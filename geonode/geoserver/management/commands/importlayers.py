@@ -240,18 +240,29 @@ class GeoNodeUploader:
             tuple: A list of required file paths and a list of optional file paths.
         """
         config = handler.supported_file_extension_config
-        base, _ = os.path.splitext(os.path.basename(file_path))
+        base, ext = os.path.splitext(os.path.basename(file_path))
+        ext = ext.lstrip(".").lower()
 
-        # Extract required and optional extensions from the formats
-        required_ext = []
-        optional_ext = []
+        # Find the matching format based on the file extension
+        matching_format = None
         for format_config in config.get("formats", []):
-            required_ext.extend(format_config.get("required_ext", []))
-            optional_ext.extend(format_config.get("optional_ext", []))
+            if ext in format_config.get("required_ext", []):
+                matching_format = format_config
+                break
+
+        if not matching_format:
+            raise ValueError(
+                f"Unsupported file extension: {ext}. Supported formats: "
+                f"{config.get('formats', [])}"
+            )
+
+        # Use the required and optional extensions from the matching format
+        required_ext = matching_format.get("required_ext", [])
+        optional_ext = matching_format.get("optional_ext", [])
 
         # Generate file paths for required and optional extensions
-        required = [os.path.join(root, base + f".{ext}") for ext in required_ext]
-        optional = [os.path.join(root, base + f".{ext}") for ext in optional_ext]
+        required = [os.path.join(root, f"{base}.{ext}") for ext in required_ext]
+        optional = [os.path.join(root, f"{base}.{ext}") for ext in optional_ext]
 
         print("Required files:", required)
         print("Optional files:", optional)
