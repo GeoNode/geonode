@@ -36,7 +36,6 @@ from django.contrib.auth import get_user_model
 from geonode.storage.manager import storage_manager
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
-from django.utils import translation
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -79,7 +78,6 @@ from geonode.base.templatetags.thesaurus import (
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
-from geonode.base.forms import ThesaurusAvailableForm, THESAURUS_RESULT_LIST_SEPERATOR
 from geonode.resource.manager import resource_manager
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
@@ -897,79 +895,6 @@ class TestTagThesaurus(TestCase):
     @staticmethod
     def __get_last_thesaurus():
         return Thesaurus.objects.all().order_by("id")[0]
-
-
-@override_settings(THESAURUS_DEFAULT_LANG="en")
-class TestThesaurusAvailableForm(TestCase):
-    #  loading test thesausurs
-    fixtures = ["test_thesaurus.json"]
-
-    def setUp(self):
-        self.sut = ThesaurusAvailableForm
-
-    def test_form_is_valid_if_all_fields_are_missing(self):
-        #  is now always true since the required is moved to the UI
-        #  (like the other fields)
-        actual = self.sut(data={})
-        self.assertTrue(actual.is_valid())
-
-    def test_form_is_invalid_if_fileds_send_unexpected_values(self):
-        actual = self.sut(data={"1": [1, 2]})
-        self.assertFalse(actual.is_valid())
-
-    def test_form_is_valid_if_fileds_send_expected_values(self):
-        actual = self.sut(data={"1": 1})
-        self.assertTrue(actual.is_valid())
-
-    def test_field_class_treq_is_correctly_set_when_field_is_required(self):
-        actual = self.sut(data={"1": 1})
-        required = actual.fields.get("1")
-        obj_class = required.widget.attrs.get("class")
-        self.assertTrue(obj_class == "treq")
-
-    def test_field_class_treq_is_not_set_when_field_is_optional(self):
-        actual = self.sut(data={"1": 1})
-        required = actual.fields.get("2")
-        obj_class = required.widget.attrs.get("class")
-        self.assertTrue(obj_class == "")
-
-    def test_will_return_thesaurus_with_the_expected_defined_order(self):
-        actual = self.sut(data={"1": 1})
-        fields = list(actual.fields.items())
-        #  will check if the first element of the tuple is the thesaurus_id = 2
-        self.assertEqual(fields[0][0], "2")
-        #  will check if the second element of the tuple is the thesaurus_id = 1
-        self.assertEqual(fields[1][0], "1")
-
-    def test_will_return_thesaurus_with_the_defaul_order_as_0(self):
-        # Update thesaurus order to 0 in order to check if the default order by id is observed
-        t = Thesaurus.objects.get(identifier="inspire-theme")
-        t.order = 0
-        t.save()
-        actual = ThesaurusAvailableForm(data={"1": 1})
-        fields = list(actual.fields.items())
-        #  will check if the first element of the tuple is the thesaurus_id = 2
-        self.assertEqual(fields[0][0], "1")
-        #  will check if the second element of the tuple is the thesaurus_id = 1
-        self.assertEqual(fields[1][0], "2")
-
-    def test_get_thesuro_key_label_with_cmd_language_code(self):
-        # in python test language code look like 'en' this test checks if key label result function
-        # returns correct results
-        tid = 1
-        translation.activate("en")
-        t_available_form = ThesaurusAvailableForm(data={"1": tid})
-        results = t_available_form._get_thesauro_keyword_label(tid, translation.get_language())
-        self.assertNotEqual(results[1], THESAURUS_RESULT_LIST_SEPERATOR)
-
-    def test_get_thesuro_key_label_with_browser_language_code(self):
-        # in browser scenario language does not look like "it", but rather include coutry code
-        # like "it-it" this test checks if _get_thesauro_keyword_label can handle this
-        tid = 1
-        translation.activate("en-us")
-        t_available_form = ThesaurusAvailableForm(data={"1": tid})
-        results = t_available_form._get_thesauro_keyword_label(tid, translation.get_language())
-        self.assertNotEqual(results[1], THESAURUS_RESULT_LIST_SEPERATOR)
 
 
 class TestFacets(TestCase):

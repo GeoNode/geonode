@@ -76,6 +76,13 @@ class DateTypeSubHandler(SubHandler):
         subschema["default"] = "Publication"
 
 
+class TitleSubHandler(SubHandler):
+    @classmethod
+    def deserialize(cls, field_value):
+        # ref https://github.com/GeoNode/geonode/issues/8198
+        return field_value.replace(",", "_")
+
+
 class DateSubHandler(SubHandler):
     @classmethod
     def serialize(cls, value):
@@ -157,6 +164,7 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
 
 
 SUBHANDLERS = {
+    "title": TitleSubHandler,
     "category": CategorySubHandler,
     "date_type": DateTypeSubHandler,
     "date": DateSubHandler,
@@ -184,8 +192,7 @@ class BaseHandler(MetadataHandler):
             self.base_schema = json.load(f)
         # building the full base schema
         for property_name, subschema in self.base_schema.items():
-            self._localize_subschema_label(context, subschema, lang, "title")
-            self._localize_subschema_label(context, subschema, lang, "description")
+            self._localize_subschema_labels(context, subschema, lang, property_name)
 
             jsonschema["properties"][property_name] = subschema
 

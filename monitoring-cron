@@ -1,3 +1,0 @@
-# */1 * * * * /usr/src/geonode/manage.sh collect_metrics -n -t xml >> /var/log/cron.log 2>&1
-# 0 * * * * /usr/src/geonode/manage.sh dispatch_metrics >> /var/log/cron.log 2>&1
-# An empty line is required at the end of this file for a valid cron file.

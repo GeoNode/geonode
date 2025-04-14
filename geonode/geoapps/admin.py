@@ -32,7 +32,7 @@ class GeoAppAdminForm(ResourceBaseAdminForm):
 
 
 class GeoAppAdmin(TabbedTranslationAdmin):
-    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display_links = ("title",)
     list_display = (
         "id",

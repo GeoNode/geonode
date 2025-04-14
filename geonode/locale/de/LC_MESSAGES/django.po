@@ -194,6 +194,9 @@ msgstr ""
 "Eine durch Kommata getrennte Liste an Schlüsselwörtern. Benutzen Sie das "
 "widget um eine Auswahl aus dem hierarchischen Baum zu wählen."
 
+msgid "Region"
+msgstr "Region"
+
 msgid "Regions"
 msgstr "Regionen"
 
@@ -349,6 +352,9 @@ msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "Wartungshäufigkeit"
+
+msgid "Keyword"
+msgstr "Schlüssel"
 
 msgid "keywords"
 msgstr "Schlüsselworter"
