@@ -122,8 +122,10 @@ class GeoNodeUploader:
         self.overwrite_existing_layers = overwrite_existing_layers
         self.skip_existing_layers = skip_existing_layers
         self.tentatives = tentatives
+        print(f"Current BaseHandler registry: {BaseHandler.get_registry()}")
         if not BaseHandler.get_registry():
             run_setup_hooks()
+            print(f"BaseHandler registry after setup: {BaseHandler.get_registry()}")
         self.handlers = BaseHandler.get_registry()
 
     def execute(self):
