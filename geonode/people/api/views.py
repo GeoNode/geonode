@@ -22,6 +22,7 @@ from geonode.people.utils import get_available_users
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from geonode.resource.manager import resource_manager
+from geonode.security.registry import permissions_registry
 
 
 class UserViewSet(DynamicModelViewSet):
@@ -152,29 +153,46 @@ class UserViewSet(DynamicModelViewSet):
         previous_owner = request.data.get("currentOwner")  # the previous owner, usually it match the user
         transfer_resource_subset = request.data.get("resources", None)
         target = None
-        if target_user == "DEFAULT":
-            if not admin:
-                return Response("Principal User not found", status=500)
-            target = admin
-        else:
-            target = get_object_or_404(get_user_model(), id=target_user)
 
-        if target == user:
-            return Response("Cannot reassign to self", status=400)
+        if user.is_superuser or (
+            not user.is_superuser
+            and ResourceBase.objects.filter(owner=user, pk__in=transfer_resource_subset).count()
+            == len(transfer_resource_subset)
+        ):
 
-        # we need to filter by the previous owner id
-        filter_payload = dict(owner=previous_owner or user)
+            if target_user == "DEFAULT":
+                if not admin:
+                    return Response("Principal User not found", status=500)
+                target = admin
+            else:
+                target = get_object_or_404(get_user_model(), id=target_user)
 
-        if transfer_resource_subset:
-            # transfer_resources
-            filter_payload["pk__in"] = transfer_resource_subset
+            if target == user:
+                return Response("Cannot reassign to self", status=400)
 
-        for instance in ResourceBase.objects.filter(**filter_payload).iterator():
-            """
-            We should reassing all the permissions to the new resource owner
-            we can use the resource manager because inside it will automatically update
-            the owner
-            """
-            resource_manager.set_permissions(instance.uuid, instance, owner=target or user, permissions=None)
+            # we need to filter by the previous owner id
+            filter_payload = dict(owner=previous_owner or user)
 
-        return Response("Resources transfered successfully", status=200)
+            if transfer_resource_subset:
+                # transfer_resources
+                filter_payload["pk__in"] = transfer_resource_subset
+
+            for instance in ResourceBase.objects.filter(**filter_payload).iterator():
+                """
+                We should reassing all the permissions to the new resource owner
+                we can use the resource manager because inside it will automatically update
+                the owner
+                """
+                perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+                prev_owner = get_user_model().objects.fitler(pk=previous_owner).first()
+
+                if prev_owner and not prev_owner.is_superuser:
+                    perms["users"].pop(prev_owner)
+
+                resource_manager.set_permissions(instance.uuid, instance, owner=target or user, permissions=perms)
+
+            return Response("Resources transfered successfully", status=200)
+
+        return Response(
+            {"error": "The user does not have any right to perform this action on this resource"}, status=403
+        )
