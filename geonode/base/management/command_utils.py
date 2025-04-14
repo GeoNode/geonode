@@ -1,10 +1,14 @@
 import logging
+from logging import getLevelName
+
 from django.conf import settings
 
 DEFAULT_COMMAND_LOGGER_NAME = "geonode.commands"
 
 
-def setup_logger(logger_name=DEFAULT_COMMAND_LOGGER_NAME, formatter_name="command", handler_name="command"):
+def setup_logger(logger_name=DEFAULT_COMMAND_LOGGER_NAME, formatter_name="command", handler_name="command", level=logging.INFO):
+    logger = logging.getLogger(logger_name)
+
     if logger_name not in settings.LOGGING["loggers"]:
         format = "%(levelname)-7s %(asctime)s %(message)s"
 
@@ -18,17 +22,16 @@ def setup_logger(logger_name=DEFAULT_COMMAND_LOGGER_NAME, formatter_name="comman
         }
         settings.LOGGING["loggers"][logger_name] = {
             "handlers": [handler_name],
-            "level": "INFO",
+            "level": getLevelName(level),
             "propagate": False
         }
 
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(fmt=format))
-        handler.setLevel(logging.DEBUG)
+        handler.setLevel(level)
 
-        logger = logging.getLogger(logger_name)
         logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(level)
         logger.propagate = False
 
-        return logger
+    return logger

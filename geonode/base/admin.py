@@ -25,7 +25,6 @@ from django.urls import path
 from dal import autocomplete
 from taggit.forms import TagField
 from django.core.management import call_command
-from slugify import slugify
 from django.contrib import messages
 
 from treebeard.admin import TreeAdmin
@@ -33,6 +32,7 @@ from treebeard.forms import movenodeform_factory
 
 from modeltranslation.admin import TabbedTranslationAdmin
 
+from geonode.base.management.commands.thesaurus_subcommands.load import ACTION_UPDATE
 from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType,
@@ -224,8 +224,7 @@ class ThesaurusAdmin(admin.ModelAdmin):
         if request.method == "POST":
             try:
                 rdf_file = request.FILES["rdf_file"]
-                name = slugify(rdf_file.name).removesuffix("-rdf")
-                call_command("load_thesaurus", file=rdf_file, name=name)
+                call_command("thesaurus", "load", action=ACTION_UPDATE, file=rdf_file)
                 self.message_user(request, "Your RDF file has been imported", messages.SUCCESS)
                 return redirect("..")
             except Exception as e:
