@@ -30,6 +30,7 @@ from django.utils import timezone
 from django.core.management.base import BaseCommand
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.handlers.base import BaseHandler
+from geonode.resource.enumerator import ExecutionRequestAction
 
 
 class Command(BaseCommand):
@@ -202,7 +203,7 @@ class GeoNodeUploader:
 
         _data = {
             "base_file": file_path,
-            "action": "upload",
+            "action": ExecutionRequestAction.UPLOAD.value,
         }
         for handler_class in self.handlers:
             if handler_class.can_handle(_data):
@@ -240,14 +241,18 @@ class GeoNodeUploader:
         """
         config = handler.supported_file_extension_config
         base, _ = os.path.splitext(os.path.basename(file_path))
-        required = [
-            os.path.join(root, base + f".{ext}")
-            for ext in config.get("requires", [])
-        ]
-        optional = [
-            os.path.join(root, base + f".{ext}")
-            for ext in config.get("optional", [])
-        ]
+
+        # Extract required and optional extensions from the formats
+        required_ext = []
+        optional_ext = []
+        for format_config in config.get("formats", []):
+            required_ext.extend(format_config.get("required_ext", []))
+            optional_ext.extend(format_config.get("optional_ext", []))
+
+        # Generate file paths for required and optional extensions
+        required = [os.path.join(root, base + f".{ext}") for ext in required_ext]
+        optional = [os.path.join(root, base + f".{ext}") for ext in optional_ext]
+
         return required, optional
 
     def prepare_upload_params(self, file, file_path, required, optional):
