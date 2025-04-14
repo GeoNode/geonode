@@ -1,3 +1,23 @@
+#########################################################################
+#
+# Copyright (C) 2025 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
+import logging
 from django.conf import settings
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
@@ -23,6 +43,9 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from geonode.resource.manager import resource_manager
 from geonode.security.registry import permissions_registry
+
+
+logger = logging.getLogger()
 
 
 class UserViewSet(DynamicModelViewSet):
@@ -151,8 +174,15 @@ class UserViewSet(DynamicModelViewSet):
         admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
         target_user = request.data.get("newOwner")  # the new owner
         previous_owner = request.data.get("currentOwner")  # the previous owner, usually it match the user
-        transfer_resource_subset = request.data.get("resources", None)
+        transfer_resource_subset = (
+            request.data.get("resources", None)
+            if not hasattr(request.data, "getlist")
+            else request.data.getlist("resources", None)
+        )
         target = None
+
+        if not target_user and previous_owner:
+            return Response("Payload not passed", status=400)
 
         if user.is_superuser or (
             not user.is_superuser
@@ -183,13 +213,22 @@ class UserViewSet(DynamicModelViewSet):
                 we can use the resource manager because inside it will automatically update
                 the owner
                 """
-                perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
-                prev_owner = get_user_model().objects.filter(pk=previous_owner).first()
+                try:
+                    # putting the resource in dirty state
+                    instance.set_dirty_state()
+                    # updating the perms with the new owner
+                    perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+                    prev_owner = get_user_model().objects.filter(pk=previous_owner).first()
 
-                if prev_owner and not prev_owner.is_superuser:
-                    perms["users"].pop(prev_owner)
-
-                resource_manager.set_permissions(instance.uuid, instance, owner=target or user, permissions=perms)
+                    if prev_owner and not prev_owner.is_superuser:
+                        perms["users"].pop(prev_owner)
+                    # calling the registry to update the perms
+                    resource_manager.set_permissions(instance.uuid, instance, owner=target or user, permissions=perms)
+                except Exception as e:
+                    logger.exeption(e)
+                finally:
+                    # clearing the dirty state
+                    instance.clear_dirty_state()
 
             return Response("Resources transfered successfully", status=200)
 
