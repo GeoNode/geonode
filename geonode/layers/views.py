@@ -16,25 +16,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import re
 import json
 import decimal
 import logging
-import warnings
 import traceback
 
 from owslib.wfs import WebFeatureService
 
 from django.conf import settings
 
-from django.db.models import F
 from django.http import Http404
 from django.contrib import messages
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
-from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -42,29 +38,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
-from geonode.resource.manager import resource_manager
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
-from geonode.base.views import batch_modify
-from geonode.base.models import Thesaurus, TopicCategory
-from geonode.decorators import check_keyword_write_perms
-from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, LayerAttributeForm
-from geonode.layers.models import Dataset, Attribute
+from geonode.layers.models import Dataset
 from geonode.layers.utils import (
     get_default_dataset_download_handler,
 )
 from geonode.services.models import Service
 from geonode.base import register_event
-from geonode.monitoring.models import EventType
-from geonode.groups.models import GroupProfile
-from geonode.security.utils import get_user_visible_groups
-from geonode.people.forms import ProfileForm
-from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object
+from geonode.utils import check_ogc_backend, resolve_object
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.security.registry import permissions_registry
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import gs_catalog, get_time_info
+    from geonode.geoserver.helpers import gs_catalog
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -192,343 +177,6 @@ def dataset_feature_catalogue(request, layername, template="../../catalogue/temp
     return render(request, template, context=context_dict, content_type="application/xml")
 
 
-@login_required
-@check_keyword_write_perms
-def dataset_metadata(
-    request,
-    layername,
-    template="datasets/dataset_metadata.html",
-    panel_template="layouts/panels.html",
-    custom_metadata=None,
-    ajax=True,
-):
-    try:
-        layer = _resolve_dataset(request, layername, "base.change_resourcebase_metadata", _PERMISSION_MSG_METADATA)
-    except PermissionDenied as e:
-        return HttpResponse(Exception(_("Not allowed"), e), status=403)
-    except Exception as e:
-        raise Http404(Exception(_("Not found"), e))
-    if not layer:
-        raise Http404(_("Not found"))
-    dataset_attribute_set = inlineformset_factory(
-        Dataset,
-        Attribute,
-        extra=0,
-        form=LayerAttributeForm,
-    )
-    current_keywords = [keyword.name for keyword in layer.keywords.all()]
-    topic_category = layer.category
-
-    topic_thesaurus = layer.tkeywords.all()
-
-    # Add metadata_author or poc if missing
-    layer.add_missing_metadata_author_or_poc()
-
-    # assert False, str(dataset_bbox)
-    config = layer.attribute_config()
-
-    # Add required parameters for GXP lazy-loading
-    dataset_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(dataset_bbox[0:4])]
-    if hasattr(layer, "srid"):
-        config["crs"] = {"type": "name", "properties": layer.srid}
-    config["srs"] = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
-    config["bbox"] = bbox if config["srs"] != "EPSG:3857" else llbbox_to_mercator([float(coord) for coord in bbox])
-    config["title"] = layer.title
-    config["queryable"] = True
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    if request.user != layer.owner and not request.user.is_superuser:
-        Dataset.objects.filter(id=layer.id).update(popular_count=F("popular_count") + 1)
-
-    if request.method == "POST":
-        if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
-            out = {"success": False, "errors": METADATA_UPLOADED_PRESERVE_ERROR}
-            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-
-        thumbnail_url = layer.thumbnail_url
-        dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource", user=request.user)
-
-        if not dataset_form.is_valid():
-            logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
-            out = {
-                "success": False,
-                "errors": [f"{x}: {y[0].messages[0]}" for x, y in dataset_form.errors.as_data().items()],
-            }
-            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-        if not layer.thumbnail_url:
-            layer.thumbnail_url = thumbnail_url
-        attribute_form = dataset_attribute_set(
-            request.POST,
-            instance=layer,
-            prefix="dataset_attribute_set",
-            queryset=Attribute.objects.order_by("display_order"),
-        )
-        if not attribute_form.is_valid():
-            logger.error(f"Dataset Attributes form is not valid: {attribute_form.errors}")
-            out = {
-                "success": False,
-                "errors": [re.sub(re.compile("<.*?>"), "", str(err)) for err in attribute_form.errors],
-            }
-            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-        category_form = CategoryForm(
-            request.POST,
-            prefix="category_choice_field",
-            initial=(
-                int(request.POST["category_choice_field"])
-                if "category_choice_field" in request.POST and request.POST["category_choice_field"]
-                else None
-            ),
-        )
-        if not category_form.is_valid():
-            logger.error(f"Dataset Category form is not valid: {category_form.errors}")
-            out = {
-                "success": False,
-                "errors": [re.sub(re.compile("<.*?>"), "", str(err)) for err in category_form.errors],
-            }
-            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-        if hasattr(settings, "THESAURUS"):
-            tkeywords_form = TKeywordForm(request.POST)
-        else:
-            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix="tkeywords")
-            #  set initial values for thesaurus form
-        if not tkeywords_form.is_valid():
-            logger.error(f"Dataset Thesauri Keywords form is not valid: {tkeywords_form.errors}")
-            out = {
-                "success": False,
-                "errors": [re.sub(re.compile("<.*?>"), "", str(err)) for err in tkeywords_form.errors],
-            }
-            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-
-        timeseries_form = DatasetTimeSerieForm(request.POST, instance=layer, prefix="timeseries")
-        if not timeseries_form.is_valid():
-            out = {
-                "success": False,
-                "errors": [f"{x}: {y[0].messages[0]}" for x, y in timeseries_form.errors.as_data().items()],
-            }
-            logger.error(f"{out.get('errors')}")
-            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-        elif (
-            layer.has_time
-            and timeseries_form.is_valid()
-            and not timeseries_form.cleaned_data.get("attribute", "")
-            and not timeseries_form.cleaned_data.get("end_attribute", "")
-        ):
-            out = {
-                "success": False,
-                "errors": [
-                    "The Timeseries configuration is invalid. Please select at least one option between the `attribute` and `end_attribute`, otherwise remove the 'has_time' flag"
-                ],
-            }
-            logger.error(f"{out.get('errors')}")
-            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-    else:
-        dataset_form = DatasetForm(instance=layer, prefix="resource", user=request.user)
-        dataset_form.disable_keywords_widget_for_non_superuser(request.user)
-        attribute_form = dataset_attribute_set(
-            instance=layer, prefix="dataset_attribute_set", queryset=Attribute.objects.order_by("display_order")
-        )
-        category_form = CategoryForm(
-            prefix="category_choice_field", initial=topic_category.id if topic_category else None
-        )
-
-        initial = {}
-        if layer.supports_time and layer.has_time:
-            initial = get_time_info(layer)
-
-        timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries", initial=initial)
-
-        # Create THESAURUS widgets
-        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"
-        if hasattr(settings, "THESAURUS") and settings.THESAURUS:
-            warnings.warn(
-                "The settings for Thesaurus has been moved to Model, \
-            this feature will be removed in next releases",
-                DeprecationWarning,
-            )
-            dataset_tkeywords = layer.tkeywords.all()
-            tkeywords_list = ""
-            if dataset_tkeywords and len(dataset_tkeywords) > 0:
-                tkeywords_ids = dataset_tkeywords.values_list("id", flat=True)
-                if hasattr(settings, "THESAURUS") and settings.THESAURUS:
-                    el = settings.THESAURUS
-                    thesaurus_name = el["name"]
-                    try:
-                        t = Thesaurus.objects.get(identifier=thesaurus_name)
-                        for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
-                            tkl = tk.keyword.filter(lang=lang)
-                            if len(tkl) > 0:
-                                tkl_ids = ",".join(map(str, tkl.values_list("id", flat=True)))
-                                tkeywords_list += f",{tkl_ids}" if len(tkeywords_list) > 0 else tkl_ids
-                    except Exception:
-                        tb = traceback.format_exc()
-                        logger.error(tb)
-            tkeywords_form = TKeywordForm(instance=layer)
-        else:
-            tkeywords_form = ThesaurusAvailableForm(prefix="tkeywords")
-            #  set initial values for thesaurus form
-            for tid in tkeywords_form.fields:
-                values = []
-                values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
-                tkeywords_form.fields[tid].initial = values
-    if (
-        request.method == "POST"
-        and dataset_form.is_valid()
-        and attribute_form.is_valid()
-        and category_form.is_valid()
-        and tkeywords_form.is_valid()
-        and timeseries_form.is_valid()
-    ):
-        new_category = None
-        if (
-            category_form
-            and "category_choice_field" in category_form.cleaned_data
-            and category_form.cleaned_data["category_choice_field"]
-        ):
-            new_category = TopicCategory.objects.get(id=int(category_form.cleaned_data["category_choice_field"]))
-
-        for form in attribute_form.cleaned_data:
-            la = Attribute.objects.get(id=int(form["id"].id))
-            la.description = form["description"]
-            la.attribute_label = form["attribute_label"]
-            la.visible = form["visible"]
-            la.display_order = form["display_order"]
-            la.featureinfo_type = form["featureinfo_type"]
-            la.save()
-
-        # update contact roles
-        layer.set_contact_roles_from_metadata_edit(dataset_form)
-        layer.save()
-
-        new_keywords = current_keywords if request.keyword_readonly else dataset_form.cleaned_data["keywords"]
-        new_regions = [x.strip() for x in dataset_form.cleaned_data["regions"]]
-
-        layer.keywords.clear()
-        if new_keywords:
-            layer.keywords.add(*new_keywords)
-        layer.regions.clear()
-        if new_regions:
-            layer.regions.add(*new_regions)
-        layer.category = new_category
-
-        dataset_form.save_linked_resources()
-
-        register_event(request, EventType.EVENT_CHANGE_METADATA, layer)
-        if not ajax:
-            return HttpResponseRedirect(layer.get_absolute_url())
-
-        message = layer.alternate
-
-        try:
-            if not tkeywords_form.is_valid():
-                return HttpResponse(json.dumps({"message": "Invalid thesaurus keywords"}, status_code=400))
-
-            thesaurus_setting = getattr(settings, "THESAURUS", None)
-            if thesaurus_setting:
-                tkeywords_data = tkeywords_form.cleaned_data["tkeywords"]
-                tkeywords_data = tkeywords_data.filter(thesaurus__identifier=thesaurus_setting["name"])
-                layer.tkeywords.set(tkeywords_data)
-            elif Thesaurus.objects.all().exists():
-                fields = tkeywords_form.cleaned_data
-                layer.tkeywords.set(tkeywords_form.cleanx(fields))
-
-        except Exception:
-            tb = traceback.format_exc()
-            logger.error(tb)
-
-        vals = {}
-        if "group" in dataset_form.changed_data:
-            vals["group"] = dataset_form.cleaned_data.get("group")
-        if any([x in dataset_form.changed_data for x in ["is_approved", "is_published"]]):
-            vals["is_approved"] = dataset_form.cleaned_data.get("is_approved", layer.is_approved)
-            vals["is_published"] = dataset_form.cleaned_data.get("is_published", layer.is_published)
-
-        layer.has_time = dataset_form.cleaned_data.get("has_time", layer.has_time)
-
-        if (
-            layer.supports_time
-            and timeseries_form.cleaned_data
-            and ("has_time" in dataset_form.changed_data or timeseries_form.changed_data)
-        ):
-            ts = timeseries_form.cleaned_data
-            end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
-            start_attr = layer.attributes.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
-            resource_manager.exec(
-                "set_time_info",
-                None,
-                instance=layer,
-                time_info={
-                    "attribute": start_attr,
-                    "end_attribute": end_attr,
-                    "presentation": ts.get("presentation", None),
-                    "precision_value": ts.get("precision_value", None),
-                    "precision_step": ts.get("precision_step", None),
-                    "enabled": dataset_form.cleaned_data.get("has_time", False),
-                },
-            )
-
-        resource_manager.update(
-            layer.uuid,
-            instance=layer,
-            notify=True,
-            vals=vals,
-            extra_metadata=json.loads(dataset_form.cleaned_data["extra_metadata"]),
-        )
-
-        return HttpResponse(json.dumps({"message": message}))
-
-    if not request.user.can_publish(layer):
-        dataset_form.fields["is_published"].widget.attrs.update({"disabled": "true"})
-    if not request.user.can_approve(layer):
-        dataset_form.fields["is_approved"].widget.attrs.update({"disabled": "true"})
-
-    # define contact role forms
-    contact_role_forms_context = {}
-    for role in layer.get_multivalue_role_property_names():
-        dataset_form.fields[role].initial = [p.username for p in layer.__getattribute__(role)]
-        role_form = ProfileForm(prefix=role)
-        role_form.hidden = True
-        contact_role_forms_context[f"{role}_form"] = role_form
-
-    metadata_author_groups = get_user_visible_groups(request.user)
-
-    register_event(request, "view_metadata", layer)
-    return render(
-        request,
-        template,
-        context={
-            "resource": layer,
-            "dataset": layer,
-            "panel_template": panel_template,
-            "custom_metadata": custom_metadata,
-            "dataset_form": dataset_form,
-            "attribute_form": attribute_form,
-            "timeseries_form": timeseries_form,
-            "category_form": category_form,
-            "tkeywords_form": tkeywords_form,
-            "preview": getattr(settings, "GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),
-            "crs": getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857"),
-            "metadataxsl": getattr(settings, "GEONODE_CATALOGUE_METADATA_XSL", True),
-            "freetext_readonly": getattr(settings, "FREETEXT_KEYWORDS_READONLY", False),
-            "metadata_author_groups": metadata_author_groups,
-            "TOPICCATEGORY_MANDATORY": getattr(settings, "TOPICCATEGORY_MANDATORY", False),
-            "GROUP_MANDATORY_RESOURCES": getattr(settings, "GROUP_MANDATORY_RESOURCES", False),
-            "UI_MANDATORY_FIELDS": list(
-                set(getattr(settings, "UI_DEFAULT_MANDATORY_FIELDS", []))
-                | set(getattr(settings, "UI_REQUIRED_FIELDS", []))
-            ),
-            **contact_role_forms_context,
-            "UI_ROLES_IN_TOGGLE_VIEW": layer.get_ui_toggled_role_property_names(),
-        },
-    )
-
-
-@login_required
-def dataset_metadata_advanced(request, layername):
-    return dataset_metadata(request, layername, template="datasets/dataset_metadata_advanced.html")
-
-
 @csrf_exempt
 def dataset_download(request, layername):
     handler = get_default_dataset_download_handler()
@@ -609,68 +257,6 @@ def get_dataset(request, layername):
         )
 
 
-def dataset_metadata_detail(request, layername, template="datasets/dataset_metadata_detail.html", custom_metadata=None):
-    try:
-        layer = _resolve_dataset(request, layername, "view_resourcebase", _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer:
-        raise Http404(_("Not found"))
-
-    group = None
-    if layer.group:
-        try:
-            group = GroupProfile.objects.get(slug=layer.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
-
-    register_event(request, "view_metadata", layer)
-    perms_list = permissions_registry.get_perms(instance=layer, user=request.user)
-
-    return render(
-        request,
-        template,
-        context={
-            "resource": layer,
-            "perms_list": perms_list,
-            "group": group,
-            "SITEURL": site_url,
-            "custom_metadata": custom_metadata,
-        },
-    )
-
-
-def dataset_metadata_upload(request, layername, template="datasets/dataset_metadata_upload.html"):
-    try:
-        layer = _resolve_dataset(request, layername, "base.change_resourcebase", _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer:
-        raise Http404(_("Not found"))
-
-    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
-    return render(request, template, context={"resource": layer, "layer": layer, "SITEURL": site_url})
-
-
-def dataset_sld_upload(request, layername, template="datasets/dataset_style_upload.html"):
-    try:
-        layer = _resolve_dataset(request, layername, "base.change_resourcebase", _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer:
-        raise Http404(_("Not found"))
-
-    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
-    return render(request, template, context={"resource": layer, "dataset": layer, "SITEURL": site_url})
-
-
 @xframe_options_exempt
 def dataset_embed(request, layername):
     try:
@@ -699,11 +285,6 @@ def dataset_embed(request, layername):
         "resource": layer,
     }
     return TemplateResponse(request, "datasets/dataset_embed.html", context=context_dict)
-
-
-@login_required
-def dataset_batch_metadata(request):
-    return batch_modify(request, "Dataset")
 
 
 def dataset_view_counter(dataset_id, viewer):

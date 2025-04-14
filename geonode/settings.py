@@ -1688,9 +1688,6 @@ TINYMCE_DEFAULT_CONFIG = {
     "setup": 'function(editor) {editor.on("input", onInputChange)}',
 }
 
-# Make Free-Text Kaywords writable from users or read-only
-# - if True only admins can edit free-text kwds from admin dashboard
-FREETEXT_KEYWORDS_READONLY = ast.literal_eval(os.environ.get("FREETEXT_KEYWORDS_READONLY", "False"))
 
 # ########################################################################### #
 # ASYNC SETTINGS
