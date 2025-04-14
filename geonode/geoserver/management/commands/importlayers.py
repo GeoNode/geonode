@@ -253,6 +253,9 @@ class GeoNodeUploader:
         required = [os.path.join(root, base + f".{ext}") for ext in required_ext]
         optional = [os.path.join(root, base + f".{ext}") for ext in optional_ext]
 
+        print("Required files:", required)
+        print("Optional files:", optional)
+        
         return required, optional
 
     def prepare_upload_params(self, file, file_path, required, optional):
@@ -310,6 +313,8 @@ class GeoNodeUploader:
         """
         client = requests.session()
         print(f"{file}: Submitting to upload API ...")
+        print("Params:", json.dumps(params, indent=4))
+        print("Files to upload:", list(files_to_upload.keys()))
         response = client.post(
             urljoin(self.host, "/api/v2/uploads/upload/"),
             auth=HTTPBasicAuth(self.username, self.password),
