@@ -184,7 +184,7 @@ class UserViewSet(DynamicModelViewSet):
                 the owner
                 """
                 perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
-                prev_owner = get_user_model().objects.fitler(pk=previous_owner).first()
+                prev_owner = get_user_model().objects.filter(pk=previous_owner).first()
 
                 if prev_owner and not prev_owner.is_superuser:
                     perms["users"].pop(prev_owner)
