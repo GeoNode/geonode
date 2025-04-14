@@ -30,7 +30,6 @@ from django.utils import timezone
 from django.core.management.base import BaseCommand
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.apps import run_setup_hooks
 
 
 class Command(BaseCommand):
@@ -122,10 +121,6 @@ class GeoNodeUploader:
         self.overwrite_existing_layers = overwrite_existing_layers
         self.skip_existing_layers = skip_existing_layers
         self.tentatives = tentatives
-        print(f"Current BaseHandler registry: {BaseHandler.get_registry()}")
-        if not BaseHandler.get_registry():
-            run_setup_hooks()
-            print(f"BaseHandler registry after setup: {BaseHandler.get_registry()}")
         self.handlers = BaseHandler.get_registry()
 
     def execute(self):
@@ -163,8 +158,10 @@ class GeoNodeUploader:
             return
 
         handler = self.get_handler(file_path)
+        print(f"Handler found: {handler.__class__.__name__ if handler else 'None'}")
         if not handler and not self.is_archive_file(file_path):
             # Ignore unsupported files
+            print(f"Unsupported file type: {file_path}")
             return
 
         if handler:
@@ -207,6 +204,7 @@ class GeoNodeUploader:
 
         _data = {"base_file": file_path}
         for handler_class in self.handlers:
+            print(f"Checking handler: {handler_class.__name__} for file: {file_path}")
             if handler_class.can_handle(_data):
                 return handler_class()
         return None
