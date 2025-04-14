@@ -1,5 +1,3 @@
-from twisted.python import log
-
 from django.conf import settings
 from django.core import management
 from django.core.management import call_command
@@ -39,30 +37,3 @@ def destroy_test_db(database_name):
 
 def load_db_fixtures(fixtures):
     call_command("loaddata", *fixtures)
-
-
-def setup_test_db(worker_index, fixtures, fn, *args):
-    management.get_commands()
-    management._commands["syncdb"] = "django.core"
-
-    old_name = settings.DATABASES["default"]["NAME"]
-    if worker_index is not None:
-        test_database_name = f"test_{worker_index}_{old_name}"
-    else:
-        test_database_name = f"test_{old_name}"
-
-    create_test_db(test_database_name)
-    if fixtures:
-        load_db_fixtures(fixtures)
-
-    result = None
-    try:
-        result = fn(*args)
-    except Exception as e:
-        log.err(str(e))
-        raise
-    finally:
-        destroy_test_db(test_database_name)
-
-    connection.settings_dict["NAME"] = old_name
-    return result
