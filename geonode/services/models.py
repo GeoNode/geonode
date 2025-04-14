@@ -95,7 +95,7 @@ class Service(ResourceBase):
 
     @property
     def needs_authentication(self):
-        return self.password and self.username
+        return self.password is not None and self.username is not None
 
     def _get_service_url(self):
         parsed_url = urlparse(self.base_url)
