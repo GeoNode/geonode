@@ -203,7 +203,7 @@ class GeoNodeUploader:
 
         _data = {
             "base_file": file_path,
-            "action": ExecutionRequestAction.UPLOAD.value,
+            "action": str(ExecutionRequestAction.UPLOAD.value),
         }
         for handler_class in self.handlers:
             if handler_class.can_handle(_data):
@@ -273,7 +273,7 @@ class GeoNodeUploader:
             to upload (`files_to_upload`).
         """
         params = {
-            "action": ExecutionRequestAction.UPLOAD.value,
+            "action": str(ExecutionRequestAction.UPLOAD.value),
             "dataset_title": file,
             "non_interactive": "true",
             "overwrite_existing_layer": str(self.overwrite_existing_layers).lower(),
