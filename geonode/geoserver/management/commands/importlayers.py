@@ -30,6 +30,7 @@ from django.utils import timezone
 from django.core.management.base import BaseCommand
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.handlers.base import BaseHandler
+from geonode.upload.handlers.apps import run_setup_hooks
 
 
 class Command(BaseCommand):
@@ -121,6 +122,8 @@ class GeoNodeUploader:
         self.overwrite_existing_layers = overwrite_existing_layers
         self.skip_existing_layers = skip_existing_layers
         self.tentatives = tentatives
+        if not BaseHandler.get_registry():
+            run_setup_hooks()
         self.handlers = BaseHandler.get_registry()
 
     def execute(self):
