@@ -158,10 +158,8 @@ class GeoNodeUploader:
             return
 
         handler = self.get_handler(file_path)
-        print(f"Handler found: {handler.__class__.__name__ if handler else 'None'}")
         if not handler and not self.is_archive_file(file_path):
             # Ignore unsupported files
-            print(f"Unsupported file type: {file_path}")
             return
 
         if handler:
@@ -202,9 +200,11 @@ class GeoNodeUploader:
         if self.is_archive_file(file_path):
             return None
 
-        _data = {"base_file": file_path}
+        _data = {
+            "base_file": file_path,
+            "action": "upload",
+        }
         for handler_class in self.handlers:
-            print(f"Checking handler: {handler_class.__name__} for file: {file_path}")
             if handler_class.can_handle(_data):
                 return handler_class()
         return None
