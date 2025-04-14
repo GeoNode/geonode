@@ -270,6 +270,7 @@ class GeoNodeUploader:
             to upload (`files_to_upload`).
         """
         params = {
+            "action": ExecutionRequestAction.UPLOAD.value,
             "dataset_title": file,
             "non_interactive": "true",
             "overwrite_existing_layer": str(self.overwrite_existing_layers).lower(),
