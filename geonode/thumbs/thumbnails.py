@@ -62,6 +62,7 @@ def create_thumbnail(
     styles: Optional[List] = None,
     overwrite: bool = False,
     background_zoom: Optional[int] = None,
+    map_thumb_from_bbox: bool = False,
 ) -> None:
     """
     Function generating and saving a thumbnail of the given instance (Dataset or Map), which is composed of
@@ -111,7 +112,7 @@ def create_thumbnail(
 
     if isinstance(instance, Map):
         is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).exists()
-        if is_map_with_datasets:
+        if is_map_with_datasets and not map_thumb_from_bbox:
             compute_bbox_from_datasets = True
     if bbox:
         bbox = bbox_utils.clean_bbox(bbox, target_crs)
