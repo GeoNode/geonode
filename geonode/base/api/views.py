@@ -753,6 +753,13 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         try:
             resource = ResourceBase.objects.get(id=int(resource_id))
 
+            # Check if the current user has the permissions to delete the thumbnail
+            if not request.user.has_perm("change_resourcebase", resource.get_self_resource()):
+                return Response(
+                    {"message": "You do not have permission to delete this thumbnail.", "success": False},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            
             # Check if thumbnail exists
             if not resource.thumbnail_url:
                 return Response(
