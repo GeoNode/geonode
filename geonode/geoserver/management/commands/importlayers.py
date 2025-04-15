@@ -282,9 +282,6 @@ class GeoNodeUploader:
         params = {
             "action": self.action,
             "dataset_title": file,
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "time": "false",
-            "charset": "UTF-8",
             "non_interactive": "true",
             "overwrite_existing_layer": str(self.overwrite_existing_layers).lower(),
             "skip_existing_layers": str(self.skip_existing_layers).lower(),
