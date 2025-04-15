@@ -35,7 +35,7 @@ from geonode.layers import utils
 from geonode.layers.models import Dataset
 from geonode.people import profileextractors
 
-from geonode.base.populate_test_data import all_public, create_models, remove_models
+from geonode.base.populate_test_data import all_public, create_models, create_single_dataset, remove_models
 from django.db.models import Q
 from geonode.security.registry import permissions_registry
 
@@ -1150,7 +1150,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": norman.id}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"currentOwner": bobby.id, "newOwner": norman.id},
         )
         # check that bobby owns the resources no more
         self.assertFalse(bobby_resources.exists())
@@ -1174,7 +1175,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby}/transfer_resources", data={"owner": invalid_user_id}
+            path=f"{reverse('users-list')}/{bobby}/transfer_resources",
+            data={"currentOwner": bobby.id, "newOwner": invalid_user_id},
         )
         # response should be 404
         self.assertEqual(response.status_code, 404)
@@ -1200,7 +1202,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": "DEFAULT"}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"currentOwner": bobby.id, "newOwner": "DEFAULT"},
         )
         self.assertTrue(response.status_code == 200)
         # check that bobby owns the resources no more
@@ -1232,7 +1235,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": "DEFAULT"}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"newOwner": "DEFAULT", "previousOwner": bobby.pk},
         )
         self.assertTrue(response.status_code == 500)
         self.assertEqual(response.data, "Principal User not found")
@@ -1257,7 +1261,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": bobby.pk}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"previousOwner": bobby.pk, "newOwner": bobby.pk},
         )
         self.assertTrue(response.status_code == 400)
         self.assertEqual(response.data, "Cannot reassign to self")
@@ -1277,7 +1282,6 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
         prior_bobby_resources = bobby_resources.all()
         self.assertTrue(bobby_resources.exists())
-
         # call api
         response = self.client.post(path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={})
         # response should be 404
@@ -1286,3 +1290,36 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         later_bobby_resources = ResourceBase.objects.filter(owner=bobby).all()
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
+
+    def test_transfer_resource_subset(self):
+        """
+        user wants to transfer resources to target
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # check bobbys resources
+        resource_to_transfer = ResourceBase.objects.filter(owner=bobby).first()
+        second_resource = create_single_dataset("test for api", owner=bobby)
+        new_owner = get_user_model().objects.exclude(username__in=["bobby", "AnonymousUser"]).first()
+
+        # call api to transfer bobby resource to the other user
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={
+                "newOwner": new_owner.pk,
+                "currentOwner": bobby.pk,
+                "resources": [resource_to_transfer.pk, second_resource.pk],
+            },
+        )
+        # response should be 200
+        self.assertEqual(response.status_code, 200)
+
+        resource_to_transfer.refresh_from_db()
+        second_resource.refresh_from_db()
+        # Check that bobby does not own the resource anymore
+        self.assertTrue(resource_to_transfer.owner != bobby)
+        self.assertTrue(second_resource.owner != bobby)
+        # since the payload say "default"
+        self.assertTrue(resource_to_transfer.owner == new_owner)
+        self.assertTrue(second_resource.owner == new_owner)

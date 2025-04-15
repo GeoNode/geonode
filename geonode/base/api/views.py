@@ -618,6 +618,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 )
             elif request.method == "PUT":
                 perms_spec_compact = PermSpecCompact(request.data, resource)
+                if resource.dirty_state:
+                    raise Exception("Cannot update if the resource is in dirty state")
+                resource.set_dirty_state()
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name="set_permissions",
@@ -634,6 +637,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 perms_spec_compact_patch = PermSpecCompact(request.data, resource)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
+                if resource.dirty_state:
+                    raise Exception("Cannot update if the resource is in dirty state")
+                resource.set_dirty_state()
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name="set_permissions",
