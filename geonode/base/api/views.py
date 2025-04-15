@@ -759,7 +759,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     {"message": "You do not have permission to delete this thumbnail.", "success": False},
                     status=status.HTTP_403_FORBIDDEN,
                 )
-            
+
             # Check if thumbnail exists
             if not resource.thumbnail_url:
                 return Response(
