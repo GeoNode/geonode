@@ -123,6 +123,7 @@ class GeoNodeUploader:
         self.skip_existing_layers = skip_existing_layers
         self.tentatives = tentatives
         self.handlers = BaseHandler.get_registry()
+        self.action = str(ExecutionRequestAction.UPLOAD.value)
 
     def execute(self):
         success, errors = [], []
@@ -203,7 +204,7 @@ class GeoNodeUploader:
 
         _data = {
             "base_file": file_path,
-            "action": str(ExecutionRequestAction.UPLOAD.value),
+            "action": self.action,
         }
         for handler_class in self.handlers:
             if handler_class.can_handle(_data):
@@ -279,8 +280,9 @@ class GeoNodeUploader:
             to upload (`files_to_upload`).
         """
         params = {
-            "action": str(ExecutionRequestAction.UPLOAD.value),
+            "action": self.action,
             "dataset_title": file,
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "non_interactive": "true",
             "overwrite_existing_layer": str(self.overwrite_existing_layers).lower(),
             "skip_existing_layers": str(self.skip_existing_layers).lower(),
