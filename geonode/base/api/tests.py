@@ -2048,6 +2048,23 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.data["message"], "Resource not found.")
         self.assertFalse(response.data["success"])
 
+        # Check that a user without the permissions (norman) cannot delete the thumbnail of a bobby's resource
+        bobby = get_user_model().objects.get(username="bobby")
+
+        resource.owner = bobby
+        resource.thumbnail_url = "http://example.com/thumb/bobby_thumb.png"
+        resource.thumbnail_path = "thumb/bobby_thumb.png"
+        resource.save()
+
+        url = reverse("base-resources-delete-thumbnail", kwargs={"resource_id": resource.id})
+
+        # Connect as norman user
+        self.client.logout()
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
     def test_set_thumbnail_from_bbox_from_Anonymous_user_raise_permission_error(self):
         """
         Given a request with Anonymous user, should raise an authentication error.
