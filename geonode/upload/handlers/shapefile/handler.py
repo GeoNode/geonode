@@ -165,7 +165,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
             additional_options.append("-nlt PROMOTE_TO_MULTI")
         if encoding:
-            additional_options.append(f"-lco ENCODING={encoding}")
+            additional_options.append(f"--config SHAPE_ENCODING {encoding}")
 
         return (
             f"{base_command } -lco precision=no -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "

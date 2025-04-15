@@ -35,11 +35,14 @@ class MetadataHandler(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def update_schema(self, jsonschema: dict, context, lang=None):
+    def update_schema(self, jsonschema: dict, context: dict, lang=None):
         """
         It is called by the MetadataManager when creating the JSON Schema
         It adds the subschema handled by the handler, and returns the
         augmented instance of the JSON Schema.
+        Context is populated by the manager with some common info:
+         - key "labels": contains the localized label loaded from the db as a dict, where key is the ThesaurusKeyword about
+           and value is the localized ThesaurusKeywordLabel, or the AltLabel if the localized label does not exist.
         """
         pass
 
@@ -58,9 +61,21 @@ class MetadataHandler(metaclass=ABCMeta):
         self, resource: ResourceBase, field_name: str, json_instance: dict, context: dict, errors: dict, **kwargs
     ):
         """
-        Called when persisting data, updates the field field_name of the resource
+        Called when persisting data, updates the field `field_name` of the resource
         with the content content, where json_instance is  the full JSON Schema instance,
         in case the handler needs some cross related data contained in the resource.
+        """
+        pass
+
+    def pre_save(self, resource: ResourceBase, json_instance: dict, context: dict, errors: dict, **kwargs):
+        """
+        Called just after all the calls to update_resource, and just before ResourceBase.save()
+        """
+        pass
+
+    def post_save(self, resource: ResourceBase, json_instance: dict, context: dict, errors: dict, **kwargs):
+        """
+        Called after ResourceBase.save()
         """
         pass
 
@@ -123,15 +138,22 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def _localize_label(context, lang: str, text: str):
-        # Try localization via thesaurus:
-        label = context["labels"].get(text, None)
-        # fallback: gettext()
-        if not label:
-            label = _(text)
-
-        return label
+        label = MetadataHandler._get_tkl_labels(context, lang, text)
+        return label if label else _(text)
 
     @staticmethod
-    def _localize_subschema_label(context, subschema: dict, lang: str, annotation_name: str):
-        if annotation_name in subschema:
-            subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])
+    def _get_tkl_labels(context, lang: str, text: str):
+        return context["labels"].get(text, None)
+
+    @staticmethod
+    def _localize_subschema_labels(context, subschema: dict, lang: str, property_name: str = None):
+        for annotation_name, synt in (
+            ("title", ""),
+            ("description", "__descr"),
+        ):
+            if annotation_name in subschema:
+                subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])
+            elif property_name:  # arrays may not have a name
+                label = MetadataHandler._get_tkl_labels(context, lang, f"{property_name}{synt}")
+                if label:
+                    subschema[annotation_name] = label

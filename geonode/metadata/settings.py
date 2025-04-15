@@ -1,9 +1,9 @@
 import os
-from geonode.settings import PROJECT_ROOT
+from geonode.settings import PROJECT_ROOT, SITEURL
 
 MODEL_SCHEMA = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "{GEONODE_SITE}/resource.json",
+    "$id": f"{SITEURL}/resource.json",
     "title": "GeoNode resource",
     "type": "object",
     "properties": {},

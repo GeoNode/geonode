@@ -32,22 +32,19 @@ from io import BytesIO
 
 from unittest.mock import patch
 from urllib.parse import urlparse
+from pathlib import Path
 
 from django.urls import reverse
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.defaultfilters import filesizeformat
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.assets.utils import create_asset_and_link
-from geonode.base.forms import LinkedResourceForm
+from geonode.assets.utils import create_asset_and_link, get_default_asset
 from geonode.maps.models import Map
-from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
-from geonode.base.models import License, Region, LinkedResource
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.apps import DocumentsAppConfig
 from geonode.resource.manager import resource_manager
@@ -193,6 +190,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         d = Document.objects.get(title="GeoNode Map")
         self.assertEqual(d.doc_url, "http://www.geonode.org/map.pdf")
+
+    def test_uploaded_csv_with_uppercase_extension(self):
+        """
+        The extension of the file should always be lowercase
+        """
+
+        self.client.login(username="admin", password="admin")
+        try:
+            with open(os.path.join(os.path.dirname(__file__), "tests/data/test.CSV"), "rb") as f:
+                data = {"title": "CSV with uppercase extension", "doc_file": f, "extension": "CSV"}
+                self.client.post(reverse("document_upload"), data=data)
+            d = Document.objects.get(title="CSV with uppercase extension")
+            # verify that the extension is not lowercase
+            self.assertEqual(d.extension, "csv")
+            # be sure that also the file extension is not lowercase
+            asset = get_default_asset(d)
+            self.assertEqual(Path(asset.location[0]).suffix, ".csv")
+        finally:
+            Document.objects.filter(title="CSV with uppercase extension").delete()
 
     def test_upload_document_form(self):
         """
@@ -471,79 +487,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Test that the method returns 200
         self.assertEqual(response.status_code, 200)
 
-    def test_batch_edit(self):
-        Model = Document
-        view = "document_batch_metadata"
-        resources = Model.objects.all()[:3]
-        ids = ",".join(str(element.pk) for element in resources)
-        # test non-admin access
-        self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view))
-        self.assertTrue(response.status_code in (401, 403))
-        # test group change
-        group = Group.objects.first()
-        self.client.login(username="admin", password="admin")
-        response = self.client.post(
-            reverse(view),
-            data={"group": group.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.group, group)
-        # test owner change
-        owner = get_user_model().objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"owner": owner.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.owner, owner)
-        # test license change
-        license = License.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"license": license.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.license, license)
-        # test regions change
-        region = Region.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"region": region.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            if resource.regions.all():
-                self.assertTrue(region in resource.regions.all())
-        # test language change
-        language = "eng"
-        response = self.client.post(
-            reverse(view),
-            data={"language": language, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.language, language)
-        # test keywords change
-        keywords = "some,thing,new"
-        response = self.client.post(
-            reverse(view),
-            data={"keywords": keywords, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            for word in resource.keywords.all():
-                self.assertTrue(word.name in keywords.split(","))
-
 
 class DocumentModerationTestCase(GeoNodeBaseTestSupport):
     def setUp(self):
@@ -622,61 +565,6 @@ class DocumentsNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
 
 
-class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
-    def setUp(self):
-        create_models(b"document")
-        create_models(b"map")
-        create_models(b"dataset")
-
-        self.test_file = io.BytesIO(
-            b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00"
-            b"\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
-        )
-
-    def test_create_document_with_links(self):
-        """Tests the creation of document links."""
-        superuser = get_user_model().objects.get(pk=2)
-
-        d = Document.objects.create(owner=superuser, title="theimg")
-        _, _ = create_asset_and_link(d, superuser, [TEST_GIF])
-
-        self.assertEqual(Document.objects.get(pk=d.id).title, "theimg")
-
-        maps = list(Map.objects.all())
-        layers = list(Dataset.objects.all())
-        resources = maps + layers
-
-        # create document links
-
-        mixin1 = LinkedResourceForm()
-        mixin1.instance = d
-        mixin1.cleaned_data = {
-            "linked_resources": resources,
-        }
-        mixin1.save_linked_resources()
-
-        for resource in resources:
-            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
-            self.assertEqual(_d.target_id, resource.id)
-
-        # update document links
-
-        mixin2 = LinkedResourceForm()
-        mixin2.instance = d
-        mixin2.cleaned_data = {
-            "linked_resources": layers,
-        }
-        mixin2.save_linked_resources()
-
-        for resource in layers:
-            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
-            self.assertEqual(_d.target_id, resource.id)
-
-        for resource in maps:
-            with self.assertRaises(LinkedResource.DoesNotExist):
-                LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
-
-
 class DocumentViewTestCase(GeoNodeBaseTestSupport):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
@@ -691,118 +579,6 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         )
         self.perm_spec = {"users": {"AnonymousUser": []}}
         self.doc_link_url = reverse("document_link", args=(self.test_doc.pk,))
-
-    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
-        """
-        Test that keyword multiselect widget is disabled when the user is not an admin
-        when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-            self.assertTrue(response.context["form"]["keywords"].field.disabled)
-
-    def test_that_featured_enabling_and_disabling_for_users(self):
-        # Non Admins
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        response = self.client.get(url)
-        self.assertFalse(self.not_admin.is_superuser)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["form"]["featured"].field.disabled)
-        # Admin
-        self.client.login(username="admin", password="admin")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context["form"]["featured"].field.disabled)
-
-    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
-        """
-        Test that only admin users can create/edit keywords
-        """
-        admin = self.not_admin
-        admin.is_superuser = True
-        admin.save()
-        self.client.login(username=admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        response = self.client.get(url)
-        self.assertTrue(admin.is_superuser)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context["form"]["keywords"].field.disabled)
-
-    def test_that_non_admin_user_can_create_write_to_map_without_keyword(self):
-        """
-        Test that non admin users can write to maps without creating/editing keywords
-        when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(
-                url,
-                data={
-                    "resource-owner": self.not_admin.id,
-                    "resource-title": "doc",
-                    "resource-date": "2022-01-24 16:38 pm",
-                    "resource-date_type": "creation",
-                    "resource-language": "eng",
-                },
-            )
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-        self.test_doc.refresh_from_db()
-        self.assertEqual("doc", self.test_doc.title)
-
-    def test_that_non_admin_user_cannot_create_edit_keyword(self):
-        """
-        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(url, data={"resource-keywords": "wonderful-keyword"})
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 401)
-            self.assertEqual(response.content, b"Unauthorized: Cannot edit/create Free-text Keywords")
-
-    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
-        """
-        Test that keyword multiselect widget is not disabled when the user is not an admin
-        and FREETEXT_KEYWORDS_READONLY=False
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.get(url)
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-            self.assertFalse(response.context["form"]["keywords"].field.disabled)
-
-    def test_that_non_admin_user_can_create_edit_keyword_when_freetext_keywords_readonly_istrue(self):
-        """
-        Test that non admin users can edit/create keywords when FREETEXT_KEYWORDS_READONLY=False
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.post(
-                url,
-                data={
-                    "resource-owner": self.not_admin.id,
-                    "resource-title": "doc",
-                    "resource-date": "2022-01-24 16:38 pm",
-                    "resource-date_type": "creation",
-                    "resource-language": "eng",
-                    "resource-keywords": "wonderful-keyword",
-                },
-            )
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-        self.test_doc.refresh_from_db()
-        self.assertEqual("doc", self.test_doc.title)
 
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)

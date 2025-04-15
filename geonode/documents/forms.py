@@ -29,7 +29,6 @@ from django.forms import HiddenInput
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
-from geonode.base.forms import ResourceBaseForm, get_tree_data
 from geonode.documents.models import Document
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.api.exceptions import FileUploadLimitException
@@ -75,39 +74,6 @@ class SizeRestrictedFileField(forms.FileField):
         except UploadSizeLimit.DoesNotExist:
             max_size_db_obj = UploadSizeLimit.objects.create_default_limit_with_slug(slug=self.field_slug)
         return max_size_db_obj.max_size
-
-
-class DocumentForm(ResourceBaseForm):
-    title = forms.CharField(required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["regions"].choices = get_tree_data()
-        for field in self.fields:
-            help_text = self.fields[field].help_text
-            self.fields[field].help_text = None
-            if help_text != "":
-                self.fields[field].widget.attrs.update(
-                    {
-                        "class": "has-external-popover",
-                        "data-content": help_text,
-                        "placeholder": help_text,
-                        "data-placement": "right",
-                        "data-container": "body",
-                        "data-html": "true",
-                    }
-                )
-
-    class Meta(ResourceBaseForm.Meta):
-        model = Document
-        exclude = ResourceBaseForm.Meta.exclude + (
-            "content_type",
-            "object_id",
-            "doc_file",
-            "extension",
-            "subtype",
-            "doc_url",
-        )
 
 
 class DocumentCreateForm(TranslationModelForm):
@@ -163,7 +129,7 @@ class DocumentCreateForm(TranslationModelForm):
             raise forms.ValidationError(_("A document cannot have both a file and a url."))
 
         if extension:
-            cleaned_data["extension"] = extension.replace(".", "")
+            cleaned_data["extension"] = extension.replace(".", "").lower()
 
         return cleaned_data
 

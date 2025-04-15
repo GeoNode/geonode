@@ -1687,25 +1687,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         return [role.name for role in (set(Roles.get_toggled_ones()) & set(Roles.get_toggled_ones()))]
 
-    # typing not possible due to: from geonode.base.forms import ResourceBaseForm; unable due to circular ...
-    def set_contact_roles_from_metadata_edit(self, resource_base_form) -> bool:
-        """gets a ResourceBaseForm and extracts the Contact Role elements from it
-
-        Args:
-            resource_base_form (ResourceBaseForm): ResourceBaseForm with contact roles set
-
-        Returns:
-            bool: true if all contact roles could be set, else false
-        """
-        failed = False
-        for role in self.get_multivalue_role_property_names():
-            try:
-                self.__setattr__(role, resource_base_form.cleaned_data[role])
-            except AttributeError:
-                logger.warning(f"unable to set contact role {role} for {self} ...")
-                failed = True
-        return failed
-
     def __get_contact_role_elements__(self, role: str) -> Optional[List[settings.AUTH_USER_MODEL]]:
         """general getter of for all contact roles except owner
 

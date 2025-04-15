@@ -25,7 +25,6 @@ from django.urls import path
 from dal import autocomplete
 from taggit.forms import TagField
 from django.core.management import call_command
-from slugify import slugify
 from django.contrib import messages
 
 from treebeard.admin import TreeAdmin
@@ -33,6 +32,7 @@ from treebeard.forms import movenodeform_factory
 
 from modeltranslation.admin import TabbedTranslationAdmin
 
+from geonode.base.management.commands.thesaurus_subcommands.load import ACTION_UPDATE
 from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType,
@@ -52,31 +52,8 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
 )
 
-from geonode.base.forms import BatchEditForm, ThesaurusImportForm, UserAndGroupPermissionsForm
+from geonode.base.forms import ThesaurusImportForm, UserAndGroupPermissionsForm
 from geonode.base.widgets import TaggitSelect2Custom
-
-
-def metadata_batch_edit(modeladmin, request, queryset):
-    ids = ",".join(str(element.pk) for element in queryset)
-    resource = queryset[0].class_name.lower()
-    form = BatchEditForm({"ids": ids})
-    name_space_mapper = {
-        "dataset": "dataset_batch_metadata",
-        "map": "map_batch_metadata",
-        "document": "document_batch_metadata",
-    }
-
-    try:
-        name_space = name_space_mapper[resource]
-    except KeyError:
-        name_space = None
-
-    return render(
-        request, "base/batch_edit.html", context={"form": form, "ids": ids, "model": resource, "name_space": name_space}
-    )
-
-
-metadata_batch_edit.short_description = "Metadata batch edit"
 
 
 def set_user_and_group_dataset_permission(modeladmin, request, queryset):
@@ -247,8 +224,7 @@ class ThesaurusAdmin(admin.ModelAdmin):
         if request.method == "POST":
             try:
                 rdf_file = request.FILES["rdf_file"]
-                name = slugify(rdf_file.name).removesuffix("-rdf")
-                call_command("load_thesaurus", file=rdf_file, name=name)
+                call_command("thesaurus", "load", action=ACTION_UPDATE, file=rdf_file)
                 self.message_user(request, "Your RDF file has been imported", messages.SUCCESS)
                 return redirect("..")
             except Exception as e:

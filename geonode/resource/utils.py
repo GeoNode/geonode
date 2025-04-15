@@ -333,7 +333,7 @@ def document_post_save(instance, *args, **kwargs):
     asset = get_default_asset(instance)
     if asset:
         _, extension = os.path.splitext(os.path.basename(asset.location[0]))
-        instance.extension = extension[1:]
+        instance.extension = extension[1:].lower()
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, "DOCUMENT_TYPE_MAP", {}))
         if doc_type_map is None:

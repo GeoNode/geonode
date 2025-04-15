@@ -90,7 +90,8 @@ class BaseRemoteResourceHandler(BaseHandler):
             r.raise_for_status()
         except requests.exceptions.Timeout:
             raise ImportException("Timed out")
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             raise ImportException("The provided URL is not reachable")
         return True
 
