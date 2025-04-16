@@ -65,7 +65,9 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     service_type = enumerations.REST_MAP
 
-    def __init__(self, url, geonode_service_id=None):
+    def __init__(self, url, geonode_service_id=None, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
         base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
@@ -211,9 +213,11 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
 
     service_type = enumerations.REST_IMG
 
-    def __init__(self, url, geonode_service_id=None):
+    def __init__(self, url, geonode_service_id=None, *args, **kwargs):
         ArcMapServiceHandler.__init__(self, url, geonode_service_id)
         self.url = url
+        self.args = args
+        self.kwargs = kwargs
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
