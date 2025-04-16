@@ -372,6 +372,7 @@ class PermissionLevelMixin:
         def calculate_perms(instance, user):
             # To avoid circular import
             from geonode.base.models import Configuration
+            from geonode.layers.models import Dataset
 
             config = Configuration.load()
             ctype = ContentType.objects.get_for_model(instance)
@@ -379,10 +380,13 @@ class PermissionLevelMixin:
 
             PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
             # include explicit permissions appliable to "subtype == 'vector'"
-            if instance.subtype in ["vector", "vector_time"]:
-                PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
-            elif instance.subtype == "raster":
+
+            if instance.subtype == "raster":
                 PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
+            elif isinstance(instance.get_real_instance(), Dataset):
+                # remote layers are included, since https://github.com/GeoNode/geonode/issues/13011
+                # introduces an "optimistic" approach to editing remote layers
+                PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
 
             resource_perms = Permission.objects.filter(
                 codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]

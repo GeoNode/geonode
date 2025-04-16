@@ -1688,9 +1688,6 @@ TINYMCE_DEFAULT_CONFIG = {
     "setup": 'function(editor) {editor.on("input", onInputChange)}',
 }
 
-# Make Free-Text Kaywords writable from users or read-only
-# - if True only admins can edit free-text kwds from admin dashboard
-FREETEXT_KEYWORDS_READONLY = ast.literal_eval(os.environ.get("FREETEXT_KEYWORDS_READONLY", "False"))
 
 # ########################################################################### #
 # ASYNC SETTINGS
@@ -2188,7 +2185,7 @@ FILE_UPLOAD_HANDLERS = [
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
 ]
 
-DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv("DEFAULT_MAX_UPLOAD_SIZE", 104857600))  # 100 MB
+DEFAULT_MAX_UPLOAD_SIZE = 104857600  # 100 MB
 DEFAULT_BUFFER_CHUNK_SIZE = int(os.getenv("DEFAULT_BUFFER_CHUNK_SIZE", 64 * 1024))
 DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER = int(os.getenv("DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5))
 

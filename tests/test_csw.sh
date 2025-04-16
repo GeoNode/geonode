@@ -19,7 +19,6 @@ export ASYNC_SIGNALS=False
 export DATABASE_URL=postgis://geonode:geonode@db:5432/geonode
 export GEODATABASE_URL=postgis://geonode:geonode@db:5432/geonode_data
 export DEFAULT_BACKEND_DATASTORE=datastore
-export DEFAULT_MAX_UPLOAD_SIZE=5368709120
 export DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER=100
 
 # echo "Initialize DB";

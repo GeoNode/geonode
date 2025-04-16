@@ -448,7 +448,7 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                   <gmd:URL>{{ SITEURL }}{{ layer.get_absolute_url }}</gmd:URL>
+                   <gmd:URL>{{ SITEURL }}{% url 'resolve_uuid' uuid=layer.uuid %}</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
