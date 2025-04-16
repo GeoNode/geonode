@@ -67,7 +67,7 @@ PERMISSIONS = {
 
 DOWNLOADABLE_RESOURCES = ["dataset", "document"]
 
-DATA_EDITABLE_RESOURCES_SUBTYPES = ["vector", "vector_time"]
+DATA_EDITABLE_RESOURCES_SUBTYPES = ["vector", "vector_time", "remote"]
 
 DATA_STYLABLE_RESOURCES_SUBTYPES = ["raster", "vector", "vector_time"]
 
