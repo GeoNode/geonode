@@ -444,6 +444,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
 class ImporterWMSImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "ASYNC_SIGNALS": "False"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", ASYNC_SIGNALS=False)
+    @skip("To be updated without using development demo as source for the test")
     def test_import_wms(self):
         _, wms = WebMapService(
             "https://development.demo.geonode.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities"
