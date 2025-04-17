@@ -697,11 +697,8 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         res = None
         try:
             dt_files = [os.path.join(os.path.abspath(os.path.dirname(__file__)), "data", "WY_USNG.zip")]
-            defaults = {"owner": self.user_admin}
             # raises an exception if resource_type is not provided
-            self.rm.ingest(dt_files)
-            # ingest with datasets
-            res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
+            res = self.rm.create(None, resource_type=Dataset, defaults={"owner": self.user_admin, "files": dt_files})
             if (
                 res
             ):  # Since importing this dataset takes some time, the connection might be reset due to very low timeout set for testing.
