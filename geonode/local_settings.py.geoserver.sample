@@ -286,7 +286,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
                     ("%s" % pycsw_config["metadata"]["identification"]): {
                         "url": CATALOGUE["default"]["URL"],
                         "type": "csw",
-                        "title": pycsw_config["metadata"]["identification"],
+                        "title": pycsw_config["metadata"]["identification"]["title"],
                         "autoload": True,
                     }
                 }
