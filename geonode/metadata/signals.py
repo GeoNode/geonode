@@ -3,7 +3,7 @@ import logging
 from django.db.models.signals import post_save
 
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
-from geonode.metadata.manager import thesaurus_changed, thesaurusk_changed, thesauruskl_changed
+from geonode.metadata.i18n import thesaurus_changed, thesaurusk_changed, thesauruskl_changed
 
 logger = logging.getLogger(__name__)
 

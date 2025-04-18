@@ -142,7 +142,13 @@ class ContactHandler(MetadataHandler):
             if rolename == Roles.OWNER.name:
                 if not users:
                     logger.warning(f"User not specified for role '{rolename}'")
-                    self._set_error(errors, ["contacts", rolename], f"User not specified for role '{rolename}'")
+                    self._set_error(
+                        errors,
+                        ["contacts", rolename],
+                        self.localize_message(
+                            context, "metadata_contact_error_missing_role", {"fieldname": field_name, "role": rolename}
+                        ),
+                    )
                 else:
                     resource.owner = get_user_model().objects.get(pk=users["id"])
             else:

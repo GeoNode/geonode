@@ -229,4 +229,8 @@ class BaseHandler(MetadataHandler):
             setattr(resource, field_name, field_value)
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-            self._set_error(errors, [field_name], "Error while storing field. Contact your administrator")
+            self._set_error(
+                errors,
+                [field_name],
+                self.localize_message(context, "metadata_error_store", {"fieldname": field_name, "exc": e}),
+            )
