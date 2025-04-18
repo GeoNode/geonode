@@ -1149,7 +1149,7 @@ PYCSW = {
         "metadata": {
             "inspire": {
                 "enabled": True,
-                "languages_supported": ["eng" ,"gre"],
+                "languages_supported": ["eng", "gre"],
                 "default_language": "eng",
                 "date": "YYYY-MM-DD",
                 "gemet_keywords": ["Utility and governmental services"],
