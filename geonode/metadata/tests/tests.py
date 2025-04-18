@@ -31,6 +31,7 @@ from django.utils.translation import gettext as _
 from rest_framework.test import APITestCase
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.manager import metadata_manager
+from geonode.metadata.i18n import I18nCache
 from geonode.metadata.api.views import (
     ProfileAutocomplete,
     MetadataLinkedResourcesAutocomplete,
@@ -835,41 +836,37 @@ class MetadataApiTests(APITestCase):
             self.handler3.update_schema.assert_called()
 
     @patch("geonode.metadata.manager.metadata_manager.build_schema")
-    @patch("cachetools.FIFOCache.get")
-    # Mock FIFOCache's __setitem__ method (cache setting)
-    @patch("cachetools.FIFOCache.__setitem__")
-    @patch("geonode.metadata.manager.Thesaurus.objects.filter")
-    def test_get_schema(self, mock_db_value, mock_setitem, mock_get, mock_build_schema):
+    @patch.object(I18nCache, "set")
+    @patch.object(I18nCache, "get_entry")
+    def test_get_schema(self, mock_get_entry, mock_set, mock_build_schema):
 
         lang = "en"
         expected_schema = self.fake_schema
         thesaurus_date = "some_date_value"
 
-        # Mock the Thesaurus.objects.filter().first() method to return the thesaurus_date
-        mock_db_value.return_value.values_list.return_value.first.return_value = thesaurus_date
-
-        # Case when the schema is already in cache
-        mock_get.return_value = {"schema": expected_schema, "date": thesaurus_date}
+        # Schema is already cached
+        mock_get_entry.return_value = (thesaurus_date, expected_schema)
         result = metadata_manager.get_schema(lang)
 
-        # Assert that the schema was retrieved from the cache
-        mock_get.assert_called_once_with(str(lang), None)
+        mock_get_entry.assert_called_once_with(str(lang), I18nCache.DATA_KEY_SCHEMA)
         mock_build_schema.assert_not_called()
+        mock_set.assert_not_called()
         self.assertEqual(result, expected_schema)
 
-        # Reset mock calls to test the second case
-        mock_get.reset_mock()
+        # Reset mock calls
+        mock_get_entry.reset_mock()
         mock_build_schema.reset_mock()
-        mock_setitem.reset_mock()
+        mock_set.reset_mock()
 
         # Case when the schema is not in cache
-        mock_get.return_value = None
+        mock_get_entry.return_value = (thesaurus_date, None)
         mock_build_schema.return_value = expected_schema
+        
         result = metadata_manager.get_schema(lang)
 
-        mock_get.assert_called_once_with(str(lang), None)
+        mock_get_entry.assert_called_once_with(str(lang), I18nCache.DATA_KEY_SCHEMA)
         mock_build_schema.assert_called_once_with(lang)
-        mock_setitem.assert_called_once_with(str(lang), {"schema": expected_schema, "date": "some_date_value"})
+        mock_set.assert_called_once_with(str(lang), I18nCache.DATA_KEY_SCHEMA, expected_schema, thesaurus_date)
         self.assertEqual(result, expected_schema)
 
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
