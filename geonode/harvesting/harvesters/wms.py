@@ -555,11 +555,9 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             kind="DescribeLayer", override_version="1.1.1", additional_params={"layers": geonode_resource.alternate}
         )
         # check if the owsType is WFS
-        if response:
-            if (
-                etree.fromstring(response.content, parser=XML_PARSER).find("LayerDescription").attrib.get("owsType")
-                == "WFS"
-            ):
+        content = etree.fromstring(response.content, parser=XML_PARSER)
+        if response and content:
+            if content.find("LayerDescription").attrib.get("owsType") == "WFS":
                 Link.objects.get_or_create(
                     resource=geonode_resource,
                     url=geonode_resource.ows_url,
