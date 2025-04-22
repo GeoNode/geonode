@@ -1779,7 +1779,8 @@ class HandlersTests(GeoNodeBaseTestSupport):
                         "object_field": {"type": "object"},
                     }
                 }
-            }
+            },
+            "labels": {},
         }
 
         # Test string field
@@ -1827,11 +1828,11 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.sparse_handler.update_resource(
             self.resource, "number_field", json_instance_invalid_number, self.context, self.errors
         )
-        self.assertIn("Error parsing number", str(self.errors))
+        self.assertIn("metadata_sparse_error_parse", str(self.errors))
 
         # Test invalid integer number
         json_instance_invalid_int_number = {"integer_field": "not_an_integer"}
         self.sparse_handler.update_resource(
             self.resource, "integer_field", json_instance_invalid_int_number, self.context, self.errors
         )
-        self.assertIn("Error parsing integer", str(self.errors))
+        self.assertIn("metadata_sparse_error_parse", str(self.errors))

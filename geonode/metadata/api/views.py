@@ -111,7 +111,7 @@ class MetadataViewSet(ViewSet):
                 #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
                 # except Exception as e:
                 #     logger.warning(f"Can't parse JSON {request.data}: {e}")
-                errors = metadata_manager.update_schema_instance(resource, request.data)
+                errors = metadata_manager.update_schema_instance(resource, request.data, lang)
 
                 msg_t = (
                     ("m_metadata_update_error", "Some errors were found while updating the resource")
