@@ -434,11 +434,13 @@
           <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
             <div class="modal-body">
               {% csrf_token %}
+              {% if request %}
               {% get_providers as socialaccount_providers %}
               {% if socialaccount_providers %}
                   {% include "socialaccount/snippets/provider_list.html" with process="login" %}
                   {% include "socialaccount/snippets/login_extra.html" %}
                 <hr>
+              {% endif %}
               {% endif %}
               <div class="form-group">
                 <label for="id_username" class="sr-only">{% trans "Username" %}:</label>
