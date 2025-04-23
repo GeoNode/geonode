@@ -79,7 +79,6 @@ def resource_urls(request):
         LICENSES_METADATA=getattr(settings, "LICENSES", dict()).get("METADATA", "never"),
         USE_GEOSERVER=getattr(settings, "USE_GEOSERVER", False),
         USE_NOTIFICATIONS=has_notifications,
-        USE_MONITORING=settings.MONITORING_ENABLED,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, "DEFAULT_ANONYMOUS_VIEW_PERMISSION", False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, "DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", False),
         EXIF_ENABLED=getattr(settings, "EXIF_ENABLED", False),

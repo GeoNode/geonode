@@ -31,6 +31,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from geonode import geoserver
 from geonode.base import register_event
 from geonode.base.auth import get_or_create_token
+from geonode.base.enumerations import EventType
 from geonode.layers.models import Dataset
 from geonode.maps.contants import (
     _PERMISSION_MSG_GENERIC,
@@ -39,7 +40,6 @@ from geonode.maps.contants import (
     MSG_NOT_FOUND,
 )
 from geonode.maps.models import Map
-from geonode.monitoring.models import EventType
 from geonode.utils import check_ogc_backend, http_client, resolve_object
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
