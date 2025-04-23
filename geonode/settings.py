@@ -2140,6 +2140,9 @@ DEFAULT_EXTRA_METADATA_SCHEMA = {
     "field_value": object,
 }
 
+GEOIP_PATH = os.getenv("GEOIP_PATH", os.path.join(PROJECT_ROOT, "GeoIPCities.dat"))
+# This controls if tastypie search on resourches is performed only with titles
+SEARCH_RESOURCES_EXTENDED = ast.literal_eval(os.getenv("SEARCH_RESOURCES_EXTENDED", "True"))
 """
 If present, will extend the available metadata schema used for store
 new value for each resource. By default overrided the existing one.
