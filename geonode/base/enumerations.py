@@ -501,6 +501,7 @@ SOURCE_TYPES = (
 
 LAYER_TYPES = ["vector", "raster", "remote", "vector_time"]
 
+
 class EventType(enum.Enum):
     EVENT_DOWNLOAD = "download"
     EVENT_CREATE = "create"

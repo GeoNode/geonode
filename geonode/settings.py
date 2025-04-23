@@ -25,7 +25,6 @@ import sys
 import subprocess
 import dj_database_url
 from schema import Optional
-from datetime import timedelta
 from urllib.parse import urlparse, urljoin
 
 #

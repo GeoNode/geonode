@@ -17,9 +17,6 @@
 #
 #########################################################################
 import os
-import re
-import ast
-from datetime import timedelta
 from urllib.parse import urlparse
 from geonode import settings
 

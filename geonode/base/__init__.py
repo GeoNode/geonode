@@ -18,8 +18,6 @@
 #########################################################################
 from functools import wraps
 
-from django.conf import settings
-
 
 def register_url_event(event_type=None):
     """
