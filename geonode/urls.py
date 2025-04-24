@@ -221,3 +221,5 @@ if settings.MONITORING_ENABLED:
 urlpatterns += [
     re_path(r"^metadata_update_redirect$", views.metadata_update_redirect, name="metadata_update_redirect"),
 ]
+
+handler500 = "geonode.views.err500"
