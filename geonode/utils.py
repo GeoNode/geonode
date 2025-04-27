@@ -674,27 +674,6 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     return HttpResponse(body, content_type=content_type, status=status)
 
 
-def build_abstract(resourcebase, url=None, includeURL=True):
-    if resourcebase.abstract and url and includeURL:
-        return f"{resourcebase.abstract} -- [{url}]({url})"
-    else:
-        return resourcebase.abstract
-
-
-def build_caveats(resourcebase):
-    caveats = []
-    if resourcebase.maintenance_frequency:
-        caveats.append(resourcebase.maintenance_frequency_title())
-    if resourcebase.license:
-        caveats.append(resourcebase.license_verbose)
-    if resourcebase.data_quality_statement:
-        caveats.append(resourcebase.data_quality_statement)
-    if len(caveats) > 0:
-        return f"- {'%0A- '.join(caveats)}"
-    else:
-        return ""
-
-
 def check_shp_columnnames(layer):
     """Check if shapefile for a given layer has valid column names.
     If not, try to fix column names and warn the user

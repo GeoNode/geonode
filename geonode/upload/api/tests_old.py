@@ -23,7 +23,6 @@ import os
 import shutil
 import logging
 import tempfile
-from io import IOBase
 from urllib.request import urljoin
 
 from django.conf import settings
@@ -31,8 +30,6 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import authenticate, get_user_model
 from django.test.utils import override_settings
-
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from rest_framework.test import APITestCase
 
@@ -159,64 +156,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     def do_upload_step(self, step=None):
         step = urljoin(settings.SITEURL, reverse("data_upload", args=[step] if step else []))
         return step
-
-    def live_upload_file(self, _file):
-        """function that uploads a file, or a collection of files, to
-        the GeoNode"""
-        spatial_files = ("dbf_file", "shx_file", "prj_file")
-        base, ext = os.path.splitext(_file)
-        params = {
-            # make public since wms client doesn't do authentication
-            "csrfmiddlewaretoken": self.csrf_token,
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "time": "false",
-            "charset": "UTF-8",
-        }
-        cookies = {settings.SESSION_COOKIE_NAME: self.session_id, "csrftoken": self.csrf_token}
-        headers = {
-            "X-CSRFToken": self.csrf_token,
-            "X-Requested-With": "XMLHttpRequest",
-            "Set-Cookie": f"csrftoken={self.csrf_token}; sessionid={self.session_id}",
-        }
-        url = self.do_upload_step()
-        logger.debug(f" ---- UPLOAD URL: {url} / cookies: {cookies} / headers: {headers}")
-
-        # deal with shapefiles
-        if ext.lower() == ".shp":
-            for spatial_file in spatial_files:
-                ext, _ = spatial_file.split("_")
-                file_path = f"{base}.{ext}"
-                # sometimes a shapefile is missing an extra file,
-                # allow for that
-                if os.path.exists(file_path):
-                    params[spatial_file] = open(file_path, "rb")
-
-        with open(_file, "rb") as base_file:
-            params["base_file"] = base_file
-            for name, value in params.items():
-                if isinstance(value, IOBase):
-                    params[name] = (os.path.basename(value.name), value)
-
-            # refresh to exchange cookies with the server.
-            self.selenium.refresh()
-            self.selenium.get(url)
-            self.selenium.save_screenshot(os.path.join(self.temp_folder, "upload-page.png"))
-            logger.debug(f" ------------ UPLOAD FORM: {params}")
-            encoder = MultipartEncoder(fields=params)
-            headers["Content-Type"] = encoder.content_type
-            response = self.selenium.request("POST", url, data=encoder, headers=headers)
-
-        # Closes the files
-        for spatial_file in spatial_files:
-            if isinstance(params.get(spatial_file), IOBase):
-                params[spatial_file].close()
-
-        try:
-            logger.error(f" -- response: {response.status_code} / {response.json()}")
-            return response, response.json()
-        except ValueError:
-            logger.exception(ValueError(f"probably not json, status {response.status_code} / {response.content}"))
-            return response, response.content
 
     def _cleanup_layer(self, layer_name):
         # removing the layer from geonode

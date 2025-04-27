@@ -145,9 +145,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
 
         self._tempfiles = []
 
-    def _post_teardown(self):
-        pass
-
     def tearDown(self):
         connections.databases["default"]["ATOMIC_REQUESTS"] = False
 
@@ -303,16 +300,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 # bad
                 h2 = soup.find_all(["h2"])[0]
                 self.assertTrue(str(h2).find(dataset_name))
-
-    def check_upload_complete(self, dataset_name, resp, data):
-        """Makes sure that we got the correct response from an dataset
-        that has been uploaded"""
-        self.assertTrue(resp.status_code, 200)
-        if not isinstance(data, str):
-            self.assertTrue(data["success"])
-            final_step = upload_step("final")
-            if "final" in data["redirect_to"]:
-                self.assertTrue(final_step in data["redirect_to"])
 
     def check_upload_failed(self, dataset_name, resp, data):
         """Makes sure that we got the correct response from an dataset

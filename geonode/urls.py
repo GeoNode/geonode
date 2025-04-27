@@ -36,7 +36,7 @@ from geonode.upload.api.views import ImporterViewSet, ResourceImporter
 from . import views
 from . import version
 
-from geonode.api.urls import api, router
+from geonode.api.urls import router
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
 
 from geonode import geoserver
@@ -138,7 +138,6 @@ urlpatterns += [
     re_path(r"^api/v2/", include("geonode.assets.urls")),
     # metadata views
     re_path(r"^api/v2/", include("geonode.metadata.urls")),
-    re_path(r"", include(api.urls)),
     re_path(
         r"uploads/upload",
         ImporterViewSet.as_view({"post": "create"}),
