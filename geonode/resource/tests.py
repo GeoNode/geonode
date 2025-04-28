@@ -121,15 +121,21 @@ class TestResourceManager(GeoNodeBaseTestSupport):
 
     def test_ingest(self):
         dt_files = [os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")]
-        defaults = {"owner": self.user}
-        # raises an exception if resource_type is not provided
-        self.rm.ingest(dt_files)
+
         # ingest with documents
-        res = self.rm.ingest(dt_files, resource_type=Document, defaults=defaults)
+        res = self.rm.create(
+            None,
+            resource_type=Document,
+            defaults=dict(owner=self.user, files=dt_files),
+        )
         self.assertTrue(isinstance(res, Document))
         res.delete()
         # ingest with datasets
-        res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
+        res = self.rm.create(
+            None,
+            resource_type=Dataset,
+            defaults=dict(owner=self.user, files=dt_files),
+        )
         self.assertTrue(isinstance(res, Dataset))
         res.delete()
 
@@ -150,8 +156,8 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         dt_files = [os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")]
 
         # copy with documents
-        res = self.rm.ingest(
-            dt_files,
+        res = self.rm.create(
+            None,
             resource_type=Document,
             defaults={
                 "title": "relief_san_andres",
@@ -159,20 +165,22 @@ class TestResourceManager(GeoNodeBaseTestSupport):
                 "extension": "tif",
                 "data_title": "relief_san_andres",
                 "data_type": "tif",
+                "files": dt_files,
             },
         )
         self.assertTrue(isinstance(res, Document))
         _copy_assert_resource(res, "Testing Document 2")
 
         # copy with datasets
-        res = self.rm.ingest(
-            dt_files,
+        res = self.rm.create(
+            None,
             resource_type=Dataset,
             defaults={
                 "owner": self.user,
                 "title": "Testing Dataset",
                 "data_title": "relief_san_andres",
                 "data_type": "tif",
+                "files": dt_files,
             },
         )
         self.assertTrue(isinstance(res, Dataset))

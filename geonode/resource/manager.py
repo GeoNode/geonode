@@ -129,34 +129,6 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def ingest(
-        self,
-        files: typing.List[str],
-        /,
-        uuid: str = None,
-        resource_type: typing.Optional[object] = None,
-        defaults: dict = {},
-        **kwargs,
-    ) -> ResourceBase:
-        """The method allows to create a resource by providing the list of files.
-
-        e.g.:
-            In [1]: from geonode.resource.manager import resource_manager
-
-            In [2]: from geonode.layers.models import Dataset
-
-            In [3]: from django.contrib.auth import get_user_model
-
-            In [4]: admin = get_user_model().objects.get(username='admin')
-
-            In [5]: files = ["/.../san_andres_y_providencia_administrative.dbf", "/.../san_andres_y_providencia_administrative.prj",
-            ...:  "/.../san_andres_y_providencia_administrative.shx", "/.../san_andres_y_providencia_administrative.sld", "/.../san_andres_y_providencia_administrative.shp"]
-
-            In [6]: resource_manager.ingest(files, resource_type=Dataset, defaults={'owner': admin})
-        """
-        pass
-
-    @abstractmethod
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
     ) -> ResourceBase:
@@ -450,58 +422,6 @@ class ResourceManager(ResourceManagerInterface):
                 finally:
                     _resource.clear_dirty_state()
         return _resource
-
-    def ingest(
-        self,
-        files: typing.List[str],
-        /,
-        uuid: str = None,
-        resource_type: typing.Optional[object] = None,
-        defaults: dict = {},
-        **kwargs,
-    ) -> ResourceBase:
-        instance = None
-        to_update = defaults.copy()
-        to_update_with_files = {**to_update, **{"files": files}}
-        try:
-            with transaction.atomic():
-                if resource_type == Document:
-                    if "name" in to_update:
-                        to_update.pop("name")
-                    instance = self.create(uuid, resource_type=Document, defaults=to_update_with_files)
-                elif resource_type == Dataset:
-                    if files:
-                        instance = self.create(uuid, resource_type=Dataset, defaults=to_update_with_files)
-                    else:
-                        logger.warning(f"Will not create a Dataset without any file. Values: {defaults}")
-
-                if instance:
-                    instance = self._concrete_resource_manager.ingest(
-                        storage_manager.copy_files_list(files),
-                        uuid=instance.uuid,
-                        resource_type=resource_type,
-                        defaults=to_update,
-                        **kwargs,
-                    )
-                    instance.set_processing_state(enumerations.STATE_PROCESSED)
-                    instance.save(notify=False)
-        except Exception as e:
-            logger.exception(e)
-            if instance:
-                instance.set_processing_state(enumerations.STATE_INVALID)
-        if instance:
-            try:
-                resourcebase_post_save(instance.get_real_instance())
-                # Finalize Upload
-                if "user" in to_update:
-                    to_update.pop("user")
-                instance = self.update(instance.uuid, instance=instance, vals=to_update)
-                self.set_thumbnail(instance.uuid, instance=instance)
-            except Exception as e:
-                logger.exception(e)
-            finally:
-                instance.clear_dirty_state()
-        return instance
 
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
