@@ -297,19 +297,9 @@ class BaseHarvesterWorker(abc.ABC):
     def _create_new_geonode_resource(self, geonode_resource_type, defaults: typing.Dict):
         logger.debug(f"Creating a new GeoNode resource for resource with uuid: {defaults['uuid']!r}...")
         resource_defaults = defaults.copy()
-        resource_files = resource_defaults.pop("files", [])
-        if len(resource_files) > 0:
-            logger.debug("calling resource_manager.ingest...")
-            geonode_resource = resource_manager.ingest(
-                resource_files,
-                uuid=resource_defaults["uuid"],
-                resource_type=geonode_resource_type,
-                defaults=resource_defaults,
-                importer_session_opts={"name": resource_defaults["uuid"]},
-            )
-        else:
-            logger.debug("calling resource_manager.create...")
-            geonode_resource = resource_manager.create(resource_defaults["uuid"], geonode_resource_type, defaults)
+
+        logger.debug("calling resource_manager.create...")
+        geonode_resource = resource_manager.create(resource_defaults["uuid"], geonode_resource_type, defaults)
         return geonode_resource
 
     def _update_existing_geonode_resource(self, geonode_resource: ResourceBase, defaults: typing.Dict):
