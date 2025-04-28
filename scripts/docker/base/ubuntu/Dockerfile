@@ -20,7 +20,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     postgresql-client-15 \
     python3-all-dev python3-dev \
     python3-gdal python3-psycopg2 python3-ldap \
-    python3-pip python3-pil python3-lxml \
+    python3-pip python3-lxml \
     uwsgi uwsgi-plugin-python3 python3-gdbm python-is-python3 gdal-bin
 
 RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharutils
@@ -30,6 +30,7 @@ RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharut
 # Install pip packages
 RUN pip3 install uwsgi \
     && pip install pip --upgrade \
+    && pip install wheel==0.38.1 \
     && pip install pygdal==$(gdal-config --version).*
 
 # Install "sherlock" to be used with "memcached"

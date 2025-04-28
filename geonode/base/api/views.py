@@ -680,11 +680,16 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
+            map_thumb_from_bbox = False
+            if isinstance(resource.get_real_instance(), Map):
+                map_thumb_from_bbox = True
+
             if not isinstance(resource.get_real_instance(), (Dataset, Map)):
                 raise NotImplementedError("Not implemented: Endpoint available only for Dataset and Maps")
 
             request_body = request.data if request.data else json.loads(request.body)
             try:
+                # bbox format: (xmin, xmax, ymin, ymax)
                 bbox = request_body["bbox"] + [request_body["srid"]]
                 zoom = request_body.get("zoom", None)
             except MultiValueDictKeyError:
@@ -695,7 +700,11 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 zoom = request_body.get("zoom", None)
 
             thumbnail_url = create_thumbnail(
-                resource.get_real_instance(), bbox=bbox, background_zoom=zoom, overwrite=True
+                resource.get_real_instance(),
+                bbox=bbox,
+                background_zoom=zoom,
+                overwrite=True,
+                map_thumb_from_bbox=map_thumb_from_bbox,
             )
             return Response(
                 {"message": "Thumbnail correctly created.", "success": True, "thumbnail_url": thumbnail_url}, status=200
