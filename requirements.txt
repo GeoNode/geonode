@@ -143,4 +143,6 @@ nh3==0.2.17
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
 
 # Indirect deps
+djangorestframework==3.14.0
 gdal<=3.4.3
+Shapely==1.8.5.post1
