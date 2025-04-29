@@ -1213,14 +1213,11 @@ class HandlersTests(GeoNodeBaseTestSupport):
         context = {"labels": "fake_label"}
         # Create a superuser
         fake_superuser = get_user_model().objects.create_user(
-            "admin_user", 
-            "admin@fakemail.com", "admin_user_password", 
-            is_active=True, 
-            is_superuser=True
+            "admin_user", "admin@fakemail.com", "admin_user_password", is_active=True, is_superuser=True
         )
 
         context = {"labels": {}, "user": fake_superuser}
-        
+
         group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
 
         field_name = "group"
@@ -1231,7 +1228,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
         # Assert the resource group was updated
         self.assertEqual(self.resource.group, group_profile.group)
-    
+
     def test_group_handler_update_resource_as_simple_user(self):
 
         # Setup shared context
@@ -1274,7 +1271,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
         # Assert the resource group was set to None
         self.assertIsNone(self.resource.group)
-    
+
     def test_group_handler_update_resource_with_no_id(self):
 
         context = {"labels": {}, "user": self.test_user}

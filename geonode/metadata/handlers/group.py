@@ -73,18 +73,18 @@ class GroupHandler(MetadataHandler):
 
         if user is None:
             self._set_error(
-                    errors,
-                    [field_name],
-                    self.localize_message(
-                        context,
-                        "metadata_error_missing_owner",
-                        {"fieldname": field_name},
-                    ),
-                )
+                errors,
+                [field_name],
+                self.localize_message(
+                    context,
+                    "metadata_error_missing_owner",
+                    {"fieldname": field_name},
+                ),
+            )
             return
-        
+
         if id is not None:
-            
+
             if user.is_superuser or user.is_staff:
                 allowed_groups = GroupProfile.objects.all()
             else:

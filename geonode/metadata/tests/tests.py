@@ -914,7 +914,7 @@ class MetadataApiTests(APITestCase):
         mock_request = MagicMock()
         mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
         mock_request.user = self.test_user_1
-        
+
         expected_context = {"labels": {}, "user": self.test_user_1}
 
         mock_get_schema.return_value = self.fake_schema
@@ -995,7 +995,7 @@ class MetadataApiTests(APITestCase):
     @patch("geonode.metadata.manager.MetadataHandler.localize_message")
     def test_update_schema_instance_with_db_error(self, mock_localize_message, mock_get_schema):
 
-       # Fake request with data and user
+        # Fake request with data and user
         mock_request = MagicMock()
         mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
         mock_request.user = self.test_user_1
