@@ -160,7 +160,7 @@ workflows:
       #     name: tests_geoserver_integration
       #     load_docker_cache: true
       #     save_docker_cache: false
-      #     test_suite: 'geonode.geoserver.tests.integration geonode.monitoring.tests.integration'
+      #     test_suite: 'geonode.geoserver.tests.integration'
       #     requires:
       #       - geonode_test_suite_smoke
 

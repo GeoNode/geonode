@@ -284,10 +284,6 @@
                     {% if 'geonode.geoserver' in INSTALLED_APPS %}
                     <li><a href="{{ OGC_SERVER.default.WEB_UI_LOCATION }}">GeoServer</a></li>
                     {% endif %}
-                    {% if USE_MONITORING %}
-                    <li role="separator" class="divider"></li>
-                    <li><a href="{% url "monitoring:index" %}">{% trans "Monitoring & Analytics" %}</a></li>
-                    {% endif %}
                 {% endif %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>

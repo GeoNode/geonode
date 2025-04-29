@@ -26,6 +26,7 @@ import logging
 
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.utils import get_default_asset
+from geonode.base.enumerations import EventType
 from geonode.storage.manager import storage_manager
 
 # Django functionality
@@ -38,7 +39,6 @@ from django.utils.text import slugify
 # Geonode functionality
 from geonode.documents.models import Document
 from geonode.base import register_event
-from geonode.monitoring.models import EventType
 
 logger = logging.getLogger(__name__)
 

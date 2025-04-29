@@ -65,7 +65,6 @@ from geonode.settings import (
     integration_tests,
     integration_server_tests,
     integration_upload_tests,
-    integration_monitoring_tests,
     integration_csw_tests,
     integration_bdd_tests,
     INSTALLED_APPS,
@@ -74,7 +73,6 @@ from geonode.settings import (
     GEONODE_APPS,
     OGC_SERVER,
     ASYNC_SIGNALS,
-    MONITORING_ENABLED,
     CELERY_BEAT_SCHEDULER,
 )
 
@@ -679,8 +677,6 @@ def test(options):
     for _app in _apps:
         if _app and len(_app) > 0 and "geonode" in _app:
             _apps_to_test.append(_app)
-    if MONITORING_ENABLED and "geonode.monitoring" in INSTALLED_APPS and "geonode.monitoring" not in _apps_to_test:
-        _apps_to_test.append("geonode.monitoring")
     sh(
         f"{options.get('prefix')} ../manage.py test geonode.tests.smoke \
 {('.tests '.join(_apps_to_test))}.tests --noinput {_keepdb} {_parallel}"
@@ -819,11 +815,6 @@ def run_tests(options):
             call_task(
                 "test_integration",
                 options={"prefix": prefix, "name": "geonode.upload.tests.integration", "local": local},
-            )
-        elif integration_monitoring_tests:
-            call_task(
-                "test_integration",
-                options={"prefix": prefix, "name": "geonode.monitoring.tests.integration", "local": local},
             )
         elif integration_csw_tests:
             call_task("test_integration", options={"prefix": prefix, "name": "geonode.tests.csw", "local": local})
