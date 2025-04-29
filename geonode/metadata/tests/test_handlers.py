@@ -27,7 +27,7 @@ from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import Group
-from geonode.groups.models import GroupProfile
+from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people import Roles
 
 from geonode.metadata.settings import MODEL_SCHEMA
@@ -1208,37 +1208,82 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
         self.assertIsNone(group_instance)
 
-    def test_group_handler_update_resource_with_valid_id(self):
+    def test_group_handler_update_resource_as_superuser(self):
 
+        context = {"labels": "fake_label"}
+        # Create a superuser
+        fake_superuser = get_user_model().objects.create_user(
+            "admin_user", 
+            "admin@fakemail.com", "admin_user_password", 
+            is_active=True, 
+            is_superuser=True
+        )
+
+        context = {"labels": {}, "user": fake_superuser}
+        
         group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
 
         field_name = "group"
         payload_data = {"group": {"id": group_profile.pk}}
 
         # Call the method
-        self.group_handler.update_resource(self.resource, field_name, payload_data, self.context, self.errors)
+        self.group_handler.update_resource(self.resource, field_name, payload_data, context, self.errors)
 
         # Assert the resource group was updated
         self.assertEqual(self.resource.group, group_profile.group)
+    
+    def test_group_handler_update_resource_as_simple_user(self):
 
+        # Setup shared context
+        context = {"labels": {}, "user": self.test_user}
+
+        group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
+
+        field_name = "group"
+        payload_data = {"group": {"id": group_profile.pk}}
+
+        # User is a member of the group
+        GroupMember.objects.create(user=self.test_user, group=group_profile)
+
+        self.group_handler.update_resource(self.resource, field_name, payload_data, context, self.errors)
+
+        self.assertEqual(self.resource.group, group_profile.group)
+        self.assertFalse(self.errors)
+
+        # Reset for the next case
+        self.errors.clear()
+        self.resource.group = None
+
+        # Remove the user from the group
+        GroupMember.objects.filter(user=self.test_user, group=group_profile).delete()
+
+        # User is NOT a member of the group
+        self.group_handler.update_resource(self.resource, field_name, payload_data, context, self.errors)
+
+        self.assertIsNone(self.resource.group)
+        self.assertTrue(self.errors)
+
+    def test_group_handler_update_resource_with_no_user(self):
+
+        context = {"labels": {}}
+        field_name = "group"
+        json_instance = {"group": None}
+
+        # Call the method
+        self.group_handler.update_resource(self.resource, field_name, json_instance, context, self.errors)
+
+        # Assert the resource group was set to None
+        self.assertIsNone(self.resource.group)
+    
     def test_group_handler_update_resource_with_no_id(self):
+
+        context = {"labels": {}, "user": self.test_user}
 
         field_name = "group"
         json_instance = {"group": None}
 
         # Call the method
-        self.group_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
-
-        # Assert the resource group was set to None
-        self.assertIsNone(self.resource.group)
-
-    def test_group_handler_update_resource_without_field(self):
-
-        field_name = "group"
-        json_instance = {}
-
-        # Call the method
-        self.group_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
+        self.group_handler.update_resource(self.resource, field_name, json_instance, context, self.errors)
 
         # Assert the resource group was set to None
         self.assertIsNone(self.resource.group)

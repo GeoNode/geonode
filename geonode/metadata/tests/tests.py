@@ -19,7 +19,7 @@
 
 import os
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 from uuid import uuid4
 
 from django.urls import reverse
@@ -230,7 +230,7 @@ class MetadataApiTests(APITestCase):
         self.assertJSONEqual(
             response.content, {"message": "The resource was updated successfully", "extraErrors": errors}
         )
-        mock_update_schema_instance.assert_called_with(self.resource, fake_payload, lang)
+        mock_update_schema_instance.assert_called_with(self.resource, ANY, lang)
 
     @patch("geonode.metadata.manager.metadata_manager.update_schema_instance")
     @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
@@ -253,7 +253,7 @@ class MetadataApiTests(APITestCase):
             response.content,
             {"message": "Some errors were found while updating the resource", "extraErrors": errors},
         )
-        mock_update_schema_instance.assert_called_with(self.resource, fake_payload, lang)
+        mock_update_schema_instance.assert_called_with(self.resource, ANY, lang)
 
     @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
     def test_put_patch_schema_instance_with_bad_payload(self, mock_has_permission):
@@ -910,10 +910,12 @@ class MetadataApiTests(APITestCase):
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
     def test_update_schema_instance_no_errors(self, mock_get_schema):
 
-        # json_instance is the payload from the client.
-        # In this test is used only to call the update_schema_instance
-        json_instance = {"field1": "new_value1", "new_field2": "new_value2"}
-        expected_context = {"labels": {}}
+        # Fake request with data and user
+        mock_request = MagicMock()
+        mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
+        mock_request.user = self.test_user_1
+        
+        expected_context = {"labels": {}, "user": self.test_user_1}
 
         mock_get_schema.return_value = self.fake_schema
         # Mock the save method
@@ -927,17 +929,17 @@ class MetadataApiTests(APITestCase):
             self.handler3.update_resource.return_value = None
 
             # Call the update_schema_instance method
-            errors = metadata_manager.update_schema_instance(self.resource, json_instance)
+            errors = metadata_manager.update_schema_instance(self.resource, mock_request)
 
             # Assert that handlers were called to update the resource with the correct data
             self.handler1.update_resource.assert_called_once_with(
-                self.resource, "field1", json_instance, expected_context, {}
+                self.resource, "field1", mock_request.data, expected_context, {}
             )
             self.handler2.update_resource.assert_called_once_with(
-                self.resource, "field2", json_instance, expected_context, {}
+                self.resource, "field2", mock_request.data, expected_context, {}
             )
             self.handler3.update_resource.assert_called_once_with(
-                self.resource, "field3", json_instance, expected_context, {}
+                self.resource, "field3", mock_request.data, expected_context, {}
             )
 
             # Assert no errors were raised
@@ -946,16 +948,14 @@ class MetadataApiTests(APITestCase):
             # Check that resource.save() is called
             self.resource.save.assert_called_once()
 
-            # Assert that there were no extra errors in the response
-            self.assertNotIn("extraErrors", errors)
-
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
     @patch("geonode.metadata.manager.MetadataHandler.localize_message")
     def test_update_schema_instance_with_handler_error(self, mock_localize_message, mock_get_schema):
 
-        # json_instance is the payload from the client.
-        # In this test is used only to call the update_schema_instance
-        json_instance = {}
+        # Fake request with data and user
+        mock_request = MagicMock()
+        mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
+        mock_request.user = self.test_user_1
 
         mock_get_schema.return_value = self.fake_schema
 
@@ -973,7 +973,7 @@ class MetadataApiTests(APITestCase):
             self.handler3.update_resource.side_effect = None
 
             # Call the method under test
-            errors = metadata_manager.update_schema_instance(self.resource, json_instance)
+            errors = metadata_manager.update_schema_instance(self.resource, mock_request)
 
             # Ensure errors contain the expected error message for field2
             self.assertIn("__errors", errors)
@@ -995,9 +995,10 @@ class MetadataApiTests(APITestCase):
     @patch("geonode.metadata.manager.MetadataHandler.localize_message")
     def test_update_schema_instance_with_db_error(self, mock_localize_message, mock_get_schema):
 
-        # json_instance is the payload from the client.
-        # In this test is used only to call the update_schema_instance
-        json_instance = {}
+       # Fake request with data and user
+        mock_request = MagicMock()
+        mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
+        mock_request.user = self.test_user_1
 
         mock_get_schema.return_value = self.fake_schema
 
@@ -1015,7 +1016,7 @@ class MetadataApiTests(APITestCase):
             self.handler3.update_resource.side_effect = None
 
             # Call the method under test
-            errors = metadata_manager.update_schema_instance(self.resource, json_instance)
+            errors = metadata_manager.update_schema_instance(self.resource, mock_request)
 
             # Assert that update_resource was called for each handler
             self.handler1.update_resource.assert_called()

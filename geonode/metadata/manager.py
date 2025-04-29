@@ -115,11 +115,19 @@ class MetadataManager:
 
         return instance
 
-    def update_schema_instance(self, resource, json_instance, lang=None) -> dict:
+    def update_schema_instance(self, resource, request_obj, lang=None) -> dict:
+
+        # Definition of the json instance
+        json_instance = request_obj.data
+        
         logger.debug(f"RECEIVED INSTANCE {json_instance}")
         resource = resource.get_real_instance()
         schema = self.get_schema()
         context = self._init_schema_context(lang)
+
+        # We pass the request.user to the context, since it is used by the GroupHandler
+        context["user"] = request_obj.user
+        
         for handler in self.handlers.values():
             handler.load_deserialization_context(resource, schema, context)
 

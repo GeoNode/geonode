@@ -68,10 +68,10 @@ class GroupHandler(MetadataHandler):
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         data = json_instance.get(field_name, None)
         id = data.get("id", None) if data else None
-        # retrieve the owner from the resource
-        user = resource.owner
+        # retrieve the user which submitted the request
+        user = context.get("user", None)
 
-        if not user:
+        if user is None:
             self._set_error(
                     errors,
                     [field_name],
@@ -84,7 +84,11 @@ class GroupHandler(MetadataHandler):
             return
         
         if id is not None:
-            allowed_groups = GroupProfile.objects.filter(groupmember__user=user)
+            
+            if user.is_superuser or user.is_staff:
+                allowed_groups = GroupProfile.objects.all()
+            else:
+                allowed_groups = GroupProfile.objects.filter(groupmember__user=user)
 
             try:
                 gp = allowed_groups.get(pk=id)
