@@ -99,8 +99,10 @@ def err403(request, exception):
     else:
         return TemplateResponse(request, "401.html", {}, status=401).render()
 
+
 def err500(request):
     return render(request, "500.html", status=500)
+
 
 def ident_json(request):
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
