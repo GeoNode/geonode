@@ -67,8 +67,8 @@ class Service(ResourceBase):
     description = models.CharField(max_length=255, null=True, blank=True)
     extra_queryparams = models.TextField(null=True, blank=True)
     operations = models.JSONField(default=dict, null=True, blank=True)
-    username = models.CharField(max_length=150, null=True, default=None)
-    password = models.CharField(_("password"), max_length=250, null=True, default=None)
+    username = models.CharField(max_length=150, null=True, blank=True, default=None)
+    password = models.CharField(_("password"), max_length=250, null=True, blank=True, default=None)
 
     # Foreign Keys
 
