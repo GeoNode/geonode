@@ -68,7 +68,7 @@ geonode-pinax-notifications==6.0.0.2
 
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
-git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
+git+https://github.com/GeoNode/geonode-mapstore-client.git@gn_ISSUE_13110#egg=django_geonode_mapstore_client
 django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2.2
 geonode-user-messages==2.0.2.2
@@ -104,7 +104,6 @@ timeout-decorator==0.5.0
 pylibmc==1.6.3
 sherlock==0.4.1
 
-# required by monitoring
 psutil==5.9.8
 django-cors-headers==4.3.1
 django-user-agents==0.4.0

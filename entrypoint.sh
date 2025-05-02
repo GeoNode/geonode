@@ -35,10 +35,6 @@ echo GEODATABASE_URL=$GEODATABASE_URL
 echo SITEURL=$SITEURL
 echo ALLOWED_HOSTS=$ALLOWED_HOSTS
 echo GEOSERVER_PUBLIC_LOCATION=$GEOSERVER_PUBLIC_LOCATION
-echo MONITORING_ENABLED=$MONITORING_ENABLED
-echo MONITORING_HOST_NAME=$MONITORING_HOST_NAME
-echo MONITORING_SERVICE_NAME=$MONITORING_SERVICE_NAME
-echo MONITORING_DATA_TTL=$MONITORING_DATA_TTL
 
 # invoke waitfordbs
 
@@ -54,7 +50,6 @@ else
 
     if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
         invoke fixtures
-        invoke monitoringfixture
         invoke initialized
         invoke updateadmin
     fi

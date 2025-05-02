@@ -36,7 +36,6 @@ from geonode.client.hooks import hookset
 from geonode.utils import mkdtemp
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
-from geonode.monitoring.models import EventType
 from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
 from geonode.base import enumerations
@@ -217,7 +216,7 @@ class DocumentUploadView(CreateView):
         )
         resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
 
-        register_event(self.request, EventType.EVENT_UPLOAD, self.object)
+        register_event(self.request, enumerations.EventType.EVENT_UPLOAD, self.object)
 
         if self.request.GET.get("no__redirect", False):
             out["success"] = True
@@ -279,6 +278,6 @@ class DocumentUpdateView(UpdateView):
             if tempdir != os.path.dirname(storage_path):
                 shutil.rmtree(tempdir, ignore_errors=True)
 
-        register_event(self.request, EventType.EVENT_CHANGE, self.object)
+        register_event(self.request, enumerations.EventType.EVENT_CHANGE, self.object)
         url = hookset.document_detail_url(self.object)
         return HttpResponseRedirect(url)

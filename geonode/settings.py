@@ -25,7 +25,6 @@ import sys
 import subprocess
 import dj_database_url
 from schema import Optional
-from datetime import timedelta
 from urllib.parse import urlparse, urljoin
 
 #
@@ -439,7 +438,6 @@ GEONODE_INTERNAL_APPS = (
     "geonode.tasks",
     "geonode.messaging",
     "geonode.favorite",
-    "geonode.monitoring",
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -747,7 +745,6 @@ internal_apps_tests = ast.literal_eval(os.environ.get("TEST_RUN_INTERNAL_APPS", 
 integration_tests = ast.literal_eval(os.environ.get("TEST_RUN_INTEGRATION", "False"))
 integration_server_tests = ast.literal_eval(os.environ.get("TEST_RUN_INTEGRATION_SERVER", "False"))
 integration_upload_tests = ast.literal_eval(os.environ.get("TEST_RUN_INTEGRATION_UPLOAD", "False"))
-integration_monitoring_tests = ast.literal_eval(os.environ.get("TEST_RUN_INTEGRATION_MONITORING", "False"))
 integration_csw_tests = ast.literal_eval(os.environ.get("TEST_RUN_INTEGRATION_CSW", "False"))
 integration_bdd_tests = ast.literal_eval(os.environ.get("TEST_RUN_INTEGRATION_BDD", "False"))
 selenium_tests = ast.literal_eval(os.environ.get("TEST_RUN_SELENIUM", "False"))
@@ -941,7 +938,6 @@ AUTH_EXEMPT_URLS = (
     f"{FORCE_SCRIPT_NAME}/api/adminRole",
     f"{FORCE_SCRIPT_NAME}/api/users",
     f"{FORCE_SCRIPT_NAME}/api/datasets",
-    f"{FORCE_SCRIPT_NAME}/monitoring",
     r"^/i18n/setlang/?$",
 )
 
@@ -2087,63 +2083,6 @@ if USE_GEOSERVER:
     MAP_BASELAYERS = [PUBLIC_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
-# Settings for MONITORING plugin
-MONITORING_ENABLED = ast.literal_eval(os.environ.get("MONITORING_ENABLED", "False"))
-
-MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
-MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", "geonode")
-
-# how long monitoring data should be stored
-MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
-
-# this will disable csrf check for notification config views,
-# use with caution - for dev purpose only
-MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get("MONITORING_DISABLE_CSRF", "False"))
-
-if MONITORING_ENABLED:
-    if "geonode.monitoring.middleware.MonitoringMiddleware" not in MIDDLEWARE:
-        MIDDLEWARE += ("geonode.monitoring.middleware.MonitoringMiddleware",)
-
-    # skip certain paths to not to mud stats too much
-    MONITORING_SKIP_PATHS = (
-        "/api/o/",
-        "/monitoring/",
-        "/admin",
-        "/jsi18n",
-        STATIC_URL,
-        MEDIA_URL,
-        re.compile("^/[a-z]{2}/admin/"),
-    )
-
-    # configure aggregation of past data to control data resolution
-    # list of data age, aggregation, in reverse order
-    # for current data, 1 minute resolution
-    # for data older than 1 day, 1-hour resolution
-    # for data older than 2 weeks, 1 day resolution
-    MONITORING_DATA_AGGREGATION = (
-        (
-            timedelta(seconds=0),
-            timedelta(minutes=1),
-        ),
-        (
-            timedelta(days=1),
-            timedelta(minutes=60),
-        ),
-        (
-            timedelta(days=14),
-            timedelta(days=1),
-        ),
-    )
-
-USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv("USER_ANALYTICS_ENABLED", "False"))
-USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv("USER_ANALYTICS_GZIP", "False"))
-
-GEOIP_PATH = os.getenv("GEOIP_PATH", os.path.join(PROJECT_ROOT, "GeoIPCities.dat"))
-# This controls if tastypie search on resourches is performed only with titles
-SEARCH_RESOURCES_EXTENDED = ast.literal_eval(os.getenv("SEARCH_RESOURCES_EXTENDED", "True"))
-# -- END Settings for MONITORING plugin
-
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
@@ -2201,6 +2140,9 @@ DEFAULT_EXTRA_METADATA_SCHEMA = {
     "field_value": object,
 }
 
+GEOIP_PATH = os.getenv("GEOIP_PATH", os.path.join(PROJECT_ROOT, "GeoIPCities.dat"))
+# This controls if tastypie search on resourches is performed only with titles
+SEARCH_RESOURCES_EXTENDED = ast.literal_eval(os.getenv("SEARCH_RESOURCES_EXTENDED", "True"))
 """
 If present, will extend the available metadata schema used for store
 new value for each resource. By default overrided the existing one.
