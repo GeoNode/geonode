@@ -742,6 +742,25 @@ class ResourceBaseSerializer(DynamicModelSerializer):
 
     def update(self, instance, validated_data):
         user = self.context["request"].user
+
+        # Check if 'group' is being updated
+        if "group" in validated_data:
+            new_group = validated_data["group"]
+
+            if not (user.is_superuser or user.is_staff):
+                # Check if the user is a member of the defined group
+                allowed_groups = GroupProfile.objects.filter(groupmember__user=user)
+
+                # If the group is not in the allowed groups, raise a validation error
+                try:
+                    gp = allowed_groups.get(pk=new_group.pk)
+                except GroupProfile.DoesNotExist:
+                    logger.warning(f"User {user.username} has not the permission for this group: {new_group.pk})")
+                    raise serializers.ValidationError("You do not have permission to use this group.")
+
+                # If the user is a member of the group, we can proceed to update
+                instance.group = gp.group
+
         for field in instance.ROLE_BASED_MANAGED_FIELDS:
             if not user.can_change_resource_field(instance, field) and field in validated_data:
                 validated_data.pop(field)
