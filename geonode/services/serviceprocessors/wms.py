@@ -131,7 +131,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         """
         service = None
         try:
-            cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
+            cleaned_url, service_name, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
             with transaction.atomic():
                 service = models.Service.objects.create(
                     uuid=str(uuid4()),

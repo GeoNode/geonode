@@ -214,3 +214,5 @@ urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROO
 urlpatterns += [
     re_path(r"^metadata_update_redirect$", views.metadata_update_redirect, name="metadata_update_redirect"),
 ]
+
+handler500 = "geonode.views.err500"
