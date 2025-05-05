@@ -133,7 +133,7 @@ class GroupSerializer(DynamicModelSerializer):
 
     def update(self, instance, validated_data):
         user = self.context["request"].user
-        
+
         # Check if 'group' is being updated
         new_group = validated_data["group"]
 
@@ -771,7 +771,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             # Call GroupSerializer's update method
             group_serializer = GroupSerializer(context=self.context)
             instance.group = group_serializer.update(instance.group, validated_data)
-        
+
         for field in instance.ROLE_BASED_MANAGED_FIELDS:
             if not user.can_change_resource_field(instance, field) and field in validated_data:
                 validated_data.pop(field)
