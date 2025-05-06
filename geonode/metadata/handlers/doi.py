@@ -45,4 +45,4 @@ class DOIHandler(MetadataHandler):
         return resource.doi
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-        resource.doi = json_instance[field_name]
+        resource.doi = json_instance.get(field_name, None)
