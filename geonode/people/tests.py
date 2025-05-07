@@ -36,7 +36,6 @@ from geonode.layers.models import Dataset
 from geonode.people import profileextractors
 
 from geonode.base.populate_test_data import all_public, create_models, create_single_dataset, remove_models
-from django.db.models import Q
 from geonode.security.registry import permissions_registry
 
 
