@@ -61,6 +61,3 @@ class MessagingAppConfig(NotificationsAppConfigBase, AppConfig):
         broker_socket_timeout = broker_transport_options["socket_timeout"]
         connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
 
-        from geonode.messaging.notifications import initialize_notification_signal
-
-        initialize_notification_signal()

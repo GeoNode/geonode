@@ -82,7 +82,6 @@ geonode-pinax-notifications==6.0.0.2
 git+https://github.com/GeoNode/geonode-mapstore-client.git@gn_ISSUE_13110#egg=django_geonode_mapstore_client
 django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2.2
-geonode-user-messages==2.0.2.2
 geonode-announcements==2.0.2.2
 django-activity-stream==2.0.0
 gn-arcrest==10.5.6
