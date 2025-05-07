@@ -170,8 +170,11 @@ class UserViewSet(DynamicModelViewSet):
 
     @action(detail=True, methods=["post"])
     def transfer_resources(self, request, pk=None):
+
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response({"Error": "Admin access required."}, status=403)
+
         user = self.get_object()
-        admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
         target_user = request.data.get("newOwner")  # the new owner
         previous_owner = request.data.get("currentOwner")  # the previous owner, usually it match the user
         transfer_resource_subset = (
@@ -190,12 +193,7 @@ class UserViewSet(DynamicModelViewSet):
             == len(transfer_resource_subset)
         ):
 
-            if target_user == "DEFAULT":
-                if not admin:
-                    return Response("Principal User not found", status=500)
-                target = admin
-            else:
-                target = get_object_or_404(get_user_model(), id=target_user)
+            target = get_object_or_404(get_user_model(), id=target_user)
 
             if target == user:
                 return Response("Cannot reassign to self", status=400)
