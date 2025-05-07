@@ -89,6 +89,14 @@ class SparseHandler(MetadataHandler):
         }
 
     @staticmethod
+    def get_sparse_field(context, fieldname):
+        return context[CONTEXT_ID]["fields"].get(fieldname, None)
+
+    @staticmethod
+    def set_sparse_field(context, fieldname, value):
+        context[CONTEXT_ID]["fields"][fieldname] = value
+
+    @staticmethod
     def _check_type(declared, checked):
         return declared == checked or (type(declared) is list and checked in declared)
 
