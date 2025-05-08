@@ -85,22 +85,24 @@ class GroupHandler(MetadataHandler):
 
         if id is not None:
 
-            if user.is_superuser or user.is_staff:
-                allowed_groups = GroupProfile.objects.all()
-            else:
-                allowed_groups = GroupProfile.objects.filter(groupmember__user=user)
+            group_filter = {}
+            if not user.is_superuser:
+                group_filter['groupmember__user'] = user
+            allowed_groups = GroupProfile.objects.filter(**group_filter)
 
-            try:
-                gp = allowed_groups.get(pk=id)
+            gp_set = allowed_groups.filter(pk=id)
+            if gp_set.exists():
+                gp = gp_set.first()
+
                 resource.group = gp.group
-            except GroupProfile.DoesNotExist as e:
+            else:
                 self._set_error(
                     errors,
                     [field_name],
                     self.localize_message(
                         context,
                         "metadata_group_error_missing_group",
-                        {"fieldname": field_name, "exc": e},
+                        {"fieldname": field_name},
                     ),
                 )
         else:
