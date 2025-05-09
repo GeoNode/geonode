@@ -134,9 +134,6 @@
 </div>
 
 <div class="col-xs-12 col-md-3">
-  <ul class="list-group">
-      <li class="list-group-item"><a href="{% url "message_create" profile.pk %}"><i class="fa fa-paper-plane-o"></i> {% trans "Message User" %}</a></li>
-    </ul>
   {% if user == profile %}
     <ul class="list-group">
       {% if not READ_ONLY_MODE %}
