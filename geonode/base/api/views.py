@@ -57,7 +57,7 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
-from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
+from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN, remove_thumb
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import (
@@ -618,6 +618,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 )
             elif request.method == "PUT":
                 perms_spec_compact = PermSpecCompact(request.data, resource)
+                if resource.dirty_state:
+                    raise Exception("Cannot update if the resource is in dirty state")
+                resource.set_dirty_state()
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name="set_permissions",
@@ -634,6 +637,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 perms_spec_compact_patch = PermSpecCompact(request.data, resource)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
+                if resource.dirty_state:
+                    raise Exception("Cannot update if the resource is in dirty state")
+                resource.set_dirty_state()
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name="set_permissions",
@@ -731,105 +737,62 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
 
     @extend_schema(
-        methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'INGEST' operation."
+        methods=["post"],
+        responses={200},
+        description="API endpoint allowing to delete a thumbnail for an existing dataset.",
     )
     @action(
         detail=False,
-        url_path="ingest/(?P<resource_type>\w+)",  # noqa
-        url_name="resource-service-ingest",
+        url_path="(?P<resource_id>\d+)/delete_thumbnail",  # noqa
+        url_name="delete-thumbnail",
         methods=["post"],
-        permission_classes=[IsAuthenticated],
+        permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
-    def resource_service_ingest(self, request, resource_type: str = None, *args, **kwargs):
-        """Instructs the Async dispatcher to execute a 'INGEST' operation
+    def delete_thumbnail(self, request, resource_id, *args, **kwargs):
 
-        - POST input_params: {
-            uuid: "<str: UUID>",
-            files: "<list(str) path>",
-            defaults: "{\"owner\":\"<str: username>\",<list: str>}",  # WARNING: 'owner' is mandatory
-            resource_type: "<enum: ['dataset', 'document', 'map', '<GeoApp: name>']>"
-        }
-
-        - output_params: {
-            output: <int: number of resources deleted / 0 if none>
-        }
-
-        - output: {
-                "status": "ready",
-                "execution_id": "<str: execution ID>",
-                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
-            }
-
-        Sample Request:
-
-        1. curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d 'defaults={"owner":"admin","title":"pippo"}' -d 'files=["/mnt/c/Data/flowers.jpg"]'
-            http://localhost:8000/api/v2/resources/ingest/document
-            OUTPUT: {
-                "status": "ready",
-                "execution_id": "90ca670d-df60-44b6-b358-d792c6aecc58",
-                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58"
-            }
-
-        2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58
-            OUTPUT: {
-                "user": "admin",
-                "status": "finished",
-                "func_name": "create",
-                "created": "2021-07-22T15:32:09.096075Z",
-                "finished": "2021-07-22T15:32:26.936683Z",
-                "last_updated": "2021-07-22T15:32:09.096129Z",
-                "input_params": {
-                    "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb",
-                    "files": "[\"/mnt/c/Data/flowers.jpg\"]",
-                    "defaults": "{\"owner\":\"admin\",\"title\":\"pippo\"}",
-                    "resource_type": "dataset"
-                },
-                "output_params": {
-                    "output": {
-                        "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb"
-                    }
-                }
-            }
-        """
-        config = Configuration.load()
-        if (
-            config.read_only
-            or config.maintenance
-            or request.user.is_anonymous
-            or not request.user.is_authenticated
-            or not request.user.has_perm("base.add_resourcebase")
-        ):
-            return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = self._get_request_params(request)
-            uuid = request_params.get("uuid", str(uuid4()))
-            resource_filter = ResourceBase.objects.filter(uuid=uuid)
-            _exec_request = ExecutionRequest.objects.create(
-                user=request.user,
-                func_name="ingest",
-                geonode_resource=resource_filter.get() if resource_filter.exists() else None,
-                action="ingest",
-                input_params={
-                    "uuid": uuid,
-                    "files": request_params.get("files", "[]"),
-                    "resource_type": resource_type,
-                    "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
-                },
-            )
-            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
-            return Response(
-                {
-                    "status": _exec_request.status,
-                    "execution_id": _exec_request.exec_id,
-                    "status_url": urljoin(
-                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
-                    ),
-                },
-                status=status.HTTP_200_OK,
-            )
+            resource = ResourceBase.objects.get(id=int(resource_id))
+
+            # Check if the current user has the permissions to delete the thumbnail
+            if not request.user.has_perm("change_resourcebase", resource.get_self_resource()):
+                return Response(
+                    {"message": "You do not have permission to delete this thumbnail.", "success": False},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            # Check if thumbnail exists
+            if not resource.thumbnail_url:
+                return Response(
+                    {"message": "The thumbnail URL field is already empty.", "success": False},
+                    status=status.HTTP_200_OK,
+                )
+
+            thumb_parsed_url = urlparse(resource.thumbnail_url)
+            thumb_filename = thumb_parsed_url.path.split("/")[-1]
+            if thumb_filename.rsplit(".")[-1] not in ["png", "jpeg", "jpg"]:
+                return Response(
+                    "The file name is not a valid image with a format png, jpeg or jpg",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # remove_thumb will call the thumb_path function and then the storage_manager which will delete it
+            remove_thumb(thumb_filename)
+
+            # Clear the related fields in the database
+            resource.thumbnail_url = None
+            resource.thumbnail_path = None
+            resource.save(update_fields=["thumbnail_url", "thumbnail_path"])
+
+            return Response({"message": "Thumbnail deleted successfully.", "success": True}, status=status.HTTP_200_OK)
+
+        except ResourceBase.DoesNotExist:
+            return Response({"message": "Resource not found.", "success": False}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            logger.exception(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+            logger.error(e)
+            return Response(
+                {"message": "Unexpected error occurred.", "success": False},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     @extend_schema(
         methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'CREATE' operation."
@@ -843,7 +806,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     )
     def resource_service_create(self, request, resource_type: str = None, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
-        **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
 
         - POST input_params: {
             uuid: "<str: UUID>",

@@ -89,6 +89,14 @@ class SparseHandler(MetadataHandler):
         }
 
     @staticmethod
+    def get_sparse_field(context, fieldname):
+        return context[CONTEXT_ID]["fields"].get(fieldname, None)
+
+    @staticmethod
+    def set_sparse_field(context, fieldname, value):
+        context[CONTEXT_ID]["fields"][fieldname] = value
+
+    @staticmethod
     def _check_type(declared, checked):
         return declared == checked or (type(declared) is list and checked in declared)
 
@@ -159,14 +167,32 @@ class SparseHandler(MetadataHandler):
                 field_value = str(float(bare_value)) if bare_value is not None else None
             except ValueError as e:
                 logger.warning(f"Error parsing sparse field '{field_name}'::'{field_type}'='{bare_value}': {e}")
-                self._set_error(errors, [field_name], f"Error parsing number '{bare_value}'")
+                self._set_error(
+                    errors,
+                    [field_name],
+                    self.localize_message(
+                        context,
+                        "metadata_sparse_error_parse",
+                        {"fieldname": field_name, "type": "number", "value": bare_value},
+                    ),
+                )
+
                 return
         elif self._check_type(field_type, "integer"):
             try:
                 field_value = str(int(bare_value)) if bare_value is not None else None
             except ValueError as e:
                 logger.warning(f"Error parsing sparse field '{field_name}'::'{field_type}'='{bare_value}': {e}")
-                self._set_error(errors, [field_name], f"Error parsing integer '{bare_value}'")
+                self._set_error(
+                    errors,
+                    [field_name],
+                    self.localize_message(
+                        context,
+                        "metadata_sparse_error_parse",
+                        {"fieldname": field_name, "type": "integer", "value": bare_value},
+                    ),
+                )
+
                 return
         elif field_type == "array":
             field_value = json.dumps(bare_value) if bare_value is not None else "[]"
@@ -174,7 +200,13 @@ class SparseHandler(MetadataHandler):
             field_value = json.dumps(bare_value) if bare_value is not None else "{}"
         else:
             logger.warning(f"Unhandled type '{field_type}' for sparse field '{field_name}'")
-            self._set_error(errors, [field_name], f"Unhandled type {field_type}. Contact your administrator")
+            self._set_error(
+                errors,
+                [field_name],
+                self.localize_message(
+                    context, "metadata_sparse_error_type", {"fieldname": field_name, "type": field_type}
+                ),
+            )
             return
 
         try:
@@ -185,8 +217,16 @@ class SparseHandler(MetadataHandler):
             elif is_nullable:
                 SparseField.objects.filter(resource=resource, name=field_name).delete()
             else:
-                self._set_error(errors, [field_name], f"Empty value not stored for field '{field_name}'")
+                self._set_error(
+                    errors,
+                    [field_name],
+                    self.localize_message(context, "metadata_error_empty_field", {"fieldname": field_name}),
+                )
                 logger.debug(f"Not setting null value for {field_name}")
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-            self._set_error(errors, [field_name], f"Error setting value: {e}")
+            self._set_error(
+                errors,
+                [field_name],
+                self.localize_message(context, "metadata_error_store", {"fieldname": field_name, "exc": e}),
+            )

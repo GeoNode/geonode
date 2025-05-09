@@ -35,8 +35,7 @@ from geonode.layers import utils
 from geonode.layers.models import Dataset
 from geonode.people import profileextractors
 
-from geonode.base.populate_test_data import all_public, create_models, remove_models
-from django.db.models import Q
+from geonode.base.populate_test_data import all_public, create_models, create_single_dataset, remove_models
 from geonode.security.registry import permissions_registry
 
 
@@ -1134,6 +1133,34 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         for group in self.group_profiles:
             self.assertTrue(f"{group.title}" in response.json()["success"])
 
+    def test_transfer_resource_with_non_admin_user(self):
+        """
+        non-admin user wants to transfer resources to target
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+
+        # Login as non-admin (non-admin should not be able to transfer resources)
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+
+        # check bobbys resources
+        resource_to_transfer = ResourceBase.objects.filter(owner=bobby).first()
+        second_resource = create_single_dataset("test for api", owner=bobby)
+        new_owner = get_user_model().objects.exclude(username__in=["bobby", "AnonymousUser"]).first()
+
+        # call api to transfer bobby resource to the other user
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={
+                "newOwner": new_owner.pk,
+                "currentOwner": bobby.pk,
+                "resources": [resource_to_transfer.pk, second_resource.pk],
+            },
+        )
+
+        # Since Bobby is not an admin, the response should be 403 Forbidden
+        self.assertEqual(response.status_code, 403)
+
     def test_transfer_resources_all(self):
         """
         user wants to transfer resources to target
@@ -1142,15 +1169,17 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         norman = get_user_model().objects.get(username="norman")
         # group = GroupProfile.objects.get(slug="bar")
 
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
         prior_bobby_resources = bobby_resources.all()
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": norman.id}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"currentOwner": bobby.id, "newOwner": norman.id},
         )
         # check that bobby owns the resources no more
         self.assertFalse(bobby_resources.exists())
@@ -1166,15 +1195,17 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         bobby = get_user_model().objects.get(username="bobby")
         invalid_user_id = get_user_model().objects.last().id + 1
 
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
         prior_bobby_resources = bobby_resources.all()
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby}/transfer_resources", data={"owner": invalid_user_id}
+            path=f"{reverse('users-list')}/{bobby}/transfer_resources",
+            data={"currentOwner": bobby.id, "newOwner": invalid_user_id},
         )
         # response should be 404
         self.assertEqual(response.status_code, 404)
@@ -1184,71 +1215,14 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # and no change has happened to them
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
 
-    def test_transfer_resources_default(self):
-        """
-        user wants to transfer resources to target
-        """
-        bobby = get_user_model().objects.get(username="bobby")
-        admin = get_user_model().objects.get(username="admin")
-
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
-
-        # check bobbys resources
-        bobby_resources = ResourceBase.objects.filter(owner=bobby)
-        prior_bobby_resources = bobby_resources.all()
-        self.assertTrue(bobby_resources.exists())
-        # call api
-        response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": "DEFAULT"}
-        )
-        self.assertTrue(response.status_code == 200)
-        # check that bobby owns the resources no more
-        self.assertFalse(bobby_resources.exists())
-        # check that the resources have been transfered to admin
-        admin_resources = ResourceBase.objects.filter(owner=admin).all()
-        self.assertTrue(set(prior_bobby_resources).issubset(set(admin_resources)))
-
-    def test_transfer_resources_to_missing_default(self):
-        """
-        user wants to transfer resources to principal,
-        but a principal account is missing
-        """
-        bobby = get_user_model().objects.get(username="bobby")
-        admin = get_user_model().objects.get(username="admin")
-
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.client.force_login(bobby)
-        self.assertTrue(bobby.is_authenticated)
-        # removal of admin accounts
-        admin.is_superuser = False
-        admin.is_staff = False
-        admin.save()
-        self.assertFalse(get_user_model().objects.filter(Q(is_superuser=True) | Q(is_staff=True)).exists())
-
-        # check bobbys resources
-        bobby_resources = ResourceBase.objects.filter(owner=bobby)
-        prior_bobby_resources = bobby_resources.all()
-        self.assertTrue(bobby_resources.exists())
-        # call api
-        response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": "DEFAULT"}
-        )
-        self.assertTrue(response.status_code == 500)
-        self.assertEqual(response.data, "Principal User not found")
-        # check that bobby still owns the resources
-        later_bobby_resources = bobby_resources.all()
-        # check that the resources havent changed
-        self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
-
     def test_transfer_resources_to_self(self):
         """
         user wants to transfer resources to self but should be unable to
         """
         bobby = get_user_model().objects.get(username="bobby")
 
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
 
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
@@ -1257,7 +1231,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": bobby.pk}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"previousOwner": bobby.pk, "newOwner": bobby.pk},
         )
         self.assertTrue(response.status_code == 400)
         self.assertEqual(response.data, "Cannot reassign to self")
@@ -1271,13 +1246,14 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         user wants to transfer resources to target
         """
         bobby = get_user_model().objects.get(username="bobby")
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
         prior_bobby_resources = bobby_resources.all()
         self.assertTrue(bobby_resources.exists())
-
         # call api
         response = self.client.post(path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={})
         # response should be 404
@@ -1286,3 +1262,39 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         later_bobby_resources = ResourceBase.objects.filter(owner=bobby).all()
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
+
+    def test_transfer_resource_subset(self):
+        """
+        user wants to transfer resources to target
+        """
+
+        bobby = get_user_model().objects.get(username="bobby")
+
+        # check bobbys resources
+        resource_to_transfer = ResourceBase.objects.filter(owner=bobby).first()
+        second_resource = create_single_dataset("test for api", owner=bobby)
+        new_owner = get_user_model().objects.exclude(username__in=["bobby", "AnonymousUser"]).first()
+
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        # Call the API again as admin to transfer Bobby's resources
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={
+                "newOwner": new_owner.pk,
+                "currentOwner": bobby.pk,
+                "resources": [resource_to_transfer.pk, second_resource.pk],
+            },
+        )
+        # response should be 200
+        self.assertEqual(response.status_code, 200)
+
+        resource_to_transfer.refresh_from_db()
+        second_resource.refresh_from_db()
+        # Check that bobby does not own the resource anymore
+        self.assertTrue(resource_to_transfer.owner != bobby)
+        self.assertTrue(second_resource.owner != bobby)
+        # since the payload say "default"
+        self.assertTrue(resource_to_transfer.owner == new_owner)
+        self.assertTrue(second_resource.owner == new_owner)

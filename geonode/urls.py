@@ -210,14 +210,9 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
-if settings.MONITORING_ENABLED:
-    urlpatterns += [
-        re_path(r"^monitoring/", include(("geonode.monitoring.urls", "geonode.monitoring"), namespace="monitoring"))
-    ]
-
-
 # Internationalization Javascript
 urlpatterns += [
     re_path(r"^metadata_update_redirect$", views.metadata_update_redirect, name="metadata_update_redirect"),
 ]
+
+handler500 = "geonode.views.err500"

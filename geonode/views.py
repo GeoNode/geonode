@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from geonode.client.hooks import hookset
 import json
 
+from django.shortcuts import render
 from django import forms
 from django.apps import apps
 from django.db.models import Q
@@ -97,6 +98,10 @@ def err403(request, exception):
         return HttpResponseRedirect(f"{reverse('account_login')}?next={request.get_full_path()}")
     else:
         return TemplateResponse(request, "401.html", {}, status=401).render()
+
+
+def err500(request):
+    return render(request, "500.html", status=500)
 
 
 def ident_json(request):
