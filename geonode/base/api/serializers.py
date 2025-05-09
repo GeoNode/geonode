@@ -137,19 +137,24 @@ class GroupSerializer(DynamicModelSerializer):
         # Check if 'group' is being updated
         new_group = validated_data["group"]
 
-        if not (user.is_superuser or user.is_staff):
-            # Check if the user is a member of the defined group
-            allowed_groups = GroupProfile.objects.filter(groupmember__user=user)
+        if new_group:
+            group_filter = {}
+            if not (user.is_superuser or user.is_staff):
+                group_filter["groupmember__user"] = user
+            allowed_groups = GroupProfile.objects.filter(**group_filter)
 
             # If the group is not in the allowed groups, raise a validation error
-            try:
-                gp = allowed_groups.get(pk=new_group.pk)
-            except GroupProfile.DoesNotExist:
+            gp_set = allowed_groups.filter(pk=new_group.pk)
+            if gp_set.exists():
+                gp = gp_set.first()
+            else:
                 logger.warning(f"User {user.username} does not have permission for this group: {new_group.pk}")
                 raise serializers.ValidationError("You do not have permission to use this group.")
 
             # If the user is a member of the group, we can proceed to update
-            instance.group = gp.group
+            validated_data["group"] = gp.group
+        else:
+            validated_data["group"] = None
 
         # Call the super class's update method to continue with the default behavior
         return super().update(instance, validated_data)
@@ -770,7 +775,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         if "group" in validated_data:
             # Call GroupSerializer's update method
             group_serializer = GroupSerializer(context=self.context)
-            instance.group = group_serializer.update(instance.group, validated_data)
+            group_serializer.update(instance, validated_data)
 
         for field in instance.ROLE_BASED_MANAGED_FIELDS:
             if not user.can_change_resource_field(instance, field) and field in validated_data:

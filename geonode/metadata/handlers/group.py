@@ -87,7 +87,7 @@ class GroupHandler(MetadataHandler):
 
             group_filter = {}
             if not user.is_superuser:
-                group_filter['groupmember__user'] = user
+                group_filter["groupmember__user"] = user
             allowed_groups = GroupProfile.objects.filter(**group_filter)
 
             gp_set = allowed_groups.filter(pk=id)
