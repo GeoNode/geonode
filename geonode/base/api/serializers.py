@@ -137,24 +137,23 @@ class GroupSerializer(DynamicModelSerializer):
         # Check if 'group' is being updated
         new_group = validated_data["group"]
 
-        if new_group:
-            group_filter = {}
-            if not (user.is_superuser or user.is_staff):
-                group_filter["groupmember__user"] = user
-            allowed_groups = GroupProfile.objects.filter(**group_filter)
+        if not GroupProfile.objects.filter(group=new_group).exists():
+            logger.warning(f"Group {new_group.pk} does not have an associated GroupProfile.")
+            raise serializers.ValidationError("The selected group does not have a valid group profile.")
 
-            # If the group is not in the allowed groups, raise a validation error
-            gp_set = allowed_groups.filter(pk=new_group.pk)
-            if gp_set.exists():
-                gp = gp_set.first()
+        gp = new_group
+
+        if not (user.is_superuser or user.is_staff):
+            qs = user.groups.filter(pk=new_group.pk)
+            # check if the group exists and if it has a group profile
+            if qs.exists():
+                gp = qs.first()
             else:
                 logger.warning(f"User {user.username} does not have permission for this group: {new_group.pk}")
                 raise serializers.ValidationError("You do not have permission to use this group.")
 
-            # If the user is a member of the group, we can proceed to update
-            validated_data["group"] = gp.group
-        else:
-            validated_data["group"] = None
+        # If the user is a member of the group, we can proceed to update
+        validated_data["group"] = gp
 
         # Call the super class's update method to continue with the default behavior
         return super().update(instance, validated_data)
