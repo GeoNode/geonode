@@ -19,8 +19,9 @@
 import logging
 
 from django.conf import settings
-from user_messages.models import Message
-from user_messages.signals import message_sent
+
+# from user_messages.models import Message
+# from user_messages.signals import message_sent
 
 from geonode.notifications_helper import send_notification, notifications
 
@@ -62,7 +63,3 @@ def _get_user_to_notify(message):
     thread = message.thread
     users = thread.single_users.all() | thread.group_users.all()
     return users.exclude(username=message.sender.username).distinct()
-
-
-def initialize_notification_signal():
-    message_sent.connect(message_received_notification, sender=Message)

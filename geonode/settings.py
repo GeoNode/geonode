@@ -494,7 +494,6 @@ INSTALLED_APPS = (
     "avatar",
     "announcements",
     "actstream",
-    "user_messages",
     "tastypie",
     "polymorphic",
     "guardian",
