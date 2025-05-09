@@ -427,13 +427,11 @@ GEONODE_INTERNAL_APPS = (
     "geonode.services",
     "geonode.management_commands_http",
     "geonode.resource",
-    "geonode.resource.processing",
     "geonode.storage",
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     "geonode.geoserver",
-    "geonode.geoserver.processing",
     "geonode.upload",
     "geonode.tasks",
     "geonode.messaging",
