@@ -131,6 +131,33 @@ class GroupSerializer(DynamicModelSerializer):
         name = "group"
         fields = ("pk", "name")
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+
+        # Check if 'group' is being updated
+        new_group = validated_data["group"]
+
+        if not GroupProfile.objects.filter(group=new_group).exists():
+            logger.warning(f"Group {new_group.pk} does not have an associated GroupProfile.")
+            raise serializers.ValidationError("The selected group does not have a valid group profile.")
+
+        gp = new_group
+
+        if not (user.is_superuser or user.is_staff):
+            qs = user.groups.filter(pk=new_group.pk)
+            # check if the group exists and if it has a group profile
+            if qs.exists():
+                gp = qs.first()
+            else:
+                logger.warning(f"User {user.username} does not have permission for this group: {new_group.pk}")
+                raise serializers.ValidationError("You do not have permission to use this group.")
+
+        # If the user is a member of the group, we can proceed to update
+        validated_data["group"] = gp
+
+        # Call the super class's update method to continue with the default behavior
+        return super().update(instance, validated_data)
+
 
 class GroupProfileSerializer(BaseDynamicModelSerializer):
     class Meta:
@@ -742,6 +769,13 @@ class ResourceBaseSerializer(DynamicModelSerializer):
 
     def update(self, instance, validated_data):
         user = self.context["request"].user
+
+        # Handle group update from the GroupSerializer
+        if "group" in validated_data:
+            # Call GroupSerializer's update method
+            group_serializer = GroupSerializer(context=self.context)
+            group_serializer.update(instance, validated_data)
+
         for field in instance.ROLE_BASED_MANAGED_FIELDS:
             if not user.can_change_resource_field(instance, field) and field in validated_data:
                 validated_data.pop(field)

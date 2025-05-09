@@ -68,8 +68,42 @@ class GroupHandler(MetadataHandler):
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         data = json_instance.get(field_name, None)
         id = data.get("id", None) if data else None
+        # retrieve the user which submitted the request
+        user = context.get("user", None)
+
+        if user is None:
+            self._set_error(
+                errors,
+                [field_name],
+                self.localize_message(
+                    context,
+                    "metadata_error_missing_owner",
+                    {"fieldname": field_name},
+                ),
+            )
+            return
+
         if id is not None:
-            gp = GroupProfile.objects.get(pk=id)
-            resource.group = gp.group
+
+            group_filter = {}
+            if not user.is_superuser:
+                group_filter["groupmember__user"] = user
+            allowed_groups = GroupProfile.objects.filter(**group_filter)
+
+            gp_set = allowed_groups.filter(pk=id)
+            if gp_set.exists():
+                gp = gp_set.first()
+
+                resource.group = gp.group
+            else:
+                self._set_error(
+                    errors,
+                    [field_name],
+                    self.localize_message(
+                        context,
+                        "metadata_group_error_missing_group",
+                        {"fieldname": field_name},
+                    ),
+                )
         else:
             resource.group = None
