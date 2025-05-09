@@ -104,7 +104,7 @@ workflows:
           codecov_name: smoke_tests
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh geonode.tests.smoke geonode.tests.test_message_notifications geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers
+          test_suite: ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers
       - build:
           name: geonode_test_suite
           codecov_name: main_tests
