@@ -161,7 +161,8 @@ class DataRetriever(object):
         for name, data_item_retriever in self.data_items.items():
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
             self.file_paths[name] = Path(file_path)
-            os.chmod(file_path, settings.FILE_UPLOAD_PERMISSIONS)
+            if settings.FILE_UPLOAD_PERMISSIONS is not None:
+                os.chmod(file_path, settings.FILE_UPLOAD_PERMISSIONS)
         """
         Is more usefull to have always unzipped file than the zip file
         So in case is a zip_file, we unzip it and than delete it
