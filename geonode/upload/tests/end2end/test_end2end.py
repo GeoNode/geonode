@@ -196,6 +196,21 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="stazioni_metropolitana")
 
+    @override_settings(FILE_UPLOAD_PERMISSIONS=None)
+    def test_file_upload_permissions_none_uploads_successfully(self):
+        """
+        Test that setting FILE_UPLOAD_PERMISSIONS=None prevents chmod errors during file upload.
+        This is important for compatibility with volume types (e.g., Azure Files) that disallow chmod.
+        """
+        self._cleanup_layers(name="stazioni_metropolitana")
+
+        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
+        initial_name = "stazioni_metropolitana"
+
+        self._assertimport(payload, initial_name)
+
+        self._cleanup_layers(name="stazioni_metropolitana")
+
 
 class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
     @override_settings(ASYNC_SIGNALS=False)
