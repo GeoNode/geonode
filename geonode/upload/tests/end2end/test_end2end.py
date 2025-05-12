@@ -196,7 +196,12 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="stazioni_metropolitana")
 
-    @override_settings(FILE_UPLOAD_PERMISSIONS=None)
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(
+        FILE_UPLOAD_PERMISSIONS=None,
+        ASYNC_SIGNALS=False,
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
+    )
     def test_file_upload_permissions_none_uploads_successfully(self):
         """
         Test that setting FILE_UPLOAD_PERMISSIONS=None prevents chmod errors during file upload.
