@@ -200,7 +200,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
     @override_settings(
         FILE_UPLOAD_PERMISSIONS=None,
         ASYNC_SIGNALS=False,
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data",
     )
     def test_file_upload_permissions_none_uploads_successfully(self):
         """
