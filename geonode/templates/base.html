@@ -58,68 +58,7 @@
       <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}" type='text/css' media='all' />
       <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}" type='text/css' media='all' />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
-      <style type="text/css">
-        {% if custom_theme.logo %}
-        .navbar-brand {
-          background-image: url({{ custom_theme.logo.url }});
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: contain;
-        }
-        {% endif %}
-
-        {% if custom_theme.jumbotron_color %}
-        .home .jumbotron {
-          background-color: {{ custom_theme.jumbotron_color }}
-        }
-        {% endif %}
-
-        {% if custom_theme.jumbotron_title_color %}
-        .home .jumbotron h1,
-        .home .jumbotron h2,
-        .home .jumbotron h3 {
-          color: {{ custom_theme.jumbotron_title_color }}
-        }
-        {% endif %}
-
-        {% if custom_theme.jumbotron_text_color %}
-        .home .jumbotron p {
-          color: {{ custom_theme.jumbotron_text_color }};
-          font-weight: normal;
-          font-size: xx-large;
-          font-family: 'Open Sans','Helvetica Neue',Arial,sans-serif;
-        }
-        {% endif %}
-
-        {% if custom_theme.jumbotron_welcome_hide %}
-        .home .jumbotron .container {
-          visibility: hidden;
-        }
-        {% endif %}
-
-        {% if custom_theme.jumbotron_bg %}
-        .home .jumbotron .container {
-          position: relative;
-          z-index: 1;
-        }
-        .home .jumbotron:after {
-          content: "";
-          background-image: url({{ custom_theme.jumbotron_bg.url }});
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: cover;
-          {% if not custom_theme.jumbotron_welcome_hide %}
-          opacity: 0.5;
-          {% endif %}
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          position: absolute;
-          z-index: 0;
-        }
-        {% endif %}
-      </style>
+      
       {% block extra_head %}
       {% endblock %}
     {% endblock %}
