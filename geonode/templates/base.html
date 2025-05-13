@@ -73,20 +73,6 @@
     <!-- Autocomplete script for input boxes -->
     <script src="{% static "geonode/js/search/autocomplete.js" %}"></script>
 
-    <script type="text/javascript">
-      function thumbnailFeedbacks(data, status) {
-        try {
-          $("#_thumbnail_feedbacks").find('.modal-title').text(status);
-          $("#_thumbnail_feedbacks").find('.modal-body').text(data);
-          $("#_thumbnail_feedbacks").modal("show");
-        } catch (err) {
-          console.log(err);
-        } finally {
-          return true;
-        }
-      }
-    </script>
-
     <!-- RTL styles -->
     {% get_current_language_bidi as LANGUAGE_BIDI %}
     {% if LANGUAGE_BIDI %}
@@ -159,40 +145,6 @@
     <script src="{% static "geonode/js/base/base.js" %}"></script>
     <script type="text/javascript" src="{% url "javascript-catalog" %}"></script>
     {% block extra_script %}{% endblock extra_script %}
-
-    <div class="modal fade" style="width: 100%; height: 100%;" id="_thumbnail_processing" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h1>{% trans "Processing..." %}</h1>
-              </div>
-              <div class="modal-body">
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                      {% trans "Updating Thumbnail..." %}
-                    </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-
-  <div class="modal fade" id="_thumbnail_feedbacks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="exampleModalLabel">{% trans "Message box" %}</h4>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "OK" %}</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   </body>
 </html>
