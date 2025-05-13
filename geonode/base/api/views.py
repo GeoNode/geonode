@@ -325,6 +325,20 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})
 
+    def _reject_ownership_change(self, request_params, resource):
+        """
+        Reject the request if a different 'owner' field is present in the request parameters.
+        """
+        if "owner" in request_params:
+            requested_owner = request_params.get("owner")
+            current_owner = resource.owner.username
+            # Reject the request if the requested owner is different from the current owner
+            if requested_owner != current_owner:
+                error_message = {"detail": "Modifying the owner is not allowed from this endpoint."}
+                logger.error(f"ValidationError: {error_message}")
+                return True
+        return False
+
     @extend_schema(
         methods=["get"],
         responses={200: ResourceBaseSerializer(many=True)},
@@ -570,11 +584,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         - Removes all the permissions (except owner and admin ones) from a Resource:
         curl -v -X DELETE -u admin:admin -H "Content-Type: application/json" http://localhost:8000/api/v2/resources/<id>/permissions
 
-        - Changes the owner of a Resource:
-            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
-                --header 'Content-Type: application/json' \
-                --data-raw '{"groups": [],"organizations": [],"users": [{"id": 1001,"permissions": "owner"}]}'
-
         - Assigns View permissions to some users:
             curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
                 --header 'Content-Type: application/json' \
@@ -606,6 +615,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
             request_params = request.data
+
             if request.method == "GET":
                 return Response(perms_spec.compact)
             elif request.method == "DELETE":
@@ -617,7 +627,13 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     input_params={"uuid": request_params.get("uuid", resource.uuid)},
                 )
             elif request.method == "PUT":
+                # Reject the request if a different "owner" is presented in the request params
+                if self._reject_ownership_change(request.data, resource):
+                    error_message = {"detail": "Modifying the owner is not allowed from this endpoint."}
+                    return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+
                 perms_spec_compact = PermSpecCompact(request.data, resource)
+
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
                 resource.set_dirty_state()
@@ -628,15 +644,22 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     action="permissions",
                     input_params={
                         "uuid": request_params.get("uuid", resource.uuid),
-                        "owner": request_params.get("owner", resource.owner.username),
+                        "owner": resource.owner.username,
                         "permissions": perms_spec_compact.extended,
                         "created": request_params.get("created", False),
                     },
                 )
             elif request.method == "PATCH":
+                # Reject the request if a different "owner" is presented in the request params
+                # Reject the request if a different "owner" is presented in the request params
+                if self._reject_ownership_change(request.data, resource):
+                    error_message = {"detail": "Modifying the owner is not allowed from this endpoint."}
+                    return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+
                 perms_spec_compact_patch = PermSpecCompact(request.data, resource)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
+
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
                 resource.set_dirty_state()
@@ -647,7 +670,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     action="permissions",
                     input_params={
                         "uuid": request_params.get("uuid", resource.uuid),
-                        "owner": request_params.get("owner", resource.owner.username),
+                        "owner": resource.owner.username,
                         "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get("created", False),
                     },
