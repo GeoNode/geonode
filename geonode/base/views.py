@@ -21,7 +21,6 @@ import logging
 import ast
 
 from dal import views, autocomplete
-from user_messages.models import Message
 from guardian.shortcuts import get_objects_for_user
 
 from django.conf import settings
@@ -322,24 +321,6 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
             notice_type_label = "request_resource_edit"
             recipients = OwnerRightsRequestViewUtils.get_message_recipients(self.resource.owner)
 
-            Message.objects.new_message(
-                from_user=request.user,
-                to_users=recipients,
-                subject=_("System message: A request to modify resource"),
-                content=_("The resource owner has requested to modify the resource") + ".\n"
-                " " + _("Resource title") + ": " + self.resource.title + ".\n"
-                " "
-                + _("Reason for the request")
-                + ': "'
-                + reason
-                + '".\n'
-                + " "
-                + _(
-                    'To allow the change, set the resource to not "Approved" under the metadata settings'
-                    + "and write message to the owner to notify him"
-                )
-                + ".",
-            )
             send_notification(
                 recipients,
                 notice_type_label,
