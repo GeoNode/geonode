@@ -332,12 +332,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)["objects"]), 6)
-        # Returns limitted info about other users
+        # Returns limited info about other users
         bobby = get_user_model().objects.get(username="bobby")
         profiles = self.deserialize(resp)["objects"]
         for profile in profiles:
             if profile["username"] == "bobby":
-                self.assertEquals(profile.get("email"), bobby.email)
+                self.assertEqual(profile.get("email"), bobby.email)
             else:
                 self.assertIsNone(profile.get("email"))
 
@@ -356,12 +356,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)["objects"]), 6)
-        # Returns limitted info about other users
+        # Returns limited info about other users
         bobby = get_user_model().objects.get(username="bobby")
         owners = self.deserialize(resp)["objects"]
         for owner in owners:
             if owner["username"] == "bobby":
-                self.assertEquals(owner.get("email"), bobby.email)
+                self.assertEqual(owner.get("email"), bobby.email)
             else:
                 self.assertIsNone(owner.get("email"))
                 self.assertIsNone(owner.get("first_name"))
