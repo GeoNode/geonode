@@ -42,7 +42,6 @@ from geonode.api.views import verify_token, user_info, roles, users, admin_role
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.base import register_url_event
-from geonode.messaging.urls import urlpatterns as msg_urls
 from .people.views import CustomSignupView, CustomLoginView
 from oauth2_provider.urls import app_name as oauth2_app_name, base_urlpatterns, oidc_urlpatterns
 
@@ -64,7 +63,6 @@ urlpatterns = [
     re_path(r"^sitemap\.xml$", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     re_path(r"^robots\.txt$", TemplateView.as_view(template_name="robots.txt"), name="robots"),
     re_path(r"(.*version\.txt)$", version.version, name="version"),
-    re_path(r"^messages/", include(msg_urls)),
 ]
 
 urlpatterns += [
