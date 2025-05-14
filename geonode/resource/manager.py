@@ -204,6 +204,7 @@ class ResourceManager(ResourceManagerInterface):
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
+                _resource.set_dirty_state()
                 try:
                     if isinstance(_resource.get_real_instance(), Dataset):
                         """
