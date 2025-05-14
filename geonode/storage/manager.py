@@ -205,7 +205,7 @@ class StorageManager(StorageManagerInterface):
                     new_file = f"{new_path}/{old_file_name}_{random_suffix}{ext}"
                 _new_path = self.copy_single_file(open_file, new_file)
                 out.append(_new_path)
-            if _new_path:
+            if _new_path and settings.FILE_UPLOAD_PERMISSIONS is not None:
                 os.chmod(_new_path, settings.FILE_UPLOAD_PERMISSIONS)
         return out
 
