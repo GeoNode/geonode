@@ -432,6 +432,8 @@ def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_m
         if not resource.exists():
             raise Exception("The resource requested does not exists")
         resource = resource.first()
+        # setting the original resource in dirty_state
+        resource.set_dirty_state()
 
         _exec = orchestrator.get_execution_object(exec_id)
 
@@ -483,9 +485,20 @@ def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_m
         # so we need to remove it
         kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
 
+        # lets clear back the dirty state of the resources
+        resource.clear_dirty_state()
+        new_resource.clear_dirty_state()
+
         import_orchestrator.apply_async(task_params, kwargs)
 
     except Exception as e:
+
+        # lets clear back the dirty state of the resources
+        if resource:
+            # if something goes wrong, we should remove the dirty state
+            # from the dirty state
+            resource.clear_dirty_state()
+
         call_rollback_function(
             exec_id,
             handlers_module_path=handler_module_path,
