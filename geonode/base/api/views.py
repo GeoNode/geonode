@@ -570,11 +570,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         - Removes all the permissions (except owner and admin ones) from a Resource:
         curl -v -X DELETE -u admin:admin -H "Content-Type: application/json" http://localhost:8000/api/v2/resources/<id>/permissions
 
-        - Changes the owner of a Resource:
-            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
-                --header 'Content-Type: application/json' \
-                --data-raw '{"groups": [],"organizations": [],"users": [{"id": 1001,"permissions": "owner"}]}'
-
         - Assigns View permissions to some users:
             curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
                 --header 'Content-Type: application/json' \
@@ -606,6 +601,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
             request_params = request.data
+
             if request.method == "GET":
                 return Response(perms_spec.compact)
             elif request.method == "DELETE":
@@ -617,7 +613,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     input_params={"uuid": request_params.get("uuid", resource.uuid)},
                 )
             elif request.method == "PUT":
+
                 perms_spec_compact = PermSpecCompact(request.data, resource)
+
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
                 resource.set_dirty_state()
@@ -628,15 +626,16 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     action="permissions",
                     input_params={
                         "uuid": request_params.get("uuid", resource.uuid),
-                        "owner": request_params.get("owner", resource.owner.username),
                         "permissions": perms_spec_compact.extended,
                         "created": request_params.get("created", False),
                     },
                 )
             elif request.method == "PATCH":
+
                 perms_spec_compact_patch = PermSpecCompact(request.data, resource)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
+
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
                 resource.set_dirty_state()
@@ -647,7 +646,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     action="permissions",
                     input_params={
                         "uuid": request_params.get("uuid", resource.uuid),
-                        "owner": request_params.get("owner", resource.owner.username),
                         "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get("created", False),
                     },
