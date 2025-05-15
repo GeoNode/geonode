@@ -436,7 +436,6 @@ GEONODE_INTERNAL_APPS = (
     "geonode.geoserver.processing",
     "geonode.upload",
     "geonode.tasks",
-    "geonode.messaging",
     "geonode.favorite",
 )
 
@@ -494,7 +493,6 @@ INSTALLED_APPS = (
     "avatar",
     "announcements",
     "actstream",
-    "user_messages",
     "tastypie",
     "polymorphic",
     "guardian",
