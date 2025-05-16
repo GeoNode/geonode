@@ -135,7 +135,11 @@ class MetadataViewSet(ViewSet):
 def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
 
     lang = remove_country_from_languagecode(get_language())
-    all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
+
+    try:
+        all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
+    except ValueError:
+        all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus__identifier=thesaurusid)
 
     # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
     localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
