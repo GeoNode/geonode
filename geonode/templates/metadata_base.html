@@ -217,12 +217,6 @@
 {{ block.super }}
     {% include 'metadata_form_js.html' %}
 
-    <script type="text/javascript">
-      $('#set_thumbnail').click(function(){
-        createMapThumbnail();
-      });
-    </script>
-
     <!-- <script type="text/javascript">
         $(document).ready(function() {
             $('#id_resource-regions').multiselect({
