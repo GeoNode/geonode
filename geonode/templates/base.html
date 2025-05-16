@@ -45,18 +45,6 @@
     <link rel="preload" as="font" href="{% static "geonode/fonts/lato_light.ttf" %}" crossorigin="" />
 
     {% block head %}
-
-      {% if DEBUG_STATIC %}
-          <link href="{% static "lib/css/jquery.dataTables.css" %}" rel="stylesheet" />
-          <link href="{% static "lib/css/select2.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.theme.min.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.structure.min.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
-      {% else %}
-      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
-      {% endif %}
       <link href="{% static "geonode/css/base.css" %}" rel="stylesheet"/>
       <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}" type='text/css' media='all' />
       <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}" type='text/css' media='all' />
@@ -164,11 +152,7 @@
     {% get_current_language_bidi as LANGUAGE_BIDI %}
     {% if LANGUAGE_BIDI %}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.3.4/css/bootstrap-rtl.min.css">
-        {% if DEBUG_STATIC %}
-          <link rel="stylesheet" type="text/css" href="{% static "geonode/css/geonode-rtl.css" %}">
-        {% else %}
-          <link rel="stylesheet" type="text/css" href="{% static "geonode/css/geonode-rtl.min.css" %}">
-        {% endif %}
+        <link rel="stylesheet" type="text/css" href="{% static "geonode/css/geonode-rtl.min.css" %}">
     {% endif %}
   </head>
 
@@ -461,26 +445,12 @@
     {% endif %}
     <!-- End of Modal -->
 
-    {% if DEBUG_STATIC %}
     <script src="{% static "lib/js/jquery.js" %}"></script>
-    <script src="{% static "lib/js/jquery.dataTables.js" %}"></script>
-    <script src="{% static "lib/js/bootstrap-treeview.js" %}"></script>
-    <script src="{% static "lib/js/bootstrap-tokenfield.js" %}"></script>
-    <script src="{% static "lib/js/fastselect.standalone.js" %}"></script>
-    <script src="{% static "lib/js/select2.full.js" %}"></script>
-    <script src="{% static "lib/js/jquery.timeago.js" %}"></script>
-    <script src="{% static "lib/js/jq-ajax-progress.js" %}"></script>
     <script src="{% static "lib/js/jquery-ui.js" %}"></script>
-    <script src="{% static "lib/js/jquery.raty.js" %}"></script>
     <script src="{% static "lib/js/bootstrap.js" %}"></script>
-    <script src="{% static "lib/js/moment-with-locales.js" %}"></script>
-    <script src="{% static "lib/js/bootstrap-datetimepicker.js" %}"></script>
-    <script src="{% static "lib/js/json2.js" %}"></script>
-    <script src="{% static "lib/js/waypoints.js" %}"></script>
-    <script src="{% static "lib/js/underscore.js" %}"></script>
-    {% else %}
-    <script src="{% static "lib/js/assets.min.js" %}"></script>
-    {% endif %}
+    <script src="{% static "lib/js/bootstrap-treeview.js" %}"></script>
+
+
     <script src="{% static "geonode/js/utils/utils.js" %}"></script>
     <script src="{% static "geonode/js/base/base.js" %}"></script>
     <script type="text/javascript" src="{% url "javascript-catalog" %}"></script>
