@@ -55,7 +55,6 @@ def resource_urls(request):
         INSTALLED_APPS=settings.INSTALLED_APPS,
         THEME_ACCOUNT_CONTACT_EMAIL=settings.THEME_ACCOUNT_CONTACT_EMAIL,
         TINYMCE_DEFAULT_CONFIG=settings.TINYMCE_DEFAULT_CONFIG,
-        DEBUG_STATIC=getattr(settings, "DEBUG_STATIC", False),
         PROXY_URL=getattr(settings, "PROXY_URL", "/proxy/?url="),
         DISPLAY_SOCIAL=getattr(settings, "DISPLAY_SOCIAL", False),
         DISPLAY_RATINGS=getattr(settings, "DISPLAY_RATINGS", False),
