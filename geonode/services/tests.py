@@ -824,8 +824,9 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             # Try adding the same URL again
             form = forms.CreateServiceForm(form_data)
             self.assertEqual(Service.objects.count(), 1)
-            with self.assertRaises(KeyError):
-                self.client.post(reverse("register_service"), data=form_data)
+            response = self.client.post(reverse("register_service"), data=form_data)
+            # The service is None since there is already a created service from the first call
+            self.assertEqual(response.status_code, 404)
             self.assertEqual(Service.objects.count(), 1)
 
 

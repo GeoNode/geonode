@@ -19,6 +19,8 @@
 
 import logging
 from abc import ABCMeta, abstractmethod
+from collections import defaultdict
+
 from typing_extensions import deprecated
 
 from django.utils.translation import gettext as _
@@ -129,7 +131,7 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def _set_error(errors: dict, path: list, msg: str):
-        logger.info(f"Reported message: {'/'.join(path)}: {msg} ")
+        logger.info(f"Setting error: {'/'.join(path)}: {msg}")
         elem = errors
         for step in path:
             elem = elem.setdefault(step, {})
@@ -137,12 +139,22 @@ class MetadataHandler(metaclass=ABCMeta):
         elem.append(msg)
 
     @staticmethod
+    def localize_message(context: dict, msg_code: str, msg_info: dict):
+        msg_loc: str = MetadataHandler._get_tkl_labels(context, None, msg_code)
+        if msg_loc:
+            tokens = defaultdict(lambda: "N/A", msg_info or {})
+            return msg_loc.format_map(tokens)
+        else:
+            logger.warning(f"Missing i18n entry for key '{msg_code}' -- info is {msg_info}")
+            return f"{msg_code}:{msg_info}"
+
+    @staticmethod
     def _localize_label(context, lang: str, text: str):
         label = MetadataHandler._get_tkl_labels(context, lang, text)
         return label if label else _(text)
 
     @staticmethod
-    def _get_tkl_labels(context, lang: str, text: str):
+    def _get_tkl_labels(context, lang: str | None, text: str):
         return context["labels"].get(text, None)
 
     @staticmethod

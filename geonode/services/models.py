@@ -18,6 +18,7 @@
 #########################################################################
 import logging
 import base64
+import hashlib
 
 from urllib.parse import urlparse, ParseResult
 
@@ -37,7 +38,7 @@ from . import enumerations
 service_type_as_tuple = [(k, v["label"]) for k, v in get_available_service_types().items()]
 
 SECRET_KEY = settings.SECRET_KEY  # Ensure it's unique per project
-ENCRYPTION_KEY = base64.urlsafe_b64encode(SECRET_KEY[:32].encode())
+ENCRYPTION_KEY = base64.urlsafe_b64encode(hashlib.sha256(SECRET_KEY.encode()).digest())
 
 cipher = Fernet(ENCRYPTION_KEY)
 
@@ -67,8 +68,8 @@ class Service(ResourceBase):
     description = models.CharField(max_length=255, null=True, blank=True)
     extra_queryparams = models.TextField(null=True, blank=True)
     operations = models.JSONField(default=dict, null=True, blank=True)
-    username = models.CharField(max_length=150, null=True, default=None)
-    password = models.CharField(_("password"), max_length=250, null=True, default=None)
+    username = models.CharField(max_length=150, null=True, blank=True, default=None)
+    password = models.CharField(_("password"), max_length=250, null=True, blank=True, default=None)
 
     # Foreign Keys
 

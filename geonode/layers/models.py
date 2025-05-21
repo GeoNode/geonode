@@ -379,11 +379,6 @@ class Dataset(ResourceBase):
         """
         if user == self.owner or user.is_superuser:
             return
-        if not do_local:
-            from geonode.messaging import producer
-
-            producer.viewing_dataset(str(user), str(self.owner), self.id)
-
         else:
             Dataset.objects.filter(id=self.id).update(popular_count=models.F("popular_count") + 1)
 

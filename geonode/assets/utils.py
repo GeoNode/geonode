@@ -2,12 +2,13 @@ import logging
 import os.path
 
 from django.http import HttpResponse
-
+from django.core.exceptions import PermissionDenied
+from geonode.security.permissions import DOWNLOAD_PERMISSIONS
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.models import Asset
 from geonode.base.models import ResourceBase, Link
 from geonode.security.utils import get_visible_resources
-
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +24,14 @@ def get_perms_response(request, asset: Asset):
 
     visibile_res = get_visible_resources(queryset=ResourceBase.objects.filter(link__asset=asset), user=request.user)
 
-    logger.warning("TODO: implement permission check")
     if visibile_res.exists():
-        logger.debug("Asset: access allowed by Resource")
-        return None
+        # retrieving the resource permissions for the given user
+        resource_perms = permissions_registry.get_perms(instance=visibile_res.first(), user=user)
+        # check if download perms is available
+        if set(DOWNLOAD_PERMISSIONS).issubset(resource_perms):
+            logger.debug("Asset: access allowed by Resource")
+            return None
+        raise PermissionDenied
     elif user and user.is_authenticated:
         return HttpResponse(status=403)
     else:

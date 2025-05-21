@@ -33,6 +33,7 @@ from rest_framework.test import APITestCase
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.local import LocalAssetHandler
 from geonode.assets.models import Asset, LocalAsset
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -273,6 +274,43 @@ class AssetsDownloadTests(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.assertTrue(isinstance(response, StreamingHttpResponse))
             self.assertEqual(response.get("Content-Disposition"), f"attachment; filename={key}.zip")
+
+    def test_download_with_attachment_for_anonymous(self):
+        """
+        any user without download permissions
+        cannot download the asset
+        """
+        from geonode.resource.manager import resource_manager
+        from geonode.layers.models import Dataset
+        from guardian.shortcuts import get_anonymous_user
+
+        bobby, _ = get_user_model().objects.get_or_create(username="bobby")
+
+        self.client.force_login(get_user_model().objects.get(username="norman"))
+        for _, el in (("one", ONE_JSON), ("two", TWO_JSON), ("three", THREE_JSON)):
+            asset = self._setup_test(bobby, _file=el)
+            resource = None
+            try:
+                # creating resoruce
+                resource = resource_manager.create(
+                    None, resource_type=Dataset, defaults={"owner": bobby, "asset": asset}
+                )
+                # getting perms
+                resource_perms = permissions_registry.get_perms(instance=resource)
+                # remove perms for user bobby
+                resource_perms["users"][bobby] = ["view_resourcebase"]
+                # and anonymous just to be sure
+                resource_perms["groups"][get_anonymous_user().groups.first()] = ["view_resourcebase"]
+                # resetting the permissions for the resource
+                resource_manager.set_permissions(resource.uuid, instance=resource, permissions=resource_perms)
+                url = reverse("assets-download", kwargs={"pk": asset.pk})
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 403)
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                if resource:
+                    resource.delete()
 
     def _setup_test(self, u, _file=ONE_JSON):
         asset_handler = asset_handler_registry.get_default_handler()
