@@ -1138,10 +1138,10 @@ PYCSW = {
         "metadata": {
             "inspire": {
                 "enabled": True,
-                "languages_supported": "eng,gre",
+                "languages_supported": ["eng", "gre"],
                 "default_language": "eng",
                 "date": "YYYY-MM-DD",
-                "gemet_keywords": "Utility and governmental services",
+                "gemet_keywords": ["Utility and governmental services"],
                 "conformity_service": "notEvaluated",
                 "contact_name": "Organization Name",
                 "contact_email": "Email Address",
@@ -1155,7 +1155,7 @@ PYCSW = {
                 "description": "GeoNode is an open source platform"
                 " that facilitates the creation, sharing, and collaborative use"
                 " of geospatial data",
-                "keywords": "sdi, catalogue, discovery, metadata," " GeoNode",
+                "keywords": ["sdi", "catalogue", "discovery", "metadata", "GeoNode"],
                 "keywords_type": "theme",
                 "fees": "None",
                 "accessconstraints": "None",

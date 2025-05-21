@@ -169,7 +169,7 @@ def opensearch_dispatch(request):
         "developer": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["name"],
         "contact": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["email"],
         "attribution": settings.PYCSW["CONFIGURATION"]["metadata"]["provider"]["name"],
-        "tags": settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["keywords"].replace(",", " "),
+        "tags": " ".join(settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["keywords"]),
         "url": settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL,
     }
 
