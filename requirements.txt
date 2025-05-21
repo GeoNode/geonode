@@ -52,7 +52,7 @@ oauthlib==3.2.2
 pyjwt==2.8.0
 
 # geopython dependencies
-git+https://github.com/geopython/pycsw.git@master#egg=pycsw
+git+https://github.com/geopython/pycsw.git@3.0.0-beta1#egg=pycsw
 pyproj<3.7.0
 OWSLib==0.31.0
 SQLAlchemy==2.0.30 # required by PyCSW
