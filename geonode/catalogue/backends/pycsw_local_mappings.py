@@ -28,7 +28,7 @@ MD_CORE_MODEL = {
         "pycsw:MdSource": "csw_mdsource",
         "pycsw:InsertDate": "csw_insert_date",
         "pycsw:XML": "metadata_xml",
-        "pycsw:Metadata": "metadata_xml",
+        "pycsw:Metadata": "metadata",
         "pycsw:MetadataType": "metadata_type",
         "pycsw:AnyText": "csw_anytext",
         "pycsw:Language": "language",
