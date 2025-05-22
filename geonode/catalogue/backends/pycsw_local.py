@@ -52,13 +52,14 @@ CONFIGURATION = {
         "pretty_print": "true",
         "domainquerytype": "range",
         "domaincounts": "true",
-        "profiles": "apiso,ebrim",
     },
+    "profiles": {"apiso", "ebrim"},
     "repository": {
         "source": "geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository",
         "filter": "uuid IS NOT NULL",
         "mappings": os.path.join(os.path.dirname(__file__), "pycsw_local_mappings.py"),
     },
+    "logging": {"level": "ERROR"},
 }
 
 
