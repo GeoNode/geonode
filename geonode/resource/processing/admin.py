@@ -32,7 +32,7 @@ class ProcessingWorkflowAdmin(admin.ModelAdmin):
         "id",
         "name",
     )
-    filter_horizontal = ("processing_tasks",)
+    #filter_horizontal = ("processing_tasks",)
     inlines = [ProcessingWorkflowTasksInline]
 
 
