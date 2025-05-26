@@ -66,7 +66,7 @@ class DatasetAdmin(TabbedTranslationAdmin):
         "dirty_state",
     )
     search_fields = ("alternate", "title", "abstract", "purpose", "is_approved", "is_published", "state")
-    filter_horizontal = ("contacts",)
+    #filter_horizontal = ("contacts",)
     date_hierarchy = "date"
     readonly_fields = ("uuid", "alternate", "workspace", "geographic_bounding_box")
     inlines = (

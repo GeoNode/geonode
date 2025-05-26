@@ -483,7 +483,7 @@ INSTALLED_APPS = (
     "django_filters",
     "mptt",
     "storages",
-    "floppyforms",
+    #"floppyforms",
     "tinymce",
     "widget_tweaks",
     "django_celery_results",
