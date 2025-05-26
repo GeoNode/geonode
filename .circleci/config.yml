@@ -30,7 +30,7 @@ jobs:
 
       - run:
           name: Start the stack
-          command: docker-compose --env-file .env_test -f docker-compose-test.yml up -d --force-recreate
+          command: docker-compose --env-file .env_test -f docker-compose-test.yml up -d
           working_directory: ./
 
       - run:
