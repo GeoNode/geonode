@@ -2,7 +2,7 @@
 Pillow==11.3.0
 lxml==5.2.1
 psycopg2==2.9.9
-Django==4.2.23
+Django==5.2.1
 
 # Other
 beautifulsoup4==4.12.3
@@ -61,7 +61,9 @@ Jinja2==3.1.4
 dj-database-url==2.1.0
 dj-pagination==2.5.0
 django-select2==8.1.2
-django-floppyforms<1.10.0
+#django-floppyforms<1.10.0
+git+https://github.com/jazzband/django-floppyforms@master#egg=django-floppyforms
+
 django-forms-bootstrap<=3.1.0
 django-autocomplete-light==3.11.0
 django-invitations<2.1.1
@@ -73,13 +75,16 @@ djangorestframework-gis==1.2.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-spectacular==0.27.2
-dynamic-rest==2.3.0
+#dynamic-rest==2.3.0
+git+https://github.com/GeoNode/dynamic-rest@master#egg=dynamic-rest
 
-geonode-pinax-notifications==6.0.0.2
+
+#geonode-pinax-notifications==6.0.0.2
+git+https://github.com/GeoNode/pinax-notifications@master#egg=geonode-pinax-notifications
 
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
-git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
+#git+https://github.com/GeoNode/geonode-mapstore-client.git@django_upgrade#egg=django_geonode_mapstore_client
 django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2.2
 geonode-announcements==2.0.2.2
@@ -91,7 +96,7 @@ gisdata==0.5.4
 
 # importer dependencies
 setuptools>=59
-gdal<=3.4.3
+gdal<=3.6.4
 pdok-geopackage-validator==0.8.5
 geonode-django-dynamic-model==0.4.0
 
