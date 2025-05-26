@@ -7,6 +7,8 @@ x-common-django:
   build:
       context: ./
       dockerfile: Dockerfile
+      args:
+        - ADDITIONAL_PIP_ARGS=--no-cache-dir
   restart: unless-stopped
   env_file:
     - .env_test
