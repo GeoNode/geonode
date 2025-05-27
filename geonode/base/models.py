@@ -31,7 +31,6 @@ from PIL import Image
 
 from django.db import transaction
 from django.db import models
-from django.db.models import Max
 from django.conf import settings
 from django.utils.html import escape
 from django.utils.timezone import now
@@ -1031,11 +1030,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     send_notification(recipients, notice_type_label, {"resource": self})
 
         if self.pk is None:
-            _initial_value = ResourceBase.objects.aggregate(Max("pk"))["pk__max"]
-            if not _initial_value:
-                _initial_value = 1
-            else:
-                _initial_value += 1
+            # behaviour changed with Djagno 5.2
+            base = ResourceBase.objects
+            _initial_value = 1 if not base.exists() else base.last().id + 1
             _next_value = get_next_value("ResourceBase", initial_value=_initial_value)  # type(self).__name__,
             if _initial_value > _next_value:
                 Sequence.objects.filter(name="ResourceBase").update(last=_initial_value)
