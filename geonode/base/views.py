@@ -34,7 +34,6 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.utils.translation import get_language
@@ -42,7 +41,6 @@ from django.utils.translation import get_language
 # Geonode dependencies
 from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
-from geonode.base import register_event
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
 from geonode.resource.manager import resource_manager
