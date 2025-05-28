@@ -1187,7 +1187,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             if isinstance(defaults, str):
                 defaults = json.loads(defaults)  # convert JSON string to dict
             defaults["featured"] = False
-            
+
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name="copy",
