@@ -1120,6 +1120,13 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = self._get_request_params(request)
+
+            defaults = request_params.get("defaults", "{}")
+            # Set the featured flag always to False
+            if isinstance(defaults, str):
+                defaults = json.loads(defaults)  # convert JSON string to dict
+            defaults["featured"] = False
+
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name="copy",
@@ -1128,7 +1135,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 input_params={
                     "instance": resource.id,
                     "owner": request_params.get("owner", request.user.username),
-                    "defaults": request_params.get("defaults", "{}"),
+                    "defaults": defaults,
                 },
             )
             resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)

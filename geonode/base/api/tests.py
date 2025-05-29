@@ -2324,6 +2324,16 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         cloned_resource = Dataset.objects.last()
         self.assertEqual(cloned_resource.owner.username, "admin")
+
+        # Check that the 'featured' flag is reset on clone
+        resource.refresh_from_db()
+        resource.featured = True
+        resource.save()
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 200)
+        second_cloned = Dataset.objects.exclude(pk__in=[resource.pk, cloned_resource.pk]).latest("id")
+        self.assertFalse(second_cloned.featured, msg="Cloned resource should have featured=False")
+
         # clone dataset with invalid file
         # resource.files = ["/path/invalid_file.wrong"]
         # resource.save()
