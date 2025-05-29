@@ -435,6 +435,8 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.owner = owner or instance.get_real_instance().owner
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
+                    # Ensure that the featured flag is False
+                    _resource.featured = False
                     try:
                         # Avoid Integrity errors...
                         _resource.get_real_instance()._meta.get_field("name")
