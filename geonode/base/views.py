@@ -34,7 +34,6 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.utils.translation import get_language
@@ -42,7 +41,6 @@ from django.utils.translation import get_language
 # Geonode dependencies
 from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
-from geonode.base import register_event
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
 from geonode.resource.manager import resource_manager
@@ -329,38 +327,6 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
-
-
-@login_required
-def resource_clone(request):
-    try:
-        uuid = request.POST["uuid"]
-        resource = resolve_object(request, ResourceBase, {"uuid": uuid}, "base.change_resourcebase")
-    except PermissionDenied:
-        return HttpResponse("Not allowed", status=403)
-    except Exception:
-        raise Http404("Not found")
-    if not resource:
-        raise Http404("Not found")
-
-    out = {}
-    try:
-        getattr(resource_manager, "copy")(resource.get_real_instance(), uuid=None, defaults={"user": request.user})
-        out["success"] = True
-        out["message"] = _("Resource Cloned Successfully!")
-    except Exception as e:
-        logger.exception(e)
-        out["success"] = False
-        out["message"] = _(f"Error Occurred while Cloning the Resource: {e}")
-        out["errors"] = str(e)
-
-    if out["success"]:
-        status_code = 200
-        register_event(request, "change", resource)
-    else:
-        status_code = 400
-
-    return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
 
 
 logger = logging.getLogger("geonode.base.metadata")
