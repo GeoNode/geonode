@@ -1120,6 +1120,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = self._get_request_params(request)
+
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name="copy",

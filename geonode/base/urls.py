@@ -20,7 +20,6 @@ from django.urls import include, re_path
 
 from .views import (
     DatasetsAutocomplete,
-    resource_clone,
     RegionAutocomplete,
     ThesaurusAvailable,
     OwnerRightsRequestView,
@@ -71,11 +70,6 @@ urlpatterns = [
         r"^resource_rights/(?P<pk>\d+)$",
         OwnerRightsRequestView.as_view(),
         name="owner_rights_request",
-    ),
-    re_path(
-        r"^resource_clone/?$",
-        resource_clone,
-        name="resource_clone",
     ),
     re_path(r"^", include("geonode.base.api.urls")),
 ]
