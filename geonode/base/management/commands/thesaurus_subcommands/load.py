@@ -79,7 +79,7 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
         Thesaurus,
         {"identifier": identifier},
         {"date": date_issued, "description": description, "title": thesaurus_title, "about": str(scheme)},
-        {},
+        {"card_min": 0, "card_max": 0, "facet": False}
     )
 
     tl_cnt = tl_add = 0

@@ -207,11 +207,33 @@ class ConfigurationAdmin(admin.ModelAdmin):
         return form
 
 
+class ThesaurusLModelForm(forms.ModelForm):
+    class Meta:
+        model = ThesaurusLabel
+        fields = "__all__"
+        widgets = {
+            "lang": forms.TextInput(attrs={"style": "width: 60px !important;"}),
+            "label": forms.TextInput(attrs={"style": "width: 800px !important;"}),
+        }
+
+
+class ThesaurusLInline(admin.TabularInline):
+    model = ThesaurusLabel
+    form = ThesaurusLModelForm
+
+
 class ThesaurusAdmin(admin.ModelAdmin):
     change_list_template = "admin/thesauri/change_list.html"
 
     model = Thesaurus
-    list_display = ("id", "identifier")
+    inlines = (ThesaurusLInline,)
+
+    list_display = (
+        "id",
+        "identifier",
+        "about",
+        "title",
+    )
     list_display_links = ("id", "identifier")
     ordering = ("identifier",)
 
@@ -249,8 +271,24 @@ class ThesaurusLabelAdmin(admin.ModelAdmin):
     thesaurus_id.admin_order_field = "thesaurus__identifier"
 
 
+class ThesaurusKLModelForm(forms.ModelForm):
+    class Meta:
+        model = ThesaurusKeywordLabel
+        fields = "__all__"
+        widgets = {
+            "lang": forms.TextInput(attrs={"style": "width: 60px !important;"}),
+            "label": forms.TextInput(attrs={"style": "width: 800px !important;"}),
+        }
+
+
+class ThesaurusKLInline(admin.TabularInline):
+    model = ThesaurusKeywordLabel
+    form = ThesaurusKLModelForm
+
+
 class ThesaurusKeywordAdmin(admin.ModelAdmin):
     model = ThesaurusKeyword
+    inlines = (ThesaurusKLInline,)
 
     list_display = (
         "thesaurus_id",
@@ -266,6 +304,7 @@ class ThesaurusKeywordAdmin(admin.ModelAdmin):
         "alt_label",
     )
     list_filter = ("thesaurus_id",)
+    search_fields = ("about",)
 
     def thesaurus_id(self, obj):
         return obj.thesaurus.identifier
