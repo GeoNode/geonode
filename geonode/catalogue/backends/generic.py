@@ -28,6 +28,7 @@ from owslib.util import http_post
 from owslib.etree import etree as dlxml
 from owslib.fes import PropertyIsLike, BBox
 from geonode.catalogue.backends.base import BaseCatalogueBackend
+from geonode.metadata.manager import metadata_manager
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +130,7 @@ class Catalogue(CatalogueServiceWeb):
         ctx = {
             "CATALOG_METADATA_TEMPLATE": settings.CATALOG_METADATA_TEMPLATE,
             "layer": layer,
+            "metadata": metadata_manager.build_schema_instance(layer),
             "SITEURL": site_url,
             "id_pname": id_pname,
             "LICENSES_METADATA": getattr(settings, "LICENSES", dict()).get("METADATA", "never"),
