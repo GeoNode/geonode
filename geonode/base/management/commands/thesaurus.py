@@ -2,7 +2,12 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.management.command_utils import setup_logger
-from geonode.base.management.commands.thesaurus_subcommands.dump import dump_thesaurus, DUMP_FORMATS
+from geonode.base.management.commands.thesaurus_subcommands.dump import (
+    dump_thesaurus,
+    DUMP_FORMATS,
+    DUMP_FORMAT_DEFAULT,
+    DUMP_FORMAT_SORTED,
+)
 from geonode.base.management.commands.thesaurus_subcommands.list import list_thesauri
 from geonode.base.management.commands.thesaurus_subcommands.load import load_thesaurus, ACTIONS, ACTION_CREATE
 
@@ -54,9 +59,9 @@ class Command(BaseCommand):
         dump_group.add_argument(
             "--format",
             dest="format",
-            default="pretty-xml",
+            default=DUMP_FORMAT_DEFAULT,
             choices=DUMP_FORMATS,
-            help="Format string supported by rdflib (default: pretty-xml)",
+            help=f"Format string supported by rdflib, or {DUMP_FORMAT_SORTED} (default: {DUMP_FORMAT_DEFAULT})",
         )
         def_lang = getattr(settings, "THESAURUS_DEFAULT_LANG", None)
         dump_group.add_argument(
