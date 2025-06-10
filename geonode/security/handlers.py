@@ -19,7 +19,7 @@
 from abc import ABC
 
 from geonode.security.utils import AdvancedSecurityWorkflowManager
-from geonode.groups.models import GroupProfile, GroupMember
+from geonode.groups.models import GroupProfile
 
 
 class BasePermissionsHandler(ABC):
@@ -69,33 +69,45 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
 
 class GroupManagersPermissionsHandler(BasePermissionsHandler):
     """
-    Grants 'edit permissions' to group managers if the resource is in a group
+    Grants 'edit' permissions to group managers if the resource is in a group
     """
 
-    def get_perms(self, instance, payload, user=None, include_virtual=True, *args, **kwargs):
+    # Define the extra permissions granted to group managers
+    EXTRA_MANAGER_PERMS = [
+        "change_resourcebase",
+        "change_resourcebase_metadata",
+        "change_dataset_data",
+        "change_dataset_style",
+    ]
+
+    @staticmethod
+    def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
         if not user:
-            return payload
+            return perms_payload
 
         group = getattr(instance, "group", None)
         if not group:
-            return payload
+            return perms_payload
 
         try:
             group_profile = group.groupprofile
         except GroupProfile.DoesNotExist:
-            return payload
+            return perms_payload
 
-        # Check if user is a group manager
-        is_manager = GroupMember.objects.filter(group=group_profile, role=GroupMember.MANAGER, user=user).exists()
+        group_managers = group_profile.get_managers()
 
-        if not is_manager:
-            return payload
+        # Adjust user permissions
+        user_perms = GroupManagersPermissionsHandler._adjust_user_perms(perms_payload.get("users", {}), group_managers)
+        group_perms = perms_payload.get("groups", {})
 
-        return AdvancedSecurityWorkflowManager.get_permissions(
-            instance.uuid,
-            instance=instance,
-            permissions=payload,
-            created=kwargs.get("created"),
-            approval_status_changed=kwargs.get("approval_status_changed"),
-            group_status_changed=kwargs.get("group_status_changed"),
-        )
+        return {"users": user_perms, "groups": group_perms}
+
+    @staticmethod
+    def _adjust_user_perms(perms_payload, group_managers):
+        adjusted_payload = {}
+        for user_obj, perms in perms_payload.items():
+            if user_obj in group_managers:
+                adjusted_payload[user_obj] = list(set(perms).union(GroupManagersPermissionsHandler.EXTRA_MANAGER_PERMS))
+            else:
+                adjusted_payload[user_obj] = perms
+        return adjusted_payload
