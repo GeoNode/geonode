@@ -1561,7 +1561,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
                     with open(tmp_location, "rb+") as img:
                         # Saving the img via storage manager
-                        storage_manager.save(storage_manager.path(upload_path), img)
+                        storage_manager.save(upload_path, img)
 
                     # If we use a remote storage, the local img is deleted
                     if tmp_location != storage_manager.path(upload_path):
