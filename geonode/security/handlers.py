@@ -19,7 +19,6 @@
 from abc import ABC
 
 from geonode.security.utils import AdvancedSecurityWorkflowManager
-from geonode.groups.models import GroupProfile
 
 
 class BasePermissionsHandler(ABC):
@@ -82,32 +81,17 @@ class GroupManagersPermissionsHandler(BasePermissionsHandler):
 
     @staticmethod
     def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
-        if not user:
-            return perms_payload
 
-        group = getattr(instance, "group", None)
-        if not group:
-            return perms_payload
+        from geonode.people.utils import user_is_manager
 
-        try:
-            group_profile = group.groupprofile
-        except GroupProfile.DoesNotExist:
-            return perms_payload
+        if include_virtual:
+            perms_copy = perms_payload.copy()
+            users = perms_payload["users"]
 
-        group_managers = group_profile.get_managers()
+            for user, perms in users.items():
+                if user_is_manager(user, instance.group):
+                    perms_copy["users"][user] = list(set(perms + GroupManagersPermissionsHandler.EXTRA_MANAGER_PERMS))
 
-        # Adjust user permissions
-        user_perms = GroupManagersPermissionsHandler._adjust_user_perms(perms_payload.get("users", {}), group_managers)
-        group_perms = perms_payload.get("groups", {})
+            return perms_copy
 
-        return {"users": user_perms, "groups": group_perms}
-
-    @staticmethod
-    def _adjust_user_perms(perms_payload, group_managers):
-        adjusted_payload = {}
-        for user_obj, perms in perms_payload.items():
-            if user_obj in group_managers:
-                adjusted_payload[user_obj] = list(set(perms).union(GroupManagersPermissionsHandler.EXTRA_MANAGER_PERMS))
-            else:
-                adjusted_payload[user_obj] = perms
-        return adjusted_payload
+        return perms_payload
