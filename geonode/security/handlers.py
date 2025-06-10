@@ -22,7 +22,6 @@ from geonode.security.utils import AdvancedSecurityWorkflowManager
 from geonode.groups.models import GroupProfile, GroupMember
 
 
-
 class BasePermissionsHandler(ABC):
     """
     Abstract permissions handler.
@@ -67,6 +66,7 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
             group_status_changed=kwargs.get("group_status_changed"),
         )
 
+
 class GroupManagersPermissionsHandler(BasePermissionsHandler):
     """
     Grants 'edit permissions' to group managers if the resource is in a group
@@ -86,11 +86,7 @@ class GroupManagersPermissionsHandler(BasePermissionsHandler):
             return payload
 
         # Check if user is a group manager
-        is_manager = GroupMember.objects.filter(
-            group=group_profile,
-            role=GroupMember.MANAGER,
-            user=user
-        ).exists()
+        is_manager = GroupMember.objects.filter(group=group_profile, role=GroupMember.MANAGER, user=user).exists()
 
         if not is_manager:
             return payload
