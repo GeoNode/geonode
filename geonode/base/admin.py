@@ -54,6 +54,7 @@ from geonode.base.models import (
 
 from geonode.base.forms import ThesaurusImportForm, UserAndGroupPermissionsForm
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.metadata.models import SparseField
 
 
 def set_user_and_group_dataset_permission(modeladmin, request, queryset):
@@ -367,3 +368,19 @@ class ResourceBaseAdminForm(autocomplete.FutureModelForm):
 
     class Meta:
         pass
+
+
+class SparseInlineForm(forms.ModelForm):
+    class Meta:
+        model = SparseField
+        fields = "__all__"
+        widgets = {
+            "name": forms.TextInput(attrs={"style": "width: 200px !important;"}),
+            "value": forms.TextInput(attrs={"style": "width: 900px !important;"}),
+        }
+
+
+class SparseInline(admin.TabularInline):
+    model = SparseField
+    form = SparseInlineForm
+    extra = 0
