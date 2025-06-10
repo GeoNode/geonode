@@ -19,6 +19,8 @@
 from abc import ABC
 
 from geonode.security.utils import AdvancedSecurityWorkflowManager
+from geonode.groups.models import GroupProfile, GroupMember
+
 
 
 class BasePermissionsHandler(ABC):
@@ -60,6 +62,43 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
             instance.uuid,
             instance=instance,
             permissions=perms_payload,
+            created=kwargs.get("created"),
+            approval_status_changed=kwargs.get("approval_status_changed"),
+            group_status_changed=kwargs.get("group_status_changed"),
+        )
+
+class GroupManagersPermissionsHandler(BasePermissionsHandler):
+    """
+    Grants 'edit permissions' to group managers if the resource is in a group
+    """
+
+    def get_perms(self, instance, payload, user=None, include_virtual=True, *args, **kwargs):
+        if not user:
+            return payload
+
+        group = getattr(instance, "group", None)
+        if not group:
+            return payload
+
+        try:
+            group_profile = group.groupprofile
+        except GroupProfile.DoesNotExist:
+            return payload
+
+        # Check if user is a group manager
+        is_manager = GroupMember.objects.filter(
+            group=group_profile,
+            role=GroupMember.MANAGER,
+            user=user
+        ).exists()
+
+        if not is_manager:
+            return payload
+
+        return AdvancedSecurityWorkflowManager.get_permissions(
+            instance.uuid,
+            instance=instance,
+            permissions=payload,
             created=kwargs.get("created"),
             approval_status_changed=kwargs.get("approval_status_changed"),
             group_status_changed=kwargs.get("group_status_changed"),

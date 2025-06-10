@@ -2281,7 +2281,7 @@ ASSET_HANDLERS = [
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
 
-PERMISSIONS_HANDLERS = ["geonode.security.handlers.AdvancedWorkflowPermissionsHandler"]
+PERMISSIONS_HANDLERS = ["geonode.security.handlers.AdvancedWorkflowPermissionsHandler", "geonode.security.handlers.GroupManagersPermissionsHandler"]
 
 # Django-Avatar - Change default templates to Geonode based
 AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
