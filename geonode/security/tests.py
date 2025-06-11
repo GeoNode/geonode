@@ -2718,6 +2718,12 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         self.simple_user = get_user_model().objects.create_user(
             "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
         )
+
+        self.group_profile = GroupProfile.objects.create(title="testgroup_profile")
+
+        # Assign roles in the group
+        GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
     
     def tearDown(self):
         permissions_registry.reset()
@@ -2751,15 +2757,9 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         Test that GroupManagersPermissionsHandler adds extra permissions
         to a group manager who already has the main permissions.
         """
-        test_group = Group.objects.create(name="testgroup")
-        group_profile = GroupProfile.objects.create(group=test_group, title="testgroup_profile")
-
-        # Assign roles in the group
-        GroupMember.objects.create(user=self.group_manager, group=group_profile, role=GroupMember.MANAGER)
-        GroupMember.objects.create(user=self.group_member, group=group_profile, role=GroupMember.MEMBER)
         
         resource = create_single_dataset("test_dataset")
-        resource.group = test_group
+        resource.group = self.group_profile.group
         resource.save()
 
         perms_payload = {
@@ -2793,3 +2793,10 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         # Others remain unchanged
         self.assertListEqual(updated_perms["users"][self.group_member], ["view_resourcebase"])
         self.assertListEqual(updated_perms["users"][self.simple_user], [])
+
+        # Test for empty perms list. This should not trigger extra perms
+        perms_payload["users"][self.group_manager] = []
+        updated_perms_empty = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Still empty, since user had no base perms
+        self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
