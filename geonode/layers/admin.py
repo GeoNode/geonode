@@ -21,7 +21,7 @@ from django.contrib import admin
 
 from modeltranslation.admin import TabbedTranslationAdmin
 
-from geonode.base.admin import ResourceBaseAdminForm
+from geonode.base.admin import ResourceBaseAdminForm, SparseInline
 from geonode.layers.models import Dataset, Attribute, Style
 
 
@@ -69,7 +69,10 @@ class DatasetAdmin(TabbedTranslationAdmin):
     # filter_horizontal = ("contacts",)
     date_hierarchy = "date"
     readonly_fields = ("uuid", "alternate", "workspace", "geographic_bounding_box")
-    inlines = [AttributeInline]
+    inlines = (
+        AttributeInline,
+        SparseInline,
+    )
     form = DatasetAdminForm
 
     def delete_queryset(self, request, queryset):
