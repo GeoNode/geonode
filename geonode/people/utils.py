@@ -158,9 +158,23 @@ def user_has_resources(profile) -> bool:
     return ResourceBase.objects.filter(owner_id=profile.pk).exists()
 
 
-def user_is_manager(profile, group=None) -> bool:
+def user_is_manager(profile) -> bool:
     """
-    Checks if user is the manager of any or
+    Checks if user is the manager of any group
+
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+
+    Returns:
+        bool: profile is mangager or not
+
+    """
+    return GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER).exists()
+
+
+def user_is_manager_of_group(profile, group=None) -> bool:
+    """
+    Checks if user is the manager in
     a specific group.
 
     Args:
@@ -168,13 +182,14 @@ def user_is_manager(profile, group=None) -> bool:
         group: accepts a group instance
 
     Returns:
-        bool: profile is mangager or not
+        bool: True if the profile is a manager of the group; False otherwise
 
     """
-    queryset = GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER)
     if group is not None:
-        queryset = queryset.filter(group__group=group)
-    return queryset.exists()
+        queryset = GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER, group__group=group)
+        return queryset.exists()
+
+    return False
 
 
 def check_user_deletion_rules(profile) -> None:

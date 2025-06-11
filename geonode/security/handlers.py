@@ -82,7 +82,7 @@ class GroupManagersPermissionsHandler(BasePermissionsHandler):
     @staticmethod
     def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
 
-        from geonode.people.utils import user_is_manager
+        from geonode.people.utils import user_is_manager_of_group
 
         if include_virtual:
             perms_copy = perms_payload.copy()
@@ -90,7 +90,7 @@ class GroupManagersPermissionsHandler(BasePermissionsHandler):
 
             for user, perms in users.items():
                 # add the permissions if user is the resource's group manager and the permissions list is not empty
-                if perms and user_is_manager(user, instance.group):
+                if perms and user_is_manager_of_group(user, instance.group):
                     perms_copy["users"][user] = list(set(perms + GroupManagersPermissionsHandler.EXTRA_MANAGER_PERMS))
 
             return perms_copy
