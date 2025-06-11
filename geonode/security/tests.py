@@ -1921,7 +1921,15 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                     ],
-                    self.group_manager: ["view_resourcebase", "publish_resourcebase", "approve_resourcebase"],
+                    self.group_manager: [
+                        "view_resourcebase",
+                        "publish_resourcebase",
+                        "approve_resourcebase",
+                        "change_dataset_style",
+                        "change_dataset_data",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase",
+                    ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
                         "change_resourcebase",

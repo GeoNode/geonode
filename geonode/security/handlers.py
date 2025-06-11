@@ -86,10 +86,11 @@ class GroupManagersPermissionsHandler(BasePermissionsHandler):
 
         if include_virtual:
             perms_copy = perms_payload.copy()
-            users = perms_payload["users"]
+            users = perms_payload.get("users", {})
 
             for user, perms in users.items():
-                if user_is_manager(user, instance.group):
+                # add the permissions if user is the resource's group manager and the permissions list is not empty
+                if perms and user_is_manager(user, instance.group):
                     perms_copy["users"][user] = list(set(perms + GroupManagersPermissionsHandler.EXTRA_MANAGER_PERMS))
 
             return perms_copy
