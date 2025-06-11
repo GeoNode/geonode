@@ -2699,7 +2699,7 @@ class DummyPermissionsHandler(BasePermissionsHandler):
 @override_settings(
     PERMISSIONS_HANDLERS=[
         "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
-        "path.to.your.GroupManagersPermissionsHandler"
+        "path.to.your.GroupManagersPermissionsHandler",
     ]
 )
 class TestPermissionsRegistry(GeoNodeBaseTestSupport):
@@ -2708,7 +2708,7 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        
+
         self.group_manager = get_user_model().objects.create_user(
             "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
         )
@@ -2724,7 +2724,7 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         # Assign roles in the group
         GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
         GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
-    
+
     def tearDown(self):
         permissions_registry.reset()
 
@@ -2757,18 +2757,23 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         Test that GroupManagersPermissionsHandler adds extra permissions
         to a group manager who already has the main permissions.
         """
-        
+
         resource = create_single_dataset("test_dataset")
         resource.group = self.group_profile.group
         resource.save()
 
         perms_payload = {
             "users": {
-                self.group_manager: ["view_resourcebase", "publish_resourcebase", "approve_resourcebase", "download_resourcebase"],
+                self.group_manager: [
+                    "view_resourcebase",
+                    "publish_resourcebase",
+                    "approve_resourcebase",
+                    "download_resourcebase",
+                ],
                 self.group_member: ["view_resourcebase"],
-                self.simple_user: []
+                self.simple_user: [],
             },
-            "groups": {}
+            "groups": {},
         }
 
         # Call your handler's get_perms method directly
@@ -2776,16 +2781,18 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         updated_perms = handler.get_perms(resource, perms_payload, include_virtual=True)
 
         # Expected extra permissions added to manager_profile's perms
-        expected_manager_perms = set([
-            "view_resourcebase",
-            "publish_resourcebase",
-            "approve_resourcebase",
-            "download_resourcebase",
-            "change_resourcebase",
-            "change_resourcebase_metadata",
-            "change_dataset_data",
-            "change_dataset_style",
-        ])
+        expected_manager_perms = set(
+            [
+                "view_resourcebase",
+                "publish_resourcebase",
+                "approve_resourcebase",
+                "download_resourcebase",
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "change_dataset_data",
+                "change_dataset_style",
+            ]
+        )
 
         self.assertIn(self.group_manager, updated_perms["users"])
         self.assertSetEqual(set(updated_perms["users"][self.group_manager]), expected_manager_perms)
