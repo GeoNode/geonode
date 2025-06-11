@@ -48,7 +48,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.compat import ensure_string
-from geonode.security.handlers import BasePermissionsHandler
+from geonode.security.handlers import BasePermissionsHandler, GroupManagersPermissionsHandler
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
@@ -2696,12 +2696,29 @@ class DummyPermissionsHandler(BasePermissionsHandler):
         return {"perms": ["this", "is", "fake"]}
 
 
-@override_settings(PERMISSIONS_HANDLERS=["geonode.security.handlers.AdvancedWorkflowPermissionsHandler"])
+@override_settings(
+    PERMISSIONS_HANDLERS=[
+        "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+        "path.to.your.GroupManagersPermissionsHandler"
+    ]
+)
 class TestPermissionsRegistry(GeoNodeBaseTestSupport):
     """
     Test to verify the permissions registry
     """
 
+    def setUp(self):
+        
+        self.group_manager = get_user_model().objects.create_user(
+            "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
+        )
+        self.group_member = get_user_model().objects.create_user(
+            "group_member", "group_member@fakemail.com", "group_member_password", is_active=True
+        )
+        self.simple_user = get_user_model().objects.create_user(
+            "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
+        )
+    
     def tearDown(self):
         permissions_registry.reset()
 
@@ -2728,3 +2745,51 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         permissions_registry.add("geonode.security.tests.DummyPermissionsHandler")
         perms = permissions_registry.fixup_perms(instance, instance.get_all_level_info())
         self.assertDictEqual({"perms": ["this", "is", "fake"]}, perms)
+
+    def test_group_managers_handler_adds_extra_perms(self):
+        """
+        Test that GroupManagersPermissionsHandler adds extra permissions
+        to a group manager who already has the main permissions.
+        """
+        test_group = Group.objects.create(name="testgroup")
+        group_profile = GroupProfile.objects.create(group=test_group, title="testgroup_profile")
+
+        # Assign roles in the group
+        GroupMember.objects.create(user=self.group_manager, group=group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(user=self.group_member, group=group_profile, role=GroupMember.MEMBER)
+        
+        resource = create_single_dataset("test_dataset")
+        resource.group = test_group
+        resource.save()
+
+        perms_payload = {
+            "users": {
+                self.group_manager: ["view_resourcebase", "publish_resourcebase", "approve_resourcebase", "download_resourcebase"],
+                self.group_member: ["view_resourcebase"],
+                self.simple_user: []
+            },
+            "groups": {}
+        }
+
+        # Call your handler's get_perms method directly
+        handler = GroupManagersPermissionsHandler()
+        updated_perms = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Expected extra permissions added to manager_profile's perms
+        expected_manager_perms = set([
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_dataset_data",
+            "change_dataset_style",
+        ])
+
+        self.assertIn(self.group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.group_manager]), expected_manager_perms)
+
+        # Others remain unchanged
+        self.assertListEqual(updated_perms["users"][self.group_member], ["view_resourcebase"])
+        self.assertListEqual(updated_perms["users"][self.simple_user], [])
