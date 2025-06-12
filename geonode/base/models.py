@@ -990,14 +990,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _approval_status_changed = False
 
         if hasattr(self, "class_name") and (self.pk is None or notify):
-            if self.pk is None and (self.title or getattr(self, "name", None)):
-                # Resource Created
-                if not self.title and getattr(self, "name", None):
-                    self.title = getattr(self, "name", None)
-                notice_type_label = f"{self.class_name.lower()}_created"
-                recipients = get_notification_recipients(notice_type_label, resource=self)
-                send_notification(recipients, notice_type_label, {"resource": self})
-            elif self.pk:
+            # if self.pk is None and (self.title or getattr(self, "name", None)):
+            #    # Resource Created
+            #    if not self.title and getattr(self, "name", None):
+            #        self.title = getattr(self, "name", None)
+            #    notice_type_label = f"{self.class_name.lower()}_created"
+            #    recipients = get_notification_recipients(notice_type_label, resource=self)
+            #    send_notification(recipients, notice_type_label, {"resource": self})
+            if self.pk:
                 # Group has changed
                 _group_status_changed = self.group != ResourceBase.objects.get(pk=self.get_self_resource().pk).group
 
