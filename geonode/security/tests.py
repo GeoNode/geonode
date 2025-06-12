@@ -2667,6 +2667,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
         cls.admin = get_user_model().objects.filter(is_superuser=True).first()
         cls.non_admin = get_user_model().objects.filter(is_superuser=False).exclude(username="AnonymousUser").first()
 
+        cls.group_manager = get_user_model().objects.create_user("group_manager", is_active=True)
+        cls.second_group_manager = get_user_model().objects.create_user("second_group_manager", is_active=True)
+        cls.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="group profile 1")
+        cls.second_group_profile = GroupProfile.objects.create(title="second_testgroup_profile", slug="group profile 2")
+        GroupMember.objects.create(user=cls.group_manager, group=cls.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(
+            user=cls.second_group_manager, group=cls.second_group_profile, role=GroupMember.MANAGER
+        )
+
     def test_user_can_approve(self):
         try:
             self.assertTrue(self.admin.can_approve(self.dataset))
@@ -2683,6 +2692,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
     def test_user_can_feature(self):
         self.assertTrue(self.admin.can_feature(self.dataset))
         self.assertFalse(self.non_admin.can_feature(self.dataset))
+
+        # Test that a group manager is able to use the featured flag
+        self.dataset.group = self.group_profile.group
+        self.dataset.save()
+
+        self.assertTrue(self.group_manager.can_feature(self.dataset))
+
+        # Test that a group manager of another group is not able to use this featured flag
+        self.assertFalse(self.second_group_manager.can_feature(self.dataset))
 
     def test_user_can_publish(self):
         try:
