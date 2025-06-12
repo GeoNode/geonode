@@ -64,3 +64,35 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
             approval_status_changed=kwargs.get("approval_status_changed"),
             group_status_changed=kwargs.get("group_status_changed"),
         )
+
+
+class GroupManagersPermissionsHandler(BasePermissionsHandler):
+    """
+    Grants 'edit' permissions to group managers if the resource is in a group
+    """
+
+    # Define the extra permissions granted to group managers
+    EXTRA_MANAGER_PERMS = [
+        "change_resourcebase",
+        "change_resourcebase_metadata",
+        "change_dataset_data",
+        "change_dataset_style",
+    ]
+
+    @staticmethod
+    def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
+
+        from geonode.people.utils import user_is_manager_of_group
+
+        if include_virtual:
+            perms_copy = perms_payload.copy()
+            users = perms_payload.get("users", {})
+
+            for user, perms in users.items():
+                # add the permissions if user is the resource's group manager and the permissions list is not empty
+                if perms and user_is_manager_of_group(user, instance.group):
+                    perms_copy["users"][user] = list(set(perms + GroupManagersPermissionsHandler.EXTRA_MANAGER_PERMS))
+
+            return perms_copy
+
+        return perms_payload

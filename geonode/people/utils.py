@@ -172,6 +172,26 @@ def user_is_manager(profile) -> bool:
     return GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER).exists()
 
 
+def user_is_manager_of_group(profile, group=None) -> bool:
+    """
+    Checks if user is the manager in
+    a specific group.
+
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+        group: accepts a group instance
+
+    Returns:
+        bool: True if the profile is a manager of the group; False otherwise
+
+    """
+    if group is not None:
+        queryset = GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER, group__group=group)
+        return queryset.exists()
+
+    return False
+
+
 def check_user_deletion_rules(profile) -> None:
     """
     calls a set of defined rules specific to the deletion of a user
