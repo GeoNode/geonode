@@ -2707,31 +2707,13 @@ class DummyPermissionsHandler(BasePermissionsHandler):
 @override_settings(
     PERMISSIONS_HANDLERS=[
         "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
-        "path.to.your.GroupManagersPermissionsHandler",
+        "geonode.security.handlers.GroupManagersPermissionsHandler",
     ]
 )
 class TestPermissionsRegistry(GeoNodeBaseTestSupport):
     """
     Test to verify the permissions registry
     """
-
-    def setUp(self):
-
-        self.group_manager = get_user_model().objects.create_user(
-            "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
-        )
-        self.group_member = get_user_model().objects.create_user(
-            "group_member", "group_member@fakemail.com", "group_member_password", is_active=True
-        )
-        self.simple_user = get_user_model().objects.create_user(
-            "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
-        )
-
-        self.group_profile = GroupProfile.objects.create(title="testgroup_profile")
-
-        # Assign roles in the group
-        GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
-        GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
 
     def tearDown(self):
         permissions_registry.reset()
@@ -2760,10 +2742,34 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         perms = permissions_registry.fixup_perms(instance, instance.get_all_level_info())
         self.assertDictEqual({"perms": ["this", "is", "fake"]}, perms)
 
-    def test_group_managers_handler_adds_extra_perms(self):
+
+class TestPermissionsHandlers(GeoNodeBaseTestSupport):
+    """
+    Test to verify the GroupManagerPermissionsHandler
+    """
+
+    def setUp(self):
+
+        self.group_manager = get_user_model().objects.create_user(
+            "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
+        )
+        self.group_member = get_user_model().objects.create_user(
+            "group_member", "group_member@fakemail.com", "group_member_password", is_active=True
+        )
+        self.simple_user = get_user_model().objects.create_user(
+            "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
+        )
+
+        self.group_profile = GroupProfile.objects.create(title="testgroup_profile")
+
+        # Assign roles in the group
+        GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
+
+    def test_group_managers_permissons_handler(self):
         """
         Test that GroupManagersPermissionsHandler adds extra permissions
-        to a group manager who already has the main permissions.
+        to a group manager.
         """
 
         resource = create_single_dataset("test_dataset")
