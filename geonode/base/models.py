@@ -988,7 +988,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _notification_sent = False
         _group_status_changed = False
         _approval_status_changed = False
-
+        send_create_notification = False
         if hasattr(self, "class_name") and (self.pk is None or notify):
             # if self.pk is None and (self.title or getattr(self, "name", None)):
             #    # Resource Created
@@ -1037,6 +1037,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if _initial_value > _next_value:
                 Sequence.objects.filter(name="ResourceBase").update(last=_initial_value)
                 _next_value = _initial_value
+            send_create_notification = True
 
             self.pk = self.id = _next_value
 
@@ -1046,6 +1047,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.uuid = str(uuid.uuid4())
         super().save(*args, **kwargs)
 
+        if send_create_notification:
+            # changed in Django 5.2, the we can get the title via the assets only if the resource is saved
+            self.title = getattr(self, "name", None)
+            notice_type_label = f"{self.class_name.lower()}_created"
+            recipients = get_notification_recipients(notice_type_label, resource=self)
+            send_notification(recipients, notice_type_label, {"resource": self})
         # Update workflow permissions
         if _approval_status_changed or _group_status_changed:
             self.set_permissions(
