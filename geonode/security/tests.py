@@ -1929,6 +1929,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_data",
                         "change_resourcebase_metadata",
                         "change_resourcebase",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
@@ -1988,6 +1989,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2019,6 +2021,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2064,6 +2067,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2088,6 +2092,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2173,6 +2178,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "change_dataset_data",
                         "change_dataset_style",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: ["view_resourcebase", "change_resourcebase"],
@@ -2216,6 +2222,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2228,6 +2235,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
         }
         try:
@@ -2345,6 +2353,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "publish_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2357,6 +2366,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
         }
         for authorized_subject, expected_perms in expected.items():
