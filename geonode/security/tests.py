@@ -2781,6 +2781,11 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         self.group_manager = get_user_model().objects.create_user(
             "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
         )
+
+        self.other_group_manager = get_user_model().objects.create_user(
+            "other_group_manager", "other_group_manager@fakemail.com", "other_group_manager_password", is_active=True
+        )
+
         self.group_member = get_user_model().objects.create_user(
             "group_member", "group_member@fakemail.com", "group_member_password", is_active=True
         )
@@ -2788,11 +2793,19 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
             "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
         )
 
-        self.group_profile = GroupProfile.objects.create(title="testgroup_profile")
+        self.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="test group_profile 1")
+        self.other_group_profile = GroupProfile.objects.create(
+            title="other_testgroup_profile", slug="test group_profile 2"
+        )
 
-        # Assign roles in the group
+        # Assign roles in the main group
         GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
         GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
+
+        # Assign roles in the second group
+        GroupMember.objects.create(
+            user=self.other_group_manager, group=self.other_group_profile, role=GroupMember.MANAGER
+        )
 
     def test_group_managers_permissons_handler(self):
         """
@@ -2804,14 +2817,17 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         resource.group = self.group_profile.group
         resource.save()
 
+        default_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+        ]
+
         perms_payload = {
             "users": {
-                self.group_manager: [
-                    "view_resourcebase",
-                    "publish_resourcebase",
-                    "approve_resourcebase",
-                    "download_resourcebase",
-                ],
+                self.group_manager: default_perms,
+                self.other_group_manager: default_perms,
                 self.group_member: ["view_resourcebase"],
                 self.simple_user: [],
             },
@@ -2823,23 +2839,26 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         updated_perms = handler.get_perms(resource, perms_payload, include_virtual=True)
 
         # Expected extra permissions added to manager_profile's perms
-        expected_manager_perms = set(
-            [
-                "view_resourcebase",
-                "publish_resourcebase",
-                "approve_resourcebase",
-                "download_resourcebase",
-                "change_resourcebase",
-                "change_resourcebase_metadata",
-                "change_dataset_data",
-                "change_dataset_style",
-            ]
-        )
+        expected_manager_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_dataset_data",
+            "change_dataset_style",
+        ]
 
+        # Ensure that the permissions for the resource's group manager are updated
         self.assertIn(self.group_manager, updated_perms["users"])
-        self.assertSetEqual(set(updated_perms["users"][self.group_manager]), expected_manager_perms)
+        self.assertSetEqual(set(updated_perms["users"][self.group_manager]), set(expected_manager_perms))
 
-        # Others remain unchanged
+        # Ensure that the permissions for a group manager from another group are unchanged
+        self.assertIn(self.other_group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.other_group_manager]), set(default_perms))
+
+        # Others remain unchanged for the group member and simple user
         self.assertListEqual(updated_perms["users"][self.group_member], ["view_resourcebase"])
         self.assertListEqual(updated_perms["users"][self.simple_user], [])
 

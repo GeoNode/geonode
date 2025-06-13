@@ -23,7 +23,7 @@ from django.contrib import admin
 from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.maps.models import Map, MapLayer
-from geonode.base.admin import ResourceBaseAdminForm
+from geonode.base.admin import ResourceBaseAdminForm, SparseInline
 
 
 class MapLayerInline(admin.TabularInline):
@@ -40,9 +40,10 @@ class MapAdminForm(ResourceBaseAdminForm):
 
 
 class MapAdmin(TabbedTranslationAdmin):
-    inlines = [
+    inlines = (
         MapLayerInline,
-    ]
+        SparseInline,
+    )
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display_links = ("title",)
     list_display = (
