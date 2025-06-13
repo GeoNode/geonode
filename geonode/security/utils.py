@@ -748,7 +748,17 @@ def can_feature(user, resource):
     Utility method to check if the user can set a resource as "featured" in the metadata
     By default only superuser/admins can do
     """
-    return user.is_superuser
+    from geonode.people.utils import user_is_manager_of_group
+
+    if user.is_superuser:
+        return True
+
+    # Check if the user is a group manager
+    is_manager = user_is_manager_of_group(user, resource.group)
+    if is_manager:
+        return True
+
+    return False
 
 
 def can_approve(user, resource):
