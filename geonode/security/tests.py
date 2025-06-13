@@ -48,7 +48,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.compat import ensure_string
-from geonode.security.handlers import BasePermissionsHandler
+from geonode.security.handlers import BasePermissionsHandler, GroupManagersPermissionsHandler
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
@@ -1921,7 +1921,16 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                     ],
-                    self.group_manager: ["view_resourcebase", "publish_resourcebase", "approve_resourcebase"],
+                    self.group_manager: [
+                        "view_resourcebase",
+                        "publish_resourcebase",
+                        "approve_resourcebase",
+                        "change_dataset_style",
+                        "change_dataset_data",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase",
+                        "feature_resourcebase",
+                    ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
                         "change_resourcebase",
@@ -1980,6 +1989,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2011,6 +2021,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2056,6 +2067,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2080,6 +2092,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2157,7 +2170,16 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                     ],
-                    self.group_manager: ["view_resourcebase", "approve_resourcebase", "publish_resourcebase"],
+                    self.group_manager: [
+                        "view_resourcebase",
+                        "approve_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_dataset_data",
+                        "change_dataset_style",
+                        "feature_resourcebase",
+                    ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: ["view_resourcebase", "change_resourcebase"],
                     self.anonymous_user: ["view_resourcebase"],
@@ -2200,6 +2222,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2212,6 +2235,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
         }
         try:
@@ -2329,6 +2353,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "publish_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2341,6 +2366,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
         }
         for authorized_subject, expected_perms in expected.items():
@@ -2651,6 +2677,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
         cls.admin = get_user_model().objects.filter(is_superuser=True).first()
         cls.non_admin = get_user_model().objects.filter(is_superuser=False).exclude(username="AnonymousUser").first()
 
+        cls.group_manager = get_user_model().objects.create_user("group_manager", is_active=True)
+        cls.second_group_manager = get_user_model().objects.create_user("second_group_manager", is_active=True)
+        cls.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="group profile 1")
+        cls.second_group_profile = GroupProfile.objects.create(title="second_testgroup_profile", slug="group profile 2")
+        GroupMember.objects.create(user=cls.group_manager, group=cls.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(
+            user=cls.second_group_manager, group=cls.second_group_profile, role=GroupMember.MANAGER
+        )
+
     def test_user_can_approve(self):
         try:
             self.assertTrue(self.admin.can_approve(self.dataset))
@@ -2667,6 +2702,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
     def test_user_can_feature(self):
         self.assertTrue(self.admin.can_feature(self.dataset))
         self.assertFalse(self.non_admin.can_feature(self.dataset))
+
+        # Test that a group manager is able to use the featured flag
+        self.dataset.group = self.group_profile.group
+        self.dataset.save()
+
+        self.assertTrue(self.group_manager.can_feature(self.dataset))
+
+        # Test that a group manager of another group is not able to use this featured flag
+        self.assertFalse(self.second_group_manager.can_feature(self.dataset))
 
     def test_user_can_publish(self):
         try:
@@ -2688,7 +2732,12 @@ class DummyPermissionsHandler(BasePermissionsHandler):
         return {"perms": ["this", "is", "fake"]}
 
 
-@override_settings(PERMISSIONS_HANDLERS=["geonode.security.handlers.AdvancedWorkflowPermissionsHandler"])
+@override_settings(
+    PERMISSIONS_HANDLERS=[
+        "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+        "geonode.security.handlers.GroupManagersPermissionsHandler",
+    ]
+)
 class TestPermissionsRegistry(GeoNodeBaseTestSupport):
     """
     Test to verify the permissions registry
@@ -2720,3 +2769,102 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         permissions_registry.add("geonode.security.tests.DummyPermissionsHandler")
         perms = permissions_registry.fixup_perms(instance, instance.get_all_level_info())
         self.assertDictEqual({"perms": ["this", "is", "fake"]}, perms)
+
+
+class TestPermissionsHandlers(GeoNodeBaseTestSupport):
+    """
+    Test to verify the GroupManagerPermissionsHandler
+    """
+
+    def setUp(self):
+
+        self.group_manager = get_user_model().objects.create_user(
+            "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
+        )
+
+        self.other_group_manager = get_user_model().objects.create_user(
+            "other_group_manager", "other_group_manager@fakemail.com", "other_group_manager_password", is_active=True
+        )
+
+        self.group_member = get_user_model().objects.create_user(
+            "group_member", "group_member@fakemail.com", "group_member_password", is_active=True
+        )
+        self.simple_user = get_user_model().objects.create_user(
+            "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
+        )
+
+        self.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="test group_profile 1")
+        self.other_group_profile = GroupProfile.objects.create(
+            title="other_testgroup_profile", slug="test group_profile 2"
+        )
+
+        # Assign roles in the main group
+        GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
+
+        # Assign roles in the second group
+        GroupMember.objects.create(
+            user=self.other_group_manager, group=self.other_group_profile, role=GroupMember.MANAGER
+        )
+
+    def test_group_managers_permissons_handler(self):
+        """
+        Test that GroupManagersPermissionsHandler adds extra permissions
+        to a group manager.
+        """
+
+        resource = create_single_dataset("test_dataset")
+        resource.group = self.group_profile.group
+        resource.save()
+
+        default_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+        ]
+
+        perms_payload = {
+            "users": {
+                self.group_manager: default_perms,
+                self.other_group_manager: default_perms,
+                self.group_member: ["view_resourcebase"],
+                self.simple_user: [],
+            },
+            "groups": {},
+        }
+
+        # Call your handler's get_perms method directly
+        handler = GroupManagersPermissionsHandler()
+        updated_perms = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Expected extra permissions added to manager_profile's perms
+        expected_manager_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_dataset_data",
+            "change_dataset_style",
+        ]
+
+        # Ensure that the permissions for the resource's group manager are updated
+        self.assertIn(self.group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.group_manager]), set(expected_manager_perms))
+
+        # Ensure that the permissions for a group manager from another group are unchanged
+        self.assertIn(self.other_group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.other_group_manager]), set(default_perms))
+
+        # Others remain unchanged for the group member and simple user
+        self.assertListEqual(updated_perms["users"][self.group_member], ["view_resourcebase"])
+        self.assertListEqual(updated_perms["users"][self.simple_user], [])
+
+        # Test for empty perms list. This should not trigger extra perms
+        perms_payload["users"][self.group_manager] = []
+        updated_perms_empty = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Still empty, since user had no base perms
+        self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
