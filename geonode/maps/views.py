@@ -23,7 +23,6 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from geonode import geoserver
 from geonode.base import register_event
 from geonode.base.auth import get_or_create_token
 from geonode.base.enumerations import EventType
@@ -34,7 +33,7 @@ from geonode.maps.contants import (
     MSG_NOT_FOUND,
 )
 from geonode.maps.models import Map
-from geonode.utils import check_ogc_backend, resolve_object
+from geonode.utils import resolve_object
 
 logger = logging.getLogger("geonode.maps.views")
 
