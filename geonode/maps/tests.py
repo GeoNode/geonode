@@ -20,7 +20,6 @@ import json
 import logging
 
 from unittest.mock import patch
-from owslib.etree import etree as dlxml
 from rest_framework import status
 
 from django.urls import reverse
