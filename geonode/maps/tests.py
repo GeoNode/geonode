@@ -154,28 +154,6 @@ community."
         "groups": {},
     }
 
-    def test_map_to_wmc(self):
-        """/maps/1/wmc -> Test map WMC export
-        Make some assertions about the data structure produced
-        for serialization to a Web Map Context Document
-        """
-
-        map_obj = Map.objects.all().first()
-        map_obj.set_default_permissions()
-        response = self.client.get(reverse("map_wmc", args=(map_obj.id,)))
-        self.assertEqual(response.status_code, 200)
-
-        # check specific XPaths
-        wmc = dlxml.fromstring(response.content)
-
-        ns = "{http://www.opengis.net/context}"
-        title = f"{ns}General/{ns}Title"
-        abstract = f"{ns}General/{ns}Abstract"
-
-        self.assertIsNotNone(wmc.attrib.get("id"))
-        self.assertEqual(wmc.find(title).text, "GeoNode Default Map")
-        self.assertEqual(wmc.find(abstract).text, "GeoNode default map abstract")
-
     def test_ajax_map_permissions(self):
         """Verify that the ajax_dataset_permissions view is behaving as expected"""
 

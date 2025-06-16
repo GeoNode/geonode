@@ -16,13 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 
-from deprecated import deprecated
-from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
@@ -30,7 +27,6 @@ from geonode import geoserver
 from geonode.base import register_event
 from geonode.base.auth import get_or_create_token
 from geonode.base.enumerations import EventType
-from geonode.layers.models import Dataset
 from geonode.maps.contants import (
     _PERMISSION_MSG_GENERIC,
     _PERMISSION_MSG_VIEW,
@@ -85,123 +81,3 @@ def map_embed(request, mapid=None, template="maps/map_embed.html"):
 
     register_event(request, EventType.EVENT_VIEW, map_obj)
     return render(request, template, context=context_dict)
-
-
-# NEW MAPS #
-
-
-def clean_config(conf):
-    if isinstance(conf, str):
-        config = json.loads(conf)
-        config_extras = [
-            "tools",
-            "rest",
-            "homeUrl",
-            "localGeoServerBaseUrl",
-            "localCSWBaseUrl",
-            "csrfToken",
-            "db_datastore",
-            "authorizedRoles",
-        ]
-        for config_item in config_extras:
-            if config_item in config:
-                del config[config_item]
-            if config_item in config["map"]:
-                del config["map"][config_item]
-        return json.dumps(config)
-    else:
-        return conf
-
-
-def map_wmc(request, mapid, template="maps/wmc.xml"):
-    """Serialize an OGC Web Map Context Document (WMC) 1.1"""
-    try:
-        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(MSG_NOT_ALLOWED, status=403)
-    except Exception:
-        raise Http404(MSG_NOT_FOUND)
-    if not map_obj:
-        raise Http404(MSG_NOT_FOUND)
-
-    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
-    return render(
-        request,
-        template,
-        context={
-            "map": map_obj,
-            "maplayers": map_obj.maplayers.all(),
-            "siteurl": site_url,
-        },
-        content_type="text/xml",
-    )
-
-
-@deprecated(version="2.10.1", reason="APIs have been changed on geospatial service")
-def map_wms(request, mapid):
-    """
-    Publish local map layers as group layer in local OWS.
-
-    /maps/:id/wms
-
-    GET: return endpoint information for group layer,
-    PUT: update existing or create new group layer.
-    """
-    try:
-        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(MSG_NOT_ALLOWED, status=403)
-    except Exception:
-        raise Http404(MSG_NOT_FOUND)
-    if not map_obj:
-        raise Http404(MSG_NOT_FOUND)
-
-    if request.method == "PUT":
-        try:
-            layerGroupName = map_obj.publish_dataset_group()
-            response = dict(
-                layerGroupName=layerGroupName,
-                ows=getattr(ogc_server_settings, "ows", ""),
-            )
-            register_event(request, EventType.EVENT_PUBLISH, map_obj)
-            return HttpResponse(json.dumps(response), content_type="application/json")
-        except Exception:
-            return HttpResponseServerError()
-
-    if request.method == "GET":
-        response = dict(
-            layerGroupName=getattr(map_obj.dataset_group, "name", ""),
-            ows=getattr(ogc_server_settings, "ows", ""),
-        )
-        return HttpResponse(json.dumps(response), content_type="application/json")
-
-    return HttpResponseNotAllowed(["PUT", "GET"])
-
-
-def mapdataset_attributes(request, layername):
-    # Return custom layer attribute labels/order in JSON format
-    layer = Dataset.objects.get(alternate=layername)
-    return HttpResponse(json.dumps(layer.attribute_config()), content_type="application/json")
-
-
-def ajax_url_lookup(request):
-    if request.method != "POST":
-        return HttpResponse(content="ajax user lookup requires HTTP POST", status=405, content_type="text/plain")
-    elif "query" not in request.POST:
-        return HttpResponse(
-            content='use a field named "query" to specify a prefix to filter urls', content_type="text/plain"
-        )
-    if request.POST["query"] != "":
-        maps = Map.objects.filter(urlsuffix__startswith=request.POST["query"])
-        if request.POST["mapid"] != "":
-            maps = maps.exclude(id=request.POST["mapid"])
-        json_dict = {
-            "urls": [({"url": m.urlsuffix}) for m in maps],
-            "count": maps.count(),
-        }
-    else:
-        json_dict = {
-            "urls": [],
-            "count": 0,
-        }
-    return HttpResponse(content=json.dumps(json_dict), content_type="text/plain")
