@@ -36,11 +36,6 @@ from geonode.maps.contants import (
 from geonode.maps.models import Map
 from geonode.utils import check_ogc_backend, resolve_object
 
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    # FIXME: The post service providing the map_status object
-    # should be moved to geonode.geoserver.
-    from geonode.geoserver.helpers import ogc_server_settings
-
 logger = logging.getLogger("geonode.maps.views")
 
 
