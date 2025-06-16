@@ -26,11 +26,9 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.template import loader
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect
 
-from geonode.assets.handlers import asset_handler_registry
-from geonode.assets.utils import get_default_asset
 from geonode.base.api.exceptions import geonode_exception_handler
 from geonode.client.hooks import hookset
 from geonode.utils import mkdtemp
@@ -45,7 +43,7 @@ from pathlib import Path
 from .utils import get_download_response
 
 from .models import Document
-from .forms import DocumentCreateForm, DocumentReplaceForm
+from .forms import DocumentCreateForm
 
 logger = logging.getLogger("geonode.documents.views")
 
@@ -228,56 +226,3 @@ class DocumentUploadView(CreateView):
             return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
         else:
             return HttpResponseRedirect(url)
-
-
-class DocumentUpdateView(UpdateView):
-    template_name = "documents/document_replace.html"
-    pk_url_kwarg = "docid"
-    form_class = DocumentReplaceForm
-    queryset = Document.objects.all()
-    context_object_name = "document"
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        try:
-            return super().post(request, *args, **kwargs)
-        except Exception as e:
-            exception_response = geonode_exception_handler(e, {})
-            return HttpResponse(
-                json.dumps(exception_response.data),
-                content_type="application/json",
-                status=exception_response.status_code,
-            )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["ALLOWED_DOC_TYPES"] = ALLOWED_DOC_TYPES
-        return context
-
-    def form_valid(self, form):
-        """
-        If the form is valid, save the associated model.
-        """
-        doc_form = form.cleaned_data
-
-        file = doc_form.pop("doc_file", None)
-        if file:
-            tempdir = mkdtemp()
-            dirname = os.path.basename(tempdir)
-            filepath = storage_manager.save(os.path.join(dirname, file.name), file)
-            storage_path = storage_manager.path(filepath)
-            self.object = resource_manager.update(
-                self.object.uuid, instance=self.object, vals=dict(owner=self.request.user)
-            )
-
-            # replace data in existing asset
-            asset = get_default_asset(self.object, link_type="uploaded")
-            if asset:
-                asset_handler_registry.get_handler(asset).replace_data(asset, [storage_path])
-
-            if tempdir != os.path.dirname(storage_path):
-                shutil.rmtree(tempdir, ignore_errors=True)
-
-        register_event(self.request, enumerations.EventType.EVENT_CHANGE, self.object)
-        url = hookset.document_detail_url(self.object)
-        return HttpResponseRedirect(url)
