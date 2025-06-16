@@ -45,7 +45,7 @@ from pathlib import Path
 from .utils import get_download_response
 
 from .models import Document
-from .forms import DocumentCreateForm, DocumentReplaceForm
+from .forms import DocumentCreateForm
 
 logger = logging.getLogger("geonode.documents.views")
 
