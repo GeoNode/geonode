@@ -257,7 +257,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertFalse(form.is_valid())
         self.assertTrue("__all__" in form.errors)
 
-
     def test_non_image_documents_thumbnail(self):
         self.client.login(username="admin", password="admin")
         try:

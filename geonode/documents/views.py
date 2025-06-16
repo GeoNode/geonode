@@ -26,11 +26,9 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.template import loader
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect
 
-from geonode.assets.handlers import asset_handler_registry
-from geonode.assets.utils import get_default_asset
 from geonode.base.api.exceptions import geonode_exception_handler
 from geonode.client.hooks import hookset
 from geonode.utils import mkdtemp
