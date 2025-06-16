@@ -53,28 +53,8 @@ def _resolve_geoapp(request, id, permission="base.change_resourcebase", msg=_PER
     return resolve_object(request, GeoApp, {"pk": id}, permission=permission, permission_msg=msg, **kwargs)
 
 
-@login_required
-def new_geoapp(request, template="apps/app_new.html"):
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    if request.method == "GET":
-        _ctx = {
-            "user": request.user,
-            "access_token": access_token,
-        }
-        return render(request, template, context=_ctx)
-
-    return HttpResponseRedirect(hookset.geoapp_list_url())
-
-
 @xframe_options_sameorigin
-def geoapp_edit(request, geoappid, template="apps/app_edit.html"):
+def geoapp_embed(request, geoappid, template="apps/app_embed.html"):
     """
     The view that returns the app composer opened to
     the app with the given app ID.
