@@ -28,7 +28,6 @@ import json
 import gisdata
 
 from PIL import Image
-from io import BytesIO
 
 from unittest.mock import patch
 from urllib.parse import urlparse
