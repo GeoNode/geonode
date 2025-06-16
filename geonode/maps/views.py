@@ -18,14 +18,12 @@
 #########################################################################
 import json
 import logging
-from urllib.parse import urljoin
 
 from deprecated import deprecated
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render
-from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
@@ -40,7 +38,7 @@ from geonode.maps.contants import (
     MSG_NOT_FOUND,
 )
 from geonode.maps.models import Map
-from geonode.utils import check_ogc_backend, http_client, resolve_object
+from geonode.utils import check_ogc_backend, resolve_object
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -113,90 +111,6 @@ def clean_config(conf):
         return json.dumps(config)
     else:
         return conf
-
-
-# MAPS DOWNLOAD #
-
-
-def map_download(request, mapid, template="maps/map_download.html"):
-    """
-    Download all the layers of a map as a batch
-    XXX To do, remove layer status once progress id done
-    This should be fix because
-    """
-    try:
-        map_obj = _resolve_map(request, mapid, "base.download_resourcebase", _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(MSG_NOT_ALLOWED, status=403)
-    except Exception:
-        raise Http404(MSG_NOT_FOUND)
-    if not map_obj:
-        raise Http404(MSG_NOT_FOUND)
-
-    map_status = dict()
-    if request.method == "POST":
-
-        def perm_filter(layer):
-            return request.user.has_perm("base.view_resourcebase", obj=layer.get_self_resource())
-
-        mapJson = map_obj.json(perm_filter)
-
-        # we need to remove duplicate layers
-        j_map = json.loads(mapJson)
-        j_datasets = j_map["layers"]
-        for j_dataset in j_datasets:
-            if j_dataset["service"] is None:
-                j_datasets.remove(j_dataset)
-                continue
-            if (len([_l for _l in j_datasets if _l == j_dataset])) > 1:
-                j_datasets.remove(j_dataset)
-        mapJson = json.dumps(j_map)
-
-        # the path to geoserver backend continue here
-        url = urljoin(settings.SITEURL, reverse("download-map", kwargs={"mapid": mapid}))
-        resp, content = http_client.request(url, "POST", data=mapJson)
-
-        status = int(resp.status_code)
-
-        if status == 200:
-            map_status = json.loads(content)
-            request.session["map_status"] = map_status
-        else:
-            raise Exception(f"Could not start the download of {map_obj.title}. Error was: {content}")
-
-    locked_datasets = []
-    remote_datasets = []
-    downloadable_datasets = []
-
-    for lyr in map_obj.maplayers.iterator():
-        if lyr.group != "background":
-            if not lyr.local:
-                remote_datasets.append(lyr)
-            else:
-                ownable_dataset = Dataset.objects.get(alternate=lyr.name)
-                if not request.user.has_perm("download_resourcebase", obj=ownable_dataset.get_self_resource()):
-                    locked_datasets.append(lyr)
-                else:
-                    # we need to add the layer only once
-                    if len([_l for _l in downloadable_datasets if _l.name == lyr.name]) == 0:
-                        downloadable_datasets.append(lyr)
-    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
-
-    register_event(request, EventType.EVENT_DOWNLOAD, map_obj)
-
-    return render(
-        request,
-        template,
-        context={
-            "geoserver": ogc_server_settings.PUBLIC_LOCATION,
-            "map_status": map_status,
-            "map": map_obj,
-            "locked_datasets": locked_datasets,
-            "remote_datasets": remote_datasets,
-            "downloadable_datasets": downloadable_datasets,
-            "site": site_url,
-        },
-    )
 
 
 def map_wmc(request, mapid, template="maps/wmc.xml"):
