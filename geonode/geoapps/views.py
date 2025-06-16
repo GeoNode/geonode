@@ -23,12 +23,10 @@ import logging
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, Http404
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.core.exceptions import PermissionDenied
 
-from geonode.client.hooks import hookset
 from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
