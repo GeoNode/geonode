@@ -183,42 +183,6 @@ def dataset_download(request, layername):
     return handler(request, layername).get_download_response()
 
 
-@login_required
-def dataset_granule_remove(request, granule_id, layername, template="datasets/dataset_granule_remove.html"):
-    try:
-        layer = _resolve_dataset(request, layername, "base.delete_resourcebase", _PERMISSION_MSG_DELETE)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer:
-        raise Http404(_("Not found"))
-
-    if request.method == "GET":
-        return render(request, template, context={"granule_id": granule_id, "dataset": layer})
-    if request.method == "POST":
-        try:
-            cat = gs_catalog
-            cat._cache.clear()
-            store = cat.get_store(layer.name)
-            coverages = cat.mosaic_coverages(store)
-            cat.mosaic_delete_granule(coverages["coverages"]["coverage"][0]["name"], store, granule_id)
-        except Exception as e:
-            traceback.print_exc()
-            message = f'{_("Unable to delete layer")}: {layer.alternate}.'
-            if "referenced by layer group" in getattr(e, "message", ""):
-                message = _(
-                    "This dataset is a member of a layer group, you must remove the dataset from the group "
-                    "before deleting."
-                )
-
-            messages.error(request, message)
-            return render(request, template, context={"layer": layer})
-        return HttpResponseRedirect(layer.get_absolute_url())
-    else:
-        return HttpResponse("Not allowed", status=403)
-
-
 def get_dataset(request, layername):
     """Get Dataset object as JSON"""
 
