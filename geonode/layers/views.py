@@ -30,7 +30,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from geonode import geoserver
 from geonode.base.auth import get_or_create_token
 from geonode.layers.models import Dataset
 from geonode.layers.utils import (

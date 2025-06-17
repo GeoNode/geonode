@@ -63,7 +63,6 @@ from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadat
 from geonode.groups.models import GroupProfile
 
 from geonode.layers.utils import (
-    dataset_type,
     get_files,
     get_valid_name,
     get_valid_dataset_name,
@@ -340,29 +339,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
         nn = get_anonymous_user()
         self.assertRaises(GeoNodeException, get_valid_user, nn)
-
-    def test_dataset_type(self):
-        self.assertEqual(dataset_type("foo.shp"), "vector")
-        self.assertEqual(dataset_type("foo.SHP"), "vector")
-        self.assertEqual(dataset_type("foo.sHp"), "vector")
-        self.assertEqual(dataset_type("foo.tif"), "raster")
-        self.assertEqual(dataset_type("foo.TIF"), "raster")
-        self.assertEqual(dataset_type("foo.TiF"), "raster")
-        self.assertEqual(dataset_type("foo.geotif"), "raster")
-        self.assertEqual(dataset_type("foo.GEOTIF"), "raster")
-        self.assertEqual(dataset_type("foo.gEoTiF"), "raster")
-        self.assertEqual(dataset_type("foo.tiff"), "raster")
-        self.assertEqual(dataset_type("foo.TIFF"), "raster")
-        self.assertEqual(dataset_type("foo.TiFf"), "raster")
-        self.assertEqual(dataset_type("foo.geotiff"), "raster")
-        self.assertEqual(dataset_type("foo.GEOTIFF"), "raster")
-        self.assertEqual(dataset_type("foo.gEoTiFf"), "raster")
-        self.assertEqual(dataset_type("foo.asc"), "raster")
-        self.assertEqual(dataset_type("foo.ASC"), "raster")
-        self.assertEqual(dataset_type("foo.AsC"), "raster")
-
-        # basically anything else should produce a GeoNodeException
-        self.assertRaises(GeoNodeException, lambda: dataset_type("foo.gml"))
 
     def test_get_files(self):
         def generate_files(*extensions):

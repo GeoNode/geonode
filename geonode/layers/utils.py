@@ -203,40 +203,6 @@ def get_files(filename):
     return files, tempdir
 
 
-def dataset_type(filename):
-    """Finds out if a filename is a Feature or a Vector
-    returns a gsconfig resource_type string
-    that can be either 'featureType' or 'coverage'
-    """
-    base_name, extension = os.path.splitext(filename)
-
-    if extension.lower() == ".zip":
-        zf = ZipFile(filename, allowZip64=True)
-        # ZipFile doesn't support with statement in 2.6, so don't do it
-        with zf:
-            for n in zf.namelist():
-                b, e = os.path.splitext(n.lower())
-                if e in shp_exts or e in cov_exts or e in csv_exts:
-                    extension = e
-
-    if extension.lower() == ".tar" or filename.endswith(".tar.gz"):
-        tf = tarfile.open(filename)
-        # TarFile doesn't support with statement in 2.6, so don't do it
-        with tf:
-            for n in tf.getnames():
-                b, e = os.path.splitext(n.lower())
-                if e in shp_exts or e in cov_exts or e in csv_exts:
-                    extension = e
-
-    if extension.lower() in vec_exts:
-        return "vector"
-    elif extension.lower() in cov_exts:
-        return "raster"
-    else:
-        msg = f"Saving of extension [{extension}] is not implemented"
-        raise GeoNodeException(msg)
-
-
 def get_valid_name(dataset_name):
     """
     Create a brand new name
@@ -267,20 +233,6 @@ def get_valid_dataset_name(layer, overwrite):
         return dataset_name
     else:
         return get_valid_name(dataset_name)
-
-
-def get_default_user():
-    """Create a default user"""
-    superusers = get_user_model().objects.filter(is_superuser=True).order_by("id")
-    if superusers.exists():
-        # Return the first created superuser
-        return superusers[0]
-    else:
-        raise GeoNodeException(
-            "You must have an admin account configured "
-            "before importing data. "
-            "Try: django-admin.py createsuperuser"
-        )
 
 
 def is_vector(filename):
