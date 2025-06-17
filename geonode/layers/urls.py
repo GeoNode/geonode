@@ -29,8 +29,6 @@ js_info_dict = {
 
 urlpatterns = [
     # 'geonode.layers.views',
-    re_path(r"^load_dataset_data$", views.load_dataset_data, name="load_dataset_data"),
-    re_path(r"^(?P<layername>[^/]*)/get$", views.get_dataset, name="get_dataset"),
     re_path(r"^(?P<layername>[^/]+)/embed$", views.dataset_embed, name="dataset_embed"),
     re_path(
         r"^(?P<layername>[^/]*)/feature_catalogue$", views.dataset_feature_catalogue, name="dataset_feature_catalogue"

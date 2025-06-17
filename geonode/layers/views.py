@@ -96,58 +96,6 @@ def _resolve_dataset(request, alternate, permission="base.view_resourcebase", ms
     return resolve_object(request, Dataset, query, permission=permission, permission_msg=msg, **kwargs)
 
 
-# Loads the data using the OWS lib when the "Do you want to filter it"
-# button is clicked.
-def load_dataset_data(request):
-    context_dict = {}
-    data_dict = json.loads(request.POST.get("json_data"))
-    layername = data_dict["dataset_name"]
-    filtered_attributes = ""
-    if not isinstance(data_dict["filtered_attributes"], str):
-        filtered_attributes = [x for x in data_dict["filtered_attributes"] if "/load_dataset_data" not in x]
-    name = layername if ":" not in layername else layername.split(":")[1]
-    location = f"{(settings.OGC_SERVER['default']['LOCATION'])}wms"
-    headers = {}
-    if request and "access_token" in request.session:
-        access_token = request.session["access_token"]
-        headers["Authorization"] = f"Bearer {access_token}"
-
-    try:
-        wfs = WebFeatureService(location, version="1.1.0", headers=headers)
-        response = wfs.getfeature(typename=name, propertyname=filtered_attributes, outputFormat="application/json")
-        x = response.read()
-        x = json.loads(x)
-        features_response = json.dumps(x)
-        decoded = json.loads(features_response)
-        decoded_features = decoded["features"]
-        properties = {}
-        for key in decoded_features[0]["properties"]:
-            properties[key] = []
-
-        # loop the dictionary based on the values on the list and add the properties
-        # in the dictionary (if doesn't exist) together with the value
-        from collections.abc import Iterable
-
-        for i in range(len(decoded_features)):
-            for key, value in decoded_features[i]["properties"].items():
-                if (
-                    value != ""
-                    and isinstance(value, (str, int, float))
-                    and ((isinstance(value, Iterable) and "/load_dataset_data" not in value) or value)
-                ):
-                    properties[key].append(value)
-
-        for key in properties:
-            properties[key] = list(set(properties[key]))
-            properties[key].sort()
-
-        context_dict["feature_properties"] = properties
-    except Exception:
-        traceback.print_exc()
-        logger.error("Possible error with OWSLib.")
-    return HttpResponse(json.dumps(context_dict), content_type="application/json")
-
-
 def dataset_feature_catalogue(request, layername, template="../../catalogue/templates/catalogue/feature_catalogue.xml"):
     try:
         layer = _resolve_dataset(request, layername)
@@ -183,44 +131,6 @@ def dataset_download(request, layername):
     return handler(request, layername).get_download_response()
 
 
-def get_dataset(request, layername):
-    """Get Dataset object as JSON"""
-
-    # Function to treat Decimal in json.dumps.
-    # http://stackoverflow.com/a/16957370/1198772
-    def decimal_default(obj):
-        if isinstance(obj, decimal.Decimal):
-            return float(obj)
-        raise TypeError
-
-    logger.debug("Call get layer")
-    if request.method == "GET":
-        try:
-            dataset_obj = _resolve_dataset(request, layername)
-        except PermissionDenied:
-            return HttpResponse(_("Not allowed"), status=403)
-        except Exception:
-            raise Http404(_("Not found"))
-        if not dataset_obj:
-            raise Http404(_("Not found"))
-
-        logger.debug(layername)
-        response = {
-            "typename": layername,
-            "name": dataset_obj.name,
-            "title": dataset_obj.title,
-            "url": dataset_obj.get_tiles_url(),
-            "bbox_string": dataset_obj.bbox_string,
-            "bbox_x0": dataset_obj.bbox_helper.xmin,
-            "bbox_x1": dataset_obj.bbox_helper.xmax,
-            "bbox_y0": dataset_obj.bbox_helper.ymin,
-            "bbox_y1": dataset_obj.bbox_helper.ymax,
-        }
-        return HttpResponse(
-            json.dumps(response, ensure_ascii=False, default=decimal_default), content_type="application/javascript"
-        )
-
-
 @xframe_options_exempt
 def dataset_embed(request, layername):
     try:
@@ -249,9 +159,3 @@ def dataset_embed(request, layername):
         "resource": layer,
     }
     return TemplateResponse(request, "datasets/dataset_embed.html", context=context_dict)
-
-
-def dataset_view_counter(dataset_id, viewer):
-    _l = Dataset.objects.get(id=dataset_id)
-    _u = get_user_model().objects.get(username=viewer)
-    _l.view_count_up(_u, do_local=True)
