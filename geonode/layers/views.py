@@ -17,24 +17,17 @@
 #
 #########################################################################
 import json
-import decimal
 import logging
-import traceback
-
-from owslib.wfs import WebFeatureService
 
 from django.conf import settings
 
 from django.http import Http404
-from django.contrib import messages
 from django.shortcuts import render
-from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
@@ -45,11 +38,8 @@ from geonode.layers.utils import (
 )
 from geonode.services.models import Service
 from geonode.base import register_event
-from geonode.utils import check_ogc_backend, resolve_object
+from geonode.utils import resolve_object
 from geonode.geoserver.helpers import ogc_server_settings
-
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import gs_catalog
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
