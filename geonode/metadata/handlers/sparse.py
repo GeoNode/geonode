@@ -20,6 +20,8 @@ import copy
 import json
 import logging
 
+from rest_framework.reverse import reverse
+
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.models import SparseField
@@ -61,11 +63,27 @@ class SparseHandler(MetadataHandler):
             case _:
                 pass
 
+    def _recurse_thesauri_autocomplete(self, d):
+        if isinstance(d, dict):
+            # Check if target_key is in the current dict
+            if thesaurus_id := d.get("geonode:thesaurus", None):
+                d.setdefault("ui:options", {})["geonode-ui:autocomplete"] = reverse(
+                    "metadata_autocomplete_tkeywords", kwargs={"thesaurusid": thesaurus_id}
+                )
+            # Recurse into each value
+            for value in d.values():
+                self._recurse_thesauri_autocomplete(value)
+        elif isinstance(d, list):
+            # Recurse into each item of the list
+            for item in d:
+                self._recurse_thesauri_autocomplete(item)
+
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
         for field_name, field_info in sparse_field_registry.fields().items():
             subschema = copy.deepcopy(field_info["schema"])
             self._recurse_localization(context, subschema, lang, field_name)
+            self._recurse_thesauri_autocomplete(subschema)
             self._add_subschema(jsonschema, field_name, subschema, after_what=field_info["after"])
 
             # add the handler info to the dictionary if it doesn't exist

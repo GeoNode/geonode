@@ -1710,7 +1710,11 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
         sparse_field_registry.register(
             field_name="another_sparse_field",
-            schema={"type": "number", "title": "Another Sparse Field"},
+            schema={
+                "type": "number",
+                "title": "Another Sparse Field",
+                "geonode:thesaurus": "this_is_a_thesaurus_id",
+            },
             after="field2",
         )
 
@@ -1728,6 +1732,11 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Check that the handler info was added
         self.assertEqual(updated_schema["properties"]["new_sparse_field"]["geonode:handler"], "sparse")
         self.assertEqual(updated_schema["properties"]["another_sparse_field"]["geonode:handler"], "sparse")
+
+        # Check that the autocomplete info was added
+        self.assertNotIn("ui:options", updated_schema["properties"]["new_sparse_field"])
+        self.assertIn("ui:options", updated_schema["properties"]["another_sparse_field"])
+        self.assertIn("geonode-ui:autocomplete", updated_schema["properties"]["another_sparse_field"]["ui:options"])
 
         # Check the order of the schema
         self.assertEqual(
