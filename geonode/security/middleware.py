@@ -113,6 +113,8 @@ class SessionControlMiddleware(MiddlewareMixin):
     Middleware that checks if session variables have been correctly set.
     """
 
+    async_mode = False
+
     redirect_to = getattr(settings, "LOGIN_URL", reverse("account_login"))
 
     def __init__(self, get_response):
