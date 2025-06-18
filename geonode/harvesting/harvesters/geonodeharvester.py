@@ -29,7 +29,6 @@ import urllib.parse
 import uuid
 
 import dateutil.parser
-from deprecated import deprecated
 import requests
 from django.contrib.gis import geos
 from lxml import etree
