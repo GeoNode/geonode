@@ -233,15 +233,6 @@ def delete_orphaned_datasets():
     return deleted
 
 
-def surrogate_escape_string(input_string, source_character_set):
-    """
-    Escapes a given input string using the provided source character set,
-    using the `surrogateescape` codec error handler.
-    """
-
-    return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
-
-
 def set_datasets_permissions(
     permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False
 ):

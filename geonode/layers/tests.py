@@ -65,7 +65,6 @@ from geonode.groups.models import GroupProfile
 from geonode.layers.utils import (
     get_files,
     get_valid_name,
-    surrogate_escape_string,
 )
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
@@ -527,18 +526,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertNotIn(user, perms["users"])
         self.assertNotIn(user.username, perms["users"])
 
-    def test_surrogate_escape_string(self):
-        surrogate_escape_raw = "Zo\udcc3\udcab"
-        surrogate_escape_expected = "Zoë"
-        surrogate_escape_result = surrogate_escape_string(
-            surrogate_escape_raw, "UTF-8"
-        )  # add more test cases using different charsets?
-        self.assertEqual(
-            surrogate_escape_result,
-            surrogate_escape_expected,
-            "layers.utils.surrogate_escape_string did not produce expected result. "
-            f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}",
-        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):
