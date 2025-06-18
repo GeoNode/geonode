@@ -216,6 +216,7 @@ def get_valid_name(dataset_name):
 
     return proposed_name
 
+
 def delete_orphaned_datasets():
     """Delete orphaned layer files."""
     deleted = []

@@ -473,7 +473,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertNotEqual(get_valid_name("CA"), "CA_1")
         self.assertNotEqual(get_valid_name("CA"), "CA_1")
 
-
     # NOTE: we don't care about file content for many of these tests (the
     # forms under test validate based only on file name, and leave actual
     # content inspection to GeoServer) but Django's form validation will omit
@@ -525,7 +524,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         perms = permissions_registry.get_perms(instance=layer)
         self.assertNotIn(user, perms["users"])
         self.assertNotIn(user.username, perms["users"])
-
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):
