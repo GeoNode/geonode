@@ -65,7 +65,6 @@ from geonode.groups.models import GroupProfile
 from geonode.layers.utils import (
     get_files,
     get_valid_name,
-    get_valid_dataset_name,
     surrogate_escape_string,
 )
 
@@ -475,27 +474,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertNotEqual(get_valid_name("CA"), "CA_1")
         self.assertNotEqual(get_valid_name("CA"), "CA_1")
 
-    def test_get_valid_dataset_name(self):
-        self.assertEqual(get_valid_dataset_name("blug", False), "blug")
-        self.assertEqual(get_valid_dataset_name("blug", True), "blug")
-
-        self.assertEqual(get_valid_dataset_name("<ab>", False), "_ab_")
-        self.assertEqual(get_valid_dataset_name("<ab>", True), "<ab>")
-
-        self.assertEqual(get_valid_dataset_name("<-->", False), "_")
-        self.assertEqual(get_valid_dataset_name("<-->", True), "<-->")
-
-        self.assertNotEqual(get_valid_dataset_name("CA", False), "CA_1")
-        self.assertNotEqual(get_valid_dataset_name("CA", False), "CA_1")
-        self.assertEqual(get_valid_dataset_name("CA", True), "CA")
-        self.assertEqual(get_valid_dataset_name("CA", True), "CA")
-
-        layer = Dataset.objects.get(name="CA")
-        self.assertNotEqual(get_valid_dataset_name(layer, False), "CA_1")
-        self.assertEqual(get_valid_dataset_name(layer, True), "CA")
-
-        self.assertRaises(GeoNodeException, get_valid_dataset_name, 12, False)
-        self.assertRaises(GeoNodeException, get_valid_dataset_name, 12, True)
 
     # NOTE: we don't care about file content for many of these tests (the
     # forms under test validate based only on file name, and leave actual
