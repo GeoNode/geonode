@@ -220,16 +220,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             )
         return result
 
-    @deprecated(
-        version="4.4.0",
-        reason="Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored",
-    )
-    def should_copy_resource(
-        self,
-        harvestable_resource: models.HarvestableResource,
-    ) -> bool:
-        return False
-
     def get_geonode_resource_defaults(
         self,
         harvested_info: base.HarvestedResourceInfo,
@@ -590,15 +580,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 f"Could not retrieve remote resource with unique " f"identifier {resource_unique_identifier!r}"
             )
         return result
-
-    def should_copy_resource(
-        self,
-        harvestable_resource: models.HarvestableResource,
-    ) -> bool:
-        logger.warning(
-            "Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored"
-        )
-        return False
 
     def get_geonode_resource_defaults(
         self,
@@ -1042,12 +1023,6 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
         harvestable_resource: models.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         return self.concrete_worker.get_resource(harvestable_resource)
-
-    def should_copy_resource(
-        self,
-        harvestable_resource: models.HarvestableResource,
-    ) -> bool:
-        return self.concrete_worker.should_copy_resource(harvestable_resource)
 
     def get_geonode_resource_defaults(
         self,

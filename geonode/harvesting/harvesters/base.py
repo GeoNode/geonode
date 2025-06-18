@@ -178,48 +178,6 @@ class BaseHarvesterWorker(abc.ABC):
 
         return True
 
-    @deprecated(
-        version="4.4.0",
-        reason="Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored",
-    )
-    def should_copy_resource(
-        self,
-        harvestable_resource: "HarvestableResource",  # noqa
-    ) -> bool:
-        """Return True if the worker is able to copy the remote resource.
-
-        The base implementation just returns False. Subclasses must re-implement this method
-        if they support copying remote resources onto the local GeoNode.
-
-        """
-
-        return False
-
-    def copy_resource(
-        self,
-        harvestable_resource: "HarvestableResource",  # noqa
-        harvested_resource_info: HarvestedResourceInfo,
-    ) -> typing.Optional[Path]:
-        """Copy a remote resource's data to the local GeoNode.
-
-        The base implementation provides a generic copy using GeoNode's `storage_manager`.
-        Subclasses may need to re-implement this method if they require specialized behavior.
-
-        """
-
-        url = harvested_resource_info.resource_descriptor.distribution.download_url
-        result = None
-        if url is not None:
-            target_name = _get_file_name(harvested_resource_info)
-            final_name = "/".join((str(harvested_resource_info.resource_descriptor.uuid), target_name))
-            try:
-                result = download_resource_file(url, final_name)
-            except requests.exceptions.HTTPError:
-                logger.exception(f"Could not download resource file from {url!r}")
-        else:
-            logger.warning("harvested resource info does not provide a URL for retrieving the " "resource, skipping...")
-        return result
-
     def get_geonode_resource_defaults(
         self,
         harvested_info: HarvestedResourceInfo,
