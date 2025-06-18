@@ -25,8 +25,6 @@ import logging
 import typing
 from pathlib import Path
 
-from deprecated import deprecated
-
 import geonode.upload.files
 import requests
 from django.core.files import uploadedfile
