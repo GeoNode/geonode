@@ -79,9 +79,6 @@ class BaseHookSet:
     def map_embed_template(self, context=None):
         return NotImplemented
 
-    def map_download_template(self, context=None):
-        return NotImplemented
-
     def map_list_url(self):
         return NotImplemented
 
