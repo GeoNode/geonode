@@ -204,7 +204,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         middleware = LoginRequiredMiddleware(None)
 
-        black_listed_url = reverse("load_dataset_data")
+        black_listed_url = reverse("admin:index")
         white_listed_url = reverse("account_login")
 
         # unauthorized request to black listed URL should be redirected to `redirect_to` URL
@@ -235,7 +235,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
-        black_listed_url = reverse("load_dataset_data")
+        black_listed_url = reverse("admin:index")
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
