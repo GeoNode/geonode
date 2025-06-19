@@ -79,11 +79,6 @@ class BaseHarvesterWorker(abc.ABC):
         self.remote_url = remote_url
         self.harvester_id = harvester_id
 
-    @property
-    @abc.abstractmethod
-    def allows_copying_resources(self) -> bool:
-        """Whether copying remote resources is implemented by this worker"""
-
     @classmethod
     @abc.abstractmethod
     def from_django_record(cls, harvester: "Harvester"):  # noqa

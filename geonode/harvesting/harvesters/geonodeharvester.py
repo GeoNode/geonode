@@ -128,10 +128,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
     def base_api_url(self):
         return f"{self.remote_url}/api/v2"
 
-    @property
-    def allows_copying_resources(self) -> bool:
-        return True
-
     @classmethod
     def from_django_record(cls, record: models.Harvester):
         return _from_django_record(cls, record)
@@ -488,10 +484,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     @property
     def base_api_url(self):
         return f"{self.remote_url}/api"
-
-    @property
-    def allows_copying_resources(self) -> bool:
-        return True
 
     @classmethod
     def from_django_record(cls, record: models.Harvester):
@@ -992,10 +984,6 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
         if self._concrete_harvester_worker is None:
             self._concrete_harvester_worker = self._get_concrete_worker()
         return self._concrete_harvester_worker
-
-    @property
-    def allows_copying_resources(self) -> bool:
-        return self.concrete_worker.allows_copying_resources
 
     @classmethod
     def from_django_record(cls, record: models.Harvester):

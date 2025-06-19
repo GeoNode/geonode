@@ -38,10 +38,6 @@ class GeoNodeHarvesterWorkerTestCase(GeoNodeBaseSimpleTestSupport):
             worker = geonodeharvester.GeonodeLegacyHarvester(base_url, harvester_id)
             self.assertEqual(worker.base_api_url, expected)
 
-    def test_that_copying_remote_resources_is_allowed(self):
-        worker = geonodeharvester.GeonodeLegacyHarvester("http://fake-url2/", "fake-id")
-        self.assertTrue(worker.allows_copying_resources)
-
     def test_creation_from_harvester(self):
         now = timezone.now()
         keywords = ["keyword1", "keyword2"]

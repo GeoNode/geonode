@@ -69,7 +69,6 @@ class TestBaseHarvester(GeoNodeBaseTestSupport):
         """
         self.assertEqual(self.worker.remote_url, self.remote_url)
         self.assertEqual(self.worker.harvester_id, 1)
-        self.assertTrue(self.worker.allows_copying_resources)
         self.assertTrue(self.worker.check_availability())
         self.assertEqual(self.worker.get_num_available_resources(), 1)
         self.assertEqual(len(self.worker.list_resources()), 1)
