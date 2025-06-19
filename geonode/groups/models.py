@@ -241,7 +241,7 @@ class GroupProfile(models.Model):
 
     @property
     def logo_url(self):
-        _default_group_url = static(settings.GROUP_LOGO_URL)
+        _default_group_logo_url = static(settings.GROUP_LOGO_URL)
         try:
             _base_path = os.path.split(self.logo.path)[0]
             _upload_path = os.path.split(self.logo.url)[1]
@@ -255,7 +255,7 @@ class GroupProfile(models.Model):
             _url = self.logo.url
         except Exception as e:
             logger.debug(e)
-            return build_absolute_uri(_default_group_url)
+            return build_absolute_uri(_default_group_logo_url)
         return build_absolute_uri(_url)
 
 
