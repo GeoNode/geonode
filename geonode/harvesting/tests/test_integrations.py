@@ -86,7 +86,7 @@ class HarvesterIntegrationsTestCase(GeoNodeBaseTestSupport):
         )
 
         self.harvested_info = HarvestedResourceInfo(
-            resource_descriptor=self.record_description, copied_resources=[], additional_information=None
+            resource_descriptor=self.record_description, additional_information=None
         )
 
     @mock.patch(

@@ -57,7 +57,6 @@ class BriefRemoteResource:
 class HarvestedResourceInfo:
     resource_descriptor: resourcedescriptor.RecordDescription
     additional_information: typing.Optional[typing.Any]
-    copied_resources: typing.Optional[typing.List] = dataclasses.field(default_factory=list)
 
 
 class BaseHarvesterWorker(abc.ABC):
@@ -193,7 +192,6 @@ class BaseHarvesterWorker(abc.ABC):
             "purpose": harvested_info.resource_descriptor.identification.purpose,
             "supplemental_information": (harvested_info.resource_descriptor.identification.supplemental_information),
             "title": harvested_info.resource_descriptor.identification.title,
-            "files": [str(path) for path in harvested_info.copied_resources],
             "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
         }
         if harvested_info.resource_descriptor.identification.lonlat_extent:
@@ -257,10 +255,7 @@ class BaseHarvesterWorker(abc.ABC):
 
     def _update_existing_geonode_resource(self, geonode_resource: ResourceBase, defaults: typing.Dict):
         resource_defaults = defaults.copy()
-        if len(resource_defaults.get("files", [])) > 0:
-            result = resource_manager.replace(geonode_resource, vals=resource_defaults)
-        else:
-            result = resource_manager.update(geonode_resource.uuid, vals=resource_defaults)
+        result = resource_manager.update(geonode_resource.uuid, vals=resource_defaults)
         return result
 
 
