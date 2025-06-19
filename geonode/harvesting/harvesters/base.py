@@ -303,24 +303,6 @@ def download_resource_file(url: str, target_name: str) -> Path:
     return result
 
 
-def _get_file_name(
-    resource_info: HarvestedResourceInfo,
-) -> typing.Optional[str]:
-    file_extension = {"geotiff": ".tiff", "shapefile": ".zip"}.get(
-        resource_info.resource_descriptor.identification.native_format,
-        f".{resource_info.resource_descriptor.identification.native_format}",
-    )
-    base_fragment = resource_info.resource_descriptor.identification.name
-    base_name = html.unescape(base_fragment).rsplit("/")[-1].rsplit("\\")[-1]
-    if base_name in {"", ".", ".."}:
-        result = None
-    else:
-        result = f"harvested_{resource_info.resource_descriptor.uuid}_{base_name}{file_extension}"
-    # FIXME: geonode.upload.files._clean_string ought to be renamed in order to not indicate it is private
-    sanitized = geonode.upload.files._clean_string(result)  # noqa
-    return sanitized
-
-
 def _consolidate_resource_keywords(
     resource_descriptor: resourcedescriptor.RecordDescription, geonode_resource, harvester_id: int
 ) -> typing.List[str]:
