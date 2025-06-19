@@ -29,7 +29,6 @@ import urllib.parse
 import uuid
 
 import dateutil.parser
-from deprecated import deprecated
 import requests
 from django.contrib.gis import geos
 from lxml import etree
@@ -87,8 +86,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
     # in it
     harvest_maps: bool = False
 
-    copy_documents: bool
-    copy_datasets: bool
     resource_title_filter: typing.Optional[str]
     start_date_filter: typing.Optional[str]
     end_date_filter: typing.Optional[str]
@@ -102,8 +99,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         *args,
         harvest_documents: typing.Optional[bool] = True,
         harvest_datasets: typing.Optional[bool] = True,
-        copy_datasets: typing.Optional[bool] = False,
-        copy_documents: typing.Optional[bool] = False,
         resource_title_filter: typing.Optional[str] = None,
         start_date_filter: typing.Optional[str] = None,
         end_date_filter: typing.Optional[str] = None,
@@ -117,8 +112,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         self.http_session = requests.Session()
         self.harvest_documents = bool(harvest_documents)
         self.harvest_datasets = bool(harvest_datasets)
-        self.copy_datasets = bool(copy_datasets)
-        self.copy_documents = bool(copy_documents)
         self.resource_title_filter = resource_title_filter
         self.start_date_filter = start_date_filter
         self.end_date_filter = end_date_filter
@@ -128,10 +121,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
     @property
     def base_api_url(self):
         return f"{self.remote_url}/api/v2"
-
-    @property
-    def allows_copying_resources(self) -> bool:
-        return True
 
     @classmethod
     def from_django_record(cls, record: models.Harvester):
@@ -219,16 +208,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 f"identifier {harvestable_resource.unique_identifier!r}"
             )
         return result
-
-    @deprecated(
-        version="4.4.0",
-        reason="Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored",
-    )
-    def should_copy_resource(
-        self,
-        harvestable_resource: models.HarvestableResource,
-    ) -> bool:
-        return False
 
     def get_geonode_resource_defaults(
         self,
@@ -462,8 +441,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     # in it
     harvest_maps: bool = False
 
-    copy_documents: bool
-    copy_datasets: bool
     resource_title_filter: typing.Optional[str]
     http_session: requests.Session
     page_size: int = 10
@@ -473,8 +450,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         *args,
         harvest_documents: typing.Optional[bool] = True,
         harvest_datasets: typing.Optional[bool] = True,
-        copy_datasets: typing.Optional[bool] = False,
-        copy_documents: typing.Optional[bool] = False,
         resource_title_filter: typing.Optional[str] = None,
         start_date_filter: typing.Optional[str] = None,
         end_date_filter: typing.Optional[str] = None,
@@ -488,8 +463,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         self.http_session = requests.Session()
         self.harvest_documents = harvest_documents if harvest_documents is not None else True
         self.harvest_datasets = harvest_datasets if harvest_datasets is not None else True
-        self.copy_datasets = copy_datasets
-        self.copy_documents = copy_documents
         self.resource_title_filter = resource_title_filter
         self.start_date_filter = start_date_filter
         self.end_date_filter = end_date_filter
@@ -499,10 +472,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     @property
     def base_api_url(self):
         return f"{self.remote_url}/api"
-
-    @property
-    def allows_copying_resources(self) -> bool:
-        return True
 
     @classmethod
     def from_django_record(cls, record: models.Harvester):
@@ -590,15 +559,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 f"Could not retrieve remote resource with unique " f"identifier {resource_unique_identifier!r}"
             )
         return result
-
-    def should_copy_resource(
-        self,
-        harvestable_resource: models.HarvestableResource,
-    ) -> bool:
-        logger.warning(
-            "Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored"
-        )
-        return False
 
     def get_geonode_resource_defaults(
         self,
@@ -983,8 +943,6 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
         *args,
         harvest_documents: typing.Optional[bool] = True,
         harvest_datasets: typing.Optional[bool] = True,
-        copy_datasets: typing.Optional[bool] = False,
-        copy_documents: typing.Optional[bool] = False,
         resource_title_filter: typing.Optional[str] = None,
         start_date_filter: typing.Optional[str] = None,
         end_date_filter: typing.Optional[str] = None,
@@ -999,8 +957,6 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
         self.http_session = requests.Session()
         self.harvest_documents = bool(harvest_documents)
         self.harvest_datasets = bool(harvest_datasets)
-        self.copy_datasets = bool(copy_datasets)
-        self.copy_documents = bool(copy_documents)
         self.resource_title_filter = resource_title_filter
         self.start_date_filter = start_date_filter
         self.end_date_filter = end_date_filter
@@ -1012,10 +968,6 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
         if self._concrete_harvester_worker is None:
             self._concrete_harvester_worker = self._get_concrete_worker()
         return self._concrete_harvester_worker
-
-    @property
-    def allows_copying_resources(self) -> bool:
-        return self.concrete_worker.allows_copying_resources
 
     @classmethod
     def from_django_record(cls, record: models.Harvester):
@@ -1043,12 +995,6 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         return self.concrete_worker.get_resource(harvestable_resource)
 
-    def should_copy_resource(
-        self,
-        harvestable_resource: models.HarvestableResource,
-    ) -> bool:
-        return self.concrete_worker.should_copy_resource(harvestable_resource)
-
     def get_geonode_resource_defaults(
         self,
         harvested_info: base.HarvestedResourceInfo,
@@ -1063,8 +1009,6 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
             "harvester_id": self.harvester_id,
             "harvest_documents": self.harvest_documents,
             "harvest_datasets": self.harvest_datasets,
-            "copy_documents": self.copy_documents,
-            "copy_datasets": self.copy_datasets,
             "resource_title_filter": self.resource_title_filter,
             "start_date_filter": self.start_date_filter,
             "end_date_filter": self.end_date_filter,
@@ -1226,21 +1170,11 @@ def _get_extra_config_schema() -> typing.Dict:
 
 def _from_django_record(target_class: typing.Type, record: models.Harvester):
 
-    if (
-        "copy_datasets" in record.harvester_type_specific_configuration
-        or "copy_documents" in record.harvester_type_specific_configuration
-    ):
-        logger.warning(
-            "Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored"
-        )
-
     return target_class(
         record.remote_url,
         record.id,
         harvest_documents=record.harvester_type_specific_configuration.get("harvest_documents", True),
         harvest_datasets=record.harvester_type_specific_configuration.get("harvest_datasets", True),
-        copy_datasets=False,
-        copy_documents=False,
         resource_title_filter=record.harvester_type_specific_configuration.get("resource_title_filter"),
         start_date_filter=record.harvester_type_specific_configuration.get("start_date_filter"),
         end_date_filter=record.harvester_type_specific_configuration.get("end_date_filter"),

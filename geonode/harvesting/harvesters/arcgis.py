@@ -400,10 +400,6 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
         self._relevant_service_extractors = None
 
     @property
-    def allows_copying_resources(self) -> bool:
-        return False
-
-    @property
     def arc_catalog(self):
         if self._arc_catalog is None:
             try:

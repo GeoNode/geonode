@@ -19,15 +19,11 @@
 
 import abc
 import dataclasses
-import html
 import io
 import logging
 import typing
 from pathlib import Path
 
-from deprecated import deprecated
-
-import geonode.upload.files
 import requests
 from django.core.files import uploadedfile
 
@@ -61,7 +57,6 @@ class BriefRemoteResource:
 class HarvestedResourceInfo:
     resource_descriptor: resourcedescriptor.RecordDescription
     additional_information: typing.Optional[typing.Any]
-    copied_resources: typing.Optional[typing.List] = dataclasses.field(default_factory=list)
 
 
 class BaseHarvesterWorker(abc.ABC):
@@ -80,11 +75,6 @@ class BaseHarvesterWorker(abc.ABC):
     def __init__(self, remote_url: str, harvester_id: int):
         self.remote_url = remote_url
         self.harvester_id = harvester_id
-
-    @property
-    @abc.abstractmethod
-    def allows_copying_resources(self) -> bool:
-        """Whether copying remote resources is implemented by this worker"""
 
     @classmethod
     @abc.abstractmethod
@@ -178,48 +168,6 @@ class BaseHarvesterWorker(abc.ABC):
 
         return True
 
-    @deprecated(
-        version="4.4.0",
-        reason="Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored",
-    )
-    def should_copy_resource(
-        self,
-        harvestable_resource: "HarvestableResource",  # noqa
-    ) -> bool:
-        """Return True if the worker is able to copy the remote resource.
-
-        The base implementation just returns False. Subclasses must re-implement this method
-        if they support copying remote resources onto the local GeoNode.
-
-        """
-
-        return False
-
-    def copy_resource(
-        self,
-        harvestable_resource: "HarvestableResource",  # noqa
-        harvested_resource_info: HarvestedResourceInfo,
-    ) -> typing.Optional[Path]:
-        """Copy a remote resource's data to the local GeoNode.
-
-        The base implementation provides a generic copy using GeoNode's `storage_manager`.
-        Subclasses may need to re-implement this method if they require specialized behavior.
-
-        """
-
-        url = harvested_resource_info.resource_descriptor.distribution.download_url
-        result = None
-        if url is not None:
-            target_name = _get_file_name(harvested_resource_info)
-            final_name = "/".join((str(harvested_resource_info.resource_descriptor.uuid), target_name))
-            try:
-                result = download_resource_file(url, final_name)
-            except requests.exceptions.HTTPError:
-                logger.exception(f"Could not download resource file from {url!r}")
-        else:
-            logger.warning("harvested resource info does not provide a URL for retrieving the " "resource, skipping...")
-        return result
-
     def get_geonode_resource_defaults(
         self,
         harvested_info: HarvestedResourceInfo,
@@ -244,7 +192,6 @@ class BaseHarvesterWorker(abc.ABC):
             "purpose": harvested_info.resource_descriptor.identification.purpose,
             "supplemental_information": (harvested_info.resource_descriptor.identification.supplemental_information),
             "title": harvested_info.resource_descriptor.identification.title,
-            "files": [str(path) for path in harvested_info.copied_resources],
             "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
         }
         if harvested_info.resource_descriptor.identification.lonlat_extent:
@@ -308,10 +255,7 @@ class BaseHarvesterWorker(abc.ABC):
 
     def _update_existing_geonode_resource(self, geonode_resource: ResourceBase, defaults: typing.Dict):
         resource_defaults = defaults.copy()
-        if len(resource_defaults.get("files", [])) > 0:
-            result = resource_manager.replace(geonode_resource, vals=resource_defaults)
-        else:
-            result = resource_manager.update(geonode_resource.uuid, vals=resource_defaults)
+        result = resource_manager.update(geonode_resource.uuid, vals=resource_defaults)
         return result
 
 
@@ -350,24 +294,6 @@ def download_resource_file(url: str, target_name: str) -> Path:
         file_name = storage_manager.save(target_name, fd)
         result = Path(storage_manager.path(file_name))
     return result
-
-
-def _get_file_name(
-    resource_info: HarvestedResourceInfo,
-) -> typing.Optional[str]:
-    file_extension = {"geotiff": ".tiff", "shapefile": ".zip"}.get(
-        resource_info.resource_descriptor.identification.native_format,
-        f".{resource_info.resource_descriptor.identification.native_format}",
-    )
-    base_fragment = resource_info.resource_descriptor.identification.name
-    base_name = html.unescape(base_fragment).rsplit("/")[-1].rsplit("\\")[-1]
-    if base_name in {"", ".", ".."}:
-        result = None
-    else:
-        result = f"harvested_{resource_info.resource_descriptor.uuid}_{base_name}{file_extension}"
-    # FIXME: geonode.upload.files._clean_string ought to be renamed in order to not indicate it is private
-    sanitized = geonode.upload.files._clean_string(result)  # noqa
-    return sanitized
 
 
 def _consolidate_resource_keywords(

@@ -295,7 +295,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         return base.ServiceHandlerBase.probe(self)
 
     def get_harvester_configuration_options(self):
-        return {"harvest_datasets": True, "harvest_documents": True, "copy_datasets": False, "copy_documents": False}
+        return {"harvest_datasets": True, "harvest_documents": True}
 
     def ows_endpoint(self):
         url = urlsplit(self.url)
