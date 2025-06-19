@@ -2290,3 +2290,6 @@ PERMISSIONS_HANDLERS = [
 AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
 AVATAR_CHANGE_TEMPLATE = "people/avatar/change.html"
 AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"
+
+# Group default logo url
+GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
