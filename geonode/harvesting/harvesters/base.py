@@ -19,13 +19,11 @@
 
 import abc
 import dataclasses
-import html
 import io
 import logging
 import typing
 from pathlib import Path
 
-import geonode.upload.files
 import requests
 from django.core.files import uploadedfile
 
