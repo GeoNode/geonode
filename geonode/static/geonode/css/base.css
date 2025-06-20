@@ -7744,7 +7744,7 @@ nav.filter li a {
 .group-profile-img {
     margin-top: 0.5rem !important;
     height: 80px !important;
-    object-fit: contain
+    object-fit: contain;
 }
 
 /* Upload Layers
