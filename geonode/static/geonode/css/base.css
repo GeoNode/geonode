@@ -7741,6 +7741,12 @@ nav.filter li a {
 .group-details .group-logo img {
   width: 100%;
 }
+.group-profile-img {
+    margin-top: 0.5rem !important;
+    height: 80px !important;
+    object-fit: contain;
+}
+
 /* Upload Layers
 ----------------------- */
 #drop-zone {
