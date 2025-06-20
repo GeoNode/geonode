@@ -1,22 +1,24 @@
 {% load avatar_tags %}
 {% load i18n %}
 
-<section class="last">
+<section class="last media">
   {% with 40 as avatar_size %}
-    <div class="avatar span1 pull-left"><a href="{% url "profile_detail" profile.username %}">{% autoescape off %}{% avatar profile avatar_size %}{% endautoescape %}</a></div>
+  <div class="media-left">
+    <a href="{% url "profile_detail" profile.username %}">{% autoescape off %}{% avatar profile avatar_size %}{% endautoescape %}</a>
+  </div>
   {% endwith %}
-  <div>
+  <div class="media-body">
     <div>
-    <a href="{{ profile.get_absolute_url }}">{{ profile.username }}</a>
-      {{ username }}
-    </div>
-    <div class="details">
-      <div class="meta">
-        <p>
-          {% if profile.organization %}{{ profile.organization }}
-            {% else %}{% trans "No Group" %}
-          {% endif %}</p>
+      <a href="{{ profile.get_absolute_url }}">{{ profile.username }}</a>
+        {{ username }}
       </div>
-    </div>
+      <div class="details">
+        <div class="meta">
+          <p>
+            {% if profile.organization %}{{ profile.organization }}
+              {% else %}{% trans "No Group" %}
+            {% endif %}</p>
+        </div>
+      </div>
   </div>
 </section>
