@@ -275,7 +275,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         request = HttpRequest()
         request.user = admin
         request.session = engine.SessionStore()
-        request.session["access_token"] = get_or_create_token(admin)
+        request.session["access_token"] = str(get_or_create_token(admin))
         request.session.save()
         middleware.process_request(request)
         self.assertFalse(request.session.is_empty())
