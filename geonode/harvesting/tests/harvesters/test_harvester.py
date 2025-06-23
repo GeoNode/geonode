@@ -29,10 +29,6 @@ class TestHarvester(BaseHarvesterWorker):
     Override base harvester as test harvester
     """
 
-    @property
-    def allows_copying_resources(self) -> bool:
-        return True
-
     @classmethod
     def from_django_record(cls, record: Harvester):
         return cls(record.remote_url, record.id)
