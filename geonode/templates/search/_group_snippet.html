@@ -2,10 +2,10 @@
 <div class="row">
     <article ng-repeat="group_profile in results" resource_id="{{ id }}" ng-cloak class="ng-cloak">
         <div class="col-xs-12 item-container">
-            <div class="col-xs-4">
-                <img class="img-responsive" ng-src="{{ group_profile.logo_url }}" alt="{{ group_profile.title }}">
+            <div class="col-xs-3">
+                <img class="img-responsive group-profile-img" ng-src="{{ group_profile.logo_url }}" alt="{{ group_profile.title }}">
             </div>
-            <div class="col-xs-8 item-details">
+            <div class="col-xs-9 item-details">
                 <h4><a href="{{ group_profile.detail_url }}">{{ group_profile.title }}</a></h4>
                 <p class="abstract">
                     {{ group_profile.description | limitTo: 300 }}

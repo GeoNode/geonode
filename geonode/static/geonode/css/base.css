@@ -7741,12 +7741,16 @@ nav.filter li a {
 .group-details .group-logo img {
   width: 100%;
 }
-
 .managers-list .media-left a img {
   height: 32px !important;
   width: 32px !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+.group-profile-img {
+    margin-top: 0.5rem !important;
+    height: 80px !important;
+    object-fit: contain
 }
 
 /* Upload Layers
