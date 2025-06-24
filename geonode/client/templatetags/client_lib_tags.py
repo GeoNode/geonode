@@ -166,8 +166,6 @@ class GeoNodeClientLibraryTag(template.Node):
             t = context.template.engine.get_template(hookset.map_update_template(context=context))
         elif self.tag_name == "get_map_embed":
             t = context.template.engine.get_template("geonode-mapstore-client/map_embed.html")
-        elif self.tag_name == "get_map_download":
-            t = context.template.engine.get_template(hookset.map_download_template(context=context))
 
         # GEONODE_APPS
         if self.tag_name == "get_geoapp_list":
@@ -220,7 +218,6 @@ register.tag("get_map_view", do_get_client_library_template)
 register.tag("get_map_edit", do_get_client_library_template)
 register.tag("get_map_update", do_get_client_library_template)
 register.tag("get_map_embed", do_get_client_library_template)
-register.tag("get_map_download", do_get_client_library_template)
 
 register.tag("get_geoapp_list", do_get_client_library_template)
 register.tag("get_geoapp_detail", do_get_client_library_template)
