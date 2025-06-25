@@ -84,6 +84,14 @@ class PermissionsHandlerRegistry:
             return payload["users"][user]
         return payload
 
+    def user_has_perms(self, user, instance, perm, include_virtual=True):
+        """
+        Returns True if the user has the defined perm (permission)
+        """
+        return perm in self.get_perms(
+            instance=instance, user=user, include_virtual=include_virtual, include_user_add_resource=True
+        )
+
     @classmethod
     def get_registry(cls):
         return PermissionsHandlerRegistry.REGISTRY

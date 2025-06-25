@@ -74,6 +74,7 @@ from geonode.security.utils import (
     get_resources_with_perms,
     get_user_visible_groups,
 )
+from geonode.security.registry import permissions_registry
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
@@ -588,7 +589,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         """
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
-        _user_can_manage = request.user.has_perm("change_resourcebase_permissions", resource.get_self_resource())
+        _user_can_manage = permissions_registry.user_has_perms(
+            request.user, resource.get_self_resource(), "change_resourcebase_permissions"
+        )
         if (
             config.read_only
             or config.maintenance
