@@ -2246,6 +2246,7 @@ CELERY_TASK_QUEUES += (
     ),
     Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
     Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
+    Queue("geonode.upload.upsert_data", GEONODE_EXCHANGE, routing_key="geonode.upload.upsert_data"),
 )
 
 DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]

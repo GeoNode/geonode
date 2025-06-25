@@ -53,6 +53,7 @@ class ImporterRequestAction(enum.Enum):
     RESOURCE_METADATA_UPLOAD = _("resource_metadata_upload")
     RESOURCE_STYLE_UPLOAD = _("resource_style_upload")
     REPLACE = _("replace")
+    UPSERT = _("upsert")
 
 
 def error_handler(exc, exec_id=None):

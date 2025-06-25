@@ -37,6 +37,7 @@ class ShapeFileSerializer(DynamicModelSerializer):
             "overwrite_existing_layer",
             "skip_existing_layers",
             "action",
+            "upsert_key",
         )
 
     base_file = serializers.FileField()
@@ -49,6 +50,7 @@ class ShapeFileSerializer(DynamicModelSerializer):
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     action = serializers.CharField(required=True)
+    upsert_key = serializers.CharField(required=False)
 
 
 class OverwriteShapeFileSerializer(ShapeFileSerializer):

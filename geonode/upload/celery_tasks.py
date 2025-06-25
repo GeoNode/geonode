@@ -788,3 +788,69 @@ def dynamic_model_error_callback(*args, **kwargs):
         drop_dynamic_model_schema(schema_model)
 
     return "error"
+
+
+@importer_app.task(
+    bind=True,
+    base=ErrorBaseTaskClass,
+    name="geonode.upload.upsert_data",
+    queue="geonode.upload.upsert_data",
+    max_retries=3,
+    rate_limit=IMPORTER_PUBLISHING_RATE_LIMIT,
+    ignore_result=False,
+    task_track_started=True,
+)
+def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
+    """
+    Task to publish a single resource in geoserver.
+    NOTE: If the layer should be overwritten, for now we are skipping this feature
+        geoserver is not ready yet
+
+            Parameters:
+                    execution_id (UUID): unique ID used to keep track of the execution request
+                    step_name (str): step name example: geonode.upload.upsert_data
+                    layer_name (UUID): name of the resource example: layer
+                    alternate (UUID): alternate of the resource example: layer_alternate
+            Returns:
+                    None
+    """
+    # Updating status to running
+    try:
+        kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
+
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            last_updated=timezone.now(),
+            func_name="upsert_data",
+            step=gettext_lazy("geonode.upload.upsert_data"),
+            celery_task_request=self.request,
+        )
+        _exec = orchestrator.get_execution_object(execution_id)
+
+        _files = _exec.input_params.get("files")
+
+        # initiating the data store manager
+        _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
+
+        if not _datastore.upsert_validation(execution_id, **kwargs):
+            raise Exception("Input data is not valid for upsert purposes")
+
+        _datastore.upsert_data(execution_id, **kwargs)
+
+        """
+        since the call to the orchestrator can changed based on the handler
+        called. See the GPKG handler gpkg_next_step task
+        """
+        return self.name, execution_id
+
+    except Exception as e:
+        call_rollback_function(
+            execution_id,
+            handlers_module_path=handler_module_path,
+            prev_action=exa.UPLOAD.value,
+            layer=None,
+            alternate=None,
+            error=e,
+            **kwargs,
+        )
+        raise InvalidInputFileException(detail=error_handler(e, execution_id))

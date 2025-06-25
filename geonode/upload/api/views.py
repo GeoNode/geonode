@@ -178,7 +178,9 @@ class ImporterViewSet(DynamicModelViewSet):
 
         handler = orchestrator.get_handler(_data)
         # not file but handler means that is a remote resource
-        if handler:
+        action = _data.get("action")
+
+        if handler and handler.can_do(action):
             asset = None
             files = []
             try:
@@ -207,7 +209,6 @@ class ImporterViewSet(DynamicModelViewSet):
                             "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
                         }
                     )
-                action = input_params.get("action")
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
                     func_name=next(iter(handler.get_task_list(action=action))),

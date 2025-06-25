@@ -69,3 +69,15 @@ class DataStoreManager:
         call the resource handler object to perform the import phase
         """
         return self.handler().import_resource(self.files, execution_id, **kwargs)
+
+    def upsert_validation(self, execution_id, **kwargs):
+        """
+        call the resource handler object to perform the import phase
+        """
+        return self.handler().upsert_validation(self.files, execution_id, **kwargs)
+
+    def upsert_data(self, execution_id, **kwargs):
+        """
+        call the resource handler object to perform the import phase
+        """
+        return self.handler().upsert_data(self.files, execution_id, **kwargs)

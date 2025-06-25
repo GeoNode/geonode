@@ -24,7 +24,7 @@ import json
 import logging
 import os
 from subprocess import PIPE, Popen
-from typing import List
+from typing import List, Optional, Tuple
 from celery import chord, group
 
 from django.conf import settings
@@ -44,7 +44,7 @@ from geonode.upload.handlers.utils import (
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
-from geonode.upload.api.exceptions import ImportException
+from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.celery_app import importer_app
 from geonode.assets.utils import copy_assets_and_links, get_default_asset
 
@@ -56,6 +56,7 @@ import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
+from dynamic_models.models import FieldSchema
 
 logger = logging.getLogger("importer")
 
@@ -391,10 +392,7 @@ class BaseVectorFileHandler(BaseHandler):
                             alternate,
                             celery_group,
                         ) = self.setup_dynamic_model(
-                            layer,
-                            execution_id,
-                            should_be_overwritten,
-                            username=_exec.user,
+                            layer, execution_id, should_be_overwritten, username=_exec.user, _exec=_exec
                         )
                     else:
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
@@ -482,11 +480,7 @@ class BaseVectorFileHandler(BaseHandler):
         return alternate
 
     def setup_dynamic_model(
-        self,
-        layer: ogr.Layer,
-        execution_id: str,
-        should_be_overwritten: bool,
-        username: str,
+        self, layer: ogr.Layer, execution_id: str, should_be_overwritten: bool, username: str, _exec=None
     ):
         """
         Extract from the geopackage the layers name and their schema
@@ -496,11 +490,19 @@ class BaseVectorFileHandler(BaseHandler):
             - alternate -> the alternate of the resource which contains (if needed) the uuid
             - celery_group -> the celery group of the field creation
         """
-
-        layer_name = self.fixup_name(layer.GetName())
-        workspace = DataPublisher(None).workspace
-        user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
-        dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
+        if should_be_overwritten:
+            # if is a overwrite, we have to rely on the existing dataset so we can take the resource
+            # by the PK
+            user_datasets = Dataset.objects.filter(owner=username, pk=_exec.input_params.get("resource_pk"))
+            # for overwrite, we can take model name from the alternate of the resource
+            layer_name = user_datasets.first().alternate.split(":")[-1]
+            dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
+        else:
+            # if is not an overwrite but a creation, we can take the name from the layer
+            layer_name = self.fixup_name(layer.GetName())
+            workspace = DataPublisher(None).workspace
+            user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
+            dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
 
         dynamic_schema_exists = dynamic_schema.exists()
         dataset_exists = user_datasets.exists()
@@ -559,6 +561,7 @@ class BaseVectorFileHandler(BaseHandler):
         overwrite: bool,
         execution_id: str,
         layer_name: str,
+        return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
         layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
@@ -577,6 +580,9 @@ class BaseVectorFileHandler(BaseHandler):
                     "dim": (2 if not ogr.GeometryTypeToName(layer.GetGeomType()).lower().startswith("3d") else 3),
                 }
             ]
+
+        if not return_celery_group:
+            return layer_schema
 
         # ones we have the schema, here we create a list of chunked value
         # so the async task will handle max of 30 field per task
@@ -881,6 +887,58 @@ class BaseVectorFileHandler(BaseHandler):
         handler_module_path = exec_object.input_params.get("handler_module_path")
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(instance_name)
+
+    def upsert_validation(self, files, execution_id, **kwargs: dict) -> Tuple[bool, Optional[str]]:
+        """
+        Perform the validation step to ensure that the file provided is valid
+        to perform an upsert on the selected dataset.
+            - Load the dynamic model for the selected dataset
+            - User ogr2ogr to read the schema of the uploaded file
+            - will evaluate if the field are coherent (int -> int = valid, int -> date = invalid)
+        return True/False, if false, also the reason why is not valid
+        """
+        errors = []
+        exec_id = orchestrator.get_execution_object(execution_id)
+        target_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk"))
+        if not target_resource.exists():
+            raise UpsertException("Target resource not found")
+        target_resource = target_resource.first()
+        target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
+        new_file_schema_fields = self._get_dynamic_schema_from_file(files)
+        # let's check that the field in the uploaded file are coherent with the one preset
+        for field in new_file_schema_fields:
+            target_field = target_schema_fields.filter(name=field["name"])
+            if target_field.exists():
+                # time to check if the type is coherent
+                target_field_obj = target_field.first()
+                if not target_field_obj.class_name == field["class_name"]:
+                    message = f"The type of the following field is changed and is prohibited: {field['name']}: current {target_field_obj.class_name} new: {field['class_name']}"
+                    errors.append(message)
+                    logger.error(message)
+        return len(errors) > 0, errors
+
+    def _get_dynamic_schema_from_file(self, files):
+        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        layer = self._select_valid_layers(all_layers)[0]
+        # needs to read the file via ogr2ogr and then
+        new_file_schema_fields = self.create_dynamic_model_fields(
+            layer,
+            dynamic_model_schema=None,
+            overwrite=None,
+            execution_id=None,
+            layer_name=layer.GetName(),
+            return_celery_group=False,
+        )
+
+        return new_file_schema_fields
+
+    def upsert_data(self, files, execution_id, **kwargs):
+        """
+        Function used to upsert the data for a vector shapefile.
+        The function will:
+            - Call the validator
+        """
+        return
 
 
 @importer_app.task(

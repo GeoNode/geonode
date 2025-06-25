@@ -59,6 +59,20 @@ class OverwriteImporterSerializer(ImporterSerializer):
     resource_pk = serializers.IntegerField(required=True)
 
 
+class UpsertImporterSerializer(ImporterSerializer):
+    class Meta:
+        ref_name = "UpsertImporterSerializer"
+        model = ResourceBase
+        view_name = "importer_upload"
+        fields = ImporterSerializer.Meta.fields + (
+            "upsert_key",
+            "resource_pk",
+        )
+
+    upsert_key = serializers.CharField(required=False)
+    resource_pk = serializers.CharField(required=True)
+
+
 class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
     class Meta:
         model = UploadSizeLimit
