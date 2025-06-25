@@ -1930,6 +1930,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "change_resourcebase",
                         "feature_resourcebase",
+                        "change_resourcebase_permissions",
                     ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
@@ -2179,6 +2180,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_data",
                         "change_dataset_style",
                         "feature_resourcebase",
+                        "change_resourcebase_permissions",
                     ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: ["view_resourcebase", "change_resourcebase"],
@@ -2848,6 +2850,7 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
             "change_resourcebase_metadata",
             "change_dataset_data",
             "change_dataset_style",
+            "change_resourcebase_permissions",
         ]
 
         # Ensure that the permissions for the resource's group manager are updated
