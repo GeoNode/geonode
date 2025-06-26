@@ -590,7 +590,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
         _user_can_manage = permissions_registry.user_has_perm(
-            request.user, resource.get_self_resource(), "change_resourcebase_permissions"
+            request.user, resource.get_self_resource(), "change_resourcebase_permissions", include_virtual=True
         )
         if (
             config.read_only
