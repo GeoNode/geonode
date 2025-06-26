@@ -832,11 +832,13 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         # initiating the data store manager
         _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
 
-        if not _datastore.upsert_validation(execution_id, **kwargs):
-            raise Exception("Input data is not valid for upsert purposes")
+        is_valid, errors = _datastore.upsert_validation(execution_id, **kwargs)
+        if not is_valid:
+            raise Exception(errors)
 
-        _datastore.upsert_data(execution_id, **kwargs)
+        result = _datastore.upsert_data(execution_id, **kwargs)
 
+        orchestrator.update_execution_request_obj(_exec, {"output_params": result})
         """
         since the call to the orchestrator can changed based on the handler
         called. See the GPKG handler gpkg_next_step task

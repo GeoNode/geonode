@@ -557,10 +557,10 @@ class BaseVectorFileHandler(BaseHandler):
     def create_dynamic_model_fields(
         self,
         layer: str,
-        dynamic_model_schema: ModelSchema,
-        overwrite: bool,
-        execution_id: str,
-        layer_name: str,
+        dynamic_model_schema: ModelSchema = None,
+        overwrite: bool = None,
+        execution_id: str = None,
+        layer_name: str = None,
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
@@ -898,47 +898,95 @@ class BaseVectorFileHandler(BaseHandler):
         return True/False, if false, also the reason why is not valid
         """
         errors = []
-        exec_id = orchestrator.get_execution_object(execution_id)
-        target_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk"))
-        if not target_resource.exists():
-            raise UpsertException("Target resource not found")
-        target_resource = target_resource.first()
-        target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
-        new_file_schema_fields = self._get_dynamic_schema_from_file(files)
+        # getting the saved schema and convert the newly uploaded file into the same object
+        target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
         # let's check that the field in the uploaded file are coherent with the one preset
+        # loop on all the new field coming from the uploaded file
+        target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
+        new_file_schema_fields_as_list = [x['name'] for x in new_file_schema_fields]
+        differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list)) 
+        if any(differeces):
+            raise UpsertException(f"The schema of the column differ. The following columns must be removed: {differeces}")
         for field in new_file_schema_fields:
-            target_field = target_schema_fields.filter(name=field["name"])
-            if target_field.exists():
-                # time to check if the type is coherent
-                target_field_obj = target_field.first()
-                if not target_field_obj.class_name == field["class_name"]:
-                    message = f"The type of the following field is changed and is prohibited: {field['name']}: current {target_field_obj.class_name} new: {field['class_name']}"
+            # check if the field exists in the previous schema
+            target_field = target_schema_fields.filter(name=field["name"]).first()
+            if target_field:
+                # If the field exists the class name should be the same
+                if not target_field.class_name == field["class_name"]:
+                    # if the class changes, is marked as error
+                    message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
                     errors.append(message)
                     logger.error(message)
-        return len(errors) > 0, errors
+        return not errors, errors
 
-    def _get_dynamic_schema_from_file(self, files):
+    def __get_new_and_original_schema(self, files, execution_id):
+        # check if the execution_id is passed and if the geonode resource exists
+        exec_id = orchestrator.get_execution_object(execution_id)
+        target_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk")).first()
+        if not target_resource:
+            raise UpsertException("Target resource not found")
+        # retrieve the current schema for the resource
+        target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
+
+        # use ogr2ogr to read the uploaded files for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
         layer = self._select_valid_layers(all_layers)[0]
-        # needs to read the file via ogr2ogr and then
+        # Will generate the same schema as the target_resource_schema
         new_file_schema_fields = self.create_dynamic_model_fields(
             layer,
-            dynamic_model_schema=None,
-            overwrite=None,
-            execution_id=None,
-            layer_name=layer.GetName(),
             return_celery_group=False,
         )
 
-        return new_file_schema_fields
+        return target_schema_fields, new_file_schema_fields
 
     def upsert_data(self, files, execution_id, **kwargs):
         """
-        Function used to upsert the data for a vector shapefile.
+        Function used to upsert the data for a vector resource.
         The function will:
-            - Call the validator
+            - loop on all the values in the new uploaded file
+            - if the upsert key exists, is marked as 'to update'
+            - if the upsert key does not exists, is maked as 'to insert'
+        Before saving the resources, an update of the schema is mandatory
+            - the new column are added as nullable to keep the retrocompatibility
+            - The pre-existing columns are NOT deleted
         """
-        return
+
+        # getting execution_id information
+        exec_id = orchestrator.get_execution_object(execution_id)
+
+        # getting the related model schema for the resource
+        original_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk")).first()
+        model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
+        if not model:
+            raise UpsertException("The dynamic models was not found in the DB")
+        # retrieve the upsert key.
+        upsert_key = exec_id.input_params.get("upsert_key").split(",")
+
+        # get the rows that match the upsert key
+        OriginalResource = model.as_model()
+        
+        # use ogr2ogr to read the uploaded files values for the upsert
+        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        update_error = []
+        create_error = []
+        for feature in self._select_valid_layers(all_layers)[0]:
+            feature_as_dict = feature.items()
+            filter_dict = {field: value for field, value in feature_as_dict.items() if field in upsert_key}
+            to_update = OriginalResource.objects.filter(**filter_dict)
+            if to_update:
+                try:
+                    to_update.update(**feature_as_dict)
+                except Exception as e:
+                    logger.error(f"Error during update of {feature_as_dict} in upsert: {e}")
+                    update_error.append(feature_as_dict)
+            else:
+                try:
+                    OriginalResource.objects.create(**feature_as_dict)
+                except Exception as e:
+                    logger.error(f"Error during creation of {feature_as_dict} in upsert: {e}")
+                    create_error.append(feature_as_dict)
+        
+        return not update_error and not create_error, {"errors": {"create": create_error, "update": update_error}}
 
 
 @importer_app.task(
