@@ -52,7 +52,12 @@ from geonode.upload.settings import (
     IMPORTER_PUBLISHING_RATE_LIMIT,
     IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
 )
-from geonode.upload.utils import call_rollback_function, error_handler, find_key_recursively
+from geonode.upload.utils import (
+    call_rollback_function,
+    error_handler,
+    find_key_recursively,
+    ImporterRequestAction as ira,
+)
 
 logger = logging.getLogger("importer")
 
@@ -838,21 +843,112 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
 
         result = _datastore.upsert_data(execution_id, **kwargs)
 
-        orchestrator.update_execution_request_obj(_exec, {"output_params": result})
-        """
-        since the call to the orchestrator can changed based on the handler
-        called. See the GPKG handler gpkg_next_step task
-        """
-        return self.name, execution_id
+        orchestrator.update_execution_request_obj(_exec, {"output_params": {"upsert": result}})
+
+        resource = ResourceBase.objects.get(pk=_exec.input_params.get("resource_pk"))
+
+        task_params = (
+            {},
+            execution_id,
+            handler_module_path,
+            "geonode.upload.upsert_data",
+            resource.alternate.split(":")[-1],
+            resource.alternate.split(":")[-1],
+            action,
+        )
+
+        kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
+
+        import_orchestrator.apply_async(task_params, kwargs)
 
     except Exception as e:
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,
-            prev_action=exa.UPLOAD.value,
+            prev_action=ira.UPSERT.value,
             layer=None,
             alternate=None,
             error=e,
             **kwargs,
         )
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
+
+
+@importer_app.task(
+    bind=True,
+    base=ErrorBaseTaskClass,
+    name="geonode.upload.refresh_geonode_resource",
+    queue="geonode.upload.refresh_geonode_resource",
+    max_retries=1,
+    rate_limit=IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
+    ignore_result=False,
+    task_track_started=True,
+)
+def refresh_geonode_resource(
+    self,
+    execution_id: str,
+    /,
+    step_name: str,
+    layer_name: Optional[str] = None,
+    alternate: Optional[str] = None,
+    handler_module_path: str = None,
+    action: str = exa.UPLOAD.value,
+    **kwargs,
+):
+    """
+    Create the GeoNode resource and the relatives information associated
+    NOTE: for gpkg we dont want to handle sld and XML files
+
+            Parameters:
+                    execution_id (UUID): unique ID used to keep track of the execution request
+                    resource_type (str): extension of the resource type that we want to import
+                        The resource type is needed to retrieve the right handler for the resource
+                    step_name (str): step name example: geonode.upload.publish_resource
+                    layer_name (UUID): name of the resource example: layer
+                    alternate (UUID): alternate of the resource example: layer_alternate
+            Returns:
+                    None
+    """
+    # Updating status to running
+    try:
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            last_updated=timezone.now(),
+            func_name="refresh_geonode_resource",
+            step=gettext_lazy("geonode.upload.refresh_geonode_resource"),
+            celery_task_request=self.request,
+        )
+        _exec = orchestrator.get_execution_object(execution_id)
+
+        _files = _exec.input_params.get("files")
+
+        # initiating the data store manager
+        _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
+
+        _datastore.refresh_geonode_resource(execution_id=execution_id)
+
+        # at the end recall the import_orchestrator for the next step
+        import_orchestrator.apply_async(
+            (
+                _files,
+                execution_id,
+                handler_module_path,
+                step_name,
+                layer_name,
+                alternate,
+                action,
+            )
+        )
+        return self.name, execution_id
+
+    except Exception as e:
+        call_rollback_function(
+            execution_id,
+            handlers_module_path=handler_module_path,
+            prev_action=action,
+            layer=layer_name,
+            alternate=alternate,
+            error=e,
+            **kwargs,
+        )
+        raise ResourceCreationException(detail=error_handler(e))

@@ -81,3 +81,9 @@ class DataStoreManager:
         call the resource handler object to perform the import phase
         """
         return self.handler().upsert_data(self.files, execution_id, **kwargs)
+
+    def refresh_geonode_resource(self, execution_id, **kwargs):
+        """
+        call the resource handler object to perform the import phase
+        """
+        return self.handler().refresh_geonode_resource(execution_id, **kwargs)

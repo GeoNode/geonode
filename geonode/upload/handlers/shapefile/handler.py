@@ -41,11 +41,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
     """
 
     TASKS = BaseVectorFileHandler.TASKS | {
-        ira.UPSERT.value: (
-            "start_import",
-            "geonode.upload.upsert_data",
-            "geonode.upload.update_geonode_resource",
-        ),
+        ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
 
     @property

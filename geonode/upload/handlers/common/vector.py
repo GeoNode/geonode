@@ -57,6 +57,7 @@ from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_inv
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
 from dynamic_models.models import FieldSchema
+from django.utils.module_loading import import_string
 
 logger = logging.getLogger("importer")
 
@@ -684,18 +685,7 @@ class BaseVectorFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            delete_dataset_cache(dataset.alternate)
-            # recalculate featuretype info
-            DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
-            set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
-
-            dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
-
-            self.handle_xml_file(dataset, _exec)
-            self.handle_sld_file(dataset, _exec)
-
-            resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
-            dataset.refresh_from_db()
+            dataset = self.refresh_geonode_resource(_exec, asset, dataset)
             return dataset
         elif not dataset.exists() and _overwrite:
             logger.warning(
@@ -903,10 +893,12 @@ class BaseVectorFileHandler(BaseHandler):
         # let's check that the field in the uploaded file are coherent with the one preset
         # loop on all the new field coming from the uploaded file
         target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
-        new_file_schema_fields_as_list = [x['name'] for x in new_file_schema_fields]
-        differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list)) 
+        new_file_schema_fields_as_list = [x["name"] for x in new_file_schema_fields]
+        differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
         if any(differeces):
-            raise UpsertException(f"The schema of the column differ. The following columns must be removed: {differeces}")
+            raise UpsertException(
+                f"The schema of the column differ. The following columns must be removed: {differeces}"
+            )
         for field in new_file_schema_fields:
             # check if the field exists in the previous schema
             target_field = target_schema_fields.filter(name=field["name"]).first()
@@ -964,7 +956,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
-        
+
         # use ogr2ogr to read the uploaded files values for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
         update_error = []
@@ -978,15 +970,52 @@ class BaseVectorFileHandler(BaseHandler):
                     to_update.update(**feature_as_dict)
                 except Exception as e:
                     logger.error(f"Error during update of {feature_as_dict} in upsert: {e}")
-                    update_error.append(feature_as_dict)
+                    update_error.append(str(e))
             else:
                 try:
                     OriginalResource.objects.create(**feature_as_dict)
                 except Exception as e:
                     logger.error(f"Error during creation of {feature_as_dict} in upsert: {e}")
-                    create_error.append(feature_as_dict)
-        
+                    create_error.append(str(e))
+
+        # generating the resorucehandler infor to track the changes on ther resource
+
+        self.create_resourcehandlerinfo(handler_module_path=str(self), resource=original_resource, execution_id=exec_id)
+
         return not update_error and not create_error, {"errors": {"create": create_error, "update": update_error}}
+
+    def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, **kwargs):
+        # getting execution_id information
+        exec_obj = orchestrator.get_execution_object(execution_id)
+        # getting the geonode resource
+        if not dataset:
+            dataset = Dataset.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
+
+        # once the upsert is completed, the geonode resource must be update to
+        # load the new data from the database
+        if not asset:
+            asset = (
+                import_string(exec_obj.input_params.get("asset_module_path"))
+                .objects.filter(id=exec_obj.input_params.get("asset_id"))
+                .first()
+            )
+
+        delete_dataset_cache(dataset.alternate)
+        # recalculate featuretype info
+        DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
+        set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
+
+        dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
+
+        self.handle_xml_file(dataset, exec_obj)
+        self.handle_sld_file(dataset, exec_obj)
+
+        resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+        dataset.refresh_from_db()
+
+        orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
+
+        return dataset
 
 
 @importer_app.task(
