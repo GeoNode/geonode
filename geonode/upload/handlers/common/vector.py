@@ -393,7 +393,10 @@ class BaseVectorFileHandler(BaseHandler):
                             alternate,
                             celery_group,
                         ) = self.setup_dynamic_model(
-                            layer, execution_id, should_be_overwritten, username=_exec.user, _exec=_exec
+                            layer,
+                            execution_id,
+                            should_be_overwritten,
+                            username=_exec.user,
                         )
                     else:
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
@@ -481,7 +484,11 @@ class BaseVectorFileHandler(BaseHandler):
         return alternate
 
     def setup_dynamic_model(
-        self, layer: ogr.Layer, execution_id: str, should_be_overwritten: bool, username: str, _exec=None
+        self,
+        layer: ogr.Layer,
+        execution_id: str,
+        should_be_overwritten: bool,
+        username: str,
     ):
         """
         Extract from the geopackage the layers name and their schema
@@ -494,7 +501,9 @@ class BaseVectorFileHandler(BaseHandler):
         if should_be_overwritten:
             # if is a overwrite, we have to rely on the existing dataset so we can take the resource
             # by the PK
-            user_datasets = Dataset.objects.filter(owner=username, pk=_exec.input_params.get("resource_pk"))
+            exec_obj = orchestrator.get_execution_object(execution_id)
+
+            user_datasets = Dataset.objects.filter(owner=username, pk=exec_obj.input_params.get("resource_pk"))
             # for overwrite, we can take model name from the alternate of the resource
             layer_name = user_datasets.first().alternate.split(":")[-1]
             dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
