@@ -20,6 +20,7 @@
 import math
 import logging
 import typing
+from datetime import datetime, timedelta, timezone
 
 from celery import chord
 from django.core.exceptions import ValidationError
@@ -114,7 +115,7 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
         harvester.harvestable_resources.filter(should_be_harvested=True).values_list("id", flat=True)
     )
     if len(harvestable_resources) > 0:
-        harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id), expiration=30)
+        harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id))
     else:
         message = "harvesting_dispatcher - Nothing to do"
         logger.debug(message)
@@ -126,7 +127,7 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 @app.task(
     bind=True,
     queue="geonode",
-    expires=30,
+    expires=120,
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -143,11 +144,17 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                 session.status = session.STATUS_ON_GOING
                 session.total_records_to_process = len(harvestable_resource_ids)
                 session.save()
+                
+                # Define the expiration time dynamically
+                expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids)) 
                 resource_tasks = []
                 for harvestable_resource_id in harvestable_resource_ids:
                     resource_tasks.append(
-                        _harvest_resource.signature(args=(harvestable_resource_id, harvesting_session_id))
+                        _harvest_resource.signature(
+                            args=(harvestable_resource_id, harvesting_session_id))
+                            .set(expires=expires_at)
                     )
+
                 harvesting_finalizer = _finish_harvesting.signature(
                     args=(harvesting_session_id,), immutable=True
                 ).on_error(
@@ -156,9 +163,10 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                             "harvesting_session_id": harvesting_session_id,
                         }
                     )
-                )
+                ).set(expires=expires_at) # This is not necessary but it's for extra safety
+
                 harvesting_workflow = chord(resource_tasks, body=harvesting_finalizer)
-                harvesting_workflow.apply_async(args=(), expiration=30)
+                harvesting_workflow.apply_async()
             else:
                 message = (
                     f"Skipping harvesting for harvester {harvester.name!r} because the "
@@ -183,7 +191,6 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
 @app.task(
     bind=True,
     queue="geonode",
-    expires=30,
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -536,3 +543,24 @@ def update_asynchronous_session(
     if additional_details is not None:
         update_kwargs["details"] = Concat("details", Value(f"\n{additional_details}"))
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+
+def calculate_dynamic_expiration(
+    num_resources: int,
+    estimated_duration_per_resource: int = 10,
+    buffer_time: int = 300, # 5 minutes
+) -> datetime:
+    """
+    Calculate a dynamic expiration datetime for a group of tasks.
+
+    Args:
+        num_resources (int): Number of resources/tasks.
+        estimated_duration_per_resource (int): Estimated time per resource in seconds.
+        buffer_time (int): Additional buffer time in seconds.
+
+    Returns:
+        datetime: Expiration datetime in UTC timezone.
+    """
+    now = datetime.now(timezone.utc)
+    total_seconds = num_resources * estimated_duration_per_resource + buffer_time
+    expires_at = now + timedelta(seconds=total_seconds)
+    return expires_at
