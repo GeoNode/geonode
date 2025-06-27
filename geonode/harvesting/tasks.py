@@ -144,26 +144,28 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                 session.status = session.STATUS_ON_GOING
                 session.total_records_to_process = len(harvestable_resource_ids)
                 session.save()
-                
+
                 # Define the expiration time dynamically
-                expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids)) 
+                expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids))
                 resource_tasks = []
                 for harvestable_resource_id in harvestable_resource_ids:
                     resource_tasks.append(
-                        _harvest_resource.signature(
-                            args=(harvestable_resource_id, harvesting_session_id))
-                            .set(expires=expires_at)
+                        _harvest_resource.signature(args=(harvestable_resource_id, harvesting_session_id)).set(
+                            expires=expires_at
+                        )
                     )
 
-                harvesting_finalizer = _finish_harvesting.signature(
-                    args=(harvesting_session_id,), immutable=True
-                ).on_error(
-                    _handle_harvesting_error.signature(
-                        kwargs={
-                            "harvesting_session_id": harvesting_session_id,
-                        }
+                harvesting_finalizer = (
+                    _finish_harvesting.signature(args=(harvesting_session_id,), immutable=True)
+                    .on_error(
+                        _handle_harvesting_error.signature(
+                            kwargs={
+                                "harvesting_session_id": harvesting_session_id,
+                            }
+                        )
                     )
-                ).set(expires=expires_at) # This is not necessary but it's for extra safety
+                    .set(expires=expires_at)
+                )  # This is not necessary but it's for extra safety
 
                 harvesting_workflow = chord(resource_tasks, body=harvesting_finalizer)
                 harvesting_workflow.apply_async()
@@ -544,10 +546,11 @@ def update_asynchronous_session(
         update_kwargs["details"] = Concat("details", Value(f"\n{additional_details}"))
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
 
+
 def calculate_dynamic_expiration(
     num_resources: int,
     estimated_duration_per_resource: int = 10,
-    buffer_time: int = 300, # 5 minutes
+    buffer_time: int = 300,  # 5 minutes
 ) -> datetime:
     """
     Calculate a dynamic expiration datetime for a group of tasks.
