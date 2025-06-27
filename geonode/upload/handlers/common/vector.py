@@ -961,19 +961,27 @@ class BaseVectorFileHandler(BaseHandler):
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
         update_error = []
         create_error = []
-        for feature in self._select_valid_layers(all_layers)[0]:
+        valid_create = 0
+        valid_update = 0
+        layers = self._select_valid_layers(all_layers)
+        if not layers:
+            raise UpsertException("No valid layers were found in the file provided")
+        # we can upsert just 1 layer at time
+        for feature in layers[0]:
             feature_as_dict = feature.items()
             filter_dict = {field: value for field, value in feature_as_dict.items() if field in upsert_key}
             to_update = OriginalResource.objects.filter(**filter_dict)
             if to_update:
                 try:
                     to_update.update(**feature_as_dict)
+                    valid_update += 1
                 except Exception as e:
                     logger.error(f"Error during update of {feature_as_dict} in upsert: {e}")
                     update_error.append(str(e))
             else:
                 try:
                     OriginalResource.objects.create(**feature_as_dict)
+                    valid_create += 1
                 except Exception as e:
                     logger.error(f"Error during creation of {feature_as_dict} in upsert: {e}")
                     create_error.append(str(e))
@@ -982,7 +990,17 @@ class BaseVectorFileHandler(BaseHandler):
 
         self.create_resourcehandlerinfo(handler_module_path=str(self), resource=original_resource, execution_id=exec_id)
 
-        return not update_error and not create_error, {"errors": {"create": create_error, "update": update_error}}
+        return not update_error and not create_error, {
+            "errors": {"create": create_error, "update": update_error},
+            "data": {
+                "total": {
+                    "success": valid_update + valid_create,
+                    "error": len(create_error) + len(update_error),
+                },
+                "success": {"update": valid_update, "create": valid_create},
+                "error": {"update": len(update_error), "create": len(create_error)},
+            },
+        }
 
     def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, **kwargs):
         # getting execution_id information
