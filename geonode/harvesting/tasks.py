@@ -148,11 +148,15 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                 if len(harvestable_resource_ids) <= 100:
                     # No chunking, just one chord for all resources
                     expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids))
-                    resource_tasks = [_harvest_resource.signature((rid, harvesting_session_id)).set(expires=expires_at)
-                                    for rid in harvestable_resource_ids]
+                    resource_tasks = [
+                        _harvest_resource.signature((rid, harvesting_session_id)).set(expires=expires_at)
+                        for rid in harvestable_resource_ids
+                    ]
                     finalizer = (
                         _finish_harvesting.signature((harvesting_session_id,), immutable=True)
-                        .on_error(_handle_harvesting_error.signature(kwargs={"harvesting_session_id": harvesting_session_id}))
+                        .on_error(
+                            _handle_harvesting_error.signature(kwargs={"harvesting_session_id": harvesting_session_id})
+                        )
                         .set(expires=expires_at)
                     )
                     harvesting_workflow = chord(resource_tasks, body=finalizer)
@@ -166,10 +170,17 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                         expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids))
 
                         countdown = i * 5  # e.g., start each chunk 5s after the previous one
-                        
-                        resource_tasks = [_harvest_resource.signature((rid, harvesting_session_id)).set(expires=expires_at, countdown=countdown) for rid in chunk]
 
-                        chunk_finalizer = _finish_harvesting_chunk.signature((harvesting_session_id,), immutable=True).set(expires=expires_at)
+                        resource_tasks = [
+                            _harvest_resource.signature((rid, harvesting_session_id)).set(
+                                expires=expires_at, countdown=countdown
+                            )
+                            for rid in chunk
+                        ]
+
+                        chunk_finalizer = _finish_harvesting_chunk.signature(
+                            (harvesting_session_id,), immutable=True
+                        ).set(expires=expires_at)
 
                         chunk_chord = chord(resource_tasks, body=chunk_finalizer)
                         chunk_chords.append(chunk_chord)
@@ -177,20 +188,16 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                     all_chunks_group = group(chunk_chords)
 
                     global_finalizer = (
-                        _finish_harvesting.signature(
-                            args=(harvesting_session_id,), immutable=True
-                        )
+                        _finish_harvesting.signature(args=(harvesting_session_id,), immutable=True)
                         .on_error(
-                            _handle_harvesting_error.signature(
-                                kwargs={"harvesting_session_id": harvesting_session_id}
-                            )
+                            _handle_harvesting_error.signature(kwargs={"harvesting_session_id": harvesting_session_id})
                         )
                         .set(expires=calculate_dynamic_expiration(len(harvestable_resource_ids)))
                     )
 
                     final_workflow = chord(all_chunks_group, body=global_finalizer)
                     final_workflow.apply_async()
-                
+
             else:
                 message = (
                     f"Skipping harvesting for harvester {harvester.name!r} because the "
@@ -581,7 +588,7 @@ def calculate_dynamic_expiration(
     buffer_time: int = 300,
 ) -> int:
     """
-    Calculate a dynamic expiration time (in seconds) 
+    Calculate a dynamic expiration time (in seconds)
     depending on the harvestable resources
 
     Args:
@@ -597,4 +604,4 @@ def calculate_dynamic_expiration(
 
 def chunked(iterable, chunk_size=100):
     for i in range(0, len(iterable), chunk_size):
-        yield iterable[i:i + chunk_size]
+        yield iterable[i : i + chunk_size]
