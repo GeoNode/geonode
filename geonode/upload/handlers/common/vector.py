@@ -254,7 +254,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         if ovverwrite_layer:
             options += " -overwrite"
-
+        options += " -lco FID=gn_id"
         return options
 
     @staticmethod
@@ -272,8 +272,12 @@ class BaseVectorFileHandler(BaseHandler):
                 We use the schema editor directly, because the model itself is not managed
                 on creation, but for the delete since we are going to handle, we can use it
                 """
-                _model_editor = ModelSchemaEditor(initial_model=name, db_name=schema.db_name)
-                _model_editor.drop_table(schema.as_model())
+                try:
+                    _model_editor = ModelSchemaEditor(initial_model=name, db_name=schema.db_name)
+                    _model_editor.drop_table(schema.as_model())
+                except Exception as e:
+                    logger.info(f"database table already deleted: {e}")
+                    pass
                 ModelSchema.objects.filter(name=name).delete()
         except Exception as e:
             logger.error(f"Error during deletion of Dynamic Model schema: {e.args[0]}")
@@ -573,8 +577,14 @@ class BaseVectorFileHandler(BaseHandler):
         layer_name: str = None,
         return_celery_group: bool = True,
     ):
+        # adding default geonode id for ogr2ogr
+        layer_schema = [
+            {"name": "gn_id", "class_name": "django.db.models.AutoField", "null": False, "primary_key": True}
+        ]
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
-        layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+        layer_schema.extend(
+            [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+        )
         if (
             layer.GetGeometryColumn()
             or self.default_geometry_column_name

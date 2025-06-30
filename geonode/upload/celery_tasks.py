@@ -566,7 +566,7 @@ def create_dynamic_structure(
                 f"Error during the field creation. The field or class_name is None {field} for {layer_name} for execution {execution_id}"
             )
 
-        _kwargs = {"null": field.get("null", True)}
+        _kwargs = {"null": field.get("null", True), "primary_key": field.get("primary_key", False)}
         if field["class_name"].endswith("CharField"):
             _kwargs = {**_kwargs, **{"max_length": 255}}
 
