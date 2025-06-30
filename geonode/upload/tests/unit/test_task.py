@@ -18,12 +18,14 @@
 #########################################################################
 import os
 import shutil
+import zipfile
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 from unittest.mock import patch
 from geonode.upload.api.exceptions import InvalidInputFileException
+from osgeo import ogr
 
 from geonode.upload.celery_tasks import (
     copy_dynamic_model,
@@ -665,3 +667,58 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
         mock_cursor.execute.assert_called_once()
         mock_cursor.execute.assert_called()
         async_call.assert_called_once()
+
+
+class TestUpsertWithDynamicModel(TransactionImporterBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.upsert_original = f"{project_dir}/tests/fixture/original.zip"
+        cls.upsert_file = f"{project_dir}/tests/fixture/upsert.zip"
+
+    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.get_ogr2ogr_driver")
+    def test_upsert_validation(self, get_ogr2ogr_driver):
+        """
+        Will evaluate that the upsert first upser validation works as expected
+        """
+        get_ogr2ogr_driver.return_value = ogr.GetDriverByName("ESRI Shapefile")
+
+        # create dummy resource
+        dataset = create_single_dataset("upsert_dataset")
+
+        exec_id = orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            action="upsert",
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": {
+                    "base_file": f"{project_dir}/tests/fixture/original.shp",
+                    "dbf_file": f"{project_dir}/tests/fixture/original.dbf",
+                    "prj_file": f"{project_dir}/tests/fixture/original.prj",
+                    "shx_file": f"{project_dir}/tests/fixture/original.shx",
+                },
+                "skip_existing_layer": True,
+                "resource_pk": dataset.pk,
+            },
+        )
+        try:
+            # unzip file for testing
+            zf = zipfile.ZipFile(self.upsert_original)
+            tmp_dir = "/tmp/tmpu7nqrwz1"
+            zf.extractall(tmp_dir)
+
+            import_resource(
+                str(exec_id),
+                resource_type="shp",
+                action=ExecutionRequestAction.UPLOAD.value,
+                handler_module_path="geonode.upload.handlers.shapefile.handler.ShapeFileHandler",
+            )
+            result, errors = self.handler.upsert_validation({"base_file": f"/tmp/tmpu7nqrwz1/original.shp"}, exec_id)
+            self.assertTrue(result)
+            self.assertListEqual(errors, [])
+        except Exception as e:
+            print(e)
+        finally:
+            shutil.rmtree(tmp_dir)
+            pass
