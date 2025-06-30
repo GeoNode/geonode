@@ -22,7 +22,7 @@ import logging
 import typing
 from datetime import datetime, timedelta, timezone
 
-from celery import chord
+from celery import chord, group
 from django.core.exceptions import ValidationError
 from django.db.models import (
     F,
@@ -145,30 +145,52 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                 session.total_records_to_process = len(harvestable_resource_ids)
                 session.save()
 
-                # Define the expiration time dynamically
-                expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids))
-                resource_tasks = []
-                for harvestable_resource_id in harvestable_resource_ids:
-                    resource_tasks.append(
-                        _harvest_resource.signature(args=(harvestable_resource_id, harvesting_session_id)).set(
-                            expires=expires_at
+                if len(harvestable_resource_ids) <= 100:
+                    # No chunking, just one chord for all resources
+                    expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids))
+                    resource_tasks = [_harvest_resource.signature((rid, harvesting_session_id)).set(expires=expires_at)
+                                    for rid in harvestable_resource_ids]
+                    finalizer = (
+                        _finish_harvesting.signature((harvesting_session_id,), immutable=True)
+                        .on_error(_handle_harvesting_error.signature(kwargs={"harvesting_session_id": harvesting_session_id}))
+                        .set(expires=expires_at)
+                    )
+                    harvesting_workflow = chord(resource_tasks, body=finalizer)
+                    harvesting_workflow.apply_async()
+
+                else:
+                    # Chunking for large batches
+                    chunk_chords = []
+                    for i, chunk in enumerate(chunked(harvestable_resource_ids)):
+                        # Define the expiration time dynamically
+                        expires_at = calculate_dynamic_expiration(len(harvestable_resource_ids))
+
+                        countdown = i * 5  # e.g., start each chunk 5s after the previous one
+                        
+                        resource_tasks = [_harvest_resource.signature((rid, harvesting_session_id)).set(expires=expires_at, countdown=countdown) for rid in chunk]
+
+                        chunk_finalizer = _finish_harvesting_chunk.signature((harvesting_session_id,), immutable=True).set(expires=expires_at)
+
+                        chunk_chord = chord(resource_tasks, body=chunk_finalizer)
+                        chunk_chords.append(chunk_chord)
+
+                    all_chunks_group = group(chunk_chords)
+
+                    global_finalizer = (
+                        _finish_harvesting.signature(
+                            args=(harvesting_session_id,), immutable=True
                         )
+                        .on_error(
+                            _handle_harvesting_error.signature(
+                                kwargs={"harvesting_session_id": harvesting_session_id}
+                            )
+                        )
+                        .set(expires=calculate_dynamic_expiration(len(harvestable_resource_ids)))
                     )
 
-                harvesting_finalizer = (
-                    _finish_harvesting.signature(args=(harvesting_session_id,), immutable=True)
-                    .on_error(
-                        _handle_harvesting_error.signature(
-                            kwargs={
-                                "harvesting_session_id": harvesting_session_id,
-                            }
-                        )
-                    )
-                    .set(expires=expires_at)
-                )  # This is not necessary but it's for extra safety
-
-                harvesting_workflow = chord(resource_tasks, body=harvesting_finalizer)
-                harvesting_workflow.apply_async()
+                    final_workflow = chord(all_chunks_group, body=global_finalizer)
+                    final_workflow.apply_async()
+                
             else:
                 message = (
                     f"Skipping harvesting for harvester {harvester.name!r} because the "
@@ -257,6 +279,12 @@ def _finish_harvesting(self, harvesting_session_id: int):
         final_status = session.STATUS_FINISHED_ALL_OK
     finish_asynchronous_session(harvesting_session_id, final_status=final_status, final_details=message)
     logger.debug(f"(harvester: {harvester.pk!r} - session: {harvesting_session_id!r}) " f"{message}")
+
+
+@app.task(bind=True, queue="geonode", time_limit=600, acks_late=False, ignore_result=False)
+def _finish_harvesting_chunk(self, harvesting_session_id: int):
+    # Optionally log chunk completion, but do NOT change final status here
+    logger.debug(f"Chunk finished for session {harvesting_session_id}")
 
 
 @app.task(
@@ -550,10 +578,11 @@ def update_asynchronous_session(
 def calculate_dynamic_expiration(
     num_resources: int,
     estimated_duration_per_resource: int = 10,
-    buffer_time: int = 300,  # 5 minutes
-) -> datetime:
+    buffer_time: int = 300,
+) -> int:
     """
-    Calculate a dynamic expiration datetime for a group of tasks.
+    Calculate a dynamic expiration time (in seconds) 
+    depending on the harvestable resources
 
     Args:
         num_resources (int): Number of resources/tasks.
@@ -561,9 +590,11 @@ def calculate_dynamic_expiration(
         buffer_time (int): Additional buffer time in seconds.
 
     Returns:
-        datetime: Expiration datetime in UTC timezone.
+        estimation time in seconds.
     """
-    now = datetime.now(timezone.utc)
-    total_seconds = num_resources * estimated_duration_per_resource + buffer_time
-    expires_at = now + timedelta(seconds=total_seconds)
-    return expires_at
+    return num_resources * estimated_duration_per_resource + buffer_time
+
+
+def chunked(iterable, chunk_size=100):
+    for i in range(0, len(iterable), chunk_size):
+        yield iterable[i:i + chunk_size]
