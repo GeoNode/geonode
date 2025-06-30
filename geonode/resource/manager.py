@@ -494,7 +494,7 @@ class ResourceManager(ResourceManagerInterface):
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
-    def invalidate_cache(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def invalidate_permissions_cache(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         """Invalidate the cache for the given resource."""
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
@@ -514,7 +514,7 @@ class ResourceManager(ResourceManagerInterface):
         If is a layer removes the layer specific permissions then the
         resourcebase permissions.
         """
-        self.invalidate_cache(uuid, instance=instance)
+        self.invalidate_permissions_cache(uuid, instance=instance)
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -568,7 +568,7 @@ class ResourceManager(ResourceManagerInterface):
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
     ) -> bool:
-        self.invalidate_cache(uuid, instance=instance)
+        self.invalidate_permissions_cache(uuid, instance=instance)
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource = _resource.get_real_instance()
