@@ -19,6 +19,7 @@
 from django.conf import settings
 from django.utils.module_loading import import_string
 from geonode.security.handlers import BasePermissionsHandler
+from django.core.cache import cache 
 
 
 class PermissionsHandlerRegistry:
@@ -62,7 +63,9 @@ class PermissionsHandlerRegistry:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
 
-    def get_perms(self, instance, user=None, include_virtual=True, include_user_add_resource=False, *args, **kwargs):
+    def get_perms(
+        self, instance, user=None, include_virtual=True, include_user_add_resource=False, is_cache=False, *args, **kwargs
+    ):
         """
         Return the payload with the permissions from the handlers.
         The permissions payload can be edited by each permissions handler.
@@ -70,6 +73,15 @@ class PermissionsHandlerRegistry:
         to the resource
         include_user_add_resource -> If true add the add_resourcebase to the user perms if the user have it
         """
+        cache_key = None
+        if is_cache:
+            if user:
+                cache_key = f"resource_perms:{instance.pk}:{user.pk if not user.is_anonymous else 'anonymous'}"
+            else:
+                cache_key = f"resource_perms:{instance.pk}:__ALL__"
+            cached = cache.get(cache_key)
+            if cached is not None:
+                return cached
         if user:
             payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
         else:
@@ -81,7 +93,12 @@ class PermissionsHandlerRegistry:
         if user:
             if include_user_add_resource and user.has_perm("base.add_resourcebase"):
                 payload["users"][user].extend(["add_resourcebase"])
+            if is_cache and cache_key:
+                #set cache for 7 days
+                cache.set(cache_key, payload["users"][user], 604800) 
             return payload["users"][user]
+        if is_cache and cache_key:
+            cache.set(cache_key, payload, 604800)  # set cache for 7 days
         return payload
 
     def user_has_perm(self, user, instance, perm, include_virtual=False):
