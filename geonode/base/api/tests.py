@@ -3605,10 +3605,7 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         cls.test_group, _ = Group.objects.get_or_create(name="test-group")
         cls.test_group.user_set.add(cls.admin_user)
         cls.test_group_profile = GroupProfile.objects.create(
-            group=cls.test_group,
-            title="Test Group",
-            slug="test-group",
-            access="public"
+            group=cls.test_group, title="Test Group", slug="test-group", access="public"
         )
         cls.anonymous, _ = Group.objects.get_or_create(name="anonymous")
 
@@ -3626,21 +3623,23 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
             perm_spec = {
                 "users": {
                     cls.test_user.username: [
-                        "view_resourcebase", "change_resourcebase",
+                        "view_resourcebase",
+                        "change_resourcebase",
                         "change_resourcebase_metadata",
                         "change_resourcebase_permissions",
-                        "delete_resourcebase"
+                        "delete_resourcebase",
                     ]
                 },
                 "groups": {
                     cls.test_group.name: [
-                        "view_resourcebase", "change_resourcebase",
+                        "view_resourcebase",
+                        "change_resourcebase",
                         "change_resourcebase_metadata",
                         "change_resourcebase_permissions",
-                        "delete_resourcebase"
+                        "delete_resourcebase",
                     ],
-                    cls.anonymous.name: ["view_resourcebase"]
-                }
+                    cls.anonymous.name: ["view_resourcebase"],
+                },
             }
             resource.set_permissions(perm_spec)
             cls.resources.append(resource)
@@ -3652,17 +3651,9 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         permissions_registry = PermissionsHandlerRegistry()
         test_resource = self.resources[0]
 
-        admin_perms_1 = permissions_registry.get_perms(
-            instance=test_resource,
-            user=self.admin_user,
-            is_cache=True
-        )
+        admin_perms_1 = permissions_registry.get_perms(instance=test_resource, user=self.admin_user, is_cache=True)
 
-        admin_perms_2 = permissions_registry.get_perms(
-            instance=test_resource,
-            user=self.admin_user,
-            is_cache=True
-        )
+        admin_perms_2 = permissions_registry.get_perms(instance=test_resource, user=self.admin_user, is_cache=True)
 
         self.assertEqual(admin_perms_1, admin_perms_2)
 
@@ -3679,18 +3670,10 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         test_resource = self.resources[0]
         anonymous_user = AnonymousUser()
 
-        anon_perms_1 = permissions_registry.get_perms(
-            instance=test_resource,
-            user=anonymous_user,
-            is_cache=True
-        )
+        anon_perms_1 = permissions_registry.get_perms(instance=test_resource, user=anonymous_user, is_cache=True)
         self.assertIn("view_resourcebase", anon_perms_1)
 
-        anon_perms_2 = permissions_registry.get_perms(
-            instance=test_resource,
-            user=anonymous_user,
-            is_cache=True
-        )
+        anon_perms_2 = permissions_registry.get_perms(instance=test_resource, user=anonymous_user, is_cache=True)
         self.assertIn("view_resourcebase", anon_perms_2)
         self.assertEqual(anon_perms_1, anon_perms_2)
 
@@ -3699,25 +3682,18 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         permissions_registry = PermissionsHandlerRegistry()
         test_resource = self.resources[0]
 
-        user_perms_1 = permissions_registry.get_perms(
-            instance=test_resource,
-            user=self.test_user,
-            is_cache=True
-        )
+        user_perms_1 = permissions_registry.get_perms(instance=test_resource, user=self.test_user, is_cache=True)
 
-        user_perms_2 = permissions_registry.get_perms(
-            instance=test_resource,
-            user=self.test_user,
-            is_cache=True
-        )
+        user_perms_2 = permissions_registry.get_perms(instance=test_resource, user=self.test_user, is_cache=True)
 
         self.assertEqual(user_perms_1, user_perms_2)
 
         expected_owner_perms = [
-            "view_resourcebase", "change_resourcebase",
+            "view_resourcebase",
+            "change_resourcebase",
             "change_resourcebase_metadata",
             "change_resourcebase_permissions",
-            "delete_resourcebase"
+            "delete_resourcebase",
         ]
 
         for perm in expected_owner_perms:

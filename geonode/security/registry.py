@@ -19,7 +19,7 @@
 from django.conf import settings
 from django.utils.module_loading import import_string
 from geonode.security.handlers import BasePermissionsHandler
-from django.core.cache import cache 
+from django.core.cache import cache
 
 
 class PermissionsHandlerRegistry:
@@ -64,7 +64,14 @@ class PermissionsHandlerRegistry:
         return payload
 
     def get_perms(
-        self, instance, user=None, include_virtual=True, include_user_add_resource=False, is_cache=False, *args, **kwargs
+        self,
+        instance,
+        user=None,
+        include_virtual=True,
+        include_user_add_resource=False,
+        is_cache=False,
+        *args,
+        **kwargs,
     ):
         """
         Return the payload with the permissions from the handlers.
@@ -94,8 +101,8 @@ class PermissionsHandlerRegistry:
             if include_user_add_resource and user.has_perm("base.add_resourcebase"):
                 payload["users"][user].extend(["add_resourcebase"])
             if is_cache and cache_key:
-                #set cache for 7 days
-                cache.set(cache_key, payload["users"][user], 604800) 
+                # set cache for 7 days
+                cache.set(cache_key, payload["users"][user], 604800)
             return payload["users"][user]
         if is_cache and cache_key:
             cache.set(cache_key, payload, 604800)  # set cache for 7 days

@@ -69,7 +69,6 @@ from geonode.people.models import Profile
 from django.db.models import Q
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -494,7 +493,7 @@ class ResourceManager(ResourceManagerInterface):
                 _method = getattr(self._concrete_resource_manager, method)
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
-    
+
     def invalidate_cache(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         """Invalidate the cache for the given resource."""
         _resource = instance or ResourceManager._get_instance(uuid)
