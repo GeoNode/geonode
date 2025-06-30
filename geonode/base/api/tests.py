@@ -96,7 +96,7 @@ from geonode.resource.api.tasks import resouce_service_dispatcher
 from guardian.shortcuts import assign_perm
 from geonode.security.registry import permissions_registry
 
-from django.contrib.auth.models import AnonymousUser, Group
+from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from geonode.security.registry import PermissionsHandlerRegistry
 
@@ -3594,6 +3594,16 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         return request
 
 
+@override_settings(
+    CACHES={
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "test-cache",
+            "TIMEOUT": 600,
+            "OPTIONS": {"MAX_ENTRIES": 10000},
+        }
+    }
+)
 class TestPermissionsCaching(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
