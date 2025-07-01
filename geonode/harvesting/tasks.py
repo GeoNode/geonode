@@ -138,7 +138,6 @@ def harvest_resources(
     self,
     harvestable_resource_ids: typing.List[int],
     harvesting_session_id: int,
-    harvestable_resources_limit: int = 100,  # default limit
 ):
     """Harvest a list of remote resources that all belong to the same harvester."""
     session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
@@ -170,7 +169,10 @@ def harvest_resources(
     session.total_records_to_process = len(harvestable_resource_ids)
     session.save()
 
+    # Definition of the expiration time
     task_dynamic_expiration = calculate_dynamic_expiration(len(harvestable_resource_ids))
+
+    harvestable_resources_limit = settings.CHUNK_SIZE
 
     if len(harvestable_resource_ids) <= harvestable_resources_limit:
         # No chunking, just one chord for all resources
@@ -192,13 +194,21 @@ def harvest_resources(
         max_parallel_chunks = settings.MAX_PARALLEL_QUEUE_CHUNKS
         chunk_groups = list(chunked(chunks, max_parallel_chunks))
 
+        # Estimate dynamic time limit
+        dynamic_time_limit = calculate_dynamic_time_limit()
+
         logger.debug(f"Chunk groups: {chunk_groups}")
 
         transaction.on_commit(
             lambda: queue_next_chunk_batch.apply_async(
                 args=(chunk_groups, harvesting_session_id),
-                kwargs={"batch_index": 0, "dynamic_expiration": task_dynamic_expiration},
+                kwargs={
+                    "batch_index": 0,
+                    "dynamic_expiration": task_dynamic_expiration,
+                    "dynamic_time_limit": dynamic_time_limit,
+                },
                 expires=task_dynamic_expiration,
+                time_limit=dynamic_time_limit,
                 immutable=True,
             )
         )
@@ -311,6 +321,7 @@ def queue_next_chunk_batch(
     harvesting_session_id: int,
     batch_index: int = 0,
     dynamic_expiration: int | None = None,
+    dynamic_time_limit: int | None = None,
 ):
     """
     Queue the next batch of chunk (group of harvestable resources)
@@ -352,9 +363,13 @@ def queue_next_chunk_batch(
         )
         chords_in_batch.append(global_finalizer)
 
-    next_batch = queue_next_chunk_batch.s(chunk_groups, harvesting_session_id, batch_index + 1).set(
-        expires=dynamic_expiration, immutable=True
-    )
+    next_batch = queue_next_chunk_batch.s(
+        chunk_groups,
+        harvesting_session_id,
+        batch_index + 1,
+        dynamic_expiration=dynamic_expiration,  # explicitly pass the dynamic_expiration
+        dynamic_time_limit=dynamic_time_limit,
+    ).set(expires=dynamic_expiration, time_limit=dynamic_time_limit, immutable=True)
 
     chord(chords_in_batch, body=next_batch).apply_async()
 
@@ -649,7 +664,7 @@ def update_asynchronous_session(
 
 def calculate_dynamic_expiration(
     num_resources: int,
-    estimated_duration_per_resource: int = 10,
+    estimated_duration_per_resource: int = 20,
     buffer_time: int = 300,
 ) -> int:
     """
@@ -665,6 +680,32 @@ def calculate_dynamic_expiration(
         estimation time in seconds.
     """
     return num_resources * estimated_duration_per_resource + buffer_time
+
+
+def calculate_dynamic_time_limit(
+    estimated_duration_per_resource: int = 20,
+    buffer_time: int = 300,
+) -> int:
+    """
+    Calculate a dynamic time_limit (in seconds)
+    depending on the chunk and batch size
+
+    Args:
+        batch_size (int): Number of resources that are inserted in the queue at once.
+        estimated_duration_per_resource (int): Estimated time per resource in seconds.
+        buffer_time (int): Additional buffer time in seconds.
+
+    Returns:
+        time_limit in seconds.
+    """
+
+    chunk_size = settings.CHUNK_SIZE
+    max_parallel_queue_chunks = settings.MAX_PARALLEL_QUEUE_CHUNKS
+
+    batch_size = chunk_size * max_parallel_queue_chunks
+    estimated_time_limit = batch_size * estimated_duration_per_resource + buffer_time
+
+    return estimated_time_limit
 
 
 def chunked(iterable, chunk_size=100):
