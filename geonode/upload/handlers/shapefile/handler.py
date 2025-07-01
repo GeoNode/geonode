@@ -86,6 +86,8 @@ class ShapeFileHandler(BaseVectorFileHandler):
         _base = data.get("base_file")
         if not _base:
             return False
+        if data.get("action") == ira.UPSERT.value:
+            return False
         if _base.endswith("shp") if isinstance(_base, str) else _base.name.endswith("shp"):
             is_overwrite_flow = data.get("overwrite_existing_layer", False)
             if isinstance(is_overwrite_flow, str):
