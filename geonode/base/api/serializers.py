@@ -787,7 +787,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         """
         request = self.context.get("request")
         permissions = (
-            permissions_registry.get_perms(instance=instance, user=request.user, is_cache=True)
+            permissions_registry.get_perms(instance=instance, user=request.user, use_cache=True)
             if request and request.user and instance
             else []
         )

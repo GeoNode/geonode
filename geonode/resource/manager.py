@@ -502,10 +502,10 @@ class ResourceManager(ResourceManagerInterface):
             users = Profile.objects.filter(
                 Q(groups__in=permissions["groups"].keys()) | Q(id__in=[x.id for x in permissions["users"].keys()])
             )
-            for user in users:
-                cache.delete(f"resource_perms:{_resource.pk}:{user.pk}")
-            cache.delete(f"resource_perms:{_resource.pk}:__ALL__")
-            cache.delete(f"resource_perms:{_resource.pk}:anonymous")
+            cache_keys = [f"resource_perms:{_resource.pk}:{user.pk}" for user in users]
+            cache_keys.extend([f"resource_perms:{_resource.pk}:__ALL__", f"resource_perms:{_resource.pk}:anonymous"])
+
+            cache.delete_many(cache_keys)
             return True
         return False
 

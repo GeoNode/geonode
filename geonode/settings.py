@@ -372,6 +372,8 @@ CACHES = {
     },
 }
 
+PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
+
 if MEMCACHED_ENABLED:
     CACHES["default"] = {
         "BACKEND": MEMCACHED_BACKEND,
