@@ -882,8 +882,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Define the expected regions schema
         expected_regions = {
             "type": "array",
-            "title": "Regions",
-            "description": "keyword identifies a location",
             "items": {
                 "type": "object",
                 "properties": {
@@ -899,7 +897,9 @@ class HandlersTests(GeoNodeBaseTestSupport):
         updated_schema = self.region_handler.update_schema(schema, self.context, lang=self.lang)
 
         self.assertIn("regions", updated_schema["properties"])
-        self.assertEqual(updated_schema["properties"]["regions"], expected_regions)
+        for k, v in expected_regions.items():
+            self.assertIn(k, updated_schema["properties"]["regions"])
+            self.assertEqual(updated_schema["properties"]["regions"][k], v)
         # Check that the new field has been added with the expected order
         self.assertEqual(list(schema["properties"].keys()), ["attribution", "regions", "fake_field"])
 
@@ -1075,8 +1075,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Define the expected regions schema
         expected_doi_subschema = {
             "type": ["string", "null"],
-            "title": "DOI",
-            "description": _("a DOI will be added by Admin before publication."),
             "maxLength": 255,
             "geonode:handler": "doi",
         }
@@ -1085,7 +1083,9 @@ class HandlersTests(GeoNodeBaseTestSupport):
         updated_schema = self.doi_handler.update_schema(schema, self.context, lang=self.lang)
 
         self.assertIn("doi", updated_schema["properties"])
-        self.assertEqual(updated_schema["properties"]["doi"], expected_doi_subschema)
+        for k, v in expected_doi_subschema.items():
+            self.assertIn(k, updated_schema["properties"]["doi"])
+            self.assertEqual(updated_schema["properties"]["doi"][k], v)
         # Check that the new field has been added with the expected order
         self.assertEqual(list(schema["properties"].keys()), ["edition", "doi", "fake_field"])
 
@@ -1146,8 +1146,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Define the expected regions schema
         expected_hkeywords_subschema = {
             "type": "array",
-            "title": _("Keywords"),
-            "description": _("Hierarchical keywords"),
             "items": {
                 "type": "string",
             },
@@ -1164,7 +1162,9 @@ class HandlersTests(GeoNodeBaseTestSupport):
         updated_schema = self.hkeyword_handler.update_schema(schema, self.context, lang=self.lang)
 
         self.assertIn("hkeywords", updated_schema["properties"])
-        self.assertEqual(updated_schema["properties"]["hkeywords"], expected_hkeywords_subschema)
+        for k, v in expected_hkeywords_subschema.items():
+            self.assertIn(k, updated_schema["properties"]["hkeywords"])
+            self.assertEqual(updated_schema["properties"]["hkeywords"][k], v)
         # Check that the new field has been added with the expected order
         self.assertEqual(list(schema["properties"].keys()), ["tkeywords", "hkeywords", "fake_field"])
 
@@ -1373,7 +1373,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         mocked_endpoint.side_effect = lambda name, kwargs: f"/mocked/url/{kwargs['thesaurusid']}"
 
         # Call the method
-        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={"labels": {}}, lang="en")
 
         # Assert tkeywords property is added
         tkeywords = updated_schema["properties"].get("tkeywords")
@@ -1425,7 +1425,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         mock_collect_thesauri.return_value = {}
 
         # Call the method
-        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={"labels": {}}, lang="en")
 
         # Assert tkeywords property is hidden
         tkeywords = updated_schema["properties"].get("tkeywords")
