@@ -218,7 +218,6 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             # Check that chord was built with correct number of subtasks
             self.assertTrue(mock_chord.called)
             subtasks = mock_chord.call_args[0][0]  # This is the list of resource tasks
-            finalizer = mock_chord.call_args.kwargs["body"]
             self.assertEqual(len(subtasks), len(harvestable_resource_ids))
 
             # Check that apply_async was called on the workflow
