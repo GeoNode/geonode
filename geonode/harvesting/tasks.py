@@ -367,7 +367,7 @@ def queue_next_chunk_batch(
         chunk_groups,
         harvesting_session_id,
         batch_index + 1,
-        dynamic_expiration=dynamic_expiration,  # explicitly pass the dynamic_expiration
+        dynamic_expiration=dynamic_expiration,
         dynamic_time_limit=dynamic_time_limit,
     ).set(expires=dynamic_expiration, time_limit=dynamic_time_limit, immutable=True)
 
