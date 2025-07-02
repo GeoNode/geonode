@@ -202,6 +202,7 @@ class BaseVectorFileHandler(BaseHandler):
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
+        
 
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """

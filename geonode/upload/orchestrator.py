@@ -301,6 +301,7 @@ class ImportOrchestrator:
         name=None,
         source=None,
         asset_module_path=None,
+        geonode_resource=None,
     ) -> UUID:
         """
         Create an execution request for the user. Return the UUID of the request
