@@ -118,7 +118,7 @@ class TKeywordsHandler(MetadataHandler):
             thesaurus.update(ct["card"])
             thesauri[id] = thesaurus
 
-        tkeywords = {
+        subschema = {
             "type": "object",
             "title": _("Keywords from Thesaurus"),
             "description": _("List of keywords from Thesaurus"),
@@ -129,10 +129,11 @@ class TKeywordsHandler(MetadataHandler):
         # We are going to hide the tkeywords property if there's no thesaurus configured
         # We can't remove the property altogether, since hkeywords relies on tkeywords for positioning
         if not thesauri:
-            tkeywords["ui:widget"] = "hidden"
+            subschema["ui:widget"] = "hidden"
 
         # add thesauri after category
-        self._add_subschema(jsonschema, TKEYWORDS, tkeywords, after_what="category")
+        self._add_subschema(jsonschema, TKEYWORDS, subschema, after_what="category")
+        self._localize_subschema_labels(context, subschema, lang, TKEYWORDS)
 
         return jsonschema
 

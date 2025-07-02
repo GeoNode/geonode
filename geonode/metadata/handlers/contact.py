@@ -103,14 +103,17 @@ class ContactHandler(MetadataHandler):
 
             contacts[rolename] = contact
 
-            jsonschema["properties"]["contacts"] = {
+            subschema = {
                 "type": "object",
-                "title": self._localize_label(context, lang, "contacts"),
+                "title": "contacts",
                 "properties": contacts,
                 "required": required,
                 "geonode:required": bool(required),
                 "geonode:handler": "contact",
             }
+
+            self._localize_subschema_labels(context, subschema, lang, "contacts")
+            self._add_subschema(jsonschema, "contacts", subschema)
 
         return jsonschema
 
