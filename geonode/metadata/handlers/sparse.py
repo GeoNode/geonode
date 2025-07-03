@@ -51,6 +51,9 @@ class SparseHandler(MetadataHandler):
     Handles sparse in fields in the SparseField table
     """
 
+    def __init__(self, **kwargs):
+        self.registry = kwargs.get("registry", sparse_field_registry)
+
     def _recurse_localization(self, context, schema, lang, field_name=None):
         self._localize_subschema_labels(context, schema, lang, field_name)
 
@@ -80,7 +83,7 @@ class SparseHandler(MetadataHandler):
 
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
-        for field_name, field_info in sparse_field_registry.fields().items():
+        for field_name, field_info in self.registry.fields().items():
             subschema = copy.deepcopy(field_info["schema"])
             self._recurse_localization(context, subschema, lang, field_name)
             self._recurse_thesauri_autocomplete(subschema)
@@ -98,11 +101,9 @@ class SparseHandler(MetadataHandler):
         return jsonschema
 
     def load_serialization_context(self, resource, jsonschema: dict, context: dict):
-        logger.debug(f"Preloading sparse fields {sparse_field_registry.fields().keys()}")
+        logger.debug(f"Preloading sparse fields {self.registry.fields().keys()}")
         context[CONTEXT_ID] = {
-            "fields": {
-                f.name: f.value for f in SparseField.get_fields(resource, names=sparse_field_registry.fields().keys())
-            },
+            "fields": {f.name: f.value for f in SparseField.get_fields(resource, names=self.registry.fields().keys())},
             "schema": jsonschema,
         }
 
