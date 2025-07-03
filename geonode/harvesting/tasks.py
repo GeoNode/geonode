@@ -201,7 +201,9 @@ def harvest_resources(
 
         transaction.on_commit(
             lambda: queue_next_chunk_batch.apply_async(
-                args=(chunk_groups, harvesting_session_id),
+                # we set None for the results (1st positional argument)
+                # because we don't need it for the first call
+                args=(None, chunk_groups, harvesting_session_id),
                 kwargs={
                     "batch_index": 0,
                     "dynamic_expiration": task_dynamic_expiration,
