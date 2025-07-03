@@ -10,6 +10,7 @@ from geonode.base.models import ThesaurusKeywordLabel, Thesaurus
 logger = logging.getLogger(__name__)
 
 I18N_THESAURUS_IDENTIFIER = "labels-i18n"
+OVR_SUFFIX = "__ovr"
 
 
 def get_localized_tkeywords(lang, thesaurus_identifier: str):
@@ -34,30 +35,27 @@ def get_localized_tkeywords(lang, thesaurus_identifier: str):
         " order by label, alt_label"
     )
     ret = {}
-    ovr = {}
     with connection.cursor() as cursor:
         cursor.execute(query, [f"{lang}%", thesaurus_identifier])
         for id, about, alt, label, dblang in cursor.fetchall():
             if not dblang or dblang == lang:
                 # this is a properly localized label or an altlabel (when dblang is null)
-                ret[id] = {"id": id, "about": about, "label": label or alt}
-            elif dblang and dblang.endswith("-ovr"):
-                # store overrides to be applied later
-                ovr[id] = {"id": id, "about": about, "label": label or alt}
+                ret[id] = {"id": id, "about": about, "label": label, "default": alt}
             else:
                 logger.warning(f"Found unexpected lang {dblang}")
-        for ovr_id, ovr_row in ovr.items():  # apply overrides
-            if ovr_id in ret:
-                logger.debug(f"overriding TK {ret[ovr_id]['about']}")
-                ret[ovr_id]["label"] = ovr_row["label"]
-            else:
-                logger.debug(f"Setting ovr TK {ovr_row}")
-                ret[ovr_id] = ovr_row
 
-    return sorted(ret.values(), key=lambda i: i["label"].lower())
+    return sorted(ret.values(), key=lambda i: i["about"].lower())
 
 
 def get_localized_label(lang, about):
+    # look for override
+    ovr_qs = ThesaurusKeywordLabel.objects.filter(
+        keyword__thesaurus__identifier=I18N_THESAURUS_IDENTIFIER, keyword__about=f"{about}{OVR_SUFFIX}", lang=lang
+    )
+    if ovr_qs.exists():
+        return ovr_qs.values_list("label", flat=True).first()
+
+    # return requested keyword, if any
     return (
         ThesaurusKeywordLabel.objects.filter(
             keyword__thesaurus__identifier=I18N_THESAURUS_IDENTIFIER, keyword__about=about, lang=lang
@@ -119,9 +117,14 @@ class I18nCache:
     def get_labels(self, lang):
         date, labels = self.get_entry(lang, self.DATA_KEY_LABELS)
         if labels is None:
-            labels = {i["about"]: i["label"] for i in get_localized_tkeywords(lang, I18N_THESAURUS_IDENTIFIER)}
+            labels = {}
+            for i in get_localized_tkeywords(lang, I18N_THESAURUS_IDENTIFIER):
+                about = i["about"]
+                if about.endswith(OVR_SUFFIX) and not i["label"]:
+                    # we don't want default values for override entries
+                    continue
+                labels[about] = i["label"] or i["default"]
             self.set(lang, self.DATA_KEY_LABELS, labels, date)
-
         return labels
 
     def clear_schema_cache(self):

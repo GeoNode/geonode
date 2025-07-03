@@ -193,8 +193,7 @@ class BaseHandler(MetadataHandler):
         # building the full base schema
         for property_name, subschema in self.base_schema.items():
             self._localize_subschema_labels(context, subschema, lang, property_name)
-
-            jsonschema["properties"][property_name] = subschema
+            self._add_subschema(jsonschema, property_name, subschema)
 
             # add the base handler info to the dictionary if it doesn't exist
             if "geonode:handler" not in subschema:
