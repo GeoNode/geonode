@@ -19,6 +19,7 @@
 from django.conf import settings
 from django.utils.module_loading import import_string
 from geonode.security.handlers import BasePermissionsHandler
+from django.core.cache import cache
 
 
 class PermissionsHandlerRegistry:
@@ -62,14 +63,57 @@ class PermissionsHandlerRegistry:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
 
-    def get_perms(self, instance, user=None, include_virtual=True, include_user_add_resource=False, *args, **kwargs):
+    def _get_cache_key(self, resource_pk, user=None):
+        """
+        Generate consistent cache keys for resource permissions.
+
+        Cache key format: "resource_perms:{resource_pk}:{user_identifier}"
+
+        Where user_identifier can be:
+        - user.pk: For authenticated users
+        - "anonymous": For anonymous users
+        - "__ALL__": For permission queries that don't specify a user (returns all permissions)
+
+        Args:
+            resource_pk: Primary key of the resource
+            user: User instance, None for __ALL__ cache
+
+        Returns:
+            str: Cache key for the given resource and user combination
+        """
+        if user is None:
+            identifier = "__ALL__"
+        elif user.is_anonymous:
+            identifier = "anonymous"
+        else:
+            identifier = str(user.pk)
+
+        return f"resource_perms:{resource_pk}:{identifier}"
+
+    def get_perms(
+        self,
+        instance,
+        user=None,
+        include_virtual=True,
+        include_user_add_resource=False,
+        use_cache=False,
+        *args,
+        **kwargs,
+    ):
         """
         Return the payload with the permissions from the handlers.
         The permissions payload can be edited by each permissions handler.
         For example before return the payload, we can virtually remove perms
         to the resource
         include_user_add_resource -> If true add the add_resourcebase to the user perms if the user have it
+        Use use_cache=True to enable caching for performance-critical operations
         """
+        cache_key = None
+        if use_cache:
+            cache_key = self._get_cache_key(instance.pk, user)  # Generate cache key based on resource and user
+            cached = cache.get(cache_key)
+            if cached is not None:
+                return cached
         if user:
             payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
         else:
@@ -81,7 +125,11 @@ class PermissionsHandlerRegistry:
         if user:
             if include_user_add_resource and user.has_perm("base.add_resourcebase"):
                 payload["users"][user].extend(["add_resourcebase"])
+            if use_cache and cache_key:
+                cache.set(cache_key, payload["users"][user], settings.PERMISSION_CACHE_EXPIRATION_TIME)
             return payload["users"][user]
+        if use_cache and cache_key:
+            cache.set(cache_key, payload, settings.PERMISSION_CACHE_EXPIRATION_TIME)
         return payload
 
     def user_has_perm(self, user, instance, perm, include_virtual=False):

@@ -64,6 +64,11 @@ from ..layers.models import Dataset, Attribute
 from ..maps.models import Map
 from ..storage.manager import storage_manager
 
+from django.core.cache import cache
+from geonode.people.models import Profile
+from django.db.models import Q
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -489,11 +494,27 @@ class ResourceManager(ResourceManagerInterface):
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
+    def invalidate_permissions_cache(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+        """Invalidate the cache for the given resource."""
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            permissions = permissions_registry.get_perms(instance=_resource.get_real_instance())
+            users = Profile.objects.filter(
+                Q(groups__in=permissions["groups"].keys()) | Q(id__in=[x.id for x in permissions["users"].keys()])
+            )
+            cache_keys = [f"resource_perms:{_resource.pk}:{user.pk}" for user in users]
+            cache_keys.extend([f"resource_perms:{_resource.pk}:__ALL__", f"resource_perms:{_resource.pk}:anonymous"])
+
+            cache.delete_many(cache_keys)
+            return True
+        return False
+
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         """Remove object permissions on given resource.
         If is a layer removes the layer specific permissions then the
         resourcebase permissions.
         """
+        self.invalidate_permissions_cache(uuid, instance=instance)
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -547,6 +568,7 @@ class ResourceManager(ResourceManagerInterface):
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
     ) -> bool:
+        self.invalidate_permissions_cache(uuid, instance=instance)
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource = _resource.get_real_instance()
