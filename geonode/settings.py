@@ -2257,6 +2257,7 @@ CELERY_TASK_QUEUES += (
 DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
 
 IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS", "[]"))
+IMPORTER_ENABLE_DYN_MODELS = ast.literal_eval(os.getenv("IMPORTER_ENABLE_DYN_MODELS", "False"))
 
 INSTALLED_APPS += ("geonode.facets",)
 GEONODE_APPS += ("geonode.facets",)

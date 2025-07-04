@@ -745,8 +745,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         rules_count = geofence.get_rules_count()
         self.assertEqual(rules_count, 0)
 
-    @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
-    @override_settings(ASYNC_SIGNALS=False)
+    @patch.dict(os.environ, {"ASYNC_SIGNALS": "False", "IMPORTER_ENABLE_DYN_MODELS": "False"})
+    @override_settings(ASYNC_SIGNALS=False, IMPORTER_ENABLE_DYN_MODELS=False)
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_permissions(self):
         # Test permissions on a layer
@@ -758,7 +758,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         payload = {
             "base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"),
             "action": "upload",
-            "override_existing_layer": True,
+            # "override_existing_layer": True,
         }
         response = self.client.post(reverse("importer_upload"), data=payload)
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource

@@ -202,7 +202,6 @@ class BaseVectorFileHandler(BaseHandler):
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
-        
 
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
@@ -255,7 +254,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         if ovverwrite_layer:
             options += " -overwrite"
-        options += " -lco FID=gn_id"
         return options
 
     @staticmethod
@@ -266,7 +264,7 @@ class BaseVectorFileHandler(BaseHandler):
         try:
             name = instance.alternate.split(":")[1]
             schema = None
-            if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+            if settings.IMPORTER_ENABLE_DYN_MODELS:
                 schema = ModelSchema.objects.filter(name=name).first()
             if schema:
                 """
@@ -300,6 +298,21 @@ class BaseVectorFileHandler(BaseHandler):
             # that delete the file from the filesystem
             for asset in assets:
                 asset.delete()
+
+        # check which is the primary key in the ogr2ogr table and update the dynamic model accordingly
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
+            from django.db import connections
+
+            column = None
+            connection = connections["datastore"]
+            table_name = _exec.geonode_resource.alternate.split(":")[1]
+            with connection.cursor() as cursor:
+                column = connection.introspection.get_primary_key_columns(cursor, table_name)
+            if column:
+                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
+                if field:
+                    field.kwargs.update({"primary_key": True})
+                    field.save()
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
@@ -392,7 +405,7 @@ class BaseVectorFileHandler(BaseHandler):
                     # update the execution request object
                     # setup dynamic model and retrieve the group task needed for tun the async workflow
                     # create the async task for create the resource into geonode_data with ogr2ogr
-                    if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+                    if settings.IMPORTER_ENABLE_DYN_MODELS:
                         (
                             dynamic_model,
                             alternate,
@@ -414,7 +427,7 @@ class BaseVectorFileHandler(BaseHandler):
                         alternate,
                     )
 
-                    if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+                    if settings.IMPORTER_ENABLE_DYN_MODELS:
                         group_to_call = group(
                             celery_group.set(link_error=["dynamic_model_error_callback"]),
                             ogr_res.set(link_error=["dynamic_model_error_callback"]),
@@ -579,9 +592,7 @@ class BaseVectorFileHandler(BaseHandler):
         return_celery_group: bool = True,
     ):
         # adding default geonode id for ogr2ogr
-        layer_schema = [
-            {"name": "gn_id", "class_name": "django.db.models.AutoField", "null": False, "primary_key": True}
-        ]
+        layer_schema = []
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
         layer_schema.extend(
             [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
@@ -705,7 +716,7 @@ class BaseVectorFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            dataset = self.refresh_geonode_resource(_exec, asset, dataset)
+            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset)
             return dataset
         elif not dataset.exists() and _overwrite:
             logger.warning(
@@ -867,7 +878,7 @@ class BaseVectorFileHandler(BaseHandler):
             f"Rollback dynamic model & ogr2ogr step in progress for execid: {exec_id} resource published was: {instance_name}"
         )
         schema = None
-        if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
             schema = ModelSchema.objects.filter(name=instance_name).first()
         if schema is not None:
             _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
@@ -991,6 +1002,8 @@ class BaseVectorFileHandler(BaseHandler):
             feature_as_dict = feature.items()
             filter_dict = {field: value for field, value in feature_as_dict.items() if field in upsert_key}
             to_update = OriginalResource.objects.filter(**filter_dict)
+            geom = feature.GetGeometryRef()
+            feature_as_dict.update({self.default_geometry_column_name: geom.ExportToWkt()})
             if to_update:
                 try:
                     to_update.update(**feature_as_dict)

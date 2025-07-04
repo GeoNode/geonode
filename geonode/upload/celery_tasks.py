@@ -25,6 +25,7 @@ from django.db import connections, transaction
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy
+from django.conf import settings
 from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from dynamic_models.models import FieldSchema, ModelSchema
 from geonode.base.models import ResourceBase
@@ -566,7 +567,7 @@ def create_dynamic_structure(
                 f"Error during the field creation. The field or class_name is None {field} for {layer_name} for execution {execution_id}"
             )
 
-        _kwargs = {"null": field.get("null", True), "primary_key": field.get("primary_key", False)}
+        _kwargs = {"null": field.get("null", True)}
         if field["class_name"].endswith("CharField"):
             _kwargs = {**_kwargs, **{"max_length": 255}}
 
@@ -628,7 +629,7 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
 
         new_dataset_alternate = create_alternate(resource.title, exec_id).lower()
 
-        if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
             dynamic_schema = ModelSchema.objects.filter(name=alternate.split(":")[1])
             alternative_dynamic_schema = ModelSchema.objects.filter(name=new_dataset_alternate)
 
@@ -705,7 +706,7 @@ def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handler
         from geonode.upload.celery_tasks import import_orchestrator
 
         db_name = os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
-        if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
             schema_exists = ModelSchema.objects.filter(name=new_dataset_alternate).first()
             if schema_exists:
                 db_name = schema_exists.db_name
