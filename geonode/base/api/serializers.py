@@ -135,8 +135,16 @@ class GroupSerializer(DynamicModelSerializer):
         user = self.context["request"].user
 
         # Check if 'group' is being updated
-        new_group = validated_data["group"]
+        new_group = validated_data.get("group", None)
 
+        if new_group is None:
+            # Handle clearing the group field
+            instance.group = None
+            instance.save(update_fields=["group"])
+            # Remove 'group' from validated_data so super().update() won't process it again
+            validated_data.pop("group", None)
+            return instance
+        
         if not GroupProfile.objects.filter(group=new_group).exists():
             logger.warning(f"Group {new_group.pk} does not have an associated GroupProfile.")
             raise serializers.ValidationError("The selected group does not have a valid group profile.")
