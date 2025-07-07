@@ -346,3 +346,133 @@ class TasksTestCase(GeoNodeBaseTestSupport):
 
         # Final: check apply_async was called
         mock_chord.return_value.apply_async.assert_called_once()
+
+    def test_harvest_resource_sets_session_status_to_some_tasks_failed_or_success(self):
+        harvesting_session = self.harvesting_session
+        harvester = self.harvester
+
+        # Create a resource that will simulate failure
+        resource_fail = models.HarvestableResource.objects.create(
+            unique_identifier="fail-identifier",
+            title="Fail Resource",
+            harvester=harvester,
+            remote_resource_type="fake-remote-resource-type",
+            last_refreshed=now(),
+        )
+
+        # Mock harvester worker to simulate failure for this resource
+        mock_worker_fail = mock.MagicMock()
+        mock_worker_fail.get_resource.return_value = "fake_gotten_resource"
+        mock_worker_fail.update_geonode_resource.side_effect = RuntimeError("Test failure")
+
+        # Patch get_harvester_worker for this resource's harvester
+        resource_fail.harvester.get_harvester_worker = mock.MagicMock(return_value=mock_worker_fail)
+
+        with (
+            mock.patch("geonode.harvesting.tasks.models.HarvestableResource.objects.get", return_value=resource_fail),
+            mock.patch(
+                "geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get",
+                return_value=harvesting_session,
+            ),
+            mock.patch(
+                "geonode.harvesting.tasks.models.HarvestableResourceResult.objects.create"
+            ) as mock_create_result,
+        ):
+
+            # Run the task simulating failure
+            result = tasks._harvest_resource(resource_fail.pk, harvesting_session.pk)
+            assert result["status"] == "failed"
+            assert "Test failure" in result["details"] or "Test failure" in result.get("error", "")
+
+            mock_create_result.assert_called_with(
+                session=harvesting_session,
+                resource=resource_fail,
+                status="failed",
+                details=mock.ANY,
+                error=mock.ANY,
+            )
+
+        # Create a resource that will simulate success
+        resource_success = models.HarvestableResource.objects.create(
+            unique_identifier="success-identifier",
+            title="Success Resource",
+            harvester=harvester,
+            remote_resource_type="fake-remote-resource-type",
+            last_refreshed=now(),
+        )
+
+        # Mock harvester worker to simulate success for this resource
+        mock_worker_success = mock.MagicMock()
+        mock_worker_success.get_resource.return_value = "fake_gotten_resource"
+        mock_worker_success.update_geonode_resource.return_value = None  # no error
+
+        resource_success.harvester.get_harvester_worker = mock.MagicMock(return_value=mock_worker_success)
+
+        with (
+            mock.patch(
+                "geonode.harvesting.tasks.models.HarvestableResource.objects.get", return_value=resource_success
+            ),
+            mock.patch(
+                "geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get",
+                return_value=harvesting_session,
+            ),
+            mock.patch(
+                "geonode.harvesting.tasks.models.HarvestableResourceResult.objects.create"
+            ) as mock_create_result,
+        ):
+
+            # Run the task simulating success
+            result = tasks._harvest_resource(resource_success.pk, harvesting_session.pk)
+            assert result["status"] == "success"
+
+            mock_create_result.assert_called_with(
+                session=harvesting_session,
+                resource=resource_success,
+                status="success",
+                details=mock.ANY,
+                error=None,
+            )
+
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_finish_harvesting_handles_exception(self, mock_get):
+        harvesting_session_id = self.harvesting_session.pk
+
+        # Simulate DB lookup failure
+        mock_get.side_effect = Exception("Database error")
+
+        try:
+            tasks._finish_harvesting(harvesting_session_id=harvesting_session_id)
+        except Exception:
+            self.fail("_finish_harvesting raised an exception unexpectedly")
+
+    @mock.patch("geonode.harvesting.tasks.finish_asynchronous_session")
+    @mock.patch("geonode.harvesting.tasks.models.HarvestableResourceResult.objects.filter")
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_finish_harvesting_some_tasks_failed(self, mock_get_session, mock_filter, mock_finish_session):
+        harvesting_session_id = self.harvesting_session.pk
+
+        # Prepare mock session with required attributes
+        mock_session = mock.MagicMock()
+        mock_session.pk = harvesting_session_id
+        mock_session.status = "some_status"
+        mock_session.STATUS_ABORTING = "aborting"
+        mock_session.STATUS_ABORTED = "aborted"
+        mock_session.STATUS_FINISHED_SOME_FAILED = "some_failed"
+        mock_session.STATUS_FINISHED_ALL_OK = "all_ok"
+        mock_session.harvester.pk = 42
+
+        # Mock the .get() to return our mock session
+        mock_get_session.return_value = mock_session
+
+        # Simulate 2 failed tasks for this session
+        mock_filter.return_value.count.return_value = 2
+
+        # Run the task
+        tasks._finish_harvesting(harvesting_session_id)
+
+        # Assert finish_asynchronous_session called with expected args
+        mock_finish_session.assert_called_once_with(
+            harvesting_session_id,
+            final_status=mock_session.STATUS_FINISHED_SOME_FAILED,
+            final_details="Harvesting completed with errors: 2 task(s) failed.",
+        )

@@ -362,7 +362,7 @@ def _finish_harvesting(self, harvesting_session_id: int):
         finish_asynchronous_session(harvesting_session_id, final_status=final_status, final_details=message)
         logger.debug(f"(harvester: {harvester.pk!r} - session: {harvesting_session_id!r}) " f"{message}")
     except Exception as exc:
-        logger.exception(f"Failed to finalize harvesting session {harvesting_session_id}")
+        logger.exception(f"Failed to finalize harvesting session {harvesting_session_id}: {exc}")
 
 
 @app.task(bind=True, queue="geonode", time_limit=600, acks_late=False, ignore_result=False)
