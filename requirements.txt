@@ -58,7 +58,7 @@ Jinja2==3.1.4
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
-dj-database-url==2.1.0
+dj-database-url==3.0.1
 dj-pagination==2.5.0
 django-select2==8.1.2
 django-floppyforms<1.10.0
