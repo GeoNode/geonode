@@ -446,25 +446,6 @@ class HarvestableResource(models.Model):
         return super().delete(using, keep_parents)
 
 
-class HarvestableResourceResult(models.Model):
-    session = models.ForeignKey("AsynchronousHarvestingSession", on_delete=models.CASCADE, related_name="results")
-    resource = models.ForeignKey("HarvestableResource", on_delete=models.CASCADE, related_name="harvesting_results")
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ("success", "Success"),
-            ("failed", "Failed"),
-            ("skipped", "Skipped"),
-        ],
-    )
-    details = models.TextField(blank=True, null=True)
-    error = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-
 def validate_worker_configuration(worker_type: "BaseHarvesterWorker", worker_config: typing.Dict):  # noqa
     worker_class = import_string(worker_type)
     schema = worker_class.get_extra_config_schema()
