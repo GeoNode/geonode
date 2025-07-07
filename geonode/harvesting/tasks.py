@@ -251,7 +251,7 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
             return {
                 "resource_id": harvestable_resource_id,
                 "status": "skipped",
-                "message": message,
+                "details": message,
             }
 
         worker: base.BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
@@ -316,9 +316,12 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
                 details=details_msg,
                 error=error_msg,
             )
-        except Exception:
-            # If something goes wrong here, just skip storing the failure result
-            pass
+        except Exception as exc2:
+            logger.error(
+                f"Failed to store failure result for resource {harvestable_resource_id} "
+                f"during error handling: {exc2}",
+                exc_info=True,
+            )
         return {
             "resource_id": harvestable_resource_id,
             "status": "failed",
