@@ -144,7 +144,7 @@ class GroupSerializer(DynamicModelSerializer):
             # Remove 'group' from validated_data so super().update() won't process it again
             validated_data.pop("group", None)
             return instance
-        
+
         if not GroupProfile.objects.filter(group=new_group).exists():
             logger.warning(f"Group {new_group.pk} does not have an associated GroupProfile.")
             raise serializers.ValidationError("The selected group does not have a valid group profile.")
