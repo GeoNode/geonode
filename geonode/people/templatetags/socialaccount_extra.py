@@ -17,9 +17,7 @@ def get_other_social_providers(user):
     user_providers = get_user_social_providers(user)
     user_provider_names = {p.name.lower() for p in user_providers}
     return [
-        provider  
-        for provider in providers.registry.get_class_list()       
-        if provider.name.lower() not in user_provider_names        
+        provider for provider in providers.registry.get_class_list() if provider.name.lower() not in user_provider_names
     ]
 
 
