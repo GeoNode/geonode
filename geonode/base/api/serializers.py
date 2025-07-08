@@ -140,7 +140,6 @@ class GroupSerializer(DynamicModelSerializer):
         if new_group is None:
             # Handle clearing the group field
             instance.group = None
-            instance.save(update_fields=["group"])
             # Remove 'group' from validated_data so super().update() won't process it again
             validated_data.pop("group", None)
             return instance
