@@ -107,6 +107,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         skip_geoserver=False,
         assert_payload=None,
         keep_resource=False,
+        skip_dynamic=False
     ):
         try:
             self.client.force_login(self.admin)
@@ -129,7 +130,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 raise Exception(f"Async still in progress after 1 min of waiting: {model_to_dict(exc_obj)}")
 
             # check if the dynamic model is created
-            if settings.IMPORTER_ENABLE_DYN_MODELS:
+            if settings.IMPORTER_ENABLE_DYN_MODELS and not skip_dynamic:
                 _schema_id = ModelSchema.objects.filter(name__icontains=initial_name.lower().replace(" ", "_"))
                 self.assertTrue(_schema_id.exists())
                 schema_entity = _schema_id.first()
@@ -383,7 +384,7 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
 
         payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
         initial_name = "test_raster"
-        self._assertimport(payload, initial_name)
+        self._assertimport(payload, initial_name, skip_dynamic=True)
         self._cleanup_layers(name="test_raster")
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
@@ -393,13 +394,13 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
 
         self._cleanup_layers(name="test_raster")
         payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
-        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True, skip_dynamic=True)
 
         payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
         initial_name = "test_raster"
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
-        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, skip_dynamic=True)
         self._cleanup_layers(name="test_raster")
 
 
@@ -419,7 +420,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             "title": "Remote Title",
             "resource_type": "dataset",
         }
-        self._assertimport(payload, initial_name, skip_geoserver=True, assert_payload=assert_payload)
+        self._assertimport(payload, initial_name, skip_geoserver=True, assert_payload=assert_payload, skip_dynamic=True)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "ASYNC_SIGNALS": "False"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", ASYNC_SIGNALS=False)
@@ -443,6 +444,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             skip_geoserver=True,
             keep_resource=True,
             assert_payload=assert_payload,
+            skip_dynamic=True
         )
         prev_timestamp = resource.last_updated
         # let's re-import it again with the overwrite mode activated
@@ -458,6 +460,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             overwrite=True,
             assert_payload=assert_payload,
             last_update=prev_timestamp,
+            skip_dynamic=True
         )
 
 

@@ -241,7 +241,7 @@ class BaseVectorFileHandler(BaseHandler):
             options += " -f PGDump /vsistdout/ "
         else:
             # default option with postgres copy
-            options += " -f PostgreSQL PG:\" dbname='%s' host=%s port=%s user='%s' password='%s' \" " % (
+            options += "--debug ON -f PostgreSQL PG:\" dbname='%s' host=%s port=%s user='%s' password='%s' \" " % (
                 _datastore["NAME"],
                 _datastore["HOST"],
                 _datastore.get("PORT", 5432),
@@ -302,17 +302,19 @@ class BaseVectorFileHandler(BaseHandler):
         # check which is the primary key in the ogr2ogr table and update the dynamic model accordingly
         if settings.IMPORTER_ENABLE_DYN_MODELS:
             from django.db import connections
-
-            column = None
-            connection = connections["datastore"]
-            table_name = _exec.geonode_resource.alternate.split(":")[1]
-            with connection.cursor() as cursor:
-                column = connection.introspection.get_primary_key_columns(cursor, table_name)
-            if column:
-                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
-                if field:
-                    field.kwargs.update({"primary_key": True})
-                    field.save()
+            try:
+                column = None
+                connection = connections["datastore"]
+                table_name = _exec.geonode_resource.alternate.split(":")[1]
+                with connection.cursor() as cursor:
+                    column = connection.introspection.get_primary_key_columns(cursor, table_name)
+                if column:
+                    field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
+                    if field:
+                        field.kwargs.update({"primary_key": True})
+                        field.save()
+            except Exception as e:
+                logger.error(e)
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
