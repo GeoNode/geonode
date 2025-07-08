@@ -758,7 +758,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         payload = {
             "base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"),
             "action": "upload",
-            # "override_existing_layer": True,
+            "override_existing_layer": True,
         }
         response = self.client.post(reverse("importer_upload"), data=payload)
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource
