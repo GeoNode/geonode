@@ -33,6 +33,7 @@ from django.conf import settings
 from django.db import transaction
 
 from geonode.resource.models import ExecutionRequest
+from geonode.resource.enumerator import ExecutionRequestAction
 from geonode.celery_app import app
 
 from . import models
@@ -185,6 +186,7 @@ def harvest_resources(
             "harvesting_session_id": harvesting_session_id,
         },
         name=f"Harvest session {harvesting_session_id}",
+        action=ExecutionRequestAction.HARVEST.value,
     )
 
     # Request ID, which will be passed to the _harvest_resource sub-tasks

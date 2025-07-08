@@ -60,53 +60,117 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             )
 
     @mock.patch("geonode.harvesting.tasks.update_asynchronous_session")
-    def test_harvest_resource_updates_geonode_when_remote_resource_exists(self, mock_update_asynchronous_session):
-        """Test that `worker.get_resource()` is called by the `_harvest_resource()` task and that the related workflow is called too.
+    @mock.patch("geonode.resource.models.ExecutionRequest.objects.get")
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    @mock.patch("geonode.harvesting.tasks.models.HarvestableResource.objects.get")
+    def test_harvest_resource_updates_geonode_when_remote_resource_exists(
+        self, mock_get_resource, mock_get_session, mock_get_exec_req, mock_update_asynchronous_session
+    ):
+        """Test that get_resource, update_geonode_resource and update_asynchronous_session are called."""
 
-        Verify that `worker.get_resource()` is always called. Then verify that if the result of `worker.get_resource()` is
-        not `None`, the `worker.update_geonode_resource()` is called and `worker.update_harvesting_session()` is called too.
-
-        """
-
-        harvestable_resource_id = "fake id"
+        harvestable_resource_id = 123
         fake_execution_id = str(uuid.uuid4())
-        with mock.patch("geonode.harvesting.tasks.models") as mock_models:
-            mock_worker = mock.MagicMock()
-            mock_worker.get_resource.return_value = "fake_gotten_resource"
-            mock_harvestable_resource = mock.MagicMock(models.HarvestableResource)
-            mock_harvestable_resource.harvester.get_harvester_worker.return_value = mock_worker
-            mock_models.HarvestableResource.objects.get.return_value = mock_harvestable_resource
 
-            tasks._harvest_resource(harvestable_resource_id, self.harvesting_session.id, fake_execution_id)
+        # Mock session
+        mock_session = mock.MagicMock()
+        mock_session.status = "running"
+        mock_session.STATUS_ABORTING = "aborting"
+        mock_get_session.return_value = mock_session
 
-            mock_models.HarvestableResource.objects.get.assert_called_with(pk=harvestable_resource_id)
-            mock_worker.get_resource.assert_called()
-            mock_worker.update_geonode_resource.assert_called()
-            mock_update_asynchronous_session.assert_called()
+        # Mock ExecutionRequest
+        mock_exec_req = mock.MagicMock()
+        mock_exec_req.output_params = {}
+        mock_get_exec_req.return_value = mock_exec_req
 
-    def test_harvest_resource_does_not_update_geonode_when_remote_resource_does_not_exist(self):
-        """Test that the worker does not try to update existing GeoNode resources when the remote resource cannot be harvested."""
+        # Mock worker
+        mock_worker = mock.MagicMock()
+        mock_worker.get_resource.return_value = "fake_gotten_resource"
+        mock_worker.update_geonode_resource.return_value = None
 
-        harvestable_resource_id = "fake id"
-        with mock.patch("geonode.harvesting.tasks.models") as mock_models:
-            mock_worker = mock.MagicMock()
-            mock_worker.get_resource.return_value = None  # this means the remote resource was not harvested
-            mock_harvestable_resource = mock.MagicMock(models.HarvestableResource)
-            mock_harvestable_resource.harvester.get_harvester_worker.return_value = mock_worker
-            mock_models.HarvestableResource.objects.get.return_value = mock_harvestable_resource
+        # Mock resource
+        mock_resource = mock.MagicMock()
+        mock_resource.title = "Fake Title"
+        mock_resource.harvester.get_harvester_worker.return_value = mock_worker
+        mock_get_resource.return_value = mock_resource
 
-            tasks._harvest_resource(harvestable_resource_id, self.harvesting_session.id)
+        # Run the task
+        result = tasks._harvest_resource(harvestable_resource_id, mock_session.pk, fake_execution_id)
 
-            mock_models.HarvestableResource.objects.get.assert_called_with(pk=harvestable_resource_id)
-            mock_worker.get_resource.assert_called()
-            mock_worker.update_geonode_resource.assert_not_called()
+        # Assert
+        mock_get_resource.assert_called_with(pk=harvestable_resource_id)
+        mock_worker.get_resource.assert_called_once_with(mock_resource)
+        mock_worker.update_geonode_resource.assert_called_once()
+        mock_update_asynchronous_session.assert_called()
+        assert result["status"] == "success"
+
+    @mock.patch("geonode.harvesting.tasks.update_asynchronous_session")
+    @mock.patch("geonode.resource.models.ExecutionRequest.objects.get")
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    @mock.patch("geonode.harvesting.tasks.models.HarvestableResource.objects.get")
+    def test_harvest_resource_does_not_update_geonode_when_remote_resource_does_not_exist(
+        self, mock_get_resource, mock_get_session, mock_get_exec_req, mock_update_asynchronous_session
+    ):
+        """Test that GeoNode is not updated if remote resource cannot be harvested."""
+
+        harvestable_resource_id = 123
+        fake_execution_id = str(uuid.uuid4())
+
+        # Mock session
+        mock_session = mock.MagicMock()
+        mock_session.status = "running"
+        mock_session.STATUS_ABORTING = "aborting"
+        mock_get_session.return_value = mock_session
+
+        # Mock ExecutionRequest
+        mock_exec_req = mock.MagicMock()
+        mock_exec_req.output_params = {}
+        mock_get_exec_req.return_value = mock_exec_req
+
+        # Mock worker with None returned from get_resource
+        mock_worker = mock.MagicMock()
+        mock_worker.get_resource.return_value = None
+
+        # Mock harvestable resource
+        mock_resource = mock.MagicMock()
+        mock_resource.title = "Fake Title"
+        mock_resource.harvester.get_harvester_worker.return_value = mock_worker
+        mock_get_resource.return_value = mock_resource
+
+        # Call the task
+        result = tasks._harvest_resource(harvestable_resource_id, mock_session.pk, fake_execution_id)
+
+        # Assertions
+        mock_get_resource.assert_called_with(pk=harvestable_resource_id)
+        mock_worker.get_resource.assert_called_once_with(mock_resource)
+        mock_worker.update_geonode_resource.assert_not_called()
+        mock_update_asynchronous_session.assert_called()
+        assert result["status"] == "failed"
+        assert "no resource info returned" in result["details"].lower()
 
     def test_finish_harvesting_updates_harvester_status(self):
-        tasks._finish_harvesting(self.harvesting_session.id)
+        fake_execution_id = str(uuid.uuid4())
+        exec_req = ExecutionRequest.objects.create(
+            exec_id=fake_execution_id,
+            status=ExecutionRequest.STATUS_READY,
+            output_params={},  # no failures
+        )
+
+        tasks._finish_harvesting.apply(args=(self.harvesting_session.id, fake_execution_id))
+
+        # Refresh from DB
         self.harvester.refresh_from_db()
         self.harvesting_session.refresh_from_db()
+        exec_req.refresh_from_db()
+
+        # Assert Harvester is ready (only if `finish_asynchronous_session()` sets this)
         self.assertEqual(self.harvester.status, models.Harvester.STATUS_READY)
+
+        # Assert session ended timestamp is set
         self.assertIsNotNone(self.harvesting_session.ended)
+
+        # Assert execution request was finalized
+        self.assertEqual(exec_req.status, ExecutionRequest.STATUS_FINISHED)
+        self.assertIn("completed successfully", exec_req.log)
 
     def test_handle_harvesting_error_cleans_up_harvest_execution(self):
         tasks._handle_harvesting_error(
@@ -283,6 +347,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         chunk_groups = [[[1, 2], [3]], [[4, 5]]]
         session_id = 42
         batch_index = 0
+        fake_execution_id = str(uuid.uuid4())
         dynamic_expiration = 900
         dynamic_time_limit = 1800
 
@@ -292,6 +357,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         tasks.queue_next_chunk_batch(
             chunk_groups=chunk_groups,
             harvesting_session_id=session_id,
+            execution_id=fake_execution_id,
             batch_index=batch_index,
             dynamic_expiration=dynamic_expiration,
             dynamic_time_limit=dynamic_time_limit,
@@ -308,7 +374,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(len(chords_in_batch), 2)
 
         # Check next_batch is queue_next_chunk_batch task for batch 1
-        self.assertEqual(next_batch.args[2], 1)
+        self.assertEqual(next_batch.args[3], 1)
 
         # Final: check apply_async was called
         mock_chord.return_value.apply_async.assert_called_once()
@@ -322,6 +388,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         chunk_groups = [[[1, 2], [3]], [[4, 5]]]
         session_id = 42
         batch_index = 1
+        fake_execution_id = str(uuid.uuid4())
         dynamic_expiration = 900
         dynamic_time_limit = 1800
 
@@ -331,6 +398,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         tasks.queue_next_chunk_batch(
             chunk_groups=chunk_groups,
             harvesting_session_id=session_id,
+            execution_id=fake_execution_id,
             batch_index=batch_index,
             dynamic_expiration=dynamic_expiration,
             dynamic_time_limit=dynamic_time_limit,
