@@ -32,6 +32,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.db import transaction
 
+from geonode.resource.models import ExecutionRequest
 from geonode.celery_app import app
 
 from . import models
@@ -174,14 +175,29 @@ def harvest_resources(
 
     harvestable_resources_limit = settings.CHUNK_SIZE
 
+    # Create the ExecutionRequest
+    exec_request = ExecutionRequest.objects.create(
+        func_name="harvest_resources",
+        status=ExecutionRequest.STATUS_RUNNING,
+        created=timezone.now(),
+        input_params={
+            "harvestable_resource_ids": harvestable_resource_ids,
+            "harvesting_session_id": harvesting_session_id,
+        },
+        name=f"Harvest session {harvesting_session_id}",
+    )
+
+    # Request ID, which will be passed to the _harvest_resource sub-tasks
+    execution_id = str(exec_request.exec_id)
+
     if len(harvestable_resource_ids) <= harvestable_resources_limit:
         # No chunking, just one chord for all resources
         resource_tasks = [
-            _harvest_resource.signature((rid, harvesting_session_id)).set(expires=task_dynamic_expiration)
+            _harvest_resource.signature((rid, harvesting_session_id, execution_id)).set(expires=task_dynamic_expiration)
             for rid in harvestable_resource_ids
         ]
         finalizer = (
-            _finish_harvesting.signature((harvesting_session_id,), immutable=True)
+            _finish_harvesting.signature((harvesting_session_id, execution_id), immutable=True)
             .on_error(_handle_harvesting_error.signature(kwargs={"harvesting_session_id": harvesting_session_id}))
             .set(expires=task_dynamic_expiration)
         )
@@ -200,7 +216,7 @@ def harvest_resources(
 
         transaction.on_commit(
             lambda: queue_next_chunk_batch.apply_async(
-                args=(chunk_groups, harvesting_session_id),
+                args=(chunk_groups, harvesting_session_id, execution_id),
                 kwargs={
                     "batch_index": 0,
                     "dynamic_expiration": task_dynamic_expiration,
@@ -220,7 +236,7 @@ def harvest_resources(
     acks_late=False,
     ignore_result=False,
 )
-def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id: int):
+def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id: int, execution_id: str):
     """
     Harvest a single resource from the input harvestable resource id
 
@@ -233,6 +249,11 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
         session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
         harvestable_resource = models.HarvestableResource.objects.get(pk=harvestable_resource_id)
         now_ = timezone.now()
+        timestamp = now_.isoformat()
+
+        # Retrieve the execution id of this session
+        exec_req = ExecutionRequest.objects.get(exec_id=execution_id)
+        output = exec_req.output_params or {}
 
         if session.status == session.STATUS_ABORTING:
             message = (
@@ -241,87 +262,101 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
             update_asynchronous_session(harvesting_session_id, additional_details=message)
             logger.debug(message)
 
-            # Save a 'skipped' result
-            models.HarvestableResourceResult.objects.create(
-                session=session,
-                resource=harvestable_resource,
-                status="skipped",
-                details=message,
-            )
-            return {
-                "resource_id": harvestable_resource_id,
-                "status": "skipped",
-                "details": message,
-            }
+            log_message = f"[{timestamp}] Skipped harvesting resource {harvestable_resource_id} due to aborted session {harvesting_session_id}."
+            exec_req.log = (exec_req.log or "") + log_message + "\n"
+            exec_req.last_updated = now_
+            exec_req.save(update_fields=["last_updated", "log"])
+
+            return
 
         worker: base.BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
         harvested_resource_info = worker.get_resource(harvestable_resource)
 
         if harvested_resource_info is not None:
+
             try:
                 worker.update_geonode_resource(
                     harvested_resource_info,
                     harvestable_resource,
                 )
                 result = True
-                details = ""
+                details = "Harvest succeeded"
             except (RuntimeError, ValidationError) as exc:
                 logger.error(msg="Unable to update geonode resource")
                 result = False
                 details = str(exc)
-            harvesting_message = (
-                f"{harvestable_resource.title}({harvestable_resource_id}) - {'Success' if result else details}"
-            )
-            update_asynchronous_session(
-                harvesting_session_id,
-                additional_processed_records=1 if result else 0,
-                additional_details=harvesting_message,
-            )
-            harvestable_resource.last_harvesting_message = f"{now_} - {harvesting_message}"
-            harvestable_resource.last_harvesting_succeeded = result
         else:
-            harvestable_resource.last_harvesting_message = f"{now_}Harvesting failed"
-            harvestable_resource.last_harvesting_succeeded = False
+            result = False
+            details = "Harvesting failed (no resource info returned)"
+
+        harvesting_message = f"{harvestable_resource.title}({harvestable_resource_id}) - {details}"
+        update_asynchronous_session(
+            harvesting_session_id,
+            additional_processed_records=1 if result else 0,
+            additional_details=harvesting_message,
+        )
+        harvestable_resource.last_harvesting_message = f"{now_} - {harvesting_message}"
+        harvestable_resource.last_harvesting_succeeded = result
         harvestable_resource.last_harvested = now_
         harvestable_resource.save()
 
-        # Save harvest result to HarvestableResourceResult model
-        models.HarvestableResourceResult.objects.create(
-            session=session,
-            resource=harvestable_resource,
-            status="success" if harvestable_resource.last_harvesting_succeeded else "failed",
-            details=harvestable_resource.last_harvesting_message,
-            error=details if not harvestable_resource.last_harvesting_succeeded else None,
-        )
+        # Update execution request
+        if not result:
+            failures = output.get("failures", [])
+            failures.append(
+                {
+                    "resource_id": harvestable_resource_id,
+                    "status": "failed",
+                    "details": harvesting_message,
+                    "timestamp": timestamp,
+                }
+            )
+            output["failures"] = failures
+
+        log_entry = f"[{timestamp}] {harvesting_message}"
+        exec_req.log = (exec_req.log or "") + log_entry + "\n"
+        exec_req.output_params = output
+        exec_req.last_updated = now_
+        exec_req.save(update_fields=["output_params", "last_updated", "log"])
 
         return {
             "resource_id": harvestable_resource_id,
-            "status": "success" if harvestable_resource.last_harvesting_succeeded else "failed",
-            "details": harvestable_resource.last_harvesting_message,
+            "status": "success" if result else "failed",
+            "details": harvesting_message,
         }
 
     except Exception as exc:
         logger.error(f"Unexpected error harvesting resource {harvestable_resource_id}", exc_info=True)
 
+        now_ = timezone.now()
+        timestamp = now_.isoformat()
         error_msg = str(exc)[:1000]  # truncate long errors
         details_msg = f"Unexpected error while harvesting resource {harvestable_resource_id}"
 
         try:
-            session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
-            harvestable_resource = models.HarvestableResource.objects.get(pk=harvestable_resource_id)
-            models.HarvestableResourceResult.objects.create(
-                session=session,
-                resource=harvestable_resource,
-                status="failed",
-                details=details_msg,
-                error=error_msg,
+            exec_req = ExecutionRequest.objects.get(exec_id=execution_id)
+            output = exec_req.output_params or {}
+            failures = output.get("failures", [])
+            failures.append(
+                {
+                    "resource_id": harvestable_resource_id,
+                    "status": "failed",
+                    "details": details_msg,
+                    "error": error_msg,
+                    "timestamp": timestamp,
+                }
             )
-        except Exception as exc2:
-            logger.error(
-                f"Failed to store failure result for resource {harvestable_resource_id} "
-                f"during error handling: {exc2}",
-                exc_info=True,
-            )
+            output["failures"] = failures
+
+            log_entry = f"[{timestamp}] {details_msg}: {error_msg}"
+            exec_req.log = (exec_req.log or "") + log_entry + "\n"
+            exec_req.output_params = output
+            exec_req.last_updated = now_
+            exec_req.save(update_fields=["output_params", "last_updated", "log"])
+
+        except Exception:
+            logger.exception("Failed to update execution request during final error handling")
+
         return {
             "resource_id": harvestable_resource_id,
             "status": "failed",
@@ -337,21 +372,29 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
     acks_late=False,
     ignore_result=False,
 )
-def _finish_harvesting(self, harvesting_session_id: int):
+def _finish_harvesting(self, harvesting_session_id: int, execution_id: str):
     """
-    Finalize the harvesting session by setting its final status and logging the result.
+    Finalize the harvesting session by marking it as completed and updating
+    the ExecutionRequest status and log.
 
     NOTE:
     The expiration time is set dynamically when this task is scheduled,
     so the decorator does NOT specify an expires parameter.
     """
 
+    now_ = timezone.now()
+    timestamp = now_.isoformat()
+
     try:
         session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
         harvester = session.harvester
 
-        # Count the number of failed tasks in this session
-        failed_tasks_count = models.HarvestableResourceResult.objects.filter(session=session, status="failed").count()
+        # Get the execution request and failures
+        exec_req = ExecutionRequest.objects.get(exec_id=execution_id)
+        output = exec_req.output_params or {}
+        failures = output.get("failures", [])
+        # we exclude the faiures with status: skipped
+        failed_tasks_count = len(failures)
 
         if session.status == session.STATUS_ABORTING:
             message = "Harvesting session aborted by user"
@@ -362,7 +405,18 @@ def _finish_harvesting(self, harvesting_session_id: int):
         else:
             message = "Harvesting completed successfully!"
             final_status = session.STATUS_FINISHED_ALL_OK
+
+        # Finalize session
         finish_asynchronous_session(harvesting_session_id, final_status=final_status, final_details=message)
+
+        # Update execution request status and log
+        exec_req.status = ExecutionRequest.STATUS_FINISHED
+        log_entry = f"[{timestamp}] {message}"
+        exec_req.log = (exec_req.log or "") + log_entry + "\n"
+        exec_req.last_updated = now_
+        exec_req.output_params = output
+        exec_req.save(update_fields=["status", "log", "last_updated", "output_params"])
+
         logger.debug(f"(harvester: {harvester.pk!r} - session: {harvesting_session_id!r}) " f"{message}")
     except Exception as exc:
         logger.exception(f"Failed to finalize harvesting session {harvesting_session_id}: {exc}")
@@ -391,6 +445,7 @@ def queue_next_chunk_batch(
     self,
     chunk_groups: list,
     harvesting_session_id: int,
+    execution_id: str,
     batch_index: int = 0,
     dynamic_expiration: int | None = None,
     dynamic_time_limit: int | None = None,
@@ -419,7 +474,8 @@ def queue_next_chunk_batch(
 
     for chunk in current_chunk_group:
         resource_tasks = [
-            _harvest_resource.s(rid, harvesting_session_id).set(expires=dynamic_expiration) for rid in chunk
+            _harvest_resource.s(rid, harvesting_session_id, execution_id).set(expires=dynamic_expiration)
+            for rid in chunk
         ]
 
         chunk_finalizer = _finish_harvesting_chunk.s(harvesting_session_id).set(expires=dynamic_expiration)
@@ -429,7 +485,7 @@ def queue_next_chunk_batch(
     is_last_batch = batch_index == len(chunk_groups) - 1
     if is_last_batch:
         global_finalizer = (
-            _finish_harvesting.s(harvesting_session_id)
+            _finish_harvesting.s(harvesting_session_id, execution_id)
             .on_error(_handle_harvesting_error.s(harvesting_session_id))
             .set(expires=dynamic_expiration)
         )
@@ -438,6 +494,7 @@ def queue_next_chunk_batch(
     next_batch = queue_next_chunk_batch.s(
         chunk_groups,
         harvesting_session_id,
+        execution_id,
         batch_index + 1,
         dynamic_expiration=dynamic_expiration,
         dynamic_time_limit=dynamic_time_limit,
