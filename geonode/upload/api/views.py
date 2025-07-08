@@ -178,7 +178,9 @@ class ImporterViewSet(DynamicModelViewSet):
 
         handler = orchestrator.get_handler(_data)
         # not file but handler means that is a remote resource
-        if handler:
+        action = _data.get("action")
+
+        if handler and handler.can_do(action):
             asset = None
             files = []
             try:
@@ -215,6 +217,7 @@ class ImporterViewSet(DynamicModelViewSet):
                     input_params=input_params,
                     action=action,
                     name=_file.name if _file else extracted_params.get("title", None),
+                    geonode_resource=None or extracted_params.get("resource_pk", None),
                 )
 
                 sig = import_orchestrator.s(files, str(execution_id), handler=str(handler), action=action)

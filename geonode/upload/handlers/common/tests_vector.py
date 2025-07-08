@@ -132,6 +132,16 @@ class TestBaseVectorFileHandler(TestCase):
                 input_params={"files": self.valid_files, "skip_existing_layer": True},
             )
 
+            if overwrite:
+                resource = self.handler.create_geonode_resource(
+                    "layer_name",
+                    "layer_alternate",
+                    str(exec_id),
+                )
+                ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                    input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": resource.pk}
+                )
+
             layers = ogr.Open(self.valid_gpkg)
 
             # starting the tests
