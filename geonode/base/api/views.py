@@ -117,7 +117,6 @@ class GroupViewSet(DynamicModelViewSet):
     API endpoint that allows gropus to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         IsManagerEditOrAdmin,
@@ -247,7 +246,6 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
     API endpoint that lists all possible owners.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         AllowAny,
     ]
@@ -303,7 +301,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     API endpoint that allows base resources to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         TKeywordsFilter,

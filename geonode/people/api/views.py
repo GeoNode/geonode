@@ -54,7 +54,6 @@ class UserViewSet(DynamicModelViewSet):
     """
 
     http_method_names = ["get", "post", "patch", "delete"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
         IsOwnerOrAdmin,

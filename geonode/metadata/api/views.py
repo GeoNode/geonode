@@ -46,7 +46,6 @@ logger = logging.getLogger(__name__)
 
 
 class MetadataViewSet(ViewSet):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
 
     """

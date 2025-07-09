@@ -65,7 +65,6 @@ logger = logging.getLogger("importer")
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
     http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadSizeLimit.objects.all()
     serializer_class = UploadSizeLimitSerializer
@@ -87,7 +86,6 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
 
 class UploadParallelismLimitViewSet(DynamicModelViewSet):
     http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadParallelismLimit.objects.all()
     serializer_class = UploadParallelismLimitSerializer
@@ -115,11 +113,6 @@ class ImporterViewSet(DynamicModelViewSet):
 
     parser_class = [JSONParser, FileUploadParser, MultiPartParser]
 
-    authentication_classes = [
-        BasicAuthentication,
-        SessionAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
@@ -268,11 +261,6 @@ class ImporterViewSet(DynamicModelViewSet):
 
 
 class ResourceImporter(DynamicModelViewSet):
-    authentication_classes = [
-        SessionAuthentication,
-        BasicAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(

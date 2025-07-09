@@ -32,6 +32,7 @@ from geonode.base.auth import (
     get_token_object_from_session,
     visitor_ip_address,
     is_ipaddress_in_whitelist,
+    get_auth_token,
 )
 
 
@@ -93,19 +94,16 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
 
 class LoginFromApiKeyMiddleware(MiddlewareMixin):
-    def __init__(self, get_response):
-        self.get_response = get_response
-
     def process_request(self, request):
         """
         If an api key is provided and validated, the user can access to the page even without the login
+        This is useful for API calls, when LOCKDOWN_GEONODE is set to True and the user is not logged in.
         This middleware is deactivated by default, to activate it set ENABLE_APIKEY_LOGIN=True
         """
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-            request.user = extract_user_from_headers(request)
-
-            if request.user and not request.user.is_anonymous and request.user.is_authenticated:
-                return
+            user = extract_user_from_headers(request)
+            if user:
+                request.user = user
 
 
 class SessionControlMiddleware(MiddlewareMixin):

@@ -44,7 +44,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseFacetingView(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     @classmethod
     def _get_topics(

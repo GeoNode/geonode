@@ -48,7 +48,6 @@ class AssetViewSet(DynamicModelViewSet):
     API endpoint that allows Assets to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [
         DynamicFilterBackend,

@@ -58,7 +58,6 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
     """
 
     http_method_names = ["get", "patch", "put", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),

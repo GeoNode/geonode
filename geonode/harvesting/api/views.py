@@ -47,11 +47,6 @@ class IsAdminOrListOnly(rest_framework.permissions.BasePermission):
 
 
 class HarvesterViewSet(NestedViewSetMixin, DynamicModelViewSet):
-    authentication_classes = [
-        BasicAuthentication,
-        SessionAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
         IsAdminOrListOnly,
     ]
