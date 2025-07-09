@@ -46,9 +46,17 @@ from allauth.socialaccount.signals import social_account_added
 from geonode.security.utils import can_approve, can_feature, can_publish
 
 from .utils import format_address
-from .signals import do_login, do_logout, profile_post_save, update_user_email_addresses, notify_admins_new_signup
+from .signals import (
+    do_login,
+    do_logout,
+    profile_post_save,
+    update_user_email_addresses,
+    notify_admins_new_signup,
+    clear_user_resource_permissions_cache_on_delete,
+)
 from .languages import LANGUAGES
 from .timezones import TIMEZONES
+
 
 logger = logging.getLogger(__name__)
 
@@ -115,9 +123,8 @@ class Profile(AbstractUser):
     keywords = TaggableManager(
         _("keywords"),
         blank=True,
-        help_text=_(
-            "commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
-            (space or comma-separated"
+        help_text=(
+            "commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject             (space or comma-separated)"
         ),
     )
     language = models.CharField(_("language"), max_length=10, choices=LANGUAGES, default=settings.LANGUAGE_CODE)
@@ -296,3 +303,4 @@ user_logged_out.connect(do_logout)
 social_account_added.connect(update_user_email_addresses, dispatch_uid=str(uuid4()), weak=False)
 user_signed_up.connect(notify_admins_new_signup, dispatch_uid=str(uuid4()), weak=False)
 signals.post_save.connect(profile_post_save, sender=settings.AUTH_USER_MODEL)
+signals.pre_delete.connect(clear_user_resource_permissions_cache_on_delete, sender=settings.AUTH_USER_MODEL)
