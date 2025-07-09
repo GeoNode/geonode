@@ -129,7 +129,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 raise Exception(f"Async still in progress after 1 min of waiting: {model_to_dict(exc_obj)}")
 
             # check if the dynamic model is created
-            if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+            if settings.IMPORTER_ENABLE_DYN_MODELS:
                 _schema_id = ModelSchema.objects.filter(name__icontains=initial_name.lower().replace(" ", "_"))
                 self.assertTrue(_schema_id.exists())
                 schema_entity = _schema_id.first()

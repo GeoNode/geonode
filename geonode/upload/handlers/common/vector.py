@@ -265,16 +265,19 @@ class BaseVectorFileHandler(BaseHandler):
         try:
             name = instance.alternate.split(":")[1]
             schema = None
-            if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+            if settings.IMPORTER_ENABLE_DYN_MODELS:
                 schema = ModelSchema.objects.filter(name=name).first()
             if schema:
                 """
                 We use the schema editor directly, because the model itself is not managed
                 on creation, but for the delete since we are going to handle, we can use it
                 """
-                _model_editor = ModelSchemaEditor(initial_model=name, db_name=schema.db_name)
-                _model_editor.drop_table(schema.as_model())
-                ModelSchema.objects.filter(name=name).delete()
+                try:
+                    _model_editor = ModelSchemaEditor(initial_model=name, db_name=schema.db_name)
+                    _model_editor.drop_table(schema.as_model())
+                except Exception as e:
+                    logger.info(f"database table already deleted: {e}")
+                    pass
         except Exception as e:
             logger.error(f"Error during deletion of Dynamic Model schema: {e.args[0]}")
 
@@ -387,7 +390,7 @@ class BaseVectorFileHandler(BaseHandler):
                     # update the execution request object
                     # setup dynamic model and retrieve the group task needed for tun the async workflow
                     # create the async task for create the resource into geonode_data with ogr2ogr
-                    if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+                    if settings.IMPORTER_ENABLE_DYN_MODELS:
                         (
                             dynamic_model,
                             alternate,
@@ -409,7 +412,7 @@ class BaseVectorFileHandler(BaseHandler):
                         alternate,
                     )
 
-                    if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+                    if settings.IMPORTER_ENABLE_DYN_MODELS:
                         group_to_call = group(
                             celery_group.set(link_error=["dynamic_model_error_callback"]),
                             ogr_res.set(link_error=["dynamic_model_error_callback"]),
@@ -853,7 +856,7 @@ class BaseVectorFileHandler(BaseHandler):
             f"Rollback dynamic model & ogr2ogr step in progress for execid: {exec_id} resource published was: {instance_name}"
         )
         schema = None
-        if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
             schema = ModelSchema.objects.filter(name=instance_name).first()
         if schema is not None:
             _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
