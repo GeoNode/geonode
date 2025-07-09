@@ -25,11 +25,9 @@ from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.resource.api.exceptions import ExecutionRequestException
 from geonode.resource.api.serializer import ExecutionRequestSerializer
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ValidationError
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated

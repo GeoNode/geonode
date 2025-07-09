@@ -19,11 +19,9 @@
 import rest_framework.permissions
 
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from .. import models

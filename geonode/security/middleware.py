@@ -32,7 +32,6 @@ from geonode.base.auth import (
     get_token_object_from_session,
     visitor_ip_address,
     is_ipaddress_in_whitelist,
-    get_auth_token,
 )
 
 
