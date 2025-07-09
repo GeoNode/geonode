@@ -82,8 +82,8 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
     def tearDown(self) -> None:
         super().tearDown()
-        for el in Dataset.objects.all():
-            el.delete()
+        #for el in Dataset.objects.all():
+        #    el.delete()
 
     def _cleanup_layers(self, name):
         layer = [x for x in self.cat.get_resources() if name in x.name]
