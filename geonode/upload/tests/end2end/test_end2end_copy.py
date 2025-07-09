@@ -69,9 +69,9 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
 
         self.admin = get_user_model().objects.get(username="admin")
 
-    def tearDown(self) -> None:
-        for el in Dataset.objects.all():
-            el.delete()
+    #def tearDown(self) -> None:
+    #    for el in Dataset.objects.all():
+    #        el.delete()
 
     def _assertCloning(self, initial_name):
         # getting the geonode resource

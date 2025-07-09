@@ -79,7 +79,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         if not base:
             return False
         ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
-        return ext in ["shp"] and BaseVectorFileHandler.can_handle(_data)
+        return ext in ["shp"] and _data.get("action") in ShapeFileHandler.TASKS
 
     @staticmethod
     def has_serializer(data) -> bool:

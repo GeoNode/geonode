@@ -101,7 +101,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         try:
             ModelSchema.objects.filter(name__icontains=name.lower().replace(" ", "_")).delete()
         except Exception as e:  # noqa
-            raise e
+            pass
 
     def _assertimport(
         self,
@@ -179,7 +179,9 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
 class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True)
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
     def test_import_shapefile_upsert(self):
 
         self._cleanup_layers(name="original")

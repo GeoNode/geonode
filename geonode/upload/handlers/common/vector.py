@@ -24,7 +24,7 @@ import json
 import logging
 import os
 from subprocess import PIPE, Popen
-from typing import List
+from typing import List, Optional, Tuple
 from celery import chord, group
 
 from django.conf import settings
@@ -33,7 +33,7 @@ from dynamic_models.schema import ModelSchemaEditor
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, create_dynamic_structure
+from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
@@ -278,6 +278,7 @@ class BaseVectorFileHandler(BaseHandler):
                 except Exception as e:
                     logger.info(f"database table already deleted: {e}")
                     pass
+                ModelSchema.objects.filter(name=name).delete()
         except Exception as e:
             logger.error(f"Error during deletion of Dynamic Model schema: {e.args[0]}")
 
@@ -560,10 +561,11 @@ class BaseVectorFileHandler(BaseHandler):
     def create_dynamic_model_fields(
         self,
         layer: str,
-        dynamic_model_schema: ModelSchema,
-        overwrite: bool,
-        execution_id: str,
-        layer_name: str,
+        dynamic_model_schema: ModelSchema = None,
+        overwrite: bool = None,
+        execution_id: str = None,
+        layer_name: str = None,
+        return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
         layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
@@ -582,6 +584,9 @@ class BaseVectorFileHandler(BaseHandler):
                     "dim": (2 if not ogr.GeometryTypeToName(layer.GetGeomType()).lower().startswith("3d") else 3),
                 }
             ]
+
+        if not return_celery_group:
+            return layer_schema
 
         # ones we have the schema, here we create a list of chunked value
         # so the async task will handle max of 30 field per task
@@ -650,6 +655,22 @@ class BaseVectorFileHandler(BaseHandler):
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
         saved_dataset.refresh_from_db()
+
+        # if dynamic model is enabled, we can save up with is the primary key of the table
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
+            from django.db import connections
+
+            column = None
+            connection = connections["datastore"]
+            table_name = saved_dataset.alternate.split(":")[1]
+            with connection.cursor() as cursor:
+                column = connection.introspection.get_primary_key_columns(cursor, table_name)
+            if column:
+                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
+                if field:
+                    field.kwargs.update({"primary_key": True})
+                    field.save()
+
         return saved_dataset
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
@@ -886,6 +907,59 @@ class BaseVectorFileHandler(BaseHandler):
         handler_module_path = exec_object.input_params.get("handler_module_path")
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(instance_name)
+
+    def upsert_validation(self, files, execution_id, **kwargs: dict) -> Tuple[bool, Optional[str]]:
+        """
+        Perform the validation step to ensure that the file provided is valid
+        to perform an upsert on the selected dataset.
+            - Load the dynamic model for the selected dataset
+            - User ogr2ogr to read the schema of the uploaded file
+            - will evaluate if the field are coherent (int -> int = valid, int -> date = invalid)
+        return True/False, if false, also the reason why is not valid
+        """
+        errors = []
+        # getting the saved schema and convert the newly uploaded file into the same object
+        target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
+        # let's check that the field in the uploaded file are coherent with the one preset
+        # loop on all the new field coming from the uploaded file
+        target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
+        new_file_schema_fields_as_list = [x["name"] for x in new_file_schema_fields]
+        differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
+        if any(differeces):
+            raise UpsertException(
+                f"The schema of the column differ. The following columns must be removed: {differeces}"
+            )
+        for field in new_file_schema_fields:
+            # check if the field exists in the previous schema
+            target_field = target_schema_fields.filter(name=field["name"]).first()
+            if target_field:
+                # If the field exists the class name should be the same
+                if not target_field.class_name == field["class_name"]:
+                    # if the class changes, is marked as error
+                    message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
+                    errors.append(message)
+                    logger.error(message)
+        return not errors, errors
+
+    def __get_new_and_original_schema(self, files, execution_id):
+        # check if the execution_id is passed and if the geonode resource exists
+        exec_id = orchestrator.get_execution_object(execution_id)
+        target_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk")).first()
+        if not target_resource:
+            raise UpsertException("Target resource not found")
+        # retrieve the current schema for the resource
+        target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
+
+        # use ogr2ogr to read the uploaded files for the upsert
+        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        layer = self._select_valid_layers(all_layers)[0]
+        # Will generate the same schema as the target_resource_schema
+        new_file_schema_fields = self.create_dynamic_model_fields(
+            layer,
+            return_celery_group=False,
+        )
+
+        return target_schema_fields, new_file_schema_fields
 
     def upsert_data(self, files, execution_id, **kwargs):
         """
