@@ -598,6 +598,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
 
     @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
     @patch.dict(os.environ, {"IMPORTER_ENABLE_DYN_MODELS": "True"})
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=True)
     def test_copy_dynamic_model_should_work(self, async_call):
         try:
             name = str(self.exec_id)
