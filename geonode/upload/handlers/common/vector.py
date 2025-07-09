@@ -704,18 +704,7 @@ class BaseVectorFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            delete_dataset_cache(dataset.alternate)
-            # recalculate featuretype info
-            DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
-            set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
-
-            dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
-
-            self.handle_xml_file(dataset, _exec)
-            self.handle_sld_file(dataset, _exec)
-
-            resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
-            dataset.refresh_from_db()
+            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset)
             return dataset
         elif not dataset.exists() and _overwrite:
             logger.warning(
