@@ -963,18 +963,19 @@ class BaseVectorFileHandler(BaseHandler):
         """
 
         # getting execution_id information
-        exec_id = orchestrator.get_execution_object(execution_id)
+        exec_obj = orchestrator.get_execution_object(execution_id)
 
         # getting the related model schema for the resource
-        original_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk")).first()
+        original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
         model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
         if not model:
             raise UpsertException("The dynamic models was not found in the DB")
-        # retrieve the upsert key.
-        upsert_key = exec_id.input_params.get("upsert_key").split(",")
 
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
+
+        # retrieve the upsert key.
+        upsert_key = self.extract_upsert_key(exec_obj, dynamic_model_instance=model)
 
         # use ogr2ogr to read the uploaded files values for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
@@ -988,7 +989,7 @@ class BaseVectorFileHandler(BaseHandler):
         # we can upsert just 1 layer at time
         for feature in layers[0]:
             feature_as_dict = feature.items()
-            filter_dict = {field: value for field, value in feature_as_dict.items() if field in upsert_key}
+            filter_dict = {field: value for field, value in feature_as_dict.items() if field == upsert_key}
             to_update = OriginalResource.objects.filter(**filter_dict)
             geom = feature.GetGeometryRef()
             feature_as_dict.update({self.default_geometry_column_name: geom.ExportToWkt()})
@@ -1009,7 +1010,9 @@ class BaseVectorFileHandler(BaseHandler):
 
         # generating the resorucehandler infor to track the changes on ther resource
 
-        self.create_resourcehandlerinfo(handler_module_path=str(self), resource=original_resource, execution_id=exec_id)
+        self.create_resourcehandlerinfo(
+            handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
+        )
 
         return not update_error and not create_error, {
             "errors": {"create": create_error, "update": update_error},
@@ -1022,6 +1025,20 @@ class BaseVectorFileHandler(BaseHandler):
                 "error": {"update": len(update_error), "create": len(create_error)},
             },
         }
+
+    def extract_upsert_key(self, exec_obj, dynamic_model_instance):
+        # first we check if the upsert key is passed by the call
+        key = exec_obj.input_params.get("upsert_key")
+        if not key:
+            # if the upsert key is not passed, we use the primary key as upsert key
+            # the primary key is defined in the Fields of the dynamic model
+            # dynamic models raise error if we filter the json with ORM
+            # to be fixed: TypeError: argument of type 'bool' is not iterable
+            key = [x.name for x in dynamic_model_instance.fields.all() if x.kwargs.get("primary_key")]
+            if key:
+                return key[0]
+
+        return key
 
     def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, **kwargs):
         # getting execution_id information
