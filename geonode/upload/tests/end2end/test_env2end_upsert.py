@@ -179,7 +179,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
 class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True)
     def test_import_shapefile_upsert(self):
 
         self._cleanup_layers(name="original")
