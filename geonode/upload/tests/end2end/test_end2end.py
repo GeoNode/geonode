@@ -26,7 +26,6 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse
 from dynamic_models.models import FieldSchema, ModelSchema
-from geonode.layers.models import Dataset
 from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
@@ -44,7 +43,9 @@ logger = logging.getLogger()
 geourl = settings.GEODATABASE_URL
 
 
-@override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777, IMPORTER_ENABLE_DYN_MODELS=False)
+@override_settings(
+    FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777, IMPORTER_ENABLE_DYN_MODELS=False
+)
 class BaseImporterEndToEndTest(ImporterBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
@@ -77,10 +78,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         self.admin.is_superuser = True
         self.admin.is_staff = True
         self.admin.save()
-        #for el in Dataset.objects.all():
+        # for el in Dataset.objects.all():
         #    el.delete()
 
-    #def tearDown(self) -> None:
+    # def tearDown(self) -> None:
     #    super().tearDown()
     #    for el in Dataset.objects.all():
     #        el.delete()
