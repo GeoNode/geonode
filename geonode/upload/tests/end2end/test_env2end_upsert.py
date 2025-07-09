@@ -200,10 +200,10 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         response = self.client.post(self.url, data=payload)
         # evaluating entries if are upserted
         self.assertEqual(response.status_code, 201)
-        output = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id")).output_params
-
-        self.assertTrue(output.get("upsert")[0])
-        data = output.get("upsert")[1]
+        exec_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
+        output_input = exec_obj.output_params
+        self.assertTrue(output_input.get("upsert")[0])
+        data = output_input.get("upsert")[1]
         expected = {
             "data": {
                 "error": {"create": 0, "update": 0},
@@ -213,3 +213,11 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
             "errors": {"create": [], "update": []},
         }
         self.assertDictEqual(expected, data)
+        schema = ModelSchema.objects.filter(name=exec_obj.geonode_resource.alternate.split(":")[-1]).first()
+        self.assertIsNotNone(schema)
+        # let's check if the primary_key has been correcly set
+        key = [x.name for x in schema.fields.all() if x.kwargs.get("primary_key")]
+        self.assertIsNotNone(key)
+        self.assertTrue(len(key) == 1)
+        # evaluate if the dynamic model is correctly upserted, we expect 2 rows
+        self.assertEqual(schema.as_model().objects.count(), 2)
