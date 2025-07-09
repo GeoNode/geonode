@@ -77,8 +77,8 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         self.admin.is_superuser = True
         self.admin.is_staff = True
         self.admin.save()
-        for el in Dataset.objects.all():
-            el.delete()
+        #for el in Dataset.objects.all():
+        #    el.delete()
 
     #def tearDown(self) -> None:
     #    super().tearDown()
