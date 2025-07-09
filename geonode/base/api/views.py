@@ -314,7 +314,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         ResourceBasePermissionsFilter,
         FavoriteFilter,
     ]
-    queryset = ResourceBase.objects.all().order_by("-created")
+    queryset = ResourceBase.objects.select_related("owner").order_by("-created")
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 

@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==10.4.0
+Pillow==11.3.0
 lxml==5.2.1
 psycopg2==2.9.9
 Django==4.2.23
@@ -18,7 +18,7 @@ jsonschema==4.22.0
 schema==0.7.7
 rdflib==6.3.2
 smart_open==7.0.4
-PyMuPDF==1.26.1
+PyMuPDF==1.26.3
 defusedxml==0.7.1
 zipstream-ng==1.8.0
 
@@ -103,7 +103,7 @@ django-bootstrap3-datetimepicker-2==2.8.3
 django-storages==1.14.3
 dropbox==11.36.2
 google-cloud-storage==2.16.0
-boto3==1.38.41
+boto3==1.39.3
 
 # Django Caches
 whitenoise==6.6.0
@@ -146,6 +146,6 @@ selenium-requests==2.0.4
 webdriver_manager==4.0.1
 
 # Security and audit
-cryptography==45.0.4
+cryptography==45.0.5
 jwcrypto>=1.5.6
 nh3==0.2.17
