@@ -107,7 +107,7 @@ class PermissionsHandlerRegistry:
             permissions = permissions_registry.get_perms(instance=instance)
             users = Profile.objects.filter(
                 Q(groups__in=permissions["groups"].keys()) | Q(id__in=[x.id for x in permissions["users"].keys()])
-            )
+            ).distinct()
 
             cache_keys = _generate_cache_keys(
                 resource_pks=[instance.pk],
