@@ -46,8 +46,9 @@ def extract_user_from_headers(request):
         user = get_auth_user_from_token(request.GET.get("apikey"))
         # We set the Bearer token in the request header
         # so that it can be used by the rest of the application (for example, the DRF authentications)
-        access_token = get_auth_token(user)
+        access_token = get_token_object(request.GET.get("apikey"))
         if access_token:
+            user = access_token.user
             request.META["HTTP_AUTHORIZATION"] = f"Bearer {access_token.token}"
     return user
 
