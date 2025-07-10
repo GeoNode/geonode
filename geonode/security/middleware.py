@@ -100,7 +100,7 @@ class AuthenticateBasicAuthOrApiKeyMiddleware(MiddlewareMixin):
         """
         user = extract_user_from_headers(request)
         if user and not user.is_anonymous:
-            request.user = extract_user_from_headers(request)
+            request.user = user
 
 
 class SessionControlMiddleware(MiddlewareMixin):
