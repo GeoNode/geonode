@@ -250,8 +250,6 @@ class PermissionsHandlerRegistry:
 
         if user:
             if include_user_add_resource and user.has_perm("base.add_resourcebase"):
-                if user not in payload["users"]:
-                    payload["users"][user] = []
                 payload["users"][user].append("add_resourcebase")
 
             result = payload["users"][user]
