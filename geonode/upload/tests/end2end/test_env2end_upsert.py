@@ -66,12 +66,12 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
             "shx_file": f"{project_dir}/tests/fixture/upsert/upsert.shx",
         }
         file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
+        filename = os.path.join(file_path, "san_andres_y_providencia_natural.shp")
         cls.default_shp = {
             "base_file": filename,
-            "dbf_file": f"{file_path}/san_andres_y_providencia_highway.dbf",
-            "prj_file": f"{file_path}/san_andres_y_providencia_highway.prj",
-            "shx_file": f"{file_path}/san_andres_y_providencia_highway.shx",
+            "dbf_file": f"{file_path}/san_andres_y_providencia_natural.dbf",
+            "prj_file": f"{file_path}/san_andres_y_providencia_natural.prj",
+            "shx_file": f"{file_path}/san_andres_y_providencia_natural.shx",
         }
         cls.url = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
@@ -236,10 +236,10 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
     )
     def test_import_shapefile_upsert_raise_error_with_different_schemas(self):
 
-        self._cleanup_layers(name="san_andres_y_providencia_highway")
+        self._cleanup_layers(name="san_andres_y_providencia_natural")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
         payload["action"] = "upload"
-        initial_name = "san_andres_y_providencia_highway"
+        initial_name = "san_andres_y_providencia_natural"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_shp.items()}
         payload["resource_pk"] = prev_dataset.pk
