@@ -40,10 +40,6 @@ class ShapeFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    TASKS = BaseVectorFileHandler.TASKS | {
-        ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
-    }
-
     @property
     def supported_file_extension_config(self):
         return {
@@ -79,7 +75,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         if not base:
             return False
         ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
-        return ext in ["shp"] and _data.get("action") in ShapeFileHandler.TASKS
+        return ext in ["shp"] and BaseVectorFileHandler.can_handle(_data)
 
     @staticmethod
     def has_serializer(data) -> bool:

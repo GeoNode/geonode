@@ -92,6 +92,7 @@ class BaseVectorFileHandler(BaseHandler):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         ),
+        ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
 
     @property
@@ -146,7 +147,7 @@ class BaseVectorFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return action in BaseHandler.TASKS
+        return action in BaseVectorFileHandler.TASKS
 
     @staticmethod
     def create_error_log(exc, task_name, *args):
@@ -670,6 +671,12 @@ class BaseVectorFileHandler(BaseHandler):
                 if field:
                     field.kwargs.update({"primary_key": True})
                     field.save()
+                else:
+                    # getting the relative model schema
+                    schema = ModelSchema.objects.filter(name=table_name).first()
+                    # creating the field needed as primary key
+                    pk_field = FieldSchema(name=column[0], model_schema=schema, class_name='django.db.models.BigAutoField', kwargs={"null": False, "primary_key": True})
+                    pk_field.save()
 
         return saved_dataset
 
