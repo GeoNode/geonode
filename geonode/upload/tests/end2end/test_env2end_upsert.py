@@ -236,12 +236,12 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
     )
     def test_import_shapefile_upsert_raise_error_with_different_schemas(self):
 
-        self._cleanup_layers(name="san_andres_y_providencia_natural")
-        payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
+        self._cleanup_layers(name="original")
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.original.items()}
         payload["action"] = "upload"
         initial_name = "san_andres_y_providencia_natural"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
-        payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_shp.items()}
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
         payload["upsert_key"] = "unique"
