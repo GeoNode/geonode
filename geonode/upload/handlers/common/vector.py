@@ -906,6 +906,12 @@ class BaseVectorFileHandler(BaseHandler):
             - will evaluate if the field are coherent (int -> int = valid, int -> date = invalid)
         return True/False, if false, also the reason why is not valid
         """
+        # if the dynamic_models is not enabled or the target schema does not exists, we cannot perform the upser
+        if not settings.IMPORTER_ENABLE_DYN_MODELS:
+            raise UpsertException(
+                "The Dyamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True"
+            )
+
         errors = []
         # getting the saved schema and convert the newly uploaded file into the same object
         target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
@@ -916,7 +922,7 @@ class BaseVectorFileHandler(BaseHandler):
         differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
         if any(differeces):
             raise UpsertException(
-                f"The schema of the column differ. The following columns must be removed: {differeces}"
+                f"The columns in the source and target do not match they must be equal. The following are not expected or missing: {differeces}"
             )
         for field in new_file_schema_fields:
             # check if the field exists in the previous schema
@@ -935,7 +941,9 @@ class BaseVectorFileHandler(BaseHandler):
         exec_id = orchestrator.get_execution_object(execution_id)
         target_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk")).first()
         if not target_resource:
-            raise UpsertException("Target resource not found")
+            raise UpsertException(
+                "Target dynamic models does not exists. Please re-upload the resource with IMPORTER_ENABLE_DYN_MODELS=True to generate the schema"
+            )
         # retrieve the current schema for the resource
         target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
 

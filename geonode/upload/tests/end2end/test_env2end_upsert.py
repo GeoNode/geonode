@@ -20,6 +20,7 @@ import ast
 import os
 import time
 
+import gisdata
 import mock
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -64,7 +65,14 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
             "prj_file": f"{project_dir}/tests/fixture/upsert/upsert.prj",
             "shx_file": f"{project_dir}/tests/fixture/upsert/upsert.shx",
         }
-
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
+        cls.default_shp = {
+            "base_file": filename,
+            "dbf_file": f"{file_path}/san_andres_y_providencia_highway.dbf",
+            "prj_file": f"{file_path}/san_andres_y_providencia_highway.prj",
+            "shx_file": f"{file_path}/san_andres_y_providencia_highway.shx",
+        }
         cls.url = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
@@ -221,3 +229,32 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertTrue(len(key) == 1)
         # evaluate if the dynamic model is correctly upserted, we expect 2 rows
         self.assertEqual(schema.as_model().objects.count(), 2)
+
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
+    def test_import_shapefile_upsert_raise_error_with_different_schemas(self):
+
+        self._cleanup_layers(name="san_andres_y_providencia_highway")
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
+        payload["action"] = "upload"
+        initial_name = "san_andres_y_providencia_highway"
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_shp.items()}
+        payload["resource_pk"] = prev_dataset.pk
+        payload["action"] = "upsert"
+        payload["upsert_key"] = "unique"
+
+        # time to upsert the data
+        self.client.force_login(self.admin)
+
+        response = self.client.post(self.url, data=payload)
+        # evaluating entries if are upserted
+        self.assertEqual(response.status_code, 500)
+        self.assertFalse(response.json().get("success", True))
+        self.assertTrue("errors" in response.json())
+        self.assertTrue(
+            "The columns in the source and target do not match they must be equal. The following are not expected or missing"
+            in response.json()["errors"][0]
+        )
