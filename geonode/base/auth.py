@@ -36,9 +36,7 @@ def extract_user_from_headers(request):
     user = AnonymousUser()
     if "HTTP_AUTHORIZATION" in request.META:
         auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
-
-        if "Basic" in auth_header or "Bearer" in auth_header:
-            user = token_header_authenticate_user(auth_header)
+        user = token_header_authenticate_user(auth_header)
 
     if "apikey" in request.GET:
         user = get_auth_user_from_token(request.GET.get("apikey"))
