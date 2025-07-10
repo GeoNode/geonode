@@ -32,6 +32,7 @@ from geonode.base.auth import (
     get_token_object_from_session,
     visitor_ip_address,
     is_ipaddress_in_whitelist,
+    get_or_create_token,
 )
 
 
@@ -88,21 +89,18 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-            if not any(path.match(request.path) for path in white_list):
-                return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
+            return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
 
 
-class LoginFromApiKeyMiddleware(MiddlewareMixin):
+class AuthenticateBasicAuthOrApiKeyMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """
-        If an api key is provided and validated, the user can access to the page even without the login
-        This is useful for API calls, when LOCKDOWN_GEONODE is set to True and the user is not logged in.
-        This middleware is deactivated by default, to activate it set ENABLE_APIKEY_LOGIN=True
+        Bearer token  authentication is already coverde by OAuth2TokenMiddleware.
+        This middleware is used to extract user from headers in case of Basic Auth or API Key.
         """
-        if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-            user = extract_user_from_headers(request)
-            if user:
-                request.user = user
+        user = extract_user_from_headers(request)
+        if user and not user.is_anonymous:
+            request.user = extract_user_from_headers(request)
 
 
 class SessionControlMiddleware(MiddlewareMixin):
@@ -120,11 +118,13 @@ class SessionControlMiddleware(MiddlewareMixin):
             if not request.user.is_active:
                 self.do_logout(request)
             elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                access_token = None
                 try:
                     access_token = get_token_object_from_session(request.session)
                 except Exception:
-                    access_token = None
-                    self.do_logout(request)
+                    pass
+
+                access_token = get_or_create_token(request.user)
 
                 # we extend the token in case the session is active but the token expired
                 if access_token is None or access_token.is_expired():

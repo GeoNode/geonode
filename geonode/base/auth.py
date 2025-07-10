@@ -38,7 +38,7 @@ def extract_user_from_headers(request):
         auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
 
         if auth_header and "Basic" in auth_header:
-            user = basic_auth_authenticate_user(auth_header)
+            user = token_header_authenticate_user(auth_header)
         elif auth_header and "Bearer" in auth_header:
             user = token_header_authenticate_user(auth_header)
 
@@ -237,7 +237,7 @@ def get_auth_user_from_token(token):
 
 
 def token_header_authenticate_user(auth_header: str):
-    token = get_token_from_auth_header(auth_header)
+    token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
     return get_auth_user_from_token(token)
 
 

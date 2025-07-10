@@ -824,6 +824,7 @@ MIDDLEWARE = (
     "whitenoise.middleware.WhiteNoiseMiddleware",  # ref to: http://whitenoise.evans.io/en/stable/django.html#enable-whitenoise
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django_user_agents.middleware.UserAgentMiddleware",
+    "geonode.security.middleware.AuthenticateBasicAuthOrApiKeyMiddleware",
     "geonode.base.middleware.MaintenanceMiddleware",
     "geonode.base.middleware.ReadOnlyMiddleware",  # a Middleware enabling Read Only mode of Geonode
 )
@@ -1886,12 +1887,6 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # ########################################################################### #
 # SECURITY SETTINGS
 # ########################################################################### #
-
-ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))
-
-if ENABLE_APIKEY_LOGIN:
-    MIDDLEWARE += ("geonode.security.middleware.LoginFromApiKeyMiddleware",)
-
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
     MIDDLEWARE += ("geonode.security.middleware.LoginRequiredMiddleware",)
