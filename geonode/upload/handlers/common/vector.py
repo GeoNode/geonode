@@ -18,6 +18,7 @@
 #########################################################################
 import ast
 from django.db import connections
+from geonode.security.permissions import _to_compact_perms
 from geonode.upload.publisher import DataPublisher
 from geonode.upload.utils import call_rollback_function
 import json
@@ -57,7 +58,7 @@ from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_inv
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
 from django.utils.module_loading import import_string
-
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger("importer")
 
@@ -675,7 +676,12 @@ class BaseVectorFileHandler(BaseHandler):
                     # getting the relative model schema
                     schema = ModelSchema.objects.filter(name=table_name).first()
                     # creating the field needed as primary key
-                    pk_field = FieldSchema(name=column[0], model_schema=schema, class_name='django.db.models.BigAutoField', kwargs={"null": False, "primary_key": True})
+                    pk_field = FieldSchema(
+                        name=column[0],
+                        model_schema=schema,
+                        class_name="django.db.models.BigAutoField",
+                        kwargs={"null": False, "primary_key": True},
+                    )
                     pk_field.save()
 
         return saved_dataset
@@ -917,6 +923,20 @@ class BaseVectorFileHandler(BaseHandler):
         if not settings.IMPORTER_ENABLE_DYN_MODELS:
             raise UpsertException(
                 "The Dyamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True"
+            )
+        # evaluate if the user can perform the operation on the selected resource
+
+        exec_obj = orchestrator.get_execution_object(exec_id=execution_id)
+
+        perms = _to_compact_perms(
+            permissions_registry.get_perms(
+                instance=ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first(),
+                user=exec_obj.user,
+            )
+        )
+        if "manage" not in perms or "edit" not in perms:
+            raise UpsertException(
+                "User does not have enough permissions to perform this action on the selected resource"
             )
 
         errors = []
