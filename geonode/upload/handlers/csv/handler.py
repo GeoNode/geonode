@@ -139,10 +139,11 @@ class CSVFileHandler(BaseVectorFileHandler):
     def create_dynamic_model_fields(
         self,
         layer: str,
-        dynamic_model_schema: ModelSchema,
-        overwrite: bool,
-        execution_id: str,
-        layer_name: str,
+        dynamic_model_schema: ModelSchema = None,
+        overwrite: bool = None,
+        execution_id: str = None,
+        layer_name: str = None,
+        return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
         layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
@@ -173,6 +174,9 @@ class CSVFileHandler(BaseVectorFileHandler):
                     "dim": (2 if not ogr.GeometryTypeToName(layer.GetGeomType()).lower().startswith("3d") else 3),
                 }
             ]
+
+        if not return_celery_group:
+            return layer_schema
 
         # ones we have the schema, here we create a list of chunked value
         # so the async task will handle max of 30 field per task

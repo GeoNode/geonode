@@ -69,9 +69,9 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
 
         self.admin = get_user_model().objects.get(username="admin")
 
-    def tearDown(self) -> None:
-        for el in Dataset.objects.all():
-            el.delete()
+    # def tearDown(self) -> None:
+    #    for el in Dataset.objects.all():
+    #        el.delete()
 
     def _assertCloning(self, initial_name):
         # getting the geonode resource
@@ -147,7 +147,9 @@ class ImporterCopyEnd2EndGpkgTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
     def test_copy_dataset_from_geopackage(self):
         payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "copy"}
         initial_name = "stazioni_metropolitana"
@@ -166,7 +168,9 @@ class ImporterCopyEnd2EndGeoJsonTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
     def test_copy_dataset_from_geojson(self):
         payload = {"base_file": open(self.valid_geojson, "rb"), "action": "copy"}
         initial_name = "valid"
@@ -184,7 +188,9 @@ class ImporterCopyEnd2EndShapeFileTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
     def test_copy_dataset_from_shapefile(self):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         payload["action"] = "copy"
@@ -203,7 +209,9 @@ class ImporterCopyEnd2EndKMLTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
     def test_copy_dataset_from_kml(self):
         payload = {"base_file": open(self.valid_kml, "rb"), "action": "copy"}
         initial_name = "sample_point_dataset"

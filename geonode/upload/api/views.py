@@ -169,7 +169,9 @@ class ImporterViewSet(DynamicModelViewSet):
 
         handler = orchestrator.get_handler(_data)
         # not file but handler means that is a remote resource
-        if handler:
+        action = _data.get("action")
+
+        if handler and handler.can_do(action):
             asset = None
             files = []
             try:
@@ -242,6 +244,8 @@ class ImporterViewSet(DynamicModelViewSet):
         upload_validator = UploadLimitValidator(request.user)
         upload_validator.validate_parallelism_limit_per_user()
         upload_validator.validate_files_sum_of_sizes(storage_manager.data_retriever)
+
+        # check user perms based on the action
 
     def generate_asset_and_retrieve_paths(self, request, storage_manager, handler):
         asset_handler = asset_handler_registry.get_default_handler()

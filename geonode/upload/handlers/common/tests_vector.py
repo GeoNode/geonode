@@ -28,6 +28,7 @@ from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_
 from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
+from geonode.upload.handlers.shapefile.handler import ShapeFileHandler
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
@@ -131,6 +132,16 @@ class TestBaseVectorFileHandler(TestCase):
                 step="step",
                 input_params={"files": self.valid_files, "skip_existing_layer": True},
             )
+
+            if overwrite:
+                resource = self.handler.create_geonode_resource(
+                    "layer_name",
+                    "layer_alternate",
+                    str(exec_id),
+                )
+                ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                    input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": resource.pk}
+                )
 
             layers = ogr.Open(self.valid_gpkg)
 
@@ -366,3 +377,18 @@ class TestBaseVectorFileHandler(TestCase):
         expected_output = {"resources": [{"id": resource.pk, "detail_url": resource.detail_url}]}
         exec_obj.refresh_from_db()
         self.assertDictEqual(expected_output, exec_obj.output_params)
+
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=False)
+    def test_upsert_validation_should_fail(self):
+        """
+        The test should fail since the dynamic model generation is not enabled
+        """
+        handler = ShapeFileHandler()
+        with self.assertRaises(Exception) as exept:
+            handler.upsert_validation(["files"], 123)
+
+        self.assertIsNotNone(exept)
+        self.assertEqual(
+            str(exept.exception),
+            "The Dyamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
+        )

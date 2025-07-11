@@ -25,6 +25,7 @@ from django.db import connections, transaction
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy
+from django.conf import settings
 from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from dynamic_models.models import FieldSchema, ModelSchema
 from geonode.base.models import ResourceBase
@@ -52,7 +53,12 @@ from geonode.upload.settings import (
     IMPORTER_PUBLISHING_RATE_LIMIT,
     IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
 )
-from geonode.upload.utils import call_rollback_function, error_handler, find_key_recursively
+from geonode.upload.utils import (
+    call_rollback_function,
+    error_handler,
+    find_key_recursively,
+    ImporterRequestAction as ira,
+)
 
 logger = logging.getLogger("importer")
 
@@ -623,7 +629,7 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
 
         new_dataset_alternate = create_alternate(resource.title, exec_id).lower()
 
-        if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
             dynamic_schema = ModelSchema.objects.filter(name=alternate.split(":")[1])
             alternative_dynamic_schema = ModelSchema.objects.filter(name=new_dataset_alternate)
 
@@ -700,7 +706,7 @@ def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handler
         from geonode.upload.celery_tasks import import_orchestrator
 
         db_name = os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
-        if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
             schema_exists = ModelSchema.objects.filter(name=new_dataset_alternate).first()
             if schema_exists:
                 db_name = schema_exists.db_name
@@ -788,3 +794,164 @@ def dynamic_model_error_callback(*args, **kwargs):
         drop_dynamic_model_schema(schema_model)
 
     return "error"
+
+
+@importer_app.task(
+    bind=True,
+    base=ErrorBaseTaskClass,
+    name="geonode.upload.upsert_data",
+    queue="geonode.upload.upsert_data",
+    max_retries=3,
+    rate_limit=IMPORTER_PUBLISHING_RATE_LIMIT,
+    ignore_result=False,
+    task_track_started=True,
+)
+def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
+    """
+    Task to publish a single resource in geoserver.
+    NOTE: If the layer should be overwritten, for now we are skipping this feature
+        geoserver is not ready yet
+
+            Parameters:
+                    Parameters:
+                    execution_id (UUID): unique ID used to keep track of the execution request
+                    step_name (str): step name example: geonode.upload.upsert_data
+                    alternate (UUID): alternate of the resource example: layer_alternate
+                    handler_module_path (str): The import path of the handler for this resource type
+                    action (str): The action being performed, e.g., 'upsert'
+            Returns:
+                    None
+    """
+    # Updating status to running
+    try:
+        kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
+
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            last_updated=timezone.now(),
+            func_name="upsert_data",
+            step=gettext_lazy("geonode.upload.upsert_data"),
+            celery_task_request=self.request,
+        )
+        _exec = orchestrator.get_execution_object(execution_id)
+
+        _files = _exec.input_params.get("files")
+
+        # initiating the data store manager
+        _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
+
+        is_valid, errors = _datastore.upsert_validation(execution_id, **kwargs)
+        if not is_valid:
+            raise Exception(errors)
+
+        result = _datastore.upsert_data(execution_id, **kwargs)
+
+        orchestrator.update_execution_request_obj(_exec, {"output_params": {"upsert": result}})
+
+        resource = ResourceBase.objects.get(pk=_exec.input_params.get("resource_pk"))
+
+        task_params = (
+            {},
+            execution_id,
+            handler_module_path,
+            "geonode.upload.upsert_data",
+            resource.alternate.split(":")[-1],
+            resource.alternate.split(":")[-1],
+            action,
+        )
+
+        kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
+
+        import_orchestrator.apply_async(task_params, kwargs)
+
+    except Exception as e:
+        call_rollback_function(
+            execution_id,
+            handlers_module_path=handler_module_path,
+            prev_action=ira.UPSERT.value,
+            layer=None,
+            alternate=None,
+            error=e,
+            **kwargs,
+        )
+        raise InvalidInputFileException(detail=error_handler(e, execution_id))
+
+
+@importer_app.task(
+    bind=True,
+    base=ErrorBaseTaskClass,
+    name="geonode.upload.refresh_geonode_resource",
+    queue="geonode.upload.refresh_geonode_resource",
+    max_retries=1,
+    rate_limit=IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
+    ignore_result=False,
+    task_track_started=True,
+)
+def refresh_geonode_resource(
+    self,
+    execution_id: str,
+    /,
+    step_name: str,
+    layer_name: Optional[str] = None,
+    alternate: Optional[str] = None,
+    handler_module_path: str = None,
+    action: str = exa.UPLOAD.value,
+    **kwargs,
+):
+    """
+    Create the GeoNode resource and the relatives information associated
+    NOTE: for gpkg we dont want to handle sld and XML files
+
+            Parameters:
+                    Parameters:
+                    execution_id (UUID): unique ID used to keep track of the execution request
+                    step_name (str): step name example: geonode.upload.upsert_data
+                    alternate (UUID): alternate of the resource example: layer_alternate
+                    handler_module_path (str): The import path of the handler for this resource type
+                    action (str): The action being performed, e.g., 'upsert'
+            Returns:
+                    None
+    """
+    # Updating status to running
+    try:
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            last_updated=timezone.now(),
+            func_name="refresh_geonode_resource",
+            step=gettext_lazy("geonode.upload.refresh_geonode_resource"),
+            celery_task_request=self.request,
+        )
+        _exec = orchestrator.get_execution_object(execution_id)
+
+        _files = _exec.input_params.get("files")
+
+        # initiating the data store manager
+        _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
+
+        _datastore.refresh_geonode_resource(execution_id=execution_id)
+
+        # at the end recall the import_orchestrator for the next step
+        import_orchestrator.apply_async(
+            (
+                _files,
+                execution_id,
+                handler_module_path,
+                step_name,
+                layer_name,
+                alternate,
+                action,
+            )
+        )
+        return self.name, execution_id
+
+    except Exception as e:
+        call_rollback_function(
+            execution_id,
+            handlers_module_path=handler_module_path,
+            prev_action=action,
+            layer=layer_name,
+            alternate=alternate,
+            error=e,
+            **kwargs,
+        )
+        raise ResourceCreationException(detail=error_handler(e))
