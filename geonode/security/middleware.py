@@ -118,13 +118,11 @@ class SessionControlMiddleware(MiddlewareMixin):
             if not request.user.is_active:
                 self.do_logout(request)
             elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                access_token = None
                 try:
                     access_token = get_token_object_from_session(request.session)
                 except Exception:
-                    pass
-
-                access_token = get_or_create_token(request.user)
+                    access_token = None
+                    self.do_logout(request)
 
                 # we extend the token in case the session is active but the token expired
                 if access_token is None or access_token.is_expired():

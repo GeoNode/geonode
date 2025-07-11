@@ -184,14 +184,14 @@ class BaseApiTests(APITestCase):
             # Registered member
             self.assertTrue(self.client.login(username="bobby", password="bob"))
             response = self.client.post(url, data=data, format="json")
-            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.status_code, 403)
 
             # Group manager
             group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
             group.join(get_user_model().objects.get(username="norman"), role="manager")
             self.assertTrue(self.client.login(username="norman", password="norman"))
             response = self.client.post(url, data=data, format="json")
-            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.status_code, 403)
 
             # Admin
             self.assertTrue(self.client.login(username="admin", password="admin"))

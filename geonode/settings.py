@@ -824,7 +824,6 @@ MIDDLEWARE = (
     "whitenoise.middleware.WhiteNoiseMiddleware",  # ref to: http://whitenoise.evans.io/en/stable/django.html#enable-whitenoise
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django_user_agents.middleware.UserAgentMiddleware",
-    "geonode.security.middleware.AuthenticateBasicAuthOrApiKeyMiddleware",
     "geonode.base.middleware.MaintenanceMiddleware",
     "geonode.base.middleware.ReadOnlyMiddleware",  # a Middleware enabling Read Only mode of Geonode
 )
@@ -844,6 +843,10 @@ if SESSION_EXPIRED_CONTROL_ENABLED:
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
     # user logout
     MIDDLEWARE += ("geonode.security.middleware.SessionControlMiddleware",)
+
+# This middleware checks for basic auth or api key and if not present
+# It must be placed after the SessionMiddleware
+MIDDLEWARE += ("geonode.security.middleware.AuthenticateBasicAuthOrApiKeyMiddleware",)
 
 SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get("SESSION_COOKIE_SECURE", "False"))
 CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get("CSRF_COOKIE_SECURE", "False"))
