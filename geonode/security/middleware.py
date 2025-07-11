@@ -88,7 +88,8 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-            return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
+            if not any(path.match(request.path) for path in white_list):
+                return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
 
 
 class AuthenticateBasicAuthOrApiKeyMiddleware(MiddlewareMixin):
