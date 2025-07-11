@@ -98,7 +98,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         if layer:
             for el in layer:
                 try:
-                    self.cat.delete(el,  purge="all", recurse=True)
+                    self.cat.delete(el, purge="all", recurse=True)
                 except:  # noqa
                     continue
         try:
