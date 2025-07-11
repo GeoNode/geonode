@@ -47,9 +47,7 @@ geourl = settings.GEODATABASE_URL
     FILE_UPLOAD_PERMISSIONS=0o7777,
     IMPORTER_ENABLE_DYN_MODELS=True,
     ASYNC_SIGNAL=False,
-    GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data",
 )
-@mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
 class BaseImporterEndToEndTest(ImporterBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
@@ -92,14 +90,16 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
     def tearDown(self) -> None:
         super().tearDown()
+        # for el in Dataset.objects.all():
+        #    el.delete()
 
     def _cleanup_layers(self, name):
         layer = [x for x in self.cat.get_resources() if name in x.name]
         if layer:
             for el in layer:
                 try:
-                    self.cat.delete(el, purge="all", recurse=True)
-                except Exception as e:  # noqa
+                    self.cat.delete(el,  purge="all", recurse=True)
+                except:  # noqa
                     continue
         try:
             ResourceBase.objects.filter(alternate__icontains=name).delete()
@@ -186,6 +186,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
 
 class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
     def test_import_shapefile_upsert(self):
 
         self._cleanup_layers(name="original")
@@ -226,12 +230,16 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         # evaluate if the dynamic model is correctly upserted, we expect 2 rows
         self.assertEqual(schema.as_model().objects.count(), 2)
 
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
+    )
     def test_import_shapefile_upsert_raise_error_with_different_schemas(self):
 
         self._cleanup_layers(name="original")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.original.items()}
         payload["action"] = "upload"
-        initial_name = "original"
+        initial_name = "san_andres_y_providencia_natural"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
         payload["resource_pk"] = prev_dataset.pk
