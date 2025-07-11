@@ -934,34 +934,34 @@ class BaseVectorFileHandler(BaseHandler):
                 user=exec_obj.user,
             )
         )
-        if "manage" not in perms or "edit" not in perms:
+        if "manage" in perms or "edit" in perms:
+            errors = []
+            # getting the saved schema and convert the newly uploaded file into the same object
+            target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
+            # let's check that the field in the uploaded file are coherent with the one preset
+            # loop on all the new field coming from the uploaded file
+            target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
+            new_file_schema_fields_as_list = [x["name"] for x in new_file_schema_fields]
+            differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
+            if any(differeces):
+                raise UpsertException(
+                    f"The columns in the source and target do not match they must be equal. The following are not expected or missing: {differeces}"
+                )
+            for field in new_file_schema_fields:
+                # check if the field exists in the previous schema
+                target_field = target_schema_fields.filter(name=field["name"]).first()
+                if target_field:
+                    # If the field exists the class name should be the same
+                    if not target_field.class_name == field["class_name"]:
+                        # if the class changes, is marked as error
+                        message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
+                        errors.append(message)
+                        logger.error(message)
+            return not errors, errors
+        else:
             raise UpsertException(
                 "User does not have enough permissions to perform this action on the selected resource"
             )
-
-        errors = []
-        # getting the saved schema and convert the newly uploaded file into the same object
-        target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
-        # let's check that the field in the uploaded file are coherent with the one preset
-        # loop on all the new field coming from the uploaded file
-        target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
-        new_file_schema_fields_as_list = [x["name"] for x in new_file_schema_fields]
-        differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
-        if any(differeces):
-            raise UpsertException(
-                f"The columns in the source and target do not match they must be equal. The following are not expected or missing: {differeces}"
-            )
-        for field in new_file_schema_fields:
-            # check if the field exists in the previous schema
-            target_field = target_schema_fields.filter(name=field["name"]).first()
-            if target_field:
-                # If the field exists the class name should be the same
-                if not target_field.class_name == field["class_name"]:
-                    # if the class changes, is marked as error
-                    message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
-                    errors.append(message)
-                    logger.error(message)
-        return not errors, errors
 
     def __get_new_and_original_schema(self, files, execution_id):
         # check if the execution_id is passed and if the geonode resource exists
