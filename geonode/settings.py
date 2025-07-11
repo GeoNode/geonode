@@ -1887,6 +1887,9 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # ########################################################################### #
 # SECURITY SETTINGS
 # ########################################################################### #
+
+ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))
+
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
     MIDDLEWARE += ("geonode.security.middleware.LoginRequiredMiddleware",)
