@@ -23,9 +23,6 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.response import Response
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
@@ -70,7 +67,6 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
     """
 
     http_method_names = ["get", "patch", "put"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),

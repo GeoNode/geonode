@@ -20,7 +20,6 @@
 import logging
 from django.conf import settings
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet
 from rest_framework.response import Response
@@ -32,7 +31,6 @@ from geonode.groups.models import GroupProfile, GroupMember
 from geonode.base.api.permissions import IsOwnerOrAdmin
 from geonode.base.api.serializers import GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
 from rest_framework.exceptions import PermissionDenied
@@ -54,7 +52,6 @@ class UserViewSet(DynamicModelViewSet):
     """
 
     http_method_names = ["get", "post", "patch", "delete"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
         IsOwnerOrAdmin,

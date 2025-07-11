@@ -529,8 +529,8 @@ INSTALLED_APPS += GEONODE_APPS
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
@@ -843,6 +843,10 @@ if SESSION_EXPIRED_CONTROL_ENABLED:
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
     # user logout
     MIDDLEWARE += ("geonode.security.middleware.SessionControlMiddleware",)
+
+# This middleware checks for basic auth or api key and if not present
+# It must be placed after the SessionMiddleware
+MIDDLEWARE += ("geonode.security.middleware.AuthenticateBasicAuthOrApiKeyMiddleware",)
 
 SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get("SESSION_COOKIE_SECURE", "False"))
 CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get("CSRF_COOKIE_SECURE", "False"))
@@ -1888,9 +1892,6 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # ########################################################################### #
 
 ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))
-
-if ENABLE_APIKEY_LOGIN:
-    MIDDLEWARE += ("geonode.security.middleware.LoginFromApiKeyMiddleware",)
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:

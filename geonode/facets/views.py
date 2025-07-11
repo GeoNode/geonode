@@ -20,7 +20,6 @@
 import logging
 from urllib.parse import urlencode
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 
 from django.http import HttpResponseNotFound, JsonResponse
@@ -44,7 +43,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseFacetingView(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     @classmethod
     def _get_topics(
