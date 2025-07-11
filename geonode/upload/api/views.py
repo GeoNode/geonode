@@ -46,8 +46,6 @@ from geonode.upload.api.exceptions import HandlerException, ImportException
 from geonode.upload.api.serializer import ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -65,7 +63,6 @@ logger = logging.getLogger("importer")
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
     http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadSizeLimit.objects.all()
     serializer_class = UploadSizeLimitSerializer
@@ -87,7 +84,6 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
 
 class UploadParallelismLimitViewSet(DynamicModelViewSet):
     http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadParallelismLimit.objects.all()
     serializer_class = UploadParallelismLimitSerializer
@@ -115,11 +111,6 @@ class ImporterViewSet(DynamicModelViewSet):
 
     parser_class = [JSONParser, FileUploadParser, MultiPartParser]
 
-    authentication_classes = [
-        BasicAuthentication,
-        SessionAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
@@ -272,11 +263,6 @@ class ImporterViewSet(DynamicModelViewSet):
 
 
 class ResourceImporter(DynamicModelViewSet):
-    authentication_classes = [
-        SessionAuthentication,
-        BasicAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(

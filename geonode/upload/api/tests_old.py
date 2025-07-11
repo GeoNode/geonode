@@ -349,7 +349,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_size": 2621440})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_put_size_limit_admin_user(self):
@@ -371,7 +371,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 2621440})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_post_size_limit_admin_user(self):
@@ -398,7 +398,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.post(url, data={"slug": "other-new-slug", "max_size": 2621440})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_delete_size_limit_admin_user(self):
@@ -420,7 +420,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.delete(url)
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
 
@@ -531,7 +531,7 @@ class UploadParallelismLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_number": 4})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_patch_parallelism_limit_anonymous_user(self):
@@ -542,7 +542,7 @@ class UploadParallelismLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_number": 6})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_put_parallelism_limit_admin_user(self):
@@ -564,7 +564,7 @@ class UploadParallelismLimitTests(APITestCase):
         response = self.client.put(url, data={"slug": self.default_parallelism_limit.slug, "max_number": 8})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_post_parallelism_limit_admin_user(self):
@@ -590,7 +590,7 @@ class UploadParallelismLimitTests(APITestCase):
         response = self.client.post(url, data={"slug": "some-parallelism-limit", "max_number": 8})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_delete_parallelism_limit_admin_user(self):
@@ -631,5 +631,5 @@ class UploadParallelismLimitTests(APITestCase):
         response = self.client.delete(url)
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue(response.wsgi_request.user.is_anonymous)

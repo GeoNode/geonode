@@ -261,6 +261,54 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_authenticated_api_request_with_login_middleware(self):
+        from geonode.people.models import Profile
+
+        with override_settings(
+            MIDDLEWARE=settings.MIDDLEWARE + ("geonode.security.middleware.LoginRequiredMiddleware",)
+        ):
+            response = self.client.get(reverse("users-list"))
+            self.assertEquals(response.status_code, 302, "LoginRequiredMiddleware redirects the anonymouse user")
+            self.assertTrue(reverse("account_login") in response.url, "LoginRequiredMiddleware login redirection")
+
+            admin = get_user_model().objects.filter(is_superuser=True).first()
+
+            response = self.client.get(
+                reverse("users-list"), HTTP_AUTHORIZATION=f"Basic {base64.b64encode(b'admin:admin').decode()}"
+            )
+            self.assertEquals(
+                response.status_code, 200, "LoginRequiredMiddleware passed the Basic Auth without any issues"
+            )
+
+            access_token = get_or_create_token(admin)
+            response = self.client.get(reverse("users-list"), HTTP_AUTHORIZATION=f"Bearer {access_token.token}")
+            self.assertEquals(
+                response.status_code, 200, "LoginRequiredMiddleware passed the Bearer token without any issues"
+            )
+
+            with override_settings(
+                ENABLE_APIKEY_LOGIN=True,
+            ):
+                response = self.client.get(f"{reverse('users-list')}?apikey={access_token.token}")
+                self.assertEquals(
+                    response.status_code, 200, "LoginRequiredMiddleware passed the API Ley param without any issues"
+                )
+
+                path = f"{reverse('users-list')}?apikey={access_token.token}"
+                response = self.client.post(
+                    path,
+                    data={
+                        "username": "user1withapyley",
+                        "password": "user1withapyley",
+                        "email": "user1withapyley@email.com",
+                    },
+                )
+                self.assertEquals(
+                    response.status_code, 201, "LoginRequiredMiddleware allowed the API Key to create a new user"
+                )
+                Profile.objects.get(username="user1withapyley").delete()  # cleanup
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_session_ctrl_middleware(self):
         """
         Tests the Geonode session control authentication middleware.
@@ -1198,7 +1246,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
         response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
-        self.assertTrue(response.status_code in (302, 403))
+        self.assertTrue(response.status_code in (302, 401))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()

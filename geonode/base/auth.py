@@ -36,14 +36,16 @@ def extract_user_from_headers(request):
     user = AnonymousUser()
     if "HTTP_AUTHORIZATION" in request.META:
         auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
+        user = token_header_authenticate_user(auth_header)
 
-        if auth_header and "Basic" in auth_header:
-            user = basic_auth_authenticate_user(auth_header)
-        elif auth_header and "Bearer" in auth_header:
-            user = token_header_authenticate_user(auth_header)
-
-    if "apikey" in request.GET:
+    if settings.ENABLE_APIKEY_LOGIN and "apikey" in request.GET:
         user = get_auth_user_from_token(request.GET.get("apikey"))
+        # We set the Bearer token in the request header
+        # so that it can be used by the rest of the application (for example, the DRF authentications)
+        access_token = get_token_object(request.GET.get("apikey"))
+        if access_token:
+            user = access_token.user
+            request.META["HTTP_AUTHORIZATION"] = f"Bearer {access_token.token}"
     return user
 
 
@@ -231,7 +233,7 @@ def get_auth_user_from_token(token):
 
 
 def token_header_authenticate_user(auth_header: str):
-    token = get_token_from_auth_header(auth_header)
+    token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
     return get_auth_user_from_token(token)
 
 

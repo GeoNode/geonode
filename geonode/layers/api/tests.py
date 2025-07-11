@@ -596,7 +596,7 @@ class DatasetsApiTests(APITestCase):
         url = reverse("datasets-replace-metadata", args=(layer.id,))
 
         response = self.client.put(url)
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_unsupported_file_throws_error(self):
         layer = Dataset.objects.first()

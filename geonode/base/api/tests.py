@@ -179,7 +179,7 @@ class BaseApiTests(APITestCase):
             # Anonymous
             url = reverse("group-profiles-list")
             response = self.client.post(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
 
             # Registered member
             self.assertTrue(self.client.login(username="bobby", password="bob"))
@@ -212,7 +212,7 @@ class BaseApiTests(APITestCase):
             # Anonymous
             url = f"{reverse('group-profiles-list')}/{group.id}/"
             response = self.client.patch(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
 
             # Registered member
             self.assertTrue(self.client.login(username="bobby", password="bob"))
@@ -242,7 +242,7 @@ class BaseApiTests(APITestCase):
             # Anonymous
             url = f"{reverse('group-profiles-list')}/{group.id}/"
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
 
             # Registered member
             self.assertTrue(self.client.login(username="bobby", password="bob"))
@@ -288,7 +288,7 @@ class BaseApiTests(APITestCase):
         url = reverse("users-list")
         # Anonymous
         response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         # Authorized
         self.assertTrue(self.client.login(username="admin", password="admin"))
         response = self.client.get(url, format="json")
@@ -412,7 +412,7 @@ class BaseApiTests(APITestCase):
         # Anonymous
         self.assertIsNone(self.client.logout())
         response = self.client.post(url, data={"username": "new_user_1"}, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_acess_profile_edit(self):
         # Registered member
@@ -435,7 +435,7 @@ class BaseApiTests(APITestCase):
             data = {"first_name": "user", "password": "@!2XJSL_S&V^0nt", "email": "user@exampl2e.com"}
             # Anonymous
             response = self.client.patch(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
             # Another registered user
             self.assertTrue(self.client.login(username="bobby", password="bob"))
             response = self.client.patch(url, data=data, format="json")
@@ -472,10 +472,10 @@ class BaseApiTests(APITestCase):
             url = reverse("users-detail", kwargs={"pk": user.pk})
             # Anonymous can't read
             response = self.client.get(url, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
             # Anonymous can't delete user
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
             # Bob can't delete user
             self.assertTrue(self.client.login(username="bobby", password="bob"))
             response = self.client.delete(url, format="json")
@@ -1260,11 +1260,11 @@ class BaseApiTests(APITestCase):
         self.assertIsNone(self.client.logout())
         # get perms
         response = self.client.get(get_perms_url, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         # set perms
         resource_perm_spec["uuid"] = resource.uuid
         response = self.client.put(set_perms_url, data=resource_perm_spec, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         # login resourse owner
         # get perms
         self.assertTrue(self.client.login(username="bobby", password="bob"))
@@ -1511,7 +1511,7 @@ class BaseApiTests(APITestCase):
         url = urljoin(f"{reverse('base-resources-list')}/", "favorites/")
         # Anonymous
         response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         # Authenticated user
         bobby = get_user_model().objects.get(username="bobby")
         self.assertTrue(self.client.login(username="bobby", password="bob"))
@@ -1574,7 +1574,7 @@ class BaseApiTests(APITestCase):
         url = urljoin(f"{reverse('base-resources-list')}/", f"{dataset.pk}/favorite/")
         # Anonymous
         response = self.client.post(url, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         # Authenticated user
         self.assertTrue(self.client.login(username="bobby", password="bob"))
         response = self.client.post(url, format="json")
@@ -1942,7 +1942,7 @@ class BaseApiTests(APITestCase):
 
         # Anonymous user
         response = self.client.put(url, data=data, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
         # Authenticated user
         self.assertTrue(self.client.login(username="admin", password="admin"))
@@ -2012,7 +2012,7 @@ class BaseApiTests(APITestCase):
 
         # Anonymous user
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
         # Authenticated user (admin)
         self.assertTrue(self.client.login(username="admin", password="admin"))
@@ -2078,7 +2078,7 @@ class BaseApiTests(APITestCase):
             "code": "not_authenticated",
         }
         response = self.client.post(url, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertEqual(expected, response.json())
 
     @patch("geonode.base.api.views.create_thumbnail")
@@ -2351,7 +2351,7 @@ class BaseApiTests(APITestCase):
         bobby = get_user_model().objects.get(username="bobby")
         copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         # set perms to enable user clone resource
         self.assertTrue(self.client.login(username="admin", password="admin"))
         perm_spec = {
@@ -2797,7 +2797,7 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username="bobby", password="bob"))
 
         payload = json.dumps({"metadata_uploaded_preserve": True})
-        # should return 403 since bobby doesn't have the perms to update the metadata
+        # should return 401 since bobby doesn't have the perms to update the metadata
         # on this resource
         response = self.client.patch(url, data=payload, content_type="application/json")
         self.assertEqual(403, response.status_code)
@@ -2879,7 +2879,7 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
         resource_manager.remove_permissions(self.layer.uuid, instance=self.layer.get_self_resource())
         url = reverse("base-resources-extra-metadata", args=[self.layer.id])
         response = self.client.get(url, content_type="application/json")
-        self.assertTrue(403, response.status_code)
+        self.assertTrue(401, response.status_code)
 
         perm_spec = {"users": {"bobby": ["view_resourcebase"]}, "groups": {}}
         self.layer.set_permissions(perm_spec)
@@ -2903,16 +2903,16 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
         response = self.client.patch(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
         response = self.client.put(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_insert_one_linked_resource(self):
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
