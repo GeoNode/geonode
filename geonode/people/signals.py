@@ -38,6 +38,7 @@ from geonode.base.auth import get_or_create_token, delete_old_tokens, set_sessio
 from geonode.notifications_helper import send_notification
 
 from .adapters import get_data_extractor
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -124,3 +125,15 @@ def profile_post_save(instance, sender, **kwargs):
     # do not create email, when user-account signup code is in use
     if getattr(instance, "_disable_account_creation", False):
         return
+
+
+def clear_user_resource_permissions_cache_on_delete(sender, instance, **kwargs):
+    """
+    Signal handler to clear user-resource-related cache upon deletion.
+    """
+
+    # Clear cache for user permissions related to the instance being deleted
+    permissions_registry.delete_resource_permissions_cache(
+        instance=instance,
+        user_clear_cache=True,
+    )
