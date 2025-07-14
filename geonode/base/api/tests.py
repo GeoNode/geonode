@@ -3803,27 +3803,27 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
 
         # Test authenticated user cache key
         expected_admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
-        actual_admin_key = permissions_registry._get_cache_key(test_resource.pk, user=self.admin_user)
+        actual_admin_key = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
         self.assertEqual(actual_admin_key, expected_admin_key)
 
         # Test test user cache key
         expected_test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
-        actual_test_user_key = permissions_registry._get_cache_key(test_resource.pk, user=self.test_user)
+        actual_test_user_key = permissions_registry._get_cache_key([test_resource.pk], users=[self.test_user])
         self.assertEqual(actual_test_user_key, expected_test_user_key)
 
         # Test anonymous user cache key
         expected_anon_key = f"resource_perms:{test_resource.pk}:anonymous"
-        actual_anon_key = permissions_registry._get_cache_key(test_resource.pk, user=anonymous_user)
+        actual_anon_key = permissions_registry._get_cache_key([test_resource.pk], users=[anonymous_user])
         self.assertEqual(actual_anon_key, expected_anon_key)
 
         # Test group cache key
         expected_group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
-        actual_group_key = permissions_registry._get_cache_key(test_resource.pk, group=self.test_group)
+        actual_group_key = permissions_registry._get_cache_key([test_resource.pk], groups=[self.test_group])
         self.assertEqual(actual_group_key, expected_group_key)
 
         # Test __ALL__ cache key (when both user and group are None)
         expected_all_key = f"resource_perms:{test_resource.pk}:__ALL__"
-        actual_all_key = permissions_registry._get_cache_key(test_resource.pk, user=None, group=None)
+        actual_all_key = permissions_registry._get_cache_key([test_resource.pk], users=None, groups=None)
         self.assertEqual(actual_all_key, expected_all_key)
 
         # Test that keys are unique for different users and groups
@@ -3831,8 +3831,8 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         self.assertEqual(len(cache_keys), len(set(cache_keys)), "All cache keys should be unique")
 
         # Test consistency across multiple calls
-        key_call_1 = permissions_registry._get_cache_key(test_resource.pk, user=self.admin_user)
-        key_call_2 = permissions_registry._get_cache_key(test_resource.pk, user=self.admin_user)
+        key_call_1 = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
+        key_call_2 = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
         self.assertEqual(key_call_1, key_call_2, "Cache key generation should be consistent")
 
         # Test that the cache keys match what's actually used in caching
