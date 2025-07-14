@@ -24,6 +24,7 @@ from django.db.models import Q
 from django.contrib.auth.models import Group
 from guardian.shortcuts import get_group_perms
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
+from guardian.shortcuts import get_anonymous_user
 
 
 class PermissionsHandlerRegistry:
@@ -66,41 +67,41 @@ class PermissionsHandlerRegistry:
         for handler in self.REGISTRY:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
-    
-    def _clear_cache_keys(self,cache_keys):
+
+    def _clear_cache_keys(self, cache_keys):
         """Clear cache keys."""
         if cache_keys:
             cache.delete_many(cache_keys)
 
-
-    def _get_cache_key(self, resource_pks, users=None, groups=None,remove_all_cache=False):
+    def _get_cache_key(self, resource_pks, users=None, groups=None, remove_all_cache=False):
         """
-            Generate cache keys for resource permissions.
-            
-            Args:
-                resource_pks: List of resource primary keys
-                users: Optional list of users to generate keys for
-                groups: Optional list of groups to generate keys for
-                remove_all_cache: If True, includes the __ALL__ cache key
+        Generate cache keys for resource permissions.
+
+        Args:
+            resource_pks: List of resource primary keys
+            users: Optional list of users to generate keys for
+            groups: Optional list of groups to generate keys for
+            remove_all_cache: If True, includes the __ALL__ cache key
         """
         cache_keys = []
         for pk in resource_pks:
             if users:
                 for user in users:
-                    user_identifier = "anonymous" if user.is_anonymous or user.username == 'AnonymousUser' or user.id == -1 else f"user:{user.pk}"
+                    user_identifier = (
+                        "anonymous"
+                        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user()
+                        else f"user:{user.pk}"
+                    )
                     cache_keys.append(f"resource_perms:{pk}:{user_identifier}")
 
             if groups:
                 for group in groups:
                     cache_keys.append(f"resource_perms:{pk}:group:{group.pk}")
-            
+
             if not users and not groups or remove_all_cache:
                 cache_keys.append(f"resource_perms:{pk}:__ALL__")
-            
-        
-        return cache_keys if len(cache_keys) > 1 else cache_keys[0] if cache_keys else None
 
-    
+        return cache_keys if len(cache_keys) > 1 else cache_keys[0] if cache_keys else None
 
     def delete_resource_permissions_cache(self, instance, user_clear_cache=True, group_clear_cache=True, **kwargs):
         """
@@ -111,18 +112,17 @@ class PermissionsHandlerRegistry:
         from geonode.base.models import ResourceBase
         from geonode.people.models import Profile
 
-
         if isinstance(instance, ResourceBase):
             permissions = permissions_registry.get_perms(instance=instance)
             users = Profile.objects.filter(
                 Q(groups__in=permissions["groups"].keys()) | Q(id__in=[x.id for x in permissions["users"].keys()])
             ).distinct()
 
-            cache_keys =  self._get_cache_key(
+            cache_keys = self._get_cache_key(
                 resource_pks=[instance.pk],
                 users=users if user_clear_cache else None,
                 groups=permissions["groups"].keys() if group_clear_cache else None,
-                remove_all_cache=True # This will ensure that the __ALL__ cache key is included
+                remove_all_cache=True,  # This will ensure that the __ALL__ cache key is included
             )
             self._clear_cache_keys(cache_keys)
 
@@ -138,7 +138,7 @@ class PermissionsHandlerRegistry:
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks_with_perms,
                 users=group_users if user_clear_cache else None,
-                groups=[instance] if group_clear_cache else None
+                groups=[instance] if group_clear_cache else None,
             )
 
             self._clear_cache_keys(cache_keys)
@@ -150,7 +150,7 @@ class PermissionsHandlerRegistry:
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks,
                 users=[instance] if user_clear_cache else None,
-                groups=instance.groups.all() if group_clear_cache else None
+                groups=instance.groups.all() if group_clear_cache else None,
             )
             self._clear_cache_keys(cache_keys)
 
@@ -227,8 +227,8 @@ class PermissionsHandlerRegistry:
 
         if use_cache and isinstance(cache_key, list):
             if user_cache_key and group_cache_key:
-                cache.set(user_cache_key, result['users'][user], settings.PERMISSION_CACHE_EXPIRATION_TIME)
-                cache.set(group_cache_key, result['groups'][group], settings.PERMISSION_CACHE_EXPIRATION_TIME)
+                cache.set(user_cache_key, result["users"][user], settings.PERMISSION_CACHE_EXPIRATION_TIME)
+                cache.set(group_cache_key, result["groups"][group], settings.PERMISSION_CACHE_EXPIRATION_TIME)
         elif use_cache and cache_key:
             cache.set(cache_key, result, settings.PERMISSION_CACHE_EXPIRATION_TIME)
         else:
