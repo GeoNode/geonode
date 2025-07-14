@@ -230,7 +230,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         # evaluate if the dynamic model is correctly upserted, we expect 2 rows
         self.assertEqual(schema.as_model().objects.count(), 2)
 
-    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "IMPORTER_ENABLE_DYN_MODELS": "True"})
     @override_settings(
         GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
     )
@@ -239,7 +239,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self._cleanup_layers(name="original")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.original.items()}
         payload["action"] = "upload"
-        initial_name = "san_andres_y_providencia_natural"
+        initial_name = "original"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
         payload["resource_pk"] = prev_dataset.pk
