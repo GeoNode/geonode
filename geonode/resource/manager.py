@@ -204,11 +204,7 @@ class ResourceManager(ResourceManagerInterface):
         uuid = uuid or _resource.uuid
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
-                permissions_registry.delete_resource_permissions_cache(
-                    instance=_resource,
-                    user_clear_cache=True,
-                    group_clear_cache=True,
-                )
+                permissions_registry.delete_resource_permissions_cache(instance=_resource)
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
                 _resource.set_dirty_state()
                 try:
@@ -504,11 +500,7 @@ class ResourceManager(ResourceManagerInterface):
 
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            permissions_registry.delete_resource_permissions_cache(
-                instance=_resource,
-                user_clear_cache=True,
-                group_clear_cache=True,
-            )
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
@@ -561,11 +553,7 @@ class ResourceManager(ResourceManagerInterface):
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            permissions_registry.delete_resource_permissions_cache(
-                instance=_resource,
-                user_clear_cache=True,
-                group_clear_cache=True,
-            )
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource = _resource.get_real_instance()
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             logger.debug(f"Finalizing (permissions and notifications) on resource {instance}")

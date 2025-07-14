@@ -300,11 +300,7 @@ class GroupMember(models.Model):
         from geonode.security.utils import AdvancedSecurityWorkflowManager
         from geonode.security.registry import permissions_registry
 
-        permissions_registry.delete_resource_permissions_cache(
-            instance=self.group.group,
-            user_clear_cache=True,
-            group_clear_cache=True,
-        )
+        permissions_registry.delete_resource_permissions_cache(instance=self.group.group)
         if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
             AdvancedSecurityWorkflowManager.set_group_member_permissions(self.user, self.group, role)
 
@@ -318,11 +314,7 @@ def group_pre_delete(instance, sender, **kwargs):
             "Deletion of the anonymous group is\
          not permitted as will break the geonode permissions system"
         )
-    permissions_registry.delete_resource_permissions_cache(
-        instance=instance,
-        user_clear_cache=True,
-        group_clear_cache=True,
-    )
+    permissions_registry.delete_resource_permissions_cache(instance=instance)
 
 
 signals.pre_delete.connect(group_pre_delete, sender=Group)

@@ -3912,7 +3912,7 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
 
         temp_user_profile = temp_user
 
-        permissions_registry.delete_resource_permissions_cache(temp_user_profile, user_clear_cache=True)
+        permissions_registry.delete_resource_permissions_cache(temp_user_profile, group_clear_cache=False)
 
         for cache_key in cache_keys:
             self.assertIsNone(cache.get(cache_key), f"Cache key {cache_key} should be cleared after user deletion")
@@ -3978,7 +3978,7 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
             unrelated_cache_keys.append(cache_key)
             self.assertIsNotNone(cache.get(cache_key))
 
-        permissions_registry.delete_resource_permissions_cache(temp_group, group_clear_cache=True)
+        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
 
         for cache_key in group_cache_keys:
             self.assertIsNone(

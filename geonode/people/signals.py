@@ -135,5 +135,5 @@ def clear_user_resource_permissions_cache_on_delete(sender, instance, **kwargs):
     # Clear cache for user permissions related to the instance being deleted
     permissions_registry.delete_resource_permissions_cache(
         instance=instance,
-        user_clear_cache=True,
+        group_clear_cache=False,
     )

@@ -67,7 +67,7 @@ class PermissionsHandlerRegistry:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
 
-    def delete_resource_permissions_cache(self, instance, user_clear_cache=False, group_clear_cache=False, **kwargs):
+    def delete_resource_permissions_cache(self, instance, user_clear_cache=True, group_clear_cache=True, **kwargs):
         """
         Clear the cache for resource permissions when a resource is deleted.
         This ensures that permissions are recalculated on the next request.
@@ -76,19 +76,17 @@ class PermissionsHandlerRegistry:
         from geonode.base.models import ResourceBase
         from geonode.people.models import Profile
 
-        def _generate_cache_keys(
-            resource_pks, users=None, groups=None, include_user_cache=True, include_group_cache=True
-        ):
+        def _generate_cache_keys(resource_pks, users=None, groups=None):
             """Generate cache keys for given resources, users, and groups."""
             cache_keys = []
 
             for pk in resource_pks:
                 # User-specific cache keys
-                if include_user_cache and users:
+                if users:
                     cache_keys.extend([f"resource_perms:{pk}:user:{user.pk}" for user in users])
 
                 # Group-specific cache keys
-                if include_group_cache and groups:
+                if groups:
                     cache_keys.extend([f"resource_perms:{pk}:group:{group.pk}" for group in groups])
 
                 cache_keys.extend([f"resource_perms:{pk}:__ALL__", f"resource_perms:{pk}:anonymous"])
@@ -100,9 +98,6 @@ class PermissionsHandlerRegistry:
             if cache_keys:
                 cache.delete_many(cache_keys)
 
-        clear_user_cache = user_clear_cache or (not user_clear_cache and not group_clear_cache)
-        clear_group_cache = group_clear_cache or (not user_clear_cache and not group_clear_cache)
-
         if isinstance(instance, ResourceBase):
             permissions = permissions_registry.get_perms(instance=instance)
             users = Profile.objects.filter(
@@ -111,10 +106,8 @@ class PermissionsHandlerRegistry:
 
             cache_keys = _generate_cache_keys(
                 resource_pks=[instance.pk],
-                users=users if clear_user_cache else None,
-                groups=permissions["groups"].keys() if clear_group_cache else None,
-                include_user_cache=clear_user_cache,
-                include_group_cache=clear_group_cache,
+                users=users if user_clear_cache else None,
+                groups=permissions["groups"].keys() if group_clear_cache else None,
             )
             _clear_cache_keys(cache_keys)
 
@@ -129,10 +122,8 @@ class PermissionsHandlerRegistry:
 
             cache_keys = _generate_cache_keys(
                 resource_pks=resource_pks_with_perms,
-                users=group_users if clear_user_cache else None,
+                users=group_users if user_clear_cache else None,
                 groups=[instance] if group_clear_cache else None,
-                include_user_cache=clear_user_cache,
-                include_group_cache=group_clear_cache,
             )
 
             _clear_cache_keys(cache_keys)
@@ -141,14 +132,10 @@ class PermissionsHandlerRegistry:
             resources = get_objects_for_user(instance, "base.view_resourcebase")
             resource_pks = [resource.pk for resource in resources]
 
-            user_groups = instance.groups.all() if group_clear_cache else None
-
             cache_keys = _generate_cache_keys(
                 resource_pks=resource_pks,
-                users=[instance] if clear_user_cache else None,
-                groups=user_groups,
-                include_user_cache=clear_user_cache,
-                include_group_cache=group_clear_cache,
+                users=[instance] if user_clear_cache else None,
+                groups=instance.groups.all() if group_clear_cache else None,
             )
             _clear_cache_keys(cache_keys)
 
@@ -166,6 +153,7 @@ class PermissionsHandlerRegistry:
         - "anonymous": For anonymous users
         - group.pk: For group-specific requests
         - "__ALL__": For permission queries that don't specify user or group
+        - For both user and group: returns a list of [user_key, group_key]
 
         Args:
             resource_pk: Primary key of the resource
@@ -173,14 +161,22 @@ class PermissionsHandlerRegistry:
             group: Group instance, None if not querying group perms
 
         Returns:
-            str: Cache key for the given resource and user/group combination
+            str or list: Cache key(s) for the given resource and user/group combination
         """
-        if user is not None:
+        if user and group:
+            # Return both keys for separate caching
+            user_identifier = "anonymous" if user.is_anonymous else f"user:{user.pk}"
+            group_identifier = f"group:{group.pk}"
+            return [
+                f"resource_perms:{resource_pk}:{user_identifier}",
+                f"resource_perms:{resource_pk}:{group_identifier}",
+            ]
+        elif user:
             if user.is_anonymous:
                 identifier = "anonymous"
             else:
                 identifier = f"user:{user.pk}"
-        elif group is not None:
+        elif group:
             identifier = f"group:{group.pk}"
         else:
             identifier = "__ALL__"
@@ -205,8 +201,8 @@ class PermissionsHandlerRegistry:
 
         Args:
             instance: Resource instance
-            user: User instance (takes priority over group)
-            group: Group instance (used only if user is None)
+            user: User instance
+            group: Group instance
             include_virtual: Include virtual permissions
             include_user_add_resource: Add resourcebase permissions for users
             use_cache: Enable caching
@@ -217,49 +213,53 @@ class PermissionsHandlerRegistry:
         cache_key = None
         if use_cache:
             cache_key = self._get_cache_key(instance.pk, user, group)
-            cached = cache.get(cache_key)
-            if cached is not None:
-                return cached
+            if isinstance(cache_key, list):
+                user_cache_key, group_cache_key = cache_key
+                user_cached = cache.get(user_cache_key)
+                group_cached = cache.get(group_cache_key)
+
+                if user_cached is not None and group_cached is not None:
+                    return {"users": {user: user_cached}, "groups": {group: group_cached}}
+            else:
+                cached = cache.get(cache_key)
+                if cached is not None:
+                    return cached
 
         if user and group:
-            user_perms = self.get_perms(
-                instance,
-                user=user,
-                include_virtual=include_virtual,
-                include_user_add_resource=include_user_add_resource,
-                use_cache=use_cache,
-                *args,
-                **kwargs,
-            )
-
-            group_perms = self.get_perms(
-                instance, group=group, include_virtual=include_virtual, use_cache=use_cache, *args, **kwargs
-            )
-
-            return {"users": {user: user_perms}, "groups": {group: group_perms}}
-
-        if user:
+            payload = {
+                "users": {user: instance.get_user_perms(user)},
+                "groups": {group: get_group_perms(group, instance)},
+            }
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
+            result = payload
+        elif user:
             payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
-        elif group:
-            payload = {"users": {}, "groups": {group: get_group_perms(group, instance)}}
-        else:
-            payload = instance.get_all_level_info()
-
-        for handler in self.REGISTRY:
-            payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
-
-        if user:
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             if include_user_add_resource and user.has_perm("base.add_resourcebase"):
                 payload["users"][user].append("add_resourcebase")
 
             result = payload["users"][user]
         elif group:
+            payload = {"users": {}, "groups": {group: get_group_perms(group, instance)}}
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             result = payload["groups"][group]
         else:
+            payload = instance.get_all_level_info()
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             result = payload
 
-        if use_cache and cache_key:
+        if use_cache and isinstance(cache_key, list):
+            if user_cache_key and group_cache_key:
+                cache.set(user_cache_key, result, settings.PERMISSION_CACHE_EXPIRATION_TIME)
+                cache.set(group_cache_key, result, settings.PERMISSION_CACHE_EXPIRATION_TIME)
+        elif use_cache and cache_key:
             cache.set(cache_key, result, settings.PERMISSION_CACHE_EXPIRATION_TIME)
+        else:
+            pass
 
         return result
 
