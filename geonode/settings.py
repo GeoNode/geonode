@@ -880,8 +880,7 @@ OAUTH2_PROVIDER = {
         "groups": "Access to your groups",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
-    "OAUTH2_SERVER_CLASS": "geonode.security.oauth2_servers.OIDCServer",
-    # 'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
+    "OAUTH2_SERVER_CLASS": "oauthlib.openid.connect.core.endpoints.pre_configured.Server",
     # OpenID Connect
     "OIDC_ENABLED": True,
     "OIDC_ISS_ENDPOINT": SITEURL,
