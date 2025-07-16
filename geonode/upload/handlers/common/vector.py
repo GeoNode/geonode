@@ -1014,7 +1014,9 @@ class BaseVectorFileHandler(BaseHandler):
 
         # retrieve the upsert key.
         upsert_key = self.extract_upsert_key(exec_obj, dynamic_model_instance=model)
-
+        if not upsert_key:
+            # if for any reason the key is not present, better to raise an error
+            raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
         # use ogr2ogr to read the uploaded files values for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
         update_error = []
@@ -1028,6 +1030,11 @@ class BaseVectorFileHandler(BaseHandler):
         for feature in layers[0]:
             feature_as_dict = feature.items()
             filter_dict = {field: value for field, value in feature_as_dict.items() if field == upsert_key}
+            if not filter_dict:
+                # if is not possible to extract the feature from ogr2ogr, better to ignore the layer
+                logger.error("was not possible to extract the feature of the dataset, skipping...")
+                update_error.append(f"Was not possible to manage the following data: {feature}")
+                continue
             to_update = OriginalResource.objects.filter(**filter_dict)
             geom = feature.GetGeometryRef()
             feature_as_dict.update({self.default_geometry_column_name: geom.ExportToWkt()})

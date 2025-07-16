@@ -392,3 +392,31 @@ class TestBaseVectorFileHandler(TestCase):
             str(exept.exception),
             "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
         )
+
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=True)
+    @patch("geonode.upload.handlers.common.vector.ModelSchema")
+    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.extract_upsert_key")
+    def test_upsert_data_should_fail_if_upsertkey_is_not_provided(self, upsert_function, schema):
+        """
+        The test should fail since the upsert key provided is empty/Null and
+        was not possible to extract the key from the DB schema
+        """
+        schema.return_value = MagicMock()
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": data.pk},
+        )
+
+        upsert_function.return_value = None
+        handler = ShapeFileHandler()
+        with self.assertRaises(Exception) as exept:
+            handler.upsert_data(["files"], exec_id)
+
+        self.assertIsNotNone(exept)
+        self.assertEqual(
+            str(exept.exception),
+            "Was not possible to find the upsert key, upsert is aborted",
+        )
