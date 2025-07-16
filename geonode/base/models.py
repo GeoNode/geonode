@@ -1049,7 +1049,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         if send_create_notification:
             # changed in Django 5.2, the we can get the title via the assets only if the resource is saved
-            self.title = getattr(self, "name", None)
+            if not self.title and hasattr(self, "name") and getattr(self, "name", None):
+                self.title = getattr(self, "name", None)
             notice_type_label = f"{self.__class__.__name__.lower()}_created"
             recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {"resource": self})
