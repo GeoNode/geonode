@@ -90,6 +90,7 @@ from .utils import (
 from .permissions import PermSpec, PermSpecCompact
 from django.core.cache import cache
 from geonode.base.models import ResourceBase
+from geonode.people.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -3247,17 +3248,13 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
             other_user_cache_keys.append(other_key)
             self.assertIsNotNone(cache.get(other_key))
 
-        temp_user_profile = temp_user
-
-        permissions_registry.delete_resource_permissions_cache(temp_user_profile, group_clear_cache=False)
+        temp_user.delete()
 
         for cache_key in cache_keys:
             self.assertIsNone(cache.get(cache_key), f"Cache key {cache_key} should be cleared after user deletion")
 
         for other_key in other_user_cache_keys:
             self.assertIsNotNone(cache.get(other_key), f"Cache key {other_key} should not be affected by user deletion")
-
-        temp_user.delete()
 
     def test_group_deletion_cache_invalidation(self):
         """Test that cache is properly cleared when a group is deleted"""
@@ -3314,7 +3311,7 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
             unrelated_cache_keys.append(cache_key)
             self.assertIsNotNone(cache.get(cache_key))
 
-        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
+        temp_group.delete()
 
         for cache_key in group_cache_keys:
             self.assertIsNone(
@@ -3396,7 +3393,7 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
         self.assertIsNotNone(cache.get(other_resource_key))
 
-        permissions_registry.delete_resource_permissions_cache(temp_resource)
+        temp_resource.delete()
 
         for cache_key in cache_keys_to_check:
             self.assertIsNone(cache.get(cache_key), f"Cache key {cache_key} should be cleared after resource deletion")
@@ -3405,4 +3402,128 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
             cache.get(other_resource_key), "Cache keys for other resources should not be affected by resource deletion"
         )
 
-        temp_resource.delete()
+    def test_delete_resource_permissions_cache_function(self):
+        """Test the delete_resource_permissions_cache function directly"""
+        test_resource = self.resources[0]
+
+        temp_user = get_user_model().objects.create_user(
+            username=f"temp_user_{uuid4()}", email="temp@example.com", password="temppass123"
+        )
+
+        temp_group, _ = Group.objects.get_or_create(name=f"temp_group_{uuid4()}")
+        temp_group_profile = GroupProfile.objects.create(
+            group=temp_group, title="Temp Group", slug="temp-group", access="public"
+        )
+        anonymous_user = Profile.objects.get(username="AnonymousUser")
+
+        perm_spec = {
+            "users": {
+                temp_user.username: ["view_resourcebase", "change_resourcebase"],
+                self.test_user.username: ["view_resourcebase", "change_resourcebase"],
+            },
+            "groups": {
+                temp_group.name: ["view_resourcebase"],
+                self.test_group.name: ["view_resourcebase"],
+                self.anonymous.name: ["view_resourcebase"],
+            },
+        }
+        test_resource.set_permissions(perm_spec)
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(
+            instance=test_resource, user=self.test_user, group=self.test_group, use_cache=True
+        )
+
+        temp_user_key = f"resource_perms:{test_resource.pk}:user:{temp_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        temp_group_key = f"resource_perms:{test_resource.pk}:group:{temp_group.pk}"
+        test_group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_user, group_clear_cache=False)
+
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        self.assertIsNotNone(cache.get(temp_user_key))
+
+        permissions_registry.delete_resource_permissions_cache(anonymous_user, group_clear_cache=False)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        self.assertIsNotNone(cache.get(anonymous_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.delete_resource_permissions_cache(test_resource)
+
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(temp_group_key))
+        self.assertIsNone(cache.get(test_group_key))
+        self.assertIsNone(cache.get(all_key))
+
+        other_resource = self.resources[1]
+        permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
+        other_resource_key = f"resource_perms:{other_resource.pk}:user:{self.test_user.pk}"
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        permissions_registry.delete_resource_permissions_cache(test_resource)
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, group=temp_group, use_cache=True)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_user, group_clear_cache=False)
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNone(cache.get(temp_group_key))
+
+        temp_user.delete()
+        temp_group_profile.delete()
+        temp_group.delete()
