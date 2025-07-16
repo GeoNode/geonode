@@ -30,13 +30,8 @@ from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from dynamic_models.models import FieldSchema, ModelSchema
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
-from geonode.upload.api.exceptions import (
-    CopyResourceException,
-    InvalidInputFileException,
-    PublishResourceException,
-    ResourceCreationException,
-    StartImportException,
-)
+from geonode.upload.api.exceptions import (CopyResourceException, InvalidInputFileException,
+    PublishResourceException, ResourceCreationException, StartImportException, UpsertException)
 from geonode.upload.celery_app import importer_app
 from geonode.upload.datastore import DataStoreManager
 from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
@@ -842,7 +837,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
 
         is_valid, errors = _datastore.upsert_validation(execution_id, **kwargs)
         if not is_valid:
-            raise Exception(errors)
+            raise UpsertException(errors)
 
         result = _datastore.upsert_data(execution_id, **kwargs)
 
@@ -859,8 +854,6 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             resource.alternate.split(":")[-1],
             action,
         )
-
-        kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
 
         import_orchestrator.apply_async(task_params, kwargs)
 

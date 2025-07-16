@@ -922,7 +922,7 @@ class BaseVectorFileHandler(BaseHandler):
         # if the dynamic_models is not enabled or the target schema does not exists, we cannot perform the upser
         if not settings.IMPORTER_ENABLE_DYN_MODELS:
             raise UpsertException(
-                "The Dyamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True"
+                "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True"
             )
         # evaluate if the user can perform the operation on the selected resource
 
@@ -1071,7 +1071,6 @@ class BaseVectorFileHandler(BaseHandler):
             # if the upsert key is not passed, we use the primary key as upsert key
             # the primary key is defined in the Fields of the dynamic model
             # dynamic models raise error if we filter the json with ORM
-            # to be fixed: TypeError: argument of type 'bool' is not iterable
             key = [x.name for x in dynamic_model_instance.fields.all() if x.kwargs.get("primary_key")]
             if key:
                 return key[0]

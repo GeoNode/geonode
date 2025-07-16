@@ -390,5 +390,5 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertIsNotNone(exept)
         self.assertEqual(
             str(exept.exception),
-            "The Dyamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
+            "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
         )
