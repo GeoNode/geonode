@@ -43,28 +43,6 @@ launch.json
 }
 ```
 
-src.code-workspace.json
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        
-        {
-            "name": "Python Debugger: Django",
-            "type": "debugpy",
-            "request": "launch",
-            "args": [
-                "runserver",
-                "0.0.0.0:8000"
-            ],
-            "django": true,
-            "autoStartBrowser": false,
-            "justMyCode": false,
-            "program": "/usr/src/geonode/manage.py"
-        }
-    ]
-}
-```
 
 The .devcontainer folder should look like this
 
@@ -73,11 +51,8 @@ The .devcontainer folder should look like this
 .devcontainer
 ├── .env
 ├── .vscode
-│   ├── launch.json
-│   └── src.code-workspace.json
-├── README.md
+│   └── launch.json
 ├── devcontainer.json
 ├── docker-compose.yml
-├── docker.sh
 
 ```
