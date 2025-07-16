@@ -71,7 +71,12 @@ class PermissionsHandlerRegistry:
     def _clear_cache_keys(self, cache_keys):
         """Clear cache keys."""
         if cache_keys:
-            cache.delete_many(cache_keys)
+            if isinstance(cache_keys, str):
+                cache.delete(cache_keys)
+            elif isinstance(cache_keys, list):
+                cache.delete_many(cache_keys)
+            else:
+                raise TypeError(f"Expected str or list, got {type(cache_keys)}")
 
     def _get_cache_key(self, resource_pks, users=None, groups=None, remove_all_cache=False):
         """
@@ -124,15 +129,12 @@ class PermissionsHandlerRegistry:
                 groups=permissions["groups"].keys() if group_clear_cache else None,
                 remove_all_cache=True,  # This will ensure that the __ALL__ cache key is included
             )
-            self._clear_cache_keys(cache_keys)
+            self._clear_cache_keys(cache_keys if cache_keys else [])
 
         elif isinstance(instance, Group):
             group_users = instance.user_set.all()
             resource_pks_with_perms = [
-                resource.pk
-                for resource in get_objects_for_group(
-                    instance, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
-                )
+                resource.pk for resource in get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True)
             ]
 
             cache_keys = self._get_cache_key(
@@ -140,8 +142,7 @@ class PermissionsHandlerRegistry:
                 users=group_users if user_clear_cache else None,
                 groups=[instance] if group_clear_cache else None,
             )
-
-            self._clear_cache_keys(cache_keys)
+            self._clear_cache_keys(cache_keys if cache_keys else [])
 
         elif isinstance(instance, Profile):
             resources = get_objects_for_user(instance, "base.view_resourcebase")
@@ -152,7 +153,8 @@ class PermissionsHandlerRegistry:
                 users=[instance] if user_clear_cache else None,
                 groups=instance.groups.all() if group_clear_cache else None,
             )
-            self._clear_cache_keys(cache_keys)
+
+            self._clear_cache_keys(cache_keys if cache_keys else [])
 
         else:
             pass
@@ -201,7 +203,7 @@ class PermissionsHandlerRegistry:
         if user and group:
             payload = {
                 "users": {user: instance.get_user_perms(user)},
-                "groups": {group: get_group_perms(group, instance)},
+                "groups": {group: list(get_group_perms(group, instance))},
             }
             for handler in self.REGISTRY:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
@@ -215,7 +217,7 @@ class PermissionsHandlerRegistry:
 
             result = payload["users"][user]
         elif group:
-            payload = {"users": {}, "groups": {group: get_group_perms(group, instance)}}
+            payload = {"users": {}, "groups": {group: list(get_group_perms(group, instance))}}
             for handler in self.REGISTRY:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             result = payload["groups"][group]
