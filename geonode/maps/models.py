@@ -21,7 +21,6 @@ import logging
 import math
 import itertools
 
-from deprecated import deprecated
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -196,52 +195,6 @@ class Map(ResourceBase):
                 return {"catalog": None, "ows": ogc_server_settings.ows}
         else:
             return None
-
-    @deprecated(version="2.10.1", reason="APIs have been changed on geospatial service")
-    def publish_dataset_group(self):
-        """
-        Publishes local map layers as WMS layer group on local OWS.
-        """
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
-
-            from geonode.geoserver.helpers import gs_catalog
-        else:
-            raise Exception("Cannot publish layer group if geonode.geoserver is not in INSTALLED_APPS")
-
-        # temporary permission workaround:
-        # only allow public maps to be published
-        if not self.is_public:
-            return "Only public maps can be saved as layer group."
-
-        map_datasets = MapLayer.objects.filter(map=self.id)
-
-        # Local Group Dataset layers and corresponding styles
-        layers = []
-        lg_styles = []
-        for ml in map_datasets:
-            if ml.local:
-                layer = Dataset.objects.get(alternate=ml.name)
-                style = ml.styles or getattr(layer.default_style, "name", "")
-                layers.append(layer)
-                lg_styles.append(style)
-        lg_datasets = [lyr.name for lyr in layers]
-
-        # Group layer bounds and name
-        lg_bounds = [str(coord) for coord in self.bbox]
-        lg_name = f"{slugify(self.title)}_{self.id}"
-
-        # Update existing or add new group layer
-        lg = self.dataset_group
-        if lg is None:
-            lg = GsUnsavedLayerGroup(gs_catalog, lg_name, lg_datasets, lg_styles, lg_bounds)
-        else:
-            lg.layers, lg.styles, lg.bounds = lg_datasets, lg_styles, lg_bounds
-        gs_catalog.save(lg)
-        return lg_name
-
-    class Meta(ResourceBase.Meta):
-        pass
 
 
 class MapLayer(models.Model):

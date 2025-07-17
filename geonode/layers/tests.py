@@ -63,11 +63,8 @@ from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadat
 from geonode.groups.models import GroupProfile
 
 from geonode.layers.utils import (
-    dataset_type,
     get_files,
     get_valid_name,
-    get_valid_dataset_name,
-    surrogate_escape_string,
 )
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
@@ -341,29 +338,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         nn = get_anonymous_user()
         self.assertRaises(GeoNodeException, get_valid_user, nn)
 
-    def test_dataset_type(self):
-        self.assertEqual(dataset_type("foo.shp"), "vector")
-        self.assertEqual(dataset_type("foo.SHP"), "vector")
-        self.assertEqual(dataset_type("foo.sHp"), "vector")
-        self.assertEqual(dataset_type("foo.tif"), "raster")
-        self.assertEqual(dataset_type("foo.TIF"), "raster")
-        self.assertEqual(dataset_type("foo.TiF"), "raster")
-        self.assertEqual(dataset_type("foo.geotif"), "raster")
-        self.assertEqual(dataset_type("foo.GEOTIF"), "raster")
-        self.assertEqual(dataset_type("foo.gEoTiF"), "raster")
-        self.assertEqual(dataset_type("foo.tiff"), "raster")
-        self.assertEqual(dataset_type("foo.TIFF"), "raster")
-        self.assertEqual(dataset_type("foo.TiFf"), "raster")
-        self.assertEqual(dataset_type("foo.geotiff"), "raster")
-        self.assertEqual(dataset_type("foo.GEOTIFF"), "raster")
-        self.assertEqual(dataset_type("foo.gEoTiFf"), "raster")
-        self.assertEqual(dataset_type("foo.asc"), "raster")
-        self.assertEqual(dataset_type("foo.ASC"), "raster")
-        self.assertEqual(dataset_type("foo.AsC"), "raster")
-
-        # basically anything else should produce a GeoNodeException
-        self.assertRaises(GeoNodeException, lambda: dataset_type("foo.gml"))
-
     def test_get_files(self):
         def generate_files(*extensions):
             if extensions[0].lower() != "shp":
@@ -499,28 +473,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertNotEqual(get_valid_name("CA"), "CA_1")
         self.assertNotEqual(get_valid_name("CA"), "CA_1")
 
-    def test_get_valid_dataset_name(self):
-        self.assertEqual(get_valid_dataset_name("blug", False), "blug")
-        self.assertEqual(get_valid_dataset_name("blug", True), "blug")
-
-        self.assertEqual(get_valid_dataset_name("<ab>", False), "_ab_")
-        self.assertEqual(get_valid_dataset_name("<ab>", True), "<ab>")
-
-        self.assertEqual(get_valid_dataset_name("<-->", False), "_")
-        self.assertEqual(get_valid_dataset_name("<-->", True), "<-->")
-
-        self.assertNotEqual(get_valid_dataset_name("CA", False), "CA_1")
-        self.assertNotEqual(get_valid_dataset_name("CA", False), "CA_1")
-        self.assertEqual(get_valid_dataset_name("CA", True), "CA")
-        self.assertEqual(get_valid_dataset_name("CA", True), "CA")
-
-        layer = Dataset.objects.get(name="CA")
-        self.assertNotEqual(get_valid_dataset_name(layer, False), "CA_1")
-        self.assertEqual(get_valid_dataset_name(layer, True), "CA")
-
-        self.assertRaises(GeoNodeException, get_valid_dataset_name, 12, False)
-        self.assertRaises(GeoNodeException, get_valid_dataset_name, 12, True)
-
     # NOTE: we don't care about file content for many of these tests (the
     # forms under test validate based only on file name, and leave actual
     # content inspection to GeoServer) but Django's form validation will omit
@@ -572,19 +524,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         perms = permissions_registry.get_perms(instance=layer)
         self.assertNotIn(user, perms["users"])
         self.assertNotIn(user.username, perms["users"])
-
-    def test_surrogate_escape_string(self):
-        surrogate_escape_raw = "Zo\udcc3\udcab"
-        surrogate_escape_expected = "Zoë"
-        surrogate_escape_result = surrogate_escape_string(
-            surrogate_escape_raw, "UTF-8"
-        )  # add more test cases using different charsets?
-        self.assertEqual(
-            surrogate_escape_result,
-            surrogate_escape_expected,
-            "layers.utils.surrogate_escape_string did not produce expected result. "
-            f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}",
-        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):

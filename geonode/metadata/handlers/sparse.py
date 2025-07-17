@@ -20,6 +20,8 @@ import copy
 import json
 import logging
 
+from rest_framework.reverse import reverse
+
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.models import SparseField
@@ -49,6 +51,9 @@ class SparseHandler(MetadataHandler):
     Handles sparse in fields in the SparseField table
     """
 
+    def __init__(self, **kwargs):
+        self.registry = kwargs.get("registry", sparse_field_registry)
+
     def _recurse_localization(self, context, schema, lang, field_name=None):
         self._localize_subschema_labels(context, schema, lang, field_name)
 
@@ -61,11 +66,27 @@ class SparseHandler(MetadataHandler):
             case _:
                 pass
 
+    def _recurse_thesauri_autocomplete(self, d):
+        if isinstance(d, dict):
+            # Check if target_key is in the current dict
+            if thesaurus_id := d.get("geonode:thesaurus", None):
+                d.setdefault("ui:options", {})["geonode-ui:autocomplete"] = reverse(
+                    "metadata_autocomplete_tkeywords", kwargs={"thesaurusid": thesaurus_id}
+                )
+            # Recurse into each value
+            for value in d.values():
+                self._recurse_thesauri_autocomplete(value)
+        elif isinstance(d, list):
+            # Recurse into each item of the list
+            for item in d:
+                self._recurse_thesauri_autocomplete(item)
+
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
-        for field_name, field_info in sparse_field_registry.fields().items():
+        for field_name, field_info in self.registry.fields().items():
             subschema = copy.deepcopy(field_info["schema"])
             self._recurse_localization(context, subschema, lang, field_name)
+            self._recurse_thesauri_autocomplete(subschema)
             self._add_subschema(jsonschema, field_name, subschema, after_what=field_info["after"])
 
             # add the handler info to the dictionary if it doesn't exist
@@ -80,11 +101,9 @@ class SparseHandler(MetadataHandler):
         return jsonschema
 
     def load_serialization_context(self, resource, jsonschema: dict, context: dict):
-        logger.debug(f"Preloading sparse fields {sparse_field_registry.fields().keys()}")
+        logger.debug(f"Preloading sparse fields {self.registry.fields().keys()}")
         context[CONTEXT_ID] = {
-            "fields": {
-                f.name: f.value for f in SparseField.get_fields(resource, names=sparse_field_registry.fields().keys())
-            },
+            "fields": {f.name: f.value for f in SparseField.get_fields(resource, names=self.registry.fields().keys())},
             "schema": jsonschema,
         }
 

@@ -29,10 +29,7 @@ map_embed = views.map_embed
 
 urlpatterns = [
     # 'geonode.maps.views',
-    re_path(r"^checkurl/?$", views.ajax_url_lookup),
-    re_path(r"^(?P<mapid>[^/]+)/wmc$", views.map_wmc, name="map_wmc"),
     re_path(r"^(?P<mapid>[^/]+)/embed$", map_embed, name="map_embed"),
     re_path(r"^embed/$", views.map_embed, name="map_embed"),
-    re_path(r"^(?P<layername>[^/]*)/attributes", views.mapdataset_attributes, name="mapdataset_attributes"),
     re_path(r"^", include("geonode.maps.api.urls")),
 ]

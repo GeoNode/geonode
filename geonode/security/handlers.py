@@ -77,6 +77,7 @@ class GroupManagersPermissionsHandler(BasePermissionsHandler):
         "change_resourcebase_metadata",
         "change_dataset_data",
         "change_dataset_style",
+        "change_resourcebase_permissions",
     ]
 
     @staticmethod

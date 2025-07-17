@@ -18,9 +18,9 @@
   <div class="col-md-12">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
-      <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
+      <li><a href="#datasets-activity" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Datasets" %}</a></li>
       <li><a href="#maps-activity" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
-      <li><a href="#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> {% trans "Documents" %}</a></li>
+      <li><a href="#documents-activity" data-toggle="tab"><i class="fa fa-newspaper-o"></i> {% trans "Documents" %}</a></li>
       {% for app in GEONODE_APPS_TYPES %}
         <li><a href="#{{app}}" data-toggle="tab"><i class="fa fa-gears"></i> 
           {% trans app|title %}
@@ -37,7 +37,7 @@
         {% endfor %}
         </ul>
       </article>
-      <article id="layers" class="tab-pane">
+      <article id="datasets-activity" class="tab-pane">
         <ul class="no-style-list">
         {% for action in action_list_datasets %}
           {% activity_item action %}
@@ -55,7 +55,7 @@
         {% endfor %}
         </ul>
       </article>
-      <article id="documents" class="tab-pane">
+      <article id="documents-activity" class="tab-pane">
         <ul class="no-style-list">
         {% for action in action_list_documents %}
           {% activity_item action %}

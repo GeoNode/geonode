@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import itertools
 from os import path
 from typing import List
 
@@ -67,9 +67,11 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
 
     default_lang = getattr(settings, "THESAURUS_DEFAULT_LANG", None)
 
-    available_titles = [t for t in g.objects(scheme, DC.title) if isinstance(t, Literal)]
-    thesaurus_title = value_for_language(available_titles, default_lang)
-    description = g.value(scheme, DC.description, None, default=thesaurus_title)
+    available_titles = [t
+                        for t in itertools.chain(g.objects(scheme, DC.title), g.objects(scheme, DCTERMS.title))
+                        if isinstance(t, Literal)]
+    thesaurus_title = value_for_language(available_titles, default_lang) or f'Thesaurus: {identifier}'
+    description = g.value(scheme, DC.description, None) or g.value(scheme, DCTERMS.description, None, default=thesaurus_title)
     date_issued = g.value(scheme, DCTERMS.issued, None, default="")
 
     logger.info(f'Thesaurus parsed: Title: "{thesaurus_title}", desc: "{description}" issued at {date_issued}')
@@ -111,7 +113,7 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
             alt_label = str(alt_label)
         else:
             available_labels = [t for t in g.objects(concept, SKOS.prefLabel) if isinstance(t, Literal)]
-            alt_label = value_for_language(available_labels, default_lang)
+            alt_label = value_for_language(available_labels, default_lang) or about
 
         logger.info(f" - Parsed Concept -> about:'{about}' alt:'{alt_label}' pref:'{str(pref)}' ")
 
@@ -220,7 +222,7 @@ def value_for_language(available: List[Literal], default_lang: str) -> str:
             return str(item)
         elif item.language.split("-")[0] == default_lang:
             return str(item)
-    return str(available[0])
+    return str(available[0]) if available else None
 
 
 def preferredLabel(

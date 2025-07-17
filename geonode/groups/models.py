@@ -36,7 +36,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from geonode.utils import build_absolute_uri
-from geonode.thumbs.utils import MISSING_THUMB
 
 from guardian.shortcuts import get_objects_for_group
 
@@ -242,7 +241,7 @@ class GroupProfile(models.Model):
 
     @property
     def logo_url(self):
-        _missing_thumbnail_url = static(MISSING_THUMB)
+        _default_group_logo_url = static(settings.GROUP_LOGO_URL)
         try:
             _base_path = os.path.split(self.logo.path)[0]
             _upload_path = os.path.split(self.logo.url)[1]
@@ -256,7 +255,7 @@ class GroupProfile(models.Model):
             _url = self.logo.url
         except Exception as e:
             logger.debug(e)
-            return build_absolute_uri(_missing_thumbnail_url)
+            return build_absolute_uri(_default_group_logo_url)
         return build_absolute_uri(_url)
 
 

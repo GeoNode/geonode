@@ -529,8 +529,8 @@ INSTALLED_APPS += GEONODE_APPS
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
@@ -844,6 +844,10 @@ if SESSION_EXPIRED_CONTROL_ENABLED:
     # user logout
     MIDDLEWARE += ("geonode.security.middleware.SessionControlMiddleware",)
 
+# This middleware checks for basic auth or api key and if not present
+# It must be placed after the SessionMiddleware
+MIDDLEWARE += ("geonode.security.middleware.AuthenticateBasicAuthOrApiKeyMiddleware",)
+
 SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get("SESSION_COOKIE_SECURE", "False"))
 CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get("CSRF_COOKIE_SECURE", "False"))
 CSRF_COOKIE_HTTPONLY = ast.literal_eval(os.environ.get("CSRF_COOKIE_HTTPONLY", "False"))
@@ -876,8 +880,6 @@ OAUTH2_PROVIDER = {
         "groups": "Access to your groups",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
-    "OAUTH2_SERVER_CLASS": "geonode.security.oauth2_servers.OIDCServer",
-    # 'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
     # OpenID Connect
     "OIDC_ENABLED": True,
     "OIDC_ISS_ENDPOINT": SITEURL,
@@ -1755,6 +1757,11 @@ CELERY_ACCEPT_CONTENT = [
     CELERY_RESULT_SERIALIZER,
 ]
 
+# Define chunk size (number of resources per chunk) and how many chunks can be inserted
+# in the queue in case of harvesting hundreds of resources
+CHUNK_SIZE = os.environ.get("CHUNK_SIZE", 100)
+MAX_PARALLEL_QUEUE_CHUNKS = os.environ.get("MAX_PARALLEL_QUEUE_CHUNKS", 2)
+
 # Set Tasks Queues
 # CELERY_TASK_DEFAULT_QUEUE = "default"
 # CELERY_TASK_DEFAULT_EXCHANGE = "default"
@@ -1883,9 +1890,6 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # ########################################################################### #
 
 ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))
-
-if ENABLE_APIKEY_LOGIN:
-    MIDDLEWARE += ("geonode.security.middleware.LoginFromApiKeyMiddleware",)
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
@@ -2290,3 +2294,6 @@ PERMISSIONS_HANDLERS = [
 AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
 AVATAR_CHANGE_TEMPLATE = "people/avatar/change.html"
 AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"
+
+# Group default logo url
+GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")

@@ -26,9 +26,6 @@ js_info_dict = {
 
 urlpatterns = [
     # 'geonode.geoapps.views',
-    re_path(r"^new$", views.new_geoapp, name="new_geoapp"),
-    re_path(
-        r"^(?P<geoappid>[^/]+)/embed$", views.geoapp_edit, {"template": "apps/app_embed.html"}, name="geoapp_embed"
-    ),
+    re_path(r"^(?P<geoappid>[^/]+)/embed$", views.geoapp_embed, name="geoapp_embed"),
     re_path(r"^", include("geonode.geoapps.api.urls")),
 ]

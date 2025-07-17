@@ -120,10 +120,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         self.http_session.headers = {"Content-Type": "application/xml"}
         self.dataset_title_filter = dataset_title_filter
 
-    @property
-    def allows_copying_resources(self) -> bool:
-        return False
-
     @classmethod
     def from_django_record(cls, record: models.Harvester):
         return cls(
