@@ -67,7 +67,9 @@ else:
 
 white_list = [compile(x) for x in white_list_paths + getattr(settings, "AUTH_EXEMPT_URLS", ())]
 
+from django.utils.decorators import sync_and_async_middleware
 
+@sync_and_async_middleware
 class LoginRequiredMiddleware(MiddlewareMixin):
     """
     Requires a user to be logged in to access any page that is not white-listed.
@@ -85,6 +87,14 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
     def __init__(self, get_response):
         self.get_response = get_response
+
+    def __call__(self, request):
+        #call method is required for django 5 as old style middleware is deprecated
+        response = self.process_request(request)
+        if response:
+            return response
+        response = self.get_response(request)
+        return response
 
     def process_request(self, request):
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
