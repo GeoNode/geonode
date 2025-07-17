@@ -72,8 +72,9 @@ def register_service(request):
             if service_handler.indexing_method == enumerations.CASCADED:
                 service_handler.create_cascaded_store(service)
             service_handler.geonode_service_id = service.id
-            request.session[service_handler.url] = service_handler
-            logger.debug("Added handler to the session")
+            # commented out due to jsonserializer error, will be replaced with cache
+            # request.session[service_handler.url] = service_handler
+            # logger.debug("Added handler to the session")
             messages.add_message(request, messages.SUCCESS, _("Service registered successfully"))
             result = HttpResponseRedirect(reverse("harvest_resources", kwargs={"service_id": service.id}))
         else:
@@ -95,8 +96,9 @@ def _get_service_handler(request, service):
     service_handler = get_service_handler(service.service_url, service.type, service.id)
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
-    request.session[service.service_url] = service_handler
-    logger.debug("Added handler to the session")
+    # commented out due to jsonserializer error, will be replaced with cache
+    # request.session[service.service_url] = service_handler
+    # logger.debug("Added handler to the session")
     return service_handler
 
 
@@ -185,14 +187,15 @@ def harvest_resources_handle_post(request, service, handler):
 @login_required
 def harvest_resources(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
-    try:
-        handler = request.session[service.service_url]
-        if not handler.geonode_service_id:
-            handler.geonode_service_id = service_id
-    except KeyError:  # handler is not saved on the session, recreate it
-        handler = _get_service_handler(request, service)
-        if not handler.geonode_service_id:
-            handler.geonode_service_id = service_id
+    # commented out due to jsonserializer error, will be replaced with cache
+    # try:
+    #     handler = request.session[service.service_url]
+    #     if not handler.geonode_service_id:
+    #         handler.geonode_service_id = service_id
+    # except KeyError:  # handler is not saved on the session, recreate it
+    handler = _get_service_handler(request, service)
+    if not handler.geonode_service_id:
+        handler.geonode_service_id = service_id
     if request.method == "GET":
         return harvest_resources_handle_get(request, service, handler)
     elif request.method == "POST":
@@ -281,10 +284,11 @@ def service_detail(request, service_id):
     # speed up the register/harvest resources flow. However, for services
     # with many resources, keeping the handler in the session leads to degraded
     # performance
-    try:
-        request.session.pop(service.service_url)
-    except KeyError:
-        pass
+    # commented out due to jsonserializer error, will be replaced with cache
+    # try:
+    #     request.session.pop(service.service_url)
+    # except KeyError:
+    #     pass
 
     return render(
         request,
