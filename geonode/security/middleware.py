@@ -87,7 +87,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def __call__(self, request):
-        # call method is required for django 5 as old style middleware is deprecated
+        # call method is added for test request calls that throws async_mode error called from newer tests
         response = self.process_request(request)
         if response:
             return response
