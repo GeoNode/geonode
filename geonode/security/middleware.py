@@ -67,10 +67,7 @@ else:
 
 white_list = [compile(x) for x in white_list_paths + getattr(settings, "AUTH_EXEMPT_URLS", ())]
 
-from django.utils.decorators import sync_and_async_middleware
 
-
-@sync_and_async_middleware
 class LoginRequiredMiddleware(MiddlewareMixin):
     """
     Requires a user to be logged in to access any page that is not white-listed.
