@@ -61,6 +61,7 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
