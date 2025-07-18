@@ -84,7 +84,8 @@ class LoginRequiredMiddleware(MiddlewareMixin):
     redirect_to = login_url
 
     def __init__(self, get_response):
-        super().__init__(get_response=get_response)
+        if get_response:
+            super().__init__(get_response)
         self.get_response = get_response
 
     def process_request(self, request):
