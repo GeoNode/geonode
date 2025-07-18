@@ -72,7 +72,7 @@ services:
     image: memcached:alpine
     container_name: memcached4${COMPOSE_PROJECT_NAME}
     command: memcached ${MEMCACHED_OPTIONS}
-    restart: on-failure
+    restart: unless-stopped
     healthcheck:
       test: nc -z 127.0.0.1 11211
       interval: 30s
