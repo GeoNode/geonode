@@ -96,6 +96,9 @@ from geonode.resource.api.tasks import resouce_service_dispatcher
 from guardian.shortcuts import assign_perm
 from geonode.security.registry import permissions_registry
 
+from django.contrib.auth.models import AnonymousUser
+from django.core.cache import cache
+
 logger = logging.getLogger(__name__)
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
@@ -3588,3 +3591,206 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
         request.user = AnonymousUser()
         return request
+
+
+class TestAPIPermissionCache(GeoNodeBaseTestSupport):
+    """
+    API tests to verify cache for user, group, resource operations
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.admin_user = get_user_model().objects.get(username="admin")
+        cls.test_user = get_user_model().objects.create_user(
+            username=f"test_user_{uuid4()}", email="test_user@example.com", password="testpass123"
+        )
+        cls.test_user_owner = get_user_model().objects.create_user(
+            username=f"test_user_owner{uuid4()}", email="test_user_owner@example.com", password="testpass123"
+        )
+        cls.test_group, _ = Group.objects.get_or_create(name="test-group")
+        cls.test_group_profile = GroupProfile.objects.create(
+            group=cls.test_group, title="Test Group", slug="test-group", access="public"
+        )
+        cls.anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
+
+    def setUp(self):
+        cache.clear()
+        self.client.login(username="admin", password="admin")
+
+    def _create_test_resource(self, owner=None):
+        """Helper method to create a test resource with permissions"""
+        if owner is None:
+            owner = self.test_user_owner
+
+        resource = ResourceBase.objects.create(
+            title=f"test_resource_{uuid4()}",
+            uuid=str(uuid4()),
+            owner=owner,
+            abstract="Test resource for API testing",
+            subtype="vector",
+            is_approved=True,
+            is_published=True,
+        )
+
+        perm_spec = {
+            "users": {
+                self.test_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "delete_resourcebase",
+                ],
+                self.admin_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                ],
+            },
+            "groups": {
+                self.test_group.name: ["view_resourcebase"],
+                self.anonymous_group.name: ["view_resourcebase"],
+            },
+        }
+        resource.set_permissions(perm_spec)
+        return resource
+
+    def _populate_cache_for_resource(self, resource):
+        """Helper method to populate cache for a resource"""
+        cache_keys = {}
+
+        permissions_registry.get_perms(instance=resource, user=self.test_user, use_cache=True)
+        cache_keys["test_user"] = f"resource_perms:{resource.pk}:user:{self.test_user.pk}"
+
+        permissions_registry.get_perms(instance=resource, user=self.admin_user, use_cache=True)
+        cache_keys["admin_user"] = f"resource_perms:{resource.pk}:user:{self.admin_user.pk}"
+
+        anonymous_user = AnonymousUser()
+        permissions_registry.get_perms(instance=resource, user=anonymous_user, use_cache=True)
+        cache_keys["anonymous"] = f"resource_perms:{resource.pk}:anonymous"
+
+        permissions_registry.get_perms(instance=resource, group=self.test_group, use_cache=True)
+        cache_keys["group"] = f"resource_perms:{resource.pk}:group:{self.test_group.pk}"
+
+        permissions_registry.get_perms(instance=resource, use_cache=True)
+        cache_keys["all"] = f"resource_perms:{resource.pk}:__ALL__"
+
+        return cache_keys
+
+    def test_user_delete_api_cache_invalidation(self):
+        """Test that cache is properly invalidated when user is deleted via API"""
+        temp_user = get_user_model().objects.create_user(
+            username=f"temp_user_{uuid4()}", email="temp@example.com", password="temppass123"
+        )
+
+        resource = self._create_test_resource()
+        perm_spec = {"users": {temp_user.username: ["view_resourcebase", "change_resourcebase"]}, "groups": {}}
+        resource.set_permissions(perm_spec)
+
+        permissions_registry.get_perms(instance=resource, user=temp_user, use_cache=True)
+        temp_user_cache_key = f"resource_perms:{resource.pk}:user:{temp_user.pk}"
+
+        self.assertIsNotNone(cache.get(temp_user_cache_key))
+
+        other_cache_keys = self._populate_cache_for_resource(resource)
+        for key in other_cache_keys.values():
+            self.assertIsNotNone(cache.get(key))
+
+        response = self.client.delete(reverse("users-detail", kwargs={"pk": temp_user.pk}))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(get_user_model().objects.filter(pk=temp_user.pk).exists())
+
+        self.assertIsNone(cache.get(temp_user_cache_key), "Cache should be cleared after user deletion via API")
+
+        for cache_type, cache_key in other_cache_keys.items():
+            self.assertIsNotNone(
+                cache.get(cache_key), f"Cache for {cache_type} should not be affected by user deletion"
+            )
+
+    def test_group_delete_api_cache_invalidation(self):
+        """Test that cache is properly invalidated when group is deleted via API"""
+        temp_group_profile = GroupProfile.objects.create(title="Temp Group", slug="temp-group-test", access="public")
+
+        temp_group = temp_group_profile.group
+
+        resource = self._create_test_resource()
+        new_perm_spec = {
+            "users": {},
+            "groups": {
+                f"{temp_group.name}": [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "change_resourcebase_permissions",
+                    "delete_resourcebase",
+                ],
+            },
+        }
+        resource.set_permissions(new_perm_spec)
+
+        permissions_registry.get_perms(instance=resource, group=temp_group, use_cache=True)
+        temp_group_cache_key = f"resource_perms:{resource.pk}:group:{temp_group.pk}"
+
+        self.assertIsNotNone(cache.get(temp_group_cache_key))
+
+        print(cache.get(temp_group_cache_key), "temp_group_cache_key")
+        print(temp_group_cache_key, "temp_group_cache_key")
+
+        other_cache_keys = self._populate_cache_for_resource(resource)
+        for key in other_cache_keys.values():
+            self.assertIsNotNone(cache.get(key))
+
+        response = self.client.post(reverse("group_remove", args=[temp_group_profile.slug]))
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertFalse(GroupProfile.objects.filter(pk=temp_group.pk).exists())
+
+        self.assertIsNone(cache.get(temp_group_cache_key), "Cache should be cleared after group deletion via API")
+
+        for cache_type, cache_key in other_cache_keys.items():
+            self.assertIsNotNone(
+                cache.get(cache_key), f"Cache for {cache_type} should not be affected by group deletion"
+            )
+
+    def test_resource_delete_api_cache_invalidation(self):
+        """Test that cache is properly invalidated when resource is deleted via API"""
+        resource = self._create_test_resource()
+
+        cache_keys = self._populate_cache_for_resource(resource)
+
+        for cache_type, cache_key in cache_keys.items():
+            self.assertIsNotNone(cache.get(cache_key), f"Cache for {cache_type} should exist before deletion")
+
+        other_resource = self._create_test_resource()
+        other_cache_key = f"resource_perms:{other_resource.pk}:user:{self.test_user.pk}"
+        permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(other_cache_key))
+
+        response = self.client.delete(reverse("base-resources-detail", kwargs={"pk": resource.pk}))
+
+        self.assertEqual(response.status_code, 204)
+
+        self.assertFalse(ResourceBase.objects.filter(pk=resource.pk).exists())
+
+        for cache_type, cache_key in cache_keys.items():
+            self.assertIsNone(
+                cache.get(cache_key), f"Cache for {cache_type} should be cleared after resource deletion via API"
+            )
+
+        self.assertIsNotNone(cache.get(other_cache_key), "Cache for other resources should not be affected")
+
+    def tearDown(self):
+        cache.clear()
+        super().tearDown()
+
+    @classmethod
+    def tearDownClass(cls):
+        ResourceBase.objects.filter(owner=cls.test_user).delete()
+        cls.test_user.delete()
+        cls.test_user_owner.delete()
+        if hasattr(cls, "test_group_profile"):
+            cls.test_group_profile.delete()
+        if hasattr(cls, "test_group"):
+            cls.test_group.delete()
+        super().tearDownClass()
