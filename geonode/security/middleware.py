@@ -84,15 +84,8 @@ class LoginRequiredMiddleware(MiddlewareMixin):
     redirect_to = login_url
 
     def __init__(self, get_response):
+        super().__init__(get_response=get_response)
         self.get_response = get_response
-
-    def __call__(self, request):
-        # call method is added for test request calls that throws async_mode error called from newer tests
-        response = self.process_request(request)
-        if response:
-            return response
-        response = self.get_response(request)
-        return response
 
     def process_request(self, request):
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
