@@ -1,4 +1,3 @@
-
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.194.0/containers/docker-existing-docker-compose
 // If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
@@ -18,33 +17,29 @@
 
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
-	"workspaceFolder": "/usr/src",
+	"workspaceFolder": "/usr/src/geonode/",
 
 	// Set *default* container specific settings.json values on container create.
-    "customizations": {
-        "vscode": {
-            "settings": {
-                "terminal.integrated.profiles.linux": {
-                    "/bin/bash": {
-                        "path": "/bin/bash",
-                        "args": [
-                            "-l"
-                        ]
-                    }
-                },
-                "terminal.integrated.defaultProfile.linux": "bash"
-            },
+	"settings": {
+		"terminal.integrated.profiles.linux": {
+			"/bin/bash": {
+				"path": "/bin/bash",
+				"args": [
+					"-l"
+				]
+			}
+		},
+		"terminal.integrated.defaultProfile.linux": "/bin/bash"
+	},
 
-            // Add the IDs of extensions you want installed when the container is created.
-            "extensions": [
-                "ms-python.python",
-                "batisteo.vscode-django",
-                "mrorz.language-gettext",
-                "eamodio.gitlens", // Note: User preference
-                "bigonesystems.django" // Note: User preference
-            ]
-        }
-    },
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-python.python",
+		"batisteo.vscode-django",
+		"mrorz.language-gettext",
+		"eamodio.gitlens", // Note: User preference
+		"bigonesystems.django" // Note: User preference
+	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
