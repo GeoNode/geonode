@@ -31,10 +31,11 @@ from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer
+from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.utils import error_handler
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -76,6 +77,8 @@ class ImportOrchestrator:
                 return _serializer
         logger.info("specific serializer not found, fallback on the default one")
         is_overwrite_flow = _data.get("overwrite_existing_layer", False)
+        if _data.get("action") == ira.UPSERT.value:
+            return UpsertImporterSerializer
         if isinstance(is_overwrite_flow, str):
             is_overwrite_flow = ast.literal_eval(is_overwrite_flow.title())
         return OverwriteImporterSerializer if is_overwrite_flow else ImporterSerializer
