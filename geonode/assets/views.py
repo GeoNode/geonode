@@ -108,7 +108,8 @@ class AssetViewSet(DynamicModelViewSet):
             else:
                 asset = create_asset(request.user, [file_path])
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"An error occurred while creating the asset: {e}")
+            return Response({"error": "An internal error occurred while creating the asset"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if asset:
             serializer = self.get_serializer(asset)

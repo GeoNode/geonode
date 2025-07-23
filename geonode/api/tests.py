@@ -1033,14 +1033,6 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
 
 
 class AssetApiTests(GeoNodeBaseTestSupport):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-
     def setUp(self):
         super().setUp()
         self.admin_user = get_user_model().objects.get(username="admin")
