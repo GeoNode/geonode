@@ -29,7 +29,6 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import StreamingHttpResponse
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 from rest_framework.test import APITestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
