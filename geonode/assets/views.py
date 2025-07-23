@@ -109,6 +109,8 @@ class AssetViewSet(DynamicModelViewSet):
                 asset = create_asset(request.user, [file_path])
         except Exception as e:
             logger.error(f"An error occurred while creating the asset: {e}")
+            if file_name and storage_manager.exists(file_name):
+                storage_manager.delete(file_name)
             return Response(
                 {"error": "An internal error occurred while creating the asset"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,

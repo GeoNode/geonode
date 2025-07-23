@@ -111,7 +111,7 @@ def create_asset(
         logger.error(f"Error creating Asset: {e}", exc_info=e)
         if asset:
             asset.delete()
-        raise Exception(f"Error creating asset: {e}")
+        raise
 
 
 def create_asset_and_link(
