@@ -454,9 +454,6 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
         initial_asset_count = Asset.objects.count()
         file_obj = self._create_dummy_file(filename="test_create_asset.txt")
         file_path = os.path.join(settings.MEDIA_ROOT, file_obj.name)
-        with open(file_path, "wb+") as destination:
-            for chunk in file_obj.chunks():
-                destination.write(chunk)
 
         asset = create_asset(
             self.user,
@@ -485,9 +482,6 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
 
         file_obj = self._create_dummy_file(filename="test_create_asset_link.txt")
         file_path = os.path.join(settings.MEDIA_ROOT, file_obj.name)
-        with open(file_path, "wb+") as destination:
-            for chunk in file_obj.chunks():
-                destination.write(chunk)
 
         asset, link = create_asset_and_link(
             resource,
