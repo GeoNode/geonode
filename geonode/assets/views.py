@@ -99,9 +99,9 @@ class AssetViewSet(DynamicModelViewSet):
         file = data.get("file")
         resource_id = data.get("resource_id")
         asset = None
-        file_name = storage_manager.save(file.name, file)
-        file_path = storage_manager.path(file_name)
         try:
+            file_name = storage_manager.save(file.name, file)
+            file_path = storage_manager.path(file_name)
             if resource_id:
                 resource = get_object_or_404(ResourceBase, pk=resource_id)
                 asset, _ = create_asset_and_link(resource, request.user, [file_path])
