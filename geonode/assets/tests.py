@@ -442,19 +442,27 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.user = get_user_model().objects.get(username="admin")
+        self.created_files = []
 
     def tearDown(self):
+        for file_path in self.created_files:
+            if os.path.exists(file_path):
+                os.remove(file_path)
         super().tearDown()
 
     def _create_dummy_file(self, filename="dummy.txt", content=b"dummy content"):
-        return SimpleUploadedFile(filename, content, content_type="text/plain")
+        """Create a real file on the filesystem and return its path."""
+        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        with open(file_path, "wb") as f:
+            f.write(content)
+        self.created_files.append(file_path)
+        return file_path
 
     def test_create_asset_function(self):
         """Test the create_asset utility function."""
         initial_asset_count = Asset.objects.count()
-        file_obj = self._create_dummy_file(filename="test_create_asset.txt")
-        file_path = os.path.join(settings.MEDIA_ROOT, file_obj.name)
-
+        file_path = self._create_dummy_file(filename="test_create_asset.txt")
         asset = create_asset(
             self.user,
             [file_path],
@@ -480,8 +488,7 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
             uuid=str(uuid4()),
         )
 
-        file_obj = self._create_dummy_file(filename="test_create_asset_link.txt")
-        file_path = os.path.join(settings.MEDIA_ROOT, file_obj.name)
+        file_path = self._create_dummy_file(filename="test_create_asset_link.txt")
 
         asset, link = create_asset_and_link(
             resource,
