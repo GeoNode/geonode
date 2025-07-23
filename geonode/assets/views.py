@@ -18,7 +18,6 @@
 #########################################################################
 
 import logging
-
 from django.shortcuts import get_object_or_404
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -29,13 +28,18 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.serializers import AssetSerializer
-from geonode.assets.utils import get_perms_response
+from geonode.assets.utils import get_perms_response, create_asset, create_asset_and_link
 from geonode.assets.models import Asset
 
 from geonode.base.api.filters import (
     DynamicSearchFilter,
 )
 from geonode.base.api.pagination import GeoNodeApiPagination
+
+from geonode.base.models import ResourceBase
+from geonode.base.api.permissions import UserHasPerms
+from geonode.storage.manager import storage_manager
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +49,6 @@ class AssetViewSet(DynamicModelViewSet):
     API endpoint that allows Assets to be viewed or edited.
     """
 
-    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -55,6 +58,14 @@ class AssetViewSet(DynamicModelViewSet):
     queryset = Asset.objects.all().order_by("-created")
     serializer_class = AssetSerializer  # TODO: appropriate Serializer should be switched for each Asset instance
     pagination_class = GeoNodeApiPagination
+
+    def get_permissions(self):
+        if self.action == "create":
+            return [
+                IsAuthenticatedOrReadOnly(),
+                UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
+            ]
+        return [IsAuthenticatedOrReadOnly()]
 
     def list(self, request, *args, **kwargs):
         """
@@ -79,6 +90,30 @@ class AssetViewSet(DynamicModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        file = data.get("file")
+        resource_id = data.get("resource_id")
+        asset = None
+        file_name = storage_manager.save(file.name, file)
+        file_path = storage_manager.path(file_name)
+        try:
+            if resource_id:
+                resource = get_object_or_404(ResourceBase, pk=resource_id)
+                asset, _ = create_asset_and_link(resource, request.user, [file_path])
+            else:
+                asset = create_asset(request.user, [file_path])
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if asset:
+            serializer = self.get_serializer(asset)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"error": "Could not create asset"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def _get_file(self, request, pk, attachment: bool = False, path=None):
         asset = get_object_or_404(Asset, pk=pk)

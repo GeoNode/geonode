@@ -84,6 +84,36 @@ def create_link(resource, asset, link_type=None, extension=None, name=None, mime
     return link
 
 
+def create_asset(
+    owner,
+    files: list,
+    handler=None,
+    title=None,
+    description=None,
+    asset_type=None,
+    clone_files: bool = True,
+) -> Asset:
+    asset_handler = handler or asset_handler_registry.get_default_handler()
+    asset = None
+    try:
+        default_title, _ = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
+
+        asset = asset_handler.create(
+            title=title or default_title or "Unknown",
+            description=description or asset_type or "Unknown",
+            type=asset_type or "Unknown",
+            owner=owner,
+            files=files,
+            clone_files=clone_files,
+        )
+        return asset
+    except Exception as e:
+        logger.error(f"Error creating Asset: {e}", exc_info=e)
+        if asset:
+            asset.delete()
+        raise Exception(f"Error creating asset: {e}")
+
+
 def create_asset_and_link(
     resource,
     owner,
@@ -98,27 +128,22 @@ def create_asset_and_link(
     clone_files: bool = True,
 ) -> tuple[Asset, Link]:
 
-    asset_handler = handler or asset_handler_registry.get_default_handler()
     asset = link = None
     try:
-        default_title, default_ext = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
-        if default_ext:
-            default_ext = default_ext.lstrip(".")
-        link_type = link_type or find_type(default_ext) if default_ext else None
-
-        asset = asset_handler.create(
-            title=title or default_title or "Unknown",
-            description=description or asset_type or "Unknown",
-            type=asset_type or "Unknown",
+        asset = create_asset(
             owner=owner,
             files=files,
+            handler=handler,
+            title=title,
+            description=description,
+            asset_type=asset_type,
             clone_files=clone_files,
         )
 
         link = create_link(
             resource,
             asset,
-            asset_handler=asset_handler,
+            asset_handler=handler,
             link_type=link_type,
             extension=extension,
             name=title,

@@ -51,6 +51,9 @@ from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_models, remove_models
 from geonode.security.registry import permissions_registry
+from geonode.assets.models import Asset
+from django.core.files.uploadedfile import SimpleUploadedFile
+from geonode.base.models import Link
 
 
 logger = logging.getLogger(__name__)
@@ -1110,3 +1113,80 @@ class OwnershipTransferTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         perms_user_3_after = permissions_registry.get_perms(instance=map_resource, user=self.user3)
         self.assertIn("change_resourcebase_metadata", perms_user_3_after)
+class AssetApiTests(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+
+    def setUp(self):
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.asset_list_url = "/api/v2/assets/"
+
+    def _create_dummy_file(self, filename="test_file.txt", content=b"test content"):
+        return SimpleUploadedFile(filename, content, content_type="text/plain")
+
+    def test_create_asset_without_resource_id(self):
+        """
+        Test creating an asset without linking it to a specific resource.
+        """
+        self.client.force_login(self.admin_user)
+        initial_asset_count = Asset.objects.count()
+
+        file = self._create_dummy_file()
+        data = {
+            "file": file,
+        }
+        response = self.client.post(self.asset_list_url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 201, response.json())
+        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        new_asset = Asset.objects.latest("created")
+        self.assertEqual(new_asset.owner, self.admin_user)
+
+    def test_create_asset_with_resource_id(self):
+        """
+        Test creating an asset and linking it to an existing resource.
+        """
+        self.client.force_login(self.admin_user)
+        initial_asset_count = Asset.objects.count()
+
+        resource = ResourceBase.objects.create(
+            title="Test Resource", owner=self.admin_user, abstract="Abstract for test resource", uuid=str(uuid4())
+        )
+
+        file = self._create_dummy_file(filename="linked_file.txt")
+        data = {
+            "file": file,
+            "resource_id": resource.pk,
+        }
+        response = self.client.post(self.asset_list_url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 201, response.json())
+        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        new_asset = Asset.objects.latest("created")
+        link = Link.objects.get(asset=new_asset)
+        self.assertEqual(link.asset.owner, self.admin_user)
+
+        self.assertEqual(link.resource, resource)
+
+    def test_create_asset_unauthenticated(self):
+        """
+        Test that an unauthenticated user cannot create an asset.
+        """
+        initial_asset_count = Asset.objects.count()
+        file = self._create_dummy_file()
+        data = {
+            "file": file,
+            "type": "document",
+            "title": "Unauthorized Asset",
+            "description": "This should not be created.",
+        }
+        response = self.client.post(self.asset_list_url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(Asset.objects.count(), initial_asset_count)
