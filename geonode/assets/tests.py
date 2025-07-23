@@ -22,17 +22,22 @@ import logging
 import shutil
 import io
 import json
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import StreamingHttpResponse
 from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from rest_framework.test import APITestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.local import LocalAssetHandler
 from geonode.assets.models import Asset, LocalAsset
+from geonode.assets.utils import create_asset, create_asset_and_link
+from geonode.base.models import ResourceBase
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -334,3 +339,74 @@ class AssetsDownloadTests(APITestCase):
         shutil.copy(TWO_JSON, asset_dir)
         shutil.copy(THREE_JSON, sub_dir)
         return asset
+
+
+class AssetCreationTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="admin")
+
+    def tearDown(self):
+        super().tearDown()
+
+    def _create_dummy_file(self, filename="dummy.txt", content=b"dummy content"):
+        return SimpleUploadedFile(filename, content, content_type="text/plain")
+
+    def test_create_asset_function(self):
+        """Test the create_asset utility function."""
+        initial_asset_count = Asset.objects.count()
+        file_obj = self._create_dummy_file(filename="test_create_asset.txt")
+        file_path = os.path.join(settings.MEDIA_ROOT, file_obj.name)
+        with open(file_path, "wb+") as destination:
+            for chunk in file_obj.chunks():
+                destination.write(chunk)
+
+        asset = create_asset(
+            self.user,
+            [file_path],
+            asset_type="document",
+            title="Test Asset from Function",
+            description="Description for asset from function",
+        )
+
+        self.assertIsNotNone(asset)
+        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(asset.title, "Test Asset from Function")
+        self.assertEqual(asset.owner, self.user)
+        asset_file_path = asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")
+
+    def test_create_asset_and_link_function(self):
+        """Test the create_asset_and_link utility function."""
+        initial_asset_count = Asset.objects.count()
+        resource = ResourceBase.objects.create(
+            title="Test Resource for Asset Link",
+            owner=self.user,
+            abstract="Abstract for linked resource",
+            uuid=str(uuid4()),
+        )
+
+        file_obj = self._create_dummy_file(filename="test_create_asset_link.txt")
+        file_path = os.path.join(settings.MEDIA_ROOT, file_obj.name)
+        with open(file_path, "wb+") as destination:
+            for chunk in file_obj.chunks():
+                destination.write(chunk)
+
+        asset, link = create_asset_and_link(
+            resource,
+            self.user,
+            [file_path],
+            asset_type="image",
+            title="Linked Asset from Function",
+            description="Description for linked asset from function",
+        )
+
+        self.assertTrue(link)
+        self.assertIsNotNone(asset)
+        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(link.asset.title, "Linked Asset from Function")
+        self.assertEqual(link.asset.owner, self.user)
+        self.assertEqual(link.resource, resource)
+        asset_file_path = asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")

@@ -22,6 +22,8 @@ from django.contrib.auth import get_user_model
 
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicComputedField
+from rest_framework import serializers
+
 
 from geonode.assets.models import (
     Asset,
@@ -60,15 +62,35 @@ class AssetSubclassField(DynamicComputedField):
 
 class AssetSerializer(DynamicModelSerializer):
 
-    owner = SimpleUserSerializer(embed=False)
-    asset_type = ClassTypeField()
-    subinfo = AssetSubclassField()
+    owner = SimpleUserSerializer(embed=False, read_only=True)
+    asset_type = ClassTypeField(read_only=True)
+    subinfo = AssetSubclassField(read_only=True)
+
+    file = serializers.FileField(allow_empty_file=False, use_url=False, write_only=True, required=True)
+    resource_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = Asset
         name = "asset"
         # fields = ("pk", "title", "description", "type", "owner", "created")
-        fields = ("pk", "title", "description", "type", "owner", "created", "asset_type", "subinfo")
+        fields = (
+            "pk",
+            "title",
+            "description",
+            "type",
+            "owner",
+            "created",
+            "asset_type",
+            "subinfo",
+            "file",
+            "resource_id",
+        )
+        extra_kwargs = {
+            "title": {"read_only": True},
+            "description": {"read_only": True},
+            "type": {"read_only": True},
+            "created": {"read_only": True},
+        }
 
 
 class LocalAssetSerializer(AssetSerializer):
