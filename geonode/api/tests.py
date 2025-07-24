@@ -51,7 +51,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_models, remove_models
 from geonode.security.registry import permissions_registry
-from geonode.assets.models import Asset
+from geonode.assets.models import LocalAsset
 from django.core.files.uploadedfile import SimpleUploadedFile
 from geonode.base.models import Link
 
@@ -1127,7 +1127,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         Test creating an asset without linking it to a specific resource.
         """
         self.client.force_login(self.admin_user)
-        initial_asset_count = Asset.objects.count()
+        initial_asset_count = LocalAsset.objects.count()
 
         file = self._create_dummy_file()
         data = {
@@ -1136,8 +1136,8 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         response = self.client.post(self.asset_list_url, data, format="multipart")
 
         self.assertEqual(response.status_code, 201, response.json())
-        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
-        new_asset = Asset.objects.latest("created")
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        new_asset = LocalAsset.objects.latest("created")
         self.assertEqual(new_asset.owner, self.admin_user)
 
     def test_create_asset_with_resource_id(self):
@@ -1145,7 +1145,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         Test creating an asset and linking it to an existing resource.
         """
         self.client.force_login(self.admin_user)
-        initial_asset_count = Asset.objects.count()
+        initial_asset_count = LocalAsset.objects.count()
 
         resource = ResourceBase.objects.create(
             title="Test Resource", owner=self.admin_user, abstract="Abstract for test resource", uuid=str(uuid4())
@@ -1159,8 +1159,8 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         response = self.client.post(self.asset_list_url, data, format="multipart")
 
         self.assertEqual(response.status_code, 201, response.json())
-        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
-        new_asset = Asset.objects.latest("created")
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        new_asset = LocalAsset.objects.latest("created")
         link = Link.objects.get(asset=new_asset)
         self.assertEqual(link.asset.owner, self.admin_user)
 
@@ -1170,7 +1170,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         """
         Test that an unauthenticated user cannot create an asset.
         """
-        initial_asset_count = Asset.objects.count()
+        initial_asset_count = LocalAsset.objects.count()
         file = self._create_dummy_file()
         data = {
             "file": file,
@@ -1181,4 +1181,4 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         response = self.client.post(self.asset_list_url, data, format="multipart")
 
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(Asset.objects.count(), initial_asset_count)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count)

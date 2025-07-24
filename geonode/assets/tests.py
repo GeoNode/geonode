@@ -436,7 +436,7 @@ class AssetsDownloadTests(APITestCase):
         return asset
 
 
-class AssetCreationTests(GeoNodeBaseTestSupport):
+class LocalAssetCreationTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
@@ -460,7 +460,7 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
 
     def test_create_asset_function(self):
         """Test the create_asset utility function."""
-        initial_asset_count = Asset.objects.count()
+        initial_asset_count = LocalAsset.objects.count()
         file_path = self._create_dummy_file(filename="test_create_asset.txt")
         asset = create_asset(
             self.user,
@@ -471,7 +471,7 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
         )
 
         self.assertIsNotNone(asset)
-        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
         self.assertEqual(asset.title, "Test Asset from Function")
         self.assertEqual(asset.owner, self.user)
         asset_file_path = asset.localasset.location[0]
@@ -479,7 +479,7 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
 
     def test_create_asset_and_link_function(self):
         """Test the create_asset_and_link utility function."""
-        initial_asset_count = Asset.objects.count()
+        initial_asset_count = LocalAsset.objects.count()
         resource = ResourceBase.objects.create(
             title="Test Resource for Asset Link",
             owner=self.user,
@@ -500,7 +500,7 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
 
         self.assertTrue(link)
         self.assertIsNotNone(asset)
-        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
         self.assertEqual(link.asset.title, "Linked Asset from Function")
         self.assertEqual(link.asset.owner, self.user)
         self.assertEqual(link.resource, resource)

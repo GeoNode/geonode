@@ -22,8 +22,12 @@ from django.contrib.auth import get_user_model
 
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicComputedField
+from geonode.assets.local import LocalAssetHandler
+from geonode.base.models import ResourceBase
+from geonode.storage.manager import StorageManager
+from geonode.assets.utils import create_asset, create_asset_and_link
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-
 
 from geonode.assets.models import (
     Asset,
@@ -62,39 +66,59 @@ class AssetSubclassField(DynamicComputedField):
 
 class AssetSerializer(DynamicModelSerializer):
 
-    owner = SimpleUserSerializer(embed=False, read_only=True)
-    asset_type = ClassTypeField(read_only=True)
-    subinfo = AssetSubclassField(read_only=True)
-
-    file = serializers.FileField(allow_empty_file=False, use_url=False, write_only=True, required=True)
-    resource_id = serializers.IntegerField(write_only=True, required=False)
+    owner = SimpleUserSerializer(embed=False, required=False)
+    asset_type = ClassTypeField(required=False)
+    subinfo = AssetSubclassField(required=False)
 
     class Meta:
         model = Asset
         name = "asset"
         # fields = ("pk", "title", "description", "type", "owner", "created")
-        fields = (
-            "pk",
-            "title",
-            "description",
-            "type",
-            "owner",
-            "created",
-            "asset_type",
-            "subinfo",
-            "file",
-            "resource_id",
-        )
-        extra_kwargs = {
-            "title": {"read_only": True},
-            "description": {"read_only": True},
-            "type": {"read_only": True},
-            "created": {"read_only": True},
-        }
+        fields = ("pk", "title", "description", "type", "owner", "created", "asset_type", "subinfo")
 
 
 class LocalAssetSerializer(AssetSerializer):
+    file = serializers.FileField(write_only=True, required=True)
+    resource_id = serializers.IntegerField(required=False)
+
     class Meta(AssetSerializer.Meta):
         model = LocalAsset
         name = "local_asset"
-        fields = AssetSerializer.Meta.fields + ("location",)
+        fields = AssetSerializer.Meta.fields + ("location", "file", "resource_id")
+        extra_kwargs = {
+            "title": {"required": False},
+            "description": {"required": False},
+            "type": {"required": False},
+            "location": {"required": False},
+            "created": {"required": False},
+        }
+
+    def create(self, validated_data):
+        file = validated_data.pop("file")
+        resource_id = validated_data.pop("resource_id", None)
+        title = validated_data.pop("title", None)
+        description = validated_data.pop("description", None)
+        type = validated_data.pop("type", None)
+        user = self.context["request"].user
+
+        handler = LocalAssetHandler()
+        asset_dir = handler._create_asset_dir()
+
+        storage_manager = StorageManager(remote_files={"file": file})
+        storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
+
+        retrieved_paths = storage_manager.get_retrieved_paths()
+        file_path = retrieved_paths.get("file")
+
+        if not file_path:
+            raise serializers.ValidationError("Could not save the file.")
+
+        if resource_id:
+            resource = get_object_or_404(ResourceBase, pk=resource_id)
+            localasset, _ = create_asset_and_link(
+                resource, user, [file_path], title=title, description=description, asset_type=type
+            )
+        else:
+            localasset = create_asset(user, [file_path], title=title, description=description, asset_type=type)
+
+        return localasset
