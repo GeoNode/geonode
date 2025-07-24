@@ -581,7 +581,7 @@ def update_harvestable_resources(self, refresh_session_id: int):
     if session.status == session.STATUS_ABORTED:
         logger.debug("Session has been aborted, skipping...")
         return
-    
+
     session.status = session.STATUS_ON_GOING
     session.save()
 
@@ -594,10 +594,10 @@ def update_harvestable_resources(self, refresh_session_id: int):
                 refresh_session_id, session.STATUS_FINISHED_ALL_FAILED, final_details="Harvester is not available"
             )
             return
-        
+
         harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
         harvester.save()
-        
+
         worker = harvester.get_harvester_worker()
         try:
             num_resources = worker.get_num_available_resources()
@@ -617,19 +617,19 @@ def update_harvestable_resources(self, refresh_session_id: int):
         total_pages = math.ceil(num_resources / page_size)
         batches = []
         for page in range(total_pages):
-                batches.append(
+            batches.append(
                 _update_harvestable_resources_batch.signature(
                     args=(refresh_session_id, page, page_size),
                 ).set(expires=task_expiration_time)
             )
-        update_finalizer = _finish_harvestable_resources_update.signature(
-            args=(refresh_session_id,), immutable=True
-        ).on_error(
-             _handle_harvestable_resources_update_error.signature(
-                kwargs={"refresh_session_id": refresh_session_id}
+        update_finalizer = (
+            _finish_harvestable_resources_update.signature(args=(refresh_session_id,), immutable=True)
+            .on_error(
+                _handle_harvestable_resources_update_error.signature(kwargs={"refresh_session_id": refresh_session_id})
             )
-        ).set(expires=task_expiration_time)
-                
+            .set(expires=task_expiration_time)
+        )
+
         update_workflow = chord(batches, body=update_finalizer)
         update_workflow.apply_async(args=(), expires=task_expiration_time)
         logger.info(f"Applying harvesting chord with expiration in {task_expiration_time} seconds")
