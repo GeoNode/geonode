@@ -604,8 +604,12 @@ def update_harvestable_resources(self, refresh_session_id: int):
             # definition of the dynamic expiration time
             task_expiration_time = calculate_dynamic_expiration(num_resources)
         except (NotImplementedError, base.HarvestingException) as exc:
-            _handle_harvestable_resources_update_error(
-                self.request.id, refresh_session_id=refresh_session_id, raised_exception=exc
+            logger.exception("Failed to get number of available resources for harvester %s", harvester.id)
+            details = f"Failed to get number of available resources: {exc}"
+            finish_asynchronous_session(
+                refresh_session_id,
+                models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_FAILED,
+                final_details=details,
             )
             return
 
@@ -635,11 +639,12 @@ def update_harvestable_resources(self, refresh_session_id: int):
         logger.info(f"Applying harvesting chord with expiration in {task_expiration_time} seconds")
 
     except Exception as exc:
-        logger.exception(f"Unexpected error during update_harvestable_resources: {exc}")
-        _handle_harvestable_resources_update_error(
-            self.request.id,
-            refresh_session_id=refresh_session_id,
-            raised_exception=exc,
+        logger.exception("Unexpected error during update_harvestable_resources for harvester %s", harvester.id)
+        details = f"Unexpected error: {exc}"
+        finish_asynchronous_session(
+            refresh_session_id,
+            models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_FAILED,
+            final_details=details,
         )
 
 

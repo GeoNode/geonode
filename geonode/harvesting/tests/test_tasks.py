@@ -214,11 +214,10 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         mock_harvester.update_availability.return_value = True
 
         mock_session = mock.MagicMock()
-        mock_session.status = "ACTIVE"
+        mock_session.status = models.AsynchronousHarvestingSession.STATUS_ON_GOING
         mock_session.harvester = mock_harvester
 
         mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
-        mock_models.Harvester.objects.get.return_value = mock_harvester
 
         mock_calculate_expiration.return_value = 123
 
