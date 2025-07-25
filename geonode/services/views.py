@@ -186,7 +186,7 @@ def harvest_resources_handle_post(request, service, handler):
 def harvest_resources(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
-        handler = request.session[service.service_url]
+        handler = get_service_handler(service.service_url)
         if not handler.geonode_service_id:
             handler.geonode_service_id = service_id
     except KeyError:  # handler is not saved on the session, recreate it
