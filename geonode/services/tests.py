@@ -95,7 +95,11 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
     @mock.patch("geonode.services.serviceprocessors.get_available_service_types", autospec=True)
     def test_get_service_handler_wms(self, mock_wms_handler):
-        _handler = {}
+        class PickableMagicMock(mock.MagicMock):
+            def __reduce__(self):
+                return (mock.MagicMock, ())
+
+        _handler = PickableMagicMock()
         mock_wms_handler.return_value = {
             enumerations.WMS: {"OWS": True, "handler": _handler, "label": "Web Map Service"}
         }
