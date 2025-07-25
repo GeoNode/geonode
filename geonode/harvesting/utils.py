@@ -55,12 +55,10 @@ def create_harvestable_resource(geonode_resource, service_url):
         unique_identifier=geonode_resource.alternate,
         geonode_resource=geonode_resource,
         title=geonode_resource.title,
-        defaults={
-            "should_be_harvested": True,
-            "remote_resource_type": geonode_resource.resource_type,
-            "last_updated": timestamp,
-            "last_refreshed": timestamp,
-            "last_harvested": timestamp,
-            "last_harvesting_succeeded": True,
-        },
+        should_be_harvested=True,
+        remote_resource_type=geonode_resource.resource_type,
+        last_updated=timestamp,
+        last_refreshed=timestamp,
+        last_harvested=timestamp,
+        last_harvesting_succeeded=True,
     )
