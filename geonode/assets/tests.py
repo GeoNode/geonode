@@ -436,7 +436,7 @@ class AssetsDownloadTests(APITestCase):
         return asset
 
 
-class LocalAssetCreationTests(GeoNodeBaseTestSupport):
+class AssetCreationTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
