@@ -66,7 +66,7 @@ class AssetSubclassField(DynamicComputedField):
 
 class AssetSerializer(DynamicModelSerializer):
 
-    owner = SimpleUserSerializer(embed=False, required=False)
+    owner = SimpleUserSerializer(embed=False, required=False, read_only=True)
     asset_type = ClassTypeField(required=False)
     subinfo = AssetSubclassField(required=False)
 
@@ -75,6 +75,12 @@ class AssetSerializer(DynamicModelSerializer):
         name = "asset"
         # fields = ("pk", "title", "description", "type", "owner", "created")
         fields = ("pk", "title", "description", "type", "owner", "created", "asset_type", "subinfo")
+        extra_kwargs = {
+            "title": {"required": False},
+            "description": {"required": False},
+            "type": {"required": False},
+            "created": {"required": False, "read_only": True},
+        }
 
 
 class LocalAssetSerializer(AssetSerializer):
@@ -89,8 +95,7 @@ class LocalAssetSerializer(AssetSerializer):
             "title": {"required": False},
             "description": {"required": False},
             "type": {"required": False},
-            "location": {"required": False},
-            "created": {"required": False},
+            "location": {"required": False, "read_only": True},
         }
 
     def create(self, validated_data):
@@ -100,6 +105,9 @@ class LocalAssetSerializer(AssetSerializer):
         description = validated_data.pop("description", None)
         type = validated_data.pop("type", None)
         user = self.context["request"].user
+
+        if not title:
+            title = file.name
 
         handler = LocalAssetHandler()
         asset_dir = handler._create_asset_dir()
