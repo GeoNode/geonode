@@ -75,7 +75,7 @@ def register_service(request):
             if service_handler.indexing_method == enumerations.CASCADED:
                 service_handler.create_cascaded_store(service)
             service_handler.geonode_service_id = service.id
-            service_cache.set(service.url, service, settings.SERVICE_CACHE_EXPIRATION_TIME)
+            service_cache.set(service_handler.url, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
             messages.add_message(request, messages.SUCCESS, _("Service registered successfully"))
             result = HttpResponseRedirect(reverse("harvest_resources", kwargs={"service_id": service.id}))
         else:

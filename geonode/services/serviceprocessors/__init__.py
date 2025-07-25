@@ -71,10 +71,10 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
 
     handler = handlers.get(service_type, {}).get("handler")
     try:
-        service = handler(base_url, service_id, *args, **kwargs)
-        service_cache.set(service.url, service, settings.SERVICE_CACHE_EXPIRATION_TIME)
+        service_handler = handler(base_url, service_id, *args, **kwargs)
+        service_cache.set(service_handler.url, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
     except Exception as e:
         logger.exception(e)
         logger.exception(msg=f"Could not parse service {base_url}")
         raise
-    return service
+    return service_handler
