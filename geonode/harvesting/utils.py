@@ -49,7 +49,8 @@ def create_harvestable_resource(geonode_resource, service_url):
         return
 
     timestamp = timezone.now()
-    _, created = HarvestableResource.objects.get_or_create(
+
+    HarvestableResource.objects.create(
         harvester=harvester,
         unique_identifier=geonode_resource.alternate,
         geonode_resource=geonode_resource,
