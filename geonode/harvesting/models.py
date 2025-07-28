@@ -288,6 +288,11 @@ class Harvester(models.Model):
             result = True
             error_message = ""
         return result, error_message
+    
+    def delete(self, *args, **kwargs):
+        if self.delete_orphan_resources_automatically:
+            self.resources.all().delete()
+        super().delete(*args, **kwargs)
 
 
 class AsynchronousHarvestingSession(models.Model):
@@ -436,14 +441,18 @@ class HarvestableResource(models.Model):
             models.UniqueConstraint(fields=("harvester", "unique_identifier"), name="unique_id_for_harvester"),
         ]
 
-    def delete(self, using=None, keep_parents=False):
-        delete_orphan_resource = self.harvester.delete_orphan_resources_automatically
-        worker = self.harvester.get_harvester_worker()
-        if self.geonode_resource is not None and delete_orphan_resource:
-            self.geonode_resource.delete()
-        if delete_orphan_resource:
-            worker.finalize_harvestable_resource_deletion(self)
-        return super().delete(using, keep_parents)
+    def delete(self, *args, **kwargs):
+        if self.delete_orphan_resources_automatically:
+            from geonode.base.models import ResourceBase  # import here to avoid circular import
+
+            resource_ids = list(
+                self.harvestable_resources.filter(geonode_resource__isnull=False)
+                .values_list("geonode_resource__id", flat=True)
+            )
+            # Delete those ResourceBase objects
+            ResourceBase.objects.filter(id__in=resource_ids).delete()
+
+        super().delete(*args, **kwargs)
 
 
 def validate_worker_configuration(worker_type: "BaseHarvesterWorker", worker_config: typing.Dict):  # noqa
