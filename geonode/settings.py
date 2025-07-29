@@ -722,7 +722,9 @@ LOGGING = {
             "level": "ERROR",
         },
         "celery": {
-            "level": "WARN",
+            "level": "DEBUG",
+            "handlers": ["br"],
+            "propagate": False,
         },
         "geonode.harvesting.tasks": {
             "level": "DEBUG",
