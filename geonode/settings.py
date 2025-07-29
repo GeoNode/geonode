@@ -724,6 +724,11 @@ LOGGING = {
         "celery": {
             "level": "WARN",
         },
+        "geonode.harvesting.tasks": {
+            "level": "DEBUG",
+            "handlers": ["br"],
+            "propagate": False,
+        },
         "mapstore2_adapter.plugins.serializers": {
             "level": "ERROR",
         },

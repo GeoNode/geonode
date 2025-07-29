@@ -118,7 +118,10 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
     harvestable_resources = list(
         harvester.harvestable_resources.filter(should_be_harvested=True).values_list("id", flat=True)
     )
+
+    logger.info(f"the async session {harvesting_session_id} with harvester {harvester.name} with {len(harvestable_resources)} was defined from the dispatcher")
     if len(harvestable_resources) > 0:
+        logger.info(f"The number of the harvested resources are {len(harvestable_resources)}")
         harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id))
     else:
         message = "harvesting_dispatcher - Nothing to do"
@@ -143,6 +146,8 @@ def harvest_resources(
 ):
     """Harvest a list of remote resources that all belong to the same harvester."""
     session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
+    
+    logger.info(f"The harvest_resources task was started...")
     if session.status == session.STATUS_ABORTED:
         logger.debug("Session has been aborted, skipping...")
         return
@@ -174,6 +179,8 @@ def harvest_resources(
     # Definition of the expiration time
     task_dynamic_expiration = calculate_dynamic_expiration(len(harvestable_resource_ids))
 
+    logger.info(f"dynamic expiration time was set to {task_dynamic_expiration}")
+
     harvestable_resources_limit = settings.CHUNK_SIZE
 
     # Create the ExecutionRequest
@@ -193,6 +200,8 @@ def harvest_resources(
     execution_id = str(exec_request.exec_id)
 
     if len(harvestable_resource_ids) <= harvestable_resources_limit:
+
+        logger.info("All the harvesting tasks will be loaded in the broker's queue")
         # No chunking, just one chord for all resources
         resource_tasks = [
             _harvest_resource.signature((rid, harvesting_session_id, execution_id)).set(expires=task_dynamic_expiration)
@@ -207,14 +216,17 @@ def harvest_resources(
         transaction.on_commit(lambda: harvesting_workflow.apply_async())
 
     else:
+        logger.info("The harvesting tasks will be loaded in the broker's queue in groups of chunks")
         # Chunk the resource IDs only, NOT the Celery tasks
         chunks = list(chunked(harvestable_resource_ids, size=settings.CHUNK_SIZE))
         chunk_groups = list(chunked(chunks, size=settings.MAX_PARALLEL_QUEUE_CHUNKS))
 
+        logger.debug(f"chunks size: {chunks}, groups of chunks size: {chunk_groups}")
+
         # Estimate dynamic time limit
         dynamic_time_limit = calculate_dynamic_time_limit()
 
-        logger.debug(f"Chunk groups: {chunk_groups}")
+        logger.debug(f"dynamici_time_limit was set {dynamic_time_limit}")
 
         transaction.on_commit(
             lambda: queue_next_chunk_batch.apply_async(
@@ -256,6 +268,8 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
         # Retrieve the execution id of this session
         exec_req = ExecutionRequest.objects.get(exec_id=execution_id)
         output = exec_req.output_params or {}
+
+        logger.info(f"Harvesting resource: {harvestable_resource} in the session: {session}")
 
         if session.status == session.STATUS_ABORTING:
             message = (
@@ -320,6 +334,8 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
         exec_req.output_params = output
         exec_req.last_updated = now_
         exec_req.save(update_fields=["output_params", "last_updated", "log"])
+
+        logger.debug(f"{harvesting_message}")
 
         return {
             "resource_id": harvestable_resource_id,
@@ -390,6 +406,8 @@ def _finish_harvesting(self, harvesting_session_id: int, execution_id: str):
     try:
         session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
         harvester = session.harvester
+
+        logger.info(f"The finalizer of the harvester {harvester} of the session: {session} was started")
 
         # Get the execution request and failures
         exec_req = ExecutionRequest.objects.get(exec_id=execution_id)
@@ -582,7 +600,9 @@ def update_harvestable_resources(self, refresh_session_id: int):
         session.status = session.STATUS_ON_GOING
         session.save()
         harvester = session.harvester
+
         if harvester.update_availability():
+            logger.info(f"Discovery update was started for the harvester {harvester} in session {session}")
             harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
             harvester.save()
             worker = harvester.get_harvester_worker()
@@ -676,6 +696,7 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
 def _finish_harvestable_resources_update(self, refresh_session_id: int):
     session = models.AsynchronousHarvestingSession.objects.get(pk=refresh_session_id)
     harvester = session.harvester
+    logger.info(f"the finalizer of the discovery update was started for the harvester {harvester} in the session {session}")
     if session.status == session.STATUS_ABORTING:
         message = "Refresh session aborted by user"
         finish_asynchronous_session(refresh_session_id, session.STATUS_ABORTED, final_details=message)
@@ -769,12 +790,15 @@ def finish_asynchronous_session(
         "ended": timezone.now(),
         "status": final_status,
     }
+    logger.info(f"The task which finishes the asynchronous sessions was started for the session with ID: {session_id}")
     if additional_processed_records is not None:
         update_kwargs["records_done"] = F("records_done") + additional_processed_records
     if final_details is not None:
         update_kwargs["details"] = Concat("details", Value(f"\n{final_details}"))
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
     models.Harvester.objects.filter(sessions__pk=session_id).update(status=models.Harvester.STATUS_READY)
+
+    logger.debug(f"the asynchronous seession with {session_id} was completed: Details: {final_details}")
 
 
 def update_asynchronous_session(
@@ -784,12 +808,14 @@ def update_asynchronous_session(
     additional_details: typing.Optional[str] = None,
 ) -> None:
     update_kwargs = {}
+    logger.info(f"Updating the asynchronous session with ID: {session_id}")
     if total_records_to_process is not None:
         update_kwargs["total_records_to_process"] = total_records_to_process
     if additional_processed_records is not None:
         update_kwargs["records_done"] = F("records_done") + additional_processed_records
     if additional_details is not None:
         update_kwargs["details"] = Concat("details", Value(f"\n{additional_details}"))
+    logger.debug(f"Asynchronous session update details: {update_kwargs}")
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
 
 

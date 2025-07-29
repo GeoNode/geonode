@@ -226,6 +226,7 @@ class Harvester(models.Model):
         available = worker.check_availability(timeout_seconds=timeout_seconds)
         self.remote_available = available
         self.save()
+        logger.info(f"The availability of the harvester {self} is {available}")
         return available
 
     def initiate_update_harvestable_resources(self):
@@ -236,6 +237,7 @@ class Harvester(models.Model):
             refresh_session = AsynchronousHarvestingSession.objects.create(
                 harvester=self, session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
             )
+            logger.info(f"The disocvery session {refresh_session} of the harvester {self} is ready to be initialized")
             refresh_session.initiate()
         else:
             raise RuntimeError(error_msg)
@@ -248,6 +250,7 @@ class Harvester(models.Model):
             harvesting_session = AsynchronousHarvestingSession.objects.create(
                 harvester=self, session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
             )
+            logger.info(f"The harvesting session {harvesting_session} of the harvester {self} is ready to be initialized")
             harvesting_session.initiate(harvestable_resource_ids)
         else:
             raise RuntimeError(error_msg)
@@ -266,6 +269,7 @@ class Harvester(models.Model):
         if should_continue:
             self.status = self.STATUS_ABORTING_PERFORMING_HARVESTING
             self.save()
+            logger.info(f"The abort of the harvester {self} will be initialized")
             self.latest_harvesting_session.abort()
         else:
             raise RuntimeError(error_msg)
