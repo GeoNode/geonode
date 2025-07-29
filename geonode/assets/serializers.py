@@ -28,11 +28,13 @@ from geonode.storage.manager import StorageManager
 from geonode.assets.utils import create_asset, create_asset_and_link
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from geonode.security.registry import permissions_registry
 
 from geonode.assets.models import (
     Asset,
     LocalAsset,
 )
+from rest_framework.exceptions import PermissionDenied
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +108,13 @@ class LocalAssetSerializer(AssetSerializer):
         type = validated_data.pop("type", None)
         user = self.context["request"].user
 
+        if resource_id:
+            resource = get_object_or_404(ResourceBase, pk=resource_id)
+            if not permissions_registry.user_has_perm(
+                user, resource.get_self_resource(), "change_resourcebase", include_virtual=True
+            ):
+                raise PermissionDenied("The user does not have permissions to change the resource selected")
+
         if not title:
             title = file.name
 
@@ -122,7 +131,6 @@ class LocalAssetSerializer(AssetSerializer):
             raise serializers.ValidationError("Could not save the file.")
 
         if resource_id:
-            resource = get_object_or_404(ResourceBase, pk=resource_id)
             localasset, _ = create_asset_and_link(
                 resource, user, [file_path], title=title, description=description, asset_type=type
             )
