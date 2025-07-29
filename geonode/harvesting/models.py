@@ -288,11 +288,6 @@ class Harvester(models.Model):
             result = True
             error_message = ""
         return result, error_message
-    
-    def delete(self, *args, **kwargs):
-        if self.delete_orphan_resources_automatically:
-            self.resources.all().delete()
-        super().delete(*args, **kwargs)
 
 
 class AsynchronousHarvestingSession(models.Model):
@@ -446,8 +441,9 @@ class HarvestableResource(models.Model):
             from geonode.base.models import ResourceBase  # import here to avoid circular import
 
             resource_ids = list(
-                self.harvestable_resources.filter(geonode_resource__isnull=False)
-                .values_list("geonode_resource__id", flat=True)
+                self.harvestable_resources.filter(geonode_resource__isnull=False).values_list(
+                    "geonode_resource__id", flat=True
+                )
             )
             # Delete those ResourceBase objects
             ResourceBase.objects.filter(id__in=resource_ids).delete()
