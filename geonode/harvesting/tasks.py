@@ -680,6 +680,8 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
                 # to compare when a resource has been found
                 resource.last_refreshed = timezone.now()
                 resource.save()
+            logger.info(f"The additional processed records are: {processed}")
+            logger.info(f"The update_asynchronous_sesssion task is ready to start...")
             update_asynchronous_session(refresh_session_id, additional_processed_records=processed)
     else:
         logger.info("The refresh session has been asked to abort, so skipping...")
