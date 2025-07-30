@@ -29,7 +29,7 @@ class HarvestingAppConfig(AppConfig):
 
     def ready(self):
         from geonode.urls import urlpatterns
-        import geonode.harvesting.signals  # noqa
+        from . import signals  # noqa
 
         urlpatterns += [re_path(r"^api/v2/", include("geonode.harvesting.api.urls"))]
         settings.CELERY_BEAT_SCHEDULE["harvesting-scheduler"] = {
