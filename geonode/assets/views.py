@@ -62,7 +62,7 @@ class AssetViewSet(DynamicModelViewSet):
     pagination_class = GeoNodeApiPagination
 
     def get_serializer_class(self):
-        if "file" in self.request.FILES:
+        if self.request.method == "POST" and "file" in self.request.FILES:
             return LocalAssetSerializer
         return AssetSerializer
 

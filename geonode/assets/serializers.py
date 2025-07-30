@@ -119,6 +119,7 @@ class LocalAssetSerializer(AssetSerializer):
             if not permissions_registry.user_has_perm(
                 user, resource.get_self_resource(), "change_resourcebase", include_virtual=True
             ):
+                logger.debug("The user does not have permissions to change the resource selected")
                 raise PermissionDenied("The user does not have permissions to change the resource selected")
 
         if not title:
@@ -134,6 +135,7 @@ class LocalAssetSerializer(AssetSerializer):
         file_path = retrieved_paths.get("file")
 
         if not file_path:
+            logger.debug("Could not save the file.")
             raise serializers.ValidationError("Could not save the file.")
 
         if resource_id:
