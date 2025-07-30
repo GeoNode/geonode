@@ -35,11 +35,14 @@ from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources
+from django.core.cache import caches
 
 from .models import Service
 from . import forms, enumerations
 from .serviceprocessors import get_service_handler
 from geonode.security.registry import permissions_registry
+
+service_cache = caches["services"]
 
 logger = logging.getLogger(__name__)
 
@@ -72,8 +75,7 @@ def register_service(request):
             if service_handler.indexing_method == enumerations.CASCADED:
                 service_handler.create_cascaded_store(service)
             service_handler.geonode_service_id = service.id
-            request.session[service_handler.url] = service_handler
-            logger.debug("Added handler to the session")
+            service_cache.set(service_handler.url, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
             messages.add_message(request, messages.SUCCESS, _("Service registered successfully"))
             result = HttpResponseRedirect(reverse("harvest_resources", kwargs={"service_id": service.id}))
         else:
@@ -95,8 +97,6 @@ def _get_service_handler(request, service):
     service_handler = get_service_handler(service.service_url, service.type, service.id)
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
-    request.session[service.service_url] = service_handler
-    logger.debug("Added handler to the session")
     return service_handler
 
 
@@ -186,7 +186,7 @@ def harvest_resources_handle_post(request, service, handler):
 def harvest_resources(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
-        handler = request.session[service.service_url]
+        handler = get_service_handler(service.service_url)
         if not handler.geonode_service_id:
             handler.geonode_service_id = service_id
     except KeyError:  # handler is not saved on the session, recreate it
