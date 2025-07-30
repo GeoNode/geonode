@@ -511,7 +511,7 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
         self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")
 
 
-class AssetsUploadTests(GeoNodeBaseTestSupport):
+class AssetsUploadSizeLimitTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()

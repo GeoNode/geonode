@@ -1250,7 +1250,33 @@ class AssetApiTests(GeoNodeBaseTestSupport):
 
         changed_file = self._create_dummy_file(filename="new_change_file.txt")
         new_data = {"file": changed_file, "resource_id": resource.pk, "title": "Changed Asset"}
-
+        self.client.force_login(test_user)
         changed_response = self.client.post(self.asset_list_url, new_data, format="multipart")
         self.assertEqual(changed_response.status_code, 201)
         self.assertEqual(LocalAsset.objects.count(), changed_asset_count + 1)
+
+    def test_create_asset_file_type_validation(self):
+        """
+        Test that asset creation works with allowed file types and fails with disallowed file types.
+        """
+        self.client.force_login(self.admin_user)
+        initial_asset_count = LocalAsset.objects.count()
+
+        # Test allowed file type
+        allowed_file = self._create_dummy_file(filename="test_file.txt")
+        allowed_data = {
+            "file": allowed_file,
+        }
+        response = self.client.post(self.asset_list_url, allowed_data, format="multipart")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+
+        # Test disallowed file type
+        disallowed_file = self._create_dummy_file(filename="malicious_file.exe")
+        disallowed_data = {
+            "file": disallowed_file,
+        }
+        response = self.client.post(self.asset_list_url, disallowed_data, format="multipart")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("This file type is not allowed", str(response.content))
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)

@@ -17,7 +17,7 @@
 #
 #########################################################################
 import logging
-
+import os
 from django.contrib.auth import get_user_model
 
 from dynamic_rest.serializers import DynamicModelSerializer
@@ -35,6 +35,8 @@ from geonode.assets.models import (
     LocalAsset,
 )
 from rest_framework.exceptions import PermissionDenied
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -105,8 +107,12 @@ class LocalAssetSerializer(AssetSerializer):
         resource_id = validated_data.pop("resource_id", None)
         title = validated_data.pop("title", None)
         description = validated_data.pop("description", None)
-        type = validated_data.pop("type", None)
+        asset_type = validated_data.pop("type", None)
         user = self.context["request"].user
+
+        if file and not os.path.splitext(file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
+            logger.debug("This file type is not allowed")
+            raise serializers.ValidationError("This file type is not allowed")
 
         if resource_id:
             resource = get_object_or_404(ResourceBase, pk=resource_id)
@@ -132,9 +138,17 @@ class LocalAssetSerializer(AssetSerializer):
 
         if resource_id:
             localasset, _ = create_asset_and_link(
-                resource, user, [file_path], title=title, description=description, asset_type=type
+                resource,
+                user,
+                [file_path],
+                title=title,
+                description=description,
+                asset_type=asset_type,
+                clone_files=False,
             )
         else:
-            localasset = create_asset(user, [file_path], title=title, description=description, asset_type=type)
+            localasset = create_asset(
+                user, [file_path], title=title, description=description, asset_type=asset_type, clone_files=False
+            )
 
         return localasset
