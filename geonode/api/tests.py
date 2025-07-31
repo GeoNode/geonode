@@ -1119,6 +1119,10 @@ class AssetApiTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.admin_user = get_user_model().objects.get(username="admin")
+        self.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
+
         self.asset_list_url = "/api/v2/assets/"
 
     def _create_dummy_file(self, filename="test_file.txt", content=b"test content"):
@@ -1128,45 +1132,129 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         """
         Test creating an asset without linking it to a specific resource.
         """
-        self.client.force_login(self.admin_user)
+        self.client.force_login(self.test_user)
         initial_asset_count = LocalAsset.objects.count()
 
+        file = self._create_dummy_file(filename="test_file_regular.txt")
+        data = {
+            "file": file,
+        }
+        # post with regular user without permission
+        response = self.client.post(self.asset_list_url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 403)  # permission denied
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count)
+
+        initial_asset_count = LocalAsset.objects.count()
+
+        content_type = ContentType.objects.get_for_model(ResourceBase)
+        # permission to post assets
+        permission = Permission.objects.get(
+            codename="add_resourcebase",
+            content_type=content_type,
+        )
         file = self._create_dummy_file()
+        data = {
+            "file": file,
+        }
+        self.test_user.user_permissions.add(permission)
+        response = self.client.post(self.asset_list_url, data, format="multipart")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        new_asset = LocalAsset.objects.latest("created")
+        self.assertEqual(new_asset.owner, self.test_user)
+
+        # with admin user
+        self.client.force_login(self.admin_user)
+        new_asset_count = LocalAsset.objects.count()
+
+        file = self._create_dummy_file("test_file_admin.txt")
         data = {
             "file": file,
         }
         response = self.client.post(self.asset_list_url, data, format="multipart")
 
         self.assertEqual(response.status_code, 201, response.json())
-        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(LocalAsset.objects.count(), new_asset_count + 1)
         new_asset = LocalAsset.objects.latest("created")
         self.assertEqual(new_asset.owner, self.admin_user)
 
     def test_create_asset_with_resource_id(self):
         """
-        Test creating an asset and linking it to an existing resource.
+        Test that a asset can be created with resource also with permission.
         """
-        self.client.force_login(self.admin_user)
-        initial_asset_count = LocalAsset.objects.count()
-
-        resource = ResourceBase.objects.create(
-            title="Test Resource", owner=self.admin_user, abstract="Abstract for test resource", uuid=str(uuid4())
+        temp_user = get_user_model().objects.create_user(
+            username="test_user_no_perms", email="noperms@example.com", password="testpass123"
         )
 
-        file = self._create_dummy_file(filename="linked_file.txt")
-        data = {
-            "file": file,
-            "resource_id": resource.pk,
+        resource = ResourceBase.objects.create(
+            title="Restricted Resource",
+            owner=self.admin_user,
+            abstract="Resource that test_user should not be able to modify",
+            uuid=str(uuid4()),
+        )
+
+        content_type = ContentType.objects.get_for_model(ResourceBase)
+        # permission to post assets
+        permission = Permission.objects.get(
+            codename="add_resourcebase",
+            content_type=content_type,
+        )
+        temp_user.user_permissions.add(permission)
+
+        perm_spec = {
+            "users": {
+                temp_user.username: ["view_resourcebase"],
+                self.admin_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"],
+            },
+            "groups": {},
         }
+        resource.set_permissions(perm_spec)
+
+        self.client.force_login(temp_user)
+        initial_asset_count = LocalAsset.objects.count()
+
+        file = self._create_dummy_file(filename="unauthorized_file.txt")
+        data = {"file": file, "resource_id": resource.pk, "title": "Unauthorized Asset"}
+
         response = self.client.post(self.asset_list_url, data, format="multipart")
 
-        self.assertEqual(response.status_code, 201, response.json())
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("The user does not have permissions to change the resource selected", str(response.content))
+
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count)
+
+        # with admin user
+        self.client.force_login(self.admin_user)
+        admin_file = self._create_dummy_file(filename="admin_file.txt")
+        admin_data = {"file": admin_file, "resource_id": resource.pk, "title": "Admin Asset"}
+
+        admin_response = self.client.post(self.asset_list_url, admin_data, format="multipart")
+        self.assertEqual(admin_response.status_code, 201)
         self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
-        new_asset = LocalAsset.objects.latest("created")
-        link = Link.objects.get(asset=new_asset)
+        admin_asset = LocalAsset.objects.latest("created")
+        link = Link.objects.get(asset=admin_asset)
         self.assertEqual(link.asset.owner, self.admin_user)
 
-        self.assertEqual(link.resource, resource)
+        # with regular user and permission
+        self.client.force_login(temp_user)
+        perm_spec = {
+            "users": {
+                temp_user.username: ["change_resourcebase"],
+                self.admin_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"],
+            },
+            "groups": {},
+        }
+        resource.set_permissions(perm_spec)
+        changed_asset_count = LocalAsset.objects.count()
+        changed_file = self._create_dummy_file(filename="new_change_file.txt")
+        new_data = {"file": changed_file, "resource_id": resource.pk, "title": "Changed Asset"}
+        changed_response = self.client.post(self.asset_list_url, new_data, format="multipart")
+        self.assertEqual(changed_response.status_code, 201)
+        self.assertEqual(LocalAsset.objects.count(), changed_asset_count + 1)
+        new_asset = LocalAsset.objects.latest("created")
+        link = Link.objects.get(asset=new_asset)
+        self.assertEqual(link.asset.owner, temp_user)
 
     def test_create_asset_unauthenticated(self):
         """
@@ -1184,76 +1272,6 @@ class AssetApiTests(GeoNodeBaseTestSupport):
 
         self.assertEqual(response.status_code, 401)
         self.assertEqual(LocalAsset.objects.count(), initial_asset_count)
-
-    def test_create_asset_with_resource_id_permission_denied(self):
-        """
-        Test that a user without change permissions on a resource cannot create an asset linked to it.
-        """
-        test_user = get_user_model().objects.create_user(
-            username="test_user_no_perms", email="noperms@example.com", password="testpass123"
-        )
-
-        resource = ResourceBase.objects.create(
-            title="Restricted Resource",
-            owner=self.admin_user,
-            abstract="Resource that test_user should not be able to modify",
-            uuid=str(uuid4()),
-        )
-
-        content_type = ContentType.objects.get_for_model(ResourceBase)
-        # permission to post assets
-        permission = Permission.objects.get(
-            codename="add_resourcebase",
-            content_type=content_type,
-        )
-        test_user.user_permissions.add(permission)
-
-        perm_spec = {
-            "users": {
-                test_user.username: ["view_resourcebase"],
-                self.admin_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"],
-            },
-            "groups": {},
-        }
-        resource.set_permissions(perm_spec)
-
-        self.client.force_login(test_user)
-        initial_asset_count = LocalAsset.objects.count()
-
-        file = self._create_dummy_file(filename="unauthorized_file.txt")
-        data = {"file": file, "resource_id": resource.pk, "title": "Unauthorized Asset"}
-
-        response = self.client.post(self.asset_list_url, data, format="multipart")
-
-        self.assertEqual(response.status_code, 403)
-        self.assertIn("The user does not have permissions to change the resource selected", str(response.content))
-
-        self.assertEqual(LocalAsset.objects.count(), initial_asset_count)
-
-        self.client.force_login(self.admin_user)
-        admin_file = self._create_dummy_file(filename="admin_file.txt")
-        admin_data = {"file": admin_file, "resource_id": resource.pk, "title": "Admin Asset"}
-
-        admin_response = self.client.post(self.asset_list_url, admin_data, format="multipart")
-        self.assertEqual(admin_response.status_code, 201)
-        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
-
-        perm_spec = {
-            "users": {
-                test_user.username: ["change_resourcebase"],
-                self.admin_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"],
-            },
-            "groups": {},
-        }
-        resource.set_permissions(perm_spec)
-        changed_asset_count = LocalAsset.objects.count()
-
-        changed_file = self._create_dummy_file(filename="new_change_file.txt")
-        new_data = {"file": changed_file, "resource_id": resource.pk, "title": "Changed Asset"}
-        self.client.force_login(test_user)
-        changed_response = self.client.post(self.asset_list_url, new_data, format="multipart")
-        self.assertEqual(changed_response.status_code, 201)
-        self.assertEqual(LocalAsset.objects.count(), changed_asset_count + 1)
 
     def test_create_asset_file_type_validation(self):
         """
