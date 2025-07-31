@@ -1734,11 +1734,13 @@ if ASYNC_SIGNALS:
     _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-CELERY_RESULT_BACKEND = "django-db"
+
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
 
 CELERY_BROKER_URL = os.environ.get("BROKER_URL", _BROKER_URL)
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get("CELERY_RESULT_PERSISTENT", "False"))
 CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get("CELERY_IGNORE_RESULT", "False"))
+CELERY_RESULT_EXPIRES = 86400
 
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get("CELERY_ACKS_LATE", "True"))
