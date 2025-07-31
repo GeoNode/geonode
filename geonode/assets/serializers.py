@@ -110,6 +110,8 @@ class LocalAssetSerializer(AssetSerializer):
         asset_type = validated_data.pop("type", None)
         user = self.context["request"].user
 
+        resource = None
+
         if file and not os.path.splitext(file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
             logger.debug("This file type is not allowed")
             raise serializers.ValidationError("This file type is not allowed")
@@ -138,7 +140,7 @@ class LocalAssetSerializer(AssetSerializer):
             logger.debug("Could not save the file.")
             raise serializers.ValidationError("Could not save the file.")
 
-        if resource_id:
+        if resource:
             localasset, _ = create_asset_and_link(
                 resource,
                 user,
