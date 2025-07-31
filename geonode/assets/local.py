@@ -153,13 +153,13 @@ class LocalAssetHandler(AssetHandlerInterface):
 
     @classmethod
     def _is_file_managed(cls, file) -> bool:
-        assets_root = os.path.normpath(settings.ASSETS_ROOT)
+        assets_root = os.path.join(os.path.normpath(settings.ASSETS_ROOT), "")
         return file.startswith(assets_root)
 
     @classmethod
     def _are_files_managed(cls, asset: LocalAsset) -> bool:
         """
-        :param files: files to be checked
+        :param asset: asset pointing to the files to be checked
         :return: True if all files are managed, False is no file is managed
         :raise: ValueError if both managed and unmanaged files are in the list
         """
