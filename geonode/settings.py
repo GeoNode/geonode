@@ -2199,6 +2199,7 @@ SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
     "importer_upload",
     "document_upload",
+    "assets-list",
 )
 
 INSTALLED_APPS += (

@@ -22,17 +22,24 @@ import logging
 import shutil
 import io
 import json
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import StreamingHttpResponse
 from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 
 from rest_framework.test import APITestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.upload.models import UploadSizeLimit
 
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.local import LocalAssetHandler
 from geonode.assets.models import Asset, LocalAsset
+from geonode.assets.utils import create_asset, create_asset_and_link
+from geonode.base.models import ResourceBase
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -334,3 +341,144 @@ class AssetsDownloadTests(APITestCase):
         shutil.copy(TWO_JSON, asset_dir)
         shutil.copy(THREE_JSON, sub_dir)
         return asset
+
+
+class AssetCreationTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.created_files = []
+
+    def tearDown(self):
+        for file_path in self.created_files:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        super().tearDown()
+
+    def _create_dummy_file(self, filename="dummy.txt", content=b"dummy content"):
+        """Create a real file on the filesystem and return its path."""
+        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        with open(file_path, "wb") as f:
+            f.write(content)
+        self.created_files.append(file_path)
+        return file_path
+
+    def test_create_asset_function(self):
+        """Test the create_asset utility function."""
+        initial_asset_count = LocalAsset.objects.count()
+        file_path = self._create_dummy_file(filename="test_create_asset.txt")
+        asset = create_asset(
+            self.user,
+            [file_path],
+            asset_type="document",
+            title="Test Asset from Function",
+            description="Description for asset from function",
+        )
+
+        self.assertIsNotNone(asset)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(asset.title, "Test Asset from Function")
+        self.assertEqual(asset.owner, self.user)
+        asset_file_path = asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")
+
+    def test_create_asset_and_link_function(self):
+        """Test the create_asset_and_link utility function."""
+        initial_asset_count = LocalAsset.objects.count()
+        resource = ResourceBase.objects.create(
+            title="Test Resource for Asset Link",
+            owner=self.user,
+            abstract="Abstract for linked resource",
+            uuid=str(uuid4()),
+        )
+
+        file_path = self._create_dummy_file(filename="test_create_asset_link.txt")
+
+        asset, link = create_asset_and_link(
+            resource,
+            self.user,
+            [file_path],
+            asset_type="image",
+            title="Linked Asset from Function",
+            description="Description for linked asset from function",
+        )
+
+        self.assertTrue(link)
+        self.assertIsNotNone(asset)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(link.asset.title, "Linked Asset from Function")
+        self.assertEqual(link.asset.owner, self.user)
+        self.assertEqual(link.resource, resource)
+        asset_file_path = asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")
+
+
+class AssetsUploadSizeLimitTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.client.login(username="admin", password="admin")
+        # Set a small max_size for asset_upload_size in the UploadSizeLimit model
+        UploadSizeLimit.objects.update_or_create(
+            slug="asset_upload_size",
+            defaults={
+                "description": "Max size for the uploaded assets file via API",
+                "max_size": 500,
+            },
+        )
+
+    def test_upload_asset_large_file(self):
+        """
+        Ensure that when a file upload exceeds the size limit,
+        no asset is created and a 400 error is returned.
+        """
+        # Get initial count of assets
+        initial_asset_count = Asset.objects.count()
+
+        # Create a file larger than the asset_upload_size limit
+        limit = UploadSizeLimit.objects.get(slug="asset_upload_size").max_size
+        big_file_content = b"a" * (int(limit * 1024 * 1024) + 1)
+        big_file = SimpleUploadedFile("big_file.txt", big_file_content, "text/plain")
+
+        url = reverse("assets-list")
+        response = self.client.post(
+            url,
+            {
+                "file": big_file,
+                "title": "Big Asset",
+                "type": "text",
+            },
+            format="multipart",
+        )
+
+        # Assert 400 status code is returned
+        self.assertEqual(response.status_code, 400)
+
+        # Assert no new asset was created
+        self.assertEqual(Asset.objects.count(), initial_asset_count)
+
+    def test_upload_asset_small_file(self):
+        """
+        Ensure that when a file upload is within the size limit,
+        the asset is created.
+        """
+        small_file_content = b"small content"  # Much smaller than limit
+        small_file = SimpleUploadedFile("small_file.txt", small_file_content, "text/plain")
+
+        url = reverse("assets-list")
+        response = self.client.post(
+            url,
+            {
+                "file": small_file,
+                "title": "Small Asset",
+                "type": "text",
+            },
+            format="multipart",
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertIn("pk", response.data["local_asset"])
+        asset = Asset.objects.get(pk=response.data["local_asset"]["pk"])
+        self.assertIsInstance(asset.localasset, LocalAsset)
