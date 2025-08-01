@@ -1,9 +1,11 @@
 {% extends "groups/group_base.html" %}
 {% load i18n %}
+{% load static %}
 {% load bootstrap_tags %}
 
 {% block head %}
 {{ block.super }}
+<link href="{% static "lib/css/select2.min.css" %}" rel="stylesheet">
 <style>
 .select2-container--default .select2-search--inline .select2-search__field {
   width: 300px !important;
@@ -148,4 +150,7 @@
 
 {% block extra_script %}
 {{ block.super }}
+<script src="{% static "lib/js/select2.full.min.js" %}"></script>
+<script src="{% static "lib/js/autocomplete_light/autocomplete_light.min.js" %}"></script>
+<script src="{% static "lib/js/autocomplete_light/select2.js" %}"></script>
 {% endblock extra_script %}
