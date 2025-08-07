@@ -398,7 +398,7 @@
         "model": "base.restrictioncodetype",
         "fields": {
             "is_choice": true,
-            "gn_description": "otherRestrictions",
+            "gn_description": "limitation not listed",
             "identifier": "otherRestrictions",
             "description": "limitation not listed"
         }
