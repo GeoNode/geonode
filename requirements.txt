@@ -148,4 +148,3 @@ webdriver_manager==4.0.1
 # Security and audit
 cryptography==45.0.5
 jwcrypto>=1.5.6
-nh3==0.2.17

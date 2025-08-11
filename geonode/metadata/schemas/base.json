@@ -8,7 +8,7 @@
   },
   "title": {
     "type": "string",
-    "title": "title",
+    "title": "Title",
     "description": "name by which the cited resource is known",
     "maxLength": 255,
     "geonode:handler": "base",
@@ -16,7 +16,7 @@
   },
   "abstract": {
     "type": "string",
-    "title": "abstract",
+    "title": "Abstract",
     "description": "brief narrative summary of the content of the resource(s)",
     "maxLength": 2000,
     "ui:options": {
@@ -55,7 +55,7 @@
   },
   "language": {
     "type": "string",
-    "title": "language",
+    "title": "Language",
     "description": "language used within the dataset",
     "maxLength": 16,
     "geonode:required": true
