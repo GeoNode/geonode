@@ -951,8 +951,9 @@ class BaseVectorFileHandler(BaseHandler):
                 # check if the field exists in the previous schema
                 target_field = target_schema_fields.filter(name=field["name"]).first()
                 if target_field:
+                    # if is the primary key, we can skip the check
                     # If the field exists the class name should be the same
-                    if not target_field.class_name == field["class_name"]:
+                    if not target_field.class_name == field["class_name"] and not target_field.kwargs.get("primary_key"):
                         # if the class changes, is marked as error
                         message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
                         errors.append(message)
