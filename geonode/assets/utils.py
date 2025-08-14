@@ -96,10 +96,8 @@ def create_asset(
     asset_handler = handler or asset_handler_registry.get_default_handler()
     asset = None
     try:
-        default_title, _ = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
-
         asset = asset_handler.create(
-            title=title or default_title or "Unknown",
+            title=title or "Unknown",
             description=description or asset_type or "Unknown",
             type=asset_type or "Unknown",
             owner=owner,
@@ -130,11 +128,15 @@ def create_asset_and_link(
 
     asset = link = None
     try:
+        default_title, default_ext = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
+        if default_ext:
+            default_ext = default_ext.lstrip(".")
+        link_type = link_type or find_type(default_ext) if default_ext else None
         asset = create_asset(
             owner=owner,
             files=files,
             handler=handler,
-            title=title,
+            title=title or default_title or "Unknown",
             description=description,
             asset_type=asset_type,
             clone_files=clone_files,

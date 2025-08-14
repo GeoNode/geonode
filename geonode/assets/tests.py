@@ -522,7 +522,7 @@ class AssetsUploadSizeLimitTests(GeoNodeBaseTestSupport):
             slug="asset_upload_size",
             defaults={
                 "description": "Max size for the uploaded assets file via API",
-                "max_size": 500,
+                "max_size": 50,
             },
         )
 
