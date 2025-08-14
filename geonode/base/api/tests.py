@@ -2565,6 +2565,25 @@ class BaseApiTests(APITestCase):
         download_url = json.get("dataset").get("download_url")
         self.assertEqual(_dataset.download_url, download_url)
 
+    def test_base_resources_not_return_download_link_if_dataset_without_download_perms(self):
+        """
+        The download URL should not be visible if the user doesn't have the download perms.
+        """
+        _dataset = Dataset.objects.first()
+        perms = _dataset.get_all_level_info()
+        perms['groups'][Group.objects.filter(name="anonymous").first()] = ['view_resourcebase']
+        resource_manager.set_permissions(_dataset.uuid, instance=_dataset, permissions=perms)
+        # From resource base API
+        self.client.logout()
+        json = self._get_for_object(_dataset, "base-resources-detail")
+        download_url = json.get("resource").get("download_url")
+        self.assertEqual(_dataset.download_url, download_url)
+
+        # from dataset api
+        json = self._get_for_object(_dataset, "datasets-detail")
+        download_url = json.get("dataset").get("download_url")
+        self.assertIsNone(_dataset.download_url, download_url)
+
     def test_base_resources_dont_return_download_link_if_map(self):
         """
         Ensure we can access the Resource Base list.

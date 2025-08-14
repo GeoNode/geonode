@@ -41,6 +41,7 @@ from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from avatar.templatetags.avatar_tags import avatar_url
+from geonode.security.permissions import DOWNLOAD_PERMISSIONS
 from geonode.utils import bbox_swap
 from geonode.base.api.exceptions import InvalidResourceException
 
@@ -340,6 +341,16 @@ class DownloadArrayLinkField(DynamicComputedField):
         if asset is not None:
             asset_url = asset_handler_registry.get_handler(asset).create_download_url(asset)
 
+        user_has_download_perms = permissions_registry.user_has_perm(
+            instance=_instance,
+            user=self.context.get("request").user,
+            perm=DOWNLOAD_PERMISSIONS[0],
+            include_virtual=True
+        )
+
+        if not user_has_download_perms:
+            return []
+
         if _instance.resource_type in ["map"] + get_geoapp_subtypes():
             return []
         elif _instance.resource_type in ["document"]:
@@ -583,9 +594,16 @@ class LinksSerializer(DynamicModelSerializer):
                     "type": "asset",
                     "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
                 }
-                extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
-                    lnk.asset
+                user_has_download_perms = permissions_registry.user_has_perm(
+                    instance=lnk.resource,
+                    user=self.context.get("request").user,
+                    perm=DOWNLOAD_PERMISSIONS[0],
+                    include_virtual=True
                 )
+                if user_has_download_perms:
+                    extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
+                        lnk.asset
+                    )
                 formatted_link["extras"] = extras
 
         return ret
