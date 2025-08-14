@@ -2266,7 +2266,7 @@ DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
 
 IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS", "[]"))
 
-IMPORTER_ENABLE_DYN_MODELS = ast.literal_eval(os.getenv("IMPORTER_ENABLE_DYN_MODELS", "False"))
+IMPORTER_ENABLE_DYN_MODELS = ast.literal_eval(os.getenv("IMPORTER_ENABLE_DYN_MODELS", "True"))
 
 INSTALLED_APPS += ("geonode.facets",)
 GEONODE_APPS += ("geonode.facets",)
@@ -2309,3 +2309,5 @@ AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"
 
 # Group default logo url
 GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8081", "http://localhost:8000", "http://locahost:8000"]

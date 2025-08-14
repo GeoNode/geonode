@@ -1010,7 +1010,9 @@ class BaseVectorFileHandler(BaseHandler):
         original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
         model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
         if not model:
-            raise UpsertException("The dynamic models was not found in the DB")
+            raise UpsertException(
+                "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled"
+            )
 
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
