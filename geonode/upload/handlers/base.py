@@ -18,10 +18,14 @@
 #########################################################################
 from abc import ABC
 import logging
+import os
+from pathlib import Path
 from typing import List
+import zipfile
 
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
+from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
 from django_celery_results.models import TaskResult
@@ -182,6 +186,34 @@ class BaseHandler(ABC):
         _exec.save()
 
         return _exec
+
+    def pre_processing(self, files, execution_id, **kwargs):
+        from geonode.upload.orchestrator import orchestrator
+        from geonode.upload.api.views import asset_handler_registry
+
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        _data = _exec_obj.input_params.copy()
+
+        asset_handler_registry.get_default_handler()
+
+        if "zip_file" in files or "kmz_file" in files:
+            # if a zipfile is provided, we need to unzip it before searching for an handler
+            zipname = Path(files["base_file"]).stem
+
+            with zipfile.ZipFile(files["base_file"], "r") as z:
+                z.extractall(path=os.path.dirname(files["base_file"]))
+
+            unzipped_path = [entry.path for entry in os.scandir(os.path.dirname(files["base_file"]))]
+            # update the payload with the unziped paths
+            _data.update(
+                {
+                    **{"original_zip_name": zipname},
+                    **{"files": organize_files_by_ext(unzipped_path)},
+                }
+            )
+            orchestrator.update_execution_request_obj(_exec_obj, {"input_params": _data})
+            # TODO remove zipfile from OS
+        return
 
     def fixup_name(self, name):
         """

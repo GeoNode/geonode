@@ -51,6 +51,9 @@ class DataStoreManager:
             return self.handler.is_valid_url(url)
         return False
 
+    def pre_processing(self, **kwargs):
+        return self.handler().pre_processing(self.files, self.execution_id, **kwargs)
+
     def pre_validation(self, **kwargs):
         """
         Hook for let the handler prepare the data before the validation.

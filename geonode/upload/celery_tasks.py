@@ -161,6 +161,9 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         # initiating the data store manager
         _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
 
+        # pre processing hook
+        _datastore.pre_processing(**kwargs)
+
         _datastore.pre_validation(**kwargs)
         # starting file validation
         if not _datastore.input_is_valid():

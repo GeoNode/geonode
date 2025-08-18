@@ -21,7 +21,6 @@ from urllib.parse import urljoin, urlsplit
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.urls import reverse
-from pathlib import Path
 from geonode.resource.enumerator import ExecutionRequestAction
 from django.utils.translation import gettext_lazy as _
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -49,8 +48,6 @@ from geonode.upload.orchestrator import orchestrator
 from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from geonode.assets.handlers import asset_handler_registry
-from geonode.assets.local import LocalAssetHandler
 from geonode.proxy.utils import proxy_urls_registry
 
 from geonode.upload.api.serializer import (
@@ -140,12 +137,9 @@ class ImporterViewSet(DynamicModelViewSet):
         """
         _file = request.FILES.get("base_file") or request.data.get("base_file")
         execution_id = None
-        asset_handler = LocalAssetHandler()
-        asset_dir = asset_handler._create_asset_dir()
 
         serializer = self.get_serializer_class()
         data = serializer(data=request.data)
-        storage_manager = None
         # serializer data validation
         data.is_valid(raise_exception=True)
         _data = {
@@ -153,51 +147,30 @@ class ImporterViewSet(DynamicModelViewSet):
             **{key: value[0] if isinstance(value, list) else value for key, value in request.FILES.items()},
         }
 
-        if "zip_file" in _data or "kmz_file" in _data:
-            # if a zipfile is provided, we need to unzip it before searching for an handler
-            zipname = Path(_data["base_file"].name).stem
-            storage_manager = StorageManager(remote_files={"base_file": _data.get("zip_file", _data.get("kmz_file"))})
-            # cloning and unzip the base_file
-            storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
-            # update the payload with the unziped paths
-            _data.update(
-                {
-                    **{"original_zip_name": zipname},
-                    **storage_manager.get_retrieved_paths(),
-                }
-            )
+        # cloning data into a local folder
+        storage_manager = StorageManager(
+            remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
+            concrete_storage_manager="geonode.storage.manager.FileSystemStorageManager",
+        )
 
+        storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
+        self.validate_upload(request, storage_manager)
+        # updating general paths with the local cloned
+        _data = _data | storage_manager.get_retrieved_paths()
         handler = orchestrator.get_handler(_data)
         # not file but handler means that is a remote resource
         if handler:
-            asset = None
-            files = []
             try:
-                # cloning data into a local folder
                 extracted_params, _data = handler.extract_params_from_data(_data)
-                if _file:
-                    storage_manager, asset, files = self._handle_asset(
-                        request, asset_dir, storage_manager, _data, handler
-                    )
-
-                    self.validate_upload(request, storage_manager)
-
                 if "url" in extracted_params:
                     # we should register the hosts for the proxy
                     proxy_urls_registry.register_host(urlsplit(extracted_params["url"]).hostname)
 
                 input_params = {
-                    **{"files": files, "handler_module_path": str(handler)},
+                    **{"files": _data, "handler_module_path": str(handler)},
                     **extracted_params,
                 }
 
-                if asset:
-                    input_params.update(
-                        {
-                            "asset_id": asset.id,
-                            "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
-                        }
-                    )
                 action = input_params.get("action")
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
@@ -208,15 +181,15 @@ class ImporterViewSet(DynamicModelViewSet):
                     name=_file.name if _file else extracted_params.get("title", None),
                 )
 
-                sig = import_orchestrator.s(files, str(execution_id), handler=str(handler), action=action)
+                sig = import_orchestrator.s(_data, str(execution_id), handler=str(handler), action=action)
                 sig.apply_async()
                 return Response(data={"execution_id": execution_id}, status=201)
             except Exception as e:
                 # in case of any exception, is better to delete the
                 # cloned files to keep the storage under control
-                if asset:
+                if storage_manager:
                     try:
-                        asset.delete()
+                        storage_manager.delete_retrieved_paths()
                     except Exception as _exc:
                         logger.warning(_exc)
                 elif storage_manager is not None:
@@ -228,34 +201,10 @@ class ImporterViewSet(DynamicModelViewSet):
 
         raise ImportException(detail="No handlers found for this dataset type/action")
 
-    def _handle_asset(self, request, asset_dir, storage_manager, _data, handler):
-        if storage_manager is None:
-            # means that the storage manager is not initialized yet, so
-            # the file is not a zip
-            storage_manager = StorageManager(remote_files=_data)
-            storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
-            # get filepath
-        asset, files = self.generate_asset_and_retrieve_paths(request, storage_manager, handler)
-        return storage_manager, asset, files
-
     def validate_upload(self, request, storage_manager):
         upload_validator = UploadLimitValidator(request.user)
         upload_validator.validate_parallelism_limit_per_user()
         upload_validator.validate_files_sum_of_sizes(storage_manager.data_retriever)
-
-    def generate_asset_and_retrieve_paths(self, request, storage_manager, handler):
-        asset_handler = asset_handler_registry.get_default_handler()
-        _files = storage_manager.get_retrieved_paths()
-        asset = asset_handler.create(
-            title="Original",
-            owner=request.user,
-            description=None,
-            type=handler.id,
-            files=list(set(_files.values())),
-            clone_files=False,
-        )
-
-        return asset, _files
 
 
 class ResourceImporter(DynamicModelViewSet):
