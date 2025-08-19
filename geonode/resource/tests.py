@@ -217,6 +217,13 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertIsNone(self.rm.exec("set_style", None, instance=None))
         self.assertEqual(self.rm.exec("set_style", map.uuid, instance=map), map)
 
+    def test_transfer_ownership(self):
+        doc = create_single_doc("test_transfer_ownership_doc")
+        new_owner = get_user_model().objects.create(username="new_owner")
+        previous_owner = doc.owner
+        self.rm.transfer_ownership(doc, new_owner, previous_owner)
+        self.assertEqual(doc.owner, new_owner)
+
     def test_remove_permissions(self):
         with self.settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
             dt = create_single_dataset("test_dataset")
