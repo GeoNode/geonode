@@ -698,7 +698,7 @@ class BaseVectorFileHandler(BaseHandler):
             DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
             set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
 
-            dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
+            dataset = resource_manager.update(dataset.uuid, instance=dataset)
 
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)
