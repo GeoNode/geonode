@@ -672,7 +672,9 @@ class BaseVectorFileHandler(BaseHandler):
             remote_files={},
             concrete_storage_manager=FileSystemStorageManager(),
         )
-        storage_manager.rmtree(os.path.dirname(files.get("base_file")), ignore_errors=True)
+        directory = os.path.dirname(files.get("base_file"))
+        if settings.ASSET_DIR not in directory:
+            storage_manager.rmtree(directory, ignore_errors=True)
         return asset
 
     def overwrite_geonode_resource(
