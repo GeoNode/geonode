@@ -138,7 +138,7 @@ class ImporterViewSet(DynamicModelViewSet):
         """
         _file = request.FILES.get("base_file") or request.data.get("base_file")
         execution_id = None
-
+        storage_manager = None
         serializer = self.get_serializer_class()
         data = serializer(data=request.data)
         # serializer data validation
@@ -149,15 +149,16 @@ class ImporterViewSet(DynamicModelViewSet):
         }
 
         # clone the memory files into local file system
-        storage_manager = StorageManager(
-            remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
-            concrete_storage_manager=FileSystemStorageManager(),
-        )
-        storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
-        # validate the upload
-        self.validate_upload(request, storage_manager)
-        # merging the new local path with the input payload
-        _data = _data | storage_manager.get_retrieved_paths()
+        if "url" not in _data:
+            storage_manager = StorageManager(
+                remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
+                concrete_storage_manager=FileSystemStorageManager(),
+            )
+            storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
+            # validate the upload
+            self.validate_upload(request, storage_manager)
+            # merging the new local path with the input payload
+            _data = _data | storage_manager.get_retrieved_paths()
         # checking the correct handler for the uploaded files
         handler = orchestrator.get_handler(_data)
         # not file but handler means that is a remote resource

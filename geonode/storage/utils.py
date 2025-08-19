@@ -12,7 +12,7 @@ def organize_files_by_ext(input_data):
     base_file_choices = [x for x in available_choices if x not in not_main_files]
 
     if not isinstance(input_data, list) and os.path.isdir(input_data):
-        input_data = input_data.iterdir()
+        input_data = Path(input_data).iterdir()
     sorted_files = sorted(Path(data) for data in input_data)
 
     for _file in sorted_files:
