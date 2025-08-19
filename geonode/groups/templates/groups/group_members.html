@@ -129,6 +129,7 @@
     </div>
     {% if member_form %}
     <div class="row">
+      <div class="col-md-12">
         <h3>{% trans "Add new members" %}</h3>
         <form method="POST" action="{% url "group_members_add" group.slug %}">
             {% csrf_token %}
@@ -137,6 +138,7 @@
             </div>
             <input type="submit" value="{% trans "Add Group Members" %}" class="btn btn-primary"/>
         </form>
+      </div>
     </div>
     {% endif %}
   </div>
