@@ -575,7 +575,7 @@ class LinksSerializer(DynamicModelSerializer):
         links = Link.objects.filter(
             resource_id=instance,  # link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS", "image", "metadata"]
         )
-        request = self.context.get("request")
+        request = self.context.get("request", None)
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
@@ -584,7 +584,7 @@ class LinksSerializer(DynamicModelSerializer):
                     "type": "asset",
                     "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
                 }
-                if permissions_registry.user_has_perm(
+                if request and permissions_registry.user_has_perm(
                     request.user, lnk.resource.get_self_resource(), "download_resourcebase", include_virtual=True
                 ):
                     extras["content"]["download_url"] = asset_handler_registry.get_handler(
