@@ -272,12 +272,12 @@ class StorageManager(StorageManagerInterface):
         return self.data_retriever.delete_files(force=force)
 
 
-class DefaultStorageManager(StorageManagerInterface):
+class FileSystemStorageManager(StorageManagerInterface):
     def __init__(self, **kwargs):
         self._fsm = FileSystemStorage(**kwargs)
 
     def _get_concrete_manager(self):
-        return DefaultStorageManager()
+        return FileSystemStorageManager()
 
     def delete(self, name):
         return self._fsm.delete(name)

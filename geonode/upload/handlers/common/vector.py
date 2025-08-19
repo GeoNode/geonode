@@ -18,6 +18,7 @@
 #########################################################################
 import ast
 from django.db import connections
+from geonode.storage.manager import StorageManager
 from geonode.upload.publisher import DataPublisher
 from geonode.upload.utils import call_rollback_function
 import json
@@ -56,6 +57,8 @@ import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
+from geonode.storage.manager import FileSystemStorageManager
+
 
 logger = logging.getLogger("importer")
 
@@ -659,6 +662,18 @@ class BaseVectorFileHandler(BaseHandler):
             owner=_exec.user,
             asset=asset,
         )
+
+    def create_asset_and_link(self, resource, files, _exec):
+        if not files:
+            return
+        asset = super().create_asset_and_link(resource, files, _exec)
+        # remove temporary folders since now is managed by the asset
+        storage_manager = StorageManager(
+            remote_files={},
+            concrete_storage_manager=FileSystemStorageManager(),
+        )
+        storage_manager.rmtree(os.path.dirname(files.get("base_file")), ignore_errors=True)
+        return asset
 
     def overwrite_geonode_resource(
         self,

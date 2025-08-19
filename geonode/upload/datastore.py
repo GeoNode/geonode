@@ -52,7 +52,9 @@ class DataStoreManager:
         return False
 
     def pre_processing(self, **kwargs):
-        return self.handler().pre_processing(self.files, self.execution_id, **kwargs)
+        self.handler().pre_processing(self.files, self.execution_id, **kwargs)
+        # always update the files after the pre-processing
+        self.files = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("files")
 
     def pre_validation(self, **kwargs):
         """

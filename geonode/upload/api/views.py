@@ -49,6 +49,7 @@ from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from geonode.proxy.utils import proxy_urls_registry
+from geonode.storage.manager import FileSystemStorageManager
 
 from geonode.upload.api.serializer import (
     UploadParallelismLimitSerializer,
@@ -147,27 +148,28 @@ class ImporterViewSet(DynamicModelViewSet):
             **{key: value[0] if isinstance(value, list) else value for key, value in request.FILES.items()},
         }
 
-        # cloning data into a local folder
+        # clone the memory files into local file system
         storage_manager = StorageManager(
             remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
-            concrete_storage_manager="geonode.storage.manager.FileSystemStorageManager",
+            concrete_storage_manager=FileSystemStorageManager(),
         )
-
         storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
+        # validate the upload
         self.validate_upload(request, storage_manager)
-        # updating general paths with the local cloned
+        # merging the new local path with the input payload
         _data = _data | storage_manager.get_retrieved_paths()
+        # checking the correct handler for the uploaded files
         handler = orchestrator.get_handler(_data)
         # not file but handler means that is a remote resource
         if handler:
             try:
-                extracted_params, _data = handler.extract_params_from_data(_data)
+                extracted_params, _files = handler.extract_params_from_data(_data)
                 if "url" in extracted_params:
                     # we should register the hosts for the proxy
                     proxy_urls_registry.register_host(urlsplit(extracted_params["url"]).hostname)
 
                 input_params = {
-                    **{"files": _data, "handler_module_path": str(handler)},
+                    **{"files": _files, "handler_module_path": str(handler)},
                     **extracted_params,
                 }
 
@@ -189,11 +191,9 @@ class ImporterViewSet(DynamicModelViewSet):
                 # cloned files to keep the storage under control
                 if storage_manager:
                     try:
-                        storage_manager.delete_retrieved_paths()
+                        storage_manager.delete_retrieved_paths(force=True)
                     except Exception as _exc:
                         logger.warning(_exc)
-                elif storage_manager is not None:
-                    storage_manager.delete_retrieved_paths(force=True)
                 if execution_id:
                     orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
                 logger.exception(e)

@@ -2301,3 +2301,5 @@ AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"
 
 # Group default logo url
 GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
+FILE_UPLOAD_PERMISSIONS = 0o777

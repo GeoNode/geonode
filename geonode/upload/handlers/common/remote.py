@@ -213,7 +213,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         resource = resource_manager.create(
             None,
             resource_type=resource_type,
-            defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, None, **params),
+            defaults=self.generate_resource_payload(layer_name, alternate, _exec, None, **params),
         )
         resource_manager.set_thumbnail(None, instance=resource)
 

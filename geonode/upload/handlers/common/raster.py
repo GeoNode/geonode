@@ -17,6 +17,7 @@
 #
 #########################################################################
 import pyproj
+from geonode.assets.local import LocalAssetHandler
 from geonode.upload.publisher import DataPublisher
 import json
 import logging
@@ -41,6 +42,7 @@ from geonode.upload.orchestrator import orchestrator
 from osgeo import gdal
 from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
+from geonode.assets.handlers import asset_handler_registry
 
 logger = logging.getLogger("importer")
 
@@ -150,8 +152,33 @@ class BaseRasterFileHandler(BaseHandler):
     def pre_validation(self, files, execution_id, **kwargs):
         """
         Hook for let the handler prepare the data before the validation.
-        Maybe a file rename, assign the resource to the execution_id
+        Maybe a file rename, assign the resource to the execution_id.
+        We must ensure that is a LocalAsset because otherwise GeoServer
+        is not able to manage the raster file from remote resources
         """
+        if not isinstance(asset_handler_registry.get_default_handler(), LocalAssetHandler):
+            raise ImportException("Only LocalAsset can be used for publishing raster data")
+
+    def create_asset_and_link(self, resource, files, _exec):
+        asset = super().create_asset_and_link(resource, files, _exec)
+        # after the asset is created, we need to update the geoserver location
+        # otherwise geoserver is not able to read the tiff file
+        from geonode.upload.publisher import DataPublisher
+
+        publisher = DataPublisher(str(self))
+        update_url = (
+            f"{publisher.cat.service_url}/workspaces/{resource.workspace}/"
+            f"coveragestores/{resource.alternate.split(':')[-1]}.xml"
+        )
+        payload = f"<coverageStore><url>{asset.location[0]}</url></coverageStore>"
+
+        response = publisher.cat.http_request(
+            url=update_url, data=payload, method="PUT", headers={"Content-Type": "application/xml"}
+        )
+        response.raise_for_status()
+        # update geoserver catalog
+        response = publisher.cat.http_request(url=f"{publisher.cat.service_url}/reload", method="POST")
+        response.raise_for_status()
 
     def overwrite_geoserver_resource(self, resource: List[str], catalog, store, workspace):
         # we need to delete the resource before recreating it
