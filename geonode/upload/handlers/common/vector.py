@@ -663,10 +663,10 @@ class BaseVectorFileHandler(BaseHandler):
             asset=asset,
         )
 
-    def create_asset_and_link(self, resource, files, _exec):
+    def create_asset_and_link(self, resource, files):
         if not files:
             return
-        asset = super().create_asset_and_link(resource, files, _exec)
+        asset = super().create_asset_and_link(resource, files)
         # remove temporary folders since now is managed by the asset
         storage_manager = StorageManager(
             remote_files={},

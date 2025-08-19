@@ -313,7 +313,7 @@ class BaseHandler(ABC):
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
 
-    def create_asset_and_link(self, resource, files, _exec):
+    def create_asset_and_link(self, resource, files):
         if not files:
             return
         asset, _ = create_asset_and_link(
