@@ -177,8 +177,7 @@ def group_members_add(request, slug):
                 group.join(user, role=GroupMember.MANAGER if form.cleaned_data["manager_role"] else GroupMember.MEMBER)
             except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
-                return redirect("group_members", slug=group.slug)
-    return redirect("group_detail", slug=group.slug)
+    return redirect("group_members", slug=group.slug)
 
 
 @login_required
@@ -190,7 +189,7 @@ def group_member_remove(request, slug, username):
         return HttpResponseForbidden()
     else:
         GroupMember.objects.get(group=group, user=user).delete()
-        return redirect("group_detail", slug=group.slug)
+        return redirect("group_members", slug=group.slug)
 
 
 @login_required
