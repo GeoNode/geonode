@@ -25,6 +25,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import StreamingHttpResponse
 from django.urls import reverse
 
@@ -213,6 +214,35 @@ class AssetsTests(APITestCase):
             self.fail("Missed mixed LocalAsset detection")
         except ValueError:
             pass
+
+    def test_creation_with_in_memory_file(self):
+        u, _ = get_user_model().objects.get_or_create(username="admin")
+        asset_handler = asset_handler_registry.get_default_handler()
+        dummy_content = b"this is a dummy file content"
+        in_memory_file = SimpleUploadedFile("test_file.txt", dummy_content, content_type="text/plain")
+
+        asset = asset_handler.create(
+            title="Test In-Memory Asset",
+            description="Description of test in-memory asset",
+            type="NeverMind",
+            owner=u,
+            files=[in_memory_file],
+        )
+        self.assertIsInstance(asset, LocalAsset)
+
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
+        self.assertEqual(len(reloaded.location), 1)
+        file_path = reloaded.location[0]
+
+        self.assertTrue(os.path.exists(file_path))
+
+        with open(file_path, "rb") as f:
+            content = f.read()
+        self.assertEqual(content, dummy_content)
+
+        reloaded.delete()
+        self.assertFalse(os.path.exists(file_path))
+        self.assertFalse(os.path.exists(os.path.dirname(file_path)))
 
 
 class AssetsDownloadTests(APITestCase):

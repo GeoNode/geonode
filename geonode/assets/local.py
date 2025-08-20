@@ -62,6 +62,18 @@ class LocalAssetHandler(AssetHandlerInterface):
 
         if clone_files:
             files = self._copy_data(files)
+        elif isinstance(files[0], str):
+            pass
+        else:
+            # if files are in-memory, need to handle them properly
+            new_path = self._create_asset_dir()
+            relative_dir = os.path.relpath(new_path, os.path.dirname(settings.ASSETS_ROOT))
+            processed_files = []
+            for f in files:
+                save_path = os.path.join(relative_dir, f.name)
+                self.get_storage_manager(None).save(save_path, f)
+                processed_files.append(os.path.join(new_path, f.name))
+            files = processed_files
 
         asset = LocalAsset(
             title=title,
