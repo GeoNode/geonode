@@ -673,7 +673,7 @@ class BaseVectorFileHandler(BaseHandler):
             concrete_storage_manager=FileSystemStorageManager(),
         )
         directory = os.path.dirname(files.get("base_file"))
-        if settings.ASSET_DIR not in directory:
+        if settings.ASSETS_ROOT not in directory:
             storage_manager.rmtree(directory, ignore_errors=True)
         return asset
 

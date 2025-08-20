@@ -360,7 +360,7 @@ def create_geonode_resource(
                 execution_id=execution_id,
             )
 
-        handler.create_asset_and_link(resource, _files, _exec)
+        handler.create_asset_and_link(resource, _files)
 
         # assign geonode resource to ExectionRequest
         orchestrator.update_execution_request_obj(_exec, {"geonode_resource": resource})
