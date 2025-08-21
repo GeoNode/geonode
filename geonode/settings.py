@@ -1695,21 +1695,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # ########################################################################### #
 # ASYNC SETTINGS
 # ########################################################################### #
-# async signals can be the same as broker url
-# but they should have separate setting anyway
-# use amqp://localhost for local rabbitmq server
-"""
-    sudo apt-get install -y erlang
-    sudo apt-get install rabbitmq-server
 
-    sudo update-rc.d rabbitmq-server enable
-
-    sudo rabbitmqctl stop_app
-    sudo rabbitmqctl reset
-    sudo rabbitmqctl start_app
-
-    sudo rabbitmqctl list_queues
-"""
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
 BROKER_HEARTBEAT = 0
@@ -1725,7 +1711,6 @@ BROKER_TRANSPORT_OPTIONS = {
 CELERY_LOADER = os.environ.get("CELERY_LOADER", "geonode.loaders.GeoNodeCeleryTaksLoader")
 
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get("ASYNC_SIGNALS", "False"))
-# RABBITMQ_SIGNALS_BROKER_URL = "amqp://localhost:5672"
 REDIS_SIGNALS_BROKER_URL = "redis://localhost:6379/0"
 LOCAL_SIGNALS_BROKER_URL = "memory://"
 
