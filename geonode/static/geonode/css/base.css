@@ -8143,6 +8143,9 @@ footer form {
 #member_form_container .select2-container {
   padding: 0;
 }
+#member_form_container .select2-container .select2-selection.select2-selection--multiple {
+  height: 100%;
+}
 .table-user-profile-attribute {
   font-weight: bold;
 }
