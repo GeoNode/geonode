@@ -124,6 +124,8 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
     if exec_id.status == ExecutionRequest.STATUS_FAILED:
         logger.info("Execution is already in status FAILED")
         return
+    if exec_id.status == ExecutionRequest.STATUS_FINISHED:
+        logger.info("Execution was 'finished', forcing update to FAILURE")
 
     logger.error(f"Task FAILED with ID: {str(exec_id.exec_id)}, reason: {exc}")
 
@@ -145,7 +147,11 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
         state="FAILURE",
         meta={"exec_id": str(exec_id.exec_id), "reason": _log},
     )
-    orchestrator.update_execution_request_status(execution_id=str(exec_id.exec_id), output_params=output_params)
+    orchestrator.update_execution_request_status(
+        execution_id=str(exec_id.exec_id), 
+        output_params=output_params,
+        status=ExecutionRequest.STATUS_FAILED
+        )
 
     orchestrator.evaluate_execution_progress(
         get_uuid(args), _log=str(exc.detail if hasattr(exc, "detail") else exc.args[0])

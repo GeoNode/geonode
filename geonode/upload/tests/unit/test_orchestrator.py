@@ -18,18 +18,18 @@
 #########################################################################
 import os
 import uuid
+from celery.result import AsyncResult
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.api.serializer import ImporterSerializer
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.shapefile.serializer import ShapeFileSerializer
 from geonode.upload.orchestrator import ImportOrchestrator
 from django.utils import timezone
-from django_celery_results.models import TaskResult
 from geonode.assets.handlers import asset_handler_registry
 
 from geonode.resource.models import ExecutionRequest
@@ -280,43 +280,42 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         # cleanup
         req.delete()
 
-    def test_evaluate_execution_progress_should_continue_if_some_task_is_not_finished(
-        self,
-    ):
-        # create the celery task result entry
-        try:
-            exec_id = str(
-                self.orchestrator.create_execution_request(
-                    user=get_user_model().objects.first(),
-                    func_name="test",
-                    step="test",
-                )
+    def test_evaluate_execution_progress_should_continue_if_some_task_is_not_finished(self):
+        exec_id = str(
+            self.orchestrator.create_execution_request(
+                user=get_user_model().objects.first(),
+                func_name="test",
+                step="test",
             )
+        )
 
-            started_entry = TaskResult.objects.create(task_id="task_id_started", status="STARTED", task_args=exec_id)
-            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
+        # Mock AsyncResult to return different states
+        with patch("geonode.upload.orchestrator.AsyncResult") as mock_async_result:
+            started_mock = MagicMock()
+            started_mock.state = "STARTED"
+
+            success_mock = MagicMock()
+            success_mock.state = "SUCCESS"
+
+            mock_async_result.side_effect = [started_mock, success_mock]
+
             with self.assertLogs(level="INFO") as _log:
                 result = self.orchestrator.evaluate_execution_progress(exec_id)
 
-            self.assertIsNone(result)
-            self.assertEqual(
-                f"INFO:importer:Execution with ID {exec_id} is completed. All tasks are done",
-                _log.output[0],
-            )
+        # Should return None because not all tasks are finished
+        self.assertIsNone(result)
+        # Check that no "all tasks are done" log was created
+        self.assertFalse(
+            any("all tasks are done" in message for message in _log.output)
+        )
 
-        finally:
-            if started_entry:
-                started_entry.delete()
-            if success_entry:
-                success_entry.delete()
-
-    def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self):
+    @patch("geonode.upload.orchestrator.AsyncResult")
+    def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self, mock_async):
         """
-        Should set it fail if all the execution are done and at least 1 is failed
+        Should set it to FAILURE if all the executions are done and at least 1 is failed
         """
-        # create the celery task result entry
+        # create the celery task execution request
         os.makedirs(settings.ASSETS_ROOT, exist_ok=True)
-
         fake_path = f"{settings.ASSETS_ROOT}/file.txt"
         with open(fake_path, "w"):
             pass
@@ -333,43 +332,53 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
             clone_files=False,
         )
 
-        try:
-            exec_id = str(
-                self.orchestrator.create_execution_request(
-                    user=get_user_model().objects.first(),
-                    func_name="test",
-                    step="test",
-                    input_params={
-                        "asset_id": asset.id,
-                        "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
-                    },
-                )
+        exec_id = str(
+            self.orchestrator.create_execution_request(
+                user=user,
+                func_name="test",
+                step="test",
+                input_params={
+                    "asset_id": asset.id,
+                    "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
+                    "task_ids": ["fake-task-FAILED"],  # simulate failed task
+                },
             )
+        )
 
-            FAILED_entry = TaskResult.objects.create(task_id="task_id_FAILED", status="FAILURE", task_args=exec_id)
-            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
-            self.orchestrator.evaluate_execution_progress(exec_id)
+        # simulate async results with a MagicMock
+        def fake_async(task_id):
+            mock_result = MagicMock()
+            if "FAILED" in task_id:
+                mock_result.state = "FAILURE"
+            else:
+                mock_result.state = "SUCCESS"
+            return mock_result
 
-        finally:
-            if FAILED_entry:
-                FAILED_entry.delete()
-            if success_entry:
-                success_entry.delete()
+        mock_async.side_effect = fake_async
 
-    def test_evaluate_execution_progress_should_set_as_completed(self):
-        try:
-            exec_id = str(
-                self.orchestrator.create_execution_request(
-                    user=get_user_model().objects.first(),
-                    func_name="test",
-                    step="test",
-                )
+        # evaluate progress
+        self.orchestrator.evaluate_execution_progress(exec_id)
+
+        # check stored status
+        exec_request = ExecutionRequest.objects.get(exec_id=exec_id)
+        self.assertEqual(exec_request.status, "failed")
+
+    @patch("geonode.upload.orchestrator.AsyncResult")
+    def test_evaluate_execution_progress_should_set_as_completed(self, mock_async):
+        exec_id = str(
+            self.orchestrator.create_execution_request(
+                user=get_user_model().objects.first(),
+                func_name="test",
+                step="test",
             )
+        )
 
-            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
+        # mock AsyncResult to always succeed
+        mock_result = MagicMock()
+        mock_result.state = "SUCCESS"
+        mock_async.return_value = mock_result
 
-            self.orchestrator.evaluate_execution_progress(exec_id)
+        self.orchestrator.evaluate_execution_progress(exec_id)
 
-        finally:
-            if success_entry:
-                success_entry.delete()
+        exec_request = ExecutionRequest.objects.get(exec_id=exec_id)
+        self.assertEqual(exec_request.status, "finished")

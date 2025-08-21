@@ -26,7 +26,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.module_loading import import_string
-from django_celery_results.models import TaskResult
+from celery.result import AsyncResult
 from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
@@ -242,21 +242,15 @@ class ImportOrchestrator:
         actual_dataset = ResourceHandlerInfo.objects.filter(execution_request=_exec).count()
         is_last_dataset = actual_dataset >= expected_dataset
         execution_id = str(execution_id)  # force it as string to be sure
-        lower_exec_id = execution_id.replace("-", "_").lower()
-        exec_result = TaskResult.objects.filter(
-            Q(task_args__icontains=lower_exec_id)
-            | Q(task_kwargs__icontains=lower_exec_id)
-            | Q(result__icontains=lower_exec_id)
-            | Q(task_args__icontains=execution_id)
-            | Q(task_kwargs__icontains=execution_id)
-            | Q(result__icontains=execution_id)
-        )
+
+        task_ids = _exec.input_params.get("task_ids", [])
+        task_results = [AsyncResult(task_id) for task_id in task_ids]
+        
         _has_data = ResourceHandlerInfo.objects.filter(execution_request__exec_id=execution_id).exists()
 
-        # .all() is needed since we want to have the last status on the DB without take in consideration the cache
-        if exec_result.all().exclude(Q(status=states.SUCCESS) | Q(status=states.FAILURE)).exists():
+        if any(tr.state not in [states.SUCCESS, states.FAILURE] for tr in task_results):
             self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
-        elif exec_result.all().filter(status=states.FAILURE).exists():
+        elif any(tr.state == states.FAILURE for tr in task_results):
             """
             Should set it fail if all the execution are done and at least 1 is failed
             """
@@ -328,9 +322,6 @@ class ImportOrchestrator:
             kwargs["status"] = status
 
         ExecutionRequest.objects.filter(exec_id=execution_id).update(**kwargs)
-
-        if celery_task_request:
-            TaskResult.objects.filter(task_id=celery_task_request.id).update(task_args=celery_task_request.args)
 
     def update_execution_request_obj(self, _exec_obj, payload):
         ExecutionRequest.objects.filter(pk=_exec_obj.pk).update(**payload)

@@ -477,7 +477,6 @@ INSTALLED_APPS = (
     "floppyforms",
     "tinymce",
     "widget_tweaks",
-    "django_celery_results",
     "markdownify",
     "django_user_agents",
     # REST APIs
@@ -1726,15 +1725,16 @@ BROKER_TRANSPORT_OPTIONS = {
 CELERY_LOADER = os.environ.get("CELERY_LOADER", "geonode.loaders.GeoNodeCeleryTaksLoader")
 
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get("ASYNC_SIGNALS", "False"))
-RABBITMQ_SIGNALS_BROKER_URL = "amqp://localhost:5672"
-# REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
+# RABBITMQ_SIGNALS_BROKER_URL = "amqp://localhost:5672"
+REDIS_SIGNALS_BROKER_URL = "redis://localhost:6379/0"
 LOCAL_SIGNALS_BROKER_URL = "memory://"
 
 if ASYNC_SIGNALS:
-    _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
+    _BROKER_URL = REDIS_SIGNALS_BROKER_URL
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+CELERY_RESULT_EXPIRES = 86400 
 
 CELERY_BROKER_URL = os.environ.get("BROKER_URL", _BROKER_URL)
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get("CELERY_RESULT_PERSISTENT", "False"))
