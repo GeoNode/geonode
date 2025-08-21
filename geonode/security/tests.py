@@ -84,7 +84,6 @@ from geonode.geoserver.security import (
 
 from .utils import (
     get_users_with_perms,
-    get_visible_resources,
 )
 
 from .permissions import PermSpec, PermSpecCompact
@@ -1254,14 +1253,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()
-        actual = get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
+        actual = permissions_registry.get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
         self.assertEqual(8, len(actual))
 
     def test_get_visible_resources_should_return_updated_resource_with_metadata_only_false(self):
         # Updating the layer with metadata only True to verify that the filter works
         Dataset.objects.filter(title="dataset metadata true").update(metadata_only=False)
         layers = Dataset.objects.all()
-        actual = get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
+        actual = permissions_registry.get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
         self.assertEqual(layers.filter(dirty_state=False).count(), len(actual))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_true(self):
@@ -1274,7 +1273,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             dataset.save()
 
             layers = Dataset.objects.all()
-            actual = get_visible_resources(
+            actual = permissions_registry.get_visible_resources(
                 queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user)
             )
             self.assertEqual(1, actual.count())
@@ -1292,7 +1291,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             dataset.save()
 
             layers = Dataset.objects.all()
-            actual = get_visible_resources(
+            actual = permissions_registry.get_visible_resources(
                 queryset=layers, metadata_only=None, user=get_user_model().objects.get(username=self.user)
             )
             self.assertEqual(layers.count(), actual.count())
@@ -1311,7 +1310,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         admin_user.save()
         layers = Dataset.objects.all()
 
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
             admin_approval_required=True,
@@ -1320,7 +1319,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count(), actual.count())
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
             admin_approval_required=True,
@@ -1333,7 +1332,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Test 'is_approved=False' 'is_published=False'
         Dataset.objects.filter(~Q(owner=standard_user)).update(is_approved=False, is_published=False)
 
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
             admin_approval_required=True,
@@ -1342,7 +1341,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count(), actual.count())
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
             admin_approval_required=True,
@@ -1351,7 +1350,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count(), actual.count())
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
             admin_approval_required=True,
@@ -1366,7 +1365,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if private_groups.first():
             private_groups.first().leave(standard_user)
             Dataset.objects.filter(~Q(owner=standard_user)).update(group=private_groups.first().group)
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
             admin_approval_required=True,
@@ -1375,7 +1374,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count(), actual.count())
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
             admin_approval_required=True,
@@ -1384,7 +1383,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(8, actual.count())
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
             admin_approval_required=True,
@@ -1394,7 +1393,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(1, actual.count())
 
-    def test_get_visible_resources(self):
+    def test_permissions_registry.get_visible_resources(self):
         standard_user = get_user_model().objects.get(username="bobby")
         layers = Dataset.objects.all()
         # update user's perm on a layer,
@@ -1402,7 +1401,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         _title = "common bar"
         for x in Dataset.objects.filter(title=_title):
             x.set_permissions({"users": {"bobby": []}, "groups": []})
-        actual = get_visible_resources(
+        actual = permissions_registry.get_visible_resources(
             queryset=layers,
             user=standard_user,
             admin_approval_required=True,
@@ -1411,7 +1410,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
         self.assertNotIn(_title, list(actual.values_list("title", flat=True)))
         # get layers as admin, this should return all layers with metadata_only = True
-        actual = get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
+        actual = permissions_registry.get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
         self.assertIn(_title, list(actual.values_list("title", flat=True)))
 
     def test_perm_spec_conversion(self):

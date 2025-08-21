@@ -44,7 +44,7 @@ from geonode.base.models import HierarchicalKeyword
 from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
-from geonode.security.utils import get_visible_resources
+from geonode.security.registry import permissions_registry
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
@@ -211,7 +211,7 @@ class CommonModelApi(ModelResource):
             filtered = filtered.filter(**metadata_filters)
 
         # return filtered
-        return get_visible_resources(
+        return permissions_registry.get_visible_resources(
             filtered,
             request.user if request else None,
             metadata_only=metadata_only,

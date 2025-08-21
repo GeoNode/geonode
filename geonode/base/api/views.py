@@ -67,7 +67,6 @@ from geonode.base.api.filters import (
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
-    get_visible_resources,
     get_resources_with_perms,
     get_user_visible_groups,
 )

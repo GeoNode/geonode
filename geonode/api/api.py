@@ -62,7 +62,7 @@ from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
 from geonode.utils import check_ogc_backend
-from geonode.security.utils import get_visible_resources
+from geonode.security.registry import permissions_registry
 
 FILTER_TYPES = {"dataset": Dataset, "map": Map, "document": Document, "geoapp": GeoApp}
 
@@ -76,7 +76,7 @@ class CountJSONSerializer(Serializer):
         else:
             resources = get_objects_for_user(options["user"], "base.view_resourcebase")
 
-        resources = get_visible_resources(
+        resources = permissions_registry.get_visible_resources(
             resources,
             options["user"],
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
@@ -282,7 +282,7 @@ class TopicCategoryResource(TypeFilteredResource):
         filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values("id")).filter(metadata_only=False)
 
         if not settings.SKIP_PERMS_FILTER:
-            filter_set = get_visible_resources(
+            filter_set = permissions_registry.get_visible_resources(
                 filter_set,
                 request.user if request else None,
                 admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
@@ -707,7 +707,7 @@ def _get_resource_counts(request, resourcebase_filter_kwargs):
     objects that belong to the group that has ``my-group`` as slug
 
     """
-    resources = get_visible_resources(
+    resources = permissions_registry.get_visible_resources(
         ResourceBase.objects.filter(**resourcebase_filter_kwargs),
         request.user,
         request=request,

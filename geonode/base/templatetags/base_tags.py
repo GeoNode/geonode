@@ -34,7 +34,7 @@ from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 from geonode.base.bbox_utils import filter_bbox
 from geonode.base.models import HierarchicalKeyword, Menu, MenuItem
-from geonode.security.utils import get_visible_resources
+from geonode.security.registry import permissions_registry
 from collections import OrderedDict
 
 register = template.Library()
@@ -94,7 +94,7 @@ def facets(context):
         for label, app in apps.app_configs.items():
             if hasattr(app, "type") and app.type == "GEONODE_APP":
                 if hasattr(app, "default_model"):
-                    geoapps = get_visible_resources(
+                    geoapps = permissions_registry.get_visible_resources(
                         apps.get_model(label, app.default_model).objects.all(),
                         request.user if request else None,
                         admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
@@ -151,7 +151,7 @@ def facets(context):
         if date_range_filter:
             documents = documents.filter(date__range=date_range_filter.split(","))
 
-        documents = get_visible_resources(
+        documents = permissions_registry.get_visible_resources(
             documents,
             request.user if request else None,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
@@ -198,7 +198,7 @@ def facets(context):
         if date_range_filter:
             layers = layers.filter(date__range=date_range_filter.split(","))
 
-        layers = get_visible_resources(
+        layers = permissions_registry.get_visible_resources(
             layers,
             request.user if request else None,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
@@ -277,14 +277,14 @@ def facets(context):
             maps = maps.filter(date__range=date_range_filter.split(","))
             documents = documents.filter(date__range=date_range_filter.split(","))
 
-        maps = get_visible_resources(
+        maps = permissions_registry.get_visible_resources(
             maps,
             request.user if request else None,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
-        documents = get_visible_resources(
+        documents = permissions_registry.get_visible_resources(
             documents,
             request.user if request else None,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,

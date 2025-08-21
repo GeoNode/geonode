@@ -34,7 +34,6 @@ from django.contrib.auth.decorators import login_required
 from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_visible_resources
 
 from .models import Service
 from . import forms, enumerations
@@ -260,7 +259,7 @@ def service_detail(request, service_id):
                 "geonode_resource__id", flat=True
             )
         )
-    already_imported_datasets = get_visible_resources(
+    already_imported_datasets = permissions_registry.get_visible_resources(
         queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids), user=request.user
     )
     resources_being_harvested = []

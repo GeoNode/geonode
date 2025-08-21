@@ -19,6 +19,7 @@
 from distutils.util import strtobool
 from django.conf import settings
 from rest_framework.filters import BaseFilterBackend
+from geonode.security.registry import permissions_registry
 
 
 class DatasetPermissionsFilter(BaseFilterBackend):
@@ -36,7 +37,6 @@ class DatasetPermissionsFilter(BaseFilterBackend):
         # See https://github.com/encode/django-rest-framework/issues/4608
         # (Also see #1624 for why we need to make this import explicitly)
         from guardian.shortcuts import get_objects_for_user
-        from geonode.security.utils import get_visible_resources
 
         user = request.user
         # perm_format = '%(app_label)s.view_%(model_name)s'
@@ -53,7 +53,7 @@ class DatasetPermissionsFilter(BaseFilterBackend):
         except Exception:
             include_dirty = False
 
-        obj_with_perms = get_visible_resources(
+        obj_with_perms = permissions_registry.get_visible_resources(
             resources,
             user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,

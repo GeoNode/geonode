@@ -7,7 +7,6 @@ from geonode.security.permissions import DOWNLOAD_PERMISSIONS
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.models import Asset
 from geonode.base.models import ResourceBase, Link
-from geonode.security.utils import get_visible_resources
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,7 @@ def get_perms_response(request, asset: Asset):
         logger.debug("Asset: access allowed by user")
         return None
 
-    visibile_res = get_visible_resources(queryset=ResourceBase.objects.filter(link__asset=asset), user=request.user)
+    visibile_res = permissions_registry.get_visible_resources(queryset=ResourceBase.objects.filter(link__asset=asset), user=request.user)
 
     if visibile_res.exists():
         # retrieving the resource permissions for the given user

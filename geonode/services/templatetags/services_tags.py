@@ -20,7 +20,7 @@ from django import template
 
 from geonode.base.models import ResourceBase
 from geonode.services.models import Service
-from geonode.security.utils import get_visible_resources
+from geonode.security.registry import permissions_registry
 
 register = template.Library()
 
@@ -37,7 +37,7 @@ def get_dataset_count_by_services(service_id, user):
                     "geonode_resource__id", flat=True
                 )
             )
-        return get_visible_resources(
+        return permissions_registry.get_visible_resources(
             queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids), user=user
         ).count()
     except Exception:

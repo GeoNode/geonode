@@ -31,7 +31,7 @@ from geonode.groups.models import GroupProfile, GroupMember
 from geonode.base.api.permissions import IsOwnerOrAdmin
 from geonode.base.api.serializers import GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.security.utils import get_visible_resources
+from geonode.security.registry import permissions_registry
 from guardian.shortcuts import get_objects_for_user
 from rest_framework.exceptions import PermissionDenied
 from geonode.people.utils import check_user_deletion_rules
@@ -109,7 +109,7 @@ class UserViewSet(DynamicModelViewSet):
         permitted = get_objects_for_user(user, "base.view_resourcebase")
         qs = ResourceBase.objects.all().filter(id__in=permitted).order_by("title")
 
-        resources = get_visible_resources(
+        resources = permissions_registry.get_visible_resources(
             qs,
             user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,

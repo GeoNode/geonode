@@ -44,7 +44,6 @@ from geonode.utils import resolve_object
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
 from geonode.resource.manager import resource_manager
-from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
 from geonode.base.utils import OwnerRightsRequestViewUtils, remove_country_from_languagecode
 from geonode.base.forms import UserAndGroupPermissionsForm
@@ -197,7 +196,7 @@ class ResourceBaseAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             qs = qs.filter(title__icontains=self.q).order_by("title")
 
-        return get_visible_resources(
+        return permissions_registry.get_visible_resources(
             qs,
             request.user if request else None,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
@@ -216,7 +215,7 @@ class LinkedResourcesAutocomplete(autocomplete.Select2QuerySetView):
         if self.forwarded and "exclude" in self.forwarded:
             qs = qs.exclude(pk=self.forwarded["exclude"])
 
-        return get_visible_resources(
+        return permissions_registry.get_visible_resources(
             qs,
             self.request.user if self.request else None,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,

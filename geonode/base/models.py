@@ -76,10 +76,10 @@ from geonode.utils import (
 )
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
 from geonode.groups.models import GroupProfile
-from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
+from geonode.security.utils import get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS
-
+from geonode.security.registry import permissions_registry
 from geonode.notifications_helper import send_notification, get_notification_recipients
 from geonode.people import Roles
 from geonode.people.enumerations import ROLE_VALUES
@@ -295,7 +295,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
         if resource_name is not None:
             resources = resources.filter(title=resource_name)
 
-        resources = get_visible_resources(
+        resources = permissions_registry.get_visible_resources(
             resources,
             user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,

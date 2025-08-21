@@ -31,7 +31,7 @@ from geonode.security.permissions import (
     VIEW_PERMISSIONS,
 )
 from distutils.util import strtobool
-from geonode.security.utils import get_users_with_perms, get_visible_resources
+from geonode.security.utils import get_users_with_perms
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
@@ -205,7 +205,7 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
         except Exception:
             metadata_only = None
 
-        return get_visible_resources(
+        return permissions_registry.get_visible_resources(
             queryset,
             request.user,
             metadata_only=metadata_only,
