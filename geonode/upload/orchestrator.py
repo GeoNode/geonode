@@ -245,7 +245,7 @@ class ImportOrchestrator:
 
         task_ids = _exec.input_params.get("task_ids", [])
         task_results = [AsyncResult(task_id) for task_id in task_ids]
-        
+
         _has_data = ResourceHandlerInfo.objects.filter(execution_request__exec_id=execution_id).exists()
 
         if any(tr.state not in [states.SUCCESS, states.FAILURE] for tr in task_results):

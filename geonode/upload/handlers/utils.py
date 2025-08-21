@@ -148,10 +148,8 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
         meta={"exec_id": str(exec_id.exec_id), "reason": _log},
     )
     orchestrator.update_execution_request_status(
-        execution_id=str(exec_id.exec_id), 
-        output_params=output_params,
-        status=ExecutionRequest.STATUS_FAILED
-        )
+        execution_id=str(exec_id.exec_id), output_params=output_params, status=ExecutionRequest.STATUS_FAILED
+    )
 
     orchestrator.evaluate_execution_progress(
         get_uuid(args), _log=str(exc.detail if hasattr(exc, "detail") else exc.args[0])

@@ -305,9 +305,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         # Should return None because not all tasks are finished
         self.assertIsNone(result)
         # Check that no "all tasks are done" log was created
-        self.assertFalse(
-            any("all tasks are done" in message for message in _log.output)
-        )
+        self.assertFalse(any("all tasks are done" in message for message in _log.output))
 
     @patch("geonode.upload.orchestrator.AsyncResult")
     def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self, mock_async):
