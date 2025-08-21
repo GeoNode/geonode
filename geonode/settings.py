@@ -372,15 +372,24 @@ CACHES = {
         "TIMEOUT": 600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
     },
+    "services": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
 }
 
 PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
+
+# define service cache timeout
+SERVICE_CACHE_EXPIRATION_TIME = int(os.getenv("SERVICE_CACHE_EXPIRATION_TIME", 600))
 
 if MEMCACHED_ENABLED:
     CACHES["default"] = {
         "BACKEND": MEMCACHED_BACKEND,
         "LOCATION": MEMCACHED_LOCATION,
     }
+    CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
 
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
 WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv("WHITENOISE_MANIFEST_STRICT", "False"))
