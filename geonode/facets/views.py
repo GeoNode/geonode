@@ -89,7 +89,9 @@ class BaseFacetingView(APIView):
         if filters:
             viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs=filters)
             viewset.initial(request)
-            return permissions_registry.get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
+            return permissions_registry.get_visible_resources(
+                queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user
+            )
         else:
             # return ResourceBase.objects
             return permissions_registry.get_visible_resources(ResourceBase.objects, request.user)

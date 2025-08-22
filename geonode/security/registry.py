@@ -26,6 +26,9 @@ from guardian.shortcuts import get_group_perms
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
 from guardian.shortcuts import get_anonymous_user
 
+from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
+from django.contrib.auth.models import Permission
+
 
 class PermissionsHandlerRegistry:
 
@@ -159,6 +162,33 @@ class PermissionsHandlerRegistry:
         else:
             pass
 
+    def db_perms_by_user(self, user):
+        from geonode.base.models import Configuration
+
+        perms = set()
+        if user.is_superuser or user.is_staff:
+            # return all permissions for admins
+            perms.update(PERMISSIONS.values())
+
+        user_groups = user.groups.values_list("name", flat=True)
+        group_perms = (
+            Permission.objects.filter(group__name__in=user_groups).distinct().values_list("codename", flat=True)
+        )
+        for p in group_perms:
+            if p in PERMISSIONS:
+                # return constant names defined by GeoNode
+                perms.add(PERMISSIONS[p])
+            else:
+                # add custom permissions
+                perms.add(p)
+
+        # check READ_ONLY mode
+        config = Configuration.load()
+        if config.read_only:
+            # exclude permissions affected by readonly
+            perms = [perm for perm in perms if perm not in READ_ONLY_AFFECTED_PERMISSIONS]
+        return list(perms)
+
     def get_perms(
         self,
         instance,
@@ -212,7 +242,7 @@ class PermissionsHandlerRegistry:
             payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
             for handler in self.REGISTRY:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
-            if include_user_add_resource and user.has_perm("base.add_resourcebase"):
+            if include_user_add_resource and "add_resourcebase" in self.db_perms_by_user(user=user):
                 payload["users"][user].append("add_resourcebase")
 
             result = payload["users"][user]
@@ -311,7 +341,8 @@ class PermissionsHandlerRegistry:
                 private_groups = GroupProfile.objects.filter(access="private").values("group")
                 if user and user.is_authenticated:
                     queryset = queryset.exclude(
-                        Q(group__in=private_groups) & ~(Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
+                        Q(group__in=private_groups)
+                        & ~(Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
                     )
                 else:
                     queryset = queryset.exclude(group__in=private_groups)

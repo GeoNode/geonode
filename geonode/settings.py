@@ -869,6 +869,7 @@ SECURE_REFERRER_POLICY = os.environ.get("SECURE_REFERRER_POLICY", "strict-origin
 AUTHENTICATION_BACKENDS = (
     # 'oauth2_provider.backends.OAuth2Backend',
     "django.contrib.auth.backends.ModelBackend",
+    "geonode.people.authbackend.PermissionsRegistryAuthBackend",
     "guardian.backends.ObjectPermissionBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )

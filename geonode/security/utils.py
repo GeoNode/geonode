@@ -21,15 +21,13 @@ import json
 import logging
 import collections
 from itertools import chain
-
-from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, Permission
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
-
+from geonode.security.registry import permissions_registry
 from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import (
@@ -49,7 +47,6 @@ from geonode.security.permissions import (
 )
 
 logger = logging.getLogger(__name__)
-
 
 
 def get_users_with_perms(obj):

@@ -1253,14 +1253,18 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()
-        actual = permissions_registry.get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
+        actual = permissions_registry.get_visible_resources(
+            queryset=layers, user=get_user_model().objects.get(username=self.user)
+        )
         self.assertEqual(8, len(actual))
 
     def test_get_visible_resources_should_return_updated_resource_with_metadata_only_false(self):
         # Updating the layer with metadata only True to verify that the filter works
         Dataset.objects.filter(title="dataset metadata true").update(metadata_only=False)
         layers = Dataset.objects.all()
-        actual = permissions_registry.get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
+        actual = permissions_registry.get_visible_resources(
+            queryset=layers, user=get_user_model().objects.get(username=self.user)
+        )
         self.assertEqual(layers.filter(dirty_state=False).count(), len(actual))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_true(self):
@@ -1393,7 +1397,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(1, actual.count())
 
-    def test_permissions_registry.get_visible_resources(self):
+    def test_permissions_registry(self):
         standard_user = get_user_model().objects.get(username="bobby")
         layers = Dataset.objects.all()
         # update user's perm on a layer,
@@ -1410,7 +1414,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
         self.assertNotIn(_title, list(actual.values_list("title", flat=True)))
         # get layers as admin, this should return all layers with metadata_only = True
-        actual = permissions_registry.get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
+        actual = permissions_registry.get_visible_resources(
+            queryset=layers, user=get_user_model().objects.get(username=self.user)
+        )
         self.assertIn(_title, list(actual.values_list("title", flat=True)))
 
     def test_perm_spec_conversion(self):

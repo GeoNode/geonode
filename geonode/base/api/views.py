@@ -1436,7 +1436,7 @@ def base_linked_resources_instances(instance, user, params={}):
     ret = {"WARNINGS": warnings}
 
     get_visible_resources_p = functools.partial(
-        get_visible_resources,
+        permissions_registry.get_visible_resources,
         user=user,
         admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
         unpublished_not_visible=settings.RESOURCE_PUBLISHING,

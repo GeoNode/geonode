@@ -21,7 +21,9 @@ def get_perms_response(request, asset: Asset):
         logger.debug("Asset: access allowed by user")
         return None
 
-    visibile_res = permissions_registry.get_visible_resources(queryset=ResourceBase.objects.filter(link__asset=asset), user=request.user)
+    visibile_res = permissions_registry.get_visible_resources(
+        queryset=ResourceBase.objects.filter(link__asset=asset), user=request.user
+    )
 
     if visibile_res.exists():
         # retrieving the resource permissions for the given user
