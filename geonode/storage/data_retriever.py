@@ -29,6 +29,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 
 from geonode.storage.exceptions import DataRetrieverExcepion
+from geonode.storage.utils import organize_files_by_ext
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +153,7 @@ class DataRetriever(object):
         if tranfer_at_creation:
             self.transfer_remote_files()
 
-    def transfer_remote_files(self, cloning_directory=None, prefix=None, create_tempdir=True):
+    def transfer_remote_files(self, cloning_directory=None, prefix=None, create_tempdir=True, unzip=True):
         from geonode.utils import mkdtemp
 
         self.temporary_folder = cloning_directory or settings.MEDIA_ROOT
@@ -167,7 +168,7 @@ class DataRetriever(object):
         Is more usefull to have always unzipped file than the zip file
         So in case is a zip_file, we unzip it and than delete it
         """
-        if zipfile.is_zipfile(self.file_paths.get("base_file", "not_zip")):
+        if unzip and zipfile.is_zipfile(self.file_paths.get("base_file", "not_zip")):
             self._unzip(zip_name=self.file_paths.get("base_file"))
 
         if settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS is not None:
@@ -176,11 +177,11 @@ class DataRetriever(object):
             os.chmod(self.temporary_folder, settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS)
         return self.file_paths
 
-    def get_paths(self, allow_transfer=False, cloning_directory=None, prefix=None, create_tempdir=True):
+    def get_paths(self, allow_transfer=False, cloning_directory=None, prefix=None, create_tempdir=True, unzip=True):
         if not self.file_paths:
             if allow_transfer:
                 self.transfer_remote_files(
-                    cloning_directory=cloning_directory, prefix=prefix, create_tempdir=create_tempdir
+                    cloning_directory=cloning_directory, prefix=prefix, create_tempdir=create_tempdir, unzip=unzip
                 )
             else:
                 raise DataRetrieverExcepion(detail="You can't retrieve paths without clone file first!")
@@ -203,8 +204,6 @@ class DataRetriever(object):
         return self.data_items.items()
 
     def _unzip(self, zip_name: str) -> Mapping:
-        from geonode.utils import get_allowed_extensions
-
         """
         Function to unzip the file. If is a shp or a tiff
         is assigned as base_file otherwise will create the expected payloads
@@ -214,23 +213,7 @@ class DataRetriever(object):
         with zipfile.ZipFile(zip_file, allowZip64=True) as the_zip:
             the_zip.extractall(self.temporary_folder)
 
-        available_choices = get_allowed_extensions()
-        not_main_files = ["xml", "sld", "zip", "kmz"]
-        base_file_choices = [x for x in available_choices if x not in not_main_files]
-        sorted_files = sorted(Path(self.temporary_folder).iterdir())
-        for _file in sorted_files:
-            if not zipfile.is_zipfile(str(_file)):
-                if any([_file.name.endswith(_ext) for _ext in base_file_choices]):
-                    self.file_paths["base_file"] = Path(str(_file))
-                ext = _file.name.split(".")[-1]
-                if f"{ext}_file" in self.file_paths:
-                    existing = self.file_paths[f"{ext}_file"]
-                    self.file_paths[f"{ext}_file"] = [
-                        Path(str(_file)),
-                        *(existing if isinstance(existing, list) else [existing]),
-                    ]
-                else:
-                    self.file_paths[f"{ext}_file"] = Path(str(_file))
+        self.file_paths = organize_files_by_ext(self.temporary_folder)
 
         tmp = self.file_paths.copy()
         for key, value in self.file_paths.items():

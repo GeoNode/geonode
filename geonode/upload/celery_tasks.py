@@ -161,6 +161,9 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         # initiating the data store manager
         _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
 
+        # pre processing hook
+        _datastore.pre_processing(**kwargs)
+
         _datastore.pre_validation(**kwargs)
         # starting file validation
         if not _datastore.input_is_valid():
@@ -339,15 +342,6 @@ def create_geonode_resource(
 
         _files = _exec.input_params.get("files")
 
-        if not _files:
-            _asset = None
-        else:
-            _asset = (
-                import_string(_exec.input_params.get("asset_module_path"))
-                .objects.filter(id=_exec.input_params.get("asset_id"))
-                .first()
-            )
-
         handler_module_path = handler_module_path or _exec.input_params.get("handler_module_path")
 
         handler = import_string(handler_module_path)()
@@ -358,15 +352,15 @@ def create_geonode_resource(
                 layer_name=layer_name,
                 alternate=alternate,
                 execution_id=execution_id,
-                asset=_asset,
             )
         else:
             resource = handler.create_geonode_resource(
                 layer_name=layer_name,
                 alternate=alternate,
                 execution_id=execution_id,
-                asset=_asset,
             )
+
+        handler.create_asset_and_link(resource, _files)
 
         # assign geonode resource to ExectionRequest
         orchestrator.update_execution_request_obj(_exec, {"geonode_resource": resource})

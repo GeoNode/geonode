@@ -51,6 +51,11 @@ class DataStoreManager:
             return self.handler.is_valid_url(url)
         return False
 
+    def pre_processing(self, **kwargs):
+        self.handler().pre_processing(self.files, self.execution_id, **kwargs)
+        # always update the files after the pre-processing
+        self.files = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("files")
+
     def pre_validation(self, **kwargs):
         """
         Hook for let the handler prepare the data before the validation.
