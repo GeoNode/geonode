@@ -1714,11 +1714,15 @@ ASYNC_SIGNALS = ast.literal_eval(os.environ.get("ASYNC_SIGNALS", "False"))
 REDIS_SIGNALS_BROKER_URL = os.environ.get("BROKER_URL", "redis://localhost:6379/0")
 LOCAL_SIGNALS_BROKER_URL = "memory://"
 
-if ASYNC_SIGNALS:
-    _BROKER_URL = REDIS_SIGNALS_BROKER_URL
+# In testing, it should not be used Redis as Celery backend
+TESTING = "test" in sys.argv
+
+if TESTING:
+    _BROKER_URL = "memory://"
+    CELERY_RESULT_BACKEND = "cache+memory://"
 else:
-    _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
+    _BROKER_URL = REDIS_SIGNALS_BROKER_URL if ASYNC_SIGNALS else LOCAL_SIGNALS_BROKER_URL
+    CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
 CELERY_RESULT_EXPIRES = 86400
 
 CELERY_BROKER_URL = os.environ.get("BROKER_URL", _BROKER_URL)
