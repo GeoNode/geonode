@@ -321,7 +321,7 @@ class BaseHandler(ABC):
             owner=resource.owner,
             files=files.values(),
             title="Original",
-            asset_type=Path(files.get("base_file")).suffix.replace(".", ""),            
+            asset_type=Path(files.get("base_file")).suffix.replace(".", ""),
             clone_files=True,
         )
         return asset
