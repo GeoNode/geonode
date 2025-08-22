@@ -160,7 +160,6 @@ class ContactHandler(MetadataHandler):
                         if user != resource.owner:
                             logger.warning(f"Changing owner from {resource.owner} to {user}")
                             resource_manager.transfer_ownership(resource, user, resource.owner)
-                        resource.owner = user
                     except get_user_model().DoesNotExist:
                         logger.warning(f"User with id {users['id']} not found for role '{rolename}'")
                         self._set_error(errors, ["contacts", rolename], f"User with id {users['id']} does not exist.")
