@@ -215,34 +215,100 @@ class AssetsTests(APITestCase):
         except ValueError:
             pass
 
-    def test_creation_with_in_memory_file(self):
+    def test_creation_with_multiple_in_memory_files(self):
         u, _ = get_user_model().objects.get_or_create(username="admin")
         asset_handler = asset_handler_registry.get_default_handler()
-        dummy_content = b"this is a dummy file content"
-        in_memory_file = SimpleUploadedFile("test_file.txt", dummy_content, content_type="text/plain")
+
+        dummy_content_1 = b"this is dummy file content 1"
+        in_memory_file_1 = SimpleUploadedFile("test_file_1.txt", dummy_content_1, content_type="text/plain")
+
+        dummy_content_2 = b"this is dummy file content 2"
+        in_memory_file_2 = SimpleUploadedFile("test_file_2.txt", dummy_content_2, content_type="text/plain")
 
         asset = asset_handler.create(
             title="Test In-Memory Asset",
             description="Description of test in-memory asset",
             type="NeverMind",
             owner=u,
-            files=[in_memory_file],
+            files=[in_memory_file_1, in_memory_file_2],
         )
         self.assertIsInstance(asset, LocalAsset)
 
         reloaded = LocalAsset.objects.get(pk=asset.pk)
-        self.assertEqual(len(reloaded.location), 1)
-        file_path = reloaded.location[0]
+        self.assertEqual(len(reloaded.location), 2)
 
-        self.assertTrue(os.path.exists(file_path))
+    def test_creation_with_multiple_cloned_local_files(self):
+        u, _ = get_user_model().objects.get_or_create(username="admin")
+        asset_handler = asset_handler_registry.get_default_handler()
+        assets_root = os.path.normpath(settings.ASSETS_ROOT)
 
-        with open(file_path, "rb") as f:
+        local_files = [ONE_JSON, TWO_JSON]
+
+        asset = asset_handler.create(
+            title="Test Multiple Cloned Asset",
+            description="Description of test multiple cloned asset",
+            type="NeverMind",
+            owner=u,
+            files=local_files,
+            clone_files=True,
+        )
+        self.assertIsInstance(asset, LocalAsset)
+
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
+        self.assertEqual(len(reloaded.location), 2)
+
+        for loc in reloaded.location:
+            self.assertTrue(os.path.exists(loc))
+            self.assertTrue(os.path.normpath(loc).startswith(assets_root))
+
+        # Ensure original files are untouched
+        self.assertTrue(os.path.exists(ONE_JSON))
+        self.assertTrue(os.path.exists(TWO_JSON))
+
+        parent_dir = os.path.dirname(reloaded.location[0])
+
+        reloaded.delete()
+
+        self.assertFalse(os.path.exists(parent_dir))
+        # Ensure original files still exist after asset deletion
+        self.assertTrue(os.path.exists(ONE_JSON))
+        self.assertTrue(os.path.exists(TWO_JSON))
+
+    def test_creation_with_mixed_cloned_and_in_memory_files(self):
+        u, _ = get_user_model().objects.get_or_create(username="admin")
+        asset_handler = asset_handler_registry.get_default_handler()
+        assets_root = os.path.normpath(settings.ASSETS_ROOT)
+
+        dummy_content = b"this is a mixed dummy file"
+        in_memory_file = SimpleUploadedFile("mixed_test.txt", dummy_content, content_type="text/plain")
+
+        files_to_create = [ONE_JSON, in_memory_file]
+
+        asset = asset_handler.create(
+            title="Test Mixed Asset",
+            description="Description of test mixed asset",
+            type="NeverMind",
+            owner=u,
+            files=files_to_create,
+            clone_files=True,
+        )
+        self.assertIsInstance(asset, LocalAsset)
+
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
+        self.assertEqual(len(reloaded.location), 2)
+
+        for loc in reloaded.location:
+            self.assertTrue(os.path.exists(loc))
+            self.assertTrue(os.path.normpath(loc).startswith(assets_root))
+
+        in_memory_path = next((loc for loc in reloaded.location if "mixed_test.txt" in loc), None)
+        self.assertIsNotNone(in_memory_path)
+        with open(in_memory_path, "rb") as f:
             content = f.read()
         self.assertEqual(content, dummy_content)
 
         reloaded.delete()
-        self.assertFalse(os.path.exists(file_path))
-        self.assertFalse(os.path.exists(os.path.dirname(file_path)))
+        self.assertTrue(os.path.exists(ONE_JSON))
 
 
 class AssetsDownloadTests(APITestCase):
