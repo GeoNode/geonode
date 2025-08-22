@@ -22,7 +22,7 @@ from tastypie.test import ResourceTestCaseMixin, TestApiClient
 from unittest.mock import patch
 from urllib.parse import urlencode
 from uuid import uuid4
-
+import json
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group
@@ -50,6 +50,7 @@ from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_models, remove_models
+from geonode.security.registry import permissions_registry
 
 
 logger = logging.getLogger(__name__)
@@ -1027,3 +1028,85 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
             url = f"{list_url}?{urlencode(filter + [('force_and', True)])}"
             resp = self.api_client.get(url).json()
             self.assertEqual(exp_and, resp["total"], f"Unexpected number of resources for FORCE_AND filter {tks}")
+
+
+class OwnershipTransferTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.user1 = get_user_model().objects.create_user(username="user1", password="password1")
+        self.user2 = get_user_model().objects.create_user(username="user2", password="password2")
+        self.user3 = get_user_model().objects.create_user(username="user3", password="password3")
+        self.client.login(username="user1", password="password1")
+
+    def _get_updated_metadata(self, resource, old_owner, new_owner):
+        return {
+            "date_type": "publication",
+            "hkeywords": [],
+            "license": {"id": "not_specified", "label": "Not Specified"},
+            "regions": [],
+            "supplemental_information": "No information provided",
+            "linkedresources": [],
+            "contacts": {
+                "owner": {"id": str(new_owner.id), "label": new_owner.username},
+                "author": [{"id": str(old_owner.id), "label": old_owner.username}],
+                "pointOfContact": [{"id": str(old_owner.id), "label": old_owner.username}],
+            },
+            "uuid": str(resource.uuid),
+            "title": "test5",
+            "abstract": "sasa",
+            "date": "2025-08-13T15:30:18.724722+00:00",
+            "tkeywords": {},
+            "language": "eng",
+        }
+
+    def test_owner_change_permission_transfer(self):
+        map_data = {"title": "Test Map", "abstract": "Test abstract", "owner": self.user1}
+        map_resource = Map.objects.create(**map_data)
+        map_resource.set_permissions({"users": {self.user1.username: ["change_resourcebase_metadata"]}})
+        perms_user_1 = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertIn("change_resourcebase_metadata", perms_user_1)
+        metadata_url = f"/api/v2/metadata/instance/{map_resource.pk}/"
+
+        updated_metadata = self._get_updated_metadata(map_resource, self.user1, self.user2)
+
+        response = self.client.put(metadata_url, data=json.dumps(updated_metadata), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        map_resource.refresh_from_db()
+
+        perms_user_2 = permissions_registry.get_perms(instance=map_resource, user=self.user2)
+        self.assertIn("change_resourcebase_metadata", perms_user_2)
+        perms_user_1 = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertNotIn("change_resourcebase_metadata", perms_user_1)
+
+    def test_owner_change_does_not_affect_other_users_permissions(self):
+        map_data = {"title": "Test Map", "abstract": "Test abstract", "owner": self.user1}
+        map_resource = Map.objects.create(**map_data)
+        map_resource.set_permissions(
+            {
+                "users": {
+                    self.user1.username: ["change_resourcebase_metadata"],
+                    self.user3.username: ["change_resourcebase_metadata"],
+                }
+            }
+        )
+
+        perms_user_1 = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertIn("change_resourcebase_metadata", perms_user_1)
+        perms_user_3 = permissions_registry.get_perms(instance=map_resource, user=self.user3)
+        self.assertIn("change_resourcebase_metadata", perms_user_3)
+
+        metadata_url = f"/api/v2/metadata/instance/{map_resource.pk}/"
+        updated_metadata = self._get_updated_metadata(map_resource, self.user1, self.user2)
+
+        response = self.client.put(metadata_url, data=json.dumps(updated_metadata), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        map_resource.refresh_from_db()
+
+        perms_user_1_after = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertNotIn("change_resourcebase_metadata", perms_user_1_after)
+
+        perms_user_2_after = permissions_registry.get_perms(instance=map_resource, user=self.user2)
+        self.assertIn("change_resourcebase_metadata", perms_user_2_after)
+
+        perms_user_3_after = permissions_registry.get_perms(instance=map_resource, user=self.user3)
+        self.assertIn("change_resourcebase_metadata", perms_user_3_after)
