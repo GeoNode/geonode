@@ -3,11 +3,13 @@ import logging
 import os
 import shutil
 
+
 from django.conf import settings
 from django.http import HttpResponse, StreamingHttpResponse
 from django.urls import reverse
 from django_downloadview import DownloadResponse
 from zipstream import ZipStream
+from pathlib import Path
 
 from geonode.assets.handlers import asset_handler_registry, AssetHandlerInterface, AssetDownloadHandlerInterface
 from geonode.assets.models import LocalAsset
@@ -60,8 +62,27 @@ class LocalAssetHandler(AssetHandlerInterface):
         if not files:
             raise ValueError("File(s) expected")
 
-        if clone_files:
-            files = self._copy_data(files)
+        local_files = [f for f in files if isinstance(f, (str, Path))]
+        in_memory_files = [f for f in files if not isinstance(f, (str, Path))]
+        final_files = []
+        asset_dir = None
+
+        if local_files:
+            if clone_files:
+                copied_files = self._copy_data(local_files)
+                if copied_files:
+                    final_files.extend(copied_files)
+                    asset_dir = os.path.dirname(copied_files[0])
+            else:
+                final_files.extend(local_files)
+
+        if in_memory_files:
+            if asset_dir is None:
+                logger.info("Creating asset dir for in-memory files")
+                asset_dir = self._create_asset_dir()
+            storage = StorageManager(remote_files={f.name: f for f in in_memory_files})
+            cloned_files = storage.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
+            final_files.extend([str(p) for p in cloned_files.values()])
 
         asset = LocalAsset(
             title=title,
@@ -69,7 +90,7 @@ class LocalAssetHandler(AssetHandlerInterface):
             type=type,
             owner=owner,
             created=datetime.datetime.now(),
-            location=files,
+            location=final_files,
         )
         asset.save()
         return asset
