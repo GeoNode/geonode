@@ -674,7 +674,6 @@ class BaseVectorFileHandler(BaseHandler):
         )
         directory = os.path.dirname(files.get("base_file"))
         if settings.ASSETS_ROOT not in directory:
-            print(f"Going to delete folder: {directory}")
             storage_manager.rmtree(directory, ignore_errors=True)
         return asset
 
