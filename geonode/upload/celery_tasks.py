@@ -157,7 +157,6 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         _exec = orchestrator.get_execution_object(execution_id)
 
         _files = _exec.input_params.get("files")
-
         # initiating the data store manager
         _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
 

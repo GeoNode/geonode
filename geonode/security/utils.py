@@ -27,7 +27,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, Permission
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
-from geonode.security.registry import permissions_registry
 from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import (
@@ -105,6 +104,7 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
     Returns resources a user has access to.
     """
     from geonode.base.models import ResourceBase
+    from geonode.security.registry import permissions_registry
 
     if settings.SKIP_PERMS_FILTER:
         resources = ResourceBase.objects.all()
