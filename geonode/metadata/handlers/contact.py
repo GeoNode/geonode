@@ -26,6 +26,7 @@ from django.utils.translation import gettext as _
 
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.people import Roles
+from geonode.resource.manager import resource_manager
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +154,16 @@ class ContactHandler(MetadataHandler):
                         ),
                     )
                 else:
-                    resource.owner = get_user_model().objects.get(pk=users["id"])
+                    try:
+                        user = get_user_model().objects.get(pk=users["id"])
+
+                        if user != resource.owner:
+                            logger.warning(f"Changing owner from {resource.owner} to {user}")
+                            resource_manager.transfer_ownership(resource, user, resource.owner)
+                        resource.owner = user
+                    except get_user_model().DoesNotExist:
+                        logger.warning(f"User with id {users['id']} not found for role '{rolename}'")
+                        self._set_error(errors, ["contacts", rolename], f"User with id {users['id']} does not exist.")
             else:
                 ids = [u["id"] for u in users]
                 profiles = get_user_model().objects.filter(pk__in=ids)
