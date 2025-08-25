@@ -463,7 +463,7 @@ class Thesaurus(models.Model):
     # read from the RDF file
     description = models.TextField(max_length=255, default="")
 
-    slug = models.CharField(max_length=64, default="")
+    slug = models.CharField(max_length=64, default="", null=True, blank=True)
 
     about = models.CharField(max_length=255, null=True, blank=True)
 
