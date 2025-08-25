@@ -203,7 +203,7 @@ class Profile(AbstractUser):
 
     @property
     def perms(self):
-        return permissions_registry.db_perms_by_user(user=self)
+        return permissions_registry.get_db_perms_by_user(user=self)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

@@ -19,35 +19,20 @@
 
 import copy
 import logging
-import operator
 import traceback
 
-from functools import reduce
-
-from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
-
+from django.contrib.auth.models import Group
 from guardian.shortcuts import get_perms, get_groups_with_perms, get_anonymous_user
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.utils import get_user_groups, AdvancedSecurityWorkflowManager
 
-from .permissions import (
-    VIEW_PERMISSIONS,
-    DOWNLOAD_PERMISSIONS,
-    ADMIN_PERMISSIONS,
-    SERVICE_PERMISSIONS,
-    DATASET_ADMIN_PERMISSIONS,
-    DATASET_EDIT_DATA_PERMISSIONS,
-    DATASET_EDIT_STYLE_PERMISSIONS,
-)
 
-from .utils import get_users_with_perms, get_user_obj_perms_model, skip_registered_members_common_group
+from .utils import get_users_with_perms, skip_registered_members_common_group
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -368,88 +353,7 @@ class PermissionLevelMixin:
         """
         Returns a list of permissions a user has on a given resource.
         """
-
-        def calculate_perms(instance, user):
-            # To avoid circular import
-            from geonode.base.models import Configuration
-            from geonode.layers.models import Dataset
-
-            config = Configuration.load()
-            ctype = ContentType.objects.get_for_model(instance)
-            ctype_resource_base = ContentType.objects.get_for_model(instance.get_self_resource())
-
-            PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
-            # include explicit permissions appliable to "subtype == 'vector'"
-
-            if instance.subtype == "raster":
-                PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
-            elif isinstance(instance.get_real_instance(), Dataset):
-                # remote layers are included, since https://github.com/GeoNode/geonode/issues/13011
-                # introduces an "optimistic" approach to editing remote layers
-                PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
-
-            resource_perms = Permission.objects.filter(
-                codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]
-            ).values_list("codename", flat=True)
-
-            # Don't filter for admin users
-            if not user.is_superuser:
-                user_model = get_user_obj_perms_model(instance)
-                user_resource_perms = user_model.objects.filter(
-                    object_pk=instance.pk,
-                    content_type_id__in=[ctype.id, ctype_resource_base.id],
-                    user__username=str(user),
-                    permission__codename__in=resource_perms,
-                )
-                # get user's implicit perms for anyone flag
-                implicit_perms = get_perms(user, instance)
-                # filter out implicit permissions unappliable to "subtype != 'vector'"
-                if instance.subtype == "raster":
-                    implicit_perms = list(set(implicit_perms) - set(DATASET_EDIT_DATA_PERMISSIONS))
-                elif instance.subtype != "vector":
-                    implicit_perms = list(set(implicit_perms) - set(DATASET_ADMIN_PERMISSIONS))
-
-                resource_perms = user_resource_perms.union(
-                    user_model.objects.filter(permission__codename__in=implicit_perms)
-                ).values_list("permission__codename", flat=True)
-
-            # filter out permissions for edit, change or publish if readonly mode is active
-            perm_prefixes = ["change", "delete", "publish"]
-            if config.read_only:
-                clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
-                query = reduce(operator.or_, clauses)
-                if user.is_superuser:
-                    resource_perms = resource_perms.exclude(query)
-                else:
-                    perm_objects = Permission.objects.filter(codename__in=resource_perms)
-                    resource_perms = perm_objects.exclude(query).values_list("codename", flat=True)
-            return resource_perms
-
-        perms = calculate_perms(self, user)
-
-        if getattr(self, "get_real_instance", None):
-            perms = perms.union(calculate_perms(self.get_real_instance(), user))
-
-        if getattr(self, "get_self_resource", None):
-            perms = perms.union(calculate_perms(self.get_self_resource(), user))
-
-        perms_as_list = list(set(perms))
-
-        if user.is_anonymous:
-            # anonymous cannot feature/approve or pusblish, we can return here the perms
-            return perms_as_list
-
-        if not perms_as_list:
-            return perms_as_list
-
-        if user.can_feature(self):
-            perms_as_list.append("feature_resourcebase")
-        if user.can_approve(self):
-            perms_as_list.append("approve_resourcebase")
-        if user.can_publish(self):
-            perms_as_list.append("publish_resourcebase")
-
-        return perms_as_list
+        return permissions_registry.get_perms(self, user=user, include_virtual=True, include_user_add_resource=True)
 
     def user_can(self, user, permission):
         """

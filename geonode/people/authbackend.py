@@ -8,4 +8,4 @@ class PermissionsRegistryAuthBackend(BaseBackend):
         if obj is None:
             return False
         # Custom permission logic
-        return perm in permissions_registry.user_has_perm(user_obj, instance=obj, perm=perm.split(".")[-1])
+        return permissions_registry.user_has_perm(user_obj, instance=obj, perm=perm.split(".")[-1])
