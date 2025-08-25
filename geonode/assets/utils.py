@@ -86,7 +86,7 @@ def create_link(resource, asset, link_type=None, extension=None, name=None, mime
 
 def create_asset(
     owner,
-    files: list,
+    files,
     handler=None,
     title=None,
     description=None,
@@ -115,7 +115,7 @@ def create_asset(
 def create_asset_and_link(
     resource,
     owner,
-    files: list,
+    files,
     handler=None,
     title=None,
     description=None,
@@ -128,7 +128,11 @@ def create_asset_and_link(
 
     asset = link = None
     try:
-        default_title, default_ext = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
+        first_file = next(iter(files)) if len(files) else None
+        filename = (
+            first_file if isinstance(first_file, str) else getattr(first_file, "name", None) if first_file else None
+        )
+        default_title, default_ext = os.path.splitext(filename) if filename else (None, None)
         if default_ext:
             default_ext = default_ext.lstrip(".")
         link_type = link_type or find_type(default_ext) if default_ext else None

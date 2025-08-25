@@ -22,9 +22,7 @@ from django.contrib.auth import get_user_model
 
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicComputedField
-from geonode.assets.local import LocalAssetHandler
 from geonode.base.models import ResourceBase
-from geonode.storage.manager import StorageManager
 from geonode.assets.utils import create_asset, create_asset_and_link
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -127,24 +125,11 @@ class LocalAssetSerializer(AssetSerializer):
         if not title:
             title = file.name
 
-        handler = LocalAssetHandler()
-        asset_dir = handler._create_asset_dir()
-
-        storage_manager = StorageManager(remote_files={"file": file})
-        storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
-
-        retrieved_paths = storage_manager.get_retrieved_paths()
-        file_path = retrieved_paths.get("file")
-
-        if not file_path:
-            logger.debug("Could not save the file.")
-            raise serializers.ValidationError("Could not save the file.")
-
         if resource:
             localasset, _ = create_asset_and_link(
                 resource,
                 user,
-                [file_path],
+                [file],
                 title=title,
                 description=description,
                 asset_type=asset_type,
@@ -152,7 +137,12 @@ class LocalAssetSerializer(AssetSerializer):
             )
         else:
             localasset = create_asset(
-                user, [file_path], title=title, description=description, asset_type=asset_type, clone_files=False
+                user,
+                [file],
+                title=title,
+                description=description,
+                asset_type=asset_type,
+                clone_files=False,
             )
 
         return localasset
