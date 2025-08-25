@@ -36,7 +36,7 @@ from django.db.models import Q
 
 from geonode.decorators import view_decorator, superuser_only
 from geonode.base.views import SimpleSelect2View
-
+from geonode.people.utils import get_available_users
 from dal import autocomplete
 
 from . import forms
@@ -177,8 +177,7 @@ def group_members_add(request, slug):
                 group.join(user, role=GroupMember.MANAGER if form.cleaned_data["manager_role"] else GroupMember.MEMBER)
             except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
-                return redirect("group_members", slug=group.slug)
-    return redirect("group_detail", slug=group.slug)
+    return redirect("group_members", slug=group.slug)
 
 
 @login_required
@@ -190,7 +189,7 @@ def group_member_remove(request, slug, username):
         return HttpResponseForbidden()
     else:
         GroupMember.objects.get(group=group, user=user).delete()
-        return redirect("group_detail", slug=group.slug)
+        return redirect("group_members", slug=group.slug)
 
 
 @login_required
@@ -322,3 +321,22 @@ class GroupProfileAutocomplete(autocomplete.Select2QuerySetView):
 class GroupCategoryAutocomplete(SimpleSelect2View):
     model = models.GroupCategory
     filter_arg = "name__icontains"
+
+
+class UserAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        request = self.request
+        user = request.user
+
+        # Apply the same filtering logic as in __init__
+        if user and user.is_authenticated:
+            qs = get_available_users(user).order_by("username")
+        else:
+            # Return empty queryset if no authenticated user
+            qs = get_user_model().objects.none()
+
+        # Apply search filtering if query exists
+        if self.q:
+            qs = qs.filter(username__icontains=self.q)
+
+        return qs

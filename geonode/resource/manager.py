@@ -492,6 +492,21 @@ class ResourceManager(ResourceManagerInterface):
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
+    def transfer_ownership(self, instance, new_owner, previous_owner):
+        """
+        This method updates the resource’s ownership and adjusts permissions accordingly removing the previous owner's access and assigning it to the new owner.
+        """
+        try:
+            instance.set_dirty_state()
+            perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+            if previous_owner and not previous_owner.is_superuser:
+                perms["users"].pop(previous_owner, None)
+            self.set_permissions(instance.uuid, instance, owner=new_owner, permissions=perms)
+        except Exception as e:
+            logger.exception(e)
+        finally:
+            instance.clear_dirty_state()
+
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         """Remove object permissions on given resource.
         If is a layer removes the layer specific permissions then the

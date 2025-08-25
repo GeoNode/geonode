@@ -3794,3 +3794,57 @@ class TestAPIPermissionCache(GeoNodeBaseTestSupport):
         if hasattr(cls, "test_group"):
             cls.test_group.delete()
         super().tearDownClass()
+
+
+class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        self.user_viewer = get_user_model().objects.create_user(username="viewer", password="viewer_password")
+        self.user_downloader = get_user_model().objects.create_user(
+            username="downloader", password="downloader_password"
+        )
+        self.dataset = create_single_dataset(name="test_dataset_for_download_permission")
+
+        dataset_files = [
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
+        ]
+        create_asset_and_link(
+            self.dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
+
+        perm_spec = {
+            "users": {
+                self.user_viewer.username: [
+                    "view_resourcebase",
+                ],
+                self.user_downloader.username: [
+                    "view_resourcebase",
+                    "download_resourcebase",
+                ],
+            },
+            "groups": {},
+        }
+        self.dataset.set_permissions(perm_spec)
+
+    def test_asset_download_link_permission(self):
+        """
+        Ensure that the download link is only visible to users with download permissions.
+        """
+        self.client.login(username="viewer", password="viewer_password")
+        url = f"/api/v2/datasets/{self.dataset.pk}"
+        response = self.client.get(f"{url}", format="json")
+        self.assertEqual(response.status_code, 200)
+
+        links = response.data.get("dataset").get("links", [])
+        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
+        self.assertIsNotNone(asset_link)
+        self.assertNotIn("download_url", asset_link.get("extras", {}).get("content", {}))
+
+        self.client.login(username="downloader", password="downloader_password")
+        response = self.client.get(f"{url}", format="json")
+        self.assertEqual(response.status_code, 200)
+
+        links = response.data.get("dataset").get("links", [])
+        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
+        self.assertIsNotNone(asset_link)
+        self.assertIn("download_url", asset_link.get("extras", {}).get("content", {}))

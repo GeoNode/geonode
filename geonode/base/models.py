@@ -1231,7 +1231,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             "regions",
             "title",
         ]
-        if self.restriction_code_type == "otherRestrictions":
+        if self.restriction_code_type and self.restriction_code_type.identifier == "otherRestrictions":
             required_fields.append("constraints_other")
         filled_fields = []
         for required_field in required_fields:
