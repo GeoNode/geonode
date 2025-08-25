@@ -48,116 +48,26 @@ class PermissionsHandlerRegistry:
     def reset(self):
         self.REGISTRY = []
 
-    def _register(self):
-        for module_path in settings.PERMISSIONS_HANDLERS:
-            self.add(module_path)
+    @classmethod
+    def get_registry(cls):
+        return PermissionsHandlerRegistry.REGISTRY
 
     def sanity_checks(self):
         for item in self.REGISTRY:
             self.__check_item(item)
 
-    def __check_item(self, item):
+    def user_has_perm(self, user, instance, perm, include_virtual=False):
         """
-        Ensure that the handler is a subclass of BasePermissionsHandler
+        Returns True if the user has the defined perm (permission)
         """
-        if not isinstance(item, BasePermissionsHandler):
-            raise Exception(f"Handler {item} is not a subclass of BasePermissionsHandler")
+        return perm in self.get_perms(
+            instance=instance, user=user, include_virtual=True, include_user_add_resource=True
+        )
 
     def fixup_perms(self, instance, payload, include_virtual=True, *args, **kwargs):
         for handler in self.REGISTRY:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
-
-    def _clear_cache_keys(self, cache_keys):
-        """Clear cache keys."""
-        if cache_keys:
-            if isinstance(cache_keys, str):
-                cache.delete(cache_keys)
-            elif isinstance(cache_keys, list):
-                cache.delete_many(cache_keys)
-            else:
-                raise TypeError(f"Expected str or list, got {type(cache_keys)}")
-
-    def _get_cache_key(self, resource_pks, users=None, groups=None, remove_all_cache=False):
-        """
-        Generate cache keys for resource permissions.
-
-        Args:
-            resource_pks: List of resource primary keys
-            users: Optional list of users to generate keys for
-            groups: Optional list of groups to generate keys for
-            remove_all_cache: If True, includes the __ALL__ cache key
-        """
-        cache_keys = []
-        for pk in resource_pks:
-            if users:
-                for user in users:
-                    user_identifier = (
-                        "anonymous"
-                        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user()
-                        else f"user:{user.pk}"
-                    )
-                    cache_keys.append(f"resource_perms:{pk}:{user_identifier}")
-
-            if groups:
-                for group in groups:
-                    cache_keys.append(f"resource_perms:{pk}:group:{group.pk}")
-
-            if not users and not groups or remove_all_cache:
-                cache_keys.append(f"resource_perms:{pk}:__ALL__")
-
-        return cache_keys if len(cache_keys) > 1 else cache_keys[0] if cache_keys else None
-
-    def delete_resource_permissions_cache(self, instance, user_clear_cache=True, group_clear_cache=True, **kwargs):
-        """
-        Clear the cache for resource permissions when activity related to resource is performed.
-        This ensures that permissions are recalculated on the next request.
-        """
-
-        from geonode.base.models import ResourceBase
-        from geonode.people.models import Profile
-
-        if isinstance(instance, ResourceBase):
-            permissions = permissions_registry.get_perms(instance=instance)
-            users = Profile.objects.filter(
-                Q(groups__in=permissions["groups"].keys()) | Q(id__in=[x.id for x in permissions["users"].keys()])
-            ).distinct()
-
-            cache_keys = self._get_cache_key(
-                resource_pks=[instance.pk],
-                users=users if user_clear_cache else None,
-                groups=permissions["groups"].keys() if group_clear_cache else None,
-                remove_all_cache=True,  # This will ensure that the __ALL__ cache key is included
-            )
-            self._clear_cache_keys(cache_keys if cache_keys else [])
-
-        elif isinstance(instance, Group):
-            group_users = instance.user_set.all()
-            resource_pks_with_perms = [
-                resource.pk for resource in get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True)
-            ]
-
-            cache_keys = self._get_cache_key(
-                resource_pks=resource_pks_with_perms,
-                users=group_users if user_clear_cache else None,
-                groups=[instance] if group_clear_cache else None,
-            )
-            self._clear_cache_keys(cache_keys if cache_keys else [])
-
-        elif isinstance(instance, Profile):
-            resources = get_objects_for_user(instance, "base.view_resourcebase")
-            resource_pks = [resource.pk for resource in resources]
-
-            cache_keys = self._get_cache_key(
-                resource_pks=resource_pks,
-                users=[instance] if user_clear_cache else None,
-                groups=instance.groups.all() if group_clear_cache else None,
-            )
-
-            self._clear_cache_keys(cache_keys if cache_keys else [])
-
-        else:
-            pass
 
     def get_perms(
         self,
@@ -238,17 +148,108 @@ class PermissionsHandlerRegistry:
 
         return result
 
-    def user_has_perm(self, user, instance, perm, include_virtual=False):
+    def delete_resource_permissions_cache(self, instance, user_clear_cache=True, group_clear_cache=True, **kwargs):
         """
-        Returns True if the user has the defined perm (permission)
+        Clear the cache for resource permissions when activity related to resource is performed.
+        This ensures that permissions are recalculated on the next request.
         """
-        return perm in self.get_perms(
-            instance=instance, user=user, include_virtual=True, include_user_add_resource=True
-        )
 
-    @classmethod
-    def get_registry(cls):
-        return PermissionsHandlerRegistry.REGISTRY
+        from geonode.base.models import ResourceBase
+        from geonode.people.models import Profile
+
+        if isinstance(instance, ResourceBase):
+            permissions = permissions_registry.get_perms(instance=instance)
+            users = Profile.objects.filter(
+                Q(groups__in=permissions["groups"].keys()) | Q(id__in=[x.id for x in permissions["users"].keys()])
+            ).distinct()
+
+            cache_keys = self._get_cache_key(
+                resource_pks=[instance.pk],
+                users=users if user_clear_cache else None,
+                groups=permissions["groups"].keys() if group_clear_cache else None,
+                remove_all_cache=True,  # This will ensure that the __ALL__ cache key is included
+            )
+            self._clear_cache_keys(cache_keys if cache_keys else [])
+
+        elif isinstance(instance, Group):
+            group_users = instance.user_set.all()
+            resource_pks_with_perms = [
+                resource.pk for resource in get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True)
+            ]
+
+            cache_keys = self._get_cache_key(
+                resource_pks=resource_pks_with_perms,
+                users=group_users if user_clear_cache else None,
+                groups=[instance] if group_clear_cache else None,
+            )
+            self._clear_cache_keys(cache_keys if cache_keys else [])
+
+        elif isinstance(instance, Profile):
+            resources = get_objects_for_user(instance, "base.view_resourcebase")
+            resource_pks = [resource.pk for resource in resources]
+
+            cache_keys = self._get_cache_key(
+                resource_pks=resource_pks,
+                users=[instance] if user_clear_cache else None,
+                groups=instance.groups.all() if group_clear_cache else None,
+            )
+
+            self._clear_cache_keys(cache_keys if cache_keys else [])
+
+        else:
+            pass
+
+    def __check_item(self, item):
+        """
+        Ensure that the handler is a subclass of BasePermissionsHandler
+        """
+        if not isinstance(item, BasePermissionsHandler):
+            raise Exception(f"Handler {item} is not a subclass of BasePermissionsHandler")
+
+    def _register(self):
+        for module_path in settings.PERMISSIONS_HANDLERS:
+            self.add(module_path)
+
+    def _clear_cache_keys(self, cache_keys):
+        """Clear cache keys."""
+        if cache_keys:
+            if isinstance(cache_keys, str):
+                cache.delete(cache_keys)
+            elif isinstance(cache_keys, list):
+                cache.delete_many(cache_keys)
+            else:
+                raise TypeError(f"Expected str or list, got {type(cache_keys)}")
+
+    def _get_cache_key(self, resource_pks, users=None, groups=None, remove_all_cache=False):
+        """
+        Generate cache keys for resource permissions.
+
+        Args:
+            resource_pks: List of resource primary keys
+            users: Optional list of users to generate keys for
+            groups: Optional list of groups to generate keys for
+            remove_all_cache: If True, includes the __ALL__ cache key
+        """
+        cache_keys = []
+        for pk in resource_pks:
+            if users:
+                for user in users:
+                    user_identifier = (
+                        "anonymous"
+                        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user()
+                        else f"user:{user.pk}"
+                    )
+                    cache_keys.append(f"resource_perms:{pk}:{user_identifier}")
+
+            if groups:
+                for group in groups:
+                    cache_keys.append(f"resource_perms:{pk}:group:{group.pk}")
+
+            if not users and not groups or remove_all_cache:
+                cache_keys.append(f"resource_perms:{pk}:__ALL__")
+
+        return cache_keys if len(cache_keys) > 1 else cache_keys[0] if cache_keys else None
+
 
 
 permissions_registry = PermissionsHandlerRegistry()
