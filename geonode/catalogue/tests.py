@@ -206,6 +206,5 @@ class CatalogueMetadataTemplateTest(GeoNodeBaseTestSupport):
         template = get_template("catalogue/full_metadata.xml")
         context = {"layer": self.dataset, "resource": self.dataset}
         rendered_xml = template.render(context)
-        print(rendered_xml)
         self.assertIn(self.keyword_label.label, rendered_xml)
         self.assertNotIn(self.keyword.alt_label, rendered_xml)

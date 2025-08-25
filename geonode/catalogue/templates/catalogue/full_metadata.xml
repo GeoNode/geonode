@@ -283,10 +283,10 @@
        {% for thesaurus_id in layer.tkeywords|get_unique_thesaurus_set %}
         <gmd:descriptiveKeywords>
           <gmd:MD_Keywords>
-              {% for keyword in layer.tkeywords.all %}
+              {% for keyword in layer.tkeywords.all|with_localized_labels %}
               {% if keyword.thesaurus.id == thesaurus_id %}
               <gmd:keyword>
-                <gco:CharacterString>{{keyword|get_thesaurus_localized_label}}</gco:CharacterString>
+                <gco:CharacterString>{{keyword.localized_label}}</gco:CharacterString>
               </gmd:keyword>
               {% endif %}
               {% endfor %}
