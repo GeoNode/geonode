@@ -22,7 +22,6 @@ import logging
 import collections
 from itertools import chain
 
-from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -32,6 +31,7 @@ from guardian.shortcuts import get_objects_for_user, get_objects_for_group
 
 from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
+from geonode.security.registry import permissions_registry
 from geonode.security.permissions import (
     PermSpecCompact,
     EDIT_PERMISSIONS,
@@ -61,62 +61,21 @@ def get_visible_resources(
     private_groups_not_visibile=False,
     include_dirty=False,
 ):
-    # Get the list of objects the user has access to
-    from geonode.groups.models import GroupProfile
-
-    is_admin = user.is_superuser if user and user.is_authenticated else False
-    anonymous_group = None
-    public_groups = GroupProfile.objects.exclude(access="private").values("group")
-    groups = []
-    group_list_all = []
-    try:
-        group_list_all = user.group_list_all().values("group")
-    except Exception:
-        pass
-
-    try:
-        anonymous_group = Group.objects.get(name="anonymous")
-        if anonymous_group and anonymous_group not in groups:
-            groups.append(anonymous_group)
-    except Exception:
-        pass
-
-    if metadata_only is not None:
-        # Hide Dirty State Resources
-        queryset = queryset.filter(metadata_only=metadata_only)
-
-    if not include_dirty:
-        queryset = queryset.filter(dirty_state=False)
-
-    if not is_admin:
-        if user:
-            _allowed_resources = get_objects_for_user(
-                user, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
-            )
-            queryset = queryset.filter(id__in=_allowed_resources.values("id"))
-
-        if admin_approval_required and not AdvancedSecurityWorkflowManager.is_simplified_workflow():
-            if not user or not user.is_authenticated or user.is_anonymous:
-                queryset = queryset.filter(
-                    Q(is_published=True) | Q(group__in=public_groups) | Q(group__in=groups)
-                ).exclude(is_approved=False)
-
-        # Hide Unpublished Resources to Anonymous Users
-        if unpublished_not_visible:
-            if not user or not user.is_authenticated or user.is_anonymous:
-                queryset = queryset.exclude(is_published=False)
-
-        # Hide Resources Belonging to Private Groups
-        if private_groups_not_visibile:
-            private_groups = GroupProfile.objects.filter(access="private").values("group")
-            if user and user.is_authenticated:
-                queryset = queryset.exclude(
-                    Q(group__in=private_groups) & ~(Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
-                )
-            else:
-                queryset = queryset.exclude(group__in=private_groups)
-
-    return queryset
+    """
+    We should use the registry to get the visible resources.
+    We kept this to avoid too many changes and also avoid
+    refactors for external libraries
+    """
+    return permissions_registry.get_visible_resources(
+        queryset=queryset,
+        user=user,
+        request=request,
+        metadata_only=metadata_only,
+        admin_approval_required=admin_approval_required,
+        unpublished_not_visible=unpublished_not_visible,
+        private_groups_not_visibile=private_groups_not_visibile,
+        include_dirty=include_dirty,
+    )
 
 
 def get_users_with_perms(obj):

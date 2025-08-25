@@ -148,6 +148,76 @@ class PermissionsHandlerRegistry:
 
         return result
 
+    def get_visible_resources(
+        self,
+        queryset,
+        user,
+        request=None,
+        metadata_only=False,
+        admin_approval_required=False,
+        unpublished_not_visible=False,
+        private_groups_not_visibile=False,
+        include_dirty=False,
+    ):
+        # Get the list of objects the user has access to
+        from geonode.groups.models import GroupProfile
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+
+        is_admin = user.is_superuser if user and user.is_authenticated else False
+        anonymous_group = None
+        public_groups = GroupProfile.objects.exclude(access="private").values("group")
+        groups = []
+        group_list_all = []
+        try:
+            group_list_all = user.group_list_all().values("group")
+        except Exception:
+            pass
+
+        try:
+            anonymous_group = Group.objects.get(name="anonymous")
+            if anonymous_group and anonymous_group not in groups:
+                groups.append(anonymous_group)
+        except Exception:
+            pass
+
+        if metadata_only is not None:
+            # Hide Dirty State Resources
+            queryset = queryset.filter(metadata_only=metadata_only)
+
+        if not include_dirty:
+            queryset = queryset.filter(dirty_state=False)
+
+        if not is_admin:
+            if user:
+                _allowed_resources = get_objects_for_user(
+                    user, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
+                )
+                queryset = queryset.filter(id__in=_allowed_resources.values("id"))
+
+            if admin_approval_required and not AdvancedSecurityWorkflowManager.is_simplified_workflow():
+                if not user or not user.is_authenticated or user.is_anonymous:
+                    queryset = queryset.filter(
+                        Q(is_published=True) | Q(group__in=public_groups) | Q(group__in=groups)
+                    ).exclude(is_approved=False)
+
+            # Hide Unpublished Resources to Anonymous Users
+            if unpublished_not_visible:
+                if not user or not user.is_authenticated or user.is_anonymous:
+                    queryset = queryset.exclude(is_published=False)
+
+            # Hide Resources Belonging to Private Groups
+            if private_groups_not_visibile:
+                private_groups = GroupProfile.objects.filter(access="private").values("group")
+                if user and user.is_authenticated:
+                    queryset = queryset.exclude(
+                        Q(group__in=private_groups)
+                        & ~(Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
+                    )
+                else:
+                    queryset = queryset.exclude(group__in=private_groups)
+
+        return queryset
+
     def delete_resource_permissions_cache(self, instance, user_clear_cache=True, group_clear_cache=True, **kwargs):
         """
         Clear the cache for resource permissions when activity related to resource is performed.
@@ -158,7 +228,7 @@ class PermissionsHandlerRegistry:
         from geonode.people.models import Profile
 
         if isinstance(instance, ResourceBase):
-            permissions = permissions_registry.get_perms(instance=instance)
+            permissions = self.get_perms(instance=instance)
             users = Profile.objects.filter(
                 Q(groups__in=permissions["groups"].keys()) | Q(id__in=[x.id for x in permissions["users"].keys()])
             ).distinct()
@@ -249,7 +319,6 @@ class PermissionsHandlerRegistry:
                 cache_keys.append(f"resource_perms:{pk}:__ALL__")
 
         return cache_keys if len(cache_keys) > 1 else cache_keys[0] if cache_keys else None
-
 
 
 permissions_registry = PermissionsHandlerRegistry()
