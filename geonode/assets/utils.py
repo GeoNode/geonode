@@ -9,6 +9,7 @@ from geonode.assets.models import Asset
 from geonode.base.models import ResourceBase, Link
 from geonode.security.utils import get_visible_resources
 from geonode.security.registry import permissions_registry
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -84,10 +85,38 @@ def create_link(resource, asset, link_type=None, extension=None, name=None, mime
     return link
 
 
+def create_asset(
+    owner,
+    files,
+    handler=None,
+    title=None,
+    description=None,
+    asset_type=None,
+    clone_files: bool = True,
+) -> Asset:
+    asset_handler = handler or asset_handler_registry.get_default_handler()
+    asset = None
+    try:
+        asset = asset_handler.create(
+            title=title or "Unknown",
+            description=description or asset_type or "Unknown",
+            type=asset_type or "Unknown",
+            owner=owner,
+            files=files,
+            clone_files=clone_files,
+        )
+        return asset
+    except Exception as e:
+        logger.error(f"Error creating Asset: {e}", exc_info=e)
+        if asset:
+            asset.delete()
+        raise
+
+
 def create_asset_and_link(
     resource,
     owner,
-    files: list,
+    files,
     handler=None,
     title=None,
     description=None,
@@ -98,27 +127,32 @@ def create_asset_and_link(
     clone_files: bool = True,
 ) -> tuple[Asset, Link]:
 
-    asset_handler = handler or asset_handler_registry.get_default_handler()
     asset = link = None
     try:
-        default_title, default_ext = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
+        first_file = next(iter(files)) if len(files) else None
+        filename = (
+            first_file
+            if isinstance(first_file, (str, Path))
+            else getattr(first_file, "name", None) if first_file else None
+        )
+        default_title, default_ext = os.path.splitext(filename) if filename else (None, None)
         if default_ext:
             default_ext = default_ext.lstrip(".")
         link_type = link_type or find_type(default_ext) if default_ext else None
-
-        asset = asset_handler.create(
-            title=title or default_title or "Unknown",
-            description=description or asset_type or "Unknown",
-            type=asset_type or "Unknown",
+        asset = create_asset(
             owner=owner,
             files=files,
+            handler=handler,
+            title=title or default_title or "Unknown",
+            description=description,
+            asset_type=asset_type,
             clone_files=clone_files,
         )
 
         link = create_link(
             resource,
             asset,
-            asset_handler=asset_handler,
+            asset_handler=handler,
             link_type=link_type,
             extension=extension,
             name=title,
