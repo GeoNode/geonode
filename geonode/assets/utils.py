@@ -9,6 +9,7 @@ from geonode.assets.models import Asset
 from geonode.base.models import ResourceBase, Link
 from geonode.security.utils import get_visible_resources
 from geonode.security.registry import permissions_registry
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +131,9 @@ def create_asset_and_link(
     try:
         first_file = next(iter(files)) if len(files) else None
         filename = (
-            first_file if isinstance(first_file, str) else getattr(first_file, "name", None) if first_file else None
+            first_file
+            if isinstance(first_file, (str, Path))
+            else getattr(first_file, "name", None) if first_file else None
         )
         default_title, default_ext = os.path.splitext(filename) if filename else (None, None)
         if default_ext:
