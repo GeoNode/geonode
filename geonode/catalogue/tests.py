@@ -20,6 +20,7 @@ import logging
 import xml.etree.ElementTree as ET
 
 from django.db.models import Q
+from django.template.loader import get_template
 from django.test import RequestFactory
 from django.http.response import Http404
 from django.core.exceptions import PermissionDenied
@@ -27,6 +28,8 @@ from geonode.layers.models import Dataset
 from geonode.catalogue import get_catalogue
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+
+from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.catalogue.models import catalogue_post_save
 
@@ -178,3 +181,31 @@ class UUIDResolverTest(GeoNodeBaseTestSupport):
         with self.assertRaises(PermissionDenied) as context:
             resolve_uuid(request, self.dataset.uuid)
         self.assertTrue("Permission Denied" in str(context.exception))
+
+
+class CatalogueMetadataTemplateTest(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.thesaurus = Thesaurus.objects.create(identifier="test_thesaurus", title="Test Thesaurus")
+        self.keyword = ThesaurusKeyword.objects.create(thesaurus=self.thesaurus, alt_label="test_keyword")
+        self.keyword_label = ThesaurusKeywordLabel.objects.create(
+            keyword=self.keyword, lang="en", label="Test Keyword Label"
+        )
+        self.dataset = create_single_dataset(name="test_dataset_for_template")
+        self.dataset.tkeywords.add(self.keyword)
+        self.dataset.save()
+
+    def tearDown(self):
+        self.dataset.delete()
+        self.keyword_label.delete()
+        self.keyword.delete()
+        self.thesaurus.delete()
+        super().tearDown()
+
+    def test_localized_keyword_in_metadata(self):
+        template = get_template("catalogue/full_metadata.xml")
+        context = {"layer": self.dataset, "resource": self.dataset}
+        rendered_xml = template.render(context)
+        print(rendered_xml)
+        self.assertIn(self.keyword_label.label, rendered_xml)
+        self.assertNotIn(self.keyword.alt_label, rendered_xml)
