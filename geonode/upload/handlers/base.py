@@ -24,7 +24,6 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
-from django_celery_results.models import TaskResult
 from django.db.models import Q
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
@@ -160,17 +159,6 @@ class BaseHandler(ABC):
         """
         from geonode.upload.orchestrator import orchestrator
         from geonode.upload.models import ResourceHandlerInfo
-
-        # as last step, we delete the celery task to keep the number of rows under control
-        lower_exec_id = execution_id.replace("-", "_").lower()
-        TaskResult.objects.filter(
-            Q(task_args__icontains=lower_exec_id)
-            | Q(task_kwargs__icontains=lower_exec_id)
-            | Q(result__icontains=lower_exec_id)
-            | Q(task_args__icontains=execution_id)
-            | Q(task_kwargs__icontains=execution_id)
-            | Q(result__icontains=execution_id)
-        ).delete()
 
         _exec = orchestrator.get_execution_object(execution_id)
 

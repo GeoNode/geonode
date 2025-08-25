@@ -78,5 +78,5 @@ services:
     ports:
      - "5432:5432"
 
-  rabbitmq:
+  redis:
     restart: "no"

@@ -23,6 +23,7 @@ from django.http import Http404, HttpResponse
 from django.urls import reverse
 from pathlib import Path
 from geonode.resource.enumerator import ExecutionRequestAction
+from geonode.resource.models import ExecutionRequest
 from django.utils.translation import gettext_lazy as _
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from dynamic_rest.viewsets import DynamicModelViewSet
@@ -209,7 +210,13 @@ class ImporterViewSet(DynamicModelViewSet):
                 )
 
                 sig = import_orchestrator.s(files, str(execution_id), handler=str(handler), action=action)
-                sig.apply_async()
+                async_result = sig.apply_async()
+
+                # save task_id in the execution request
+                execution = ExecutionRequest.objects.get(exec_id=execution_id)
+                execution.input_params["task_ids"] = [async_result.id]
+                execution.save(update_fields=["input_params"])
+
                 return Response(data={"execution_id": execution_id}, status=201)
             except Exception as e:
                 # in case of any exception, is better to delete the
@@ -326,7 +333,12 @@ class ResourceImporter(DynamicModelViewSet):
                     layer_name=resource.title,
                     alternate=resource.alternate,
                 )
-                sig.apply_async()
+                async_result = sig.apply_async()
+
+                # save task_id in the execution request
+                execution = ExecutionRequest.objects.get(exec_id=execution_id)
+                execution.input_params["task_ids"] = [async_result.id]
+                execution.save(update_fields=["input_params"])
 
                 # to reduce the work on the FE, the old payload is mantained
                 return Response(
