@@ -22,9 +22,22 @@ from geonode.security.handlers import BasePermissionsHandler
 from django.core.cache import cache
 from django.db.models import Q
 from django.contrib.auth.models import Group
-from guardian.shortcuts import get_group_perms
-from guardian.shortcuts import get_objects_for_user, get_objects_for_group
-from guardian.shortcuts import get_anonymous_user
+from guardian.shortcuts import get_objects_for_user, get_objects_for_group, get_anonymous_user, get_group_perms
+
+from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
+from django.contrib.auth.models import Permission
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+from guardian.utils import get_user_obj_perms_model
+from geonode.security.permissions import (
+    VIEW_PERMISSIONS,
+    ADMIN_PERMISSIONS,
+    SERVICE_PERMISSIONS,
+    DOWNLOAD_PERMISSIONS,
+    DATASET_ADMIN_PERMISSIONS,
+    DATASET_EDIT_DATA_PERMISSIONS,
+    DATASET_EDIT_STYLE_PERMISSIONS,
+)
 
 
 class PermissionsHandlerRegistry:
@@ -64,10 +77,97 @@ class PermissionsHandlerRegistry:
             instance=instance, user=user, include_virtual=True, include_user_add_resource=True
         )
 
+    def user_can_feature(user, resource):
+        """
+        Utility method to check if the user can set a resource as "featured" in the metadata
+        By default only superuser/admins can do
+        """
+        from geonode.people.utils import user_is_manager_of_group
+
+        if user.is_superuser:
+            return True
+
+        # Check if the user is a group manager
+        is_manager = user_is_manager_of_group(user, resource.group)
+        if is_manager:
+            return True
+
+        return False
+
+    def user_can_approve(user, resource):
+        """
+        Utility method to check if the user can set a resource as "approved" in the metadata
+        """
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+
+        ResourceGroupsAndMembersSet = AdvancedSecurityWorkflowManager.compute_resource_groups_and_members_set(
+            resource.uuid, instance=resource, group=resource.group
+        )
+        is_superuser = user.is_superuser
+        is_owner = user == resource.owner
+
+        is_manager = user in ResourceGroupsAndMembersSet.managers
+
+        can_change_metadata = user.has_perm("change_resourcebase_metadata", resource.get_self_resource())
+
+        if is_superuser:
+            return True
+        elif AdvancedSecurityWorkflowManager.is_admin_moderate_mode():
+            return is_manager and can_change_metadata
+        else:
+            return is_owner or is_manager or can_change_metadata
+
+    def user_can_publish(user, resource):
+        """
+        Utility method to check if the user can set a resource as "published" in the metadata
+        """
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+
+        ResourceGroupsAndMembersSet = AdvancedSecurityWorkflowManager.compute_resource_groups_and_members_set(
+            resource.uuid, instance=resource, group=resource.group
+        )
+        is_superuser = user.is_superuser
+        is_owner = user == resource.owner
+        is_manager = user in ResourceGroupsAndMembersSet.managers
+
+        if is_superuser:
+            return True
+        elif AdvancedSecurityWorkflowManager.is_manager_publish_mode():
+            return is_manager
+        else:
+            return is_owner or is_manager
+
     def fixup_perms(self, instance, payload, include_virtual=True, *args, **kwargs):
         for handler in self.REGISTRY:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
+
+    def get_db_perms_by_user(self, user):
+        from geonode.base.models import Configuration
+
+        perms = set()
+        if user.is_superuser or user.is_staff:
+            # return all permissions for admins
+            perms.update(PERMISSIONS.values())
+
+        user_groups = user.groups.values_list("name", flat=True)
+        group_perms = (
+            Permission.objects.filter(group__name__in=user_groups).distinct().values_list("codename", flat=True)
+        )
+        for p in group_perms:
+            if p in PERMISSIONS:
+                # return constant names defined by GeoNode
+                perms.add(PERMISSIONS[p])
+            else:
+                # add custom permissions
+                perms.add(p)
+
+        # check READ_ONLY mode
+        config = Configuration.load()
+        if config.read_only:
+            # exclude permissions affected by readonly
+            perms = [perm for perm in perms if perm not in READ_ONLY_AFFECTED_PERMISSIONS]
+        return list(perms)
 
     def get_perms(
         self,
@@ -217,6 +317,95 @@ class PermissionsHandlerRegistry:
                     queryset = queryset.exclude(group__in=private_groups)
 
         return queryset
+
+    def get_users_with_perms(self, obj):
+        """
+        Override of the Guardian get_users_with_perms
+        """
+        ctype = ContentType.objects.get_for_model(obj)
+        ctype_resource_base = ContentType.objects.get_for_model(obj.get_self_resource())
+        permissions = {}
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        # include explicit permissions appliable to "subtype == 'vector'"
+        if obj.subtype == "vector":
+            PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
+            for perm in Permission.objects.filter(
+                codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]
+            ):
+                permissions[perm.id] = perm.codename
+        elif obj.subtype == "raster":
+            PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
+            for perm in Permission.objects.filter(
+                codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]
+            ):
+                permissions[perm.id] = perm.codename
+        else:
+            PERMISSIONS_TO_FETCH += DATASET_EDIT_DATA_PERMISSIONS
+            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
+                permissions[perm.id] = perm.codename
+
+        user_model = get_user_obj_perms_model(obj)
+        users_with_perms = user_model.objects.filter(object_pk=obj.pk, permission_id__in=permissions).values(
+            "user_id", "permission_id"
+        )
+
+        users = {}
+        for item in users_with_perms:
+            if item["user_id"] in users:
+                users[item["user_id"]].append(permissions[item["permission_id"]])
+            else:
+                users[item["user_id"]] = [
+                    permissions[item["permission_id"]],
+                ]
+
+        profiles = {}
+        for profile in get_user_model().objects.filter(id__in=list(users.keys())):
+            profiles[profile] = users[profile.id]
+
+        return profiles
+
+    def get_resources_with_perms(self, user, filter_options={}, shortcut_kwargs={}):
+        """
+        Returns resources a user has access to.
+        """
+        from geonode.security.utils import get_geoapp_subtypes
+        from geonode.base.models import ResourceBase
+
+        if settings.SKIP_PERMS_FILTER:
+            resources = ResourceBase.objects.all()
+        else:
+            resources = get_objects_for_user(
+                user, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True, **shortcut_kwargs
+            )
+
+        resources_with_perms = self.get_visible_resources(
+            resources,
+            user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            include_dirty=False,
+        )
+
+        if filter_options:
+            if resources_with_perms and resources_with_perms.exists():
+                if filter_options.get("title_filter"):
+                    resources_with_perms = resources_with_perms.filter(
+                        title__icontains=filter_options.get("title_filter")
+                    )
+                type_filters = []
+                if filter_options.get("type_filter"):
+                    _type_filter = filter_options.get("type_filter")
+                    if _type_filter:
+                        type_filters.append(_type_filter)
+                    # get subtypes for geoapps
+                    if _type_filter == "geoapp":
+                        type_filters.extend(get_geoapp_subtypes())
+
+                if type_filters:
+                    resources_with_perms = resources_with_perms.filter(polymorphic_ctype__model__in=type_filters)
+
+        return resources_with_perms
 
     def delete_resource_permissions_cache(self, instance, user_clear_cache=True, group_clear_cache=True, **kwargs):
         """
