@@ -13,13 +13,13 @@ from pathlib import Path
 
 from geonode.assets.handlers import asset_handler_registry, AssetHandlerInterface, AssetDownloadHandlerInterface
 from geonode.assets.models import LocalAsset
-from geonode.storage.manager import DefaultStorageManager, StorageManager
+from geonode.storage.manager import FileSystemStorageManager, StorageManager
 from geonode.utils import build_absolute_uri, mkdtemp
 
 logger = logging.getLogger(__name__)
 
 _asset_storage_manager = StorageManager(
-    concrete_storage_manager=DefaultStorageManager(location=os.path.dirname(settings.ASSETS_ROOT))
+    concrete_storage_manager=FileSystemStorageManager(location=os.path.dirname(settings.ASSETS_ROOT))
 )
 
 
