@@ -42,8 +42,10 @@ def shuffle(chars):
     random.shuffle(chars_as_list)
     return "".join(chars_as_list)
 
+
 _simple_chars = shuffle(string.ascii_letters + string.digits)
 _strong_chars = shuffle(string.ascii_letters + string.digits + "#%*._~")
+
 
 def generate_env_file(args):
     # validity checks
@@ -88,9 +90,7 @@ def generate_env_file(args):
         _vals_to_replace["letsencrypt_mode"] = (
             "disabled"
             if not _vals_to_replace.get("https_host")
-            else "staging"
-            if _jsfile.get("env_type", args.env_type) in ["test"]
-            else "production"
+            else "staging" if _jsfile.get("env_type", args.env_type) in ["test"] else "production"
         )
         _vals_to_replace["debug"] = False if _jsfile.get("env_type", args.env_type) in ["prod", "test"] else True
         _vals_to_replace["email"] = _jsfile.get("email", args.email)
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-hn",
         "--hostname",
-        help=f"Host name, default localhost",
+        help="Host name, default localhost",
         default="localhost",
     )
 

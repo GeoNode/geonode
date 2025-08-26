@@ -17,6 +17,9 @@
 #
 #########################################################################
 import shutil
+from unittest.mock import patch, MagicMock
+from celery import states
+
 from django.test import TestCase, override_settings
 from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException
 from django.contrib.auth import get_user_model
@@ -27,7 +30,6 @@ from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
 from osgeo import ogr
-from django_celery_results.models import TaskResult
 from geonode.assets.handlers import asset_handler_registry
 
 from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
@@ -122,13 +124,13 @@ class TestGPKGHandler(TestCase):
 
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_single_message_error_handler(self):
-        # lets copy the file to the temporary folder
-        # later will be removed
+        # Copy the file to the temporary folder
         shutil.copy(self.valid_gpkg, "/tmp")
 
         user = get_user_model().objects.first()
         asset_handler = asset_handler_registry.get_default_handler()
 
+        # Create asset
         asset = asset_handler.create(
             title="Original",
             owner=user,
@@ -138,8 +140,9 @@ class TestGPKGHandler(TestCase):
             clone_files=False,
         )
 
+        # Create execution request
         exec_id = orchestrator.create_execution_request(
-            user=get_user_model().objects.first(),
+            user=user,
             func_name="funct1",
             step="step",
             input_params={
@@ -149,21 +152,28 @@ class TestGPKGHandler(TestCase):
                 "handler_module_path": str(self.handler),
                 "asset_id": asset.id,
                 "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
+                "task_ids": ["fake-task-id"],  # <-- Add a dummy task ID
             },
         )
 
-        started_entry = TaskResult.objects.create(task_id=str(exec_id), status="STARTED", task_args=str(exec_id))
+        exec_request = orchestrator.get_execution_object(exec_id)
 
-        celery_task_handler = SingleMessageErrorHandler()
-        """
-        The progress evaluation will raise and exception
-        """
-        celery_task_handler.on_failure(
-            exc=Exception("exception raised"),
-            task_id=started_entry.task_id,
-            args=[str(exec_id), "other_args"],
-            kwargs={},
-            einfo=None,
-        )
+        # Mock AsyncResult to simulate a failing Celery task
+        with patch("geonode.upload.orchestrator.AsyncResult") as mock_async:
+            mock_result = MagicMock()
+            mock_result.state = states.FAILURE
+            mock_async.return_value = mock_result
 
-        self.assertEqual("FAILURE", TaskResult.objects.get(task_id=str(exec_id)).status)
+            # Trigger the error handler
+            celery_task_handler = SingleMessageErrorHandler()
+            celery_task_handler.on_failure(
+                exc=Exception("exception raised"),
+                task_id=str(exec_request.exec_id),
+                args=[str(exec_request.exec_id), "other_args"],
+                kwargs={},
+                einfo=None,
+            )
+
+        # Refresh and assert status
+        exec_request.refresh_from_db()
+        self.assertEqual(exec_request.status, "failed")
