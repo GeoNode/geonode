@@ -29,7 +29,6 @@ from geonode.layers.models import Dataset
 from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
-from django.db.models import Q
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
 

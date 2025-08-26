@@ -22,7 +22,6 @@ from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.urls import reverse
 from geonode.resource.enumerator import ExecutionRequestAction
-from geonode.resource.models import ExecutionRequest
 from django.utils.translation import gettext_lazy as _
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from dynamic_rest.viewsets import DynamicModelViewSet
