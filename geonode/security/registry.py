@@ -23,7 +23,7 @@ from django.core.cache import cache
 from django.db.models import Q
 from django.contrib.auth.models import Group
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group, get_anonymous_user, get_group_perms
-
+from django.contrib.auth.models import AnonymousUser as DjangoAnonymousUser
 from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
 from django.contrib.auth.models import Permission
 from django.contrib.auth import get_user_model
@@ -137,11 +137,6 @@ class PermissionsHandlerRegistry:
         else:
             return is_owner or is_manager
 
-    def fixup_perms(self, instance, payload, include_virtual=True, *args, **kwargs):
-        for handler in self.REGISTRY:
-            payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
-        return payload
-
     def get_db_perms_by_user(self, user):
         from geonode.base.models import Configuration
 
@@ -194,6 +189,8 @@ class PermissionsHandlerRegistry:
         Returns:
             dict: Permissions payload or specific permissions list
         """
+        if isinstance(user, DjangoAnonymousUser):
+            user = get_anonymous_user()
         cache_key = None
         if use_cache:
             cache_key = self._get_cache_key([instance.pk], [user] if user else None, [group] if group else None)

@@ -35,10 +35,6 @@ class BasePermissionsHandler(ABC):
         return self.__str__()
 
     @staticmethod
-    def fixup_perms(instance, perms_payload, include_virtual, *args, **kwargs):
-        return perms_payload
-
-    @staticmethod
     def get_perms(instance, perms_payload, user, include_virtual, *args, **kwargs):
         """
         By default we dont provide any additional perms
@@ -52,7 +48,7 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
     """
 
     @staticmethod
-    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+    def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
         from geonode.security.utils import AdvancedSecurityWorkflowManager
 
         # Fixup Advanced Workflow permissions

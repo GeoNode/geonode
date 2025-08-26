@@ -591,28 +591,16 @@ class ResourceManager(ResourceManagerInterface):
                         raise Exception("Could not acquire 'anonymous' Group.")
 
                     # Gathering and validating the current permissions (if any has been passed)
-                    if not created and permissions is None:
+                    if not permissions:
                         permissions = permissions_registry.get_perms(instance=_resource, include_virtual=False)
 
                     if permissions:
                         if PermSpecCompact.validate(permissions):
-                            _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
+                            _perm_spec = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
                         else:
-                            _permissions = copy.deepcopy(permissions)
+                            _perm_spec = copy.deepcopy(permissions)
                     else:
-                        _permissions = None
-
-                    """
-                    Align _perm_spec based on the permissions handlers
-                    """
-                    _perm_spec = permissions_registry.fixup_perms(
-                        _resource,
-                        _permissions,
-                        created=created,
-                        approval_status_changed=approval_status_changed,
-                        group_status_changed=group_status_changed,
-                        include_virtual=False,
-                    )
+                        _perm_spec = None
 
                     """
                     Cleanup the Guardian tables
