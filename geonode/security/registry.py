@@ -77,7 +77,7 @@ class PermissionsHandlerRegistry:
             instance=instance, user=user, include_virtual=True, include_user_add_resource=True
         )
 
-    def user_can_feature(user, resource):
+    def user_can_feature(self, user, resource):
         """
         Utility method to check if the user can set a resource as "featured" in the metadata
         By default only superuser/admins can do
@@ -94,7 +94,7 @@ class PermissionsHandlerRegistry:
 
         return False
 
-    def user_can_approve(user, resource):
+    def user_can_approve(self, user, resource):
         """
         Utility method to check if the user can set a resource as "approved" in the metadata
         """
@@ -117,7 +117,7 @@ class PermissionsHandlerRegistry:
         else:
             return is_owner or is_manager or can_change_metadata
 
-    def user_can_publish(user, resource):
+    def user_can_publish(self, user, resource):
         """
         Utility method to check if the user can set a resource as "published" in the metadata
         """
