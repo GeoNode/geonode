@@ -18,6 +18,7 @@
 #########################################################################
 import ast
 from django.db import connections
+from geonode.storage.manager import StorageManager
 from geonode.upload.publisher import DataPublisher
 from geonode.upload.utils import call_rollback_function
 import json
@@ -56,6 +57,8 @@ import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
+from geonode.storage.manager import FileSystemStorageManager
+
 
 logger = logging.getLogger("importer")
 
@@ -660,6 +663,20 @@ class BaseVectorFileHandler(BaseHandler):
             asset=asset,
         )
 
+    def create_asset_and_link(self, resource, files):
+        if not files:
+            return
+        asset = super().create_asset_and_link(resource, files)
+        # remove temporary folders since now is managed by the asset
+        storage_manager = StorageManager(
+            remote_files={},
+            concrete_storage_manager=FileSystemStorageManager(),
+        )
+        directory = os.path.dirname(files.get("base_file"))
+        if settings.ASSETS_ROOT not in directory:
+            storage_manager.rmtree(directory, ignore_errors=True)
+        return asset
+
     def overwrite_geonode_resource(
         self,
         layer_name: str,
@@ -683,7 +700,7 @@ class BaseVectorFileHandler(BaseHandler):
             DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
             set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
 
-            dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
+            dataset = resource_manager.update(dataset.uuid, instance=dataset)
 
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)
