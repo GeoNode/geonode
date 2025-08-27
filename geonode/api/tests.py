@@ -1115,6 +1115,8 @@ class OwnershipTransferTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         perms_user_3_after = permissions_registry.get_perms(instance=map_resource, user=self.user3)
         self.assertIn("change_resourcebase_metadata", perms_user_3_after)
+
+
 class AssetApiTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
