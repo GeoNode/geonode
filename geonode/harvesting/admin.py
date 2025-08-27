@@ -398,6 +398,9 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         uri = reverse("admin:harvesting_harvester_change", args=(harvester.pk,))
         return mark_safe(format_html(f'<a grp-button" href="{uri}">{harvester.name}</a>'))
 
+    class Media:
+        js = ("harvesting/js/select_all_should_be_harvested.js",)
+
 
 def _worker_config_changed(form) -> bool:
     field_name = "harvester_type_specific_configuration"
