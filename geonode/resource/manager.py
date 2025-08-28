@@ -591,7 +591,7 @@ class ResourceManager(ResourceManagerInterface):
                         raise Exception("Could not acquire 'anonymous' Group.")
 
                     # Gathering and validating the current permissions (if any has been passed)
-                    if not permissions or (not permissions.get("users") and not permissions.get("groups")):
+                    if not permissions or ("users" not in permissions and "groups" not in permissions):
                         permissions = permissions_registry.get_perms(
                             instance=_resource,
                             created=created,
