@@ -210,7 +210,7 @@ class PermissionsHandlerRegistry:
                         return cached
 
         if user and group:
-            payload = {
+            payload = permissions or {
                 "users": {user: instance.get_user_perms(user)},
                 "groups": {group: list(get_group_perms(group, instance))},
             }
@@ -226,7 +226,7 @@ class PermissionsHandlerRegistry:
 
             result = payload["users"][user]
         elif group:
-            payload = {"users": {}, "groups": {group: list(get_group_perms(group, instance))}}
+            payload = permissions or {"users": {}, "groups": {group: list(get_group_perms(group, instance))}}
             for handler in self.REGISTRY:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             result = payload["groups"][group]

@@ -2821,7 +2821,7 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         instance = create_single_dataset("fake_dataset")
         # adding the dummy at the end, means will win over the other handler
         permissions_registry.add("geonode.security.tests.DummyPermissionsHandler")
-        perms = permissions_registry.get_perms(instance, instance.get_all_level_info())
+        perms = permissions_registry.get_perms(instance, permissions=instance.get_all_level_info())
         self.assertDictEqual({"perms": ["this", "is", "fake"]}, perms)
 
 
