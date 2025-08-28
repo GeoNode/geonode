@@ -172,6 +172,7 @@ class PermissionsHandlerRegistry:
         include_user_add_resource=False,
         use_cache=False,
         group=None,
+        permissions={},
         *args,
         **kwargs,
     ):
@@ -191,6 +192,7 @@ class PermissionsHandlerRegistry:
         """
         if isinstance(user, DjangoAnonymousUser):
             user = get_anonymous_user()
+
         cache_key = None
         if use_cache:
             cache_key = self._get_cache_key([instance.pk], [user] if user else None, [group] if group else None)
@@ -229,7 +231,7 @@ class PermissionsHandlerRegistry:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             result = payload["groups"][group]
         else:
-            payload = instance.get_all_level_info()
+            payload = permissions or instance.get_all_level_info()
             for handler in self.REGISTRY:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             result = payload

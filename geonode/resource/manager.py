@@ -590,21 +590,14 @@ class ResourceManager(ResourceManagerInterface):
                     if not anonymous_group:
                         raise Exception("Could not acquire 'anonymous' Group.")
 
-                    _registry_perms = permissions_registry.get_perms(
+                    permissions = permissions_registry.get_perms(
+                        permissions=permissions,
                         instance=_resource,
                         created=created,
                         approval_status_changed=approval_status_changed,
                         group_status_changed=group_status_changed,
                         include_virtual=False,
                     )
-                    # Gathering and validating the current permissions (if any has been passed)
-                    if not permissions or ("users" not in permissions and "groups" not in permissions):
-                        permissions = copy.deepcopy(_registry_perms)
-                    else:
-                        if "users" not in permissions:
-                            permissions["users"] = _registry_perms["users"]
-                        if "groups" not in permissions:
-                            permissions["groups"] = _registry_perms["groups"]
 
                     if permissions:
                         if PermSpecCompact.validate(permissions):
