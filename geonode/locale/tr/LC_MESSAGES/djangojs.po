@@ -309,7 +309,6 @@ msgid ""
 msgstr ""
 " - 510 Genişletilmedi. Bu hata, HTTP isteğine eklenen uzantının web sunucusu tarafından desteklenmediğinde oluşur. Sorunu çözmek için sunucuyu güncellemeniz gerekebilir."
 
-#, fuzzy
 msgid "Unknwon"
 msgstr "Bilinmeyen"
 
@@ -474,8 +473,8 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
-"Bir eylem seçtiniz ve bireysel alanlarda herhangi bir değişiklik yapmadınız. Muhtemelen Kaydet düğmesi yerine Git düğmesini arıyorsunuz."
-
+"Bir eylem seçtiniz ve belirli alanlarda herhangi bir değişiklik yapmadınız."
+" Muhtemelen Kaydet düğmesi yerine Git düğmesini arıyorsunuz."
 msgid "'"
 msgstr "'"
 
@@ -488,18 +487,16 @@ msgstr "trailingComments"
 msgid "leadingComments"
 msgstr "leadingComments"
 
-#, fuzzy
-#| msgid "Enter comments here."
+
 msgid "innerComments"
-msgstr "İç yorumlar"
+msgstr "innerComments"
 
 msgid "Multiselect"
 msgstr "Çoklu seçim"
 
-#, fuzzy
-#| msgid "Select"
+
 msgid "SelectList"
-msgstr "Seçim listesi"
+msgstr "SelectList"
 
 msgid "show:"
 msgstr "göster:"
@@ -514,70 +511,70 @@ msgid "-"
 msgstr "-"
 
 msgid "uirevision"
-msgstr "uiRevizyonu"
+msgstr "uirevision"
 
 msgid "bgcolor"
-msgstr "arkaPlanRengi"
+msgstr "bgcolor"
 
 msgid "bordercolor"
-msgstr "kenarRengi"
+msgstr "bordercolor"
 
 msgid "borderwidth"
-msgstr "kenarGenisligi"
+msgstr "borderwidth"
 
 msgid "orientation"
-msgstr "yönlendirme"
+msgstr "orientation"
 
 msgid "traceorder"
-msgstr "izSırası"
+msgstr "traceorder"
 
 msgid "tracegroupgap"
-msgstr "izGrupAraligi"
+msgstr "tracegroupgap"
 
 msgid "itemsizing"
-msgstr "ögeBoyutlandırma"
+msgstr "itemsizing"
 
 msgid "itemclick"
-msgstr "ögeTıklaması"
+msgstr "itemclick"
 
 msgid "itemdoubleclick"
-msgstr "ögeÇiftTıklaması"
+msgstr "itemdoubleclick"
 
 msgid "x"
 msgstr "x"
 
 msgid "xanchor"
-msgstr "xÇapası"
+msgstr "xanchor"
 
 msgid "y"
 msgstr "y"
 
 msgid "yanchor"
-msgstr "yÇapası"
+msgstr "yanchor"
 
 msgid "valign"
-msgstr "dikeyHizalama"
+msgstr "valign"
 
 msgid "title.text"
-msgstr "başlık.metin"
+msgstr "title.text"
 
 msgid "title.side"
-msgstr "başlık.yan"
+msgstr "title.side"
 
 msgid "visible"
-msgstr "görünür"
+msgstr "visible"
 
 msgid "thickness"
-msgstr "kalınlık"
+msgstr "thickness"
 
 msgid "autorange"
-msgstr "otomatikAralık"
+msgstr "autorange"
 
 msgid "range"
-msgstr "aralık"
+msgstr "range"
 
 msgid "bingroup"
-msgstr "binGrup"
+msgstr "bingroup"
 
 msgid "Print configuration broken ("
 msgstr "Yazdırma yapılandırması bozuk ("
@@ -586,13 +583,13 @@ msgid "Print configuration not available ("
 msgstr "Yazdırma yapılandırması mevcut değil ("
 
 msgid "go"
-msgstr "git"
+msgstr "go"
 
 msgid "goBack"
-msgstr "geriGit"
+msgstr "goBack"
 
 msgid "goForward"
-msgstr "ileriGit"
+msgstr "goForward"
 
 msgid "Abort"
 msgstr "İptal Et"
