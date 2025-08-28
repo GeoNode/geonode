@@ -307,7 +307,7 @@ class BaseRasterFileHandler(BaseHandler):
                     alternate = dataset.alternate.split(":")[-1]
                     orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
                 else:
-                    user_datasets = Dataset.objects.filter(owner=_exec.user, alternate=f"{workspace.name}:{layer_name}")
+                    user_datasets = Dataset.objects.filter(alternate=f"{workspace.name}:{layer_name}")
 
                     dataset_exists = user_datasets.exists()
 
@@ -529,17 +529,17 @@ class BaseRasterFileHandler(BaseHandler):
         """
         pass
 
-    def _publish_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
+    def _publish_resource_rollback(self, exec_id, instance_name=None, *args, **kwargs):
         """
         We delete the resource from geoserver
         """
         logger.info(
-            f"Rollback publishing step in progress for execid: {exec_id} resource published was: {istance_name}"
+            f"Rollback publishing step in progress for execid: {exec_id} resource published was: {instance_name}"
         )
         exec_object = orchestrator.get_execution_object(exec_id)
         handler_module_path = exec_object.input_params.get("handler_module_path")
         publisher = DataPublisher(handler_module_path=handler_module_path)
-        publisher.delete_resource(istance_name)
+        publisher.delete_resource(instance_name)
 
 
 @importer_app.task(
