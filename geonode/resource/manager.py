@@ -64,6 +64,7 @@ from ..layers.models import Dataset, Attribute
 from ..maps.models import Map
 from ..storage.manager import storage_manager
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -203,9 +204,11 @@ class ResourceManager(ResourceManagerInterface):
         uuid = uuid or _resource.uuid
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
+                permissions_registry.delete_resource_permissions_cache(instance=_resource)
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
                 _resource.set_dirty_state()
                 try:
+
                     if isinstance(_resource.get_real_instance(), Dataset):
                         """
                         - Remove any associated style to the dataset, if it is not used by other datasets.
@@ -411,6 +414,8 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.owner = owner or instance.get_real_instance().owner
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
+                    # Ensure that the featured flag is set to False
+                    _resource.featured = False
                     try:
                         # Avoid Integrity errors...
                         _resource.get_real_instance()._meta.get_field("name")
@@ -492,12 +497,13 @@ class ResourceManager(ResourceManagerInterface):
         If is a layer removes the layer specific permissions then the
         resourcebase permissions.
         """
+
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
-                    logger.debug(f"Removing all permissions on {_resource}")
                     from geonode.layers.models import Dataset
 
                     _dataset = (
@@ -547,6 +553,7 @@ class ResourceManager(ResourceManagerInterface):
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource = _resource.get_real_instance()
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             logger.debug(f"Finalizing (permissions and notifications) on resource {instance}")

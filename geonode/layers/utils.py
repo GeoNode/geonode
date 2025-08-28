@@ -27,9 +27,8 @@ import os
 import glob
 import string
 import logging
-import tarfile
 
-from zipfile import ZipFile, is_zipfile
+from zipfile import is_zipfile
 from random import choice
 
 # Django functionality
@@ -47,7 +46,7 @@ from geonode.storage.manager import storage_manager
 from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
-from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
+from geonode.layers.models import cov_exts, Dataset
 from geonode.security.registry import permissions_registry
 
 READ_PERMISSIONS = ["view_resourcebase"]
@@ -203,40 +202,6 @@ def get_files(filename):
     return files, tempdir
 
 
-def dataset_type(filename):
-    """Finds out if a filename is a Feature or a Vector
-    returns a gsconfig resource_type string
-    that can be either 'featureType' or 'coverage'
-    """
-    base_name, extension = os.path.splitext(filename)
-
-    if extension.lower() == ".zip":
-        zf = ZipFile(filename, allowZip64=True)
-        # ZipFile doesn't support with statement in 2.6, so don't do it
-        with zf:
-            for n in zf.namelist():
-                b, e = os.path.splitext(n.lower())
-                if e in shp_exts or e in cov_exts or e in csv_exts:
-                    extension = e
-
-    if extension.lower() == ".tar" or filename.endswith(".tar.gz"):
-        tf = tarfile.open(filename)
-        # TarFile doesn't support with statement in 2.6, so don't do it
-        with tf:
-            for n in tf.getnames():
-                b, e = os.path.splitext(n.lower())
-                if e in shp_exts or e in cov_exts or e in csv_exts:
-                    extension = e
-
-    if extension.lower() in vec_exts:
-        return "vector"
-    elif extension.lower() in cov_exts:
-        return "raster"
-    else:
-        msg = f"Saving of extension [{extension}] is not implemented"
-        raise GeoNodeException(msg)
-
-
 def get_valid_name(dataset_name):
     """
     Create a brand new name
@@ -250,55 +215,6 @@ def get_valid_name(dataset_name):
         logger.debug("Requested name already used; adjusting name " f"[{dataset_name}] => [{proposed_name}]")
 
     return proposed_name
-
-
-def get_valid_dataset_name(layer, overwrite):
-    """Checks if the layer is a string and fetches it from the database."""
-    # The first thing we do is get the layer name string
-    if isinstance(layer, Dataset):
-        dataset_name = layer.name
-    elif isinstance(layer, str):
-        dataset_name = str(layer)
-    else:
-        msg = "You must pass either a filename or a GeoNode dataset object"
-        raise GeoNodeException(msg)
-
-    if overwrite:
-        return dataset_name
-    else:
-        return get_valid_name(dataset_name)
-
-
-def get_default_user():
-    """Create a default user"""
-    superusers = get_user_model().objects.filter(is_superuser=True).order_by("id")
-    if superusers.exists():
-        # Return the first created superuser
-        return superusers[0]
-    else:
-        raise GeoNodeException(
-            "You must have an admin account configured "
-            "before importing data. "
-            "Try: django-admin.py createsuperuser"
-        )
-
-
-def is_vector(filename):
-    __, extension = os.path.splitext(filename)
-
-    if extension in vec_exts:
-        return True
-    else:
-        return False
-
-
-def is_raster(filename):
-    __, extension = os.path.splitext(filename)
-
-    if extension in cov_exts:
-        return True
-    else:
-        return False
 
 
 def delete_orphaned_datasets():
@@ -316,15 +232,6 @@ def delete_orphaned_datasets():
                 logger.error(f"Failed to delete orphaned dataset file '{filename}': {e}")
 
     return deleted
-
-
-def surrogate_escape_string(input_string, source_character_set):
-    """
-    Escapes a given input string using the provided source character set,
-    using the `surrogateescape` codec error handler.
-    """
-
-    return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
 def set_datasets_permissions(

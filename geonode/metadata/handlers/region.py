@@ -34,7 +34,7 @@ class RegionHandler(MetadataHandler):
     """
 
     def update_schema(self, jsonschema, context, lang=None):
-        regions = {
+        subschema = {
             "type": "array",
             "title": _("Regions"),
             "description": _("keyword identifies a location"),
@@ -52,7 +52,9 @@ class RegionHandler(MetadataHandler):
         }
 
         # add regions after Attribution
-        self._add_subschema(jsonschema, "regions", regions, after_what="attribution")
+        self._add_subschema(jsonschema, "regions", subschema, after_what="attribution")
+        self._localize_subschema_labels(context, subschema, lang, "regions")
+
         return jsonschema
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):

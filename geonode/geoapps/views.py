@@ -23,12 +23,10 @@ import logging
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, Http404
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.core.exceptions import PermissionDenied
 
-from geonode.client.hooks import hookset
 from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
@@ -53,28 +51,8 @@ def _resolve_geoapp(request, id, permission="base.change_resourcebase", msg=_PER
     return resolve_object(request, GeoApp, {"pk": id}, permission=permission, permission_msg=msg, **kwargs)
 
 
-@login_required
-def new_geoapp(request, template="apps/app_new.html"):
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    if request.method == "GET":
-        _ctx = {
-            "user": request.user,
-            "access_token": access_token,
-        }
-        return render(request, template, context=_ctx)
-
-    return HttpResponseRedirect(hookset.geoapp_list_url())
-
-
 @xframe_options_sameorigin
-def geoapp_edit(request, geoappid, template="apps/app_edit.html"):
+def geoapp_embed(request, geoappid, template="apps/app_embed.html"):
     """
     The view that returns the app composer opened to
     the app with the given app ID.

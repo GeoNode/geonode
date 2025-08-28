@@ -36,9 +36,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from geonode.utils import build_absolute_uri
-from geonode.thumbs.utils import MISSING_THUMB
 
 from guardian.shortcuts import get_objects_for_group
+
 
 logger = logging.getLogger(__name__)
 
@@ -242,7 +242,7 @@ class GroupProfile(models.Model):
 
     @property
     def logo_url(self):
-        _missing_thumbnail_url = static(MISSING_THUMB)
+        _default_group_logo_url = static(settings.GROUP_LOGO_URL)
         try:
             _base_path = os.path.split(self.logo.path)[0]
             _upload_path = os.path.split(self.logo.url)[1]
@@ -256,7 +256,7 @@ class GroupProfile(models.Model):
             _url = self.logo.url
         except Exception as e:
             logger.debug(e)
-            return build_absolute_uri(_missing_thumbnail_url)
+            return build_absolute_uri(_default_group_logo_url)
         return build_absolute_uri(_url)
 
 
@@ -298,18 +298,23 @@ class GroupMember(models.Model):
 
     def _handle_perms(self, role=None):
         from geonode.security.utils import AdvancedSecurityWorkflowManager
+        from geonode.security.registry import permissions_registry
 
+        permissions_registry.delete_resource_permissions_cache(instance=self.group.group)
         if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
             AdvancedSecurityWorkflowManager.set_group_member_permissions(self.user, self.group, role)
 
 
 def group_pre_delete(instance, sender, **kwargs):
+    from geonode.security.registry import permissions_registry
+
     """Make sure that the anonymous group is not deleted"""
     if instance.name == "anonymous":
         raise Exception(
             "Deletion of the anonymous group is\
          not permitted as will break the geonode permissions system"
         )
+    permissions_registry.delete_resource_permissions_cache(instance=instance)
 
 
 signals.pre_delete.connect(group_pre_delete, sender=Group)

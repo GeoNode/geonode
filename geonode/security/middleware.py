@@ -92,20 +92,15 @@ class LoginRequiredMiddleware(MiddlewareMixin):
                 return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
 
 
-class LoginFromApiKeyMiddleware(MiddlewareMixin):
-    def __init__(self, get_response):
-        self.get_response = get_response
-
+class AuthenticateBasicAuthOrApiKeyMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """
-        If an api key is provided and validated, the user can access to the page even without the login
-        This middleware is deactivated by default, to activate it set ENABLE_APIKEY_LOGIN=True
+        Bearer token  authentication is already coverde by OAuth2TokenMiddleware.
+        This middleware is used to extract user from headers in case of Basic Auth or API Key.
         """
-        if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-            request.user = extract_user_from_headers(request)
-
-            if request.user and not request.user.is_anonymous and request.user.is_authenticated:
-                return
+        user = extract_user_from_headers(request)
+        if user and not user.is_anonymous:
+            request.user = user
 
 
 class SessionControlMiddleware(MiddlewareMixin):

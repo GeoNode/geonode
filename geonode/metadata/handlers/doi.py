@@ -37,6 +37,7 @@ class DOIHandler(MetadataHandler):
             "geonode:handler": "doi",
         }
 
+        self._localize_subschema_labels(context, doi_schema, lang, "doi")
         # add DOI after edition
         self._add_subschema(jsonschema, "doi", doi_schema, after_what="edition")
         return jsonschema

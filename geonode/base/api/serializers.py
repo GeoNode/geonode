@@ -135,7 +135,14 @@ class GroupSerializer(DynamicModelSerializer):
         user = self.context["request"].user
 
         # Check if 'group' is being updated
-        new_group = validated_data["group"]
+        new_group = validated_data.get("group", None)
+
+        if new_group is None:
+            # Handle clearing the group field
+            instance.group = None
+            # Remove 'group' from validated_data so super().update() won't process it again
+            validated_data.pop("group", None)
+            return instance
 
         if not GroupProfile.objects.filter(group=new_group).exists():
             logger.warning(f"Group {new_group.pk} does not have an associated GroupProfile.")
@@ -654,7 +661,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     download_url = DownloadLinkField(read_only=True)
     favorite = FavoriteField(read_only=True)
     download_urls = DownloadArrayLinkField(read_only=True)
-    perms = DynamicRelationField(PermsSerializer, source="id", read_only=True)
+    perms = serializers.SerializerMethodField(read_only=True)
     links = DynamicRelationField(LinksSerializer, source="id", read_only=True)
 
     # Deferred fields
@@ -780,6 +787,18 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             if not user.can_change_resource_field(instance, field) and field in validated_data:
                 validated_data.pop(field)
         return super().update(instance, validated_data)
+
+    def get_perms(self, instance):
+        """
+        Returns the permissions for the resource instance using Django cache.
+        """
+        request = self.context.get("request")
+        permissions = (
+            permissions_registry.get_perms(instance=instance, user=request.user, use_cache=True)
+            if request and request.user and instance
+            else []
+        )
+        return permissions
 
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)

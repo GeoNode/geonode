@@ -38,8 +38,6 @@ from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -49,7 +47,6 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
@@ -74,6 +71,7 @@ from geonode.security.utils import (
     get_resources_with_perms,
     get_user_visible_groups,
 )
+from geonode.security.registry import permissions_registry
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
@@ -116,7 +114,6 @@ class GroupViewSet(DynamicModelViewSet):
     API endpoint that allows gropus to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         IsManagerEditOrAdmin,
@@ -246,7 +243,6 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
     API endpoint that lists all possible owners.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         AllowAny,
     ]
@@ -302,7 +298,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     API endpoint that allows base resources to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         TKeywordsFilter,
@@ -313,7 +308,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         ResourceBasePermissionsFilter,
         FavoriteFilter,
     ]
-    queryset = ResourceBase.objects.all().order_by("-created")
+    queryset = ResourceBase.objects.select_related("owner").order_by("-created")
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -588,7 +583,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         """
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
-        _user_can_manage = request.user.has_perm("change_resourcebase_permissions", resource.get_self_resource())
+        _user_can_manage = permissions_registry.user_has_perm(
+            request.user, resource.get_self_resource(), "change_resourcebase_permissions", include_virtual=True
+        )
         if (
             config.read_only
             or config.maintenance
@@ -1181,6 +1178,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = self._get_request_params(request)
+
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name="copy",

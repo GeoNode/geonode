@@ -26,8 +26,6 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from django.utils.translation import gettext as _
-from django.contrib.auth.models import Group
-from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people import Roles
 
 from geonode.metadata.settings import MODEL_SCHEMA
@@ -59,7 +57,6 @@ from geonode.metadata.handlers.base import (
 from geonode.metadata.handlers.region import RegionHandler
 from geonode.metadata.handlers.doi import DOIHandler
 from geonode.metadata.handlers.linkedresource import LinkedResourceHandler
-from geonode.metadata.handlers.group import GroupHandler
 from geonode.metadata.handlers.hkeyword import HKeywordHandler
 from geonode.metadata.handlers.thesaurus import TKeywordsHandler
 from geonode.resource.utils import KeywordHandler
@@ -108,7 +105,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.spatial_repr = SpatialRepresentationType.objects.create(
             identifier="fake_spatial_repr", description="a detailed description"
         )
-        self.fake_group = Group.objects.create(name="fake group")
+
         # Create instances for thesaurus
         self.thesaurus1 = Thesaurus.objects.create(title="Spatial scope thesaurus", identifier="3-2-4-3-spatialscope")
         self.thesaurus2 = Thesaurus.objects.create(
@@ -146,7 +143,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.region_handler = RegionHandler()
         self.linkedresource_handler = LinkedResourceHandler()
         self.doi_handler = DOIHandler()
-        self.group_handler = GroupHandler()
         self.hkeyword_handler = HKeywordHandler()
         self.contact_handler = ContactHandler()
         self.tkeywords_handler = TKeywordsHandler()
@@ -886,8 +882,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Define the expected regions schema
         expected_regions = {
             "type": "array",
-            "title": "Regions",
-            "description": "keyword identifies a location",
             "items": {
                 "type": "object",
                 "properties": {
@@ -903,7 +897,9 @@ class HandlersTests(GeoNodeBaseTestSupport):
         updated_schema = self.region_handler.update_schema(schema, self.context, lang=self.lang)
 
         self.assertIn("regions", updated_schema["properties"])
-        self.assertEqual(updated_schema["properties"]["regions"], expected_regions)
+        for k, v in expected_regions.items():
+            self.assertIn(k, updated_schema["properties"]["regions"])
+            self.assertEqual(updated_schema["properties"]["regions"][k], v)
         # Check that the new field has been added with the expected order
         self.assertEqual(list(schema["properties"].keys()), ["attribution", "regions", "fake_field"])
 
@@ -1079,8 +1075,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Define the expected regions schema
         expected_doi_subschema = {
             "type": ["string", "null"],
-            "title": "DOI",
-            "description": _("a DOI will be added by Admin before publication."),
             "maxLength": 255,
             "geonode:handler": "doi",
         }
@@ -1089,7 +1083,9 @@ class HandlersTests(GeoNodeBaseTestSupport):
         updated_schema = self.doi_handler.update_schema(schema, self.context, lang=self.lang)
 
         self.assertIn("doi", updated_schema["properties"])
-        self.assertEqual(updated_schema["properties"]["doi"], expected_doi_subschema)
+        for k, v in expected_doi_subschema.items():
+            self.assertIn(k, updated_schema["properties"]["doi"])
+            self.assertEqual(updated_schema["properties"]["doi"][k], v)
         # Check that the new field has been added with the expected order
         self.assertEqual(list(schema["properties"].keys()), ["edition", "doi", "fake_field"])
 
@@ -1130,161 +1126,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Ensure that only the regions defined in the payload_data are included in the resource model
         self.assertEqual(self.resource.doi, "10.1000/new_fake_doi")
 
-    # Tests for the Group handler
-    @patch("geonode.metadata.handlers.group.reverse")
-    def test_group_handler_update_schema(self, mock_reverse):
-        """
-        Test for the update_schema of the group_handler
-        """
-
-        mock_reverse.return_value = "/mocked_endpoint"
-
-        # fake_schema definition which includes the "date_type" field
-        schema = {
-            "properties": {
-                "date_type": {"type": "string", "title": "date_type", "maxLength": 255},
-                "fake_field": {"type": "string", "title": "fake_field", "maxLength": 255},
-            }
-        }
-
-        # Define the expected regions schema
-        expected_group_subschema = {
-            "type": "object",
-            "title": _("group"),
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "ui:widget": "hidden",
-                },
-                "label": {
-                    "type": "string",
-                    "title": _("group"),
-                },
-            },
-            "geonode:handler": "group",
-            "ui:options": {"geonode-ui:autocomplete": "/mocked_endpoint"},
-        }
-
-        # Call the method
-        updated_schema = self.group_handler.update_schema(schema, self.context, lang=self.lang)
-
-        self.assertIn("group", updated_schema["properties"])
-        self.assertEqual(updated_schema["properties"]["group"], expected_group_subschema)
-        # Check that the new field has been added with the expected order
-        self.assertEqual(list(schema["properties"].keys()), ["date_type", "group", "fake_field"])
-
-    def test_group_handler_get_jsonschema_instance_with_group(self):
-        """
-        Test the get_jsonschema_instance of the group handler
-        """
-
-        GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
-        self.resource.group = self.fake_group
-
-        field_name = "group"
-
-        expected_group_instance = {
-            "id": str(self.resource.group.groupprofile.pk),
-            "label": self.resource.group.groupprofile.title,
-        }
-
-        group_instance = self.group_handler.get_jsonschema_instance(
-            self.resource, field_name, self.context, self.errors, self.lang
-        )
-
-        self.assertEqual(group_instance, expected_group_instance)
-
-    def test_group_handler_get_jsonschema_instance_without_group(self):
-        """
-        Test the get_jsonschema_instance of the group handler
-        in case that we don't have a group
-        """
-
-        field_name = "group"
-
-        group_instance = self.group_handler.get_jsonschema_instance(
-            self.resource, field_name, self.context, self.errors, self.lang
-        )
-
-        self.assertIsNone(group_instance)
-
-    def test_group_handler_update_resource_as_superuser(self):
-
-        context = {"labels": "fake_label"}
-        # Create a superuser
-        fake_superuser = get_user_model().objects.create_user(
-            "admin_user", "admin@fakemail.com", "admin_user_password", is_active=True, is_superuser=True
-        )
-
-        context = {"labels": {}, "user": fake_superuser}
-
-        group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
-
-        field_name = "group"
-        payload_data = {"group": {"id": group_profile.pk}}
-
-        # Call the method
-        self.group_handler.update_resource(self.resource, field_name, payload_data, context, self.errors)
-
-        # Assert the resource group was updated
-        self.assertEqual(self.resource.group, group_profile.group)
-
-    def test_group_handler_update_resource_as_simple_user(self):
-
-        # Setup shared context
-        context = {"labels": {}, "user": self.test_user}
-
-        group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
-
-        field_name = "group"
-        payload_data = {"group": {"id": group_profile.pk}}
-
-        # User is a member of the group
-        GroupMember.objects.create(user=self.test_user, group=group_profile)
-
-        self.group_handler.update_resource(self.resource, field_name, payload_data, context, self.errors)
-
-        self.assertEqual(self.resource.group, group_profile.group)
-        self.assertFalse(self.errors)
-
-        # Reset for the next case
-        self.errors.clear()
-        self.resource.group = None
-
-        # Remove the user from the group
-        GroupMember.objects.filter(user=self.test_user, group=group_profile).delete()
-
-        # User is NOT a member of the group
-        self.group_handler.update_resource(self.resource, field_name, payload_data, context, self.errors)
-
-        self.assertIsNone(self.resource.group)
-        self.assertTrue(self.errors)
-
-    def test_group_handler_update_resource_with_no_user(self):
-
-        context = {"labels": {}}
-        field_name = "group"
-        json_instance = {"group": None}
-
-        # Call the method
-        self.group_handler.update_resource(self.resource, field_name, json_instance, context, self.errors)
-
-        # Assert the resource group was set to None
-        self.assertIsNone(self.resource.group)
-
-    def test_group_handler_update_resource_with_no_id(self):
-
-        context = {"labels": {}, "user": self.test_user}
-
-        field_name = "group"
-        json_instance = {"group": None}
-
-        # Call the method
-        self.group_handler.update_resource(self.resource, field_name, json_instance, context, self.errors)
-
-        # Assert the resource group was set to None
-        self.assertIsNone(self.resource.group)
-
     # Tests hkeyword handler
     @patch("geonode.metadata.handlers.hkeyword.reverse")
     def test_hkeyword_handler_update_schema(self, mock_reverse):
@@ -1305,8 +1146,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Define the expected regions schema
         expected_hkeywords_subschema = {
             "type": "array",
-            "title": _("Keywords"),
-            "description": _("Hierarchical keywords"),
             "items": {
                 "type": "string",
             },
@@ -1323,7 +1162,9 @@ class HandlersTests(GeoNodeBaseTestSupport):
         updated_schema = self.hkeyword_handler.update_schema(schema, self.context, lang=self.lang)
 
         self.assertIn("hkeywords", updated_schema["properties"])
-        self.assertEqual(updated_schema["properties"]["hkeywords"], expected_hkeywords_subschema)
+        for k, v in expected_hkeywords_subschema.items():
+            self.assertIn(k, updated_schema["properties"]["hkeywords"])
+            self.assertEqual(updated_schema["properties"]["hkeywords"][k], v)
         # Check that the new field has been added with the expected order
         self.assertEqual(list(schema["properties"].keys()), ["tkeywords", "hkeywords", "fake_field"])
 
@@ -1532,7 +1373,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         mocked_endpoint.side_effect = lambda name, kwargs: f"/mocked/url/{kwargs['thesaurusid']}"
 
         # Call the method
-        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={"labels": {}}, lang="en")
 
         # Assert tkeywords property is added
         tkeywords = updated_schema["properties"].get("tkeywords")
@@ -1584,7 +1425,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         mock_collect_thesauri.return_value = {}
 
         # Call the method
-        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={"labels": {}}, lang="en")
 
         # Assert tkeywords property is hidden
         tkeywords = updated_schema["properties"].get("tkeywords")
@@ -1710,7 +1551,11 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
         sparse_field_registry.register(
             field_name="another_sparse_field",
-            schema={"type": "number", "title": "Another Sparse Field"},
+            schema={
+                "type": "number",
+                "title": "Another Sparse Field",
+                "geonode:thesaurus": "this_is_a_thesaurus_id",
+            },
             after="field2",
         )
 
@@ -1728,6 +1573,11 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Check that the handler info was added
         self.assertEqual(updated_schema["properties"]["new_sparse_field"]["geonode:handler"], "sparse")
         self.assertEqual(updated_schema["properties"]["another_sparse_field"]["geonode:handler"], "sparse")
+
+        # Check that the autocomplete info was added
+        self.assertNotIn("ui:options", updated_schema["properties"]["new_sparse_field"])
+        self.assertIn("ui:options", updated_schema["properties"]["another_sparse_field"])
+        self.assertIn("geonode-ui:autocomplete", updated_schema["properties"]["another_sparse_field"]["ui:options"])
 
         # Check the order of the schema
         self.assertEqual(

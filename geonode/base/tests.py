@@ -50,7 +50,6 @@ from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.templatetags.base_tags import display_change_perms_button
-from geonode.base.templatetags.sanitize_html import sanitize_html
 from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.base.models import (
     HierarchicalKeyword,
@@ -728,14 +727,6 @@ class TestOwnerRightsRequestUtils(TestCase):
         self.assertTrue(user_perms)
 
 
-class SanitizedHtmlTest(TestCase):
-    def test_sanitized_html(self):
-        test_html = "<script>alert('XSS');</script><b>Allowed Text</b>"
-        expected_output = "<b>Allowed Text</b>"
-        sanitized_output = sanitize_html(test_html)
-        self.assertEqual(sanitized_output, expected_output)
-
-
 class TestGetVisibleResource(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username="mikel_arteta")
@@ -1259,3 +1250,46 @@ class LinkedResourcesTest(GeoNodeBaseTestSupport):
         finally:
             for _ in d:
                 _.delete()
+
+
+class TestResourceBaseViewSetQueryset(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_user = get_user_model().objects.create_user(
+            username="test_queryset_user", email="test@example.com", password="testpass123"
+        )
+
+        cls.admin_user = get_user_model().objects.create_user(
+            username="admin_queryset_user", email="admin@example.com", password="adminpass123", is_staff=True
+        )
+
+        cls.test_resources = []
+        for i in range(5):
+            resource = ResourceBase.objects.create(
+                title=f"test_resource_queryset_{i}",
+                uuid=str(uuid4()),
+                owner=cls.test_user if i % 2 == 0 else cls.admin_user,
+                abstract=f"Test resource {i} for queryset",
+                subtype="vector",
+                is_approved=True,
+                is_published=True,
+            )
+            cls.test_resources.append(resource)
+
+    def test_original_queryset_vs_optimized_queryset(self):
+        """Test that original and optimized querysets return the same results"""
+
+        original_queryset = ResourceBase.objects.all().order_by("-created")
+
+        optimized_queryset = ResourceBase.objects.select_related("owner").order_by("-created")
+
+        original_list = list(original_queryset)
+        optimized_list = list(optimized_queryset)
+
+        self.assertEqual(len(original_list), len(optimized_list))
+
+        self.assertEqual(original_list, optimized_list)
+
+        original_pks = [obj.pk for obj in original_list]
+        optimized_pks = [obj.pk for obj in optimized_list]
+        self.assertEqual(original_pks, optimized_pks)

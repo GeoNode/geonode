@@ -26,6 +26,7 @@ from typing_extensions import deprecated
 from django.utils.translation import gettext as _
 
 from geonode.base.models import ResourceBase
+from geonode.metadata.i18n import OVR_SUFFIX
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ class MetadataHandler(metaclass=ABCMeta):
     @staticmethod
     def _localize_label(context, lang: str, text: str):
         label = MetadataHandler._get_tkl_labels(context, lang, text)
-        return label if label else _(text)
+        return label or _(text)
 
     @staticmethod
     def _get_tkl_labels(context, lang: str | None, text: str):
@@ -163,7 +164,9 @@ class MetadataHandler(metaclass=ABCMeta):
             ("title", ""),
             ("description", "__descr"),
         ):
-            if annotation_name in subschema:
+            if ovr := MetadataHandler._get_tkl_labels(context, lang, f"{property_name}{synt}{OVR_SUFFIX}"):
+                subschema[annotation_name] = ovr
+            elif annotation_name in subschema:
                 subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])
             elif property_name:  # arrays may not have a name
                 label = MetadataHandler._get_tkl_labels(context, lang, f"{property_name}{synt}")

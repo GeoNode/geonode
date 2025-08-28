@@ -26,6 +26,7 @@ import os
 import requests
 import importlib
 import mock
+from uuid import uuid4
 
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
@@ -48,7 +49,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.compat import ensure_string
-from geonode.security.handlers import BasePermissionsHandler
+from geonode.security.handlers import BasePermissionsHandler, GroupManagersPermissionsHandler
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
@@ -87,6 +88,9 @@ from .utils import (
 )
 
 from .permissions import PermSpec, PermSpecCompact
+from django.core.cache import cache
+from geonode.base.models import ResourceBase
+from geonode.people.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -204,7 +208,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         middleware = LoginRequiredMiddleware(None)
 
-        black_listed_url = reverse("load_dataset_data")
+        black_listed_url = reverse("admin:index")
         white_listed_url = reverse("account_login")
 
         # unauthorized request to black listed URL should be redirected to `redirect_to` URL
@@ -235,7 +239,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
-        black_listed_url = reverse("load_dataset_data")
+        black_listed_url = reverse("admin:index")
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
@@ -259,6 +263,54 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     msg=f"Returned redirection should be a valid path starting '/'. "
                     f"Instead got: {response.get('Location')}",
                 )
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_authenticated_api_request_with_login_middleware(self):
+        from geonode.people.models import Profile
+
+        with override_settings(
+            MIDDLEWARE=settings.MIDDLEWARE + ("geonode.security.middleware.LoginRequiredMiddleware",)
+        ):
+            response = self.client.get(reverse("users-list"))
+            self.assertEquals(response.status_code, 302, "LoginRequiredMiddleware redirects the anonymouse user")
+            self.assertTrue(reverse("account_login") in response.url, "LoginRequiredMiddleware login redirection")
+
+            admin = get_user_model().objects.filter(is_superuser=True).first()
+
+            response = self.client.get(
+                reverse("users-list"), HTTP_AUTHORIZATION=f"Basic {base64.b64encode(b'admin:admin').decode()}"
+            )
+            self.assertEquals(
+                response.status_code, 200, "LoginRequiredMiddleware passed the Basic Auth without any issues"
+            )
+
+            access_token = get_or_create_token(admin)
+            response = self.client.get(reverse("users-list"), HTTP_AUTHORIZATION=f"Bearer {access_token.token}")
+            self.assertEquals(
+                response.status_code, 200, "LoginRequiredMiddleware passed the Bearer token without any issues"
+            )
+
+            with override_settings(
+                ENABLE_APIKEY_LOGIN=True,
+            ):
+                response = self.client.get(f"{reverse('users-list')}?apikey={access_token.token}")
+                self.assertEquals(
+                    response.status_code, 200, "LoginRequiredMiddleware passed the API Ley param without any issues"
+                )
+
+                path = f"{reverse('users-list')}?apikey={access_token.token}"
+                response = self.client.post(
+                    path,
+                    data={
+                        "username": "user1withapyley",
+                        "password": "user1withapyley",
+                        "email": "user1withapyley@email.com",
+                    },
+                )
+                self.assertEquals(
+                    response.status_code, 201, "LoginRequiredMiddleware allowed the API Key to create a new user"
+                )
+                Profile.objects.get(username="user1withapyley").delete()  # cleanup
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_session_ctrl_middleware(self):
@@ -1198,7 +1250,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
         response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
-        self.assertTrue(response.status_code in (302, 403))
+        self.assertTrue(response.status_code in (302, 401))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()
@@ -1921,7 +1973,17 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                     ],
-                    self.group_manager: ["view_resourcebase", "publish_resourcebase", "approve_resourcebase"],
+                    self.group_manager: [
+                        "view_resourcebase",
+                        "publish_resourcebase",
+                        "approve_resourcebase",
+                        "change_dataset_style",
+                        "change_dataset_data",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase",
+                        "feature_resourcebase",
+                        "change_resourcebase_permissions",
+                    ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
                         "change_resourcebase",
@@ -1980,6 +2042,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2011,6 +2074,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2056,6 +2120,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2080,6 +2145,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2157,7 +2223,17 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                     ],
-                    self.group_manager: ["view_resourcebase", "approve_resourcebase", "publish_resourcebase"],
+                    self.group_manager: [
+                        "view_resourcebase",
+                        "approve_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_dataset_data",
+                        "change_dataset_style",
+                        "feature_resourcebase",
+                        "change_resourcebase_permissions",
+                    ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: ["view_resourcebase", "change_resourcebase"],
                     self.anonymous_user: ["view_resourcebase"],
@@ -2200,6 +2276,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2212,6 +2289,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
         }
         try:
@@ -2329,6 +2407,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "publish_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2341,6 +2420,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
             ],
         }
         for authorized_subject, expected_perms in expected.items():
@@ -2651,6 +2731,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
         cls.admin = get_user_model().objects.filter(is_superuser=True).first()
         cls.non_admin = get_user_model().objects.filter(is_superuser=False).exclude(username="AnonymousUser").first()
 
+        cls.group_manager = get_user_model().objects.create_user("group_manager", is_active=True)
+        cls.second_group_manager = get_user_model().objects.create_user("second_group_manager", is_active=True)
+        cls.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="group profile 1")
+        cls.second_group_profile = GroupProfile.objects.create(title="second_testgroup_profile", slug="group profile 2")
+        GroupMember.objects.create(user=cls.group_manager, group=cls.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(
+            user=cls.second_group_manager, group=cls.second_group_profile, role=GroupMember.MANAGER
+        )
+
     def test_user_can_approve(self):
         try:
             self.assertTrue(self.admin.can_approve(self.dataset))
@@ -2667,6 +2756,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
     def test_user_can_feature(self):
         self.assertTrue(self.admin.can_feature(self.dataset))
         self.assertFalse(self.non_admin.can_feature(self.dataset))
+
+        # Test that a group manager is able to use the featured flag
+        self.dataset.group = self.group_profile.group
+        self.dataset.save()
+
+        self.assertTrue(self.group_manager.can_feature(self.dataset))
+
+        # Test that a group manager of another group is not able to use this featured flag
+        self.assertFalse(self.second_group_manager.can_feature(self.dataset))
 
     def test_user_can_publish(self):
         try:
@@ -2688,7 +2786,12 @@ class DummyPermissionsHandler(BasePermissionsHandler):
         return {"perms": ["this", "is", "fake"]}
 
 
-@override_settings(PERMISSIONS_HANDLERS=["geonode.security.handlers.AdvancedWorkflowPermissionsHandler"])
+@override_settings(
+    PERMISSIONS_HANDLERS=[
+        "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+        "geonode.security.handlers.GroupManagersPermissionsHandler",
+    ]
+)
 class TestPermissionsRegistry(GeoNodeBaseTestSupport):
     """
     Test to verify the permissions registry
@@ -2720,3 +2823,755 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         permissions_registry.add("geonode.security.tests.DummyPermissionsHandler")
         perms = permissions_registry.fixup_perms(instance, instance.get_all_level_info())
         self.assertDictEqual({"perms": ["this", "is", "fake"]}, perms)
+
+
+class TestPermissionsHandlers(GeoNodeBaseTestSupport):
+    """
+    Test to verify the GroupManagerPermissionsHandler
+    """
+
+    def setUp(self):
+
+        self.group_manager = get_user_model().objects.create_user(
+            "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
+        )
+
+        self.other_group_manager = get_user_model().objects.create_user(
+            "other_group_manager", "other_group_manager@fakemail.com", "other_group_manager_password", is_active=True
+        )
+
+        self.group_member = get_user_model().objects.create_user(
+            "group_member", "group_member@fakemail.com", "group_member_password", is_active=True
+        )
+        self.simple_user = get_user_model().objects.create_user(
+            "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
+        )
+
+        self.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="test group_profile 1")
+        self.other_group_profile = GroupProfile.objects.create(
+            title="other_testgroup_profile", slug="test group_profile 2"
+        )
+
+        # Assign roles in the main group
+        GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
+
+        # Assign roles in the second group
+        GroupMember.objects.create(
+            user=self.other_group_manager, group=self.other_group_profile, role=GroupMember.MANAGER
+        )
+
+    def test_group_managers_permissons_handler(self):
+        """
+        Test that GroupManagersPermissionsHandler adds extra permissions
+        to a group manager.
+        """
+
+        resource = create_single_dataset("test_dataset")
+        resource.group = self.group_profile.group
+        resource.save()
+
+        default_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+        ]
+
+        perms_payload = {
+            "users": {
+                self.group_manager: default_perms,
+                self.other_group_manager: default_perms,
+                self.group_member: ["view_resourcebase"],
+                self.simple_user: [],
+            },
+            "groups": {},
+        }
+
+        # Call your handler's get_perms method directly
+        handler = GroupManagersPermissionsHandler()
+        updated_perms = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Expected extra permissions added to manager_profile's perms
+        expected_manager_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_dataset_data",
+            "change_dataset_style",
+            "change_resourcebase_permissions",
+        ]
+
+        # Ensure that the permissions for the resource's group manager are updated
+        self.assertIn(self.group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.group_manager]), set(expected_manager_perms))
+
+        # Ensure that the permissions for a group manager from another group are unchanged
+        self.assertIn(self.other_group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.other_group_manager]), set(default_perms))
+
+        # Others remain unchanged for the group member and simple user
+        self.assertListEqual(updated_perms["users"][self.group_member], ["view_resourcebase"])
+        self.assertListEqual(updated_perms["users"][self.simple_user], [])
+
+        # Test for empty perms list. This should not trigger extra perms
+        perms_payload["users"][self.group_manager] = []
+        updated_perms_empty = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Still empty, since user had no base perms
+        self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
+
+
+@override_settings(
+    CACHES={
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "test-cache",
+            "TIMEOUT": 600,
+            "OPTIONS": {"MAX_ENTRIES": 10000},
+        }
+    }
+)
+class TestPermissionsCaching(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.admin_user = get_user_model().objects.get(username="admin")
+        cls.test_user = get_user_model().objects.create_user(
+            username=f"test_user{uuid4()}", email="test_user@example.com", password="testpass123"
+        )
+        cls.test_user_owner = get_user_model().objects.create_user(
+            username=f"test_user_owner{uuid4()}", email="test_user_owner@example.com", password="testpass123"
+        )
+        cls.test_group, _ = Group.objects.get_or_create(name="test-group")
+        cls.test_group.user_set.add(cls.admin_user)
+        cls.test_group_profile = GroupProfile.objects.create(
+            group=cls.test_group, title="Test Group", slug="test-group", access="public"
+        )
+        cls.anonymous, _ = Group.objects.get_or_create(name="anonymous")
+
+        cls.resources = []
+        for i in range(4):
+            resource = ResourceBase.objects.create(
+                title=f"test_dataset_{i:02d}",
+                uuid=str(uuid4()),
+                owner=cls.test_user_owner,
+                abstract=f"Test dataset {i:02d} by test_user",
+                subtype="vector",
+                is_approved=True,
+                is_published=True,
+            )
+            perm_spec = {
+                "users": {
+                    cls.test_user.username: [
+                        "view_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                    ]
+                },
+                "groups": {
+                    cls.test_group.name: [
+                        "view_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                    ],
+                    cls.anonymous.name: ["view_resourcebase"],
+                },
+            }
+            resource.set_permissions(perm_spec)
+            cls.resources.append(resource)
+
+    def setUp(self):
+        cache.clear()
+
+    def test_admin_user_permissions_caching(self):
+        test_resource = self.resources[0]
+
+        admin_perms_1 = permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        admin_perms_2 = permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+
+        self.assertEqual(admin_perms_1, admin_perms_2)
+
+        self.assertIn("view_resourcebase", admin_perms_1)
+        self.assertIn("download_resourcebase", admin_perms_1)
+        self.assertIn("change_resourcebase", admin_perms_1)
+        self.assertIn("change_resourcebase_metadata", admin_perms_1)
+        self.assertIn("change_resourcebase_permissions", admin_perms_1)
+        self.assertIn("delete_resourcebase", admin_perms_1)
+
+    def test_permission_anonymous_users(self):
+        test_resource = self.resources[0]
+        anonymous_user = AnonymousUser()
+
+        anon_perms_1 = permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        self.assertIn("view_resourcebase", anon_perms_1)
+
+        anon_perms_2 = permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        self.assertIn("view_resourcebase", anon_perms_2)
+        self.assertEqual(anon_perms_1, anon_perms_2)
+
+    def test_owner_user_permissions_caching(self):
+        test_resource = self.resources[0]
+
+        user_perms_1 = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        user_perms_2 = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+
+        self.assertEqual(user_perms_1, user_perms_2)
+
+        expected_owner_perms = [
+            "view_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_resourcebase_permissions",
+            "delete_resourcebase",
+        ]
+
+        for perm in expected_owner_perms:
+            self.assertIn(perm, user_perms_1)
+
+    def test_group_permissions_caching(self):
+        """Test that group permissions are cached correctly"""
+        test_resource = self.resources[0]
+
+        group_perms_1 = permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        group_perms_2 = permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+
+        self.assertEqual(list(group_perms_1), list(group_perms_2))
+
+        expected_group_perms = [
+            "view_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_resourcebase_permissions",
+            "delete_resourcebase",
+        ]
+
+        for perm in expected_group_perms:
+            self.assertIn(perm, group_perms_1)
+
+    def test_user_and_group_permissions_combined(self):
+        """Test getting both user and group permissions in one call"""
+        test_resource = self.resources[0]
+
+        combined_perms = permissions_registry.get_perms(
+            instance=test_resource, user=self.test_user, group=self.test_group, use_cache=True
+        )
+
+        self.assertIn("users", combined_perms)
+        self.assertIn("groups", combined_perms)
+        self.assertIn(self.test_user, combined_perms["users"])
+        self.assertIn(self.test_group, combined_perms["groups"])
+
+    def test_cache_keys_are_different(self):
+        test_resource = self.resources[0]
+        anonymous_user = AnonymousUser()
+
+        # Generate permissions to populate cache
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+
+        # Updated cache key formats
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+
+        # Verify all cache keys exist
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(admin_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(group_key))
+
+        # Verify cached values are different
+        anon_cached = cache.get(anonymous_key)
+        admin_cached = cache.get(admin_key)
+        user_cached = cache.get(test_user_key)
+        group_cached = cache.get(group_key)
+
+        self.assertNotEqual(anon_cached, admin_cached)
+        self.assertNotEqual(anon_cached, user_cached)
+        self.assertNotEqual(admin_cached, user_cached)
+        self.assertNotEqual(user_cached, group_cached)
+
+    def test_multiple_resources_independent_caching(self):
+
+        resource_1 = self.resources[0]
+        resource_2 = self.resources[1]
+
+        perms_r1 = permissions_registry.get_perms(instance=resource_1, user=self.test_user, use_cache=True)
+        perms_r2 = permissions_registry.get_perms(instance=resource_2, user=self.test_user, use_cache=True)
+
+        self.assertEqual(perms_r1, perms_r2)
+
+        # Updated cache key format
+        cache_key_r1 = f"resource_perms:{resource_1.pk}:user:{self.test_user.pk}"
+        cache_key_r2 = f"resource_perms:{resource_2.pk}:user:{self.test_user.pk}"
+
+        self.assertIsNotNone(cache.get(cache_key_r1))
+        self.assertIsNotNone(cache.get(cache_key_r2))
+
+    def test_cache_key_generation_consistency(self):
+        """
+        Test that the _get_cache_key method generates consistent and correct cache keys
+        for different user types, groups, and scenarios.
+        """
+        test_resource = self.resources[0]
+        anonymous_user = AnonymousUser()
+
+        # Test authenticated user cache key
+        expected_admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        actual_admin_key = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
+        self.assertEqual(actual_admin_key, expected_admin_key)
+
+        # Test test user cache key
+        expected_test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        actual_test_user_key = permissions_registry._get_cache_key([test_resource.pk], users=[self.test_user])
+        self.assertEqual(actual_test_user_key, expected_test_user_key)
+
+        # Test anonymous user cache key
+        expected_anon_key = f"resource_perms:{test_resource.pk}:anonymous"
+        actual_anon_key = permissions_registry._get_cache_key([test_resource.pk], users=[anonymous_user])
+        self.assertEqual(actual_anon_key, expected_anon_key)
+
+        # Test group cache key
+        expected_group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        actual_group_key = permissions_registry._get_cache_key([test_resource.pk], groups=[self.test_group])
+        self.assertEqual(actual_group_key, expected_group_key)
+
+        # Test __ALL__ cache key (when both user and group are None)
+        expected_all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+        actual_all_key = permissions_registry._get_cache_key([test_resource.pk], users=None, groups=None)
+        self.assertEqual(actual_all_key, expected_all_key)
+
+        # Test that keys are unique for different users and groups
+        cache_keys = [actual_admin_key, actual_test_user_key, actual_anon_key, actual_group_key, actual_all_key]
+        self.assertEqual(len(cache_keys), len(set(cache_keys)), "All cache keys should be unique")
+
+        # Test consistency across multiple calls
+        key_call_1 = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
+        key_call_2 = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
+        self.assertEqual(key_call_1, key_call_2, "Cache key generation should be consistent")
+
+        # Test that the cache keys match what's actually used in caching
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+
+        # Verify the generated keys match what's in cache
+        self.assertIsNotNone(cache.get(actual_admin_key), "Admin cache key should exist in cache")
+        self.assertIsNotNone(cache.get(actual_anon_key), "Anonymous cache key should exist in cache")
+        self.assertIsNotNone(cache.get(actual_group_key), "Group cache key should exist in cache")
+
+    def test_cache_invalidation_on_permission_change(self):
+        """Test that cache is properly invalidated when permissions are actually changed"""
+        test_resource = self.resources[0]
+        cache_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+
+        initial_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+
+        self.assertIsNotNone(cache.get(cache_key))
+        self.assertIn("view_resourcebase", initial_perms)
+        self.assertIn("change_resourcebase", initial_perms)
+        self.assertIn("delete_resourcebase", initial_perms)
+
+        new_perm_spec = {
+            "users": {
+                f"{self.test_user.username}": [
+                    "view_resourcebase",
+                ]
+            },
+            "groups": {
+                f"{self.test_group.name}": [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "change_resourcebase_permissions",
+                    "delete_resourcebase",
+                ],
+                f"{self.anonymous.name}": ["view_resourcebase"],
+            },
+        }
+
+        test_resource.set_permissions(new_perm_spec)
+
+        self.assertIsNone(cache.get(cache_key), "Cache should be cleared after permission change")
+
+        updated_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+
+        self.assertIsNotNone(cache.get(cache_key), "Cache should be populated after fresh permission fetch")
+
+        self.assertIn("view_resourcebase", updated_perms)
+        self.assertNotIn("change_resourcebase", updated_perms)
+        self.assertNotIn("delete_resourcebase", updated_perms)
+
+        cached_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        self.assertEqual(updated_perms, cached_perms)
+
+        restored_perm_spec = {
+            "users": {
+                self.test_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",  # Add back change permission
+                    "delete_resourcebase",  # Add back delete permission
+                ]
+            },
+            "groups": {
+                self.test_group.name: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "change_resourcebase_permissions",
+                    "delete_resourcebase",
+                ],
+                self.anonymous.name: ["view_resourcebase"],
+            },
+        }
+
+        test_resource.set_permissions(restored_perm_spec)
+
+        self.assertIsNone(cache.get(cache_key), "Cache should be cleared after second permission change")
+
+        final_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(cache_key), "Cache should be populated after final permission fetch")
+
+        self.assertIn("view_resourcebase", final_perms)
+        self.assertIn("change_resourcebase", final_perms)
+        self.assertIn("delete_resourcebase", final_perms)
+
+        self.assertNotEqual(
+            updated_perms, final_perms, "Final permissions should be different from updated permissions"
+        )
+
+    def test_all_permissions_caching(self):
+        """Test caching when getting all permissions (no user or group specified)"""
+        test_resource = self.resources[0]
+
+        all_perms_1 = permissions_registry.get_perms(instance=test_resource, use_cache=True)
+        all_perms_2 = permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        self.assertEqual(all_perms_1, all_perms_2)
+
+        # Verify structure contains both users and groups
+        self.assertIn("users", all_perms_1)
+        self.assertIn("groups", all_perms_1)
+
+    def test_user_deletion_cache_invalidation(self):
+        """Test that cache is properly cleared when a user is deleted"""
+
+        # Create a temporary user for deletion testing
+        temp_user = get_user_model().objects.create_user(
+            username=f"temp_user_{uuid4()}", email="temp@example.com", password="temppass123"
+        )
+
+        for resource in self.resources[:2]:  # Use first 2 resources
+            perm_spec = {"users": {temp_user.username: ["view_resourcebase", "change_resourcebase"]}, "groups": {}}
+            resource.set_permissions(perm_spec)
+
+        cached_perms = []
+        cache_keys = []
+
+        for resource in self.resources[:2]:
+            perms = permissions_registry.get_perms(instance=resource, user=temp_user, use_cache=True)
+            cached_perms.append(perms)
+            cache_key = f"resource_perms:{resource.pk}:user:{temp_user.pk}"
+            cache_keys.append(cache_key)
+
+            # Verify permissions are cached
+            self.assertIsNotNone(cache.get(cache_key))
+            self.assertIn("view_resourcebase", perms)
+
+        other_user_cache_keys = []
+        for resource in self.resources[:2]:
+            permissions_registry.get_perms(instance=resource, user=self.test_user, use_cache=True)
+            other_key = f"resource_perms:{resource.pk}:user:{self.test_user.pk}"
+            other_user_cache_keys.append(other_key)
+            self.assertIsNotNone(cache.get(other_key))
+
+        temp_user.delete()
+
+        for cache_key in cache_keys:
+            self.assertIsNone(cache.get(cache_key), f"Cache key {cache_key} should be cleared after user deletion")
+
+        for other_key in other_user_cache_keys:
+            self.assertIsNotNone(cache.get(other_key), f"Cache key {other_key} should not be affected by user deletion")
+
+    def test_group_deletion_cache_invalidation(self):
+        """Test that cache is properly cleared when a group is deleted"""
+        temp_group, created = Group.objects.get_or_create(name=f"temp_group_{uuid4()}")
+
+        temp_group_profile, created = GroupProfile.objects.get_or_create(
+            group_id=temp_group.id,
+        )
+
+        temp_group, _ = Group.objects.get_or_create(name="test-group-2")
+        temp_group_profile = GroupProfile.objects.create(
+            group=temp_group, title="Test Group 2 ", slug="test-group-2", access="public"
+        )
+
+        temp_group_profile.refresh_from_db()
+
+        self.assertEqual(
+            temp_group_profile.group.id,
+            temp_group.id,
+            f"GroupProfile.group ({temp_group_profile.group}) should equal temp_group ({temp_group})",
+        )
+
+        temp_group.user_set.add(self.test_user, self.admin_user)
+
+        for resource in self.resources[:2]:  # Use first 2 resources
+            perm_spec = {"users": {}, "groups": {temp_group.name: ["view_resourcebase", "change_resourcebase"]}}
+            resource.set_permissions(perm_spec)
+
+        group_cache_keys = []
+        for resource in self.resources[:2]:
+            perms = permissions_registry.get_perms(instance=resource, group=temp_group, use_cache=True)
+            cache_key = f"resource_perms:{resource.pk}:group:{temp_group.pk}"
+            group_cache_keys.append(cache_key)
+
+            self.assertIsNotNone(cache.get(cache_key))
+            self.assertIn("view_resourcebase", perms)
+
+        user_cache_keys = []
+        for resource in self.resources[:2]:
+            for user in [self.test_user, self.admin_user]:
+                permissions_registry.get_perms(instance=resource, user=user, use_cache=True)
+                cache_key = f"resource_perms:{resource.pk}:user:{user.pk}"
+                user_cache_keys.append(cache_key)
+                self.assertIsNotNone(cache.get(cache_key))
+
+        unrelated_user = get_user_model().objects.create_user(
+            username=f"unrelated_user_{uuid4()}", email="unrelated@example.com", password="unrelated123"
+        )
+
+        unrelated_cache_keys = []
+        for resource in self.resources[:2]:
+            permissions_registry.get_perms(instance=resource, user=unrelated_user, use_cache=True)
+            cache_key = f"resource_perms:{resource.pk}:user:{unrelated_user.pk}"
+            unrelated_cache_keys.append(cache_key)
+            self.assertIsNotNone(cache.get(cache_key))
+
+        temp_group.delete()
+
+        for cache_key in group_cache_keys:
+            self.assertIsNone(
+                cache.get(cache_key), f"Group cache key {cache_key} should be cleared after group deletion"
+            )
+
+    def test_resource_deletion_cache_invalidation(self):
+        """Test that cache is properly cleared when a resource is deleted"""
+
+        # Create a temporary resource for deletion testing
+        temp_resource = ResourceBase.objects.create(
+            title=f"temp_resource_{uuid4()}",
+            uuid=str(uuid4()),
+            owner=self.test_user,
+            abstract="Temporary resource for deletion testing",
+            subtype="vector",
+            is_approved=True,
+            is_published=True,
+        )
+
+        # Set permissions on the temporary resource
+        perm_spec = {
+            "users": {
+                self.test_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "delete_resourcebase",
+                ],
+                self.admin_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                ],
+            },
+            "groups": {
+                self.test_group.name: ["view_resourcebase"],
+                self.anonymous.name: ["view_resourcebase"],
+            },
+        }
+        temp_resource.set_permissions(perm_spec)
+
+        cache_keys_to_check = []
+
+        user_perms = permissions_registry.get_perms(instance=temp_resource, user=self.test_user, use_cache=True)
+        test_user_key = f"resource_perms:{temp_resource.pk}:user:{self.test_user.pk}"
+        cache_keys_to_check.append(test_user_key)
+
+        admin_perms = permissions_registry.get_perms(instance=temp_resource, user=self.admin_user, use_cache=True)
+        admin_user_key = f"resource_perms:{temp_resource.pk}:user:{self.admin_user.pk}"
+        cache_keys_to_check.append(admin_user_key)
+
+        anonymous_user = AnonymousUser()
+        anon_perms = permissions_registry.get_perms(instance=temp_resource, user=anonymous_user, use_cache=True)
+        anon_key = f"resource_perms:{temp_resource.pk}:anonymous"
+        cache_keys_to_check.append(anon_key)
+
+        group_perms = permissions_registry.get_perms(instance=temp_resource, group=self.test_group, use_cache=True)
+        group_key = f"resource_perms:{temp_resource.pk}:group:{self.test_group.pk}"
+        cache_keys_to_check.append(group_key)
+
+        permissions_registry.get_perms(instance=temp_resource, use_cache=True)
+        all_key = f"resource_perms:{temp_resource.pk}:__ALL__"
+        cache_keys_to_check.append(all_key)
+
+        for cache_key in cache_keys_to_check:
+            self.assertIsNotNone(cache.get(cache_key), f"Cache key {cache_key} should exist before deletion")
+
+        self.assertIn("view_resourcebase", user_perms)
+        self.assertIn("change_resourcebase", user_perms)
+        self.assertIn("delete_resourcebase", user_perms)
+
+        self.assertIn("view_resourcebase", admin_perms)
+        self.assertIn("change_resourcebase", admin_perms)
+
+        self.assertIn("view_resourcebase", anon_perms)
+        self.assertIn("view_resourcebase", group_perms)
+
+        other_resource = self.resources[0]
+        other_resource_key = f"resource_perms:{other_resource.pk}:user:{self.test_user.pk}"
+        permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        temp_resource.delete()
+
+        for cache_key in cache_keys_to_check:
+            self.assertIsNone(cache.get(cache_key), f"Cache key {cache_key} should be cleared after resource deletion")
+
+        self.assertIsNotNone(
+            cache.get(other_resource_key), "Cache keys for other resources should not be affected by resource deletion"
+        )
+
+    def test_delete_resource_permissions_cache_function(self):
+        """Test the delete_resource_permissions_cache function directly"""
+        test_resource = self.resources[0]
+
+        temp_user = get_user_model().objects.create_user(
+            username=f"temp_user_{uuid4()}", email="temp@example.com", password="temppass123"
+        )
+
+        temp_group, _ = Group.objects.get_or_create(name=f"temp_group_{uuid4()}")
+        temp_group_profile = GroupProfile.objects.create(
+            group=temp_group, title="Temp Group", slug="temp-group", access="public"
+        )
+        anonymous_user = Profile.objects.get(username="AnonymousUser")
+
+        perm_spec = {
+            "users": {
+                temp_user.username: ["view_resourcebase", "change_resourcebase"],
+                self.test_user.username: ["view_resourcebase", "change_resourcebase"],
+            },
+            "groups": {
+                temp_group.name: ["view_resourcebase"],
+                self.test_group.name: ["view_resourcebase"],
+                self.anonymous.name: ["view_resourcebase"],
+            },
+        }
+        test_resource.set_permissions(perm_spec)
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(
+            instance=test_resource, user=self.test_user, group=self.test_group, use_cache=True
+        )
+
+        temp_user_key = f"resource_perms:{test_resource.pk}:user:{temp_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        temp_group_key = f"resource_perms:{test_resource.pk}:group:{temp_group.pk}"
+        test_group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_user, group_clear_cache=False)
+
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        self.assertIsNotNone(cache.get(temp_user_key))
+
+        permissions_registry.delete_resource_permissions_cache(anonymous_user, group_clear_cache=False)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        self.assertIsNotNone(cache.get(anonymous_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.delete_resource_permissions_cache(test_resource)
+
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(temp_group_key))
+        self.assertIsNone(cache.get(test_group_key))
+        self.assertIsNone(cache.get(all_key))
+
+        other_resource = self.resources[1]
+        permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
+        other_resource_key = f"resource_perms:{other_resource.pk}:user:{self.test_user.pk}"
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        permissions_registry.delete_resource_permissions_cache(test_resource)
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, group=temp_group, use_cache=True)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_user, group_clear_cache=False)
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNone(cache.get(temp_group_key))
+
+        temp_user.delete()
+        temp_group_profile.delete()
+        temp_group.delete()
