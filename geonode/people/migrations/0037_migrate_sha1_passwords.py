@@ -5,7 +5,7 @@ from geonode.people.hashers import PBKDF2SHA1WrappedSHA1PasswordHasher
 
 def forwards_func(apps, schema_editor):
     User = apps.get_model("people", "Profile")
-    users = User.objects.filter(password__startswith="sha1$")
+    users = User.objects.filter(password__startswith="sha1$").iterator()
     hasher = PBKDF2SHA1WrappedSHA1PasswordHasher()
     for user in users:
         algorithm, salt, sha1_hash = user.password.split("$", 2)
