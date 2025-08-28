@@ -7,7 +7,7 @@ services:
     volumes:
     - '.:/usr/src/geonode'
     - './geonode-mapstore-client:/usr/src/geonode-mapstore-client'
-    - './.devcontainer/.vscode:/usr/src/.vscode'
+    - './.devcontainer/._vscode:/usr/src/.vscode'
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
