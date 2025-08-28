@@ -1032,7 +1032,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.pk is None:
             # behaviour changed with Djagno 5.2
             base = ResourceBase.objects
-            _initial_value = 1 if not base.exists() else base.last().id + 1
+            _initial_value = 1 if not base.exists() else base.order_by("pk").last().id
             _next_value = get_next_value("ResourceBase", initial_value=_initial_value)  # type(self).__name__,
             if _initial_value > _next_value:
                 Sequence.objects.filter(name="ResourceBase").update(last=_initial_value)
