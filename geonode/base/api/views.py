@@ -33,6 +33,7 @@ from django.conf import settings
 from django.db.models import Subquery, QuerySet
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
@@ -1342,6 +1343,25 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 _obj.metadata.add(new_m)
             _obj.refresh_from_db()
             return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()), status=201)
+
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
+        url_path="iso_metadata_xml",
+    )
+    def iso_metadata_xml(self, request, pk=None):
+        """
+        Returns the resource's metadata XML document.
+        """
+        resource = self.get_object()
+
+        if not resource.metadata_xml:
+            return Response(
+                {"message": "Metadata XML not available for this resource."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        return HttpResponse(resource.metadata_xml, content_type="application/xml")
 
     def _get_request_params(self, request, encode=False):
         try:
