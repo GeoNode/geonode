@@ -58,7 +58,6 @@ import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
-from django.utils.module_loading import import_string
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
 
@@ -702,10 +701,10 @@ class BaseVectorFileHandler(BaseHandler):
             asset=asset,
         )
 
-    def create_asset_and_link(self, resource, files):
+    def create_asset_and_link(self, resource, files, action=None):
         if not files:
             return
-        asset = super().create_asset_and_link(resource, files)
+        asset = super().create_asset_and_link(resource, files, action)
         # remove temporary folders since now is managed by the asset
         storage_manager = StorageManager(
             remote_files={},
@@ -734,7 +733,7 @@ class BaseVectorFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset)
+            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset, create_asset=False)
             return dataset
         elif not dataset.exists() and _overwrite:
             logger.warning(
@@ -1106,7 +1105,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         return key
 
-    def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, **kwargs):
+    def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, create_asset=True, **kwargs):
         # getting execution_id information
         exec_obj = orchestrator.get_execution_object(execution_id)
         # getting the geonode resource
@@ -1115,19 +1114,19 @@ class BaseVectorFileHandler(BaseHandler):
 
         # once the upsert is completed, the geonode resource must be update to
         # load the new data from the database
-        if not asset:
-            asset = (
-                import_string(exec_obj.input_params.get("asset_module_path"))
-                .objects.filter(id=exec_obj.input_params.get("asset_id"))
-                .first()
+        if not asset and create_asset:
+            # if the asset is not passed, we can create a new one
+            asset = self.create_asset_and_link(
+                resource=dataset, files=exec_obj.input_params["files"], action=exec_obj.action
             )
+            # but we need to delete the previous one associated to the resource
 
         delete_dataset_cache(dataset.alternate)
         # recalculate featuretype info
         DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
         set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
 
-        dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
+        dataset = resource_manager.update(dataset.uuid, instance=dataset)
 
         self.handle_xml_file(dataset, exec_obj)
         self.handle_sld_file(dataset, exec_obj)

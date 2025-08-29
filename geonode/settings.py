@@ -2318,5 +2318,3 @@ AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"
 
 # Group default logo url
 GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
-
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8081", "http://localhost:8000", "http://locahost:8000"]

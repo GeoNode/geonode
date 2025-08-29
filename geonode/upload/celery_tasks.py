@@ -367,7 +367,7 @@ def create_geonode_resource(
                 execution_id=execution_id,
             )
 
-        handler.create_asset_and_link(resource, _files)
+        handler.create_asset_and_link(resource, _files, action=_exec.action)
 
         # assign geonode resource to ExectionRequest
         orchestrator.update_execution_request_obj(_exec, {"geonode_resource": resource})
@@ -834,6 +834,8 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
 
         # initiating the data store manager
         _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
+
+        _datastore.pre_processing(**kwargs)
 
         is_valid, errors = _datastore.upsert_validation(execution_id, **kwargs)
         if not is_valid:
