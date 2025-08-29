@@ -83,17 +83,3 @@ class UploadParallelismLimitSerializer(BaseDynamicModelSerializer):
             "max_number",
         )
         read_only_fields = ("slug",)
-
-
-class UpsertImporterSerializer(ImporterSerializer):
-    class Meta:
-        ref_name = "UpsertImporterSerializer"
-        model = ResourceBase
-        view_name = "importer_upload"
-        fields = ImporterSerializer.Meta.fields + (
-            "upsert_key",
-            "resource_pk",
-        )
-
-    upsert_key = serializers.CharField(required=False)
-    resource_pk = serializers.IntegerField(required=True)

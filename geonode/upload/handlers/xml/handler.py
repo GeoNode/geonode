@@ -41,16 +41,6 @@ class XMLFileHandler(MetadataFileHandler):
         ),
     }
 
-    @staticmethod
-    def can_do(action) -> bool:
-        """
-        Evaluate if the handler can take care of a specific action.
-        Each action (import/copy/etc...) can define different step so
-        the Handler must be ready to handle them. If is not in the actual
-        flow the already in place flow is followd
-        """
-        return action in XMLFileHandler.TASKS
-
     @property
     def supported_file_extension_config(self):
         return {
