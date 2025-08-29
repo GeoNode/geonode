@@ -456,11 +456,4 @@ class PermissionLevelMixin:
         """
         Checks if a has a given permission to the resource.
         """
-        user_perms = permissions_registry.get_perms(instance=self, user=user)
-
-        if permission not in user_perms:
-            # TODO cater for permissions with syntax base.permission_codename
-            # eg 'base.change_resourcebase'
-            return False
-
-        return True
+        return permissions_registry.user_has_perm(user, self, permission)
