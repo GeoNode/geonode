@@ -239,6 +239,7 @@ community."
             name="base:nic_admin",
             ows_url="http://localhost:8080/geoserver/wms",
         )
+        # map_created.set_default_permissions()
         resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
         map_id = map_created.id
 

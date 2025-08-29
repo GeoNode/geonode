@@ -47,8 +47,9 @@ from .permissions import (
     DATASET_EDIT_STYLE_PERMISSIONS,
 )
 
-from .utils import get_users_with_perms, get_user_obj_perms_model, skip_registered_members_common_group
+from .utils import get_users_with_perms, skip_registered_members_common_group
 from geonode.security.registry import permissions_registry
+from guardian.utils import get_user_obj_perms_model
 
 logger = logging.getLogger(__name__)
 
