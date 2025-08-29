@@ -1001,6 +1001,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     else:
         server_url = ogc_server_settings.LOCATION
     if layer.subtype in ["tileStore", "remote"] and layer.remote_service.ptype == "gxp_arcrestsource":
+        logger.info(f"Getting info for {layer.subtype} '{layer.alternate or layer.typename}'")
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
@@ -1010,11 +1011,14 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 [n["name"], _esri_types[n["type"]]] for n in body["fields"] if n.get("name") and n.get("type")
             ]
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(
+                f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'",
+                stack_info=True,
+            )
             attribute_map = []
     elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
         typename = layer.alternate if layer.alternate else layer.typename
+        logger.info(f"Getting WFS info for {layer.subtype} '{typename}'")
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
         dft_query = urlencode(
             {"service": "wfs", "version": "1.0.0", "request": "DescribeFeatureType", "typename": typename}
@@ -1032,8 +1036,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 if n.attrib.get("name") and n.attrib.get("type")
             ]
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(
+                f"Error while retrieving WFS info for {layer.subtype} '{typename}'... will try WMS", stack_info=True
+            )
             attribute_map = []
             # Try WMS instead
             dft_url = (
@@ -1058,6 +1063,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 )
             )
             try:
+                logger.info(f"Getting WMS info for {layer.subtype} '{layer.alternate or layer.typename}'")
                 req, body = http_client.get(dft_url, user=_user)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll("th"):
@@ -1067,11 +1073,11 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                         field_name = field.string
                     attribute_map.append([field_name, "xsd:string"])
             except Exception:
-                tb = traceback.format_exc()
-                logger.debug(tb)
+                logger.warning(f"Error while retrieving WMS info for {layer.subtype} '{typename}'", stack_info=True)
                 attribute_map = []
     elif layer.subtype in ["raster"]:
         typename = layer.alternate if layer.alternate else layer.typename
+        logger.info(f"Getting WCS info for {layer.subtype} '{typename}'")
         dc_url = f"{server_url}wcs?{urlencode({'service': 'wcs', 'version': '1.1.0', 'request': 'DescribeCoverage', 'identifiers': typename})}"
         try:
             req, body = http_client.get(dc_url, user=_user)
@@ -1080,8 +1086,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             path = f".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key"
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(f"Error while retrieving WCS info for {layer.subtype} '{typename}'", stack_info=True)
             attribute_map = []
     # Get attribute statistics & package for call to really_set_attributes()
     attribute_stats = defaultdict(dict)
@@ -1097,6 +1102,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             else:
                 result = None
             attribute_stats[layer.name][field] = result
+    logger.info(f"Found {len(attribute_map)} attributes for {layer.subtype}")
     set_attributes(layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats)
 
 
