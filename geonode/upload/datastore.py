@@ -74,21 +74,3 @@ class DataStoreManager:
         call the resource handler object to perform the import phase
         """
         return self.handler().import_resource(self.files, execution_id, **kwargs)
-
-    def upsert_validation(self, execution_id, **kwargs):
-        """
-        Call the resource handler to validate files for an upsert operation.
-        """
-        return self.handler().upsert_validation(self.files, execution_id, **kwargs)
-
-    def upsert_data(self, execution_id, **kwargs):
-        """
-        Call the resource handler to perform the upsert operation.
-        """
-        return self.handler().upsert_data(self.files, execution_id, **kwargs)
-
-    def refresh_geonode_resource(self, execution_id, **kwargs):
-        """
-        Call the resource handler to refresh the GeoNode resource after an update.
-        """
-        return self.handler().refresh_geonode_resource(execution_id, **kwargs)

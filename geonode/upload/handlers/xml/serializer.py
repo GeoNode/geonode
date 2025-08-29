@@ -31,5 +31,5 @@ class MetadataFileSerializer(DynamicModelSerializer):
 
     base_file = serializers.FileField()
     overwrite_existing_layer = serializers.BooleanField(required=False, default=True)
-    resource_pk = serializers.IntegerField(required=True)
+    resource_pk = serializers.CharField(required=True)
     action = serializers.CharField(required=True)

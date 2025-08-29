@@ -162,9 +162,7 @@ class ImporterViewSet(DynamicModelViewSet):
         # checking the correct handler for the uploaded files
         handler = orchestrator.get_handler(_data)
         # not file but handler means that is a remote resource
-        action = _data.get("action")
-
-        if handler and handler.can_do(action):
+        if handler:
             try:
                 extracted_params, _files = handler.extract_params_from_data(_data)
                 if "url" in extracted_params:
@@ -182,7 +180,6 @@ class ImporterViewSet(DynamicModelViewSet):
                     func_name=next(iter(handler.get_task_list(action=action))),
                     step=_(next(iter(handler.get_task_list(action=action)))),
                     input_params=input_params,
-                    resource=extracted_params.get("resource_pk", None),
                     action=action,
                     name=_file.name if _file else extracted_params.get("title", None),
                 )

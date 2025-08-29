@@ -17,7 +17,6 @@
 #
 #########################################################################
 import os
-from django.test import override_settings
 from dynamic_models.models import ModelSchema, FieldSchema
 import mock
 from geonode.base.populate_test_data import create_single_dataset
@@ -43,7 +42,6 @@ class TestModelSchemaSignal(TransactionImporterBaseTestSupport):
         )
 
     @mock.patch.dict(os.environ, {"IMPORTER_ENABLE_DYN_MODELS": "True"})
-    @override_settings(IMPORTER_ENABLE_DYN_MODELS=True)
     def test_delete_dynamic_model(self):
         """
         Ensure that the dynamic model is deleted

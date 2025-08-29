@@ -26,6 +26,7 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse
 from dynamic_models.models import FieldSchema, ModelSchema
+from geonode.layers.models import Dataset
 from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
@@ -43,9 +44,7 @@ logger = logging.getLogger()
 geourl = settings.GEODATABASE_URL
 
 
-@override_settings(
-    FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777, IMPORTER_ENABLE_DYN_MODELS=False
-)
+@override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777)
 class BaseImporterEndToEndTest(ImporterBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
@@ -78,13 +77,13 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         self.admin.is_superuser = True
         self.admin.is_staff = True
         self.admin.save()
-        # for el in Dataset.objects.all():
-        #    el.delete()
+        for el in Dataset.objects.all():
+            el.delete()
 
-    # def tearDown(self) -> None:
-    #    super().tearDown()
-    #    for el in Dataset.objects.all():
-    #        el.delete()
+    def tearDown(self) -> None:
+        super().tearDown()
+        for el in Dataset.objects.all():
+            el.delete()
 
     def _cleanup_layers(self, name):
         layer = [x for x in self.cat.get_resources() if name in x.name]
@@ -130,7 +129,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 raise Exception(f"Async still in progress after 1 min of waiting: {model_to_dict(exc_obj)}")
 
             # check if the dynamic model is created
-            if settings.IMPORTER_ENABLE_DYN_MODELS:
+            if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
                 _schema_id = ModelSchema.objects.filter(name__icontains=initial_name.lower().replace(" ", "_"))
                 self.assertTrue(_schema_id.exists())
                 schema_entity = _schema_id.first()

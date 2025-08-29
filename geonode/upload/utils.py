@@ -53,13 +53,9 @@ class ImporterRequestAction(enum.Enum):
     RESOURCE_METADATA_UPLOAD = _("resource_metadata_upload")
     RESOURCE_STYLE_UPLOAD = _("resource_style_upload")
     REPLACE = _("replace")
-    UPSERT = _("upsert")
 
 
 def error_handler(exc, exec_id=None):
-    err = f'{str(exc.detail if hasattr(exc, "detail") else exc.args[0])}'
-    if "Request:" in err:
-        return err
     return f'{str(exc.detail if hasattr(exc, "detail") else exc.args[0])}. Request: {exec_id}'
 
 
