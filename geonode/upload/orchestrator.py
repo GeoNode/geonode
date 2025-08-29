@@ -28,15 +28,17 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django_celery_results.models import TaskResult
+from geonode.base.models import ResourceBase
 from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
 from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer
+from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.utils import error_handler
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -85,6 +87,8 @@ class ImportOrchestrator:
                 return _serializer
         logger.info("specific serializer not found, fallback on the default one")
         is_overwrite_flow = _data.get("overwrite_existing_layer", False)
+        if _data.get("action") == ira.UPSERT.value:
+            return UpsertImporterSerializer
         if isinstance(is_overwrite_flow, str):
             is_overwrite_flow = ast.literal_eval(is_overwrite_flow.title())
         return OverwriteImporterSerializer if is_overwrite_flow else ImporterSerializer
@@ -313,7 +317,7 @@ class ImportOrchestrator:
         """
         execution = ExecutionRequest.objects.create(
             user=user,
-            geonode_resource=resource,
+            geonode_resource=ResourceBase.objects.filter(pk=resource).first().get_real_instance() if resource else None,
             func_name=func_name,
             step=step,
             input_params=input_params,

@@ -18,6 +18,7 @@
 #########################################################################
 import ast
 from django.db import connections
+from geonode.security.permissions import _to_compact_perms
 from geonode.storage.manager import StorageManager
 from geonode.upload.publisher import DataPublisher
 from geonode.upload.utils import call_rollback_function
@@ -25,7 +26,7 @@ import json
 import logging
 import os
 from subprocess import PIPE, Popen
-from typing import List
+from typing import List, Optional, Tuple
 from celery import chord, group
 
 from django.conf import settings
@@ -34,7 +35,7 @@ from dynamic_models.schema import ModelSchemaEditor
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, create_dynamic_structure
+from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
@@ -45,7 +46,7 @@ from geonode.upload.handlers.utils import (
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
-from geonode.upload.api.exceptions import ImportException
+from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.celery_app import importer_app
 from geonode.assets.utils import copy_assets_and_links, get_default_asset
 
@@ -57,6 +58,8 @@ import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
+from django.utils.module_loading import import_string
+from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
 
 
@@ -93,6 +96,7 @@ class BaseVectorFileHandler(BaseHandler):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         ),
+        ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
 
     @property
@@ -147,7 +151,7 @@ class BaseVectorFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return action in BaseHandler.TASKS
+        return action in BaseVectorFileHandler.TASKS
 
     @staticmethod
     def create_error_log(exc, task_name, *args):
@@ -266,15 +270,19 @@ class BaseVectorFileHandler(BaseHandler):
         try:
             name = instance.alternate.split(":")[1]
             schema = None
-            if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+            if settings.IMPORTER_ENABLE_DYN_MODELS:
                 schema = ModelSchema.objects.filter(name=name).first()
             if schema:
                 """
                 We use the schema editor directly, because the model itself is not managed
                 on creation, but for the delete since we are going to handle, we can use it
                 """
-                _model_editor = ModelSchemaEditor(initial_model=name, db_name=schema.db_name)
-                _model_editor.drop_table(schema.as_model())
+                try:
+                    _model_editor = ModelSchemaEditor(initial_model=name, db_name=schema.db_name)
+                    _model_editor.drop_table(schema.as_model())
+                except Exception as e:
+                    logger.info(f"database table already deleted: {e}")
+                    pass
                 ModelSchema.objects.filter(name=name).delete()
         except Exception as e:
             logger.error(f"Error during deletion of Dynamic Model schema: {e.args[0]}")
@@ -388,7 +396,7 @@ class BaseVectorFileHandler(BaseHandler):
                     # update the execution request object
                     # setup dynamic model and retrieve the group task needed for tun the async workflow
                     # create the async task for create the resource into geonode_data with ogr2ogr
-                    if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+                    if settings.IMPORTER_ENABLE_DYN_MODELS:
                         (
                             dynamic_model,
                             alternate,
@@ -410,7 +418,7 @@ class BaseVectorFileHandler(BaseHandler):
                         alternate,
                     )
 
-                    if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+                    if settings.IMPORTER_ENABLE_DYN_MODELS:
                         group_to_call = group(
                             celery_group.set(link_error=["dynamic_model_error_callback"]),
                             ogr_res.set(link_error=["dynamic_model_error_callback"]),
@@ -558,10 +566,11 @@ class BaseVectorFileHandler(BaseHandler):
     def create_dynamic_model_fields(
         self,
         layer: str,
-        dynamic_model_schema: ModelSchema,
-        overwrite: bool,
-        execution_id: str,
-        layer_name: str,
+        dynamic_model_schema: ModelSchema = None,
+        overwrite: bool = None,
+        execution_id: str = None,
+        layer_name: str = None,
+        return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
         layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
@@ -580,6 +589,9 @@ class BaseVectorFileHandler(BaseHandler):
                     "dim": (2 if not ogr.GeometryTypeToName(layer.GetGeomType()).lower().startswith("3d") else 3),
                 }
             ]
+
+        if not return_celery_group:
+            return layer_schema
 
         # ones we have the schema, here we create a list of chunked value
         # so the async task will handle max of 30 field per task
@@ -648,6 +660,33 @@ class BaseVectorFileHandler(BaseHandler):
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
         saved_dataset.refresh_from_db()
+
+        # if dynamic model is enabled, we can save up with is the primary key of the table
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
+            from django.db import connections
+
+            column = None
+            connection = connections["datastore"]
+            table_name = saved_dataset.alternate.split(":")[1]
+            with connection.cursor() as cursor:
+                column = connection.introspection.get_primary_key_columns(cursor, table_name)
+            if column:
+                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
+                if field:
+                    field.kwargs.update({"primary_key": True})
+                    field.save()
+                else:
+                    # getting the relative model schema
+                    schema = ModelSchema.objects.filter(name=table_name).first()
+                    # creating the field needed as primary key
+                    pk_field = FieldSchema(
+                        name=column[0],
+                        model_schema=schema,
+                        class_name="django.db.models.BigAutoField",
+                        kwargs={"null": False, "primary_key": True},
+                    )
+                    pk_field.save()
+
         return saved_dataset
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
@@ -695,18 +734,7 @@ class BaseVectorFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            delete_dataset_cache(dataset.alternate)
-            # recalculate featuretype info
-            DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
-            set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
-
-            dataset = resource_manager.update(dataset.uuid, instance=dataset)
-
-            self.handle_xml_file(dataset, _exec)
-            self.handle_sld_file(dataset, _exec)
-
-            resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
-            dataset.refresh_from_db()
+            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset)
             return dataset
         elif not dataset.exists() and _overwrite:
             logger.warning(
@@ -868,7 +896,7 @@ class BaseVectorFileHandler(BaseHandler):
             f"Rollback dynamic model & ogr2ogr step in progress for execid: {exec_id} resource published was: {instance_name}"
         )
         schema = None
-        if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
+        if settings.IMPORTER_ENABLE_DYN_MODELS:
             schema = ModelSchema.objects.filter(name=instance_name).first()
         if schema is not None:
             _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
@@ -898,6 +926,218 @@ class BaseVectorFileHandler(BaseHandler):
         handler_module_path = exec_object.input_params.get("handler_module_path")
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(instance_name)
+
+    def upsert_validation(self, files, execution_id, **kwargs: dict) -> Tuple[bool, Optional[str]]:
+        """
+        Perform the validation step to ensure that the file provided is valid
+        to perform an upsert on the selected dataset.
+            - Load the dynamic model for the selected dataset
+            - User ogr2ogr to read the schema of the uploaded file
+            - will evaluate if the field are coherent (int -> int = valid, int -> date = invalid)
+        return True/False, if false, also the reason why is not valid
+        """
+        # if the dynamic_models is not enabled or the target schema does not exists, we cannot perform the upser
+        if not settings.IMPORTER_ENABLE_DYN_MODELS:
+            raise UpsertException(
+                "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True"
+            )
+        # evaluate if the user can perform the operation on the selected resource
+
+        exec_obj = orchestrator.get_execution_object(exec_id=execution_id)
+
+        perms = _to_compact_perms(
+            permissions_registry.get_perms(
+                instance=ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first(),
+                user=exec_obj.user,
+            )
+        )
+        if "manage" in perms or "edit" in perms:
+            errors = []
+            # getting the saved schema and convert the newly uploaded file into the same object
+            target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
+            # let's check that the field in the uploaded file are coherent with the one preset
+            # loop on all the new field coming from the uploaded file
+            target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
+            new_file_schema_fields_as_list = [x["name"] for x in new_file_schema_fields]
+            differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
+            if any(differeces):
+                raise UpsertException(
+                    f"The columns in the source and target do not match they must be equal. The following are not expected or missing: {differeces}"
+                )
+            for field in new_file_schema_fields:
+                # check if the field exists in the previous schema
+                target_field = target_schema_fields.filter(name=field["name"]).first()
+                if target_field:
+                    # if is the primary key, we can skip the check
+                    # If the field exists the class name should be the same
+                    if not target_field.class_name == field["class_name"] and not target_field.kwargs.get(
+                        "primary_key"
+                    ):
+                        # if the class changes, is marked as error
+                        message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
+                        errors.append(message)
+                        logger.error(message)
+            return not errors, errors
+        else:
+            raise UpsertException(
+                "User does not have enough permissions to perform this action on the selected resource"
+            )
+
+    def __get_new_and_original_schema(self, files, execution_id):
+        # check if the execution_id is passed and if the geonode resource exists
+        exec_id = orchestrator.get_execution_object(execution_id)
+        target_resource = ResourceBase.objects.filter(pk=exec_id.input_params.get("resource_pk")).first()
+        if not target_resource:
+            raise UpsertException(
+                "Target dynamic models does not exists. Please re-upload the resource with IMPORTER_ENABLE_DYN_MODELS=True to generate the schema"
+            )
+        # retrieve the current schema for the resource
+        target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
+
+        # use ogr2ogr to read the uploaded files for the upsert
+        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        layers = self._select_valid_layers(all_layers)
+        if not layers:
+            raise UpsertException("No valid layers found in the provided file for upsert.")
+        layer = layers[0]
+        # Will generate the same schema as the target_resource_schema
+        new_file_schema_fields = self.create_dynamic_model_fields(
+            layer,
+            return_celery_group=False,
+        )
+
+        return target_schema_fields, new_file_schema_fields
+
+    def upsert_data(self, files, execution_id, **kwargs):
+        """
+        Function used to upsert the data for a vector resource.
+        The function will:
+            - loop on all the values in the new uploaded file
+            - if the upsert key exists, is marked as 'to update'
+            - if the upsert key does not exists, is maked as 'to insert'
+        Before saving the resources, an update of the schema is mandatory
+            - the new column are added as nullable to keep the retrocompatibility
+            - The pre-existing columns are NOT deleted
+        """
+
+        # getting execution_id information
+        exec_obj = orchestrator.get_execution_object(execution_id)
+
+        # getting the related model schema for the resource
+        original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
+        model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
+        if not model:
+            raise UpsertException(
+                "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled"
+            )
+
+        # get the rows that match the upsert key
+        OriginalResource = model.as_model()
+
+        # retrieve the upsert key.
+        upsert_key = self.extract_upsert_key(exec_obj, dynamic_model_instance=model)
+        if not upsert_key:
+            # if for any reason the key is not present, better to raise an error
+            raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
+        # use ogr2ogr to read the uploaded files values for the upsert
+        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        update_error = []
+        create_error = []
+        valid_create = 0
+        valid_update = 0
+        layers = self._select_valid_layers(all_layers)
+        if not layers:
+            raise UpsertException("No valid layers were found in the file provided")
+        # we can upsert just 1 layer at time
+        for feature in layers[0]:
+            feature_as_dict = feature.items()
+            filter_dict = {field: value for field, value in feature_as_dict.items() if field == upsert_key}
+            if not filter_dict:
+                # if is not possible to extract the feature from ogr2ogr, better to ignore the layer
+                logger.error("was not possible to extract the feature of the dataset, skipping...")
+                update_error.append(f"Was not possible to manage the following data: {feature}")
+                continue
+            to_update = OriginalResource.objects.filter(**filter_dict)
+            geom = feature.GetGeometryRef()
+            feature_as_dict.update({self.default_geometry_column_name: geom.ExportToWkt()})
+            if to_update:
+                try:
+                    to_update.update(**feature_as_dict)
+                    valid_update += 1
+                except Exception as e:
+                    logger.error(f"Error during update of {feature_as_dict} in upsert: {e}")
+                    update_error.append(str(e))
+            else:
+                try:
+                    OriginalResource.objects.create(**feature_as_dict)
+                    valid_create += 1
+                except Exception as e:
+                    logger.error(f"Error during creation of {feature_as_dict} in upsert: {e}")
+                    create_error.append(str(e))
+
+        # generating the resorucehandler infor to track the changes on ther resource
+
+        self.create_resourcehandlerinfo(
+            handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
+        )
+
+        return not update_error and not create_error, {
+            "errors": {"create": create_error, "update": update_error},
+            "data": {
+                "total": {
+                    "success": valid_update + valid_create,
+                    "error": len(create_error) + len(update_error),
+                },
+                "success": {"update": valid_update, "create": valid_create},
+                "error": {"update": len(update_error), "create": len(create_error)},
+            },
+        }
+
+    def extract_upsert_key(self, exec_obj, dynamic_model_instance):
+        # first we check if the upsert key is passed by the call
+        key = exec_obj.input_params.get("upsert_key")
+        if not key:
+            # if the upsert key is not passed, we use the primary key as upsert key
+            # the primary key is defined in the Fields of the dynamic model
+            # dynamic models raise error if we filter the json with ORM
+            key = [x.name for x in dynamic_model_instance.fields.all() if x.kwargs.get("primary_key")]
+            if key:
+                return key[0]
+
+        return key
+
+    def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, **kwargs):
+        # getting execution_id information
+        exec_obj = orchestrator.get_execution_object(execution_id)
+        # getting the geonode resource
+        if not dataset:
+            dataset = Dataset.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
+
+        # once the upsert is completed, the geonode resource must be update to
+        # load the new data from the database
+        if not asset:
+            asset = (
+                import_string(exec_obj.input_params.get("asset_module_path"))
+                .objects.filter(id=exec_obj.input_params.get("asset_id"))
+                .first()
+            )
+
+        delete_dataset_cache(dataset.alternate)
+        # recalculate featuretype info
+        DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
+        set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
+
+        dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
+
+        self.handle_xml_file(dataset, exec_obj)
+        self.handle_sld_file(dataset, exec_obj)
+
+        resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+        dataset.refresh_from_db()
+
+        orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
+
+        return dataset
 
 
 @importer_app.task(
