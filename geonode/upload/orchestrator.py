@@ -20,6 +20,7 @@ import ast
 import logging
 from typing import Optional
 from uuid import UUID
+import zipfile
 
 from celery import states
 from django.contrib.auth import get_user_model
@@ -31,6 +32,7 @@ from geonode.base.models import ResourceBase
 from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
+from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
 from geonode.upload.celery_app import importer_app
@@ -58,6 +60,13 @@ class ImportOrchestrator:
         If is part of the supported format, return the handler which can handle the import
         otherwise return None
         """
+        file_list = {}
+        if "zip_file" in _data or "kmz_file" in _data:
+            with zipfile.ZipFile(_data["base_file"], "r") as zip_ref:
+                # Get a list of all files inside the zip
+                file_list = organize_files_by_ext(zip_ref.namelist())
+        _data = _data | file_list
+
         for handler in self.get_handler_registry():
             can_handle = handler.can_handle(_data)
             match can_handle:

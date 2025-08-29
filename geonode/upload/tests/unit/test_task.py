@@ -18,6 +18,7 @@
 #########################################################################
 import os
 import shutil
+import tempfile
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -79,8 +80,6 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 "files": {"base_file": self.existing_file},
                 # "overwrite_existing_layer": True,
                 "store_spatial_files": True,
-                "asset_id": self.asset.id,
-                "asset_module_path": f"{self.asset.__module__}.{self.asset.__class__.__name__}",
             },
         )
 
@@ -296,6 +295,17 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         try:
             alternate = "geonode:alternate_foo_dataset"
             self.assertFalse(Dataset.objects.filter(alternate=alternate).exists())
+
+            _dir = tempfile.TemporaryDirectory()
+            shutil.copy(self.existing_file, _dir.name)
+
+            ExecutionRequest.objects.filter(exec_id=self.exec_id).update(
+                input_params={
+                    "files": {"base_file": f"{_dir.name}/valid.gpkg"},
+                    # "overwrite_existing_layer": True,
+                    "store_spatial_files": True,
+                }
+            )
 
             create_geonode_resource(
                 str(self.exec_id),
