@@ -159,8 +159,8 @@ class BaseRasterFileHandler(BaseHandler):
         if not isinstance(asset_handler_registry.get_default_handler(), LocalAssetHandler):
             raise ImportException("Only LocalAsset can be used for publishing raster data")
 
-    def create_asset_and_link(self, resource, files):
-        asset = super().create_asset_and_link(resource, files)
+    def create_asset_and_link(self, resource, files, action=None):
+        asset = super().create_asset_and_link(resource, files, action=action)
         # after the asset is created, we need to update the geoserver location
         # otherwise geoserver is not able to read the tiff file
         from geonode.upload.publisher import DataPublisher
