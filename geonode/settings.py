@@ -250,9 +250,9 @@ EXTRA_LANG_INFO = {
 AUTH_USER_MODEL = os.getenv("AUTH_USER_MODEL", "people.Profile")
 
 PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.SHA1PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "geonode.people.hashers.PBKDF2SHA1WrappedSHA1PasswordHasher",  # Wrapped Hasher
     # 'django.contrib.auth.hashers.Argon2PasswordHasher',
     # 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     # 'django.contrib.auth.hashers.BCryptPasswordHasher',
@@ -483,7 +483,7 @@ INSTALLED_APPS = (
     "django_filters",
     "mptt",
     "storages",
-    "floppyforms",
+    # "floppyforms",
     "tinymce",
     "widget_tweaks",
     "django_celery_results",
@@ -844,7 +844,7 @@ MIDDLEWARE = (
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
 # Sessions
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
 SESSION_ENGINE = os.environ.get("SESSION_ENGINE", "django.contrib.sessions.backends.db")
 if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.contrib.sessions.backends.cache"):
     SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested

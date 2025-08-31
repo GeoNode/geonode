@@ -24,6 +24,7 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
     name = "geonode.base"
+    default_auto_field = "django.db.models.BigAutoField"
     NOTIFICATIONS = (
         (
             "request_download_resourcebase",
