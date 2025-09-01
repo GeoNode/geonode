@@ -33,7 +33,7 @@ def get_dataset_count_by_services(service_id, user):
         if service.harvester:
             _h = service.harvester
             harvested_resources_ids = list(
-                _h.harvestable_resources.filter(should_be_harvested=True, geonode_resource__isnull=False).values_list(
+                _h.harvestable_resources.filter(geonode_resource__isnull=False).values_list(
                     "geonode_resource__id", flat=True
                 )
             )

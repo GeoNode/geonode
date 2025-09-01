@@ -14,43 +14,22 @@
         <p><strong>SERVICE NOTES:</strong> The service is accessed by Basic auth via the user <strong>{{service.username}}</strong></p>
       {% endif %}
     {% autoescape off %}
-        <h3>{% trans "Service Resources" %} <span class="badge">{{ total_resources }}</span></h3>
-        {% if service.harvester %}
-        {% with service.harvester.latest_harvesting_session.get_progress_percentage as harvesting_progress %}
-            {% if harvesting_progress >= 0 and harvesting_progress < 100.0 %}
-            <p>
-            <i class="fa fa-gear"></i> <i>{% trans "Resource harvesting in progress..." %}</i>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: {{ harvesting_progress }}%;" aria-valuenow="{{ harvesting_progress }}" aria-valuemin="0" aria-valuemax="100">{{ harvesting_progress }}%</div>
+        <div id="harvestProgressWrapper" style="display:none;">
+            <i class="fa fa-gear"></i> <i id="harvestProgressText"></i>
+            <div class="progress" id="harvestProgressContainer">
+                <div class="progress-bar" id="harvestProgressBar" role="progressbar"
+                    style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    0%
+                </div>
             </div>
-            </p>
+        </div>
+        <div id="resourcesContainer">
+            {% if datasets %}
+                {% include "services/service_resources_partial.html" %}
+            {% else %}
+                <p>{% trans "No resources have been imported yet." %}</p>
             {% endif %}
-        {% endwith %}
-        {% endif %}
-        {% if total_resources == 0 %}
-            <p>{% trans "No resources have been imported yet." %}</p>
-        {% else %}
-            <div class="row">
-            <table class="table">
-                <thead>
-                <th>{% trans "Title" %}</th>
-                <th>{% trans "Description" %}</th>
-                </thead>
-                {% for dataset in datasets %}
-                    <tr>
-                        <td><a href='{{ dataset.get_absolute_url }}'>{{dataset.title|striptags}}</a></td>
-                        <td>
-                            <div class="row">
-                                <div class="col-md-9">
-                                    {{dataset.abstract|striptags}}
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-            </div>
-        {% endif %}
+        </div>
     {% if resources.paginator.num_pages > 1 %}
         <div class="row">
             <nav aria-label="importable resources pages">
@@ -109,27 +88,64 @@
     {% endif %}
 {% endblock %}
 {% block extra_script %}
-    {{ block.super }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#harvestResources').on("click", function() {
-                $("#progressModal").modal("show");
-            });
-            $('button[name^=retry]').on('click', function () {
-                const resourceId = this.name.replace("retry-", "");
-                const retryUrl = "/services/{{ service.id }}/harvest/" + resourceId;
-                const retryForm = document.createElement('form');
-                retryForm.setAttribute("method", "post");
-                retryForm.setAttribute("action", retryUrl);
-                const csrfInputElem = document.createElement("input");
-                csrfInputElem.type = "hidden";
-                csrfInputElem.name = "csrfmiddlewaretoken";
-                csrfInputElem.value = "{{ csrf_token }}";
-                retryForm.appendChild(csrfInputElem);
-                document.body.appendChild(retryForm);
-                retryForm.submit();
-
-            });
+{{ block.super }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#harvestResources').on("click", function() {
+            $("#progressModal").modal("show");
         });
-    </script>
+
+        $('button[name^=retry]').on('click', function () {
+            const resourceId = this.name.replace("retry-", "");
+            const retryUrl = "/services/{{ service.id }}/harvest/" + resourceId;
+            const retryForm = document.createElement('form');
+            retryForm.setAttribute("method", "post");
+            retryForm.setAttribute("action", retryUrl);
+            const csrfInputElem = document.createElement("input");
+            csrfInputElem.type = "hidden";
+            csrfInputElem.name = "csrfmiddlewaretoken";
+            csrfInputElem.value = "{{ csrf_token }}";
+            retryForm.appendChild(csrfInputElem);
+            document.body.appendChild(retryForm);
+            retryForm.submit();
+        });
+
+        
+    let lastStatus = null;
+    let resourcesUpdated = false;
+
+    function updateHarvestProgress() {
+        $.get("{% url 'service_harvest_progress' service.id %}", function(data) {
+            let progress = data.progress || 0;
+
+            if (data.in_progress) {
+                $("#harvestProgressWrapper").show();
+                $("#harvestProgressText").text("Resource harvesting in progress...");
+                $("#harvestProgressBar")
+                    .css("width", progress + "%")
+                    .attr("aria-valuenow", progress)
+                    .text(Math.round(progress) + "%");
+                resourcesUpdated = false; // reset flag while harvesting
+            } else {
+                $("#harvestProgressWrapper").hide();
+                $("#harvestProgressText").text("");
+                $("#harvestProgressBar")
+                    .css("width", "0%")
+                    .attr("aria-valuenow", 0)
+                    .text("0%");
+
+                // Trigger partial API exactly once when in-progress → finished
+                if (lastStatus === "on-going" && !resourcesUpdated) {
+                    $("#resourcesContainer").load("{% url 'service_resources_partial' service.id %}");
+                    resourcesUpdated = true;
+                }
+            }
+
+        lastStatus = data.status;
+    });
+}
+    updateHarvestProgress();
+    setInterval(updateHarvestProgress, 7000)
+    });
+</script>
 {% endblock extra_script %}

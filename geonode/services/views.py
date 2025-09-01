@@ -22,7 +22,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -256,7 +256,7 @@ def service_detail(request, service_id):
     if service.harvester:
         _h = service.harvester
         harvested_resources_ids = list(
-            _h.harvestable_resources.filter(should_be_harvested=True, geonode_resource__isnull=False).values_list(
+            _h.harvestable_resources.filter(geonode_resource__isnull=False).values_list(
                 "geonode_resource__id", flat=True
             )
         )
@@ -352,3 +352,53 @@ def remove_service(request, service_id):
         service.harvester.delete()
         messages.add_message(request, messages.INFO, _(f"Service {service.title} has been deleted"))
         return HttpResponseRedirect(reverse("services"))
+
+
+@login_required
+def service_harvest_progress(request, service_id):
+    try:
+        service = Service.objects.get(id=service_id)
+        session = None
+        if service.harvester:
+            # Get latest active session if any
+            active_session = service.harvester.latest_harvesting_session
+            if active_session and active_session.status in ["pending", "on-going"]:
+                session = active_session
+        if session:
+            progress = session.get_progress_percentage()
+            status = session.status
+            in_progress = status in ["pending", "on-going"]
+        else:
+            progress = None
+            status = "no-session"
+            in_progress = False
+        return JsonResponse({"progress": progress, "status": status, "in_progress": in_progress})
+    except Service.DoesNotExist:
+        return JsonResponse({"progress": 0, "status": "not_found", "in_progress": False})
+
+
+@login_required
+def service_resources_partial(request, service_id):
+    service = get_object_or_404(Service, id=service_id)
+
+    harvested_resources_ids = []
+    if service.harvester:
+        _h = service.harvester
+        harvested_resources_ids = list(
+            _h.harvestable_resources.filter(geonode_resource__isnull=False).values_list(
+                "geonode_resource__id", flat=True
+            )
+        )
+
+    datasets = get_visible_resources(
+        queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids), user=request.user
+    )
+
+    return render(
+        request,
+        template_name="services/service_resources_partial.html",
+        context={
+            "datasets": datasets,
+            "total_resources": len(datasets),
+        },
+    )
