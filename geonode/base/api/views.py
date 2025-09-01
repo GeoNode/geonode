@@ -1470,11 +1470,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 )
         except Exception as e:
             logger.exception(e)
-            return Response(
-                {"message": "Error creating asset.", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return Response({"message": "Error creating asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=True, methods=["delete"], url_path=r"assets/(?P<asset_id>\d+)", url_name="delete_asset")
+    @action(detail=True, methods=["delete"], url_path=r"assets/(?P<asset_id>\d+)", url_name="delete-asset")
     def delete_asset(self, request, pk=None, asset_id=None, *args, **kwargs):
         """Deletes an asset and its link to the resource."""
         resource = self.get_object()
@@ -1496,9 +1494,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             return Response({"message": "Asset not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.exception(e)
-            return Response(
-                {"message": "Error deleting asset.", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return Response({"message": "Error deleting asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def base_linked_resources(instance, user, params):

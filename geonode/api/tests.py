@@ -1353,14 +1353,14 @@ class AssetDeleteApiTests(GeoNodeBaseTestSupport):
 
     def test_delete_asset_as_owner(self):
         self.client.force_login(self.admin_user)
-        url = reverse("base-resources-delete_asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
+        url = reverse("base-resources-delete-asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Asset.objects.filter(pk=self.asset1.pk).exists())
 
     def test_delete_asset_with_permission(self):
         self.client.force_login(self.test_user)
-        url = reverse("base-resources-delete_asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
+        url = reverse("base-resources-delete-asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Asset.objects.filter(pk=self.asset1.pk).exists())
@@ -1368,7 +1368,7 @@ class AssetDeleteApiTests(GeoNodeBaseTestSupport):
     def test_delete_asset_no_permission(self):
         no_perm_user = get_user_model().objects.create_user(username="no_perm", password="password")
         self.client.force_login(no_perm_user)
-        url = reverse("base-resources-delete_asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
+        url = reverse("base-resources-delete-asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Asset.objects.filter(pk=self.asset1.pk).exists())
