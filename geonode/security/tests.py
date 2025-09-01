@@ -813,6 +813,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             "override_existing_layer": True,
         }
         response = self.client.post(reverse("importer_upload"), data=payload)
+        self.assertEqual(201, response.status_code, response.json())
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource
         if layer is None:
             raise Exception("error during import")

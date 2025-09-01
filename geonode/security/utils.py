@@ -380,6 +380,8 @@ class AdvancedSecurityWorkflowManager:
             prev_perms = _perm_spec["users"].get(_resource.owner, []) if isinstance(_perm_spec["users"], dict) else []
             prev_perms += AdminViewPermissionsSet.view_perms.copy() + AdminViewPermissionsSet.admin_perms.copy()
             prev_perms = list(set(prev_perms))
+            if _resource.owner in perm_spec["users"]:
+                prev_perms = perm_spec["users"][_resource.owner]
             if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                 # Check if owner is a manager of any group and add admin_manager_perms accordingly
                 if _resource.owner not in ResourceGroupsAndMembersSet.managers:
