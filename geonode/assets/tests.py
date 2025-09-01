@@ -33,13 +33,12 @@ from django.urls import reverse
 
 from rest_framework.test import APITestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.upload.models import UploadSizeLimit
 
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.local import LocalAssetHandler
 from geonode.assets.models import Asset, LocalAsset
-from geonode.assets.utils import create_asset, create_asset_and_link
-from geonode.base.models import ResourceBase
+from geonode.assets.utils import create_asset, create_asset_and_link, unlink_asset
+from geonode.base.models import ResourceBase, Link
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -510,70 +509,77 @@ class AssetCreationTests(GeoNodeBaseTestSupport):
         self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")
 
 
-class AssetsUploadSizeLimitTests(GeoNodeBaseTestSupport):
+class DeleteAssetTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
         self.user = get_user_model().objects.get(username="admin")
-        self.client.login(username="admin", password="admin")
-        # Set a small max_size for asset_upload_size in the UploadSizeLimit model
-        UploadSizeLimit.objects.update_or_create(
-            slug="asset_upload_size",
-            defaults={
-                "description": "Max size for the uploaded assets file via API",
-                "max_size": 50,
-            },
+        self.resource1 = ResourceBase.objects.create(
+            title="Test Resource 1",
+            owner=self.user,
+            uuid=str(uuid4()),
         )
-
-    def test_upload_asset_large_file(self):
-        """
-        Ensure that when a file upload exceeds the size limit,
-        no asset is created and a 400 error is returned.
-        """
-        # Get initial count of assets
-        initial_asset_count = Asset.objects.count()
-
-        # Create a file larger than the asset_upload_size limit
-        limit = UploadSizeLimit.objects.get(slug="asset_upload_size").max_size
-        big_file_content = b"a" * (int(limit * 1024 * 1024) + 1)
-        big_file = SimpleUploadedFile("big_file.txt", big_file_content, "text/plain")
-
-        url = reverse("assets-list")
-        response = self.client.post(
-            url,
-            {
-                "file": big_file,
-                "title": "Big Asset",
-                "type": "text",
-            },
-            format="multipart",
+        self.resource2 = ResourceBase.objects.create(
+            title="Test Resource 2",
+            owner=self.user,
+            uuid=str(uuid4()),
         )
+        self.asset = create_asset(self.user, asset_type="document", title="Test Asset for Deletion", files=[ONE_JSON])
+        self.protected_asset = create_asset(self.user, asset_type="document", title="Original", files=[TWO_JSON])
+        self.link1 = Link.objects.create(resource=self.resource1, asset=self.asset)
+        self.protected_link = Link.objects.create(resource=self.resource1, asset=self.protected_asset)
 
-        # Assert 400 status code is returned
-        self.assertEqual(response.status_code, 400)
+    def test_delete_protected_asset(self):
+        """Test that a protected asset (e.g., 'Original') is not deleted."""
+        self.assertTrue(Asset.objects.filter(pk=self.protected_asset.pk).exists())
+        self.assertTrue(Link.objects.filter(pk=self.protected_link.pk).exists())
 
-        # Assert no new asset was created
-        self.assertEqual(Asset.objects.count(), initial_asset_count)
+        deleted, msg = unlink_asset(self.resource1, self.protected_asset)
 
-    def test_upload_asset_small_file(self):
-        """
-        Ensure that when a file upload is within the size limit,
-        the asset is created.
-        """
-        small_file_content = b"small content"  # Much smaller than limit
-        small_file = SimpleUploadedFile("small_file.txt", small_file_content, "text/plain")
+        self.assertFalse(deleted)
+        self.assertEqual(msg, "Asset is protected and will not be unlinked or deleted.")
+        self.assertTrue(Asset.objects.filter(pk=self.protected_asset.pk).exists())
+        self.assertTrue(Link.objects.filter(pk=self.protected_link.pk).exists())
 
-        url = reverse("assets-list")
-        response = self.client.post(
-            url,
-            {
-                "file": small_file,
-                "title": "Small Asset",
-                "type": "text",
-            },
-            format="multipart",
-        )
-        self.assertEqual(response.status_code, 201)
-        self.assertIn("pk", response.data["local_asset"])
-        asset = Asset.objects.get(pk=response.data["local_asset"]["pk"])
-        self.assertIsInstance(asset.localasset, LocalAsset)
+    def test_delete_asset_no_link(self):
+        """Test that nothing happens if there is no link between the resource and the asset."""
+        asset_no_link = create_asset(self.user, title="Asset with no link", files=[THREE_JSON])
+        self.assertTrue(Asset.objects.filter(pk=asset_no_link.pk).exists())
+
+        deleted, msg = unlink_asset(self.resource1, asset_no_link)
+
+        self.assertFalse(deleted)
+        self.assertEqual(msg, "Link between resource and asset not found.")
+        self.assertTrue(Asset.objects.filter(pk=asset_no_link.pk).exists())
+
+    def test_delete_asset_linked_to_other_resources(self):
+        """Test that only the link is deleted when the asset is linked to other resources."""
+        # Link the asset to a second resource
+        link2 = Link.objects.create(resource=self.resource2, asset=self.asset)
+        self.assertEqual(Link.objects.filter(asset=self.asset).count(), 2)
+        self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+
+        deleted, msg = unlink_asset(self.resource1, self.asset)
+
+        self.assertTrue(deleted)
+        self.assertIn("Asset not deleted as it is linked to other resources.", msg)
+        self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+        self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
+        self.assertTrue(Link.objects.filter(pk=link2.pk).exists())
+        self.assertEqual(Link.objects.filter(asset=self.asset).count(), 1)
+
+    def test_delete_asset_and_link(self):
+        """Test that both the asset and the link are deleted when the asset is only linked to one resource."""
+        self.assertEqual(Link.objects.filter(asset=self.asset).count(), 1)
+        self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+        asset_pk = self.asset.pk
+        asset_file_path = self.asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path))
+
+        deleted, msg = unlink_asset(self.resource1, self.asset)
+
+        self.assertTrue(deleted)
+        self.assertIn(f"Removed link and asset {asset_pk} for resource {self.resource1.pk}.", msg)
+        self.assertFalse(Asset.objects.filter(pk=asset_pk).exists())
+        self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
+        self.assertFalse(os.path.exists(asset_file_path))

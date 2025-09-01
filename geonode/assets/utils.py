@@ -135,7 +135,7 @@ def create_asset_and_link(
             if isinstance(first_file, (str, Path))
             else getattr(first_file, "name", None) if first_file else None
         )
-        default_title, default_ext = os.path.splitext(filename) if filename else (None, None)
+        default_title, default_ext = os.path.splitext(filename) if filename else ("Unknown", None)
         if default_ext:
             default_ext = default_ext.lstrip(".")
         link_type = link_type or find_type(default_ext) if default_ext else None
@@ -143,7 +143,7 @@ def create_asset_and_link(
             owner=owner,
             files=files,
             handler=handler,
-            title=title or default_title or "Unknown",
+            title=title or default_title,
             description=description,
             asset_type=asset_type,
             clone_files=clone_files,
@@ -201,3 +201,50 @@ def rollback_asset_and_link(asset, link):
             asset.delete()  # TODO: make sure we are only deleting from DB and not also the stored data
     except Exception as e:
         logger.error(f"Could not rollback asset[{asset}] and link[{link}]", exc_info=e)
+
+
+def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True):
+    """
+    Unlinks an asset from a resource. By default, the asset is deleted.
+
+    Behavior:
+    - If the asset title is "Original" or "Files", it will not be unlinked or deleted.
+    - If remove_asset=False:
+        * Only the link between the resource and asset is removed.
+    - If remove_asset=True(default):
+        * If the asset is linked to other resources, only the link is removed.
+        * If the asset is only linked to the provided resource, the asset itself is deleted,
+          which in turn triggers the deletion of the associated files.
+    """
+    if asset.title in ["Original", "Files"]:
+        logger.info(f"Asset '{asset.title}' is protected and will not be unlinked or deleted.")
+        return False, "Asset is protected and will not be unlinked or deleted."
+
+    link = Link.objects.filter(resource=resource, asset=asset).first()
+    if not link:
+        return False, "Link between resource and asset not found."
+
+    if not remove_asset:
+        # Always just remove the link
+        link.delete()
+        msg = f"Removed link between resource {resource.pk} and asset {asset.pk}. Asset not deleted."
+        logger.info(msg)
+        return True, msg
+
+    # Check if the asset is linked to other resources
+    other_links_count = Link.objects.filter(asset=asset).exclude(pk=link.pk).count()
+
+    if other_links_count > 0:
+        # Only delete the link
+        link.delete()
+        msg = f"Removed link between resource {resource.pk} and asset {asset.pk}. Asset not deleted as it is linked to other resources."
+        logger.info(msg)
+        return True, msg
+    else:
+        # Delete the link and the asset. Post delete signal call the handler to remove the file eg: LocalAsset which will handle the deletion of the physical file.
+        asset_pk = asset.pk
+        link.delete()
+        asset.delete()
+        msg = f"Removed link and asset {asset_pk} for resource {resource.pk}."
+        logger.info(msg)
+        return True, msg

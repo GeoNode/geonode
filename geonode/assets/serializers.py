@@ -17,23 +17,16 @@
 #
 #########################################################################
 import logging
-import os
+
 from django.contrib.auth import get_user_model
 
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicComputedField
-from geonode.base.models import ResourceBase
-from geonode.assets.utils import create_asset, create_asset_and_link
-from django.shortcuts import get_object_or_404
-from rest_framework import serializers
-from geonode.security.registry import permissions_registry
 
 from geonode.assets.models import (
     Asset,
     LocalAsset,
 )
-from rest_framework.exceptions import PermissionDenied
-from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -68,81 +61,19 @@ class AssetSubclassField(DynamicComputedField):
 
 class AssetSerializer(DynamicModelSerializer):
 
-    owner = SimpleUserSerializer(embed=False, required=False, read_only=True)
-    asset_type = ClassTypeField(required=False)
-    subinfo = AssetSubclassField(required=False)
+    owner = SimpleUserSerializer(embed=False)
+    asset_type = ClassTypeField()
+    subinfo = AssetSubclassField()
 
     class Meta:
         model = Asset
         name = "asset"
         # fields = ("pk", "title", "description", "type", "owner", "created")
         fields = ("pk", "title", "description", "type", "owner", "created", "asset_type", "subinfo")
-        extra_kwargs = {
-            "title": {"required": False},
-            "description": {"required": False},
-            "type": {"required": False},
-            "created": {"required": False, "read_only": True},
-        }
 
 
 class LocalAssetSerializer(AssetSerializer):
-    file = serializers.FileField(write_only=True, required=True)
-    resource_id = serializers.IntegerField(required=False)
-
     class Meta(AssetSerializer.Meta):
         model = LocalAsset
         name = "local_asset"
-        fields = AssetSerializer.Meta.fields + ("location", "file", "resource_id")
-        extra_kwargs = {
-            "title": {"required": False},
-            "description": {"required": False},
-            "type": {"required": False},
-            "location": {"required": False, "read_only": True},
-        }
-
-    def create(self, validated_data):
-        file = validated_data.pop("file")
-        resource_id = validated_data.pop("resource_id", None)
-        title = validated_data.pop("title", None)
-        description = validated_data.pop("description", None)
-        asset_type = validated_data.pop("type", None)
-        user = self.context["request"].user
-
-        resource = None
-
-        if file and not os.path.splitext(file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
-            logger.debug("This file type is not allowed")
-            raise serializers.ValidationError("This file type is not allowed")
-
-        if resource_id:
-            resource = get_object_or_404(ResourceBase, pk=resource_id)
-            if not permissions_registry.user_has_perm(
-                user, resource.get_self_resource(), "change_resourcebase", include_virtual=True
-            ):
-                logger.debug("The user does not have permissions to change the resource selected")
-                raise PermissionDenied("The user does not have permissions to change the resource selected")
-
-        if not title:
-            title = file.name
-
-        if resource:
-            localasset, _ = create_asset_and_link(
-                resource,
-                user,
-                [file],
-                title=title,
-                description=description,
-                asset_type=asset_type,
-                clone_files=False,
-            )
-        else:
-            localasset = create_asset(
-                user,
-                [file],
-                title=title,
-                description=description,
-                asset_type=asset_type,
-                clone_files=False,
-            )
-
-        return localasset
+        fields = AssetSerializer.Meta.fields + ("location",)

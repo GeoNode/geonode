@@ -28,16 +28,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from geonode.assets.handlers import asset_handler_registry
-from geonode.assets.serializers import AssetSerializer, LocalAssetSerializer
+from geonode.assets.serializers import AssetSerializer
 from geonode.assets.utils import get_perms_response
 from geonode.assets.models import Asset
-from rest_framework import status
 
 from geonode.base.api.filters import (
     DynamicSearchFilter,
 )
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.base.api.permissions import UserHasPerms
 
 logger = logging.getLogger(__name__)
 
@@ -47,10 +45,7 @@ class AssetViewSet(DynamicModelViewSet):
     API endpoint that allows Assets to be viewed or edited.
     """
 
-    permission_classes = [
-        IsAuthenticatedOrReadOnly,
-        UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
-    ]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -60,11 +55,6 @@ class AssetViewSet(DynamicModelViewSet):
     queryset = Asset.objects.all().order_by("-created")
     serializer_class = AssetSerializer  # TODO: appropriate Serializer should be switched for each Asset instance
     pagination_class = GeoNodeApiPagination
-
-    def get_serializer_class(self):
-        if self.request.method == "POST" and "file" in self.request.FILES:
-            return LocalAssetSerializer
-        return AssetSerializer
 
     def list(self, request, *args, **kwargs):
         """
@@ -89,12 +79,6 @@ class AssetViewSet(DynamicModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(owner=self.request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def _get_file(self, request, pk, attachment: bool = False, path=None):
         asset = get_object_or_404(Asset, pk=pk)

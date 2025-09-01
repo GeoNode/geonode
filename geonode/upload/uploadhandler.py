@@ -50,15 +50,13 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
         )
         self.max_size_allowed = 0
         self.activated = False
-
         dataset_upload_url = reverse("importer_upload")
-        asset_upload_url = reverse("assets-list")
 
         # If the post is too large, we create a empty UploadedFile, otherwise another handler will take care or it.
         if self.is_view_elegible_for_size_restriction:
             if dataset_upload_url in input_data.path:
                 file_type = "dataset_upload_size"
-            elif asset_upload_url in input_data.path:
+            elif self.request.resolver_match.url_name == "base-resources-assets":
                 file_type = "asset_upload_size"
             else:
                 file_type = "document_upload_size"
