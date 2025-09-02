@@ -227,7 +227,7 @@ def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True
     if not remove_asset:
         # Always just remove the link
         link.delete()
-        msg = f"Removed link between resource {resource.pk} and asset {asset.pk}. Asset not deleted."
+        msg = f"Asset {asset.pk} was unlinked from resource {resource.pk} but not deleted."
         logger.info(msg)
         return True, msg
 
@@ -237,7 +237,7 @@ def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True
     if other_links_count > 0:
         # Only delete the link
         link.delete()
-        msg = f"Removed link between resource {resource.pk} and asset {asset.pk}. Asset not deleted as it is linked to other resources."
+        msg = f"Asset {asset.pk} was unlinked but could not be deleted."
         logger.info(msg)
         return True, msg
     else:
@@ -245,6 +245,6 @@ def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True
         asset_pk = asset.pk
         link.delete()
         asset.delete()
-        msg = f"Removed link and asset {asset_pk} for resource {resource.pk}."
+        msg = f"Asset {asset_pk} was unlinked and deleted from resource {resource.pk}."
         logger.info(msg)
         return True, msg

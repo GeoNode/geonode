@@ -1453,7 +1453,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
 
         if file and not os.path.splitext(file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
             logger.debug("This file type is not allowed")
-            return Response({"message": "This file type is not allowed."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "The uploaded file type is not allowed."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             handler = asset_handler_registry.get_default_handler()
             asset, link = create_asset_and_link(
@@ -1461,7 +1461,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             )
             if asset and link:
                 return Response(
-                    {"message": "Asset created and linked successfully.", "asset_id": asset.id, "link_id": link.id},
+                    {"message": "Asset created and linked successfully.", "asset_id": asset.id},
                     status=status.HTTP_201_CREATED,
                 )
             else:
@@ -1491,10 +1491,12 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 return Response({"message": message}, status=status.HTTP_403_FORBIDDEN)
 
         except Asset.DoesNotExist:
-            return Response({"message": "Asset not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": f"The requested {asset_id} does not exists"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.exception(e)
-            return Response({"message": "Error deleting asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"message": f"Error deleting asset {asset_id}."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 def base_linked_resources(instance, user, params):

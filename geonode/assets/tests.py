@@ -558,11 +558,12 @@ class DeleteAssetTests(GeoNodeBaseTestSupport):
         link2 = Link.objects.create(resource=self.resource2, asset=self.asset)
         self.assertEqual(Link.objects.filter(asset=self.asset).count(), 2)
         self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+        asset_pk = self.asset.pk
 
         deleted, msg = unlink_asset(self.resource1, self.asset)
 
         self.assertTrue(deleted)
-        self.assertIn("Asset not deleted as it is linked to other resources.", msg)
+        self.assertIn(f"Asset {asset_pk} was unlinked but could not be deleted.", msg)
         self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
         self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
         self.assertTrue(Link.objects.filter(pk=link2.pk).exists())
@@ -579,7 +580,7 @@ class DeleteAssetTests(GeoNodeBaseTestSupport):
         deleted, msg = unlink_asset(self.resource1, self.asset)
 
         self.assertTrue(deleted)
-        self.assertIn(f"Removed link and asset {asset_pk} for resource {self.resource1.pk}.", msg)
+        self.assertIn(f"Asset {asset_pk} was unlinked and deleted from resource {self.resource1.pk}.", msg)
         self.assertFalse(Asset.objects.filter(pk=asset_pk).exists())
         self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
         self.assertFalse(os.path.exists(asset_file_path))
