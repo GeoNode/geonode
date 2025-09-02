@@ -108,8 +108,6 @@ def create_asset(
         return asset
     except Exception as e:
         logger.error(f"Error creating Asset: {e}", exc_info=e)
-        if asset:
-            asset.delete()
         raise
 
 
@@ -126,7 +124,7 @@ def create_asset_and_link(
     mime=None,
     clone_files: bool = True,
 ) -> tuple[Asset, Link]:
-
+    asset_handler = handler or asset_handler_registry.get_default_handler()
     asset = link = None
     try:
         first_file = next(iter(files)) if len(files) else None
@@ -142,7 +140,7 @@ def create_asset_and_link(
         asset = create_asset(
             owner=owner,
             files=files,
-            handler=handler,
+            handler=asset_handler,
             title=title or default_title,
             description=description,
             asset_type=asset_type,
@@ -152,7 +150,7 @@ def create_asset_and_link(
         link = create_link(
             resource,
             asset,
-            asset_handler=handler,
+            asset_handler=asset_handler,
             link_type=link_type,
             extension=extension,
             name=title,
@@ -237,7 +235,7 @@ def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True
     if other_links_count > 0:
         # Only delete the link
         link.delete()
-        msg = f"Asset {asset.pk} was unlinked but could not be deleted."
+        msg = f"Asset {asset.pk} was unlinked but not deleted, because still linked to {other_links_count} resources"
         logger.info(msg)
         return True, msg
     else:

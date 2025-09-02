@@ -559,11 +559,13 @@ class DeleteAssetTests(GeoNodeBaseTestSupport):
         self.assertEqual(Link.objects.filter(asset=self.asset).count(), 2)
         self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
         asset_pk = self.asset.pk
-
+        other_links_count = Link.objects.filter(asset=self.asset).exclude(pk=link2.pk).count()
         deleted, msg = unlink_asset(self.resource1, self.asset)
 
         self.assertTrue(deleted)
-        self.assertIn(f"Asset {asset_pk} was unlinked but could not be deleted.", msg)
+        self.assertIn(
+            f"Asset {asset_pk} was unlinked but not deleted, because still linked to {other_links_count} resources", msg
+        )
         self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
         self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
         self.assertTrue(Link.objects.filter(pk=link2.pk).exists())

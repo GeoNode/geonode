@@ -1452,8 +1452,11 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             )
 
         if file and not os.path.splitext(file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
-            logger.debug("This file type is not allowed")
-            return Response({"message": "The uploaded file type is not allowed."}, status=status.HTTP_400_BAD_REQUEST)
+            logger.debug(f"{os.path.splitext(file.name)[1].lower()[1:]} file type is not allowed")
+            return Response(
+                {"message": f"The uploaded file type {os.path.splitext(file.name)[1].lower()[1:]} is not allowed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             handler = asset_handler_registry.get_default_handler()
             asset, link = create_asset_and_link(
@@ -1461,7 +1464,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             )
             if asset and link:
                 return Response(
-                    {"message": "Asset created and linked successfully.", "asset_id": asset.id},
+                    {"message": "Asset created and linked successfully.", "asset_id": asset.id, "link_id": link.id},
                     status=status.HTTP_201_CREATED,
                 )
             else:
@@ -1482,7 +1485,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 status=status.HTTP_403_FORBIDDEN,
             )
         try:
-            asset = get_object_or_404(Asset, pk=asset_id)
+            asset = Asset.objects.get(pk=asset_id)
             success, message = unlink_asset(resource, asset)
 
             if success:
