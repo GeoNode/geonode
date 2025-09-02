@@ -241,46 +241,12 @@ def rescan_service(request, service_id):
 def service_detail(request, service_id):
     """This view shows the details of a service"""
 
-    services = Service.objects.filter(resourcebase_ptr_id=service_id)
-
-    if not services.exists():
-        messages.add_message(request, messages.ERROR, _("You dont have enougth rigths to see the resource detail"))
-        return redirect(reverse("services"))
-    service = services.first()
+    service, resources, total_resources = _get_service_and_resources(service_id, request.user, request.GET.get("page"))
 
     permissions_json = _perms_info_json(service)
 
     perms_list = permissions_registry.get_perms(instance=service, user=request.user)
 
-    harvested_resources_ids = []
-    if service.harvester:
-        _h = service.harvester
-        harvested_resources_ids = list(
-            _h.harvestable_resources.filter(geonode_resource__isnull=False).values_list(
-                "geonode_resource__id", flat=True
-            )
-        )
-    already_imported_datasets = get_visible_resources(
-        queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids), user=request.user
-    )
-    resources_being_harvested = []
-
-    all_resources = list(resources_being_harvested) + list(already_imported_datasets)
-
-    paginator = Paginator(all_resources, getattr(settings, "CLIENT_RESULTS_LIMIT", 25), orphans=3)
-    page = request.GET.get("page")
-    try:
-        resources = paginator.page(page)
-    except PageNotAnInteger:
-        resources = paginator.page(1)
-    except EmptyPage:
-        resources = paginator.page(paginator.num_pages)
-
-    # pop the handler out of the session in order to free resources
-    # - we had stored the service handler on the session in order to
-    # speed up the register/harvest resources flow. However, for services
-    # with many resources, keeping the handler in the session leads to degraded
-    # performance
     try:
         request.session.pop(service.service_url)
     except KeyError:
@@ -291,14 +257,12 @@ def service_detail(request, service_id):
         template_name="services/service_detail.html",
         context={
             "service": service,
-            "datasets": already_imported_datasets,
-            # "resource_jobs": (r for r in resources if isinstance(r, HarvestJob)),
+            "resources": resources,
             "resource_jobs": (),
             "permissions_json": permissions_json,
             "permissions_list": perms_list,
             "can_add_resorces": request.user.has_perm("base.add_resourcebase"),
-            "resources": resources,
-            "total_resources": len(already_imported_datasets),
+            "total_resources": total_resources,
         },
     )
 
@@ -379,26 +343,44 @@ def service_harvest_progress(request, service_id):
 
 @login_required
 def service_resources_partial(request, service_id):
-    service = get_object_or_404(Service, id=service_id)
-
-    harvested_resources_ids = []
-    if service.harvester:
-        _h = service.harvester
-        harvested_resources_ids = list(
-            _h.harvestable_resources.filter(geonode_resource__isnull=False).values_list(
-                "geonode_resource__id", flat=True
-            )
-        )
-
-    datasets = get_visible_resources(
-        queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids), user=request.user
-    )
+    service, resources, total_resources = _get_service_and_resources(service_id, request.user, request.GET.get("page"))
 
     return render(
         request,
         template_name="services/service_resources_partial.html",
         context={
-            "datasets": datasets,
-            "total_resources": len(datasets),
+            "service": service,
+            "resources": resources,
+            "total_resources": total_resources,
         },
     )
+
+
+def _get_service_and_resources(service_id, user, page):
+    """
+    Common helper to fetch a service and its paginated resources.
+    """
+    service = get_object_or_404(Service, id=service_id)
+
+    harvested_resources_ids = []
+    if service.harvester:
+        harvested_resources_ids = list(
+            service.harvester.harvestable_resources.filter(geonode_resource__isnull=False).values_list(
+                "geonode_resource__id", flat=True
+            )
+        )
+
+    datasets = get_visible_resources(queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids), user=user)
+
+    resources_being_harvested = []
+    all_resources = list(resources_being_harvested) + list(datasets)
+
+    paginator = Paginator(all_resources, getattr(settings, "CLIENT_RESULTS_LIMIT", 25), orphans=3)
+    try:
+        resources = paginator.page(page)
+    except PageNotAnInteger:
+        resources = paginator.page(1)
+    except EmptyPage:
+        resources = paginator.page(paginator.num_pages)
+
+    return service, resources, len(datasets)

@@ -14,13 +14,13 @@
                 <th>{% trans "Title" %}</th>
                 <th>{% trans "Description" %}</th>
             </thead>
-            {% for dataset in datasets %}
+            {% for resource in resources %}
                 <tr>
-                    <td><a href="{{ dataset.get_absolute_url }}">{{ dataset.title|striptags }}</a></td>
+                    <td><a href="{{ resource.get_absolute_url }}">{{ resource.title|striptags }}</a></td>
                     <td>
                         <div class="row">
                             <div class="col-md-9">
-                                {{ dataset.abstract|striptags }}
+                                {{ resource.abstract|striptags }}
                             </div>
                         </div>
                     </td>
