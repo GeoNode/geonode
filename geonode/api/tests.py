@@ -945,7 +945,7 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
 
     @classmethod
     def _create_resources(self):
-        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
+        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {}}
 
         for x in range(20):
             d: ResourceBase = ResourceBase.objects.create(
