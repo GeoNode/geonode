@@ -590,6 +590,10 @@ class ResourceManager(ResourceManagerInterface):
                     if not anonymous_group:
                         raise Exception("Could not acquire 'anonymous' Group.")
 
+                    # Gathering and validating the current permissions (if any has been passed)
+                    if not created and permissions is None:
+                        permissions = permissions_registry.get_perms(instance=_resource, include_virtual=False)
+
                     if permissions:
                         if PermSpecCompact.validate(permissions):
                             _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
@@ -601,9 +605,9 @@ class ResourceManager(ResourceManagerInterface):
                     """
                     Align _perm_spec based on the permissions handlers
                     """
-                    _perm_spec = permissions_registry.get_perms(
-                        permissions=_permissions,
-                        instance=_resource,
+                    _perm_spec = permissions_registry.fixup_perms(
+                        _resource,
+                        _permissions,
                         created=created,
                         approval_status_changed=approval_status_changed,
                         group_status_changed=group_status_changed,

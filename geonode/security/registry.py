@@ -137,6 +137,11 @@ class PermissionsHandlerRegistry:
         else:
             return is_owner or is_manager
 
+    def fixup_perms(self, instance, payload, include_virtual=True, *args, **kwargs):
+        for handler in self.REGISTRY:
+            payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
+        return payload
+
     def get_db_perms_by_user(self, user):
         from geonode.base.models import Configuration
 
