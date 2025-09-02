@@ -35,4 +35,14 @@ urlpatterns = [
         views.harvest_single_resource,
         name="harvest_single_resource",
     ),
+    re_path(
+        r"^(?P<service_id>\d+)/progress/$",
+        views.service_harvest_progress,
+        name="service_harvest_progress",
+    ),
+    re_path(
+        r"^(?P<service_id>\d+)/resources_partial/$",
+        views.service_resources_partial,
+        name="service_resources_partial",
+    ),
 ]
