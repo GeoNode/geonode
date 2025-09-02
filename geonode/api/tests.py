@@ -1211,7 +1211,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         response = self.client.post(url, data, format="multipart")
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn("The uploaded file type is not allowed.", str(response.content))
+        self.assertIn("The uploaded file type exe is not allowed.", str(response.content))
 
     def test_create_asset_no_add_permission(self):
         no_perm_user = get_user_model().objects.create_user(username="no_perm_user", password="password")
