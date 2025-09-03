@@ -1136,16 +1136,16 @@ class BaseVectorFileHandler(BaseHandler):
             # but we need to delete the previous one associated to the resource
         start = datetime.now()
         delete_dataset_cache(dataset.alternate)
-        logging.error(f"DATASET DELETE CACHE DONE {datetime.now() - start}")
+        logging.debug(f"DATASET DELETE CACHE DONE {datetime.now() - start}")
 
         # recalculate featuretype info
         start = datetime.now()
         DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
-        logging.error(f"recalculate_geoserver_featuretype DONE {datetime.now() - start}")
+        logging.debug(f"recalculate_geoserver_featuretype DONE {datetime.now() - start}")
 
         start = datetime.now()
         set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
-        logging.error(f"set_geowebcache_invalidate_cache DONE {datetime.now() - start}")
+        logging.debug(f"set_geowebcache_invalidate_cache DONE {datetime.now() - start}")
 
         dataset = resource_manager.update(dataset.uuid, instance=dataset)
 
