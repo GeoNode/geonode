@@ -200,6 +200,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_shp.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
+        payload["overwrite"] = True
         payload["upsert_key"] = "ogc_fid"
 
         # time to upsert the data
