@@ -17,6 +17,7 @@
 #
 #########################################################################
 import ast
+from datetime import datetime
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
 from geonode.storage.manager import StorageManager
@@ -586,6 +587,7 @@ class BaseVectorFileHandler(BaseHandler):
                         self.promote_to_multi(ogr.GeometryTypeToName(layer.GetGeomType()))
                     ),
                     "dim": (2 if not ogr.GeometryTypeToName(layer.GetGeomType()).lower().startswith("3d") else 3),
+                    "authority": self.identify_authority(layer),
                 }
             ]
 
@@ -963,12 +965,20 @@ class BaseVectorFileHandler(BaseHandler):
                 raise UpsertException(
                     f"The columns in the source and target do not match they must be equal. The following are not expected or missing: {differeces}"
                 )
+            skip_geom_eval = False
             for field in new_file_schema_fields:
                 # check if the field exists in the previous schema
                 target_field = target_schema_fields.filter(name=field["name"]).first()
                 if target_field:
                     # if is the primary key, we can skip the check
                     # If the field exists the class name should be the same
+                    if "authority" in field and not skip_geom_eval:
+                        if db_value := target_field.model_schema.as_model().objects.first():
+                            skip_geom_eval = True
+                            if not str(db_value.geometry.srid) in field["authority"]:
+                                message = f"The file provided have a different authority ({field['authority']}) compared to the one in the DB: {db_value}"
+                                raise UpsertException(message)
+
                     if not target_field.class_name == field["class_name"] and not target_field.kwargs.get(
                         "primary_key"
                     ):
@@ -1080,7 +1090,11 @@ class BaseVectorFileHandler(BaseHandler):
             handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
         )
 
+        if not valid_update and not valid_create and (update_error or create_error):
+            raise UpsertException("All the entries provided raised error, execution is going to be stopped")
+
         return not update_error and not create_error, {
+            "status": not update_error and not create_error,
             "errors": {"create": create_error, "update": update_error},
             "data": {
                 "total": {
@@ -1120,11 +1134,18 @@ class BaseVectorFileHandler(BaseHandler):
                 resource=dataset, files=exec_obj.input_params["files"], action=exec_obj.action
             )
             # but we need to delete the previous one associated to the resource
-
+        start = datetime.now()
         delete_dataset_cache(dataset.alternate)
+        logging.error(f"DATASET DELETE CACHE DONE {datetime.now() - start}")
+
         # recalculate featuretype info
+        start = datetime.now()
         DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
+        logging.error(f"recalculate_geoserver_featuretype DONE {datetime.now() - start}")
+
+        start = datetime.now()
         set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
+        logging.error(f"set_geowebcache_invalidate_cache DONE {datetime.now() - start}")
 
         dataset = resource_manager.update(dataset.uuid, instance=dataset)
 
