@@ -220,7 +220,7 @@ class BaseHandler(ABC):
             if "zip_file" in files and os.path.exists(files["zip_file"]):
                 os.remove(files["zip_file"])
             if "kmz_file" in files and os.path.exists(files["kmz_file"]):
-                os.remove(files["zip_file"])
+                os.remove(files["kmz_file"])
 
         return _data, execution_id
 
