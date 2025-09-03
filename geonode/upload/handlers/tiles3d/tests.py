@@ -301,8 +301,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(resource.bbox_y0, 40.03610390613993)
         self.assertEqual(resource.bbox_y1, 40.04895731654794)
 
-        os.remove("/tmp/tileset.json")
-
     def test_set_bbox_from_bounding_volume_without_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L147-L180
         tilesetjson_file = {
@@ -346,8 +344,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(resource.bbox_x1, 0.0004463052796897286)
         self.assertEqual(resource.bbox_y0, 86.81078622278615)
         self.assertEqual(resource.bbox_y1, 86.81124587650872)
-
-        os.remove("/tmp/tileset.json")
 
     def test_set_bbox_from_bounding_volume_sphere_with_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L102-L146
@@ -396,8 +392,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertAlmostEqual(resource.bbox_y0, 40.042485645323616)
         self.assertAlmostEqual(resource.bbox_y1, 40.042575577526556)
 
-        os.remove("/tmp/tileset.json")
-
     def test_set_bbox_from_bounding_volume_sphere_without_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L53C4-L79C8
         tilesetjson_file = {
@@ -425,8 +419,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(resource.bbox_y0, 86.81097108354597)
         self.assertEqual(resource.bbox_y1, 86.8110610157489)
 
-        os.remove("/tmp/tileset.json")
-
     def test_set_bbox_from_bounding_volume_sphere_with_center_zero_without_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L53C4-L79C8
         # This test should not extract bbox from boundingVolume sphere with center 0, 0, 0
@@ -449,8 +441,6 @@ class TestTiles3DFileHandler(TestCase):
             asset=asset,
         )
         self.assertTrue(resource.bbox == self.default_bbox)
-
-        os.remove("/tmp/tileset.json")
 
     def _generate_execid_asset(self):
         exec_id = orchestrator.create_execution_request(
