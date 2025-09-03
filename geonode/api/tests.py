@@ -1151,7 +1151,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         self.client.force_login(self.test_user)
         url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
         file = self._create_dummy_file()
-        data = {"file": file, "title": "My Linked Asset"}
+        data = {"files": file, "title": "My Linked Asset"}
 
         initial_asset_count = Asset.objects.count()
         initial_link_count = Link.objects.count()
@@ -1188,7 +1188,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         response = self.client.post(
             url,
             {
-                "file": big_file,
+                "files": big_file,
                 "title": "Big Asset",
             },
             format="multipart",
@@ -1206,7 +1206,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
 
         disallowed_file = self._create_dummy_file(filename="malicious_file.exe", content=b"malicious content")
-        data = {"file": disallowed_file}
+        data = {"files": disallowed_file}
 
         response = self.client.post(url, data, format="multipart")
 
@@ -1219,7 +1219,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
 
         url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
         file = self._create_dummy_file()
-        data = {"file": file}
+        data = {"files": file}
 
         response = self.client.post(url, data, format="multipart")
 
@@ -1256,7 +1256,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         initial_asset_count = Asset.objects.count()
 
         file = self._create_dummy_file(filename="unauthorized_file.txt")
-        data = {"file": file, "resource_id": self.resource.pk, "title": "Unauthorized Asset"}
+        data = {"files": file, "resource_id": self.resource.pk, "title": "Unauthorized Asset"}
 
         response = self.client.post(url, data, format="multipart")
 
@@ -1267,7 +1267,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         # with admin user
         self.client.force_login(self.admin_user)
         admin_file = self._create_dummy_file(filename="admin_file.txt")
-        admin_data = {"file": admin_file, "resource_id": self.resource.pk, "title": "Admin Asset"}
+        admin_data = {"files": admin_file, "resource_id": self.resource.pk, "title": "Admin Asset"}
 
         admin_response = self.client.post(url, admin_data, format="multipart")
         self.assertEqual(admin_response.status_code, 201)
@@ -1288,7 +1288,7 @@ class AssetApiTests(GeoNodeBaseTestSupport):
         self.resource.set_permissions(perm_spec)
         changed_asset_count = Asset.objects.count()
         changed_file = self._create_dummy_file(filename="new_change_file.txt")
-        new_data = {"file": changed_file, "resource_id": self.resource.pk, "title": "Changed Asset"}
+        new_data = {"files": changed_file, "resource_id": self.resource.pk, "title": "Changed Asset"}
         changed_response = self.client.post(url, new_data, format="multipart")
         self.assertEqual(changed_response.status_code, 201)
         self.assertEqual(Asset.objects.count(), changed_asset_count + 1)
@@ -1346,7 +1346,7 @@ class AssetDeleteApiTests(GeoNodeBaseTestSupport):
     def _create_asset_via_api(self, resource, title):
         url = reverse("base-resources-assets", kwargs={"pk": resource.pk})
         file = SimpleUploadedFile("test_file.txt", b"test content", content_type="text/plain")
-        data = {"file": file, "title": title}
+        data = {"files": file, "title": title}
         response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, 201)
         return Asset.objects.get(pk=response.data["asset_id"])
