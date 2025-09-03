@@ -1008,8 +1008,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             ]
         except Exception:
             logger.warning(
-                            f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'", exc_info=True
-                        )
+                f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'", exc_info=True
+            )
             attribute_map = []
     elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
         typename = layer.alternate if layer.alternate else layer.typename
@@ -2162,6 +2162,7 @@ def ows_endpoint_in_path(path):
         or re.match(r".*(?<!w[a-z]s)/(w.*s)/.*$", path, re.IGNORECASE)
         or re.match(r".*(?<!ows)/(ows)/.*$", path, re.IGNORECASE)
     )
+
 
 def _get_from_catalog(url):
     resp = gs_catalog.http_request(url)
