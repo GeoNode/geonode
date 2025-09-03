@@ -129,7 +129,6 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         if "zip_file" in kwargs:
             # if we have a zipfile we need to read the file content before proceed
             with zipfile.ZipFile(kwargs["zip_file"], "r") as z:
-                # Step 4: Read 'data.txt' directly from the in-memory archive
                 with z.open(_file.name) as inner_file:
                     _file = json.loads(inner_file.read().decode("utf-8"))
         else:
