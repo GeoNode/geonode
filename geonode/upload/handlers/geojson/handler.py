@@ -19,6 +19,7 @@
 import json
 import logging
 import os
+import zipfile
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from osgeo import ogr
@@ -74,6 +75,12 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
                 if isinstance(base, str):
                     with open(base, "r") as f:
                         _file = json.loads(f.read())
+                elif "zip_file" in _data:
+                    # if we have a zipfile we need to read the file content before proceed
+                    with zipfile.ZipFile(_data["zip_file"], "r") as z:
+                        # Step 4: Read 'data.txt' directly from the in-memory archive
+                        with z.open(_file.name) as inner_file:
+                            _file = json.loads(inner_file.read().decode("utf-8"))
                 else:
                     _file = json.loads(base.read())
 

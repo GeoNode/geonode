@@ -80,6 +80,10 @@ class BaseHandler(ABC):
         return cls.TASKS.get(action)
 
     @property
+    def have_table(self):
+        return True
+
+    @property
     def default_geometry_column_name(self):
         return "geometry"
 
@@ -212,6 +216,12 @@ class BaseHandler(ABC):
             )
             # updating the execution id params
             orchestrator.update_execution_request_obj(_exec_obj, {"input_params": _data})
+            # removing zip file
+            if "zip_file" in files and os.path.exists(files["zip_file"]):
+                os.remove(files["zip_file"])
+            if "kmz_file" in files and os.path.exists(files["kmz_file"]):
+                os.remove(files["zip_file"])
+
         return _data, execution_id
 
     def fixup_name(self, name):

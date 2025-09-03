@@ -99,6 +99,10 @@ class BaseVectorFileHandler(BaseHandler):
     }
 
     @property
+    def have_table(self):
+        return False
+
+    @property
     def default_geometry_column_name(self):
         return "geometry"
 
@@ -661,7 +665,7 @@ class BaseVectorFileHandler(BaseHandler):
         saved_dataset.refresh_from_db()
 
         # if dynamic model is enabled, we can save up with is the primary key of the table
-        if settings.IMPORTER_ENABLE_DYN_MODELS:
+        if settings.IMPORTER_ENABLE_DYN_MODELS and self.have_table:
             from django.db import connections
 
             column = None
@@ -704,13 +708,16 @@ class BaseVectorFileHandler(BaseHandler):
     def create_asset_and_link(self, resource, files, action=None):
         if not files:
             return
+        directory = os.path.dirname(files.get("base_file"))
+        if not os.path.exists(directory):
+            logger.warning("Path does not exists, asset generation skipping...")
+            return
         asset = super().create_asset_and_link(resource, files, action)
         # remove temporary folders since now is managed by the asset
         storage_manager = StorageManager(
             remote_files={},
             concrete_storage_manager=FileSystemStorageManager(),
         )
-        directory = os.path.dirname(files.get("base_file"))
         if settings.ASSETS_ROOT not in directory:
             storage_manager.rmtree(directory, ignore_errors=True)
         return asset
