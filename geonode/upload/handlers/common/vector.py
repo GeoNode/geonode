@@ -1018,9 +1018,9 @@ class BaseVectorFileHandler(BaseHandler):
 
         # Execute the SQL query to the layer
         result = all_layers.ExecuteSQL(sql_query)
-        if result.GetFeatureCount() > 0:
+        if not result or (result and result.GetFeatureCount() > 0):
             raise UpsertException(
-                f"All the feature in the file must have the ogc_fid field correctly populated. Number of None value: {result.GetFeatureCount()}"
+                f"All the feature in the file must have the ogc_fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
             )
 
         # Will generate the same schema as the target_resource_schema
