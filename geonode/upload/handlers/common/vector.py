@@ -18,6 +18,7 @@
 #########################################################################
 import ast
 from datetime import datetime
+from itertools import islice
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
 from geonode.storage.manager import StorageManager
@@ -986,6 +987,7 @@ class BaseVectorFileHandler(BaseHandler):
                         message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
                         errors.append(message)
                         logger.error(message)
+
             return not errors, errors
         else:
             raise UpsertException(
@@ -1008,7 +1010,19 @@ class BaseVectorFileHandler(BaseHandler):
         layers = self._select_valid_layers(all_layers)
         if not layers:
             raise UpsertException("No valid layers found in the provided file for upsert.")
+
         layer = layers[0]
+        # evaluate if some of the ogc_fid entry is null. if is null we stop the workflow
+        # the user should provide the completed list with the ogc_fid set
+        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "ogc_fid" IS NULL'
+
+        # Execute the SQL query to the layer
+        result = all_layers.ExecuteSQL(sql_query)
+        if result.GetFeatureCount() > 0:
+            raise UpsertException(
+                f"All the feature in the file must have the ogc_fid field correctly populated. Number of None value: {result.GetFeatureCount()}"
+            )
+
         # Will generate the same schema as the target_resource_schema
         new_file_schema_fields = self.create_dynamic_model_fields(
             layer,
@@ -1058,31 +1072,26 @@ class BaseVectorFileHandler(BaseHandler):
         if not layers:
             raise UpsertException("No valid layers were found in the file provided")
         # we can upsert just 1 layer at time
-        for feature in layers[0]:
-            feature_as_dict = feature.items()
-            filter_dict = {field: value for field, value in feature_as_dict.items() if field == upsert_key}
-            if not filter_dict:
-                # if is not possible to extract the feature from ogr2ogr, better to ignore the layer
-                logger.error("was not possible to extract the feature of the dataset, skipping...")
-                update_error.append(f"Was not possible to manage the following data: {feature}")
-                continue
-            to_update = OriginalResource.objects.filter(**filter_dict)
-            geom = feature.GetGeometryRef()
-            feature_as_dict.update({self.default_geometry_column_name: geom.ExportToWkt()})
-            if to_update:
-                try:
-                    to_update.update(**feature_as_dict)
-                    valid_update += 1
-                except Exception as e:
-                    logger.error(f"Error during update of {feature_as_dict} in upsert: {e}")
-                    update_error.append(str(e))
-            else:
-                try:
-                    OriginalResource.objects.create(**feature_as_dict)
-                    valid_create += 1
-                except Exception as e:
-                    logger.error(f"Error during creation of {feature_as_dict} in upsert: {e}")
-                    create_error.append(str(e))
+        schema_fields = [f.name for f in model.fields.filter(kwargs__primary_key__isnull=True)]
+        layer_iterator = iter(layers[0])
+        while True:
+            # Create an iterator for the next chunk
+            data_chunk = list(islice(layer_iterator, settings.UPSERT_CHUNK_SIZE))
+
+            # If the chunk is empty, we've reached the end of the layer
+            if not data_chunk:
+                break
+
+            valid_create, valid_update, update_error, create_error = self._process_feature(
+                data_chunk,
+                model_instance=OriginalResource,
+                upsert_key=upsert_key,
+                update_error=update_error,
+                create_error=create_error,
+                valid_update=valid_update,
+                valid_create=valid_create,
+                schema_fields=schema_fields,
+            )
 
         # generating the resorucehandler infor to track the changes on ther resource
 
@@ -1105,6 +1114,56 @@ class BaseVectorFileHandler(BaseHandler):
                 "error": {"update": len(update_error), "create": len(create_error)},
             },
         }
+
+    def _process_feature(
+        self,
+        data_chunk,
+        model_instance,
+        upsert_key,
+        update_error,
+        create_error,
+        valid_update,
+        valid_create,
+        schema_fields,
+    ):
+        # getting all the upsert_key value from the data chunk
+        # retrieving the data from the DB
+        value_in_db = model_instance.objects.filter(
+            **{f"{upsert_key}__in": (getattr(feature, upsert_key) for feature in data_chunk)}
+        ).in_bulk(field_name=upsert_key)
+        update_bulk = []
+        create_bulk = []
+        for feature in data_chunk:
+            feature_as_dict = feature.items()
+            geom = feature.GetGeometryRef()
+            feature_as_dict.update({self.default_geometry_column_name: geom.ExportToWkt()})
+            if feature_as_dict.get(upsert_key) in value_in_db:
+                # if the key is present, we need to update the object
+                # the geometry must be treated manually
+                obj = value_in_db[feature_as_dict.get(upsert_key)]
+                for key, value in feature_as_dict.items():
+                    setattr(obj, key, value)
+                update_bulk.append(obj)
+            else:
+                # if the key is not present, we can create a new instance
+                create_bulk.append(model_instance(**feature_as_dict))
+
+        if update_bulk:
+            try:
+                model_instance.objects.bulk_update(update_bulk, fields=schema_fields)
+                valid_update += len(update_bulk)
+            except Exception as e:
+                logger.error("Error during update of feature in upsert")
+                update_error.append(str(e))
+
+        if create_bulk:
+            try:
+                model_instance.objects.bulk_create(create_bulk)
+                valid_create += len(update_bulk)
+            except Exception as e:
+                logger.error("Error during create of feature in upsert")
+                create_error.append(str(e))
+        return valid_create, valid_update, update_error, create_error
 
     def extract_upsert_key(self, exec_obj, dynamic_model_instance):
         # first we check if the upsert key is passed by the call
