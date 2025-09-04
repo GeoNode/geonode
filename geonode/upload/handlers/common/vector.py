@@ -447,7 +447,7 @@ class BaseVectorFileHandler(BaseHandler):
                 """
                 drop_dynamic_model_schema(dynamic_model)
             raise e
-        return
+        return alternate
 
     def _select_valid_layers(self, all_layers):
         layers = []

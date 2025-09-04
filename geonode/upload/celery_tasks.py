@@ -79,6 +79,106 @@ class ErrorBaseTaskClass(Task):
         # kwargs (Dict) - Original keyword arguments for the task that failed.
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
+class UpdateTaskClass(Task):
+    max_retries = 3
+    track_started = True
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        """
+        Called when the task fails.
+        Updates the ExecutionRequest.tasks dict and delegates logging/error handling to evaluate_error.
+        """
+        task_name = self.name
+        execution_id = args[0]
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # Determine key for this task (alternate / pending)
+        if task_name == "geonode.upload.import_resource":
+            # import_resource may not know the alternate yet
+            key = "pending_alternate"
+        else:
+            # Subsequent tasks: alternate is passed as arg 3
+            key = args[3] if len(args) > 3 else None
+
+        if key not in tasks_status:
+            tasks_status[key] = {}
+
+        tasks_status[key][task_name] = "FAILED"
+
+        # Update ExecutionRequest tasks dict first
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            tasks=tasks_status
+        )
+
+        # Delegate the rest (errors, failed_layers, status) to evaluate_error
+        evaluate_error(self, exc, task_id, args, kwargs, einfo)
+
+    def before_start(self, task_id, args, kwargs):
+        """
+        Called before the task runs.
+        - For import_resource, alternate is unknown.
+        - For other tasks, alternate is passed as argument.
+        """
+        execution_id = args[0]
+        task_name = self.name
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # Determine key for this task
+        if task_name == "geonode.upload.import_resource":
+            key = "pending_alternate"  # alternate unknown
+        else:
+            # subsequent tasks: alternate is always passed in args or kwargs
+            # positional args: args = (execution_id, step_name, layer_name, alternate, ...)
+            alternate = args[3]
+            key = alternate
+
+        if key not in tasks_status:
+            tasks_status[key] = {}
+
+        tasks_status[key][task_name] = "RUNNING"
+
+        orchestrator.update_execution_request_status(
+            execution_id,
+            tasks=tasks_status,
+        )
+
+    def on_success(self, retval, task_id, args, kwargs):
+        """
+        Called when the task succeeds.
+        """
+        task_name = self.name
+        execution_id = args[0]
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        if task_name == "geonode.upload.import_resource":
+            # import_resource returns (task_name, execution_id, alternate)
+            if not retval or len(retval) < 3:
+                return
+            _, _, alternate = retval
+
+            # Remove pending_alternate
+            if "pending_alternate" in tasks_status:
+                tasks_status.pop("pending_alternate")
+        else:
+            # For other tasks, alternate is always passed as argument
+            alternate = args[3]
+
+        if alternate not in tasks_status:
+            tasks_status[alternate] = {}
+
+        tasks_status[alternate][task_name] = "SUCCESS"
+
+        orchestrator.update_execution_request_status(
+            execution_id,
+            tasks=tasks_status,
+        )
 
 @importer_app.task(
     bind=True,
@@ -132,7 +232,7 @@ def import_orchestrator(
 
 @importer_app.task(
     bind=True,
-    # base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.import_resource",
     queue="geonode.upload.import_resource",
     max_retries=1,
@@ -177,13 +277,13 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             raise Exception("dataset is invalid")
 
         _datastore.prepare_import(**kwargs)
-        _datastore.start_import(execution_id, **kwargs)
+        alternate = _datastore.start_import(execution_id, **kwargs)
 
         """
         since the call to the orchestrator can changed based on the handler
         called. See the GPKG handler gpkg_next_step task
         """
-        return self.name, execution_id
+        return self.name, execution_id, alternate
 
     except Exception as e:
         call_rollback_function(
@@ -200,7 +300,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.publish_resource",
     queue="geonode.upload.publish_resource",
     max_retries=3,
@@ -303,7 +403,7 @@ def publish_resource(
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.create_geonode_resource",
     queue="geonode.upload.create_geonode_resource",
     max_retries=1,
@@ -338,6 +438,7 @@ def create_geonode_resource(
     """
     # Updating status to running
     try:
+        raise Exception("Something wrong happened")
         orchestrator.update_execution_request_status(
             execution_id=execution_id,
             last_updated=timezone.now(),
