@@ -210,9 +210,10 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertEqual(response.status_code, 201)
         exec_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
         output_input = exec_obj.output_params
-        self.assertTrue(output_input.get("upsert", {}).get("status"))
+        self.assertTrue(output_input.get("upsert", {}).get("success"))
         data = output_input.get("upsert")
         expected = {
+            "success": True,
             "data": {
                 "error": {"create": 0, "update": 0},
                 "total": {"error": 0, "success": 2},

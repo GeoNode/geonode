@@ -1094,7 +1094,7 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException("All the entries provided raised error, execution is going to be stopped")
 
         return not update_error and not create_error, {
-            "status": not update_error and not create_error,
+            "success": not update_error and not create_error,
             "errors": {"create": create_error, "update": update_error},
             "data": {
                 "total": {
