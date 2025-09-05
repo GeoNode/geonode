@@ -54,16 +54,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         super().setUpClass()
         cls.user = get_user_model().objects.exclude(username="Anonymous").first()
         cls.original = {
-            "base_file": f"{project_dir}/tests/fixture/upsert/original.shp",
-            "dbf_file": f"{project_dir}/tests/fixture/upsert/original.dbf",
-            "prj_file": f"{project_dir}/tests/fixture/upsert/original.prj",
-            "shx_file": f"{project_dir}/tests/fixture/upsert/original.shx",
+            "base_file": f"{project_dir}/tests/fixture/upsert/original.json",
         }
-        cls.upsert_shp = {
-            "base_file": f"{project_dir}/tests/fixture/upsert/upsert.shp",
-            "dbf_file": f"{project_dir}/tests/fixture/upsert/upsert.dbf",
-            "prj_file": f"{project_dir}/tests/fixture/upsert/upsert.prj",
-            "shx_file": f"{project_dir}/tests/fixture/upsert/upsert.shx",
+        cls.upsert_geojson = {
+            "base_file": f"{project_dir}/tests/fixture/upsert/upsert.json",
         }
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "san_andres_y_providencia_natural.shp")
@@ -191,16 +185,15 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", IMPORTER_ENABLE_DYN_MODELS=True
     )
     def test_import_shapefile_upsert(self):
-
         self._cleanup_layers(name="original")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.original.items()}
         payload["action"] = "upload"
         initial_name = "original"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
-        payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_shp.items()}
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_geojson.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
-        payload["upsert_key"] = "unique"
+        payload["upsert_key"] = "ogc_fid"
 
         # time to upsert the data
         self.client.force_login(self.admin)
@@ -210,9 +203,10 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertEqual(response.status_code, 201)
         exec_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
         output_input = exec_obj.output_params
-        self.assertTrue(output_input.get("upsert")[0])
-        data = output_input.get("upsert")[1]
+        self.assertTrue(output_input.get("upsert", {}).get("success"))
+        data = output_input.get("upsert")
         expected = {
+            "success": True,
             "data": {
                 "error": {"create": 0, "update": 0},
                 "total": {"error": 0, "success": 2},
@@ -228,7 +222,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertIsNotNone(key)
         self.assertTrue(len(key) == 1)
         # evaluate if the dynamic model is correctly upserted, we expect 2 rows
-        self.assertEqual(schema.as_model().objects.count(), 2)
+        self.assertEqual(schema.as_model().objects.count(), 3)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "IMPORTER_ENABLE_DYN_MODELS": "True"})
     @override_settings(
@@ -244,7 +238,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
-        payload["upsert_key"] = "unique"
+        payload["upsert_key"] = "ogc_fid"
 
         # time to upsert the data
         self.client.force_login(self.admin)
@@ -255,6 +249,6 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertFalse(response.json().get("success", True))
         self.assertTrue("errors" in response.json())
         self.assertTrue(
-            "The columns in the source and target do not match they must be equal. The following are not expected or missing"
+            "All the feature in the file must have the ogc_fid field correctly populated. Number of None value: all"
             in response.json()["errors"][0]
         )
