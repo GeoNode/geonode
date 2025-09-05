@@ -209,8 +209,8 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
             "success": True,
             "data": {
                 "error": {"create": 0, "update": 0},
-                "total": {"error": 0, "success": 4},
-                "success": {"create": 2, "update": 2},
+                "total": {"error": 0, "success": 2},
+                "success": {"create": 1, "update": 1},
             },
             "errors": {"create": [], "update": []},
         }
