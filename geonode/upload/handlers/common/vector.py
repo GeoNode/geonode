@@ -306,17 +306,17 @@ class BaseVectorFileHandler(BaseHandler):
 
         tmp_data = _exec.input_params.get("temporary_files")
         if tmp_data:
-            """
-            Delete at the end of the operations, the temporary files created at the beginning
-            to cleanup disk space
-            """
+            # Delete at the end of the operations, the temporary files created at the beginning
+            # to cleanup disk space
             storage_manager = StorageManager(
                 remote_files={},
                 concrete_storage_manager=FileSystemStorageManager(),
             )
-            directory = os.path.dirname(tmp_data.get("base_file"))
-            if settings.ASSETS_ROOT not in directory:
-                storage_manager.rmtree(directory, ignore_errors=True)
+            base_file_path = tmp_data.get("base_file")
+            if base_file_path:
+                directory = os.path.dirname(base_file_path)
+                if settings.ASSETS_ROOT not in directory:
+                    storage_manager.rmtree(directory, ignore_errors=True)
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
