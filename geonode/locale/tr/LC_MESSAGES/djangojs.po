@@ -1,0 +1,1227 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Cihad GUNDOGDU <cihadgundogdu@gmail.com>, 2025
+
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-08 09:03+0300\n"
+"PO-Revision-Date: 2020-12-08 16:02+0100\n"
+"Last-Translator: Cihad GUNDOGDU <cihadgundogdu@gmail.com>\n"
+"Language-Team: Turkish\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.4.2\n"
+
+#, fuzzy
+msgid "STORE_UPDATED"
+msgstr "STORE_UPDATED"
+
+#, javascript-format
+msgid "Missing a %s file, which is required"
+msgstr "Gerekli bir %s dosyası eksik"
+
+msgid "ESRI Shapefile"
+msgstr "ESRI Shapefile"
+
+msgid "ASCII Text File"
+msgstr "ASCII Metin Dosyası"
+
+msgid "GeoTIFF"
+msgstr "GeoTIFF"
+
+msgid "Comma Separated Value"
+msgstr "Virgülle Ayrılmış Değer"
+
+msgid "Google Earth KML"
+msgstr "Google Earth KML"
+
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "Google Earth KML Yer Yerleşimi ile"
+
+msgid "Google Earth KMZ"
+msgstr "Google Earth KMZ"
+
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+msgid "Zip Archive"
+msgstr "Zip Arşivi"
+
+msgid "ERDAS Imagine"
+msgstr "ERDAS Imagine"
+
+msgid "National Imagery Transmission Format"
+msgstr "Ulusal Görüntü İletim Formatı"
+
+msgid "Controlled Image Base-1 Meter"
+msgstr "Controlled Image Base-1 Meter"
+
+msgid "Controlled Image Base-5 Meter"
+msgstr "Controlled Image Base-5 Meter"
+
+msgid "Controlled Image Base-10 Meter"
+msgstr "Controlled Image Base-10 Meter"
+
+msgid "CADRG-Global Navigation Chart"
+msgstr "CADRG-Global Navigation Chart"
+
+msgid "CADRG-Jet Navigation Chart"
+msgstr "CADRG-Jet Navigation Chart"
+
+msgid "CADRG-Operational Navigation Chart"
+msgstr "CADRG-Operational Navigation Chart"
+
+msgid "CADRG-Tactical Pilotage Chart"
+msgstr "CADRG-Tactical Pilotage Chart"
+
+msgid "CADRG-Joint Operations Graphic"
+msgstr "CADRG-Joint Operations Graphic"
+
+msgid "CADRG-Topographic Line Map 100K"
+msgstr "CADRG-Topographic Line Map 100K"
+
+msgid "CADRG-Topographic Line Map 50K"
+msgstr "CADRG-Topographic Line Map 50K"
+
+msgid "JPEG2000"
+msgstr "JPEG2000"
+
+msgid "MrSID-Multi-resolution Seamless Image Database"
+msgstr "MrSID-Multi-resolution Seamless Image Database"
+
+msgid "XML Metadata File"
+msgstr "XML Metadata Dosyası"
+
+msgid "Style Layer Descriptor"
+msgstr "Stil Katman Tanımlayıcı"
+
+msgid "JPEG"
+msgstr "JPEG"
+
+msgid "PNG"
+msgstr "PNG"
+
+msgid "GIF"
+msgstr "GIF"
+
+msgid "Unexpected error!"
+msgstr "Beklenmeyen hata!"
+
+msgid ""
+" - 400 Bad Request. Server cannot or will not process the request due to "
+"something that is perceived to be a client error (e.g., malformed request "
+"syntax, invalid request message framing, or deceptive request routing)."
+msgstr ""
+" - 400 Hatalı İstek. Sunucu, istemciden kaynaklanan bir hata nedeniyle isteği işleyemiyor veya işlemek istemiyor (örneğin, hatalı istek sözdizimi, geçersiz istek mesajı çerçevelemesi veya yanıltıcı istek yönlendirmesi)."
+
+msgid ""
+" - 401 Unauthorized. Request was not sent with the proper authentication "
+"credentials."
+msgstr ""
+" - 401 Yetkisiz. İstek uygun kimlik doğrulama bilgileriyle gönderilmedi."
+
+msgid ""
+" - 403 Forbidden. This is generally related to permission rules on your "
+"server. Contact the system administrator for more information regarding this "
+"error message."
+msgstr ""
+" - 403 Yasaklandı. Genellikle sunucunuzdaki izin kurallarıyla ilgilidir. Daha fazla bilgi için sistem yöneticinizle iletişime geçin."
+
+msgid ""
+" - 404 Not Found. Origin server was unable or unwilling to find the resource "
+"requested."
+msgstr ""
+" - 404 Bulunamadı. Sunucu, istenen kaynağı bulamadı veya bulmak istemedi."
+
+msgid ""
+" - 405 Method Not Allowed. Origin server is aware of the requested resource, "
+"but the request method used is not supported."
+msgstr ""
+" - 405 Yönteme İzin Verilmiyor. Sunucu, istenen kaynağı biliyor ancak kullanılan istek yöntemi desteklenmiyor."
+
+msgid ""
+" - 406 Not Acceptable. Resource is not available at the origin that adheres "
+"to negotiation headers that were  set prior (e.g. via 'Accept-Charset' and "
+"'Accept-Language' headers)."
+msgstr ""
+" - 406 Kabul Edilemez. Kaynak, daha önce belirlenen müzakere başlıklarına (örneğin, 'Accept-Charset' ve 'Accept-Language' başlıkları aracılığıyla) uyan bir şekilde mevcut değil."
+
+msgid ""
+" - 407 Authentication Required. The client did not send the required "
+"authentication with the request."
+msgstr ""
+" - 407 Kimlik Doğrulama Gerekli. İstemci, istekle birlikte gerekli kimlik doğrulamayı göndermedi."
+
+msgid ""
+" - 408 Request Timeout. The origin server did not receive the complete "
+"request in what it considers a reasonable time."
+msgstr ""
+" - 408 İstek Zaman Aşımı. Sunucu, makul bir süre içinde tam isteği almadı."
+
+msgid ""
+" - 409 Conflict. The request did not complete because of a conflict with the "
+"current state of the resource. Typically happens on a PUT request where "
+"multiple clients are attempting to edit the same resource."
+msgstr ""
+" - 409 Çakışma. İstek, kaynağın mevcut durumu ile bir çakışma nedeniyle tamamlanamadı. Genellikle birden fazla istemci aynı kaynağı düzenlemeye çalıştığında ortaya çıkar."
+
+msgid ""
+" - 410 Gone. The resource requested is permanently missing at the origin."
+msgstr ""
+" - 410 Yok. İstenen kaynak sunucuda kalıcı olarak yok."
+
+msgid ""
+" - 411 Length Required. Client did not define the 'Content-Length' of the "
+"request body in the headers and this is required to obtain the resource."
+msgstr ""
+" - 411 Uzunluk Gerekli. İstemci, başlıkta isteğin gövdesinin 'Content-Length'ını tanımlamadı ve bu kaynak elde etmek için gereklidir."
+
+msgid ""
+" - 412 Precondition Failed. Server denies the request because the resource "
+"failed to meet the conditions specified by the client."
+msgstr ""
+" - 412 Ön Koşul Başarısız. Sunucu, kaynak istemci tarafından belirtilen koşulları karşılamadığı için isteği reddeder."
+
+msgid ""
+" - 413 Payload Too Large. Refusal from the server to process the request "
+"because the payload sent from the client is larger than the server wished to "
+"accept. Server has the optional to close the connection."
+msgstr ""
+" - 413 Yük Çok Büyük. Sunucu, istemciden gönderilen yükün kabul etmek istediğinden daha büyük olduğu için isteği işlemekten vazgeçer. Sunucu bağlantıyı kapatmayı seçebilir."
+
+msgid ""
+" - 414 URI Too Long. Refusal from the server that the URI was too long to be "
+"processed. For example, if a client is attempting a GET request with an "
+"unusually long URI after a POST, this could be seen as a security risk and a "
+"414 gets generated."
+msgstr ""
+" - 414 URI Çok Uzun. Sunucu, URI'nin işlenmek için çok uzun olduğunu reddeder. Örneğin, bir istemci POST'tan sonra anormal derecede uzun bir URI ile GET isteği yapmaya çalışırsa, bu bir güvenlik riski olarak görülebilir ve 414 oluşturulur."
+
+msgid ""
+" - 415 Unsupported Media Type. Refusal from the server to process the format "
+"of the current payload. One way to identify and fix this issue would be to "
+"look at the 'Content-Type' or 'Content-Encoding' headers sent in the "
+"client’s request."
+msgstr ""
+" - 415 Desteklenmeyen Medya Türü. Sunucu, mevcut yükün formatını işlemekten vazgeçer. Bu sorunu belirlemek ve düzeltmek için istemcinin isteğinde gönderilen 'Content-Type' veya 'Content-Encoding' başlıklarına bakmak bir yol olabilir."
+
+msgid ""
+" - 417 Expectation Failed. Failure of server to meet the requirements "
+"specified in the 'Expect' header of the client’s request."
+msgstr ""
+" - 417 Beklenti Başarısız. Sunucu, istemcinin isteğinin 'Expect' başlığında belirtilen gereksinimleri karşılayamadı."
+
+msgid ""
+" - 429 Too Many Requests. Client has sent too many requests in the specified "
+"amount of time according to the server."
+msgstr ""
+" - 429 Çok Fazla İstek. İstemci, sunucuya göre belirtilen süre içinde çok fazla istek gönderdi."
+
+msgid ""
+" - 499 Client Close Request. Nginx specific response code to indicate when "
+"the connection has been closed by the client while the server is still "
+"processing its request, making server unable to send a status code back."
+msgstr ""
+" - 499 İstemci Kapatma İsteği. Nginx'e özgü yanıt kodu; sunucu hala isteği işlerken istemci bağlantıyı kapattığında kullanılır, bu da sunucunun durum kodu geri gönderememesine neden olur."
+
+msgid ""
+" - 500 Internal Server Error. This error indicates that the server has "
+"encountered an unexpected condition. This often occurs when an application "
+"request cannot be fulfilled due to the application being configured "
+"incorrectly on the server."
+msgstr ""
+" - 500 İç Sunucu Hatası. Bu hata, sunucunun beklenmeyen bir durumla karşılaştığını gösterir. Bu genellikle uygulama isteği, uygulama sunucuda yanlış yapılandırıldığı için yerine getirilemediğinde oluşur."
+
+msgid ""
+" - 501 Not Implemented. This error indicates that the HTTP method sent by "
+"the client is not supported by the server. This is most often caused by the "
+"server being out of date. It is a very rare error and generally requires "
+"that the web server be updated."
+msgstr ""
+" - 501 Uygulanmadı. Bu hata, istemci tarafından gönderilen HTTP yönteminin sunucu tarafından desteklenmediğini gösterir. Bu genellikle sunucunun güncel olmaması nedeniyle oluşur. Çok nadir bir hatadır ve genellikle web sunucusunun güncellenmesini gerektirir."
+
+msgid ""
+" - 502 Bad Gateway. This error is usually due to improperly configured proxy "
+"servers. The first step in resolving the issue is to clear the client's "
+"cache."
+msgstr ""
+" - 502 Hatalı Ağ Geçidi. Bu hata genellikle yanlış yapılandırılmış proxy sunucular nedeniyle oluşur. Sorunu çözmek için ilk adım istemci önbelleğini temizlemektir."
+
+msgid ""
+" - 503 Service Unavailable. This error occurs when the server is unable to "
+"handle requests due to a temporary overload or due to the server being "
+"temporarily closed for maintenance. The error indicates that the server will "
+"only temporarily be down."
+msgstr ""
+" - 503 Hizmet Kullanılamıyor. Bu hata, sunucu geçici aşırı yüklenme veya bakım için geçici olarak kapatılması nedeniyle istekleri işleyemediğinde oluşur. Hata, sunucunun sadece geçici olarak kapalı olacağını gösterir."
+
+msgid ""
+" - 504 Gateway Timeout. GeoNode lost the connection with GeoServer or DB due "
+"to a connection timeout. Consider using the management commands to import "
+"data!"
+msgstr ""
+" - 504 Ağ Geçidi Zaman Aşımı. GeoNode, bağlantı zaman aşımı nedeniyle GeoServer veya DB ile bağlantıyı kaybetti. Verileri içe aktarmak için yönetim komutlarını kullanmayı düşünün!"
+
+msgid ""
+" - 505 HTTP Version Not Supported. This error occurs when the server refuses "
+"to support the HTTP protocol that has been specified by the client computer. "
+"This can be caused by the protocol not being specified properly by the "
+"client computer; for example, if an invalid version number has been "
+"specified."
+msgstr ""
+" - 505 HTTP Sürümü Desteklenmiyor. Bu hata, sunucu istemci bilgisayarı tarafından belirtilen HTTP protokolünü desteklemeyi reddettiğinde oluşur. Bu, protokolün istemci bilgisayarı tarafından doğru şekilde belirtilmemesi nedeniyle olabilir; örneğin, geçersiz bir sürüm numarası belirtilmişse."
+
+msgid ""
+" - 506 Variant Also Negotiates. This error indicates that the server is not "
+"properly configured. Contact the system administrator to resolve this issue."
+msgstr ""
+" - 506 Varyant Ayrıca Müzakere Ediyor. Bu hata, sunucunun doğru şekilde yapılandırılmadığını gösterir. Sorunu çözmek için sistem yöneticisiyle iletişime geçin."
+
+msgid ""
+" - 507 Insufficient Storage. This error indicates that the server is out of "
+"free memory. This is most likely to occur when an application that is being "
+"requested cannot allocate the necessary system resources to run. To resolve "
+"the issue, the server's hard disk may need to be cleaned of any unnecessary "
+"documents to free up more hard disk space, its memory may need to be "
+"expanded, or it may simply need to be restarted. Contact the system "
+"administrator for more information regarding this error message."
+msgstr ""
+" - 507 Yetersiz Depolama. Bu hata, sunucunun boş belleğinin tükendiğini gösterir. Bu, istenen uygulamanın çalışması için gerekli sistem kaynaklarını ayıramadığında en olasıdır. Sorunu çözmek için sunucunun sabit diski gereksiz belgelerden temizlenebilir, belleği genişletilebilir veya basitçe yeniden başlatılabilir. Daha fazla bilgi için sistem yöneticisiyle iletişime geçin."
+
+msgid ""
+" - 509 Bandwidth Limit Exceeded. This error occurs when the bandwidth limit "
+"imposed by the system administrator has been reached. The only fix for this "
+"issue is to wait until the limit is reset in the following cycle. Consult "
+"the system administrator for information about acquiring more bandwidth."
+msgstr ""
+" - 509 Bant Genişliği Sınırı Aşıldı. Bu hata, sistem yöneticisi tarafından uygulanan bant genişliği sınırına ulaşıldığında oluşur. Bu sorun için tek çözüm, sınırın sonraki döngüde sıfırlanmasını beklemektir. Daha fazla bant genişliği elde etme bilgileri için sistem yöneticisine danışın."
+
+msgid ""
+" - 510 Not Extended. This error occurs when an extension attached to the "
+"HTTP request is not supported by the web server. To resolve the issue, you "
+"may need to update the server."
+msgstr ""
+" - 510 Genişletilmedi. Bu hata, HTTP isteğine eklenen uzantının web sunucusu tarafından desteklenmediğinde oluşur. Sorunu çözmek için sunucuyu güncellemeniz gerekebilir."
+
+msgid "Unknwon"
+msgstr "Bilinmeyen"
+
+msgid ""
+" Error Code. Contact the system administrator for more information regarding "
+"this error message."
+msgstr ""
+" Hata Kodu. Bu hata mesajı hakkında daha fazla bilgi için sistem yöneticisiyle iletişime geçin."
+
+msgid "Additional info: "
+msgstr "Ek bilgi: "
+
+msgid "Finalizing"
+msgstr "Sonlandırılıyor"
+
+msgid "Unexpected Error"
+msgstr "Beklenmeyen Hata"
+
+msgid "Your "
+msgstr "Sizin "
+
+msgid " Info"
+msgstr " Bilgi"
+
+msgid "Edit Metadata"
+msgstr "Metadata Düzenle"
+
+msgid "Upload Metadata"
+msgstr "Metadata Yükle"
+
+msgid "Upload SLD"
+msgstr "SLD Yükle"
+
+msgid "Manage Styles"
+msgstr "Stilleri Yönet"
+
+msgid "Please wait until GeoNode finished configuring it!"
+msgstr "GeoNode yapılandırmayı bitirene kadar lütfen bekleyin!"
+
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr "%1 sütunu %2 olarak yeniden adlandırıldı <br/>"
+
+msgid "Performing Final GeoServer Config Step"
+msgstr "Son GeoServer Yapılandırma Adımı Gerçekleştiriliyor"
+
+msgid "You need to specify more information in order to complete your upload"
+msgstr "Yüklemenizi tamamlamak için daha fazla bilgi belirtmeniz gerekir"
+
+msgid "Files are ready to be ingested!"
+msgstr "Dosyalar alınmaya hazır!"
+
+msgid "A temporal dimension may be added to this Layer."
+msgstr "Bu Katmana zamansal bir boyut eklenebilir."
+
+msgid "Performing GeoServer Config Step"
+msgstr "GeoServer Yapılandırma Adımı Gerçekleştiriliyor"
+
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+"<br>Lütfen ağ bağlantınızı kontrol edin. Katman Yükleme durumunda GeoServer'ın çalıştığından ve bağlantıları kabul ettiğinden emin olun."
+
+msgid "<br>"
+msgstr "<br>"
+
+msgid "<br>Bad request or URL not found."
+msgstr "<br>Hatalı istek veya URL bulunamadı."
+
+#, fuzzy
+msgid "<br>Unknown."
+msgstr "<br>Bilinmeyen."
+
+msgid "Layer files uploaded, configuring in GeoServer"
+msgstr "Katman dosyaları yüklendi, GeoServer'da yapılandırılıyor"
+
+msgid "Remove"
+msgstr "Kaldır"
+
+#, javascript-format
+msgid "The file %s is an unsupported file type, please select another file."
+msgstr "%s dosyası desteklenmeyen bir dosya türü, lütfen başka bir dosya seçin."
+
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
+"Tam olmayan bir dosya kümesi yüklemeye çalışıyorsunuz veya tüm zorunlu seçenekler doğrulanmadı.\n"
+"\n"
+"Lütfen formdaki hataları kontrol edin!"
+
+#, fuzzy, javascript-format
+#| msgid "Available Layers"
+msgid "Available %s"
+msgstr "Mevcut %s"
+
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+"Bu, mevcut %s listesi. Aşağıdaki kutuda bunları seçerek bazılarını seçebilirsiniz ve ardından iki kutu arasındaki \"Seç\" okuna tıklayın."
+
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr "Mevcut %s listesini filtrelemek için bu kutuya yazın."
+
+msgid "Filter"
+msgstr "Filtre"
+
+msgid "Choose all"
+msgstr "Tümünü seç"
+
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr "Tüm %s'yi bir kerede seçmek için tıklayın."
+
+msgid "Choose"
+msgstr "Seç"
+
+#, javascript-format
+msgid "Chosen %s"
+msgstr "Seçilen %s"
+
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+"Bu, seçilen %s listesi. Aşağıdaki kutuda bunları seçerek bazılarını kaldırabilirsiniz ve ardından iki kutu arasındaki \"Kaldır\" okuna tıklayın."
+
+#, fuzzy
+#| msgid "Remove"
+msgid "Remove all"
+msgstr "Tümünü kaldır"
+
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr "Tüm seçilen %s'yi bir kerede kaldırmak için tıklayın."
+
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] "%(cnt)s'den %(sel)s seçildi"
+msgstr[1] "%(cnt)s'den %(sel)s seçildi"
+
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+"Bireysel düzenlenebilir alanlarda kaydedilmemiş değişiklikleriniz var. Bir eylem çalıştırırsanız, kaydedilmemiş değişiklikleriniz kaybolacak."
+
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+"Bir eylem seçtiniz ve belirli alanlarda herhangi bir değişiklik yapmadınız."
+" Muhtemelen Kaydet düğmesi yerine Git düğmesini arıyorsunuz."
+msgid "'"
+msgstr "'"
+
+msgid "-1"
+msgstr "-1"
+
+msgid "trailingComments"
+msgstr "trailingComments"
+
+msgid "leadingComments"
+msgstr "leadingComments"
+
+
+msgid "innerComments"
+msgstr "innerComments"
+
+msgid "Multiselect"
+msgstr "Çoklu seçim"
+
+
+msgid "SelectList"
+msgstr "SelectList"
+
+msgid "show:"
+msgstr "göster:"
+
+msgid "DraftEditor/root"
+msgstr "TaslakDüzenleyici/kök"
+
+msgid "DraftEditor/editorContainer"
+msgstr "TaslakDüzenleyici/düzenleyiciKonteyneri"
+
+msgid "-"
+msgstr "-"
+
+msgid "uirevision"
+msgstr "uirevision"
+
+msgid "bgcolor"
+msgstr "bgcolor"
+
+msgid "bordercolor"
+msgstr "bordercolor"
+
+msgid "borderwidth"
+msgstr "borderwidth"
+
+msgid "orientation"
+msgstr "orientation"
+
+msgid "traceorder"
+msgstr "traceorder"
+
+msgid "tracegroupgap"
+msgstr "tracegroupgap"
+
+msgid "itemsizing"
+msgstr "itemsizing"
+
+msgid "itemclick"
+msgstr "itemclick"
+
+msgid "itemdoubleclick"
+msgstr "itemdoubleclick"
+
+msgid "x"
+msgstr "x"
+
+msgid "xanchor"
+msgstr "xanchor"
+
+msgid "y"
+msgstr "y"
+
+msgid "yanchor"
+msgstr "yanchor"
+
+msgid "valign"
+msgstr "valign"
+
+msgid "title.text"
+msgstr "title.text"
+
+msgid "title.side"
+msgstr "title.side"
+
+msgid "visible"
+msgstr "visible"
+
+msgid "thickness"
+msgstr "thickness"
+
+msgid "autorange"
+msgstr "autorange"
+
+msgid "range"
+msgstr "range"
+
+msgid "bingroup"
+msgstr "bingroup"
+
+msgid "Print configuration broken ("
+msgstr "Yazdırma yapılandırması bozuk ("
+
+msgid "Print configuration not available ("
+msgstr "Yazdırma yapılandırması mevcut değil ("
+
+msgid "go"
+msgstr "go"
+
+msgid "goBack"
+msgstr "goBack"
+
+msgid "goForward"
+msgstr "goForward"
+
+msgid "Abort"
+msgstr "İptal Et"
+
+msgid "As Sibling"
+msgstr "Kardeş Olarak"
+
+msgid "As child"
+msgstr "Çocuk Olarak"
+
+#, fuzzy
+#~| msgid "onerror"
+#~ msgid "error"
+#~ msgstr "hata"
+
+#, fuzzy
+#~| msgid "None"
+#~ msgid "No"
+#~ msgstr "Hayır"
+
+#~ msgid "Enter your text here ..."
+#~ msgstr "Metninizi buraya girin ..."
+
+#~ msgid "Enter your region here ..."
+#~ msgstr "Bölgenizi buraya girin ..."
+
+#~ msgid "Cancel"
+#~ msgstr "İptal"
+
+#~ msgid "Save as Copy"
+#~ msgstr "Kopya Olarak Kaydet"
+
+#~ msgid "About this Map"
+#~ msgstr "Bu Harita Hakkında"
+
+#~ msgid "Abstract"
+#~ msgstr "Özet"
+
+#~ msgid "Save"
+#~ msgstr "Kaydet"
+
+#~ msgid "Title"
+#~ msgstr "Başlık"
+
+#~ msgid "Connection Error"
+#~ msgstr "Bağlantı Hatası"
+
+#~ msgid "The server returned an error"
+#~ msgstr "Sunucu bir hata döndürdü"
+
+#~ msgid "Details..."
+#~ msgstr "Ayrıntılar..."
+
+#~ msgid "Add Layers"
+#~ msgstr "Katmanlar Ekle"
+
+#, fuzzy
+#~ msgid "Add ArcGIS REST Server"
+#~ msgstr "ArcGIS REST Sunucusu Ekle"
+
+#, fuzzy
+#~ msgid "Link"
+#~ msgstr "Bağlantı"
+
+#~ msgid "Area"
+#~ msgstr "Alan"
+
+#~ msgid "Background"
+#~ msgstr "Arka Plan"
+
+#~ msgid "Done"
+#~ msgstr "Tamamlandı"
+
+#~ msgid "Add feeds"
+#~ msgstr "Akışlar ekle"
+
+#, fuzzy
+#~ msgid "Flickr"
+#~ msgstr "Flickr"
+
+#, fuzzy
+#~| msgid "Google Earth KML"
+#~ msgid "Google Earth"
+#~ msgstr "Google Earth"
+
+#~ msgid ""
+#~ "<p>Your map is ready to be published to the web! </p><p> Simply copy the "
+#~ "following HTML to embed the map in your website: </p>"
+#~ msgstr ""
+#~ "<p>Haritanız web'de yayınlanmaya hazır! </p><p> Haritayı web sitenize gömmek için aşağıdaki HTML'yi kopyalayın: </p>"
+
+#~ msgid "Height"
+#~ msgstr "Yükseklik"
+
+#, fuzzy
+#~ msgid "Help"
+#~ msgstr "Yardım"
+
+#~ msgid "Get Feature Info"
+#~ msgstr "Özellik Bilgisi Al"
+
+#, fuzzy
+#~ msgid "About"
+#~ msgstr "Hakkında"
+
+#~ msgid "About us"
+#~ msgstr "Hakkımızda"
+
+#~ msgid "Large"
+#~ msgstr "Büyük"
+
+#~ msgid "or add a new server."
+#~ msgstr "veya yeni bir sunucu ekleyin."
+
+#~ msgid "Map Layers"
+#~ msgstr "Harita Katmanları"
+
+#~ msgid "Upload your own data"
+#~ msgstr "Kendi verilerinizi yükleyin"
+
+#~ msgid "View available data from:"
+#~ msgstr "Mevcut verileri görüntüle:"
+
+#~ msgid "Data"
+#~ msgstr "Veri"
+
+#~ msgid "Layers"
+#~ msgstr "Katmanlar"
+
+#~ msgid "Legend"
+#~ msgstr "Gösterge"
+
+#~ msgid "Length"
+#~ msgstr "Uzunluk"
+
+#~ msgid "Loading Map..."
+#~ msgstr "Harita Yükleniyor..."
+
+#~ msgid "Map Size"
+#~ msgstr "Harita Boyutu"
+
+#~ msgid "Measure"
+#~ msgstr "Ölç"
+
+#, fuzzy
+#~ msgid "Warning"
+#~ msgstr "Uyarı"
+
+#~ msgid ""
+#~ "You now have %n layers in your map.  With more than %max layers you may "
+#~ "experience problems with layer ordering, info balloon display, and "
+#~ "general performance. "
+#~ msgstr ""
+#~ "Şimdi haritanızda %n katman var. %max'tan fazla katmanla katman sıralaması, bilgi balonu görüntüleme ve genel performans sorunları yaşayabilirsiniz."
+
+#~ msgid "Contact"
+#~ msgstr "İletişim"
+
+#~ msgid "Permalink"
+#~ msgstr "Kalıcı Bağlantı"
+
+#, fuzzy
+#~ msgid "Copy"
+#~ msgstr "Kopyala"
+
+#, fuzzy
+#~| msgid "About this Map"
+#~ msgid "About this Map View"
+#~ msgstr "Bu Harita Görünümü Hakkında"
+
+#, fuzzy
+#~ msgid "Abstract (brief description)"
+#~ msgstr "Özet (kısa açıklama)"
+
+#, fuzzy
+#~ msgid "Introduction (tell visitors more about your map view)"
+#~ msgstr "Giriş (ziyaretçilerinize harita görünümünüz hakkında daha fazla bilgi verin)"
+
+#, fuzzy
+#~ msgid "UserUrl"
+#~ msgstr "KullanıcıUrl"
+
+#~ msgid "Mini"
+#~ msgstr "Mini"
+
+#~ msgid "Add Category"
+#~ msgstr "Kategori Ekle"
+
+#~ msgid " Add a new category to the layer tree"
+#~ msgstr " Katman ağacına yeni bir kategori ekle"
+
+#~ msgid " Rename Category"
+#~ msgstr " Kategoriyi Yeniden Adlandır"
+
+#~ msgid " Rename this category"
+#~ msgstr " Bu kategoriyi yeniden adlandır"
+
+#~ msgid " Remove Category"
+#~ msgstr " Kategoriyi Kaldır"
+
+#~ msgid " Remove this category and layers"
+#~ msgstr " Bu kategoriyi ve katmanları kaldır"
+
+#~ msgid "Pan Map"
+#~ msgstr "Haritayı Kaydır"
+
+#~ msgid "Zoom to Next Extent"
+#~ msgstr "Sonraki Kapsama Yakınlaştır"
+
+#~ msgid "Zoom to Previous Extent"
+#~ msgstr "Önceki Kapsama Yakınlaştır"
+
+#~ msgid "This map has not yet been saved."
+#~ msgstr "Bu harita henüz kaydedilmedi."
+
+#~ msgid "Premium"
+#~ msgstr "Premium"
+
+#~ msgid "Print Map"
+#~ msgstr "Haritayı Yazdır"
+
+#~ msgid "Print Preview"
+#~ msgstr "Yazdırma Önizlemesi"
+
+#~ msgid "Properties"
+#~ msgstr "Özellikler"
+
+#~ msgid "Publish Map"
+#~ msgstr "Haritayı Yayınla"
+
+#~ msgid "Remove Layer"
+#~ msgstr "Katmanı Kaldır"
+
+#~ msgid "Sorry, your map could not be saved."
+#~ msgstr "Üzgünüz, haritanız kaydedilemedi."
+
+#~ msgid "Error While Saving"
+#~ msgstr "Kaydederken Hata"
+
+#~ msgid "Save Map"
+#~ msgstr "Haritayı Kaydet"
+
+#~ msgid "You must be logged in to save this map."
+#~ msgstr "Bu haritayı kaydetmek için giriş yapmış olmalısınız."
+
+#~ msgid "Small"
+#~ msgstr "Küçük"
+
+#~ msgid " Share Layer"
+#~ msgstr " Katmanı Paylaş"
+
+#~ msgid ""
+#~ "Error contacting server.\n"
+#~ " Please check the url and try again."
+#~ msgstr ""
+#~ "Sunucuya bağlanırken hata.\n"
+#~ " Lütfen URL'yi kontrol edin ve tekrar deneyin."
+
+#~ msgid "Layer Properties"
+#~ msgstr "Katman Özellikleri"
+
+#~ msgid "Change layer format and style"
+#~ msgstr "Katman formatını ve stilini değiştir"
+
+#~ msgid "Edit Styles"
+#~ msgstr "Stilleri Düzenle"
+
+#~ msgid "Edit layer styles"
+#~ msgstr "Katman stillerini düzenle"
+
+#~ msgid "Switch to Google Earth 3D Viewer"
+#~ msgstr "Google Earth 3D Görüntüleyiciye Geç"
+
+#~ msgid ""
+#~ "The map that you are trying to load does not exist.  Creating a new map "
+#~ "instead."
+#~ msgstr ""
+#~ "Yüklemeye çalıştığınız harita mevcut değil. Bunun yerine yeni bir harita oluşturuluyor."
+
+#~ msgid "Unsupported Layers"
+#~ msgstr "Desteklenmeyen Katmanlar"
+
+#, fuzzy
+#~ msgid "The following layers cannot be printed:"
+#~ msgstr "Aşağıdaki katmanlar yazdırılamaz:"
+
+#~ msgid "Width"
+#~ msgstr "Genişlik"
+
+#~ msgid "Zoom In"
+#~ msgstr "Yakınlaştır"
+
+#~ msgid "Zoom Out"
+#~ msgstr "Uzaklaştır"
+
+#~ msgid "Zoom level"
+#~ msgstr "Yakınlaştırma seviyesi"
+
+#~ msgid "Zoom Level"
+#~ msgstr "Yakınlaştırma Seviyesi"
+
+#~ msgid "Zoom to Layer Extent"
+#~ msgstr "Katman Kapsamına Yakınlaştır"
+
+#~ msgid "Zoom to Visible Extent"
+#~ msgstr "Görünür Kapsama Yakınlaştır"
+
+#, fuzzy
+#~ msgid "Picasa"
+#~ msgstr "Picasa"
+
+#, fuzzy
+#~ msgid "YouTube"
+#~ msgstr "YouTube"
+
+#, fuzzy
+#~ msgid "Harvard Geospatial Library"
+#~ msgstr "Harvard Coğrafi Veri Kütüphanesi"
+
+#, fuzzy
+#~| msgid "Upload SLD"
+#~ msgid "Upload Layer"
+#~ msgstr "Katman Yükle"
+
+#~ msgid "Create Layer"
+#~ msgstr "Katman Oluştur"
+
+#~ msgid "Rectify Layer"
+#~ msgstr "Katmanı Düzelt"
+
+#, fuzzy
+#~ msgid "Submit a Map Service"
+#~ msgstr "Bir Harita Hizmeti Gönder"
+
+#~ msgid "Search"
+#~ msgstr "Ara"
+
+#, fuzzy
+#~ msgid "External Data"
+#~ msgstr "Harici Veri"
+
+#, fuzzy
+#~ msgid "If you leave this page, unsaved changes will be lost."
+#~ msgstr "Bu sayfadan çıkarsanız, kaydedilmemiş değişiklikler kaybolacak."
+
+#~ msgid "Center for Geographic Analysis"
+#~ msgstr "Coğrafi Analiz Merkezi"
+
+#, fuzzy
+#~ msgid "Bigdata and AMAP Innovation Team"
+#~ msgstr "Bigdata ve AMAP Yenilik Ekibi"
+
+#~ msgid "Zoom Level {zoom}"
+#~ msgstr "Yakınlaştırma Seviyesi {zoom}"
+
+#~ msgid "Create Map"
+#~ msgstr "Harita Oluştur"
+
+#~ msgid "Export Map"
+#~ msgstr "Haritayı Dışa Aktar"
+
+#~ msgid "Map"
+#~ msgstr "Harita"
+
+#~ msgid "View this Map"
+#~ msgstr "Bu Haritayı Görüntüle"
+
+#~ msgid "Open Map"
+#~ msgstr "Haritayı Aç"
+
+#~ msgid "Name"
+#~ msgstr "Ad"
+
+#~ msgid "Queryable"
+#~ msgstr "Sorgulanabilir"
+
+#~ msgid "No background"
+#~ msgstr "Arka plan yok"
+
+#~ msgid ""
+#~ "Your map is ready to be published to the web!  Simply copy the following "
+#~ "HTML to embed the map in your website:"
+#~ msgstr ""
+#~ "Haritanız web'de yayınlanmaya hazır! Haritayı web sitenize gömmek için aşağıdaki HTML'yi kopyalayın:"
+
+#~ msgid "Abstract:"
+#~ msgstr "Özet:"
+
+#~ msgid "No attribution information is provided for this layer."
+#~ msgstr "Bu katman için atıf bilgisi sağlanmadı."
+
+#~ msgid "Provided by:"
+#~ msgstr "Tarafından sağlanıldı:"
+
+#~ msgid "Download:"
+#~ msgstr "İndir:"
+
+#~ msgid "No keywords are listed for this layer."
+#~ msgstr "Bu katman için anahtar kelime listelenmedi."
+
+#~ msgid "Keywords:"
+#~ msgstr "Anahtar Kelimeler:"
+
+#~ msgid "No metadata URLs are defined for this layer."
+#~ msgstr "Bu katman için metadata URL'leri tanımlanmadı."
+
+#~ msgid "Metadata Links:"
+#~ msgstr "Metadata Bağlantıları:"
+
+#~ msgid "Paper size:"
+#~ msgstr "Kağıt boyutu:"
+
+#~ msgid "Resolution:"
+#~ msgstr "Çözünürlük:"
+
+#~ msgid "Print"
+#~ msgstr "Yazdır"
+
+#~ msgid "Enter map title here."
+#~ msgstr "Harita başlığını buraya girin."
+
+#~ msgid "Include legend?"
+#~ msgstr "Gösterge dahil edilsin mi?"
+
+#~ msgid "Creating PDF..."
+#~ msgstr "PDF oluşturuluyor..."
+
+#~ msgid "Last Modified"
+#~ msgstr "Son Değiştirilme"
+
+#~ msgid "Prev"
+#~ msgstr "Önceki"
+
+#~ msgid "Next"
+#~ msgstr "Sonraki"
+
+#~ msgid "of"
+#~ msgstr "nin"
+
+#~ msgid "Your search did not match any items."
+#~ msgstr "Aramanız hiçbir öğeyle eşleşmedi."
+
+#~ msgid "Search Maps"
+#~ msgstr "Haritaları Ara"
+
+#~ msgid "Showing"
+#~ msgstr "Gösteriliyor"
+
+#~ msgid "Loading"
+#~ msgstr "Yükleniyor"
+
+#~ msgid "permalink"
+#~ msgstr "kalıcı bağlantı"
+
+#~ msgid "Select:"
+#~ msgstr "Seç:"
+
+#~ msgid "All"
+#~ msgstr "Tümü"
+
+#~ msgid "Keyword"
+#~ msgstr "Anahtar Kelime"
+
+#~ msgid "Showing..."
+#~ msgstr "Gösteriliyor..."
+
+#~ msgid "Loading..."
+#~ msgstr "Yükleniyor..."
+
+#~ msgid "You do not have permission to view this data"
+#~ msgstr "Bu verileri görüntüleme izniniz yok"
+
+#~ msgid "This data is stored on a remote server"
+#~ msgstr "Bu veri uzak bir sunucuda depolanmış"
+
+#, fuzzy
+#~ msgid "Invalid Query"
+#~ msgstr "Geçersiz Sorgu"
+
+#, fuzzy
+#~ msgid "You need to specify a search term"
+#~ msgstr "Bir arama terimi belirtmeniz gerekir"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Kaynak"
+
+#~ msgid "Data Type"
+#~ msgstr "Veri Türü"
+
+#, fuzzy
+#~ msgid "Date"
+#~ msgstr "Tarih"
+
+#, fuzzy
+#~ msgid "from year"
+#~ msgstr "yıldan"
+
+#, fuzzy
+#~ msgid "to year"
+#~ msgstr "yıla"
+
+#, fuzzy
+#~ msgid "Reset"
+#~ msgstr "Sıfırla"
+
+#~ msgid "No abstract is provided for this layer."
+#~ msgstr "Bu katman için özet sağlanmadı."
+
+#~ msgid "No download URLs are definied for this layer."
+#~ msgstr "Bu katman için indirme URL'leri tanımlanmadı."
+
+#, fuzzy
+#~ msgid "Click here for more information about this layer."
+#~ msgstr "Bu katman hakkında daha fazla bilgi için buraya tıklayın."
+
+#~ msgid "Selected Layers"
+#~ msgstr "Seçilen Katmanlar"
+
+#~ msgid "No Layers Selected"
+#~ msgstr "Katman Seçilmedi"
+
+#~ msgid "Clear Selected"
+#~ msgstr "Seçileni Temizle"
+
+#~ msgid "Clear All"
+#~ msgstr "Tümünü Temizle"
+
+#~ msgid "Operation Failed"
+#~ msgstr "İşlem Başarısız"
+
+#~ msgid "No layers are currently selected."
+#~ msgstr "Şu anda hiçbir katman seçilmedi."
+
+#~ msgid "Downloading..."
+#~ msgstr "İndiriliyor..."
+
+#~ msgid "Please wait"
+#~ msgstr "Lütfen bekleyin"
+
+#~ msgid "emitReadable"
+#~ msgstr "emitReadable"
+
+#~ msgid "emit readable"
+#~ msgstr "emit readable"
+
+#~ msgid "maybeReadMore read 0"
+#~ msgstr "maybeReadMore read 0"
+
+#~ msgid "pipeOnDrain"
+#~ msgstr "pipeOnDrain"
+
+#~ msgid "readable nexttick read 0"
+#~ msgstr "readable nexttick read 0"
+
+#~ msgid "resume read 0"
+#~ msgstr "resume read 0"
+
+#~ msgid "flow"
+#~ msgstr "flow"
+
+#~ msgid "read"
+#~ msgstr "read"
+
+#~ msgid "read: emitReadable"
+#~ msgstr "read: emitReadable"
+
+#~ msgid "need readable"
+#~ msgstr "need readable"
+
+#~ msgid "length less than watermark"
+#~ msgstr "length less than watermark"
+
+#~ msgid "reading or ended"
+#~ msgstr "reading or ended"
+
+#~ msgid "do read"
+#~ msgstr "do read"
+
+#~ msgid "onunpipe"
+#~ msgstr "onunpipe"
+
+#~ msgid "onend"
+#~ msgstr "onend"
+
+#~ msgid "cleanup"
+#~ msgstr "cleanup"
+
+#~ msgid "ondata"
+#~ msgstr "ondata"
+
+#~ msgid "false write response, pause"
+#~ msgstr "false write response, pause"
+
+#~ msgid "onfinish"
+#~ msgstr "onfinish"
+
+#~ msgid "unpipe"
+#~ msgstr "unpipe"
+
+#~ msgid "pipe count=%d opts=%j"
+#~ msgstr "pipe count=%d opts=%j"
+
+#~ msgid "pipe resume"
+#~ msgstr "pipe resume"
+
+#~ msgid "resume"
+#~ msgstr "resume"
+
+#~ msgid "call pause flowing=%j"
+#~ msgstr "call pause flowing=%j"
+
+#~ msgid "pause"
+#~ msgstr "pause"
+
+#~ msgid "wrapped end"
+#~ msgstr "wrapped end"
+
+#~ msgid "wrapped data"
+#~ msgstr "wrapped data"
+
+#~ msgid "wrapped _read"
+#~ msgstr "wrapped _read"
+
+#~ msgid "Only one File at a time can be uploaded!"
+#~ msgstr "Bir seferde sadece bir dosya yüklenebilir!"
+
+#~ msgid "<iframe frameborder='0' width='0' height='0'/>"
+#~ msgstr "<iframe frameborder='0' width='0' height='0'/>"
+
+#~ msgid "<script>"
+#~ msgstr "<script>"
+
+#~ msgid "<div>"
+#~ msgstr "<div>"
