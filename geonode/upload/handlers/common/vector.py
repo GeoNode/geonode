@@ -1073,6 +1073,7 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException("No valid layers were found in the file provided")
         # we can upsert just 1 layer at time
         schema_fields = [f.name for f in model.fields.filter(kwargs__primary_key__isnull=True)]
+        total_feature = layers[0].GetFeatureCount()
         layer_iterator = iter(layers[0])
         while True:
             # Create an iterator for the next chunk
@@ -1099,7 +1100,7 @@ class BaseVectorFileHandler(BaseHandler):
             handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
         )
 
-        if not valid_update and not valid_create and (update_error or create_error):
+        if (total_feature - len(update_error) - len(create_error)) == 0:
             raise UpsertException("All the entries provided raised error, execution is going to be stopped")
 
         return not update_error and not create_error, {
@@ -1150,6 +1151,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         if update_bulk:
             try:
+                raise Exception("something")
                 model_instance.objects.bulk_update(update_bulk, fields=schema_fields)
                 valid_update += len(update_bulk)
             except Exception as e:
