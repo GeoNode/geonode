@@ -304,6 +304,20 @@ class BaseVectorFileHandler(BaseHandler):
             for asset in assets:
                 asset.delete()
 
+        tmp_data = _exec.input_params.get("temporary_files")
+        if tmp_data:
+            """
+            Delete at the end of the operations, the temporary files created at the beginning
+            to cleanup disk space
+            """
+            storage_manager = StorageManager(
+                remote_files={},
+                concrete_storage_manager=FileSystemStorageManager(),
+            )
+            directory = os.path.dirname(tmp_data.get("base_file"))
+            if settings.ASSETS_ROOT not in directory:
+                storage_manager.rmtree(directory, ignore_errors=True)
+
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
             return [
@@ -700,20 +714,6 @@ class BaseVectorFileHandler(BaseHandler):
             owner=_exec.user,
             asset=asset,
         )
-
-    def create_asset_and_link(self, resource, files, action=None):
-        if not files:
-            return
-        asset = super().create_asset_and_link(resource, files, action)
-        # remove temporary folders since now is managed by the asset
-        storage_manager = StorageManager(
-            remote_files={},
-            concrete_storage_manager=FileSystemStorageManager(),
-        )
-        directory = os.path.dirname(files.get("base_file"))
-        if settings.ASSETS_ROOT not in directory:
-            storage_manager.rmtree(directory, ignore_errors=True)
-        return asset
 
     def overwrite_geonode_resource(
         self,
