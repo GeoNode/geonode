@@ -1151,7 +1151,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         if update_bulk:
             try:
-                raise Exception("something")
                 model_instance.objects.bulk_update(update_bulk, fields=schema_fields)
                 valid_update += len(update_bulk)
             except Exception as e:
