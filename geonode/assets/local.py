@@ -69,10 +69,10 @@ class LocalAssetHandler(AssetHandlerInterface):
 
         if local_files:
             if clone_files:
-                copied_files = self._copy_data(local_files)
-                if copied_files:
-                    final_files.extend(copied_files)
-                    asset_dir = os.path.dirname(copied_files[0])
+                dir_name = os.path.dirname(local_files[0])
+                asset_dir = self._clone_data(dir_name)
+                if asset_dir:
+                    final_files.extend([_f.replace(dir_name, asset_dir) for _f in local_files])
             else:
                 final_files.extend(local_files)
 
@@ -144,6 +144,11 @@ class LocalAssetHandler(AssetHandlerInterface):
             os.chmod(new_path, settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS)
 
         shutil.copytree(source_dir, new_path, dirs_exist_ok=True)
+
+        # fixing in case the permissions on the newly clonsed files:
+        if settings.FILE_UPLOAD_PERMISSIONS is not None:
+            for _file in os.listdir(new_path):
+                os.chmod(os.path.join(new_path, _file), settings.FILE_UPLOAD_PERMISSIONS)
 
         return new_path
 

@@ -28,6 +28,7 @@ from geonode.assets.models import (
     LocalAsset,
 )
 
+
 logger = logging.getLogger(__name__)
 
 

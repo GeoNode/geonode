@@ -20,6 +20,7 @@ import ast
 import functools
 import json
 import re
+import os
 
 from uuid import uuid4
 from urllib.parse import urljoin, urlparse
@@ -104,6 +105,10 @@ from .serializers import (
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import validate_extra_metadata
+from geonode.assets.models import Asset
+from geonode.assets.utils import create_asset_and_link, unlink_asset
+from geonode.assets.handlers import asset_handler_registry
+from geonode.utils import get_supported_datasets_file_types
 
 import logging
 
@@ -1434,6 +1439,96 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             return Response(payload, status=200)
 
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path=r"assets",
+        permission_classes=[UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
+        parser_classes=[JSONParser, MultiPartParser],
+        url_name="assets",
+    )
+    def asset(self, request, pk=None, *args, **kwargs):
+        """Handles uploading a new file, creating an asset, and linking it to the resource."""
+
+        files = request.FILES.getlist("files")
+        if not files:
+            return Response({"message": "File(s) not provided."}, status=status.HTTP_400_BAD_REQUEST)
+        resource = get_object_or_404(ResourceBase, pk=pk)
+        user = request.user
+        title = request.data.get("title", None)
+        description = request.data.get("description", None)
+
+        forbidden_titles = {"Original", "Files"}
+        # Temporary solution to prevent reserved assets titles.
+        # A proper flag will be added later to handle this restriction more robustly.
+        if title in forbidden_titles:
+            return Response(
+                {"message": f"'{title}' is a reserved title and cannot be used."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not permissions_registry.user_has_perm(user, resource, "change_resourcebase", include_virtual=True):
+            return Response(
+                {"message": "You do not have permission to add an asset to this resource."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        allowed_extensions = []
+        for _type in get_supported_datasets_file_types():
+            for val in _type["formats"]:
+                allowed_extensions.extend(val["required_ext"])
+        allowed_extensions = list(settings.ALLOWED_DOCUMENT_TYPES) + allowed_extensions
+        for file in files:
+            file_ext = os.path.splitext(file.name)[1].lower()[1:]
+            if file_ext not in allowed_extensions:
+                logger.debug(f"{file_ext} file type is not allowed")
+                return Response(
+                    {"message": f"The uploaded file type {file_ext} is not allowed."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        try:
+            handler = asset_handler_registry.get_default_handler()
+            asset, link = create_asset_and_link(
+                resource, user, files, handler=handler, title=title, description=description
+            )
+            if asset and link:
+                return Response(
+                    {"message": "Asset created and linked successfully.", "asset_id": asset.id, "link_id": link.id},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "Error creating asset or link."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        except Exception as e:
+            logger.exception(e)
+            return Response({"message": "Error creating asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=["delete"], url_path=r"assets/(?P<asset_id>\d+)", url_name="delete-asset")
+    def delete_asset(self, request, pk=None, asset_id=None, *args, **kwargs):
+        """Deletes an asset and its link to the resource."""
+        resource = self.get_object()
+        if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase", include_virtual=True):
+            return Response(
+                {"message": "You do not have permission to delete an asset from this resource."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            asset = Asset.objects.get(pk=asset_id)
+            success, message = unlink_asset(resource, asset)
+
+            if success:
+                return Response({"message": message}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": message}, status=status.HTTP_403_FORBIDDEN)
+
+        except Asset.DoesNotExist:
+            return Response({"message": f"The requested {asset_id} does not exists"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.exception(e)
+            return Response(
+                {"message": f"Error deleting asset {asset_id}."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 def base_linked_resources(instance, user, params):

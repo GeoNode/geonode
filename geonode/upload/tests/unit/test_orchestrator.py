@@ -30,7 +30,6 @@ from geonode.upload.handlers.shapefile.serializer import ShapeFileSerializer
 from geonode.upload.orchestrator import ImportOrchestrator
 from django.utils import timezone
 from django_celery_results.models import TaskResult
-from geonode.assets.handlers import asset_handler_registry
 
 from geonode.resource.models import ExecutionRequest
 
@@ -197,18 +196,6 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         with open(fake_path, "w"):
             pass
 
-        user = get_user_model().objects.first()
-        asset_handler = asset_handler_registry.get_default_handler()
-
-        asset = asset_handler.create(
-            title="Original",
-            owner=user,
-            description=None,
-            type="gpkg",
-            files=[fake_path],
-            clone_files=False,
-        )
-
         self.assertTrue(os.path.exists(fake_path))
         # we need to create first the execution
         _uuid = self.orchestrator.create_execution_request(
@@ -218,8 +205,6 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
             input_params={
                 "files": {"base_file": fake_path},
                 "store_spatial_files": True,
-                "asset_id": asset.id,
-                "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
             },
         )
         _uuid = str(_uuid)
@@ -321,28 +306,13 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         with open(fake_path, "w"):
             pass
 
-        user = get_user_model().objects.first()
-        asset_handler = asset_handler_registry.get_default_handler()
-
-        asset = asset_handler.create(
-            title="Original",
-            owner=user,
-            description=None,
-            type="gpkg",
-            files=[fake_path],
-            clone_files=False,
-        )
-
         try:
             exec_id = str(
                 self.orchestrator.create_execution_request(
                     user=get_user_model().objects.first(),
                     func_name="test",
                     step="test",
-                    input_params={
-                        "asset_id": asset.id,
-                        "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
-                    },
+                    input_params={},
                 )
             )
 

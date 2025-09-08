@@ -313,14 +313,17 @@ class BaseHandler(ABC):
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
 
-    def create_asset_and_link(self, resource, files):
+    def create_asset_and_link(self, resource, files, action=None):
         if not files:
             return
+        asset_name = (
+            Path(files.get("base_file")).stem if action in [ira.REPLACE.value, ira.UPSERT.value] else "Original"
+        )
         asset, _ = create_asset_and_link(
             resource=resource,
             owner=resource.owner,
             files=files.values(),
-            title="Original",
+            title=asset_name,
             asset_type=Path(files.get("base_file")).suffix.replace(".", ""),
             clone_files=True,
         )
