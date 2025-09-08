@@ -22,6 +22,7 @@ import logging
 import shutil
 import io
 import json
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -29,11 +30,15 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import StreamingHttpResponse
 from django.urls import reverse
 
+
 from rest_framework.test import APITestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.local import LocalAssetHandler
 from geonode.assets.models import Asset, LocalAsset
+from geonode.assets.utils import create_asset, create_asset_and_link, unlink_asset
+from geonode.base.models import ResourceBase, Link
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -430,3 +435,154 @@ class AssetsDownloadTests(APITestCase):
         shutil.copy(TWO_JSON, asset_dir)
         shutil.copy(THREE_JSON, sub_dir)
         return asset
+
+
+class AssetCreationTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.created_files = []
+
+    def tearDown(self):
+        for file_path in self.created_files:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        super().tearDown()
+
+    def _create_dummy_file(self, filename="dummy.txt", content=b"dummy content"):
+        """Create a real file on the filesystem and return its path."""
+        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        with open(file_path, "wb") as f:
+            f.write(content)
+        self.created_files.append(file_path)
+        return file_path
+
+    def test_create_asset_function(self):
+        """Test the create_asset utility function."""
+        initial_asset_count = LocalAsset.objects.count()
+        file_path = self._create_dummy_file(filename="test_create_asset.txt")
+        asset = create_asset(
+            self.user,
+            [file_path],
+            asset_type="document",
+            title="Test Asset from Function",
+            description="Description for asset from function",
+        )
+
+        self.assertIsNotNone(asset)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(asset.title, "Test Asset from Function")
+        self.assertEqual(asset.owner, self.user)
+        asset_file_path = asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")
+
+    def test_create_asset_and_link_function(self):
+        """Test the create_asset_and_link utility function."""
+        initial_asset_count = LocalAsset.objects.count()
+        resource = ResourceBase.objects.create(
+            title="Test Resource for Asset Link",
+            owner=self.user,
+            abstract="Abstract for linked resource",
+            uuid=str(uuid4()),
+        )
+
+        file_path = self._create_dummy_file(filename="test_create_asset_link.txt")
+
+        asset, link = create_asset_and_link(
+            resource,
+            self.user,
+            [file_path],
+            asset_type="image",
+            title="Linked Asset from Function",
+            description="Description for linked asset from function",
+        )
+
+        self.assertTrue(link)
+        self.assertIsNotNone(asset)
+        self.assertEqual(LocalAsset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(link.asset.title, "Linked Asset from Function")
+        self.assertEqual(link.asset.owner, self.user)
+        self.assertEqual(link.resource, resource)
+        asset_file_path = asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path), f"File should exist at asset location: {asset_file_path}")
+
+
+class DeleteAssetTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.resource1 = ResourceBase.objects.create(
+            title="Test Resource 1",
+            owner=self.user,
+            uuid=str(uuid4()),
+        )
+        self.resource2 = ResourceBase.objects.create(
+            title="Test Resource 2",
+            owner=self.user,
+            uuid=str(uuid4()),
+        )
+        self.asset = create_asset(self.user, asset_type="document", title="Test Asset for Deletion", files=[ONE_JSON])
+        self.protected_asset = create_asset(self.user, asset_type="document", title="Original", files=[TWO_JSON])
+        self.link1 = Link.objects.create(resource=self.resource1, asset=self.asset)
+        self.protected_link = Link.objects.create(resource=self.resource1, asset=self.protected_asset)
+
+    def test_delete_protected_asset(self):
+        """Test that a protected asset (e.g., 'Original') is not deleted."""
+        self.assertTrue(Asset.objects.filter(pk=self.protected_asset.pk).exists())
+        self.assertTrue(Link.objects.filter(pk=self.protected_link.pk).exists())
+
+        deleted, msg = unlink_asset(self.resource1, self.protected_asset)
+
+        self.assertFalse(deleted)
+        self.assertEqual(msg, "Asset is protected and will not be unlinked or deleted.")
+        self.assertTrue(Asset.objects.filter(pk=self.protected_asset.pk).exists())
+        self.assertTrue(Link.objects.filter(pk=self.protected_link.pk).exists())
+
+    def test_delete_asset_no_link(self):
+        """Test that nothing happens if there is no link between the resource and the asset."""
+        asset_no_link = create_asset(self.user, title="Asset with no link", files=[THREE_JSON])
+        self.assertTrue(Asset.objects.filter(pk=asset_no_link.pk).exists())
+
+        deleted, msg = unlink_asset(self.resource1, asset_no_link)
+
+        self.assertFalse(deleted)
+        self.assertEqual(msg, "Link between resource and asset not found.")
+        self.assertTrue(Asset.objects.filter(pk=asset_no_link.pk).exists())
+
+    def test_delete_asset_linked_to_other_resources(self):
+        """Test that only the link is deleted when the asset is linked to other resources."""
+        # Link the asset to a second resource
+        link2 = Link.objects.create(resource=self.resource2, asset=self.asset)
+        self.assertEqual(Link.objects.filter(asset=self.asset).count(), 2)
+        self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+        asset_pk = self.asset.pk
+        other_links_count = Link.objects.filter(asset=self.asset).exclude(pk=link2.pk).count()
+        deleted, msg = unlink_asset(self.resource1, self.asset)
+
+        self.assertTrue(deleted)
+        self.assertIn(
+            f"Asset {asset_pk} was unlinked but not deleted, because still linked to {other_links_count} resources", msg
+        )
+        self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+        self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
+        self.assertTrue(Link.objects.filter(pk=link2.pk).exists())
+        self.assertEqual(Link.objects.filter(asset=self.asset).count(), 1)
+
+    def test_delete_asset_and_link(self):
+        """Test that both the asset and the link are deleted when the asset is only linked to one resource."""
+        self.assertEqual(Link.objects.filter(asset=self.asset).count(), 1)
+        self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+        asset_pk = self.asset.pk
+        asset_file_path = self.asset.localasset.location[0]
+        self.assertTrue(os.path.exists(asset_file_path))
+
+        deleted, msg = unlink_asset(self.resource1, self.asset)
+
+        self.assertTrue(deleted)
+        self.assertIn(f"Asset {asset_pk} was unlinked and deleted from resource {self.resource1.pk}.", msg)
+        self.assertFalse(Asset.objects.filter(pk=asset_pk).exists())
+        self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
+        self.assertFalse(os.path.exists(asset_file_path))
