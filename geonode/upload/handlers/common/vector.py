@@ -386,6 +386,9 @@ class BaseVectorFileHandler(BaseHandler):
         orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
         dynamic_model = None
         celery_group = None
+        # list to collect all the alternates:
+        all_alternates = []
+
         try:
             if len(layers) == 0:
                 raise Exception("No valid layers found")
@@ -423,6 +426,8 @@ class BaseVectorFileHandler(BaseHandler):
                     else:
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
 
+                    all_alternates.append(alternate)
+
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
                         files,
@@ -452,6 +457,15 @@ class BaseVectorFileHandler(BaseHandler):
                             **kwargs,
                         )
                     )
+
+            # Update the tasks_status with the created alternates
+            for alternate in all_alternates:
+                if alternate not in _exec.tasks:
+                    _exec.tasks[alternate] = {}
+                _exec.tasks[alternate]["geonode.upload.import_resource"] = "PENDING"
+
+            # Persist the updated tasks_status
+            orchestrator.update_execution_request_status(execution_id=str(execution_id), tasks=_exec.tasks)
         except Exception as e:
             logger.error(e)
             if dynamic_model:
@@ -461,7 +475,7 @@ class BaseVectorFileHandler(BaseHandler):
                 """
                 drop_dynamic_model_schema(dynamic_model)
             raise e
-        return alternate
+        return
 
     def _select_valid_layers(self, all_layers):
         layers = []

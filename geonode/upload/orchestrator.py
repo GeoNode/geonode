@@ -27,7 +27,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.module_loading import import_string
-from django_celery_results.models import TaskResult
 from geonode.base.models import ResourceBase
 from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
@@ -242,50 +241,48 @@ class ImportOrchestrator:
         )
 
     def evaluate_execution_progress(self, execution_id, _log=None, handler_module_path=None):
+
         from geonode.upload.models import ResourceHandlerInfo
 
         """
-        The execution id is a mandatory argument for the task
-        We use that to filter out all the task execution that are still in progress.
-        if any is failed, we raise it.
+        Evaluate the progress of an execution request.
+        Uses _exec.tasks to track the status of all alternates/tasks while it sets
+        the execution request as failed, partially failed, or calls _evaluate_last_dataset.
         """
 
         _exec = self.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
         expected_dataset = _exec.input_params.get("total_layers", 0)
         actual_dataset = ResourceHandlerInfo.objects.filter(execution_request=_exec).count()
         is_last_dataset = actual_dataset >= expected_dataset
-        execution_id = str(execution_id)  # force it as string to be sure
-        lower_exec_id = execution_id.replace("-", "_").lower()
-        exec_result = TaskResult.objects.filter(
-            Q(task_args__icontains=lower_exec_id)
-            | Q(task_kwargs__icontains=lower_exec_id)
-            | Q(result__icontains=lower_exec_id)
-            | Q(task_args__icontains=execution_id)
-            | Q(task_kwargs__icontains=execution_id)
-            | Q(result__icontains=execution_id)
-        )
+
+        # Check if any data exists (ResourceHandlerInfo) for this execution
         _has_data = ResourceHandlerInfo.objects.filter(execution_request__exec_id=execution_id).exists()
 
-        # .all() is needed since we want to have the last status on the DB without take in consideration the cache
-        if exec_result.all().exclude(Q(status=states.SUCCESS) | Q(status=states.FAILURE)).exists():
-            self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
-        elif exec_result.all().filter(status=states.FAILURE).exists():
-            """
-            Should set it fail if all the execution are done and at least 1 is failed
-            """
-            # failed = [x.task_id for x in exec_result.filter(status=states.FAILURE)]
-            # _log_message = f"For the execution ID {execution_id} The following celery task are failed: {failed}"
-            if _has_data:
-                log = list(set(self.get_execution_object(execution_id).output_params.get("failed_layers", ["Unknown"])))
-                logger.error(log)
-                self.set_as_partially_failed(execution_id=execution_id, reason=log)
-                self._last_step(execution_id, handler_module_path)
+        # Flatten all statuses across alternates
+        all_statuses = [status for alt_dict in tasks_status.values() for status in alt_dict.values()]
 
-            elif is_last_dataset:
+        if any(status in {"RUNNING", "PENDING"} for status in all_statuses):
+            # Some tasks still in progress
+            self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
+
+        elif "FAILED" in all_statuses:
+            # At least one task failed
+            failed_alternates = [alt for alt, status_dict in tasks_status.items() if "FAILED" in status_dict.values()]
+
+            if _has_data and failed_alternates:
+                # Partial import: some layers imported, some failed
+                logger.error(f"Partial failure for execution {execution_id}: {failed_alternates}")
+                self.set_as_partially_failed(execution_id=execution_id, reason=failed_alternates)
+                self._last_step(execution_id, handler_module_path)
+            else:
+                # Nothing imported or only a single layer expected
+                logger.error(f"Execution {execution_id} failed completely.")
                 self.set_as_failed(execution_id=execution_id, reason=_log)
-            elif expected_dataset == 1 and not _has_data:
-                self.set_as_failed(execution_id=execution_id, reason=_log)
+
         else:
+            # All tasks succeeded
             self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
 
     def _evaluate_last_dataset(self, is_last_dataset, _log, execution_id, handler_module_path):
@@ -341,9 +338,6 @@ class ImportOrchestrator:
             kwargs["status"] = status
 
         ExecutionRequest.objects.filter(exec_id=execution_id).update(**kwargs)
-
-        if celery_task_request:
-            TaskResult.objects.filter(task_id=celery_task_request.id).update(task_args=celery_task_request.args)
 
     def update_execution_request_obj(self, _exec_obj, payload):
         ExecutionRequest.objects.filter(pk=_exec_obj.pk).update(**payload)

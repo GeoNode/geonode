@@ -79,6 +79,7 @@ class ErrorBaseTaskClass(Task):
         # kwargs (Dict) - Original keyword arguments for the task that failed.
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
+
 class UpdateTaskClass(Task):
     max_retries = 3
     track_started = True
@@ -94,24 +95,27 @@ class UpdateTaskClass(Task):
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
-        # Determine key for this task (alternate / pending)
         if task_name == "geonode.upload.import_resource":
-            # import_resource may not know the alternate yet
-            key = "pending_alternate"
+            # Mark all real alternates as FAILED
+            for alternate, status_dict in tasks_status.items():
+                if task_name in status_dict:
+                    status_dict[task_name] = "FAILED"
+
+            # The temporary placeholder remains if no real alternates exist
+            # (optional: remove after populating real alternates in import_resource)
+            # Only remove pending_alternate if at least one real alternate exists
+        if "pending_alternate" in tasks_status and any(alt != "pending_alternate" for alt in tasks_status):
+            tasks_status.pop("pending_alternate")
         else:
             # Subsequent tasks: alternate is passed as arg 3
-            key = args[3] if len(args) > 3 else None
-
-        if key not in tasks_status:
-            tasks_status[key] = {}
-
-        tasks_status[key][task_name] = "FAILED"
+            alternate = args[3] if len(args) > 3 else None
+            if alternate:
+                if alternate not in tasks_status:
+                    tasks_status[alternate] = {}
+                tasks_status[alternate][task_name] = "FAILED"
 
         # Update ExecutionRequest tasks dict first
-        orchestrator.update_execution_request_status(
-            execution_id=execution_id,
-            tasks=tasks_status
-        )
+        orchestrator.update_execution_request_status(execution_id=execution_id, tasks=tasks_status)
 
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
@@ -132,10 +136,11 @@ class UpdateTaskClass(Task):
         if task_name == "geonode.upload.import_resource":
             key = "pending_alternate"  # alternate unknown
         else:
-            # subsequent tasks: alternate is always passed in args or kwargs
-            # positional args: args = (execution_id, step_name, layer_name, alternate, ...)
-            alternate = args[3]
-            key = alternate
+            # subsequent tasks: alternate is usually in args[3], fallback to pending
+            if len(args) > 3 and args[3]:
+                key = args[3]
+            else:
+                key = "pending_alternate"
 
         if key not in tasks_status:
             tasks_status[key] = {}
@@ -150,6 +155,7 @@ class UpdateTaskClass(Task):
     def on_success(self, retval, task_id, args, kwargs):
         """
         Called when the task succeeds.
+        Updates tasks_status for all alternates.
         """
         task_name = self.name
         execution_id = args[0]
@@ -158,27 +164,27 @@ class UpdateTaskClass(Task):
         tasks_status = _exec.tasks or {}
 
         if task_name == "geonode.upload.import_resource":
-            # import_resource returns (task_name, execution_id, alternate)
-            if not retval or len(retval) < 3:
-                return
-            _, _, alternate = retval
+            # Iterate over all alternates already in tasks_status
+            for alternate, status_dict in tasks_status.items():
+                if task_name in status_dict:
+                    status_dict[task_name] = "SUCCESS"
 
-            # Remove pending_alternate
-            if "pending_alternate" in tasks_status:
-                tasks_status.pop("pending_alternate")
+            # Remove the temporary placeholder
+            if "pending_alternate" in _exec.tasks:
+                _exec.tasks.pop("pending_alternate")
         else:
             # For other tasks, alternate is always passed as argument
-            alternate = args[3]
-
-        if alternate not in tasks_status:
-            tasks_status[alternate] = {}
-
-        tasks_status[alternate][task_name] = "SUCCESS"
+            alternate = args[3] if len(args) > 3 else None
+            if alternate:
+                if alternate not in tasks_status:
+                    tasks_status[alternate] = {}
+                tasks_status[alternate][task_name] = "SUCCESS"
 
         orchestrator.update_execution_request_status(
             execution_id,
             tasks=tasks_status,
         )
+
 
 @importer_app.task(
     bind=True,
@@ -277,13 +283,13 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             raise Exception("dataset is invalid")
 
         _datastore.prepare_import(**kwargs)
-        alternate = _datastore.start_import(execution_id, **kwargs)
+        all_alternates = _datastore.start_import(execution_id, **kwargs)
 
         """
         since the call to the orchestrator can changed based on the handler
         called. See the GPKG handler gpkg_next_step task
         """
-        return self.name, execution_id, alternate
+        return self.name, execution_id, all_alternates
 
     except Exception as e:
         call_rollback_function(
@@ -438,7 +444,6 @@ def create_geonode_resource(
     """
     # Updating status to running
     try:
-        raise Exception("Something wrong happened")
         orchestrator.update_execution_request_status(
             execution_id=execution_id,
             last_updated=timezone.now(),

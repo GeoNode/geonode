@@ -28,10 +28,6 @@ class UploadAppConfig(AppConfig):
         """Finalize setup"""
         run_setup_hooks()
         super(UploadAppConfig, self).ready()
-        settings.CELERY_BEAT_SCHEDULE["clean-up-old-task-result"] = {
-            "task": "geonode.upload.tasks.cleanup_celery_task_entries",
-            "schedule": 86400.0,
-        }
 
 
 def run_setup_hooks(*args, **kwargs):
