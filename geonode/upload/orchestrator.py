@@ -22,9 +22,7 @@ from typing import Optional
 from uuid import UUID
 import zipfile
 
-from celery import states
 from django.contrib.auth import get_user_model
-from django.db.models import Q
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from geonode.base.models import ResourceBase
