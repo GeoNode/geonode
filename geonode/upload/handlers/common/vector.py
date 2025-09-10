@@ -50,7 +50,7 @@ from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.celery_app import importer_app
 from geonode.assets.utils import copy_assets_and_links, get_default_asset
 
-from geonode.upload.handlers.utils import create_alternate, should_be_imported
+from geonode.upload.handlers.utils import create_alternate, should_be_imported, create_simple_alternate
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
@@ -387,7 +387,7 @@ class BaseVectorFileHandler(BaseHandler):
         dynamic_model = None
         celery_group = None
         # list to collect all the alternates:
-        all_alternates = []
+        layer_names = []
 
         try:
             if len(layers) == 0:
@@ -426,7 +426,7 @@ class BaseVectorFileHandler(BaseHandler):
                     else:
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
 
-                    all_alternates.append(alternate)
+                    layer_names.append(layer_name)
 
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
@@ -459,10 +459,11 @@ class BaseVectorFileHandler(BaseHandler):
                     )
 
             # Update the tasks_status with the created alternates
-            for alternate in all_alternates:
-                if alternate not in _exec.tasks:
-                    _exec.tasks[alternate] = {}
-                _exec.tasks[alternate]["geonode.upload.import_resource"] = "PENDING"
+            for layer in layer_names:
+                alternate_key = create_simple_alternate(layer, str(_exec.exec_id)).lower()
+                if alternate_key not in _exec.tasks:
+                    _exec.tasks[alternate_key] = {}
+                _exec.tasks[alternate_key]["geonode.upload.import_resource"] = "PENDING"
 
             # Persist the updated tasks_status
             orchestrator.update_execution_request_status(execution_id=str(execution_id), tasks=_exec.tasks)

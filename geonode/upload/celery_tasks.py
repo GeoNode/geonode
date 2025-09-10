@@ -95,27 +95,19 @@ class UpdateTaskClass(Task):
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
-        if task_name == "geonode.upload.import_resource":
-            # Mark all real alternates as FAILED
-            for alternate, status_dict in tasks_status.items():
-                if task_name in status_dict:
-                    status_dict[task_name] = "FAILED"
-
-            # The temporary placeholder remains if no real alternates exist
-            # (optional: remove after populating real alternates in import_resource)
-            # Only remove pending_alternate if at least one real alternate exists
+        # Only drop the placeholder if real alternates exist
         if "pending_alternate" in tasks_status and any(alt != "pending_alternate" for alt in tasks_status):
             tasks_status.pop("pending_alternate")
-        else:
-            # Subsequent tasks: alternate is passed as arg 3
-            alternate = args[3] if len(args) > 3 else None
-            if alternate:
-                if alternate not in tasks_status:
-                    tasks_status[alternate] = {}
-                tasks_status[alternate][task_name] = "FAILED"
+
+        # Mark all alternates (or placeholder) as FAILED for this task
+        for alternate_key, status_dict in tasks_status.items():
+            status_dict[task_name] = "FAILED"
 
         # Update ExecutionRequest tasks dict first
-        orchestrator.update_execution_request_status(execution_id=execution_id, tasks=tasks_status)
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            tasks=tasks_status,
+        )
 
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
@@ -123,8 +115,7 @@ class UpdateTaskClass(Task):
     def before_start(self, task_id, args, kwargs):
         """
         Called before the task runs.
-        - For import_resource, alternate is unknown.
-        - For other tasks, alternate is passed as argument.
+        Marks the task as RUNNING for all alternates (or placeholder if none).
         """
         execution_id = args[0]
         task_name = self.name
@@ -132,20 +123,13 @@ class UpdateTaskClass(Task):
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
-        # Determine key for this task
-        if task_name == "geonode.upload.import_resource":
-            key = "pending_alternate"  # alternate unknown
-        else:
-            # subsequent tasks: alternate is usually in args[3], fallback to pending
-            if len(args) > 3 and args[3]:
-                key = args[3]
-            else:
-                key = "pending_alternate"
+        # If no alternates exist yet (import task), use the placeholder
+        if not tasks_status:
+            tasks_status["pending_alternate"] = {}
 
-        if key not in tasks_status:
-            tasks_status[key] = {}
-
-        tasks_status[key][task_name] = "RUNNING"
+        # Mark task as RUNNING for all existing alternates (or placeholder)
+        for alternate_key, status_dict in tasks_status.items():
+            status_dict[task_name] = "PENDING"
 
         orchestrator.update_execution_request_status(
             execution_id,
@@ -163,22 +147,13 @@ class UpdateTaskClass(Task):
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
-        if task_name == "geonode.upload.import_resource":
-            # Iterate over all alternates already in tasks_status
-            for alternate, status_dict in tasks_status.items():
-                if task_name in status_dict:
-                    status_dict[task_name] = "SUCCESS"
+        # Only drop the placeholder if real alternates exist
+        if "pending_alternate" in tasks_status and any(alt != "pending_alternate" for alt in tasks_status):
+            tasks_status.pop("pending_alternate")
 
-            # Remove the temporary placeholder
-            if "pending_alternate" in _exec.tasks:
-                _exec.tasks.pop("pending_alternate")
-        else:
-            # For other tasks, alternate is always passed as argument
-            alternate = args[3] if len(args) > 3 else None
-            if alternate:
-                if alternate not in tasks_status:
-                    tasks_status[alternate] = {}
-                tasks_status[alternate][task_name] = "SUCCESS"
+        # Mark all alternates (or placeholder) as SUCCESS for this task
+        for alternate_key, status_dict in tasks_status.items():
+            status_dict[task_name] = "SUCCESS"
 
         orchestrator.update_execution_request_status(
             execution_id,

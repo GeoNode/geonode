@@ -93,6 +93,22 @@ def create_alternate(layer_name, execution_id):
     return alternate
 
 
+def create_simple_alternate(layer_name, execution_id):
+    """
+    Generate a simple alternate key for a layer in a specific execution.
+    Format: layername_executionid
+    """
+    alternate = f"{layer_name}_{execution_id}"
+
+    # Optional: ensure it does not exceed Postgres 63-character limit
+    if len(alternate) > 63:
+        # truncate layer_name, keep exec_id intact
+        truncate_len = 63 - len(str(execution_id)) - 1  # -1 for underscore
+        alternate = f"{layer_name[:truncate_len]}_{execution_id}"
+
+    return alternate
+
+
 def drop_dynamic_model_schema(schema_model):
     if schema_model:
         schema = ModelSchemaEditor(initial_model=schema_model.name, db_name="datastore")
