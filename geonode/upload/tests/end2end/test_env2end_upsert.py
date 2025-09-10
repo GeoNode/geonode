@@ -32,7 +32,7 @@ from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
 from geonode.upload import project_dir
-from geonode.upload.tests.utils import ImporterBaseTestSupport
+from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
 from django.db.models import Q
 from geonode.base.models import ResourceBase
 import logging
@@ -48,7 +48,7 @@ geourl = settings.GEODATABASE_URL
     IMPORTER_ENABLE_DYN_MODELS=True,
     ASYNC_SIGNAL=False,
 )
-class BaseImporterEndToEndTest(ImporterBaseTestSupport):
+class BaseImporterEndToEndTest(TransactionImporterBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
@@ -80,7 +80,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         self.admin.is_staff = True
         self.admin.save()
         for el in Dataset.objects.all():
-            el.delete()
+            try:
+                el.delete()
+            except:  # noqa
+                continue
 
     def tearDown(self) -> None:
         super().tearDown()
@@ -193,7 +196,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_geojson.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
-        payload["upsert_key"] = "ogc_fid"
+        payload["upsert_key"] = "id"
 
         # time to upsert the data
         self.client.force_login(self.admin)
