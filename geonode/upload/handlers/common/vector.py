@@ -56,6 +56,7 @@ from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
+
 import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
@@ -616,6 +617,14 @@ class BaseVectorFileHandler(BaseHandler):
         """
         return geometry_name
 
+    def promote_geom_to_multi(self, geom):
+        """
+        Convert the GetGeometryType object into Multi
+        example if is Point -> MultiPoint
+        Needed for the shapefiles
+        """
+        return geom
+
     def create_geonode_resource(
         self,
         layer_name: str,
@@ -1134,10 +1143,13 @@ class BaseVectorFileHandler(BaseHandler):
         ).in_bulk(field_name=upsert_key)
         update_bulk = []
         create_bulk = []
+        # looping over the chunk data
         for feature in data_chunk:
             feature_as_dict = feature.items()
+            # need to simulate the "promote to multi" used by the upload process.
+            # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
-            feature_as_dict.update({self.default_geometry_column_name: geom.ExportToWkt()})
+            feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
             if feature_as_dict.get(upsert_key) in value_in_db:
                 # if the key is present, we need to update the object
                 # the geometry must be treated manually
@@ -1151,6 +1163,8 @@ class BaseVectorFileHandler(BaseHandler):
 
         if update_bulk:
             try:
+                # bulk update of the value. the schema is needed since is possible in django
+                # to update only specific columns of the schema. By default is updating all of them
                 model_instance.objects.bulk_update(update_bulk, fields=schema_fields)
                 valid_update += len(update_bulk)
             except Exception as e:
