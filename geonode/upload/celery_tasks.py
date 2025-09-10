@@ -511,7 +511,7 @@ def create_geonode_resource(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_resource",
     queue="geonode.upload.copy_geonode_resource",
     max_retries=1,
@@ -700,7 +700,7 @@ def create_dynamic_structure(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_dynamic_model",
     queue="geonode.upload.copy_dynamic_model",
     task_track_started=True,
@@ -783,7 +783,7 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_data_table",
     queue="geonode.upload.copy_geonode_data_table",
     task_track_started=True,
