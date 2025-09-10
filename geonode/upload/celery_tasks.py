@@ -258,13 +258,13 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             raise Exception("dataset is invalid")
 
         _datastore.prepare_import(**kwargs)
-        all_alternates = _datastore.start_import(execution_id, **kwargs)
+        _datastore.start_import(execution_id, **kwargs)
 
         """
         since the call to the orchestrator can changed based on the handler
         called. See the GPKG handler gpkg_next_step task
         """
-        return self.name, execution_id, all_alternates
+        return self.name, execution_id
 
     except Exception as e:
         call_rollback_function(
