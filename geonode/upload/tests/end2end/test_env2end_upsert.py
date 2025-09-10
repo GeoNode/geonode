@@ -32,7 +32,7 @@ from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
 from geonode.upload import project_dir
-from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
+from geonode.upload.tests.utils import ImporterBaseTestSupport
 from django.db.models import Q
 from geonode.base.models import ResourceBase
 import logging
@@ -48,7 +48,7 @@ geourl = settings.GEODATABASE_URL
     IMPORTER_ENABLE_DYN_MODELS=True,
     ASYNC_SIGNAL=False,
 )
-class BaseImporterEndToEndTest(TransactionImporterBaseTestSupport):
+class BaseImporterEndToEndTest(ImporterBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
