@@ -926,9 +926,12 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         if not is_valid:
             raise UpsertException(errors)
 
-        result = _datastore.upsert_data(execution_id, **kwargs)
+        upsert_success, result = _datastore.upsert_data(execution_id, **kwargs)
 
         orchestrator.update_execution_request_obj(_exec, {"output_params": {"upsert": result}})
+
+        if not upsert_success:
+            raise UpsertException("Upsert has failed, please verify the log for more information")
 
         resource = ResourceBase.objects.get(pk=_exec.input_params.get("resource_pk"))
 

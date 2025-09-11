@@ -210,7 +210,30 @@ class ShapeFileHandler(BaseVectorFileHandler):
         If needed change the name of the geometry, by promoting it to Multi
         example if is Point -> MultiPoint
         Needed for the shapefiles
+        Later this is used to map the geometry coming from ogr2ogr with a django class
         """
         if "Multi" not in geometry_name and "Point" not in geometry_name:
             return f"Multi {geometry_name.title()}"
         return geometry_name
+
+    def promote_geom_to_multi(self, geom):
+        """
+        Convert the GetGeometryType object into Multi
+        example if is Point -> MultiPoint
+        Needed for the shapefiles
+        """
+        match geom.GetGeometryType():
+            case ogr.wkbMultiLineString | ogr.wkbMultiPolygon:
+                # if is already multi, we dont need to do anything
+                return geom
+            case ogr.wkbLineString:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiLineString)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case ogr.wkbPolygon:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiPolygon)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case _:
+                # we dont convert points
+                return geom
