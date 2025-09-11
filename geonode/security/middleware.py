@@ -84,6 +84,8 @@ class LoginRequiredMiddleware(MiddlewareMixin):
     redirect_to = login_url
 
     def __init__(self, get_response):
+        if get_response:
+            super().__init__(get_response)
         self.get_response = get_response
 
     def process_request(self, request):
@@ -107,6 +109,8 @@ class SessionControlMiddleware(MiddlewareMixin):
     """
     Middleware that checks if session variables have been correctly set.
     """
+
+    async_mode = False
 
     redirect_to = getattr(settings, "LOGIN_URL", reverse("account_login"))
 
