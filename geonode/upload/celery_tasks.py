@@ -879,7 +879,7 @@ def dynamic_model_error_callback(*args, **kwargs):
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.upsert_data",
     queue="geonode.upload.upsert_data",
     max_retries=3,
@@ -960,7 +960,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.refresh_geonode_resource",
     queue="geonode.upload.refresh_geonode_resource",
     max_retries=1,
