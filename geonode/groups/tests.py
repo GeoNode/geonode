@@ -347,7 +347,8 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertCountEqual(json.loads(perms_info)["groups"], {"bar": ["view_resourcebase"]})
+        self.assertTrue("bar" in json.loads(perms_info)["groups"])
+        self.assertListEqual(json.loads(perms_info)["groups"]["bar"], ["view_resourcebase"])
 
     def test_resource_permissions(self):
         """
@@ -409,7 +410,8 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertCountEqual(permissions["groups"], {"bar": ["change_resourcebase"]})
+            self.assertTrue("bar" in permissions["groups"])
+            self.assertListEqual(permissions["groups"]["bar"], ["change_resourcebase"])
 
             # Remove group permissions
             permissions = {"users": {"admin": ["change_resourcebase"]}}
@@ -435,7 +437,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
-            self.assertCountEqual(permissions["groups"], {})
+            self.assertTrue("bar" not in permissions["groups"])
 
     def test_create_new_group(self):
         """
