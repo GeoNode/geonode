@@ -102,6 +102,10 @@ class BaseVectorFileHandler(BaseHandler):
     }
 
     @property
+    def have_table(self):
+        return True
+
+    @property
     def default_geometry_column_name(self):
         return "geometry"
 
@@ -179,6 +183,7 @@ class BaseVectorFileHandler(BaseHandler):
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
+            "upsert_key": _data.pop("upsert_key", None),
         }, _data
 
     @staticmethod
@@ -687,7 +692,7 @@ class BaseVectorFileHandler(BaseHandler):
         saved_dataset.refresh_from_db()
 
         # if dynamic model is enabled, we can save up with is the primary key of the table
-        if settings.IMPORTER_ENABLE_DYN_MODELS:
+        if settings.IMPORTER_ENABLE_DYN_MODELS and self.have_table:
             from django.db import connections
 
             column = None
@@ -1182,7 +1187,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def extract_upsert_key(self, exec_obj, dynamic_model_instance):
         # first we check if the upsert key is passed by the call
-        key = exec_obj.input_params.get("upsert_key")
+        key = exec_obj.input_params.get("upsert_key", "ogc_fid")
         if not key:
             # if the upsert key is not passed, we use the primary key as upsert key
             # the primary key is defined in the Fields of the dynamic model

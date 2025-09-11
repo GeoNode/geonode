@@ -21,6 +21,8 @@ import logging
 import os
 from pathlib import Path
 import math
+import zipfile
+from geonode.assets.models import LocalAsset
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.utils import UploadLimitValidator
@@ -84,7 +86,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             if not base:
                 return False
             ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
-            if ext in ["json"] and Tiles3DFileHandler.is_3dtiles_json(base):
+            if ext in ["json"] and Tiles3DFileHandler.is_3dtiles_json(base, **_data):
                 return True
         except Exception:
             return False
@@ -123,9 +125,15 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return True
 
     @staticmethod
-    def is_3dtiles_json(_file):
-        with open(_file, "r") as _readed_file:
-            _file = json.loads(_readed_file.read())
+    def is_3dtiles_json(_file, **kwargs):
+        if "zip_file" in kwargs:
+            # if we have a zipfile we need to read the file content before proceed
+            with zipfile.ZipFile(kwargs["zip_file"], "r") as z:
+                with z.open(_file.name) as inner_file:
+                    _file = json.loads(inner_file.read().decode("utf-8"))
+        else:
+            with open(_file, "r") as _readed_file:
+                _file = json.loads(_readed_file.read())
             # required key described in the specification of 3dtiles
             # https://docs.ogc.org/cs/22-025r4/22-025r4.html#toc92
         is_valid = all(key in _file.keys() for key in ("asset", "geometricError", "root"))
@@ -225,25 +233,28 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         asset=None,
     ):
         # we want just the tileset.json as location of the asset
-        asset.location = [path for path in asset.location if path.endswith(".json")]
-        asset.save()
+        # asset.location = [path for path in asset.location if path.endswith(".json")]
+        # asset.save()
+        exec_obj = orchestrator.get_execution_object(execution_id)
 
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
+        asset = self.create_asset_and_link(resource, files=exec_obj.input_params["files"], action=exec_obj.action)
 
-        # fixing-up bbox for the 3dtile object
-        js_file = None
-        with open(asset.location[0]) as _file:
-            js_file = json.loads(_file.read())
+        if isinstance(asset, LocalAsset):
+            # fixing-up bbox for the 3dtile object
+            js_file = None
+            with open(asset.location[0]) as _file:
+                js_file = json.loads(_file.read())
 
-        if not js_file:
-            return resource
+            if not js_file:
+                return resource
 
-        if self._has_region(js_file):
-            resource = self.set_bbox_from_region(js_file, resource=resource)
-        elif self._has_sphere(js_file):
-            resource = self.set_bbox_from_boundingVolume_sphere(js_file, resource=resource)
-        else:
-            resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
+            if self._has_region(js_file):
+                resource = self.set_bbox_from_region(js_file, resource=resource)
+            elif self._has_sphere(js_file):
+                resource = self.set_bbox_from_boundingVolume_sphere(js_file, resource=resource)
+            else:
+                resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
 
         return resource
 
