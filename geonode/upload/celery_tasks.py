@@ -43,6 +43,7 @@ from geonode.upload.datastore import DataStoreManager
 from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     create_alternate,
+    create_simple_alternate,
     drop_dynamic_model_schema,
     evaluate_error,
     get_uuid,
@@ -704,6 +705,9 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
         resource = resource.first()
 
         new_dataset_alternate = create_alternate(resource.title, exec_id).lower()
+
+        # Register the tasks_status with the created key alternates
+        orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING")
 
         if settings.IMPORTER_ENABLE_DYN_MODELS:
             dynamic_schema = ModelSchema.objects.filter(name=alternate.split(":")[1])

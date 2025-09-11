@@ -50,7 +50,7 @@ from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.celery_app import importer_app
 from geonode.assets.utils import copy_assets_and_links, get_default_asset
 
-from geonode.upload.handlers.utils import create_alternate, should_be_imported, create_simple_alternate
+from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
@@ -388,6 +388,7 @@ class BaseVectorFileHandler(BaseHandler):
         celery_group = None
         # list to collect all the alternates:
         layer_names = []
+        task_name = "geonode.upload.import_resource"
 
         try:
             if len(layers) == 0:
@@ -451,22 +452,16 @@ class BaseVectorFileHandler(BaseHandler):
                         import_next_step.s(
                             execution_id,
                             str(self),  # passing the handler module path
-                            "geonode.upload.import_resource",
+                            task_name,
                             layer_name,
                             alternate,
                             **kwargs,
                         )
                     )
 
-            # Update the tasks_status with the created alternates
-            for layer in layer_names:
-                alternate_key = create_simple_alternate(layer, str(_exec.exec_id)).lower()
-                if alternate_key not in _exec.tasks:
-                    _exec.tasks[alternate_key] = {}
-                _exec.tasks[alternate_key]["geonode.upload.import_resource"] = "PENDING"
+            # Register the tasks_status with the created key alternates
+            orchestrator.register_task_status(execution_id, layer_names, task_name, status="RUNNING")
 
-            # Persist the updated tasks_status
-            orchestrator.update_execution_request_status(execution_id=str(execution_id), tasks=_exec.tasks)
         except Exception as e:
             logger.error(e)
             if dynamic_model:

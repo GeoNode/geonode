@@ -34,6 +34,7 @@ from geonode.upload.api.exceptions import ImportException
 from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
+from geonode.upload.handlers.utils import create_simple_alternate
 from geonode.upload.utils import error_handler
 from geonode.upload.utils import ImporterRequestAction as ira
 
@@ -350,6 +351,30 @@ class ImportOrchestrator:
         if not handler_module_path:
             return
         return self.load_handler(handler_module_path).perform_last_step(execution_id)
+
+    def register_task_status(
+        self, exec_id: str, layer_names: str | list[str], step: str, status: str = "PENDING"
+    ) -> None:
+        """
+        Register or update task status for one or more layers in an ExecutionRequest.
+
+        exec_id: ID of the execution request
+        layer_names: Layer name or list of layer names
+        step: Task step name (e.g., 'geonode.upload.import_resource')
+        status: Status to set ('PENDING', 'RUNNING', 'SUCCESS', 'FAILED', etc.)
+        """
+        if isinstance(layer_names, str):
+            layer_names = [layer_names]
+
+        _exec = self.get_execution_object(exec_id)
+
+        for layer_name in layer_names:
+            alternate_key = create_simple_alternate(layer_name, str(_exec.exec_id)).lower()
+            if alternate_key not in _exec.tasks:
+                _exec.tasks[alternate_key] = {}
+            _exec.tasks[alternate_key][step] = status
+
+        self.update_execution_request_status(execution_id=exec_id, tasks=_exec.tasks)
 
 
 orchestrator = ImportOrchestrator()
