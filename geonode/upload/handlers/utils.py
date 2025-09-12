@@ -100,8 +100,7 @@ def create_layer_key(layer_name, execution_id):
     the ExecutionRequest by the importer
     Format: layername_executionid
     """
-    layer_key = f"{layer_name}_{execution_id}"
-    return layer_key
+    return f"{layer_name}_{execution_id}"
 
 
 def drop_dynamic_model_schema(schema_model):

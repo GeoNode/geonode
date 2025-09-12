@@ -389,8 +389,6 @@ class BaseVectorFileHandler(BaseHandler):
         orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
         dynamic_model = None
         celery_group = None
-        # list to collect all the alternates:
-        layer_names = []
         task_name = "geonode.upload.import_resource"
 
         try:
@@ -429,8 +427,6 @@ class BaseVectorFileHandler(BaseHandler):
                         )
                     else:
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
-
-                    layer_names.append(layer_name)
 
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
