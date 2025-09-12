@@ -173,6 +173,9 @@ class ImportOrchestrator:
                 If layer name and alternate are provided, are sent as an argument
                 for the next task step
                 """
+                if alternate not in _exec_obj.tasks:
+                    self.register_task_status(_exec_obj, alternate, step=step, status="RUNNING", persist=True)
+
                 task_params = (
                     str(execution_id),
                     next_step,
@@ -353,31 +356,21 @@ class ImportOrchestrator:
         return self.load_handler(handler_module_path).perform_last_step(execution_id)
 
     def register_task_status(
-        self, 
-        exec_id: str, 
-        layer_names: str | list[str], 
-        step: str, 
-        status: str = "PENDING",
-        persist=True
+        self, exec_id: str, layer_name: str | list[str], step: str, status: str = "PENDING", persist=True
     ) -> None:
         """
         Register or update task status for one or more layers in an ExecutionRequest.
         """
-        if isinstance(layer_names, str):
-            layer_names = [layer_names]
 
-        _exec = self.get_execution_object(exec_id)
-
-        for layer_name in layer_names:
-            layer_key = create_layer_key(layer_name, str(_exec.exec_id)).lower()
-            if layer_key not in _exec.tasks:
-                _exec.tasks[layer_key] = {}
-            _exec.tasks[layer_key][step] = status
+        layer_key = create_layer_key(layer_name, str(exec_id.exec_id)).lower()
+        if layer_key not in exec_id.tasks:
+            exec_id.tasks[layer_key] = {}
+        exec_id.tasks[layer_key][step] = status
 
         if persist:
-            self.update_execution_request_status(execution_id=exec_id, tasks=_exec.tasks)
-        
-        return _exec.tasks
+            self.update_execution_request_status(execution_id=str(exec_id.exec_id), tasks=exec_id.tasks)
+
+        return exec_id.tasks
 
 
 orchestrator = ImportOrchestrator()

@@ -462,9 +462,6 @@ class BaseVectorFileHandler(BaseHandler):
                         )
                     )
 
-            # Register the tasks_status with the created key alternates
-            orchestrator.register_task_status(execution_id, layer_names, task_name, status="RUNNING")
-
         except Exception as e:
             logger.error(e)
             if dynamic_model:
@@ -1073,14 +1070,6 @@ class BaseVectorFileHandler(BaseHandler):
                 "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled"
             )
 
-        # register the task as RUNNING
-        orchestrator.register_task_status(
-            execution_id,
-            original_resource.title,
-            "geonode.upload.upsert_data",
-            status="RUNNING"
-        )
-        
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
 
