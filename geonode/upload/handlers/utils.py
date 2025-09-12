@@ -93,6 +93,16 @@ def create_alternate(layer_name, execution_id):
     return alternate
 
 
+def create_layer_key(layer_name, execution_id):
+    """
+    Generate a layer key for a specific execution
+    in order to be stored in the 'tasks field of
+    the ExecutionRequest by the importer
+    Format: layername_executionid
+    """
+    return f"{layer_name}_{execution_id}"
+
+
 def drop_dynamic_model_schema(schema_model):
     if schema_model:
         schema = ModelSchemaEditor(initial_model=schema_model.name, db_name="datastore")

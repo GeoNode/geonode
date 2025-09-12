@@ -394,6 +394,8 @@ class BaseVectorFileHandler(BaseHandler):
         orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
         dynamic_model = None
         celery_group = None
+        task_name = "geonode.upload.import_resource"
+
         try:
             if len(layers) == 0:
                 raise Exception("No valid layers found")
@@ -454,12 +456,13 @@ class BaseVectorFileHandler(BaseHandler):
                         import_next_step.s(
                             execution_id,
                             str(self),  # passing the handler module path
-                            "geonode.upload.import_resource",
+                            task_name,
                             layer_name,
                             alternate,
                             **kwargs,
                         )
                     )
+
         except Exception as e:
             logger.error(e)
             if dynamic_model:

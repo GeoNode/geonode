@@ -80,6 +80,87 @@ class ErrorBaseTaskClass(Task):
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
 
+class UpdateTaskClass(Task):
+    max_retries = 3
+    track_started = True
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        """
+        Called when the task fails.
+        Updates the ExecutionRequest.tasks dict and delegates logging/error handling to evaluate_error.
+        """
+        task_name = self.name
+        execution_id = args[0]
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # Only drop the placeholder if real alternates exist
+        if "pending_alternate" in tasks_status and any(alt != "pending_alternate" for alt in tasks_status):
+            tasks_status.pop("pending_alternate")
+
+        # Mark all alternates (or placeholder) as FAILED for this task
+        for alternate_key, status_dict in tasks_status.items():
+            status_dict[task_name] = "FAILED"
+
+        # Update ExecutionRequest tasks dict first
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            tasks=tasks_status,
+        )
+
+        # Delegate the rest (errors, failed_layers, status) to evaluate_error
+        evaluate_error(self, exc, task_id, args, kwargs, einfo)
+
+    def before_start(self, task_id, args, kwargs):
+        """
+        Called before the task runs.
+        Marks the task as RUNNING for all alternates (or placeholder if none).
+        """
+        execution_id = args[0]
+        task_name = self.name
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # If no alternates exist yet (import task), use the placeholder
+        if not tasks_status:
+            tasks_status["pending_alternate"] = {}
+
+        # Mark task as RUNNING for all existing alternates (or placeholder)
+        for alternate_key, status_dict in tasks_status.items():
+            status_dict[task_name] = "PENDING"
+
+        orchestrator.update_execution_request_status(
+            execution_id,
+            tasks=tasks_status,
+        )
+
+    def on_success(self, retval, task_id, args, kwargs):
+        """
+        Called when the task succeeds.
+        Updates tasks_status for all alternates.
+        """
+        task_name = self.name
+        execution_id = args[0]
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # Only drop the placeholder if real alternates exist
+        if "pending_alternate" in tasks_status and any(alt != "pending_alternate" for alt in tasks_status):
+            tasks_status.pop("pending_alternate")
+
+        # Mark all alternates (or placeholder) as SUCCESS for this task
+        for alternate_key, status_dict in tasks_status.items():
+            status_dict[task_name] = "SUCCESS"
+
+        orchestrator.update_execution_request_status(
+            execution_id,
+            tasks=tasks_status,
+        )
+
+
 @importer_app.task(
     bind=True,
     base=ErrorBaseTaskClass,
@@ -132,7 +213,7 @@ def import_orchestrator(
 
 @importer_app.task(
     bind=True,
-    # base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.import_resource",
     queue="geonode.upload.import_resource",
     max_retries=1,
@@ -200,7 +281,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.publish_resource",
     queue="geonode.upload.publish_resource",
     max_retries=3,
@@ -303,7 +384,7 @@ def publish_resource(
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.create_geonode_resource",
     queue="geonode.upload.create_geonode_resource",
     max_retries=1,
@@ -405,7 +486,7 @@ def create_geonode_resource(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_resource",
     queue="geonode.upload.copy_geonode_resource",
     max_retries=1,
@@ -594,7 +675,7 @@ def create_dynamic_structure(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_dynamic_model",
     queue="geonode.upload.copy_dynamic_model",
     task_track_started=True,
@@ -607,6 +688,7 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
     from geonode.upload.celery_tasks import import_orchestrator
 
     try:
+
         orchestrator.update_execution_request_status(
             execution_id=exec_id,
             last_updated=timezone.now(),
@@ -677,7 +759,7 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_data_table",
     queue="geonode.upload.copy_geonode_data_table",
     task_track_started=True,
@@ -793,7 +875,7 @@ def dynamic_model_error_callback(*args, **kwargs):
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.upsert_data",
     queue="geonode.upload.upsert_data",
     max_retries=3,
@@ -877,7 +959,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.refresh_geonode_resource",
     queue="geonode.upload.refresh_geonode_resource",
     max_retries=1,
