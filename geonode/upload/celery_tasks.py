@@ -689,11 +689,15 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
     from geonode.upload.celery_tasks import import_orchestrator
 
     try:
+        # Register the tasks_status with the created key alternates
+        task_status = orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING", persist=False)
+
         orchestrator.update_execution_request_status(
             execution_id=exec_id,
             last_updated=timezone.now(),
             func_name="copy_dynamic_model",
             step=gettext_lazy("geonode.upload.copy_dynamic_model"),
+            tasks=task_status
         )
         additional_kwargs = {}
 
@@ -705,9 +709,6 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
         resource = resource.first()
 
         new_dataset_alternate = create_alternate(resource.title, exec_id).lower()
-
-        # Register the tasks_status with the created key alternates
-        orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING")
 
         if settings.IMPORTER_ENABLE_DYN_MODELS:
             dynamic_schema = ModelSchema.objects.filter(name=alternate.split(":")[1])
@@ -878,7 +879,7 @@ def dynamic_model_error_callback(*args, **kwargs):
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.upsert_data",
     queue="geonode.upload.upsert_data",
     max_retries=3,
@@ -962,7 +963,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.refresh_geonode_resource",
     queue="geonode.upload.refresh_geonode_resource",
     max_retries=1,

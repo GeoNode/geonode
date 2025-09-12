@@ -353,15 +353,15 @@ class ImportOrchestrator:
         return self.load_handler(handler_module_path).perform_last_step(execution_id)
 
     def register_task_status(
-        self, exec_id: str, layer_names: str | list[str], step: str, status: str = "PENDING"
+        self, 
+        exec_id: str, 
+        layer_names: str | list[str], 
+        step: str, 
+        status: str = "PENDING",
+        persist=True
     ) -> None:
         """
         Register or update task status for one or more layers in an ExecutionRequest.
-
-        exec_id: ID of the execution request
-        layer_names: Layer name or list of layer names
-        step: Task step name (e.g., 'geonode.upload.import_resource')
-        status: Status to set ('PENDING', 'RUNNING', 'SUCCESS', 'FAILED', etc.)
         """
         if isinstance(layer_names, str):
             layer_names = [layer_names]
@@ -374,7 +374,10 @@ class ImportOrchestrator:
                 _exec.tasks[alternate_key] = {}
             _exec.tasks[alternate_key][step] = status
 
-        self.update_execution_request_status(execution_id=exec_id, tasks=_exec.tasks)
+        if persist:
+            self.update_execution_request_status(execution_id=exec_id, tasks=_exec.tasks)
+        
+        return _exec.tasks
 
 
 orchestrator = ImportOrchestrator()
