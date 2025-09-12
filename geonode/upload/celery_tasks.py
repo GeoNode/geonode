@@ -43,7 +43,6 @@ from geonode.upload.datastore import DataStoreManager
 from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     create_alternate,
-    create_simple_alternate,
     drop_dynamic_model_schema,
     evaluate_error,
     get_uuid,

@@ -93,20 +93,15 @@ def create_alternate(layer_name, execution_id):
     return alternate
 
 
-def create_simple_alternate(layer_name, execution_id):
+def create_layer_key(layer_name, execution_id):
     """
-    Generate a simple alternate key for a layer in a specific execution.
+    Generate a layer key for a specific execution
+    in order to be stored in the 'tasks field of
+    the ExecutionRequest by the importer
     Format: layername_executionid
     """
-    alternate = f"{layer_name}_{execution_id}"
-
-    # Optional: ensure it does not exceed Postgres 63-character limit
-    if len(alternate) > 63:
-        # truncate layer_name, keep exec_id intact
-        truncate_len = 63 - len(str(execution_id)) - 1  # -1 for underscore
-        alternate = f"{layer_name[:truncate_len]}_{execution_id}"
-
-    return alternate
+    layer_key = f"{layer_name}_{execution_id}"
+    return layer_key
 
 
 def drop_dynamic_model_schema(schema_model):

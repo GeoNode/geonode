@@ -34,7 +34,7 @@ from geonode.upload.api.exceptions import ImportException
 from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.utils import create_simple_alternate
+from geonode.upload.handlers.utils import create_layer_key
 from geonode.upload.utils import error_handler
 from geonode.upload.utils import ImporterRequestAction as ira
 
@@ -369,10 +369,10 @@ class ImportOrchestrator:
         _exec = self.get_execution_object(exec_id)
 
         for layer_name in layer_names:
-            alternate_key = create_simple_alternate(layer_name, str(_exec.exec_id)).lower()
-            if alternate_key not in _exec.tasks:
-                _exec.tasks[alternate_key] = {}
-            _exec.tasks[alternate_key][step] = status
+            layer_key = create_layer_key(layer_name, str(_exec.exec_id)).lower()
+            if layer_key not in _exec.tasks:
+                _exec.tasks[layer_key] = {}
+            _exec.tasks[layer_key][step] = status
 
         if persist:
             self.update_execution_request_status(execution_id=exec_id, tasks=_exec.tasks)
