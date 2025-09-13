@@ -1,0 +1,5183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Cihad GUNDOGDU <cihadgundogdu@gmail.com>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-28 10:44+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Cihad GUNDOGDU <cihadgundogdu@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: geonode/base/apps.py:30
+msgid "Request to download a resource"
+msgstr "Bir kaynağı indirmek için istek"
+
+#: geonode/base/apps.py:31
+msgid "A request for downloading a resource was sent"
+msgstr "Bir kaynağı indirmek için bir istek gönderildi"
+
+#: geonode/base/apps.py:35
+msgid "Request resource change"
+msgstr "Kaynak değişikliği talebi"
+
+#: geonode/base/apps.py:36
+msgid "Owner has requested permissions to modify a resource"
+msgstr "Sahibi, bir kaynağı değiştirmek için izin talep etti"
+
+#: geonode/base/enumerations.py:26
+msgid "series"
+msgstr "dizi"
+
+#: geonode/base/enumerations.py:27
+msgid "computer program or routine"
+msgstr "bilgisayar programı veya rutini"
+
+#: geonode/base/enumerations.py:28
+msgid "feature type"
+msgstr "özellik türü"
+
+#: geonode/base/enumerations.py:29
+msgid "copy or imitation of an existing or hypothetical object"
+msgstr "mevcut veya varsayımsal bir nesnenin kopyası veya taklidi"
+
+#: geonode/base/enumerations.py:30
+msgid "collection hardware"
+msgstr "koleksiyon donanımı"
+
+#: geonode/base/enumerations.py:31
+msgid "collection session"
+msgstr "koleksiyon oturumu"
+
+#: geonode/base/enumerations.py:32
+msgid "non-geographic data"
+msgstr "coğrafi olmayan veriler"
+
+#: geonode/base/enumerations.py:33
+msgid "property type"
+msgstr "özellik türü"
+
+#: geonode/base/enumerations.py:34
+msgid "field session"
+msgstr "alan oturumu"
+
+#: geonode/base/enumerations.py:35
+msgid "dataset"
+msgstr "veri seti"
+
+#: geonode/base/enumerations.py:36
+msgid "service interfaces"
+msgstr "hizmet arayüzleri"
+
+#: geonode/base/enumerations.py:37
+msgid "attribute class"
+msgstr "özellik sınıfı"
+
+#: geonode/base/enumerations.py:38
+msgid "characteristic of a feature"
+msgstr "bir özelliğin niteliği"
+
+#: geonode/base/enumerations.py:39
+msgid "tile or spatial subset of geographic data"
+msgstr "coğrafi verilerin karoları veya mekansal alt kümesi"
+
+#: geonode/base/enumerations.py:40
+msgid "feature"
+msgstr "özellik"
+
+#: geonode/base/enumerations.py:41
+msgid "dimension group"
+msgstr "boyut grubu"
+
+#: geonode/base/enumerations.py:45
+msgid "frequency of maintenance for the data is not known"
+msgstr "verilerin bakımı için sıklık bilinmiyor"
+
+#: geonode/base/enumerations.py:46
+msgid "data is repeatedly and frequently updated"
+msgstr "veriler tekrar tekrar ve sık sık güncelleniyor"
+
+#: geonode/base/enumerations.py:47
+msgid "there are no plans to update the data"
+msgstr "verilerin güncellenmesi için plan yok"
+
+#: geonode/base/enumerations.py:48
+msgid "data is updated each day"
+msgstr "veriler her gün güncelleniyor"
+
+#: geonode/base/enumerations.py:49
+msgid "data is updated every year"
+msgstr "veriler her yıl güncelleniyor"
+
+#: geonode/base/enumerations.py:50
+msgid "data is updated as deemed necessary"
+msgstr "veriler gerekli görüldüğünde güncelleniyor"
+
+#: geonode/base/enumerations.py:51
+msgid "data is updated each month"
+msgstr "veriler her ay güncelleniyor"
+
+#: geonode/base/enumerations.py:52
+msgid "data is updated every two weeks"
+msgstr "veriler her iki haftada bir güncelleniyor"
+
+#: geonode/base/enumerations.py:53
+msgid "data is updated in intervals that are uneven in duration"
+msgstr "veriler düzensiz sürelerle güncelleniyor"
+
+#: geonode/base/enumerations.py:54
+msgid "data is updated on a weekly basis"
+msgstr "veriler her hafta güncelleniyor"
+
+#: geonode/base/enumerations.py:55
+msgid "data is updated twice each year"
+msgstr "veriler her yıl iki kez güncelleniyor"
+
+#: geonode/base/enumerations.py:56
+msgid "data is updated every three months"
+msgstr "veriler her üç ayda bir güncelleniyor"
+
+#: geonode/base/enumerations.py:74
+msgid "No information provided"
+msgstr "Hiç bilgi verilmedi"
+
+#: geonode/base/forms.py:79
+msgid "Resource"
+msgstr "Kaynak"
+
+#: geonode/base/forms.py:82
+msgid "Reason"
+msgstr "Gerekçe"
+
+#: geonode/base/forms.py:82
+msgid "Short reasoning behind the request"
+msgstr "Talebin arkasındaki kısa gerekçe"
+
+#: geonode/base/models.py:101 geonode/services/models.py:154
+msgid "function performed by the responsible party"
+msgstr "sorumlu tarafça yerine getirilen işlev"
+
+#: geonode/base/models.py:645
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "kaynak(lar)ın içeriğine dair kısa anlatı özeti"
+
+#: geonode/base/models.py:646
+msgid "reference date for the cited resource"
+msgstr "atıfta bulunulan kaynağın referans tarihi"
+
+#: geonode/base/models.py:647
+msgid "identification of when a given event occurred"
+msgstr "belirli bir olayın ne zaman gerçekleştiğinin tanımlanması"
+
+#: geonode/base/models.py:648
+msgid "version of the cited resource"
+msgstr "atıfta bulunulan kaynağın versiyonu"
+
+#: geonode/base/models.py:650
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+"yönetici, yasama meclisi,"
+"delege veya benzeri birine atanan yetki veya işlev."
+
+#: geonode/base/models.py:652 geonode/metadata/handlers/doi.py:35
+msgid "a DOI will be added by Admin before publication."
+msgstr "Yayınlanmadan önce bir DOI, Yönetici tarafından eklenecektir."
+
+#: geonode/base/models.py:653
+msgid "summary of the intentions with which the resource(s) was developed"
+msgstr "kaynak(lar)ın geliştirilme amacına dair özet"
+
+#: geonode/base/models.py:655
+msgid ""
+"frequency with which modifications and deletions are made to the data after "
+"it is first produced"
+msgstr ""
+"verilerin ilk üretildikten sonra değiştirilme ve silinme sıklığı"
+
+#: geonode/base/models.py:658
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject (space or comma-separated)"
+msgstr ""
+"konuyu tanımlamak için kullanılan yaygın kelime(ler) veya biçimlendirilmiş kelime(ler) veya ifade(ler) (boşluk veya virgülle ayrılmış)"
+#: geonode/base/models.py:662
+msgid ""
+"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
+"subject (space or comma-separated)"
+msgstr ""
+"konuyu tanımlamak için kullanılan sabit bir sözlükten alınan resmi kelime(ler) veya kelime öbeği(leri) (konu) (boşluk veya virgülle ayrılmış)"
+
+#: geonode/base/models.py:665 geonode/metadata/handlers/region.py:40
+msgid "keyword identifies a location"
+msgstr "anahtar kelime bir konumu tanımlar"
+
+#: geonode/base/models.py:666
+msgid "limitation(s) placed upon the access or use of the data."
+msgstr "verilerin erişimi veya kullanımı üzerinde konulan kısıtlama(lar)"
+
+#: geonode/base/models.py:668
+msgid ""
+"other restrictions and legal prerequisites for accessing and using the "
+"resource or metadata"
+msgstr "kaynağa veya meta veriye erişim ve kullanım için diğer kısıtlamalar ve yasal ön koşullar"
+
+#: geonode/base/models.py:670
+msgid "license of the dataset"
+msgstr "veri kümesinin lisansı"
+
+#: geonode/base/models.py:671
+msgid "language used within the dataset"
+msgstr "veri kümesinde kullanılan dil"
+
+#: geonode/base/models.py:673
+msgid ""
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"mevcut coğrafi veri setlerinin gruplandırılmasına ve aranmasına yardımcı olmak için yüksek düzeyde coğrafi veri tematik sınıflandırması."
+
+#: geonode/base/models.py:676
+msgid "method used to represent geographic information in the dataset."
+msgstr "veri kümesinde coğrafi bilgiyi temsil etmek için kullanılan yöntem."
+
+#: geonode/base/models.py:677
+msgid "time period covered by the content of the dataset (start)"
+msgstr "veri kümesinin içeriğini kapsayan zaman dilimi (başlangıç)"
+
+#: geonode/base/models.py:678
+msgid "time period covered by the content of the dataset (end)"
+msgstr "veri kümesinin içeriğini kapsayan zaman dilimi (bitiş)"
+
+#: geonode/base/models.py:680
+msgid ""
+"general explanation of the data producer's knowledge about the lineage of a "
+"dataset"
+msgstr "veri kümesinin kökenine dair veri üreticisinin bilgisine genel bir açıklama"
+
+#: geonode/base/models.py:683
+msgid ""
+"Additional metadata, must be in format [ {\"metadata_key\": "
+"\"metadata_value\"}, {\"metadata_key\": \"metadata_value\"} ]"
+msgstr "Ek meta veri, [ {\"metadata_key\": "
+"\"metadata_value\"}, {\"metadata_key\": \"metadata_value\"} ] formatında olmalıdır."
+
+#: geonode/base/models.py:687 geonode/metadata/handlers/linkedresource.py:44
+#: geonode/metadata/handlers/region.py:47
+#: geonode/metadata/tests/test_handlers.py:993
+msgid "title"
+msgstr "başlık"
+
+#: geonode/base/models.py:687
+msgid "name by which the cited resource is known"
+msgstr "atıfta bulunulan kaynağın bilindiği ad"
+
+#: geonode/base/models.py:688
+msgid "abstract"
+msgstr "özet"
+
+#: geonode/base/models.py:689
+msgid "purpose"
+msgstr "amaç"
+
+#: geonode/base/models.py:691 geonode/base/models.py:949
+#: geonode/documents/models.py:77 geonode/facets/providers/users.py:44
+msgid "Owner"
+msgstr "Sahibi"
+
+#: geonode/base/models.py:694
+msgid "alternate"
+msgstr "alternatif"
+
+#: geonode/base/models.py:695
+msgid "date"
+msgstr "tarih"
+
+#: geonode/base/models.py:697
+msgid "date type"
+msgstr "tarih türü"
+
+#: geonode/base/models.py:699
+msgid "edition"
+msgstr "baskı"
+
+#: geonode/base/models.py:701
+#: geonode/base/templates/base/_resourcebase_info_panel.html:129
+msgid "Attribution"
+msgstr "Atıf"
+
+#: geonode/base/models.py:703
+#: geonode/base/templates/base/_resourcebase_info_panel.html:124
+msgid "DOI"
+msgstr "DOI"
+
+#: geonode/base/models.py:705
+msgid "maintenance frequency"
+msgstr "bakım sıklığı"
+
+#: geonode/base/models.py:713 geonode/base/models.py:720
+#: geonode/people/models.py:124
+msgid "keywords"
+msgstr "anahtar kelimeler"
+
+#: geonode/base/models.py:723
+msgid "keywords region"
+msgstr "anahtar kelimeler bölgesi"
+
+#: geonode/base/models.py:727
+msgid "restrictions"
+msgstr "kısıtlamalar"
+
+#: geonode/base/models.py:735
+msgid "restrictions other"
+msgstr "diğer kısıtlamalar"
+
+#: geonode/base/models.py:741
+#: geonode/base/templates/base/_resourcebase_info_panel.html:17
+#: geonode/base/templates/base/_resourcebase_info_panel.html:149
+#: geonode/catalogue/templates/geonode_metadata_full.html:93
+msgid "License"
+msgstr "Lisans"
+
+#: geonode/base/models.py:746 geonode/people/models.py:130
+msgid "language"
+msgstr "dil"
+
+#: geonode/base/models.py:762
+msgid "spatial representation type"
+msgstr "mekansal temsil türü"
+
+#: geonode/base/models.py:768
+msgid "temporal extent start"
+msgstr "zamansal kapsam başlangıcı"
+
+#: geonode/base/models.py:771
+msgid "temporal extent end"
+msgstr "zamansal kapsam bitişi"
+
+#: geonode/base/models.py:774
+msgid "supplemental information"
+msgstr "tamamlayıcı bilgi"
+
+#: geonode/base/models.py:777
+msgid "any other descriptive information about the dataset"
+msgstr "veri kümesi hakkında başka herhangi bir tanımlayıcı bilgi"
+
+#: geonode/base/models.py:782
+msgid "data quality statement"
+msgstr "veri kalitesi beyanı"
+
+#: geonode/base/models.py:798
+msgid "CSW typename"
+msgstr "CSW tür adı"
+
+#: geonode/base/models.py:800
+msgid "CSW schema"
+msgstr "CSW şeması"
+
+#: geonode/base/models.py:802
+msgid "CSW source"
+msgstr "CSW kaynağı"
+
+#: geonode/base/models.py:803
+msgid "CSW insert date"
+msgstr "CSW ekleme tarihi"
+
+#: geonode/base/models.py:805
+msgid "CSW type"
+msgstr "CSW türü"
+
+#: geonode/base/models.py:807
+msgid "CSW anytext"
+msgstr "CSW herhangi bir metin"
+
+#: geonode/base/models.py:809
+msgid "CSW WKT geometry"
+msgstr "CSW WKT geometrisi"
+
+#: geonode/base/models.py:814
+msgid "Metadata uploaded preserve"
+msgstr "Meta verisi yüklendi koruma"
+
+#: geonode/base/models.py:821
+msgid "Featured"
+msgstr "Öne Çıkan"
+
+#: geonode/base/models.py:821
+msgid "Should this resource be advertised in home page?"
+msgstr "Bu kaynak ana sayfada tanıtılmalı mı?"
+
+#: geonode/base/models.py:823
+msgid "Was Published"
+msgstr "Yayınlandı mı?"
+
+#: geonode/base/models.py:823
+msgid "Previous Published state."
+msgstr "Önceki Yayın Durumu."
+
+#: geonode/base/models.py:825
+msgid "Is Published"
+msgstr "Yayınlandı mı?"
+
+#: geonode/base/models.py:825
+msgid "Should this resource be published and searchable?"
+msgstr "Bu kaynak yayınlanmalı ve aranabilir olmalı mı?"
+
+#: geonode/base/models.py:827
+msgid "Was Approved"
+msgstr "Onaylandı mı?"
+
+#: geonode/base/models.py:827
+msgid "Previous Approved state."
+msgstr "Önceki Onay Durumu."
+
+#: geonode/base/models.py:829
+msgid "Approved"
+msgstr "Onaylandı"
+
+#: geonode/base/models.py:829
+msgid "Is this resource validated from a publisher or editor?"
+msgstr "Bu kaynak bir yayıncı veya editör tarafından doğrulandı mı?"
+
+#: geonode/base/models.py:832
+msgid "Advertised"
+msgstr "Tanıtıldı"
+
+#: geonode/base/models.py:834
+msgid ""
+"If False, will hide the resource from search results and catalog listings"
+msgstr "Eğer False ise, kaynağı arama sonuçlarından ve katalog listelerinden gizleyecektir."
+
+#: geonode/base/models.py:837
+msgid "Thumbnail url"
+msgstr "Küçük resim URL'si"
+
+#: geonode/base/models.py:838
+msgid "Thumbnail path"
+msgstr "Küçük resim yolu"
+
+#: geonode/base/models.py:844
+msgid "State"
+msgstr "Durum"
+
+#: geonode/base/models.py:850
+msgid "Hold the resource processing state."
+msgstr "Kaynağın işleme durumunu tut."
+
+#: geonode/base/models.py:854
+msgid "Source Type"
+msgstr "Kaynak Türü"
+
+#: geonode/base/models.py:860
+msgid ""
+"The resource source type, which can be one of \"LOCAL\", \"REMOTE\" or "
+"\"COPYREMOTE\"."
+msgstr ""
+"Kaynak türü, \"LOCAL\", \"REMOTE\" veya "
+"\"COPYREMOTE\" olabilir."
+
+#: geonode/base/models.py:864
+msgid "Remote Service Typename"
+msgstr "Uzak Servis Tür Adı"
+
+#: geonode/base/models.py:868
+msgid "Name of the Remote Service if any."
+msgstr "Varsa Uzak Servis Adı."
+
+#: geonode/base/models.py:873
+msgid "Dirty State"
+msgstr "Kirli Durum"
+
+#: geonode/base/models.py:873
+msgid "Security Rules Are Not Synched with GeoServer!"
+msgstr "Güvenlik Kuralları GeoServer ile Senkronize Değil!"
+
+#: geonode/base/models.py:880
+msgid "Resource Type"
+msgstr "Kaynak Türü"
+
+#: geonode/base/models.py:883
+msgid "Metadata"
+msgstr "Meta veri"
+
+#: geonode/base/models.py:883
+msgid "If true, will be excluded from search"
+msgstr "Eğer doğruysa, aramadan hariç tutulacaktır."
+
+#: geonode/base/models.py:891
+msgid "Extra Metadata"
+msgstr "Ek Meta veri"
+
+#: geonode/base/models.py:944 geonode/documents/models.py:72
+msgid "None"
+msgstr "Yok"
+
+#: geonode/base/models.py:945
+msgid "View"
+msgstr "Görüntüle"
+
+#: geonode/base/models.py:946
+msgid "Download"
+msgstr "İndir"
+
+#: geonode/base/models.py:947 geonode/documents/models.py:75
+msgid "Edit"
+msgstr "Düzenle"
+
+#: geonode/base/models.py:948 geonode/documents/models.py:76
+#: geonode/services/templates/services/service_detail.html:98
+#: geonode/services/templates/services/service_resources_harvest.html:155
+msgid "Manage"
+msgstr "Yönet"
+
+#: geonode/base/models.py:1993
+msgid "For example \"kml\""
+msgstr "Örneğin \"kml\""
+
+#: geonode/base/models.py:1995
+msgid "For example \"View in Google Earth\""
+msgstr "Örneğin \"Google Earth'te Görüntüle\""
+
+#: geonode/base/models.py:1996
+msgid "For example \"text/xml\""
+msgstr "Örneğin \"text/xml\""
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
+msgid "About"
+msgstr "Hakkında"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:5
+msgid "Responsible, Point of Contact, Metadata Author"
+msgstr "Sorumlu, İletişim Noktası, Meta Veri Yazarı"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:10
+#: geonode/base/templates/base/_resourcebase_info_panel.html:107
+#: geonode/catalogue/templates/geonode_metadata_full.html:63
+msgid "Responsible"
+msgstr "Sorumlu"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:112
+msgid "Point of Contact"
+msgstr "İletişim Noktası"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+msgid "Metadata Author"
+msgstr "Meta Veri Yazarı"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:7
+#: geonode/catalogue/templates/geonode_metadata_full.html:46
+#: geonode/groups/models.py:87 geonode/services/forms.py:111
+#: geonode/services/templates/services/service_detail.html:36
+#: geonode/services/templates/services/service_list.html:18
+#: geonode/services/templates/services/service_resources_harvest.html:29
+#: geonode/templates/announcements/announcement_list.html:21
+msgid "Title"
+msgstr "Başlık"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:12
+#: geonode/base/templates/base/_resourcebase_info_panel.html:144
+msgid "SRID"
+msgstr "SRID"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:25
+#: geonode/base/templates/base/_resourcebase_info_panel.html:156
+msgid "For more info see"
+msgstr "Daha fazla bilgi için bakınız"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:30
+#: geonode/catalogue/templates/geonode_metadata_full.html:52
+#: geonode/services/forms.py:114
+#: geonode/services/templates/services/service_detail.html:10
+#: geonode/services/templates/services/service_resources_harvest.html:30
+msgid "Abstract"
+msgstr "Özet"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:36
+msgid "Creation Date"
+msgstr "Oluşturulma Tarihi"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:38
+msgid "Publication Date"
+msgstr "Yayın Tarihi"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:40
+msgid "Revision Date"
+msgstr "Revizyon Tarihi"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:42
+#: geonode/catalogue/templates/geonode_metadata_full.html:49
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:66
+msgid "Date"
+msgstr "Tarih"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:54
+#: geonode/catalogue/templates/geonode_metadata_full.html:86
+#: geonode/services/templates/services/service_detail.html:8
+#: geonode/services/templates/services/service_list.html:20
+#: geonode/services/templates/services/service_resources_harvest.html:31
+msgid "Type"
+msgstr "Tür"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:59
+#: geonode/catalogue/templates/geonode_metadata_full.html:137
+#: geonode/groups/models.py:92 geonode/metadata/handlers/hkeyword.py:36
+#: geonode/people/forms/__init__.py:49
+#: geonode/people/templates/people/profile_detail.html:105
+#: geonode/services/templates/services/service_detail.html:11
+msgid "Keywords"
+msgstr "Anahtar Kelimeler"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:85
+#: geonode/catalogue/templates/geonode_metadata_full.html:140
+#: geonode/facets/providers/category.py:44
+msgid "Category"
+msgstr "Kategori"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:95
+#: geonode/catalogue/templates/geonode_metadata_full.html:144
+#: geonode/metadata/handlers/region.py:39
+msgid "Regions"
+msgstr "Bölgeler"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:119
+#: geonode/facets/providers/group.py:46
+msgid "Group"
+msgstr "Grup"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:136
+msgid "More info"
+msgstr "Daha fazla bilgi"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:162
+#: geonode/catalogue/templates/geonode_metadata_full.html:83
+msgid "Maintenance Frequency"
+msgstr "Bakım Sıklığı"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:167
+#: geonode/catalogue/templates/geonode_metadata_full.html:89
+msgid "Restrictions"
+msgstr "Kısıtlamalar"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:176
+#: geonode/catalogue/templates/geonode_metadata_full.html:55
+msgid "Edition"
+msgstr "Baskı"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:181
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+msgid "Purpose"
+msgstr "Amaç"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:186
+#: geonode/catalogue/templates/geonode_metadata_full.html:96
+msgid "Language"
+msgstr "Dil"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:191
+#: geonode/catalogue/templates/geonode_metadata_full.html:99
+msgid "Temporal Extent"
+msgstr "Zamansal Kapsam"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:196
+#: geonode/catalogue/templates/geonode_metadata_full.html:117
+msgid "Data Quality"
+msgstr "Veri Kalitesi"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:201
+#: geonode/catalogue/templates/geonode_metadata_full.html:114
+msgid "Supplemental Information"
+msgstr "Tamamlayıcı Bilgiler"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:206
+msgid "Spatial Representation Type"
+msgstr "Mekansal Temsil Türü"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:7
+msgid "No content created yet."
+msgstr "Henüz içerik oluşturulmadı."
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:26
+msgid "Temporal Serie"
+msgstr "Zamansal Seri"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:51
+msgid "Select"
+msgstr "Seç"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:57
+#: geonode/base/templates/base/_resourcebase_snippet.html:58
+msgid "Service is"
+msgstr "Hizmet"
+
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:57
+msgid "online"
+msgstr "çevrimiçi"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:58
+msgid "offline"
+msgstr "çevrimdışı"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:60
+msgid "SECURITY NOT YET SYNCHRONIZED"
+msgstr "GÜVENLİK HENÜZ SENKRONİZE EDİLMEDİ"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:61
+msgid "Sync permissions immediately"
+msgstr "İzinleri hemen senkronize et"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:63
+msgid "PENDING APPROVAL"
+msgstr "ONAY BEKLENİYOR"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:64
+msgid "UNPUBLISHED"
+msgstr "YAYIMLANMAMIŞ"
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:81
+msgid "View Map"
+msgstr "Haritayı Görüntüle"
+
+#: geonode/base/templates/base/iso_categories.html:6
+msgid "Discover the available datasets."
+msgstr "Mevcut veri setlerini keşfedin."
+
+#: geonode/base/templates/base/thumbnail_upload.html:13
+msgid "Upload a Thumbnail"
+msgstr "Bir Küçültülmüş Resim Yükle"
+
+#: geonode/base/templates/base/thumbnail_upload.html:27
+msgid "Remove (and use auto generated thumbnail)"
+msgstr "Kaldır (ve otomatik oluşturulan küçük resmi kullan)"
+
+#: geonode/base/templates/base/thumbnail_upload.html:35
+msgid "Upload"
+msgstr "Yükle"
+
+#: geonode/base/templates/base/thumbnail_upload.html:41
+msgid "Auto generated thumbnail"
+msgstr "Otomatik oluşturulan küçük resim"
+
+#: geonode/base/templates/base/user_and_group_permissions.html:6
+#: geonode/base/templates/base/user_and_group_permissions.html:21
+msgid "Batch Edit"
+msgstr "Toplu Düzenle"
+
+#: geonode/base/templates/base/user_and_group_permissions.html:42
+#: geonode/templates/admin/backups/confirm_cancel.html:21
+#: geonode/templates/announcements/announcement_confirm_delete.html:20
+#: geonode/templates/announcements/announcement_form.html:22
+msgid "Cancel"
+msgstr "İptal"
+
+#: geonode/base/templates/base/user_and_group_permissions.html:43
+#: geonode/people/templates/people/forgot_username_form.html:15
+#: geonode/templates/invitations/forms/_invite.html:29
+msgid "Submit"
+msgstr "Gönder"
+
+#: geonode/base/templatetags/base_tags.py:43
+msgid "Raster Dataset"
+msgstr "Raster Veri Kümesi"
+
+#: geonode/base/templatetags/base_tags.py:44
+msgid "Vector Dataset"
+msgstr "Vektör Veri Kümesi"
+
+#: geonode/base/templatetags/base_tags.py:45
+msgid "Vector Temporal Serie"
+msgstr "Vektör Zamansal Serisi"
+
+#: geonode/base/templatetags/base_tags.py:46
+msgid "Remote Dataset"
+msgstr "Uzak Veri Kümesi"
+
+#: geonode/base/templatetags/base_tags.py:47
+msgid "WMS Cascade Dataset"
+msgstr "WMS Kaskad Veri Kümesi"
+
+#: geonode/base/templatetags/user_messages.py:53
+#: geonode/base/templatetags/user_messages.py:61
+msgid "me"
+msgstr "ben"
+
+#: geonode/base/views.py:334
+msgid "You do not have permissions for this resource."
+msgstr "Bu kaynak için izinleriniz yok."
+
+#: geonode/base/views.py:335
+msgid "You are not allowed to modify this resource's metadata."
+msgstr "Bu kaynağın meta verilerini değiştirme izniniz yok."
+
+#: geonode/base/views.py:336
+msgid "You are not allowed to view this resource."
+msgstr "Bu kaynağı görüntüleme izniniz yok."
+
+#: geonode/base/views.py:358 geonode/catalogue/metadataxsl/views.py:60
+#: geonode/geoapps/views.py:63 geonode/layers/views.py:92
+#: geonode/layers/views.py:128 geonode/maps/contants.py:32
+msgid "Not allowed"
+msgstr "İzin verilmedi"
+
+#: geonode/base/views.py:360 geonode/base/views.py:362
+#: geonode/geoapps/views.py:65 geonode/geoapps/views.py:67
+#: geonode/layers/views.py:94 geonode/layers/views.py:96
+#: geonode/layers/views.py:130 geonode/layers/views.py:132
+#: geonode/maps/contants.py:33
+msgid "Not found"
+msgstr "Bulunamadı"
+
+#: geonode/catalogue/metadataxsl/views.py:53
+msgid "You are not permitted to view this resource"
+msgstr "Bu kaynağı görüntüleme izniniz yok."
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:31
+msgid "Resource Metadata"
+msgstr "Kaynak Meta Verisi"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:40
+msgid "Thumbnail"
+msgstr "Küçültülmüş Resim"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:43
+msgid "Resource ID"
+msgstr "Kaynak Kimliği"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:100
+msgid "Start"
+msgstr "Başlangıç"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:106
+msgid "End"
+msgstr "Bitiş"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:124
+msgid "Extent"
+msgstr "Kapsam"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:134
+msgid "Spatial Reference System Identifier"
+msgstr "Mekansal Referans Sistemi Tanımlayıcısı"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:154
+msgid "Attributes"
+msgstr "Öznitelikler"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:162
+msgid "Attribute name"
+msgstr "Öznitelik adı"
+
+#: geonode/catalogue/templates/geonode_metadata_full.html:162
+#: geonode/groups/models.py:49 geonode/groups/models.py:90
+#: geonode/people/templates/people/profile_detail.html:81
+#: geonode/services/forms.py:113
+#: geonode/services/templates/services/service_detail.html:37
+msgid "Description"
+msgstr "Açıklama"
+
+#: geonode/client/apps.py:26
+msgid "GeoNode Client Library"
+msgstr "GeoNode İstemci Kütüphanesi"
+
+#: geonode/custom_translations.py:27
+msgid ""
+"Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
+"biological sciences, ecology, wilderness, sealife, wetlands, habitat."
+msgstr ""
+"Doğal ortamdaki flora ve/veya fauna. Örnekler: yaban hayatı, bitki örtüsü, "
+"biyolojik bilimler, ekoloji, vahşi doğa, deniz yaşamı, sulak alanlar, habitat."
+#: geonode/custom_translations.py:30
+msgid "Biota"
+msgstr "Biyota"
+
+#: geonode/custom_translations.py:31
+msgid ""
+"Legal land descriptions. Examples: political and administrative boundaries."
+msgstr ""
+"Hukuki arazi tanımlamaları. Örnekler: siyasi ve idari sınırlar."
+#: geonode/custom_translations.py:32
+msgid "Boundaries"
+msgstr "Sınırlar"
+
+#: geonode/custom_translations.py:34
+msgid ""
+"Processes and phenomena of the atmosphere. Examples: cloud cover, weather, "
+"climate, atmospheric conditions, climate change, precipitation."
+msgstr ""
+"Atmosferin süreçleri ve olayları. Örnekler: bulut örtüsü, hava durumu, "
+"iklim, atmosfer koşulları, iklim değişikliği, yağış."
+#: geonode/custom_translations.py:37
+msgid "Climatology Meteorology Atmosphere"
+msgstr "İklim Bilimi Meteoroloji Atmosfer"
+
+#: geonode/custom_translations.py:39
+msgid ""
+"Economic activities, conditions and employment. Examples: production, "
+"labour, revenue, commerce, industry, tourism and ecotourism, forestry, "
+"fisheries, commercial or subsistence hunting, exploration and exploitation "
+"of resources such as minerals, oil and gas."
+msgstr ""
+"Ekonomik faaliyetler, koşullar ve istihdam. Örnekler: üretim, "
+"emek, gelir, ticaret, sanayi, turizm ve ekoturizm, ormancılık, "
+"balıkçılık, ticari veya geçimlik avcılık, "
+"mineraller, petrol ve gaz gibi kaynakların keşfi ve işletilmesi."
+#: geonode/custom_translations.py:43
+msgid "Economy"
+msgstr "Ekonomi"
+
+#: geonode/custom_translations.py:45
+msgid ""
+"Height above or below sea level. Examples: altitude, bathymetry, digital "
+"elevation models, slope, derived products."
+msgstr ""
+"Deniz seviyesinin üstünde veya altında yükseklik. Örnekler: rakım, batimetri, dijital "
+"yükseklik modelleri, eğim, türetilmiş ürünler."
+#: geonode/custom_translations.py:48
+msgid "Elevation"
+msgstr "Yükseklik"
+
+#: geonode/custom_translations.py:50
+msgid ""
+"Environmental resources, protection and conservation. Examples: "
+"environmental pollution, waste storage and treatment, environmental impact "
+"assessment, monitoring environmental risk, nature reserves, landscape."
+msgstr ""
+"Çevresel kaynaklar, koruma ve korunma. Örnekler: çevresel kirlilik, atık "
+"depolama ve işleme, çevresel etki değerlendirmesi, çevresel risk "
+"izleme, doğa koruma alanları, peyzaj."
+
+#: geonode/custom_translations.py:53
+msgid "Environment"
+msgstr "Çevre"
+
+#: geonode/custom_translations.py:55
+msgid ""
+"Rearing of animals and/or cultivation of plants. Examples: agriculture, "
+"irrigation, aquaculture, plantations, herding, pests and diseases affecting "
+"crops and livestock."
+msgstr ""
+"Hayvan yetiştiriciliği ve/veya bitki yetiştiriciliği. Örnekler: tarım, "
+"sulama, su ürünleri yetiştiriciliği, plantasyonlar, hayvancılık, mahsulleri ve hayvanları etkileyen zararlılar ve hastalıklar."
+
+#: geonode/custom_translations.py:58
+msgid "Farming"
+msgstr "Tarım"
+
+#: geonode/custom_translations.py:60
+msgid ""
+"Information pertaining to earth sciences. Examples: geophysical features and "
+"processes, geology, minerals, sciences dealing with the composition, "
+"structure and origin of the earth s rocks, risks of earthquakes, volcanic "
+"activity, landslides, gravity information, soils, permafrost, hydrogeology, "
+"erosion."
+msgstr ""
+"Yer bilimleriyle ilgili bilgiler. Örnekler: jeofizik özellikler ve süreçler, jeoloji, mineraller, yer kayaçlarının bileşimi, yapısı ve kökeni, deprem riskleri, volkanik aktivite, heyelanlar, yer çekimi bilgileri, topraklar, donmuş toprak, hidrojeoloji, erozyon."
+#: geonode/custom_translations.py:64
+msgid "Geoscientific Information"
+msgstr "Jeobilimsel Bilgi"
+
+#: geonode/custom_translations.py:66
+msgid ""
+"Health, health services, human ecology, and safety. Examples: disease and "
+"illness, factors affecting health, hygiene, substance abuse, mental and "
+"physical health, health services."
+msgstr ""
+"Sağlık, sağlık hizmetleri, insan ekolojisi ve güvenlik. Örnekler: hastalık ve "
+"rahatsızlık, sağlığı etkileyen faktörler, hijyen, madde bağımlılığı, zihinsel ve "
+"bedensel sağlık, sağlık hizmetleri."
+#: geonode/custom_translations.py:69
+msgid "Health"
+msgstr "Sağlık"
+
+#: geonode/custom_translations.py:70
+msgid ""
+"Base maps. Examples: land cover, topographic maps, imagery, unclassified "
+"images, annotations."
+msgstr ""
+"Temel haritalar. Örnekler: arazi örtüsü, topoğrafik haritalar, görüntüler, sınıflandırılmamış "
+"görüntüler, notlar."
+#: geonode/custom_translations.py:71
+msgid "Imagery Base Maps Earth Cover"
+msgstr "Görüntü Temel Haritalar Yer Örtüsü"
+
+#: geonode/custom_translations.py:73
+msgid ""
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
+msgstr ""
+"İç su yapıları, drenaj sistemleri ve özellikleri. Örnekler: "
+"nehirler ve buzullar, tuz gölleri, su kullanım planları, barajlar, akıntılar, "
+"taşkınlar, su kalitesi, hidrografik haritalar."
+#: geonode/custom_translations.py:76
+msgid "Inland Waters"
+msgstr "İç Sular"
+
+#: geonode/custom_translations.py:78
+msgid ""
+"Military bases, structures, activities. Examples: barracks, training "
+"grounds, military transportation, information collection."
+msgstr ""
+"Askeri üsler, yapılar, faaliyetler. Örnekler: kışlalar, eğitim alanları, askeri ulaşım, bilgi toplama."
+#: geonode/custom_translations.py:81
+msgid "Intelligence Military"
+msgstr "Askeri İstihbarat"
+
+#: geonode/custom_translations.py:83
+msgid ""
+"Positional information and services. Examples: addresses, geodetic networks, "
+"control points, postal zones and services, place names."
+msgstr ""
+"Konumsal bilgi ve hizmetler. Örnekler: adresler, jeodezik ağlar, "
+"kontrol noktaları, posta bölgeleri ve hizmetleri, yer adları."
+#: geonode/custom_translations.py:86
+#: geonode/people/templates/people/profile_detail.html:89
+msgid "Location"
+msgstr "Konum"
+
+#: geonode/custom_translations.py:88
+msgid ""
+"Features and characteristics of salt water bodies (excluding inland waters). "
+"Examples: tides, tidal waves, coastal information, reefs."
+msgstr ""
+"Tuzlu su kütlelerinin özellikleri ve karakteristikleri (iç sular hariç). "
+"Örnekler: gelgitler, gelgit dalgaları, kıyı bilgileri, resifler."
+#: geonode/custom_translations.py:91
+msgid "Oceans"
+msgstr "Okyanuslar"
+
+#: geonode/custom_translations.py:93
+msgid ""
+"Information used for appropriate actions for future use of the land. "
+"Examples: land use maps, zoning maps, cadastral surveys, land ownership."
+msgstr ""
+"Arazilerin gelecekteki kullanımına yönelik uygun eylemler için kullanılan bilgiler."
+"Örnekler: arazi kullanım haritaları, imar haritaları, kadastro çalışmaları, arazi mülkiyeti."
+
+#: geonode/custom_translations.py:96
+msgid "Planning Cadastre"
+msgstr "Planlama Kadastrosu"
+
+#: geonode/custom_translations.py:98
+msgid ""
+"Settlements, anthropology, archaeology, education, traditional beliefs, "
+"manners and customs, demographic data, recreational areas and activities, "
+"social impact assessments, crime and justice, census information. Economic "
+"activities, conditions and employment."
+msgstr ""
+"Yerleşimler, antropoloji, arkeoloji, eğitim, geleneksel inançlar, "
+"örf ve adetler, demografik veriler, rekreasyon alanları ve aktiviteleri, "
+"sosyal etki değerlendirmeleri, suç ve adalet, nüfus sayımı bilgileri. Ekonomik "
+"faaliyetler, koşullar ve istihdam."
+
+#: geonode/custom_translations.py:102
+msgid "Population"
+msgstr "Nüfus"
+
+#: geonode/custom_translations.py:104
+msgid ""
+"Characteristics of society and cultures. Examples: settlements, "
+"anthropology, archaeology, education, traditional beliefs, manners and "
+"customs, demographic data, recreational areas and activities, social impact "
+"assessments, crime and justice, census information."
+msgstr ""
+"Toplum ve kültürlerin özellikleri. Örnekler: yerleşim yerleri, "
+"antropoloji, arkeoloji, eğitim, geleneksel inançlar, örf ve adetler, "
+"demografik veriler, rekreasyon alanları ve aktiviteleri, sosyal etki "
+"değerlendirmeleri, suç ve adalet, nüfus sayımı bilgileri."
+#: geonode/custom_translations.py:108
+msgid "Society"
+msgstr "Toplum"
+
+#: geonode/custom_translations.py:109
+msgid ""
+"Man-made construction. Examples: buildings, museums, churches, factories, "
+"housing, monuments, shops, towers."
+msgstr ""
+"İnsan yapımı yapılar. Örnekler: binalar, müzeler, kiliseler, fabrikalar, "
+"konutlar, anıtlar, dükkanlar, kuleler."
+
+#: geonode/custom_translations.py:110
+msgid "Structure"
+msgstr "Yapı"
+
+#: geonode/custom_translations.py:112
+msgid ""
+"Means and aids for conveying persons and/or goods. Examples: roads, airports/"
+"airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel "
+"location, aeronautical charts, railways."
+msgstr ""
+"Kişi ve/veya eşya taşıma araçları ve yardımcıları. Örnekler: yollar, havaalanları/"
+"uçak pistleri, gemi rotaları, tüneller, deniz haritaları, araç veya gemi"
+"konum, havacılık haritaları, demiryolları."
+
+#: geonode/custom_translations.py:115
+msgid "Transportation"
+msgstr "Taşımacılık"
+
+#: geonode/custom_translations.py:117
+msgid ""
+"Energy, water and waste systems and communications infrastructure and "
+"services. Examples: hydroelectricity, geothermal, solar and nuclear sources "
+"of energy, water purification and distribution, sewage collection and "
+"disposal, electricity and gas distribution, data communication, "
+"telecommunication, radio, communication networks."
+msgstr ""
+"Enerji, su ve atık sistemleri ile iletişim altyapısı ve hizmetleri."
+"Örnekler: hidroelektrik, jeotermal, güneş ve nükleer enerji kaynakları, "
+"su arıtma ve dağıtımı, atık su toplama ve bertarafı, "
+"elektrik ve gaz dağıtımı, veri iletişimi, telekomünikasyon, radyo, iletişim ağları."
+#: geonode/custom_translations.py:122
+msgid "Utilities Communication"
+msgstr "Altyapı İletişimi"
+
+#: geonode/documents/apps.py:30
+msgid "Document Created"
+msgstr "Belge Oluşturuldu"
+
+#: geonode/documents/apps.py:31
+msgid "A Document was created"
+msgstr "Bir belge oluşturuldu"
+
+#: geonode/documents/apps.py:35
+msgid "Document Updated"
+msgstr "Belge Güncellendi"
+
+#: geonode/documents/apps.py:36
+msgid "A Document was updated"
+msgstr "Bir belge güncellendi"
+
+#: geonode/documents/apps.py:40
+msgid "Document Approved"
+msgstr "Belge Onaylandı"
+
+#: geonode/documents/apps.py:41
+msgid "A Document was approved by a Manager"
+msgstr "Bir belge bir yönetici tarafından onaylandı."
+
+#: geonode/documents/apps.py:45
+msgid "Document Published"
+msgstr "Belge Yayınlandı"
+
+#: geonode/documents/apps.py:46
+msgid "A Document was published"
+msgstr "Bir belge yayınlandı."
+
+#: geonode/documents/apps.py:50
+msgid "Document Deleted"
+msgstr "Belge Silindi"
+
+#: geonode/documents/apps.py:51
+msgid "A Document was deleted"
+msgstr "Bir belge silindi."
+
+#: geonode/documents/apps.py:55
+msgid "Rating for Document"
+msgstr "Belge için Değerlendirme"
+
+#: geonode/documents/apps.py:56
+msgid "A rating was given to a document"
+msgstr "Bir belgeye değerlendirme verildi."
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
+msgid "Width"
+msgstr "Genişlik"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:7
+msgid "Height"
+msgstr "Yükseklik"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:9
+msgid "Make"
+msgstr "Marka"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:11
+msgid "Model"
+msgstr "Model"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:15
+msgid "Latitude"
+msgstr "Enlem"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:16
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:18
+msgid "Not specified"
+msgstr "Belirtilmemiş"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:17
+msgid "Longitude"
+msgstr "Boylam"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:19
+msgid "Flash"
+msgstr "Flaş"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:20
+msgid "True"
+msgstr "Doğru"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:20
+msgid "False"
+msgstr "Yanlış"
+
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
+msgid "Speed Rating"
+msgstr "Hız Değerlendirmesi"
+
+#: geonode/documents/forms.py:60
+msgid ""
+"File size size exceeds {filesizeformat(max_size)}. Please try again with a "
+"smaller file."
+msgstr ""
+"Dosya boyutu {filesizeformat(max_size)}'i aşıyor. Lütfen daha küçük bir dosya ile tekrar deneyin."
+#: geonode/documents/forms.py:88
+msgid "File"
+msgstr "Dosya"
+
+#: geonode/documents/forms.py:112
+msgid "Permissions must be valid JSON."
+msgstr "İzinler geçerli bir JSON olmalıdır."
+
+#: geonode/documents/forms.py:125
+msgid "Document must be a file or url."
+msgstr "Belge bir dosya veya URL olmalıdır."
+
+#: geonode/documents/forms.py:129
+msgid "A document cannot have both a file and a url."
+msgstr "Bir belgenin hem dosya hem de URL içermesi mümkün değildir."
+
+#: geonode/documents/forms.py:144
+msgid "This file type is not allowed"
+msgstr "Bu dosya türüne izin verilmiyor."
+
+#: geonode/documents/models.py:51
+msgid "The URL of the document if it is external."
+msgstr "Belge dışarıdaysa URL'si."
+
+#: geonode/documents/models.py:52 geonode/layers/models.py:468
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:19
+msgid "URL"
+msgstr "URL"
+
+#: geonode/documents/models.py:73
+msgid "View Metadata"
+msgstr "Meta Verileri Görüntüle"
+
+#: geonode/documents/models.py:74
+msgid "View and Download"
+msgstr "Görüntüle ve İndir"
+
+#: geonode/documents/utils.py:75 geonode/documents/views.py:69
+msgid "You are not allowed to view this document."
+msgstr "Bu belgeyi görüntüleme izniniz yok."
+
+#: geonode/facets/providers/keyword.py:44
+msgid "Keyword"
+msgstr "Anahtar Kelime"
+
+#: geonode/facets/providers/region.py:44
+msgid "Region"
+msgstr "Bölge"
+
+#: geonode/geoapps/apps.py:31
+msgid "App Created"
+msgstr "Uygulama Oluşturuldu"
+
+#: geonode/geoapps/apps.py:32
+msgid "A App was created"
+msgstr "Bir uygulama oluşturuldu."
+
+#: geonode/geoapps/apps.py:36
+msgid "App Updated"
+msgstr "Uygulama Güncellendi"
+
+#: geonode/geoapps/apps.py:37
+msgid "A App was updated"
+msgstr "Bir uygulama güncellendi."
+
+#: geonode/geoapps/apps.py:41
+msgid "App Approved"
+msgstr "Uygulama Onaylandı"
+
+#: geonode/geoapps/apps.py:42
+msgid "A App was approved by a Manager"
+msgstr "Bir uygulama bir Yönetici tarafından onaylandı."
+
+#: geonode/geoapps/apps.py:46
+msgid "App Published"
+msgstr "Uygulama Yayınlandı"
+
+#: geonode/geoapps/apps.py:47
+msgid "A App was published"
+msgstr "Bir uygulama yayınlandı."
+
+#: geonode/geoapps/apps.py:51
+msgid "App Deleted"
+msgstr "Uygulama Silindi"
+
+#: geonode/geoapps/apps.py:52
+msgid "A App was deleted"
+msgstr "Bir uygulama silindi."
+
+#: geonode/geoapps/apps.py:56
+msgid "Rating for App"
+msgstr "Uygulama için Değerlendirme"
+
+#: geonode/geoapps/apps.py:57
+msgid "A rating was given to an App"
+msgstr "Bir uygulama için değerlendirme yapıldı."
+
+#: geonode/geoapps/models.py:46 geonode/groups/models.py:48
+#: geonode/layers/models.py:120
+#: geonode/services/templates/services/service_resources_harvest.html:28
+msgid "Name"
+msgstr "Ad"
+
+#: geonode/geoapps/views.py:42
+msgid "You do not have permissions for this app."
+msgstr "Bu uygulama için izinleriniz yok."
+
+#: geonode/geoapps/views.py:43
+msgid "You are not allowed to view this app."
+msgstr "Bu uygulamayı görüntüleme izniniz yok."
+
+#: geonode/geoserver/apps.py:64
+msgid "Dataset Uploaded"
+msgstr "Veri Kümesi Yüklendi"
+
+#: geonode/geoserver/apps.py:65
+msgid "A layer was uploaded"
+msgstr "Bir katman yüklendi."
+
+#: geonode/geoserver/apps.py:69 geonode/layers/apps.py:57
+msgid "Rating for Dataset"
+msgstr "Veri Kümesi için Değerlendirme"
+
+#: geonode/geoserver/apps.py:70 geonode/layers/apps.py:58
+msgid "A rating was given to a layer"
+msgstr "Bir katman için değerlendirme yapıldı."
+
+#: geonode/geoserver/createlayer/forms.py:24
+msgid "Points"
+msgstr "Noktalar"
+
+#: geonode/geoserver/createlayer/forms.py:25
+msgid "Lines"
+msgstr "Çizgiler"
+
+#: geonode/geoserver/createlayer/forms.py:26
+msgid "Polygons"
+msgstr "Poligonlar"
+
+#: geonode/geoserver/createlayer/forms.py:35
+msgid "Dataset name"
+msgstr "Veri Kümesi Adı"
+
+#: geonode/geoserver/createlayer/forms.py:36
+msgid "Dataset title"
+msgstr "Veri Kümesi Başlığı"
+
+#: geonode/geoserver/createlayer/forms.py:37
+msgid "Geometry type"
+msgstr "Geometri türü"
+
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:8
+msgid "Create Dataset"
+msgstr "Veri Kümesi Oluştur"
+
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:21
+msgid "Create an empty dataset"
+msgstr "Boş bir veri kümesi oluştur"
+
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:39
+msgid "Add Attribute"
+msgstr "Öznitelik Ekle"
+
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:42
+#: geonode/groups/templates/groups/group_create.html:26
+#: geonode/services/templates/services/service_register.html:61
+msgid "Create"
+msgstr "Oluştur"
+
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:63
+msgid "String"
+msgstr "Metin"
+
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:64
+msgid "Integer"
+msgstr "Tam Sayı"
+
+#: geonode/geoserver/createlayer/templates/createlayer/dataset_create.html:65
+msgid "Float"
+msgstr "Kayan Nokta"
+
+#: geonode/geoserver/helpers.py:727
+msgid "No title provided"
+msgstr "Başlık sağlanmadı"
+
+#: geonode/geoserver/helpers.py:728 geonode/resource/utils.py:474
+msgid "No abstract provided"
+msgstr "Özet sağlanmadı"
+
+#: geonode/geoserver/helpers.py:1489
+msgid "An exception occurred loading data to PostGIS"
+msgstr "PostGIS'e veri yüklenirken bir istisna oluştu."
+
+#: geonode/geoserver/helpers.py:1494
+msgid " Additionally an error occured during database cleanup"
+msgstr " Ayrıca veritabanı temizliği sırasında bir hata oluştu."
+
+#: geonode/geoserver/helpers.py:2025 geonode/utils.py:1256
+msgid "Invalid Projection. Dataset is missing CRS!"
+msgstr "Geçersiz Projeksiyon. Veri Kümesi CRS'yi eksik."
+
+#: geonode/geoserver/ows.py:268
+msgid "GeoTIFF"
+msgstr "GeoTIFF"
+
+#: geonode/geoserver/ows.py:312
+msgid "Zipped Shapefile"
+msgstr "Sıkıştırılmış Shapefile"
+
+#: geonode/geoserver/ows.py:313
+msgid "GML 2.0"
+msgstr "GML 2.0"
+
+#: geonode/geoserver/ows.py:314
+msgid "GML 3.1.1"
+msgstr "GML 3.1.1"
+
+#: geonode/geoserver/ows.py:315
+msgid "CSV"
+msgstr "CSV"
+
+#: geonode/geoserver/ows.py:316
+msgid "Excel"
+msgstr "Excel"
+
+#: geonode/geoserver/ows.py:317
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+#: geonode/geoserver/ows.py:361
+msgid "JPEG"
+msgstr "JPEG"
+
+#: geonode/geoserver/ows.py:362
+msgid "PDF"
+msgstr "PDF"
+
+#: geonode/geoserver/ows.py:363
+msgid "PNG"
+msgstr "PNG"
+
+#: geonode/geoserver/views.py:273
+msgid "You don't have permissions to change style for this layer"
+msgstr "Bu katmanın stilini değiştirmek için izniniz yok"
+
+#: geonode/geoserver/views.py:368 geonode/geoserver/views.py:411
+msgid "Bad HTTP Authorization Credentials."
+msgstr "Geçersiz HTTP Yetkilendirme Kimlik Bilgileri."
+
+#: geonode/groups/forms.py:33
+msgid ""
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+msgstr ""
+"sadece harf, rakam, alt çizgi ve tirelerden oluşan ismin kısa hali."
+#: geonode/groups/forms.py:40 geonode/groups/forms.py:56
+msgid "A group already exists with that slug."
+msgstr "Bu slug ile zaten bir grup mevcut."
+
+#: geonode/groups/forms.py:45 geonode/groups/forms.py:53
+#: geonode/groups/forms.py:72
+msgid "A group already exists with that name."
+msgstr "Bu isim ile zaten bir grup mevcut."
+
+#: geonode/groups/forms.py:89
+msgid "User Identifiers"
+msgstr "Kullanıcı Tanımlayıcıları"
+
+#: geonode/groups/forms.py:93
+msgid "Select users..."
+msgstr "Kullanıcıları seçin..."
+
+#: geonode/groups/forms.py:98
+msgid "Enter usernames separated by commas or select from dropdown"
+msgstr "Kullanıcı adlarını virgülle ayırarak girin veya açılır listeden seçin."
+
+#: geonode/groups/forms.py:101
+msgid "Assign manager role"
+msgstr "Yönetici rolü ata"
+
+#: geonode/groups/forms.py:107
+msgid "Please select at least one user"
+msgstr "Lütfen en az bir kullanıcı seçin."
+
+#: geonode/groups/forms.py:126
+#, python-format
+msgid "The following are not valid usernames: %(errors)s"
+msgstr "Aşağıdakiler geçersiz kullanıcı adlarıdır: %(errors)s"
+
+#: geonode/groups/models.py:52
+#: geonode/templates/search/_search_user_content.html:28
+msgid "Group Categories"
+msgstr "Grup Kategorileri"
+
+#: geonode/groups/models.py:70
+msgid "Public"
+msgstr "Herkese Açık"
+
+#: geonode/groups/models.py:71
+msgid "Public (invite-only)"
+msgstr "Herkese Açık (sadece davetli)"
+
+#: geonode/groups/models.py:72
+msgid "Private"
+msgstr "Özel"
+
+#: geonode/groups/models.py:76
+msgid ""
+"Public: Any registered user can view and join a public group.<br>Public "
+"(invite-only):Any registered user can view the group.  Only invited users "
+"can join.<br>Private: Registered users cannot see any details about the "
+"group, including membership.  Only invited users can join."
+msgstr ""
+"Herkese Açık: Kayıtlı herhangi bir kullanıcı herkese açık bir grubu görüntüleyebilir ve katılabilir.<br>Herkese Açık"
+"(yalnızca davetli): Kayıtlı herhangi bir kullanıcı grubu görüntüleyebilir. Yalnızca davetli kullanıcılar katılabilir.<br>Özel: Kayıtlı kullanıcılar, üyelik de dahil olmak üzere grupla ilgili hiçbir ayrıntıyı göremez. Yalnızca davetli kullanıcılar katılabilir."
+
+#: geonode/groups/models.py:83
+msgid ""
+"Email used to contact one or all group members, such as a mailing list, "
+"shared email, or exchange group."
+msgstr ""
+"Bir posta listesi, paylaşılan e-posta veya değişim grubu gibi bir veya tüm grup üyeleriyle iletişim kurmak için kullanılan e-posta."
+
+#: geonode/groups/models.py:89
+msgid "Logo"
+msgstr "Logo"
+
+#: geonode/groups/models.py:91
+#: geonode/people/templates/people/profile_detail.html:68
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr "E-posta"
+
+#: geonode/groups/models.py:92 geonode/people/forms/__init__.py:49
+msgid "A space or comma-separated list of keywords"
+msgstr "Anahtar kelimelerin boşluk veya virgülle ayrılmış bir listesi"
+
+#: geonode/groups/models.py:94
+msgid "Access"
+msgstr "Erişim"
+
+#: geonode/groups/models.py:96
+msgid "Categories"
+msgstr "Kategoriler"
+
+#: geonode/groups/models.py:272
+#: geonode/groups/templates/groups/group_members.html:34
+#: geonode/groups/templates/groups/group_members.html:74
+#: geonode/groups/templates/groups/group_members.html:106
+msgid "Manager"
+msgstr "Yönetici"
+
+#: geonode/groups/models.py:273
+msgid "Member"
+msgstr "Üye"
+
+#: geonode/groups/templates/groups/activity.html:7
+#: geonode/groups/templates/groups/activity.html:8
+#: geonode/groups/templates/groups/activity.html:19
+#: geonode/templates/actstream/actor.html:19
+msgid "Activity Feed for"
+msgstr "Etkinlik Akışı"
+
+#: geonode/groups/templates/groups/activity.html:25
+#: geonode/groups/templates/groups/group_members.html:19
+#: geonode/social/templates/social/activity_list.html:20
+msgid "All"
+msgstr "Tümü"
+
+#: geonode/groups/templates/groups/activity.html:26
+#: geonode/people/templates/people/_profile_filters.html:5
+#: geonode/social/templates/social/activity_list.html:21
+msgid "Datasets"
+msgstr "Veri Setleri"
+
+#: geonode/groups/templates/groups/activity.html:27
+#: geonode/people/templates/people/_profile_filters.html:6
+#: geonode/social/templates/social/activity_list.html:22
+msgid "Maps"
+msgstr "Haritalar"
+
+
+#: geonode/groups/templates/groups/activity.html:28
+#: geonode/people/templates/people/_profile_filters.html:7
+#: geonode/social/templates/social/activity_list.html:23
+msgid "Documents"
+msgstr "Belgeler"
+
+#: geonode/groups/templates/groups/activity.html:36
+#: geonode/groups/templates/groups/activity.html:45
+#: geonode/groups/templates/groups/activity.html:54
+#: geonode/groups/templates/groups/activity.html:63
+#: geonode/social/templates/social/activity_list.html:36
+#: geonode/social/templates/social/activity_list.html:45
+#: geonode/social/templates/social/activity_list.html:54
+#: geonode/social/templates/social/activity_list.html:63
+#: geonode/social/templates/social/activity_list.html:73
+#: geonode/templates/actstream/actor.html:28
+msgid "No actions yet"
+msgstr "Henüz hiçbir işlem yok"
+
+#: geonode/groups/templates/groups/category_list.html:5
+#: geonode/groups/templates/groups/category_list.html:14
+msgid "Explore Group Categories"
+msgstr "Grup Kategorilerini Keşfet"
+
+#: geonode/groups/templates/groups/category_list.html:12
+msgid "Create a New Group Category"
+msgstr "Yeni Bir Grup Kategorisi Oluştur"
+
+#: geonode/groups/templates/groups/group_base.html:12
+#: geonode/groups/templates/groups/group_list.html:5
+#: geonode/groups/templates/groups/group_list.html:14
+msgid "Explore Groups"
+msgstr "Grupları Keşfet"
+
+#: geonode/groups/templates/groups/group_base.html:13
+#: geonode/groups/templates/groups/group_create.html:11
+msgid "Create a Group"
+msgstr "Bir Grup Oluştur"
+
+#: geonode/groups/templates/groups/group_base.html:15
+#: geonode/groups/templates/groups/group_update.html:11
+msgid "Update Group"
+msgstr "Grubu Güncelle"
+
+#: geonode/groups/templates/groups/group_base.html:16
+msgid "Remove Group"
+msgstr "Grubu Kaldır"
+
+#: geonode/groups/templates/groups/group_create.html:5
+#: geonode/groups/templates/groups/group_update.html:5
+msgid "Create Group"
+msgstr "Grup Oluştur"
+
+#: geonode/groups/templates/groups/group_detail.html:22
+msgid "Last Modified"
+msgstr "Son Değişiklik"
+
+#: geonode/groups/templates/groups/group_detail.html:32
+msgid "This group has not created a logo."
+msgstr "Bu grup bir logo oluşturmadı."
+
+#: geonode/groups/templates/groups/group_detail.html:65
+msgid "Edit Group Details"
+msgstr "Grup Ayrıntılarını Düzenle"
+
+#: geonode/groups/templates/groups/group_detail.html:66
+msgid "Manage Group Members"
+msgstr "Grup Üyelerini Yönet"
+
+#: geonode/groups/templates/groups/group_detail.html:67
+msgid "Delete this Group"
+msgstr "Bu Grubu Sil"
+
+#: geonode/groups/templates/groups/group_detail.html:70
+msgid "Group Activities"
+msgstr "Grup Etkinlikleri"
+
+#: geonode/groups/templates/groups/group_detail.html:73
+#: geonode/people/admin.py:55
+msgid "Permissions"
+msgstr "İzinler"
+
+#: geonode/groups/templates/groups/group_detail.html:75
+#, python-format
+msgid ""
+"\n"
+"            This group is <strong>%(access)s</strong>.\n"
+"          "
+msgstr ""
+"\n"
+" Bu grup <strong>%(access)s</strong>'dir.\n"
+" "
+#: geonode/groups/templates/groups/group_detail.html:79
+msgid "Anyone may join this group."
+msgstr "Bu gruba herkes katılabilir."
+
+#: geonode/groups/templates/groups/group_detail.html:83
+msgid "Join Group"
+msgstr "Gruba Katıl"
+
+#: geonode/groups/templates/groups/group_detail.html:87
+msgid "Anyone may view this group but membership is by invitation only."
+msgstr "Bu grubu herkes görüntüleyebilir ancak üyelik yalnızca davetiyeyle mümkündür."
+
+#: geonode/groups/templates/groups/group_detail.html:89
+msgid "Membership is by invitation only."
+msgstr "Üyelik yalnızca davetiyeyle mümkündür."
+
+#: geonode/groups/templates/groups/group_detail.html:94
+#: geonode/groups/templates/groups/group_members.html:20
+msgid "Managers"
+msgstr "Yöneticiler"
+
+#: geonode/groups/templates/groups/group_detail.html:106
+#: geonode/groups/templates/groups/group_members.html:21
+msgid "Members"
+msgstr "Üyeler"
+
+#: geonode/groups/templates/groups/group_list.html:12
+msgid "Create a New Group"
+msgstr "Yeni Bir Grup Oluştur"
+
+#: geonode/groups/templates/groups/group_members.html:14
+msgid "Edit Members for"
+msgstr "Üyeleri Düzenle"
+
+#: geonode/groups/templates/groups/group_members.html:15
+msgid "Current Members"
+msgstr "Mevcut Üyeler"
+
+#: geonode/groups/templates/groups/group_members.html:39
+#: geonode/groups/templates/groups/group_members.html:79
+#: geonode/groups/templates/groups/group_members.html:111
+#: geonode/templates/account/email.html:36
+#: geonode/templates/socialaccount/connections.html:33
+msgid "Remove"
+msgstr "Kaldır"
+
+#: geonode/groups/templates/groups/group_members.html:45
+#: geonode/groups/templates/groups/group_members.html:116
+msgid "Promote"
+msgstr "Terfi Et"
+
+
+#: geonode/groups/templates/groups/group_members.html:52
+#: geonode/groups/templates/groups/group_members.html:84
+msgid "Demote"
+msgstr "Aldır"
+
+#: geonode/groups/templates/groups/group_members.html:57
+#: geonode/groups/templates/groups/group_members.html:88
+#: geonode/groups/templates/groups/group_members.html:120
+msgid "Role"
+msgstr "Rol"
+
+#: geonode/groups/templates/groups/group_members.html:133
+msgid "Add new members"
+msgstr "Yeni üyeler ekle"
+
+#: geonode/groups/templates/groups/group_members.html:139
+msgid "Add Group Members"
+msgstr "Grup Üyeleri Ekle"
+
+#: geonode/groups/templates/groups/group_remove.html:12
+#, python-format
+msgid ""
+"\n"
+"          Are you sure you want to remove the group: %(group_title)s?\n"
+"        "
+msgstr ""
+"\n"
+" %(group_title)s grubunu kaldırmak istediğinizden emin misiniz?\n"
+" "
+#: geonode/groups/templates/groups/group_remove.html:19
+#: geonode/services/templates/services/service_remove.html:17
+msgid "Yes, I am sure"
+msgstr "Evet, eminim"
+
+#: geonode/groups/templates/groups/group_remove.html:20
+#: geonode/services/templates/services/service_remove.html:18
+msgid "No, don't remove it"
+msgstr "Hayır, kaldırmayın"
+
+#: geonode/groups/templates/groups/group_remove_maps_data.html:6
+msgid "Remove Maps/Data from Group"
+msgstr "Grup Haritalarını/Verilerini Kaldır"
+
+#: geonode/groups/templates/groups/group_remove_maps_data.html:15
+msgid "Remove selected maps/data"
+msgstr "Seçilen haritaları/verileri kaldır"
+
+#: geonode/groups/templates/groups/group_update.html:26
+msgid "Update"
+msgstr "Güncelle"
+
+#: geonode/groups/templates/groups/groupcategory_detail.html:24
+msgid "Edit Group Category Details"
+msgstr "Grup Kategori Ayrıntılarını Düzenle"
+
+#: geonode/groups/templates/groups/groupcategory_detail.html:31
+msgid "Groups"
+msgstr "Gruplar"
+
+#: geonode/groups/templates/groups/groupcategory_form.html:4
+msgid "Create Group Category"
+msgstr "Grup Kategorisi Oluştur"
+
+#: geonode/groups/templates/groups/groupcategory_form.html:6
+msgid "Create a Group Category"
+msgstr "Bir Grup Kategorisi Oluştur"
+
+#: geonode/groups/templates/groups/groupcategory_update_form.html:4
+#: geonode/groups/templates/groups/groupcategory_update_form.html:6
+msgid "Edit Group Category"
+msgstr "Grup Kategorisini Düzenle"
+
+#: geonode/groups/templates/groups/groupcategory_update_form.html:8
+#: geonode/services/templates/services/service_edit.html:21
+#: geonode/templates/announcements/announcement_form.html:26
+msgid "Save"
+msgstr "Kaydet"
+
+#: geonode/harvesting/admin.py:142 geonode/harvesting/admin.py:182
+msgid "No ready harvesters have been selected, skipping..."
+msgstr "Seçilen hazır toplayıcılar yok, atlanıyor..."
+
+#: geonode/harvesting/admin.py:164
+msgid ""
+"No active refresh sessions have been found for the selected harvesters. "
+"Skipping..."
+msgstr ""
+"Seçilen toplayıcılar için etkin yenileme oturumları bulunamadı. "
+"Atlanıyor..."
+
+#: geonode/harvesting/admin.py:204
+msgid ""
+"No active harvesting sessions have been found for the selected harvesters. "
+"Skipping..."
+msgstr ""
+"Seçilen toplayıcılar için etkin toplama oturumları bulunamadı. "
+"Atlanıyor..."
+
+#: geonode/harvesting/admin.py:213
+#, python-format
+msgid "Resetting status for harvester %(name)s..."
+msgstr "Toplayıcı %(name)s için durum sıfırlanıyor..."
+
+#: geonode/harvesting/admin.py:227
+msgid "Harvestable resources"
+msgstr "Toplanabilir kaynaklar"
+
+#: geonode/harvesting/models.py:49 geonode/harvesting/models.py:398
+#: geonode/resource/models.py:34
+msgid "ready"
+msgstr "hazır"
+
+#: geonode/harvesting/models.py:50
+msgid "updating-harvestable-resources"
+msgstr "guncelleniyor-toplanabilir-kaynaklar"
+
+#: geonode/harvesting/models.py:51
+msgid "aborting-update-harvestable-resources"
+msgstr "iptal-ediliyor-guncelleniyor-toplanabilir-kaynaklar"
+
+#: geonode/harvesting/models.py:52
+msgid "harvesting-resources"
+msgstr "toplama-kaynaklari"
+
+#: geonode/harvesting/models.py:53
+msgid "aborting-harvesting-resources"
+msgstr "iptal-ediliyor-toplama-kaynaklari"
+
+#: geonode/harvesting/models.py:54
+msgid "checking-availability"
+msgstr "kontrol-ediliyor-mevcudiyet"
+
+#: geonode/harvesting/models.py:57
+msgid "Harvester name"
+msgstr "Toplayıcı adı"
+
+#: geonode/harvesting/models.py:59
+msgid "Base URL of the remote service that is to be harvested"
+msgstr "Toplanacak uzak hizmetin temel URL'si"
+
+#: geonode/harvesting/models.py:61
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+"Bu hasat makinesinin uzaktan hizmette kaynak araması için periyodik olarak programlanması gerekip gerekmediği"
+
+#: geonode/harvesting/models.py:65
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled?"
+msgstr "Yeni toplama oturumlarının otomatik olarak ne sıklıkla (dakika cinsinden) planlanması gerekiyor?"
+
+#: geonode/harvesting/models.py:68
+msgid ""
+"How often (in minutes) should new refresh sessions be automatically "
+"scheduled?"
+msgstr "Yeni yenileme oturumlarının otomatik olarak ne sıklıkla (dakika cinsinden) planlanması gerekiyor?"
+
+#: geonode/harvesting/models.py:71
+msgid "Whether the remote service is known to be available or not"
+msgstr "Uzak hizmetin mevcut olup olmadığı biliniyor mu?"
+
+#: geonode/harvesting/models.py:74
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr "Uzak hizmetin mevcut olup olmadığını kontrol etmek için ne sıklıkla (dakika cinsinden) kontrol edilmelidir?"
+
+#: geonode/harvesting/models.py:77
+msgid "Last time the remote server was checked for availability"
+msgstr "Uzak sunucunun mevcut olup olmadığı en son ne zaman kontrol edildi?"
+
+#: geonode/harvesting/models.py:80
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr "Uzak sunucunun toplanabilir kaynaklar için en son ne zaman kontrol edildi?"
+
+#: geonode/harvesting/models.py:86
+msgid "Default owner of harvested resources"
+msgstr "Toplanan kaynakların varsayılan sahibi"
+
+#: geonode/harvesting/models.py:89
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr "Yeni kaynakların açık bir seçim olmadan otomatik olarak toplanması gerekiyor mu?"
+
+#: geonode/harvesting/models.py:94
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+"Yetim kaynaklar, daha önce bir "
+"toplama işlemiyle oluşturulmuş ancak GeoNode'un artık topladığı uzak "
+"hizmetinde bulamadığı kaynaklardır. Bu kaynaklar GeoNode'dan otomatik olarak silinmeli mi? Bu, bir toplayıcı yapılandırması "
+"silindiğinde de geçerlidir; bu durumda, o "
+"toplayıcıdan kaynaklanan tüm kaynaklar artık yetim olarak kabul edilir."
+
+
+#: geonode/harvesting/models.py:104
+msgid "Date of last update to the harvester configuration."
+msgstr "Toplayıcı yapılandırmasının en son güncellenme tarihi."
+
+#: geonode/harvesting/models.py:109
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+"Hasat oturumlarını gerçekleştirmek için kullanılan Harvester sınıfı. Yeni hasat türleri, bir yönetici tarafından ana GeoNode `settings.py` dosyası değiştirilerek eklenebilir."
+
+#: geonode/harvesting/models.py:119
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+"Her hasat makinesi türüne özgü yapılandırma. Daha fazla bilgi için lütfen GeoNode hasat belgelerine bakın. Bu alan zorunludur, bu nedenle en azından boş bir nesne (yani {}) sağlanmalıdır."
+#: geonode/harvesting/models.py:302
+msgid "pending"
+msgstr "beklemede"
+
+#: geonode/harvesting/models.py:303
+msgid "on-going"
+msgstr "devam-ediyor"
+
+#: geonode/harvesting/models.py:304
+msgid "finished-all-ok"
+msgstr "tamamlandi-tumu-iyi"
+
+#: geonode/harvesting/models.py:305
+msgid "finished-all-failed"
+msgstr "tamamlandi-tumu-basarisiz"
+
+#: geonode/harvesting/models.py:306
+msgid "finished-some-failed"
+msgstr "tamamlandi-bazi-basarisiz"
+
+#: geonode/harvesting/models.py:307
+msgid "aborting"
+msgstr "iptal-ediliyor"
+
+#: geonode/harvesting/models.py:308
+msgid "aborted"
+msgstr "iptal-edildi"
+
+#: geonode/harvesting/models.py:313
+msgid "harvesting"
+msgstr "toplama"
+
+#: geonode/harvesting/models.py:314
+msgid "discover-harvestable-resources"
+msgstr "toplanabilir-kaynaklari-kesfet"
+
+#: geonode/harvesting/models.py:331
+msgid "Number of records being processed in this session"
+msgstr "Bu oturumda işlenmekte olan kayıt sayısı"
+
+#: geonode/harvesting/models.py:333
+msgid "Number of records that have already been processed"
+msgstr "Zaten işlenmiş kayıt sayısı"
+
+#: geonode/harvesting/models.py:399
+msgid "updating-harvestable-resource"
+msgstr "toplanabilir-kaynak-guncelleniyor"
+
+#: geonode/harvesting/models.py:400
+msgid "harvesting-resource"
+msgstr "toplama-kaynagi"
+
+#: geonode/harvesting/models.py:406
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+"Kaynağa uzak hizmetinde benzersiz bir şekilde referans verilmesini sağlayan tanımlayıcı. Bu genellikle hasatçı "
+"çalışanı tarafından otomatik olarak doldurulur. Hasatçı çalışanının, ardışık hasat oturumları arasında kaynakların kullanılabilirliğini karşılaştırabilmek için her uzak kaynaktan bunu nasıl okuyacağını veya üreteceğini bilmesi gerekir."
+
+#: geonode/harvesting/models.py:427
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
+"Uzak hizmetteki kaynağın türü. Her hasatçı çalışanı, hasatın desteklendiği kaynaklara göre bu alanı nasıl dolduracağını bilir."
+
+#: geonode/invitations/forms.py:49
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
+msgstr "E-posta adresi '{email}' zaten davet edilmiştir."
+
+#: geonode/invitations/forms.py:50
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
+msgstr "E-posta adresi '{email}' zaten bir daveti kabul etmiştir."
+
+#: geonode/invitations/forms.py:51
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
+msgstr "Aktif bir kullanıcı '{email}' e-posta adresini zaten kullanıyor."
+
+#: geonode/invitations/forms.py:67
+msgid "E-mail"
+msgstr "E-posta"
+
+#: geonode/invitations/views.py:71
+#, python-format
+msgid "Invitations successfully sent to '%(email)s'"
+msgstr "Davetiyeler '%(email)s' adresine başarıyla gönderildi."
+
+#: geonode/invitations/views.py:80
+#, python-format
+msgid ""
+"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
+"%(error)s (%(type)s)"
+msgstr ""
+"Üzgünüm, '%(email)s' adresini davet etmek mümkün olmadı: "
+"%(error)s (%(type)s)"
+#: geonode/layers/apps.py:32
+msgid "Dataset Created"
+msgstr "Veri Kümesi Oluşturuldu"
+
+#: geonode/layers/apps.py:33
+msgid "A Dataset was created"
+msgstr "Bir Veri Kümesi oluşturuldu"
+
+#: geonode/layers/apps.py:37
+msgid "Dataset Updated"
+msgstr "Veri Kümesi Güncellendi"
+
+#: geonode/layers/apps.py:38
+msgid "A Dataset was updated"
+msgstr "Bir Veri Kümesi güncellendi"
+
+#: geonode/layers/apps.py:42
+msgid "Dataset Approved"
+msgstr "Veri Kümesi Onaylandı"
+
+#: geonode/layers/apps.py:43
+msgid "A Dataset was approved by a Manager"
+msgstr "Bir Veri Kümesi bir Yönetici tarafından onaylandı."
+
+#: geonode/layers/apps.py:47
+msgid "Dataset Published"
+msgstr "Veri Kümesi Yayınlandı"
+
+#: geonode/layers/apps.py:48
+msgid "A Dataset was published"
+msgstr "Bir Veri Kümesi yayınlandı"
+
+#: geonode/layers/apps.py:52
+msgid "Dataset Deleted"
+msgstr "Veri Kümesi Silindi"
+
+#: geonode/layers/apps.py:53
+msgid "A Dataset was deleted"
+msgstr "Bir Veri Kümesi silindi"
+
+#: geonode/layers/download_handler.py:97
+msgid "You do not have download permissions for this dataset."
+msgstr "Bu veri kümesi için indirme izinleriniz yok."
+
+#: geonode/layers/models.py:55
+msgid "YYYYMMDD"
+msgstr "YYYYMMDD"
+
+#: geonode/layers/models.py:56
+msgid "YYYYMMDD'T'hhmmss"
+msgstr "YYYYMMDD'T'hhmmss"
+
+#: geonode/layers/models.py:57
+msgid "YYYYMMDD'T'hhmmss'Z'"
+msgstr "YYYYMMDD'T'hhmmss'Z'"
+
+#: geonode/layers/models.py:66
+msgid "style name"
+msgstr "stil adı"
+
+#: geonode/layers/models.py:68
+msgid "sld text"
+msgstr "sld metni"
+
+#: geonode/layers/models.py:69
+msgid "sld version"
+msgstr "sld sürümü"
+
+#: geonode/layers/models.py:70
+msgid "sld url"
+msgstr "sld url"
+
+#: geonode/layers/models.py:118
+msgid "Workspace"
+msgstr "Çalışma Alanı"
+
+#: geonode/layers/models.py:119
+msgid "Store"
+msgstr "Depo"
+
+#: geonode/layers/models.py:121
+msgid "Typename"
+msgstr "Tür Adı"
+
+#: geonode/layers/models.py:123 geonode/maps/models.py:231
+msgid "ows URL"
+msgstr "ows url"
+
+#: geonode/layers/models.py:126
+msgid "The URL of the OWS service providing this layer, if any exists."
+msgstr "Bu katmanı sağlayan OWS hizmetinin URL'si, varsa."
+
+#: geonode/layers/models.py:129
+msgid "Is mosaic?"
+msgstr "Mozaik mi?"
+
+#: geonode/layers/models.py:130
+msgid "Has time?"
+msgstr "Zaman var mı?"
+
+#: geonode/layers/models.py:131
+msgid "Has elevation?"
+msgstr "Yükseklik var mı?"
+
+#: geonode/layers/models.py:132
+msgid "Time regex"
+msgstr "Zaman düzeni"
+
+#: geonode/layers/models.py:133
+msgid "Elevation regex"
+msgstr "Yükseklik düzeni"
+
+#: geonode/layers/models.py:135
+msgid "P-Type"
+msgstr "P-Tipi"
+
+#: geonode/layers/models.py:148
+msgid "use featureinfo custom template?"
+msgstr "Özelleştirilmiş GetFeatureInfo şablonu kullanılsın mı?"
+
+#: geonode/layers/models.py:149
+msgid "specifies wether or not use a custom GetFeatureInfo template."
+msgstr "Özelleştirilmiş GetFeatureInfo şablonu kullanılıp kullanılmayacağını belirtir."
+
+#: geonode/layers/models.py:153
+msgid "featureinfo custom template"
+msgstr "özelleştirilmiş GetFeatureInfo şablonu"
+
+#: geonode/layers/models.py:154
+msgid "the custom GetFeatureInfo template HTML contents."
+msgstr "özelleştirilmiş GetFeatureInfo şablonunun HTML içeriği."
+
+#: geonode/layers/models.py:261
+msgid "File cannot be opened, maybe check the encoding"
+msgstr "Dosya açılamıyor, belki kodlamayı kontrol edin."
+
+#: geonode/layers/models.py:406
+msgid "attribute name"
+msgstr "öznitelik adı"
+
+#: geonode/layers/models.py:407
+msgid "name of attribute as stored in shapefile/spatial database"
+msgstr "şekil dosyası/uzamsal veritabanında saklanan öznitelik adı"
+
+#: geonode/layers/models.py:414
+msgid "attribute description"
+msgstr "öznitelik açıklaması"
+
+#: geonode/layers/models.py:415
+msgid "description of attribute to be used in metadata"
+msgstr "meta verilerinde kullanılacak öznitelik açıklaması"
+
+#: geonode/layers/models.py:421
+msgid "attribute label"
+msgstr "öznitelik etiketi"
+
+#: geonode/layers/models.py:422
+msgid "title of attribute as displayed in GeoNode"
+msgstr "GeoNode'da görüntülenen öznitelik başlığı"
+
+#: geonode/layers/models.py:429
+msgid "attribute type"
+msgstr "öznitelik türü"
+
+#: geonode/layers/models.py:430
+msgid "the data type of the attribute (integer, string, geometry, etc)"
+msgstr "özniteliğin veri türü (tam sayı, dize, geometri, vb.)"
+
+#: geonode/layers/models.py:438
+msgid "visible?"
+msgstr "görünür mü?"
+
+#: geonode/layers/models.py:438
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr "özniteliğin tanımlama sonuçlarında görüntülenip görüntülenmeyeceğini belirtir."
+
+#: geonode/layers/models.py:441
+msgid "display order"
+msgstr "görüntüleme sırası"
+
+#: geonode/layers/models.py:442
+msgid ""
+"specifies the order in which attribute should be displayed in identify "
+"results"
+msgstr "özniteliğin tanımlama sonuçlarında görüntülenme sırasını belirtir."
+
+#: geonode/layers/models.py:464
+msgid "Label"
+msgstr "Etiket"
+
+#: geonode/layers/models.py:473
+msgid "Image"
+msgstr "Görüntü"
+
+#: geonode/layers/models.py:479
+msgid "Video (mp4)"
+msgstr "Video (mp4)"
+
+#: geonode/layers/models.py:485
+msgid "Video (ogg)"
+msgstr "Video (ogg)"
+
+#: geonode/layers/models.py:491
+msgid "Video (webm)"
+msgstr "Video (webm)"
+
+#: geonode/layers/models.py:497
+msgid "Video (3gp)"
+msgstr "Video (3gp)"
+
+#: geonode/layers/models.py:503
+msgid "Video (flv)"
+msgstr "Video (flv)"
+
+#: geonode/layers/models.py:509
+msgid "Video (YouTube/VIMEO - embedded)"
+msgstr "Video (YouTube/VIMEO - gömülü)"
+
+#: geonode/layers/models.py:515
+msgid "Audio"
+msgstr "Ses"
+
+#: geonode/layers/models.py:521
+msgid "IFRAME"
+msgstr "IFRAME"
+
+#: geonode/layers/models.py:526
+msgid "featureinfo type"
+msgstr "özellik bilgisi türü"
+
+#: geonode/layers/models.py:527
+msgid ""
+"specifies if the attribute should be rendered with an HTML widget on "
+"GetFeatureInfo template."
+msgstr "özniteliğin GetFeatureInfo şablonunda bir HTML widget'ı ile render edilip edilmeyeceğini belirtir."
+
+#: geonode/layers/models.py:537
+msgid "count"
+msgstr "sayım"
+
+#: geonode/layers/models.py:537
+msgid "count value for this field"
+msgstr "bu alan için sayım değeri"
+
+#: geonode/layers/models.py:539
+msgid "min"
+msgstr "minimum"
+
+#: geonode/layers/models.py:540
+msgid "minimum value for this field"
+msgstr "bu alan için minimum değer"
+
+#: geonode/layers/models.py:548
+msgid "max"
+msgstr "maksimum"
+
+#: geonode/layers/models.py:549
+msgid "maximum value for this field"
+msgstr "bu alan için maksimum değer"
+
+#: geonode/layers/models.py:557
+msgid "average"
+msgstr "ortalama"
+
+#: geonode/layers/models.py:558
+msgid "average value for this field"
+msgstr "bu alan için ortalama değer"
+
+#: geonode/layers/models.py:566
+msgid "median"
+msgstr "medyan"
+
+#: geonode/layers/models.py:567
+msgid "median value for this field"
+msgstr "bu alan için medyan değeri"
+
+#: geonode/layers/models.py:575
+msgid "standard deviation"
+msgstr "standart sapma"
+
+#: geonode/layers/models.py:576
+msgid "standard deviation for this field"
+msgstr "bu alan için standart sapma"
+
+#: geonode/layers/models.py:584
+msgid "sum"
+msgstr "toplam"
+
+#: geonode/layers/models.py:585
+msgid "sum value for this field"
+msgstr "bu alan için toplam değer"
+
+#: geonode/layers/models.py:592
+msgid "unique values for this field"
+msgstr "bu alan için benzersiz değerler"
+
+#: geonode/layers/models.py:594
+msgid "last modified"
+msgstr "son değişiklik"
+
+#: geonode/layers/models.py:594
+msgid "date when attribute statistics were last updated"
+msgstr "öznitelik istatistiklerinin en son ne zaman güncellendiği"
+
+#: geonode/layers/views.py:48
+msgid ""
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
+msgstr ""
+"Not: Bu veri kümesinin orijinal meta verileri, bir meta veri XML dosyası içe aktarılarak doldurulmuş ve korunmuştur. Bu meta veriler düzenlenemez."
+
+#: geonode/layers/views.py:52
+msgid "You are not permitted to delete this dataset"
+msgstr "Bu veri kümesini silme izniniz yok."
+
+#: geonode/layers/views.py:53
+msgid "You do not have permissions for this dataset."
+msgstr "Bu veri kümesi için izinleriniz yok."
+
+#: geonode/layers/views.py:54
+msgid "You are not permitted to modify this dataset"
+msgstr "Bu veri kümesini değiştirme izniniz yok."
+
+#: geonode/layers/views.py:55
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "Bu veri kümesinin meta verilerini değiştirme izniniz yok."
+
+#: geonode/layers/views.py:56
+msgid "You are not permitted to view this dataset"
+msgstr "Bu veri kümesini görüntüleme izniniz yok."
+
+#: geonode/management_commands_http/models.py:56
+msgid "Positional Arguments"
+msgstr "Pozisyonel Argümanlar"
+
+#: geonode/management_commands_http/models.py:57
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr "JSON kodlu pozisyonel argümanlar (Örnek: [\"arg1\", \"arg2\"])"
+
+#: geonode/management_commands_http/models.py:62
+msgid "Keyword Arguments"
+msgstr "Anahtar Kelime Argümanları"
+
+#: geonode/management_commands_http/models.py:63
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr "JSON kodlu anahtar kelime argümanları (Örnek: {\"argument\": \"value\"})"
+
+#: geonode/management_commands_http/utils/jobs.py:27
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr "İşlem {job.id} başlatılamaz çünkü durumu \"{job.status}\"."
+
+#: geonode/maps/apps.py:31
+msgid "Map Created"
+msgstr "Harita Oluşturuldu"
+
+#: geonode/maps/apps.py:32
+msgid "A Map was created"
+msgstr "Bir harita oluşturuldu"
+
+#: geonode/maps/apps.py:36
+msgid "Map Updated"
+msgstr "Harita Güncellendi"
+
+#: geonode/maps/apps.py:37
+msgid "A Map was updated"
+msgstr "Bir harita güncellendi"
+
+#: geonode/maps/apps.py:41
+msgid "Map Approved"
+msgstr "Harita Onaylandı"
+
+#: geonode/maps/apps.py:42
+msgid "A Map was approved by a Manager"
+msgstr "Bir harita bir Yönetici tarafından onaylandı."
+
+#: geonode/maps/apps.py:46
+msgid "Map Published"
+msgstr "Harita Yayınlandı"
+
+#: geonode/maps/apps.py:47
+msgid "A Map was published"
+msgstr "Bir harita yayınlandı"
+
+#: geonode/maps/apps.py:51
+msgid "Map Deleted"
+msgstr "Harita Silindi"
+
+#: geonode/maps/apps.py:52
+msgid "A Map was deleted"
+msgstr "Bir harita silindi"
+
+#: geonode/maps/apps.py:56
+msgid "Rating for Map"
+msgstr "Harita için Değerlendirme"
+
+#: geonode/maps/apps.py:57
+msgid "A rating was given to a map"
+msgstr "Bir haritaya değerlendirme verildi."
+
+#: geonode/maps/contants.py:24
+msgid "You are not permitted to delete this map."
+msgstr "Bu haritayı silme izniniz yok."
+
+#: geonode/maps/contants.py:25
+msgid "You do not have permissions for this map."
+msgstr "Bu harita için izinleriniz yok."
+
+#: geonode/maps/contants.py:26
+msgid "You must be logged in to save this map"
+msgstr "Bu haritayı kaydetmek için giriş yapmalısınız."
+
+#: geonode/maps/contants.py:27
+msgid "You are not permitted to save or edit this map."
+msgstr "Bu haritayı kaydetme veya düzenleme izniniz yok."
+
+#: geonode/maps/contants.py:28
+msgid "You are not allowed to modify this map's metadata."
+msgstr "Bu haritanın meta verilerini değiştirme izniniz yok."
+
+#: geonode/maps/contants.py:29
+msgid "You are not allowed to view this map."
+msgstr "Bu haritayı görüntüleme izniniz yok."
+
+#: geonode/maps/contants.py:30
+msgid "An unknown error has occured."
+msgstr "Bilinmeyen bir hata oluştu."
+
+#: geonode/maps/models.py:47
+msgid "Site URL"
+msgstr "Site URL'si"
+
+#: geonode/maps/models.py:51
+msgid "Featured Map URL"
+msgstr "Öne Çıkan Harita URL'si"
+
+#: geonode/maps/models.py:219
+msgid "name"
+msgstr "isim"
+
+#: geonode/maps/models.py:222
+msgid "store"
+msgstr "depo"
+
+#: geonode/maps/models.py:228
+msgid "current style"
+msgstr "mevcut stil"
+
+#: geonode/metadata/handlers/contact.py:76
+#: geonode/metadata/handlers/contact.py:93
+msgid "User id"
+msgstr "Kullanıcı kimliği"
+
+#: geonode/metadata/handlers/contact.py:80
+#: geonode/metadata/handlers/contact.py:98
+msgid "User name"
+msgstr "Kullanıcı adı"
+
+#: geonode/metadata/handlers/hkeyword.py:37
+msgid "Hierarchical keywords"
+msgstr "Hiyerarşik anahtar kelimeler"
+
+#: geonode/metadata/handlers/linkedresource.py:36
+#: geonode/metadata/tests/test_handlers.py:985
+msgid "Related resources"
+msgstr "İlgili kaynaklar"
+
+#: geonode/metadata/handlers/linkedresource.py:37
+#: geonode/metadata/tests/test_handlers.py:986
+msgid "Resources related to this one"
+msgstr "Bu kaynağa ilişkin kaynaklar"
+
+#: geonode/metadata/handlers/thesaurus.py:123
+msgid "Keywords from Thesaurus"
+msgstr "Tezaurustan Anahtar Kelimeler"
+
+#: geonode/metadata/handlers/thesaurus.py:124
+msgid "List of keywords from Thesaurus"
+msgstr "Tezaurustan Anahtar Kelimeler Listesi"
+
+#: geonode/metadata/tests/test_handlers.py:728
+msgid "Fake frequency 1"
+msgstr "Sahte frekans 1"
+
+#: geonode/metadata/tests/test_handlers.py:729
+msgid "Fake frequency 2"
+msgstr "Sahte frekans 2"
+
+#: geonode/metadata/tests/test_handlers.py:730
+msgid "Fake frequency 3"
+msgstr "Sahte frekans 3"
+
+#: geonode/metadata/tests/tests.py:300 geonode/metadata/tests/tests.py:314
+msgid "fake category 1"
+msgstr "sahte kategori 1"
+
+#: geonode/metadata/tests/tests.py:301 geonode/metadata/tests/tests.py:315
+#: geonode/metadata/tests/tests.py:328
+msgid "fake category 2"
+msgstr "sahte kategori 2"
+
+#: geonode/metadata/tests/tests.py:354 geonode/metadata/tests/tests.py:368
+msgid "fake license 1"
+msgstr "sahte lisans 1"
+
+#: geonode/metadata/tests/tests.py:355 geonode/metadata/tests/tests.py:369
+#: geonode/metadata/tests/tests.py:382
+msgid "fake license 2"
+msgstr "sahte lisans 2"
+
+#: geonode/people/admin.py:54
+msgid "Personal info"
+msgstr "Kişisel bilgi"
+
+#: geonode/people/admin.py:56
+msgid "Important dates"
+msgstr "Önemli tarihler"
+
+#: geonode/people/admin.py:58
+msgid "Extended profile"
+msgstr "Genişletilmiş profil"
+
+#: geonode/people/admin.py:166
+msgid "Password changed successfully."
+msgstr "Şifre başarıyla değiştirildi."
+
+#: geonode/people/admin.py:176
+#, python-format
+msgid "Change password: %s"
+msgstr "Şifre değiştir: %s"
+
+#: geonode/people/apps.py:29
+msgid "User following you"
+msgstr "Seni takip eden kullanıcı"
+
+#: geonode/people/apps.py:30
+msgid "Another user has started following you"
+msgstr "Başka bir kullanıcı seni takip etmeye başladı."
+
+#: geonode/people/apps.py:34
+msgid "User requested access"
+msgstr "Kullanıcı erişim talep etti."
+
+#: geonode/people/apps.py:35
+msgid "A new user has requested access to the site"
+msgstr "Yeni bir kullanıcı siteye erişim talep etti."
+
+#: geonode/people/apps.py:39
+msgid "Account activated"
+msgstr "Hesap etkinleştirildi."
+
+#: geonode/people/apps.py:40
+msgid "This account is now active and can log in the site"
+msgstr "Bu hesap artık aktiftir ve siteye giriş yapabilir."
+
+#: geonode/people/enumerations.py:22
+msgid "party who authored the resource"
+msgstr "kaynağı oluşturan taraf"
+
+#: geonode/people/enumerations.py:23
+msgid ""
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+msgstr ""
+"Verileri, kaynağın değiştirildiği bir şekilde işleyen taraf"
+"değiştirilmiş"
+
+#: geonode/people/enumerations.py:24
+msgid "party who published the resource"
+msgstr "kaynağı yayımlayan taraf"
+
+#: geonode/people/enumerations.py:28
+msgid ""
+"party that accepts accountability and responsibility for the data and "
+"ensures         appropriate care and maintenance of the resource"
+msgstr ""
+"Veri için hesap verebilirlik ve sorumluluk kabul eden taraf ve "
+"kaynağın uygun bakım ve korunmasını sağlar"
+
+#: geonode/people/enumerations.py:32
+msgid ""
+"party who can be contacted for acquiring knowledge about or acquisition of "
+"the resource"
+msgstr "kaynağın edinilmesi veya hakkında bilgi edinilmesi için iletişim kurulabilecek taraf"
+
+#: geonode/people/enumerations.py:33
+msgid "party who distributes the resource"
+msgstr "kaynağı dağıtan taraf"
+
+#: geonode/people/enumerations.py:34
+msgid "party who uses the resource"
+msgstr "kaynağı kullanan taraf"
+
+#: geonode/people/enumerations.py:35
+msgid "party that supplies the resource"
+msgstr "kaynağı sağlayan taraf"
+
+#: geonode/people/enumerations.py:36
+msgid "party who created the resource"
+msgstr "kaynağı oluşturan taraf"
+
+#: geonode/people/enumerations.py:37
+msgid "party that owns the resource"
+msgstr "kaynağına sahip olan taraf"
+
+#: geonode/people/enumerations.py:38
+msgid "key party responsible for gathering information and conducting research"
+msgstr "bilgi toplama ve araştırma yapma sorumluluğu olan ana taraf"
+
+#: geonode/people/forms/__init__.py:44
+msgid "Email Address"
+msgstr "E-posta Adresi"
+
+#: geonode/people/models.py:73
+msgid "Organization Name"
+msgstr "Organizasyon Adı"
+
+#: geonode/people/models.py:77
+msgid "name of the responsible organization"
+msgstr "sorumlu organizasyonun adı"
+
+#: geonode/people/models.py:79
+msgid "Profile"
+msgstr "Profil"
+
+#: geonode/people/models.py:79
+msgid "introduce yourself"
+msgstr "kendinizi tanıtın"
+
+#: geonode/people/models.py:81
+#: geonode/people/templates/people/profile_detail.html:85
+msgid "Position Name"
+msgstr "Pozisyon Adı"
+
+#: geonode/people/models.py:85
+msgid "role or position of the responsible person"
+msgstr "sorumlu kişinin rolü veya pozisyonu"
+
+#: geonode/people/models.py:88
+#: geonode/people/templates/people/profile_detail.html:93
+msgid "Voice"
+msgstr "Ses"
+
+#: geonode/people/models.py:92
+msgid ""
+"telephone number by which individuals can speak to the responsible "
+"organization or individual"
+msgstr "sorumlu organizasyon veya birey ile konuşmak için kullanılacak telefon numarası"
+
+#: geonode/people/models.py:95
+msgid "Facsimile"
+msgstr "Faks"
+
+#: geonode/people/models.py:99
+msgid ""
+"telephone number of a facsimile machine for the responsible organization or "
+"individual"
+msgstr "sorumlu organizasyon veya birey için bir faks makinesinin telefon numarası"
+
+#: geonode/people/models.py:102
+msgid "Delivery Point"
+msgstr "Teslim Noktası"
+
+#: geonode/people/models.py:106
+msgid ""
+"physical and email address at which the organization or individual may be "
+"contacted"
+msgstr ""
+"organizasyon veya bireyin iletişim kurulabileceği fiziksel ve e-posta adresi"
+
+#: geonode/people/models.py:108
+msgid "City"
+msgstr "Şehir"
+
+#: geonode/people/models.py:108
+msgid "city of the location"
+msgstr "konumun şehri"
+
+#: geonode/people/models.py:110
+msgid "Administrative Area"
+msgstr "İdari Bölge"
+
+#: geonode/people/models.py:110
+msgid "state, province of the location"
+msgstr "konumun eyaleti, ili"
+
+#: geonode/people/models.py:113
+msgid "Postal Code"
+msgstr "Posta Kodu"
+
+#: geonode/people/models.py:113
+msgid "ZIP or other postal code"
+msgstr "ZIP veya diğer posta kodu"
+
+#: geonode/people/models.py:116
+msgid "Country"
+msgstr "Ülke"
+
+#: geonode/people/models.py:121
+msgid "country of the physical address"
+msgstr "fiziksel adresin ülkesi"
+
+#: geonode/people/models.py:132
+msgid "Timezone"
+msgstr "Saat Dilimi"
+
+#: geonode/people/password_validators.py:14
+msgid "The password must contain at least"
+msgstr "Şifre en az"
+
+#: geonode/people/password_validators.py:20
+msgid "Your password must contain at least"
+msgstr "Şifreniz en az"
+
+#: geonode/people/password_validators.py:28
+msgid ""
+"The password must contain at least                     1 uppercase letter, A-"
+"Z."
+msgstr ""
+"Şifre en az 1 büyük harf içermelidir, A-"
+"Z."
+#: geonode/people/password_validators.py:35
+msgid "Your password must contain at least 1 uppercase letter, A-Z."
+msgstr "Şifreniz en az 1 büyük harf içermelidir, A-Z."
+
+#: geonode/people/password_validators.py:43
+msgid ""
+"The password must contain at least                     1 lowercase letter, a-"
+"z."
+msgstr ""
+"Şifre en az 1 küçük harf içermelidir, a-z."
+#: geonode/people/password_validators.py:50
+msgid "Your password must contain at least 1 lowercase letter, a-z."
+msgstr "Şifreniz en az 1 küçük harf içermelidir, a-z."
+
+#: geonode/people/password_validators.py:58
+msgid ""
+"The password must contain at least                     1 symbol, @#$%^&*()[]"
+"{}+=`:\";'<>?,./."
+msgstr ""
+"Şifre en az 1 sembol içermelidir, @#$%^&*()[]"
+"{}+=`:\";'<>?,./."
+
+#: geonode/people/password_validators.py:66
+msgid ""
+"Your password must contain at least                 1 symbol, @#$%^&*()[]"
+"{}+=`:\";'<>?,./."
+msgstr ""
+"Şifreniz en az 1 sembol içermelidir, @#$%^&*()[]"
+"{}+=`:\";'<>?,./."
+
+#: geonode/people/templates/people/_profile_about_item.html:19
+msgid "No Group"
+msgstr "Grup Yok"
+
+#: geonode/people/templates/people/_profile_filters.html:4
+msgid "All contents"
+msgstr "Tüm içerikler"
+
+#: geonode/people/templates/people/_profile_list_item.html:18
+msgid "No Organization Info"
+msgstr "Organizasyon Bilgisi Yok"
+
+#: geonode/people/templates/people/avatar/add.html:6
+msgid "Add Avatar"
+msgstr "Avatar Ekle"
+
+#: geonode/people/templates/people/avatar/add.html:10
+#: geonode/people/templates/people/avatar/change.html:11
+msgid "Your current avatar: "
+msgstr "Mevcut avatarınız: "
+
+#: geonode/people/templates/people/avatar/add.html:13
+#: geonode/people/templates/people/avatar/change.html:14
+msgid "You haven't uploaded an avatar yet. Please upload one now."
+msgstr "Henüz bir avatar yüklemediniz. Lütfen şimdi bir tane yükleyin."
+
+#: geonode/people/templates/people/avatar/add.html:16
+#: geonode/people/templates/people/avatar/change.html:31
+msgid "Add new avatar"
+msgstr "Yeni avatar ekle"
+
+#: geonode/people/templates/people/avatar/add.html:21
+#: geonode/people/templates/people/avatar/change.html:36
+msgid "Upload New Image"
+msgstr "Yeni Resim Yükle"
+
+#: geonode/people/templates/people/avatar/add.html:22
+#: geonode/people/templates/people/avatar/change.html:26
+#: geonode/people/templates/people/avatar/change.html:37
+#: geonode/people/templates/people/avatar/confirm_delete.html:20
+msgid "Go back to Edit Your Profile"
+msgstr "Profilinizi Düzenlemeye Geri Dön"
+
+#: geonode/people/templates/people/avatar/change.html:7
+msgid "Change Avatar"
+msgstr "Avatar Değiştir"
+
+#: geonode/people/templates/people/avatar/change.html:17
+msgid "Select default avatar"
+msgstr "Varsayılan avatarı seç"
+
+#: geonode/people/templates/people/avatar/change.html:24
+msgid "Choose new Default"
+msgstr "Yeni Varsayılanı Seç"
+
+#: geonode/people/templates/people/avatar/change.html:25
+msgid "Delete avatar"
+msgstr "Avatarı Sil"
+
+#: geonode/people/templates/people/avatar/confirm_delete.html:6
+msgid "Delete Avatar"
+msgstr "Avatarı Sil"
+
+#: geonode/people/templates/people/avatar/confirm_delete.html:12
+#, python-format
+msgid ""
+"You have no avatars to delete. Please <a "
+"href=\"%(avatar_change_url)s\">upload one</a> now."
+msgstr "" 
+"Silinecek avatarınız yok. Lütfen <a "
+"href=\"%(avatar_change_url)s\">bir tane yükleyin</a>."
+
+#: geonode/people/templates/people/avatar/confirm_delete.html:14
+msgid "Please select the avatars that you would like to delete."
+msgstr "Silmek istediğiniz avatarları seçin."
+
+#: geonode/people/templates/people/avatar/confirm_delete.html:19
+msgid "Delete These"
+msgstr "Bunları Sil"
+
+#: geonode/people/templates/people/forgot_username_form.html:6
+msgid "Forgot Username"
+msgstr "Kullanıcı Adını Unuttum"
+
+#: geonode/people/templates/people/forgot_username_form.html:10
+msgid ""
+"Enter your email address and click the submit button. <br />Your username "
+"will be sent to you."
+msgstr ""
+"Email adresinizi girin ve gönder butonuna tıklayın. <br />Kullanıcı adınız "
+"size gönderilecektir."
+
+#: geonode/people/templates/people/profile_create.html:8
+#: geonode/people/templates/people/profile_create.html:14
+msgid "Create Profile"
+msgstr "Profil Oluştur"
+
+#: geonode/people/templates/people/profile_detail.html:8
+msgid "Profile of "
+msgstr "Profil "
+
+#: geonode/people/templates/people/profile_detail.html:72
+#: geonode/people/templates/people/profile_detail.html:78
+#: geonode/people/templates/people/profile_detail.html:82
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:90
+#: geonode/people/templates/people/profile_detail.html:102
+#: geonode/people/templates/people/profile_detail.html:119
+msgid "Not provided."
+msgstr "Sağlanmadı."
+
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:118
+msgid "Organization"
+msgstr "Organizasyon"
+
+#: geonode/people/templates/people/profile_detail.html:97
+#: geonode/people/templates/people/profile_detail.html:112
+#: geonode/services/serviceprocessors/arcgis.py:129
+#: geonode/services/serviceprocessors/wms.py:151
+msgid "Not provided"
+msgstr "Sağlanmadı"
+
+#: geonode/people/templates/people/profile_detail.html:101
+msgid "Fax"
+msgstr "Faks"
+
+#: geonode/people/templates/people/profile_detail.html:132
+msgid "User layers WMS GetCapabilities document"
+msgstr "Kullanıcı katmanları WMS GetCapabilities belgesi"
+
+#: geonode/people/templates/people/profile_detail.html:140
+#: geonode/people/templates/people/profile_detail.html:173
+msgid "Edit profile"
+msgstr "Profili Düzenle"
+
+#: geonode/people/templates/people/profile_detail.html:143
+msgid "Connected social accounts"
+msgstr "Bağlı sosyal hesaplar"
+
+#: geonode/people/templates/people/profile_detail.html:145
+msgid "Associated e-mails"
+msgstr "İlişkili e-postalar"
+
+#: geonode/people/templates/people/profile_detail.html:147
+msgid "Set/Change password"
+msgstr "Şifreyi Ayarla/Degiştir"
+
+#: geonode/people/templates/people/profile_detail.html:151
+msgid "My Activities"
+msgstr "Aktivitelerim"
+
+#: geonode/people/templates/people/profile_detail.html:155
+msgid "Notifications"
+msgstr "Bildirimler"
+
+#: geonode/people/templates/people/profile_detail.html:158
+#: geonode/templates/announcements/announcement_list.html:5
+#: geonode/templates/announcements/announcement_list.html:14
+msgid "Announcements"
+msgstr "Duyurular"
+
+#: geonode/people/templates/people/profile_detail.html:163
+#: geonode/templates/invitations/forms/_invite.html:7
+msgid "Invite Users"
+msgstr "Kullanıcı Davet Et"
+
+#: geonode/people/templates/people/profile_detail.html:166
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/people/templates/people/profile_detail.html:167
+msgid "Admin"
+msgstr "Yönetici"
+
+#: geonode/people/templates/people/profile_detail.html:177
+msgid "User Activities"
+msgstr "Kullanıcı Aktiviteleri"
+
+#: geonode/people/templates/people/profile_detail.html:183
+msgid "Resources"
+msgstr "Kaynaklar"
+
+#: geonode/people/templates/people/profile_edit.html:11
+msgid "Edit Your Profile"
+msgstr "Profilinizi Düzenleyin"
+
+#: geonode/people/templates/people/profile_edit.html:13
+msgid "Edit Profile for"
+msgstr "Profili Düzenle"
+
+#: geonode/people/templates/people/profile_edit.html:20
+msgid "Change your avatar"
+msgstr "Avatarınızı Değiştirin"
+
+#: geonode/people/templates/people/profile_edit.html:41
+msgid "Update profile"
+msgstr "Profili Güncelle"
+
+#: geonode/people/templates/people/profile_list.html:4
+#: geonode/people/templates/people/profile_list.html:10
+msgid "Explore People"
+msgstr "İnsanları Keşfet"
+
+#: geonode/people/views.py:130
+#, python-brace-format
+msgid "Your username for {site.name}"
+msgstr "{site.name} için kullanıcı adınız"
+
+#: geonode/people/views.py:147
+msgid "Your username has been emailed to you."
+msgstr "Kullanıcı adınız e-posta ile gönderildi."
+
+#: geonode/people/views.py:149
+msgid "No user could be found with that email address."
+msgstr "Bu e-posta adresiyle eşleşen bir kullanıcı bulunamadı."
+
+#: geonode/proxy/templatetags/proxy_lib_tags.py:39 geonode/proxy/views.py:236
+msgid "You are not permitted to save or edit this resource."
+msgstr "Bu kaynağı kaydetme veya düzenleme izniniz yok."
+
+#: geonode/proxy/views.py:235
+msgid "You are not authorized to download this resource."
+msgstr "Bu kaynağı indirme izniniz yok."
+
+#: geonode/proxy/views.py:237
+msgid ""
+"No files have been found for this resource. Please, contact a system "
+"administrator."
+msgstr "Bu kaynağa ait dosya bulunamadı. Lütfen bir sistem yöneticisi ile iletişime geçin."
+
+#: geonode/proxy/views.py:256 geonode/proxy/views.py:267
+#: geonode/proxy/views.py:295
+msgid "No files found."
+msgstr "Hiçbir dosya bulunamadı."
+
+#: geonode/proxy/views.py:302
+msgid "Not Authorized"
+msgstr "Yetkisiz"
+
+#: geonode/resource/api/tasks.py:147
+#, python-brace-format
+msgid "Error occurred while executing the operation: '{_request.func_name}'"
+msgstr "İşlem sırasında hata oluştu: '{_request.func_name}'"
+
+#: geonode/resource/api/tasks.py:154
+#, python-brace-format
+msgid "Could not find the operation name: '{_request.func_name}'"
+msgstr "İşlem adı bulunamadı: '{_request.func_name}'"
+
+#: geonode/resource/enumerator.py:24
+msgid "import"
+msgstr "import"
+
+#: geonode/resource/enumerator.py:25
+msgid "upload"
+msgstr "upload"
+
+#: geonode/resource/enumerator.py:26
+msgid "create"
+msgstr "create"
+
+#: geonode/resource/enumerator.py:27
+msgid "copy"
+msgstr "copy"
+
+#: geonode/resource/enumerator.py:28
+msgid "delete"
+msgstr "delete"
+
+#: geonode/resource/enumerator.py:29
+msgid "permissions"
+msgstr "permissions"
+
+#: geonode/resource/enumerator.py:30
+msgid "update"
+msgstr "update"
+
+#: geonode/resource/enumerator.py:31
+msgid "ingest"
+msgstr "ingest"
+
+#: geonode/resource/enumerator.py:32
+msgid "harvest"
+msgstr "harvest"
+
+#: geonode/resource/enumerator.py:33
+msgid "unknown"
+msgstr "unknown"
+
+#: geonode/resource/models.py:35
+msgid "failed"
+msgstr "failed"
+
+#: geonode/resource/models.py:36
+msgid "running"
+msgstr "running"
+
+#: geonode/resource/models.py:37
+msgid "finished"
+msgstr "finished"
+
+#: geonode/resource/processing/apps.py:26
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode Kaynak İşleme Kütüphanesi"
+
+#: geonode/resource/processing/models.py:46
+#: geonode/resource/processing/models.py:61
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr "Bu Görevi devre dışı bırakmak, İşleme İş Akışının bunu atlamasına neden olacaktır."
+
+#: geonode/resource/processing/models.py:82
+msgid "Processing Workflow Tasks"
+msgstr "İşleme İş Akışı Görevleri"
+
+#: geonode/security/middleware.py:139
+msgid "Session is Expired. Please login again!"
+msgstr "Oturum süresi doldu. Lütfen tekrar giriş yapın!"
+
+#: geonode/security/middleware.py:186
+#, python-brace-format
+msgid "Admin access forbidden from {visitor_ip}"
+msgstr "Yönetici erişimi {visitor_ip} adresinden yasaklandı."
+
+#: geonode/security/views.py:63
+msgid "Permissions successfully updated!"
+msgstr "İzinler başarıyla güncellendi!"
+
+#: geonode/security/views.py:81
+#, python-brace-format
+msgid ""
+"User {username} has download permissions but cannot access the resource. "
+"Please update permission consistently!"
+msgstr "Kullanıcı {username} indirme izinlerine sahip ancak kaynağa erişemiyor. "
+"Lütfen izinleri tutarlı bir şekilde güncelleyin!"
+
+#: geonode/security/views.py:92
+msgid "Error updating permissions :("
+msgstr "İzinleri güncellerken hata oluştu :("
+
+#: geonode/security/views.py:105
+msgid "You are not allowed to change permissions for this resource"
+msgstr "Bu kaynak için izinleri değiştirme izniniz yok"
+
+#: geonode/security/views.py:226
+msgid "Security Rules Cache Refreshed!"
+msgstr "Güvenlik Kuralları Önbelleği Yenilendi!"
+
+#: geonode/security/views.py:233 geonode/security/views.py:295
+msgid "You cannot modify this resource!"
+msgstr "Bu kaynağı değiştiremezsiniz!"
+
+#: geonode/security/views.py:289
+msgid "Attributes/Stats Refreshed Successfully!"
+msgstr "Öznitelikler/İstatistikler Başarıyla Yenilendi!"
+
+#: geonode/security/views.py:352
+msgid "Wrong permissions specification"
+msgstr "Yanlış izinler spesifikasyonu"
+
+#: geonode/security/views.py:377
+msgid "error delivering notification"
+msgstr "Bildirim gönderilirken hata oluştu"
+
+#: geonode/services/forms.py:38
+msgid "Service URL"
+msgstr "Hizmet URL'si"
+
+#: geonode/services/forms.py:45
+msgid "Service Type"
+msgstr "Hizmet Türü"
+
+#: geonode/services/forms.py:53
+msgid "Username (optional)"
+msgstr "Kullanıcı Adı (isteğe bağlı)"
+
+#: geonode/services/forms.py:61
+msgid "password (optional)"
+msgstr "şifre (isteğe bağlı)"
+
+#: geonode/services/forms.py:70
+#, python-format
+msgid "Service %(url)s is already registered"
+msgstr "Hizmet %(url)s zaten kaydedilmiş"
+
+#: geonode/services/forms.py:88 geonode/services/forms.py:90
+#, python-format
+msgid "Could not connect to the service at %(url)s"
+msgstr "Hizmete bağlanılamadı: %(url)s"
+
+#: geonode/services/forms.py:94
+#, python-format
+msgid "Found service of type %(found_type)s instead of %(service_type)s"
+msgstr "Hizmet türü %(found_type)s bulundu, ancak beklenen tür %(service_type)s idi."
+
+#: geonode/services/models.py:55
+msgid "Local"
+msgstr "Yerel"
+
+#: geonode/services/models.py:56
+msgid "Cascaded"
+msgstr "Kaskadlı"
+
+#: geonode/services/models.py:57
+msgid "Harvested"
+msgstr "Hasat Edilmiş"
+
+#: geonode/services/models.py:58
+msgid "Indexed"
+msgstr "İndekslenmiş"
+
+#: geonode/services/models.py:59
+msgid "Live"
+msgstr "Canlı"
+
+#: geonode/services/models.py:60
+msgid "OpenGeoPortal"
+msgstr "OpenGeoPortal"
+
+#: geonode/services/models.py:72
+msgid "password"
+msgstr "şifre"
+
+#: geonode/services/serviceprocessors/__init__.py:39
+msgid "Web Map Service"
+msgstr "Web Harita Servisi"
+
+#: geonode/services/serviceprocessors/__init__.py:43
+msgid "GeoNode (Web Map Service)"
+msgstr "GeoNode (Web Harita Servisi)"
+
+#: geonode/services/serviceprocessors/__init__.py:47
+msgid "ArcGIS REST MapServer"
+msgstr "ArcGIS REST Harita Sunucusu"
+
+#: geonode/services/serviceprocessors/__init__.py:51
+msgid "ArcGIS REST ImageServer"
+msgstr "ArcGIS REST Görüntü Sunucusu"
+
+#: geonode/services/templates/services/remote_service_unavailable.html:5
+msgid "Remote service unavailable"
+msgstr "Uzak hizmet kullanılamıyor"
+
+#: geonode/services/templates/services/remote_service_unavailable.html:9
+msgid "Service unavailable"
+msgstr "Hizmet kullanılamıyor"
+
+#: geonode/services/templates/services/remote_service_unavailable.html:11
+msgid "Could not contact"
+msgstr "İletişim kurulamadı"
+
+#: geonode/services/templates/services/service_detail.html:12
+msgid "Contact"
+msgstr "İletişim"
+
+#: geonode/services/templates/services/service_detail.html:17
+msgid "Service Resources"
+msgstr "Hizmet Kaynakları"
+
+#: geonode/services/templates/services/service_detail.html:22
+msgid "Resource harvesting in progress..."
+msgstr "Kaynak hasadı devam ediyor..."
+
+#: geonode/services/templates/services/service_detail.html:31
+msgid "No resources have been imported yet."
+msgstr "Henüz hiçbir kaynak içe aktarılmadı."
+
+#: geonode/services/templates/services/service_detail.html:59
+#: geonode/services/templates/services/service_detail.html:61
+#: geonode/services/templates/services/service_resources_harvest.html:90
+#: geonode/services/templates/services/service_resources_harvest.html:92
+msgid "previous"
+msgstr "önceki"
+
+#: geonode/services/templates/services/service_detail.html:65
+#: geonode/services/templates/services/service_detail.html:67
+#: geonode/services/templates/services/service_resources_harvest.html:97
+#: geonode/services/templates/services/service_resources_harvest.html:100
+msgid "Next"
+msgstr "Sonraki"
+
+#: geonode/services/templates/services/service_detail.html:65
+#: geonode/services/templates/services/service_detail.html:67
+#: geonode/services/templates/services/service_resources_harvest.html:98
+#: geonode/services/templates/services/service_resources_harvest.html:100
+msgid "next"
+msgstr "sonraki"
+
+#: geonode/services/templates/services/service_detail.html:78
+#: geonode/services/templates/services/service_register.html:68
+#: geonode/services/templates/services/service_resources_harvest.html:115
+msgid "Connecting to service..."
+msgstr "Hizmete bağlanılıyor..."
+
+#: geonode/services/templates/services/service_detail.html:100
+msgid "Edit Service Metadata"
+msgstr "Hizmet Meta Verisini Düzenle"
+
+#: geonode/services/templates/services/service_detail.html:103
+msgid "Import Service Resources"
+msgstr "Hizmet Kaynaklarını İçe Aktar"
+
+#: geonode/services/templates/services/service_detail.html:106
+msgid "Remove Service"
+msgstr "Hizmeti Kaldır"
+
+#: geonode/services/templates/services/service_edit.html:11
+#: geonode/services/templates/services/service_edit.html:15
+msgid "Edit Service"
+msgstr "Hizmeti Düzenle"
+
+#: geonode/services/templates/services/service_list.html:5
+msgid "Services"
+msgstr "Hizmetler"
+
+#: geonode/services/templates/services/service_list.html:10
+msgid "Add Remote Service"
+msgstr "Uzak Hizmet Ekle"
+
+#: geonode/services/templates/services/service_list.html:12
+msgid "Remote Services"
+msgstr "Uzak Hizmetler"
+
+#: geonode/services/templates/services/service_list.html:21
+msgid "Protected (wms only)"
+msgstr "Korunan (sadece wms)"
+
+#: geonode/services/templates/services/service_list.html:39
+msgid "No services registered"
+msgstr "Hiçbir hizmet kaydedilmedi"
+
+#: geonode/services/templates/services/service_register.html:9
+msgid "Register Service"
+msgstr "Hizmet Kaydet"
+
+#: geonode/services/templates/services/service_register.html:13
+msgid "Register New Service"
+msgstr "Yeni Hizmet Kaydet"
+
+#: geonode/services/templates/services/service_remove.html:8
+msgid "Remove Remote Service"
+msgstr "Uzak Hizmeti Kaldır"
+
+#: geonode/services/templates/services/service_remove.html:12
+msgid "Are you sure you want to remove"
+msgstr "Kaldırmak istediğinize emin misiniz?"
+
+#: geonode/services/templates/services/service_remove.html:27
+msgid "Deleting service and its associated resources..."
+msgstr "Hizmet ve ilişkili kaynakları siliniyor..."
+
+#: geonode/services/templates/services/service_resources_harvest.html:7
+msgid "Import resources"
+msgstr "Kaynakları İçe Aktar"
+
+#: geonode/services/templates/services/service_resources_harvest.html:15
+msgid "no"
+msgstr "hayır"
+
+#: geonode/services/templates/services/service_resources_harvest.html:16
+msgid "resources can be imported"
+msgstr "kaynaklar içe aktarılabilir"
+
+#: geonode/services/templates/services/service_resources_harvest.html:18
+msgid "- These will be cascaded through your local geoserver instance"
+msgstr "- Bunlar yerel geoserver örneğinize kaskadlanacaktır."
+
+#: geonode/services/templates/services/service_resources_harvest.html:75
+msgid "Clear Filter"
+msgstr "Filtreyi Temizle"
+
+#: geonode/services/templates/services/service_resources_harvest.html:77
+msgid "Back to service details"
+msgstr "Hizmet detaylarına geri dön"
+
+#: geonode/services/templates/services/service_resources_harvest.html:79
+msgid "Import Resources"
+msgstr "Kaynakları İçe Aktar"
+
+#: geonode/services/templates/services/service_resources_harvest.html:89
+#: geonode/services/templates/services/service_resources_harvest.html:92
+msgid "Previous"
+msgstr "Önceki"
+
+#: geonode/services/templates/services/service_resources_harvest.html:108
+msgid "All resources have already been imported"
+msgstr "Tüm kaynaklar zaten içe aktarılmıştır."
+
+#: geonode/services/templates/services/service_resources_harvest.html:133
+msgid "Harvesting resources..."
+msgstr "Kaynaklar toplanıyor..."
+
+#: geonode/services/templates/services/service_resources_harvest.html:162
+msgid "Re-scan Service for new Resources"
+msgstr "Yeni Kaynaklar için Hizmeti Yeniden Tara"
+
+#: geonode/services/views.py:79
+msgid "Service registered successfully"
+msgstr "Hizmet başarıyla kaydedildi"
+
+#: geonode/services/views.py:177
+msgid "The selected resources are being imported"
+msgstr "Seçilen kaynaklar içe aktarılıyor"
+
+#: geonode/services/views.py:178
+msgid "The selected resources have been imported"
+msgstr "Seçilen kaynaklar içe aktarıldı"
+
+#: geonode/services/views.py:215
+#, python-brace-format
+msgid "Resource {resource_id} is being processed"
+msgstr "Kaynak {resource_id} işleniyor"
+
+#: geonode/services/views.py:236
+msgid "Service rescanned successfully"
+msgstr "Hizmet başarıyla yeniden tarandı"
+
+#: geonode/services/views.py:247
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Kaynak detayını görüntülemek için yeterli izniniz yok"
+
+#: geonode/services/views.py:316
+msgid "You are not permitted to change this service."
+msgstr "Bu hizmeti değiştirmek için izniniz yok."
+
+#: geonode/services/views.py:342
+msgid "You are not permitted to remove this service."
+msgstr "Bu hizmeti kaldırmak için izniniz yok."
+
+#: geonode/services/views.py:353
+#, python-brace-format
+msgid "Service {service.title} has been deleted"
+msgstr "Hizmet {service.title} silindi"
+
+#: geonode/social/signals.py:66
+msgid "created"
+msgstr "oluşturuldu"
+
+#: geonode/social/signals.py:67 geonode/social/tests.py:124
+msgid "deleted"
+msgstr "silindi"
+
+#: geonode/social/signals.py:71
+msgid "updated"
+msgstr "güncellendi"
+
+#: geonode/social/signals.py:83 geonode/social/signals.py:88
+#: geonode/social/tests.py:96
+msgid "uploaded"
+msgstr "yüklendi"
+
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "önce"
+
+#: geonode/social/templates/social/activity_list.html:4
+#: geonode/social/templates/social/activity_list.html:15
+msgid "Recent activity"
+msgstr "Son etkinlikler"
+
+#: geonode/social/templatetags/social_tags.py:65
+msgid "to"
+msgstr "için"
+
+#: geonode/templates/401.html:10
+msgid "Not Permitted"
+msgstr "İzin Verilmedi"
+
+#: geonode/templates/401.html:20
+msgid ""
+"\n"
+"          You are not allowed to perform this operation.\n"
+"      "
+msgstr ""
+"\n"
+" Bu işlemi gerçekleştirmenize izin verilmiyor.\n"
+" "
+
+#: geonode/templates/401.html:26
+msgid "Please verify that you are logged in as the correct user."
+msgstr "Lütfen doğru kullanıcı olarak oturum açtığınızı doğrulayın."
+
+#: geonode/templates/401.html:28
+msgid "Please login or register and retry."
+msgstr "Lütfen oturum açın veya kaydolun ve tekrar deneyin."
+
+#: geonode/templates/404.html:5
+msgid "Page Not Found"
+msgstr "Sayfa Bulunamadı"
+
+#: geonode/templates/404.html:9
+msgid ""
+"\n"
+"          The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
+"      "
+msgstr ""
+"\n"
+" İstediğiniz sayfa mevcut değil. Belki de "
+"güncel olmayan bir yer imi kullanıyorsunuz?\n"
+" "
+#: geonode/templates/500.html:6
+msgid "There was a problem loading this page"
+msgstr "Bu sayfa yüklenirken bir sorun oluştu."
+
+#: geonode/templates/500.html:8
+msgid ""
+"\n"
+"  Please contact your GeoNode administrator (they may have received an email "
+"automatically if they configured it properly).\n"
+"  If you are the site administrator, enable debug mode to see the actual "
+"error and fix it or file an issue in <a href=\"http://github.com/GeoNode/"
+"geonode/issues\">GeoNode's issue tracker</a>\n"
+"  "
+msgstr ""
+"\n"
+" Lütfen GeoNode yöneticinizle iletişime geçin (doğru şekilde yapılandırdılarsa otomatik olarak bir e-posta almış olabilirler).\n"
+" Site yöneticisiyseniz, gerçek hatayı görmek ve düzeltmek için hata ayıklama modunu etkinleştirin veya <a href=\"http://github.com/GeoNode/"
+"geonode/issues\">GeoNode'un sorun izleyicisine</a> bir sorun bildirin.\n"
+" "
+
+#: geonode/templates/_status_message.html:4
+msgid "Placeholder for status-message"
+msgstr "Durum mesajı için yer tutucu"
+
+#: geonode/templates/_status_message.html:5
+msgid "Placeholder for status-message-body"
+msgstr "Durum mesajı gövdesi için yer tutucu"
+
+#: geonode/templates/about.html:4 geonode/templates/about.html:8
+msgid "About GeoNode"
+msgstr "GeoNode Hakkında"
+
+#: geonode/templates/about.html:11
+msgid ""
+"GeoNode is a geospatial content management system, a platform for the "
+"management and publication of geospatial data. It brings together mature and "
+"stable open-source software projects under a consistent and easy-to-use "
+"interface allowing non-specialized users to share data and create "
+"interactive maps."
+msgstr ""
+"GeoNode, coğrafi verilerin yönetimi ve yayınlanması için bir platform olan "
+"coğrafi bir içerik yönetim sistemidir. Olgun ve istikrarlı açık kaynaklı "
+" yazılım projelerini, uzman olmayan kullanıcıların veri paylaşmasına ve etkileşimli"
+" haritalar oluşturmasına olanak tanıyan tutarlı ve kullanımı kolay bir arayüz altında bir araya getirir."
+
+#: geonode/templates/about.html:14
+msgid ""
+"Data management tools built into GeoNode allow for integrated creation of "
+"data, metadata, and map visualizations. Each dataset in the system can be "
+"shared publicly or restricted to allow access to only specific users. Social "
+"features like user profiles and rating systems allow for the development of "
+"communities around each platform to facilitate the use, management, and "
+"quality control of the data the GeoNode instance contains."
+msgstr ""
+"GeoNode'a entegre veri yönetimi araçları, veri, meta veri ve harita görselleştirmelerinin "
+"entegre bir şekilde oluşturulmasına olanak tanır. "
+"Sistemdeki her veri kümesi herkese açık olarak paylaşılabilir veya yalnızca belirli "
+"kullanıcıların erişimine izin verecek şekilde kısıtlanabilir. "
+"Kullanıcı profilleri ve derecelendirme sistemleri gibi sosyal özellikler, "
+"GeoNode örneğinin içerdiği verilerin kullanımını, yönetimini ve kalite kontrolünü kolaylaştırmak için her platform etrafında toplulukların oluşturulmasına olanak tanır."
+
+
+#: geonode/templates/about.html:17
+msgid ""
+"It is also designed to be a flexible platform that software developers can "
+"extend, modify or integrate against to meet requirements in their own "
+"applications."
+msgstr ""
+"Ayrıca, yazılım geliştiricilerinin kendi uygulamalarındaki gereksinimleri karşılamak için genişletebilecekleri, değiştirebilecekleri veya entegre edebilecekleri esnek bir platform olacak şekilde tasarlanmıştır."
+
+#: geonode/templates/account/account_inactive.html:5
+#: geonode/templates/account/account_inactive.html:8
+msgid "Account Inactive"
+msgstr "Hesap Pasif"
+
+#: geonode/templates/account/account_inactive.html:10
+msgid "This account is inactive."
+msgstr "Bu hesap pasif."
+
+#: geonode/templates/account/admin_approval_needed.html:5
+#: geonode/templates/account/admin_approval_needed.html:10
+#: geonode/templates/account/admin_approval_sent.html:5
+#: geonode/templates/account/admin_approval_sent.html:10
+msgid "Account Pending Approval"
+msgstr "Hesap Onay Bekliyor"
+
+#: geonode/templates/account/admin_approval_needed.html:12
+msgid ""
+"The account email verification is enabled and the email associated with this "
+"account is invalid or not set.<br> We invite you to contact the "
+"administrator to reset the email."
+msgstr "Hesap e-posta doğrulaması etkinleştirildi ve bu hesapla ilişkili e-posta geçersiz veya ayarlanmamış.<br> E-postayı sıfırlamak için lütfen yöneticiyle iletişime geçin."
+
+#: geonode/templates/account/admin_approval_sent.html:13
+#, python-format
+msgid ""
+"We have sent the administrators a notice to approve your account associated "
+"with <b>%(email)s</b>. If the account is approved, you will receive a "
+"confirmation notice."
+msgstr "Bu hesapla ilişkili <b>%(email)s</b> e-posta adresinin onaylanması için yöneticilere bir bildirim gönderdik. Hesap onaylandığında, bir onay bildirimi alacaksınız."
+
+#: geonode/templates/account/email.html:5
+msgid "Account"
+msgstr "Hesap"
+
+#: geonode/templates/account/email.html:8
+msgid "E-mail Addresses"
+msgstr "E-posta Adresleri"
+
+#: geonode/templates/account/email.html:10
+msgid "The following e-mail addresses are associated with your account:"
+msgstr "Hesabınızla ilişkili aşağıdaki e-posta adresleri bulunmaktadır:"
+
+#: geonode/templates/account/email.html:24
+msgid "Verified"
+msgstr "Doğrulanmış"
+
+#: geonode/templates/account/email.html:26
+msgid "Unverified"
+msgstr "Doğrulanmamış"
+
+#: geonode/templates/account/email.html:28
+msgid "Primary"
+msgstr "Birincil"
+
+#: geonode/templates/account/email.html:34
+msgid "Make Primary"
+msgstr "Birincil Yap"
+
+#: geonode/templates/account/email.html:35
+msgid "Re-send Verification"
+msgstr "Doğrulamayı Yeniden Gönder"
+
+#: geonode/templates/account/email.html:43
+msgid "Warning:"
+msgstr "Uyarı:"
+
+#: geonode/templates/account/email.html:43
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, etc."
+msgstr "Bir e-posta adresi eklemelisiniz, böylece bildirimler alabilir, şifrenizi sıfırlayabilirsiniz, vb."
+
+#: geonode/templates/account/email.html:48
+msgid "Add E-mail Address"
+msgstr "E-posta Adresi Ekle"
+
+#: geonode/templates/account/email.html:53
+msgid "Add E-mail"
+msgstr "E-posta Ekle"
+
+#: geonode/templates/account/email.html:62
+msgid "Do you really want to remove the selected e-mail address?"
+msgstr "Seçilen e-posta adresini gerçekten kaldırmak istiyor musunuz?"
+
+#: geonode/templates/account/email/email_confirmation_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name|urlencode)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s\n"
+msgstr ""
+"%(site_name|urlencode)s'den merhaba!\n"
+"\n"
+"Bu e-postayı, %(user_display)s adlı kullanıcının hesabını bağlamak için e-posta adresi olarak sizinkini "
+"vermesi nedeniyle alıyorsunuz.\n"
+"\n"
+"Bunun doğru olduğunu onaylamak için %(activate_url)s adresine gidin\n"
+
+#: geonode/templates/account/email/email_confirmation_message.txt:7
+#, python-format
+msgid ""
+"Thank you from %(site_name|urlencode)s!\n"
+"%(site_domain)s"
+msgstr ""
+"%(site_name|urlencode)s'den teşekkürler!\n"
+"%(site_domain)s"
+#: geonode/templates/account/email/email_confirmation_subject.txt:1
+#, python-format
+msgid "Please confirm email address for %(site_name|urlencode)s"
+msgstr "Lütfen %(site_name|urlencode)s için e-posta adresini onaylayın."
+
+#: geonode/templates/account/email/invite_user.txt:1
+#, python-format
+msgid "You have been invited to sign up at %(site_name|urlencode)s."
+msgstr "Sizi %(site_name|urlencode)s'de kaydolmaya davet ettik."
+
+#: geonode/templates/account/email/invite_user_subject.txt:1
+#, python-format
+msgid "Create an account on %(site_name|urlencode)s"
+msgstr "Hesap oluşturun %(site_name|urlencode)s"
+
+#: geonode/templates/account/email/password_change.txt:1
+msgid ""
+"This is the email notification to confirm your password has been changed on"
+msgstr "Bu, şifrenizin değiştirildiğini onaylamak için gönderilen e-posta bildirimidir."
+
+#: geonode/templates/account/email/password_change_subject.txt:1
+msgid "Change password email notification"
+msgstr "Şifre değişikliği e-posta bildirimi"
+
+#: geonode/templates/account/email/password_reset_key.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name|urlencode)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"%(site_name|urlencode)s'dan merhaba!\n"
+"\n"
+"Bu e-postayı, siz veya başka biri kullanıcı hesabınız için bir "
+"şifre talep ettiği için alıyorsunuz.\n"
+"Şifre sıfırlama talebinde bulunmadıysanız, bu e-postayı güvenle göz ardı edebilirsiniz. Şifrenizi sıfırlamak için aşağıdaki "
+"bağlantıya tıklayın."
+
+#: geonode/templates/account/email/password_reset_key.txt:8
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr "Unuttuysanız, kullanıcı adınız %(username)s."
+
+#: geonode/templates/account/email/password_reset_key.txt:10
+#, python-format
+msgid ""
+"Thank you for using %(site_name|urlencode)s!\n"
+"%(site_domain)s"
+msgstr ""
+"%(site_name|urlencode)s'yi kullandığınız için teşekkür ederiz!\n"
+"%(site_domain)s"
+
+#: geonode/templates/account/email/password_reset_key_subject.txt:1
+msgid " Password reset"
+msgstr "Şifre sıfırlama"
+
+#: geonode/templates/account/email_confirm.html:6
+#: geonode/templates/account/email_confirm.html:10
+msgid "Confirm E-mail Address"
+msgstr "E-posta Adresini Onayla"
+
+#: geonode/templates/account/email_confirm.html:16
+#, python-format
+msgid ""
+"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
+"address for user %(user_display)s."
+msgstr ""
+"Lütfen <a href=\"mailto:%(email)s\">%(email)s</a> adresinin %(user_display)s adlı kullanıcıya ait bir e-posta adresi olduğunu onaylayın."
+#: geonode/templates/account/email_confirm.html:20
+msgid "Confirm"
+msgstr "Onayla"
+
+#: geonode/templates/account/email_confirm.html:27
+#, python-format
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"Bu e-posta onay bağlantısı süresi dolmuş veya geçersizdir. Lütfen <a "
+"href=\"%(email_url)s\">yeni bir e-posta onay talebi oluşturun</a>."
+
+#: geonode/templates/account/login.html:7
+msgid "Log in"
+msgstr "Giriş yap"
+
+#: geonode/templates/account/login.html:11
+msgid "Log in to an existing account"
+msgstr "Mevcut bir hesaba giriş yap"
+
+#: geonode/templates/account/login.html:20
+#, python-format
+msgid ""
+"Please sign in with one\n"
+"      of your existing third party accounts. Or, <a "
+"href=\"%(signup_url)s\">sign up</a>\n"
+"      for a %(site_name)s account and sign in below:"
+msgstr ""
+"Lütfen mevcut üçüncü taraf hesaplarınızdan biriyle oturum açın. Veya bir %(site_name)s hesabına <a "
+"href=\"%(signup_url)s\">kaydolun</a>\n"
+" ve aşağıdan oturum açın:"
+
+#: geonode/templates/account/login.html:28
+msgid "or"
+msgstr "veya"
+
+#: geonode/templates/account/login.html:34
+#, python-format
+msgid ""
+"If you have not created an account yet, then please\n"
+"      <a href=\"%(signup_url)s\">sign up</a> first."
+msgstr ""
+"Henüz bir hesap oluşturmadıysanız, lütfen önce\n"
+"      <a href=\"%(signup_url)s\">kaydolun</a>."
+
+#: geonode/templates/account/login.html:43
+msgid "Sign In"
+msgstr "Oturum Aç"
+
+#: geonode/templates/account/logout.html:5
+#: geonode/templates/account/logout.html:11
+#: geonode/templates/account/logout.html:16
+msgid "Log out"
+msgstr "Çıkış yap"
+
+#: geonode/templates/account/logout.html:14
+msgid "Are you sure you want to log out?"
+msgstr "Çıkış yapmak istediğinize emin misiniz?"
+
+#: geonode/templates/account/password_change.html:6
+msgid "Password change"
+msgstr "Şifre değişikliği"
+
+#: geonode/templates/account/password_change.html:10
+msgid "Password Change"
+msgstr "Şifre Değişikliği"
+
+#: geonode/templates/account/password_change.html:14
+msgid "Change your password here"
+msgstr "Şifrenizi buradan değiştirin."
+
+#: geonode/templates/account/password_change.html:20
+msgid "Change my password"
+msgstr "Şifremi değiştir"
+
+#: geonode/templates/account/password_reset.html:7
+msgid "Password reset"
+msgstr "Şifre sıfırlama"
+
+#: geonode/templates/account/password_reset.html:13
+#: geonode/templates/account/password_reset_done.html:6
+#: geonode/templates/account/password_reset_done.html:9
+msgid "Password Reset"
+msgstr "Şifre Sıfırlama"
+
+#: geonode/templates/account/password_reset.html:20
+msgid "Forgotten your password?"
+msgstr "Şifrenizi mi unuttunuz?"
+
+#: geonode/templates/account/password_reset.html:21
+msgid ""
+"Enter your email address below, and we'll send you an email allowing you to "
+"reset it."
+msgstr ""
+"Email adresinizi aşağıya girin, size şifrenizi sıfırlamanıza olanak tanıyan bir email göndereceğiz."
+
+#: geonode/templates/account/password_reset.html:27
+msgid "Reset my password"
+msgstr "Şifremi sıfırla"
+
+#: geonode/templates/account/password_reset.html:31
+#, python-format
+msgid ""
+"If you have any trouble resetting your password, contact us at <a "
+"href=\"mailto:"
+"%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
+msgstr ""
+"Şifrenizi sıfırlamada herhangi bir sorun yaşarsanız, <a "
+"href=\"mailto:"
+"%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a> adresinden bizimle iletişime geçin."
+
+#: geonode/templates/account/password_reset_done.html:15
+msgid ""
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"Size bir e-posta gönderdik. Eğer birkaç dakika içinde almazsanız lütfen bizimle "
+"iletişime geçin."
+
+#: geonode/templates/account/password_reset_from_key.html:4
+#: geonode/templates/account/password_reset_from_key.html:7
+#: geonode/templates/account/password_reset_from_key_done.html:4
+#: geonode/templates/account/password_reset_from_key_done.html:7
+msgid "Change Password"
+msgstr "Şifre Değiştir"
+
+#: geonode/templates/account/password_reset_from_key.html:7
+msgid "Bad Token"
+msgstr "Geçersiz Token"
+
+#: geonode/templates/account/password_reset_from_key.html:11
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+"Şifre sıfırlama bağlantısı geçersizdi, muhtemelen zaten kullanıldığı için. Lütfen yeni bir <a href=\"%(passwd_reset_url)s\">şifre sıfırlama</a> isteyin."
+
+#: geonode/templates/account/password_reset_from_key.html:17
+msgid "change password"
+msgstr "şifre değiştir"
+
+#: geonode/templates/account/password_reset_from_key.html:20
+#: geonode/templates/account/password_reset_from_key_done.html:8
+msgid "Your password is now changed."
+msgstr "Şifreniz artık değiştirildi."
+
+#: geonode/templates/account/password_set.html:6
+msgid "Set Password"
+msgstr "Şifre Belirle"
+
+#: geonode/templates/account/password_set.html:10
+msgid "Password Set"
+msgstr "Şifre Belirlendi"
+
+#: geonode/templates/account/password_set.html:15
+msgid "Set your password here"
+msgstr "Şifrenizi buradan belirleyin."
+
+#: geonode/templates/account/password_set.html:21
+msgid "Set password"
+msgstr "Şifre Belirle"
+
+#: geonode/templates/account/signup.html:7
+#: geonode/templates/account/signup.html:11
+#: geonode/templates/account/signup.html:34
+msgid "Sign up"
+msgstr "Kaydol"
+
+#: geonode/templates/account/signup.html:16
+msgid ""
+"Sign up with one\n"
+"              of your existing third party accounts"
+msgstr ""
+"Mevcut üçüncü taraf hesaplarınızdan biriyle kaydolun."
+
+#: geonode/templates/account/signup.html:25
+msgid "Create a new local account"
+msgstr "Yeni bir yerel hesap oluştur"
+
+#: geonode/templates/account/signup_closed.html:5
+#: geonode/templates/account/signup_closed.html:8
+msgid "Sign Up Closed"
+msgstr "Kayıt Olma Kapalı"
+
+#: geonode/templates/account/signup_closed.html:10
+msgid "We are sorry, but the sign up is currently closed."
+msgstr "Üzgünüz, ancak kayıt olma işlemi şu anda kapalı."
+
+#: geonode/templates/account/snippets/already_logged_in.html:5
+msgid "Note"
+msgstr "Not"
+
+#: geonode/templates/account/snippets/already_logged_in.html:5
+#, python-format
+msgid "you are already logged in as %(user_display)s."
+msgstr "Zaten %(user_display)s olarak giriş yaptınız."
+
+#: geonode/templates/account/verification_sent.html:5
+#: geonode/templates/account/verification_sent.html:10
+msgid "Verify your email address"
+msgstr "E-posta adresinizi doğrulayın"
+
+#: geonode/templates/account/verification_sent.html:13
+msgid ""
+"We have sent an email to you for verification. Follow the\n"
+"    link provided to finalize the signup process. Please contact us if you "
+"do\n"
+"    not receive it within a few minutes"
+msgstr "Doğrulama için size bir e-posta gönderdik. Eğer birkaç dakika içinde almazsanız lütfen bizimle iletişime geçin."
+
+#: geonode/templates/account/verified_email_required.html:5
+#: geonode/templates/account/verified_email_required.html:8
+msgid "Verify Your E-mail Address"
+msgstr "E-posta Adresinizi Doğrulayın"
+
+#: geonode/templates/account/verified_email_required.html:12
+msgid ""
+"This part of the site requires us to verify that\n"
+"you are who you claim to be. For this purpose, we require that you\n"
+"verify ownership of your e-mail address. "
+msgstr ""
+"Sitenin bu bölümü, iddia ettiğiniz kişi olduğunuzu doğrulamamızı gerektiriyor. Bu amaçla, e-posta adresinizin mülkiyetini doğrulamanızı istiyoruz."
+
+#: geonode/templates/account/verified_email_required.html:16
+msgid ""
+"We have sent an e-mail to you for\n"
+"verification. Please click on the link inside this e-mail. Please\n"
+"contact us if you do not receive it within a few minutes."
+msgstr "Doğrulama için size bir e-posta gönderdik. Eğer birkaç dakika içinde almazsanız lütfen bizimle iletişime geçin."
+
+#: geonode/templates/account/verified_email_required.html:20
+#, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
+"mail address</a>."
+msgstr "<strong>Not:</strong> E-posta adresinizi <a href=\"%(email_url)s\">değiştirebilirsiniz</a>."
+
+#: geonode/templates/actstream/actor.html:7
+#: geonode/templates/actstream/actor.html:8
+msgid "My Activity feed"
+msgstr "Benim Etkinlik Akışım"
+
+#: geonode/templates/actstream/actor.html:7
+#: geonode/templates/actstream/actor.html:8
+msgid "Activity Feed"
+msgstr "Etkinlik Akışı"
+
+#: geonode/templates/admin/backups/confirm_cancel.html:8
+msgid "Are you sure you want to run the selected"
+msgstr "Seçili olanı çalıştırmak istediğinizden emin misiniz?"
+
+#: geonode/templates/admin/backups/confirm_cancel.html:22
+msgid "Yes, I'm sure"
+msgstr "Evet, eminim"
+
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
+msgstr "GeoNode site yöneticisi"
+
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
+msgstr "GeoNode yönetimi"
+
+#: geonode/templates/announcements/announcement_confirm_delete.html:9
+msgid "Delete Announcement?"
+msgstr "Duyuruyu Sil?"
+
+#: geonode/templates/announcements/announcement_confirm_delete.html:12
+msgid "Are you sure you want to delete this announcement?"
+msgstr "Bu duyuruyu silmek istediğinize emin misiniz?"
+
+#: geonode/templates/announcements/announcement_confirm_delete.html:21
+#: geonode/templates/announcements/announcement_form.html:24
+msgid "Delete"
+msgstr "Sil"
+
+#: geonode/templates/announcements/announcement_form.html:10
+msgid "Edit Announcement"
+msgstr "Duyuruyu Düzenle"
+
+#: geonode/templates/announcements/announcement_form.html:10
+msgid "Create Announcement"
+msgstr "Duyuru Oluştur"
+
+#: geonode/templates/announcements/announcement_list.html:12
+msgid "New Announcement"
+msgstr "Yeni Duyuru"
+
+#: geonode/templates/announcements/announcement_list.html:22
+msgid "Level"
+msgstr "Seviye"
+
+#: geonode/templates/announcements/announcement_list.html:23
+msgid "Announcement"
+msgstr "Duyuru"
+
+#: geonode/templates/announcements/announcement_list.html:24
+msgid "Published From"
+msgstr "Yayınlandığı Tarih"
+
+#: geonode/templates/announcements/announcement_list.html:39
+#, python-format
+msgid ""
+"\n"
+"          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
+"b>.\n"
+"          "
+msgstr ""
+"\n"
+" <b>%(publish_start)s</b>'den <b>%(publish_end)s</b>'ye yayınlandı"
+"b>.\n"
+" "
+
+#: geonode/templates/announcements/detail.html:4
+#, python-format
+msgid "Announcements : %(announcement)s"
+msgstr "Duyurular : %(announcement)s"
+
+#: geonode/templates/base.html:52
+msgid "GeoNode Search"
+msgstr "GeoNode Arama"
+
+#: geonode/templates/developer.html:4 geonode/templates/developer.html:8
+msgid "Information for Developers"
+msgstr "Geliştiriciler için Bilgi"
+
+#: geonode/templates/developer.html:13
+msgid "Useful information for developers interested in GeoNode."
+msgstr "GeoNode ile ilgilenen geliştiriciler için yararlı bilgiler."
+
+#: geonode/templates/developer.html:14
+#, python-format
+msgid ""
+"\n"
+"    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
+"on open source software. We encourage you to build new applications using "
+"the components and resources it provides. This page is a starting point for "
+"developers interesting in taking full advantage of GeoNode. It also includes "
+"links to the project's source code so anyone can build and customize their "
+"own GeoNode. </p>\n"
+"\n"
+"    <h3>GeoNode Software</h3>\n"
+"\n"
+"    <p>All the code that runs GeoNode is open source. The code is available "
+"at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"geonode/</a>. The issue tracker for the project is at <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
+"issues</a>.</p>\n"
+"\n"
+"    <p>GeoNode is built using several open source projects, each with its "
+"own community. If you are interested in contributing new features to the "
+"GeoNode, we encourage you to do so by contributing to one of the projects on "
+"which it is built:</p>\n"
+"    <ul>\n"
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"server for geospatial information</li>\n"
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"Pure JavaScript library powering the maps of GeoExt</li>\n"
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch and OAI-"
+"PMH metadata catalogue server</li>\n"
+"    </ul>\n"
+"\n"
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed "
+"by ISO and the <a href=\"http://opengeospatial.org/\">Open Geospatial "
+"Consortium</a>; in particular, WMS (Web Map Service) is used for accessing "
+"maps, WFS (Web Feature Service) is used for accessing vector data, and WCS "
+"(Web Coverage Service) is used for accessing raster data.  WMC (Web Map "
+"Context Documents) is used for sharing maps. You can use these services in "
+"your own applications using libraries such as OpenLayers, GeoTools, and OGR "
+"(all of which are open-source software and available at zero cost). "
+"Additionally, CSW (Catalog Service for the Web) supports access to "
+"collections of descriptive information (metadata) about data and services.</"
+"p>\n"
+"\n"
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number "
+"of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
+"improves on WMS by caching data and providing more responsive maps.</p>\n"
+"\n"
+"    <h3>CSW Example Code</h3>\n"
+"    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS "
+"MetaSearch, GRASS, etc.).  The following example illustrates a simple "
+"invocation using the OWSLib Python package:</p>\n"
+"    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
+"    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
+"    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
+"    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>\n"
+"    <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
+"    <p><code>print csw.results</code></p>\n"
+"    <p><code>print csw.records</code></p>\n"
+"\n"
+"    <h3>OpenLayers Example Code</h3>\n"
+"\n"
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"name for that layer. This is found in the layer's <code>name</code> field "
+"(not <code>title</code>) of the layer list. For this example, we will use "
+"the Nicaraguan political boundaries background layer, whose name is "
+"<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
+"Layer.WMS:</p>\n"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk "
+"Data\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
+"\n"
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
+"\n"
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For "
+"example, to get the full Nicaraguan admin boundaries use:</p>\n"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
+"WFS protocol also can handle more precise queries, specifying a bounding box "
+"or various spatial and non-spatial filters based on the attributes of the "
+"data.</p>\n"
+"\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a "
+"Query. It is all documented on the wiki at <code>http://geotools.org/</code>."
+"</p>\n"
+"    "
+msgstr ""
+"\n"
+" <p><a href=\"http://geonode.org/\">GeoNode</a>, açık kaynaklı yazılım üzerine kurulu açık bir hizmettir. Sağladığı bileşenleri ve kaynakları kullanarak yeni uygulamalar geliştirmenizi öneririz. Bu sayfa, GeoNode'dan tam olarak yararlanmak isteyen geliştiriciler için bir başlangıç ​​noktasıdır. Ayrıca, herkesin kendi GeoNode'unu oluşturup özelleştirebilmesi için projenin kaynak koduna bağlantılar da içerir. </p>\n"
+"\n"
+" <h3>GeoNode Yazılımı</h3>\n"
+"\n"
+" <p>GeoNode'u çalıştıran tüm kodlar açık kaynaklıdır. Kod, <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"geonode/</a> adresinde mevcuttur. Projenin sorun izleme aracı <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
+"issues</a>.</p>\n"
+"\n"
+" <p>GeoNode, her biri kendi "
+"topluluğuna sahip çeşitli açık kaynaklı projeler kullanılarak geliştirilmiştir. "
+"GeoNode'a yeni özellikler eklemekle ilgileniyorsanız, üzerinde geliştirildiği projelerden birine katkıda bulunarak bunu yapmanızı öneririz:</p>\n"
+" <ul>\n"
+" <li><a href=\"http://geoserver.org\">GeoServer</a> - Standartlara dayalı "
+"coğrafi bilgi sunucusu</li>\n"
+" <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - WMS Kutucukları için "
+"önbellek motoru</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"GeoExt haritalarını destekleyen saf JavaScript kütüphanesi</li>\n"
+" <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch ve OAI-"
+"PMH meta veri katalog sunucusu</li>\n"
+" </ul>\n"
+"\n"
+" <h3>OGC Hizmetleri nelerdir?</h3>\n"
+" <p>Bu uygulamadaki veriler, ISO ve <a href=\"http://opengeospatial.org/\">Open Geospatial "
+"Konsorsiyumu</a> tarafından onaylanan açık standartlar kullanılarak sunulmaktadır; özellikle haritalara erişim için WMS (Web Harita Hizmeti), vektör verilerine erişim için WFS (Web Özellik Hizmeti) ve web kapsam hizmetine erişim için WCS (Web Kapsama Hizmeti) kullanılır. Raster verileri. Harita paylaşımı için WMC (Web Haritası "
+"Bağlam Belgeleri) kullanılır. Bu hizmetleri, OpenLayers, GeoTools ve OGR gibi kütüphaneleri kullanarak kendi uygulamalarınızda kullanabilirsiniz (hepsi açık kaynaklı yazılımlardır ve ücretsiz olarak sunulmaktadır). "
+"Ayrıca, CSW (Web için Katalog Hizmeti), veriler ve hizmetler hakkında açıklayıcı bilgi koleksiyonlarına (meta veri) erişimi destekler.</"
+"p>\n"
+"\n"
+" <h3>GeoWebCache Nedir?</h3>\n"
+" <p>GeoWebCache, Google Haritalar, Bing Haritalar ve OpenLayers dahil olmak üzere birçok haritalama motoruyla uyumlu haritalama döşemeleri sağlar. GeoNode tarafından barındırılan tüm "
+"veriler GeoWebCache aracılığıyla da kullanılabilir. GeoWebCache, verileri önbelleğe alarak ve daha hızlı yanıt vererek WMS'yi geliştirir Haritalar.</p>\n"
+"\n"
+" <h3>CSW Örnek Kodu</h3>\n"
+" <p>GeoNode'un CSW'siyle etkileşim kurmak için herhangi bir CSW istemcisini (QGIS "
+"MetaSearch, GRASS vb.) kullanabilirsiniz. Aşağıdaki örnek, OWSLib Python paketi kullanılarak basit bir "
+"çağrıyı göstermektedir:</p>\n"
+" <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
+" <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
+" <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
+" <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>\n"
+" <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
+" <p><code>print csw.results</code></p>\n"
+" <p><code>print csw.records</code></p>\n"
+"\n"
+" <h3>OpenLayers Örnek Kodu</h3>\n"
+"\n"
+" <p>Bir GeoNode harita katmanını OpenLayers haritasına eklemek için, önce o katmanın adını bulun. Bu ad, katman listesinin katmanın <code>ad</code> alanında bulunur (<code>title</code> değil). Bu örnek için, adı "
+"<code>risk:nicaragua_admin</code> olan Nikaragua siyasi sınırları arka plan katmanını kullanacağız. Ardından, bir OpenLayers örneği oluşturacağız. Layer.WMS:</p>\n"
+" <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk "
+"Veri\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
+"\n"
+" <h3>Google Haritalar Örnek Kodu</h3>\n"
+" <p>Bir Google Haritasına GeoNode harita katmanı eklemek için, URL şablonuna veri kümesi "
+"adını ekleyin.</p>\n"
+" <p><code>var tilelayer = new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
+"\n"
+" <h3>Shapefile/GeoJSON/GML Çıktısı</h3>\n"
+" <p>GeoNode web servislerinden veri almak için WFS protokolünü kullanın. "
+"Örneğin, tüm Nikaragua yönetici sınırlarını almak için şunu kullanın:</p>\n"
+" <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+" <p>Çıktı biçimini <code>json</code>, <code>GML2</code>, "
+"<code>GML3</code> veya <code>csv</code> olarak değiştirmek, verileri bu biçimlerde almanızı sağlar. "
+"WFS protokolü ayrıca, bir bound belirterek daha hassas sorguları da işleyebilir."
+
+
+#: geonode/templates/developer.html:64
+msgid "GeoNode's Web Services"
+msgstr "GeoNode'un Web Servisleri"
+
+#: geonode/templates/developer.html:65
+msgid "GeoNode's Web Services are available from the following URLs:"
+msgstr "GeoNode'un Web Servisleri aşağıdaki URL'lerden erişilebilir:"
+
+#: geonode/templates/developer.html:68
+msgid "Dynamic tiles via WMS:"
+msgstr "Dinamik döşemeler WMS üzerinden:"
+
+#: geonode/templates/developer.html:72
+msgid "Vector data via WFS:"
+msgstr "Vektör verileri WFS üzerinden:"
+
+#: geonode/templates/developer.html:76
+msgid "Raster data via WCS:"
+msgstr "Raster verileri WCS üzerinden:"
+
+#: geonode/templates/developer.html:80
+msgid "Metadata search via CSW:"
+msgstr "Meta veri arama CSW üzerinden:"
+
+#: geonode/templates/developer.html:84
+msgid "Metadata search via OpenSearch:"
+msgstr "Meta veri arama OpenSearch üzerinden:"
+
+#: geonode/templates/developer.html:88
+msgid "Metadata search via OAI-PMH:"
+msgstr "Meta veri arama OAI-PMH üzerinden:"
+
+#: geonode/templates/developer.html:92
+msgid "Cached tiles via WMTS:"
+msgstr "Önbellekli döşemeler WMTS üzerinden:"
+
+#: geonode/templates/help.html:5
+msgid "User Guide"
+msgstr "Kullanıcı Kılavuzu"
+
+#: geonode/templates/help.html:9
+msgid "GeoNode Help"
+msgstr "GeoNode Yardım"
+
+#: geonode/templates/help.html:13
+msgid ""
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
+msgstr ""
+"Bu sayfa, GeoNode'un nasıl kullanılacağı hakkında faydalı bilgiler sunmaktadır. Öğrenmek istediklerinize ulaşmak için kenar çubuğu bağlantılarını kullanabilirsiniz."
+
+#: geonode/templates/help.html:19
+#, python-format
+msgid ""
+"\n"
+"    <p>The GeoNode provides access to data sets and a map editing "
+"application allows users to browse existing maps and contribute their own.</"
+"p>\n"
+"\n"
+"    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"    <p>The <a href=\"%(url_dataset_browse)s\">Layers</a> tab allows you to "
+"browse data uploaded to this GeoNode.</p>\n"
+"    <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
+"\n"
+"    <h4 id=\"developer-access\">Developer Access</h4>\n"
+"    <p>The <a href=\"%(url_developer)s\"> Developer</a> page is the place "
+"for developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
+"\n"
+"    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+"    <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"    <p>The <a href=\"%(url_maps_browse)s\">Maps</a> tab is a gateway to map "
+"exploration on GeoNode.  From here you can <strong>search for a map</strong> "
+"or <strong>create a map</strong>, which will open the Map Composer.</p>\n"
+"    <h5>Google Earth Mode</h5>\n"
+"    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
+"\n"
+"    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+"    <p>To create a new map go to the <a "
+"href=\"%(url_maps_browse)s\">Contributed Maps</a> tab and click the create "
+"your own map link.</p>\n"
+"    <p>This will take you to the Map Composer with a base layer loaded.</p>\n"
+"    <p>To add data layers from the GeoNode click on the green plus button "
+"located below the layers tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"    <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
+"\n"
+"    <h5>Reordering and Removing Layers</h5>\n"
+"    <p>Change the display order of the layers listed in the data tab by "
+"simply dragging and dropping their names. The order in the map will be "
+"updated to reflect that. To turn a layer's visibility off simply uncheck it, "
+"and to remove it entirely select it and hit the red minus button.</p>\n"
+"\n"
+"    <h5>Saving your map</h5>\n"
+"    <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
+"\n"
+"    <h4 id=\"exporting-a-map\">Publishing a Map</h4>\n"
+"    <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To publish a map:</p>\n"
+"    <ol>\n"
+"      <li>Select the from the list of maps on the community or map page and "
+"then hit the 'Publish map' button.</li>\n"
+"      <li>Choose your desired height and width for the widget in the wizard."
+"</li>\n"
+"      <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
+"    </ol>\n"
+"    <p>This will put an interactive widget showing you map in your web page "
+"or blog post.</p>\n"
+"    <p>Note that the Map Composer also has a button to publish the map. Just "
+"be sure to save the map before publishing if there are changes that you want "
+"others to see. It publishes the last saved version, not the last viewed "
+"version.</p>\n"
+"\n"
+"    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+"    <p>Any map available can serve as a starting point for a new map.</p>\n"
+"    <ol>\n"
+"      <li>Open the map in the Map Composer.</li>\n"
+"      <li>Add and remove layers as you like.</li>\n"
+"      <li>Pan and zoom to highlight the area of interest.</li>\n"
+"      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+"info and tags to reflect the new map.</li>\n"
+"      <li>Save the map.</li>\n"
+"    </ol>\n"
+"    <p>You will be able to see your new map when you search for it from the "
+"<a href=\"%(url_maps_browse)s\">Maps</a> tab.</p>\n"
+"    "
+msgstr ""
+"\n"
+" <p>GeoNode, veri kümelerine erişim sağlar ve bir harita düzenleme uygulaması, kullanıcıların mevcut haritalara göz atmasına ve kendi haritalarını eklemesine olanak tanır.</"
+"p>\n"
+"\n"
+" <h4 id=\"browsing-data\">Katmanlara Göz Atma</h4>\n"
+" <p><a href=\"%(url_dataset_browse)s\">Katmanlar</a> sekmesi, bu GeoNode'a yüklenen verilere göz atmanıza olanak tanır.</p>\n"
+" <p>Tüm veriler, diğer uygulamalarda kullanılmak üzere çeşitli biçimlerde indirilebilir.</p>\n"
+"\n"
+" <h4 id=\"developer-access\">Geliştirici Erişimi</h4>\n"
+" <p><a href=\"%(url_developer)s\">Geliştirici</a> sayfası, "
+"Geliştiricilerin GeoNode'a karşı uygulama geliştirmeye başlamaları için. "
+"Web servislerinin kullanımıyla ilgili talimatlar, GeoNode'un kaynak koduna bağlantılar ve GeoNode'u oluşturmak için kullanılan açık kaynaklı projeler hakkında bilgiler içerir.</p>\n"
+"\n"
+" <h4 id=\"browsing-maps\">Haritalara Göz Atma</h4>\n"
+" <p>GeoNode, kullanıcıların haritalar oluşturup birbirleriyle paylaşmalarına olanak tanır.</"
+"p>\n"
+" <p><a href=\"%(url_maps_browse)s\">Haritalar</a> sekmesi, GeoNode'da harita "
+"arama"
+"için bir geçittir. Buradan <strong>bir harita arayabilir</strong> "
+"veya <strong>bir harita oluşturabilirsiniz</strong>; bu işlem Harita Oluşturucu'yu açar.</p>\n"
+" <h5>Google Earth Modu</h5>\n"
+" <p>Etkileşimli harita düzenleyicide görüntülenen tüm haritalar, Google Earth eklentisiyle 3B modunda görüntülenebilir. 3B moduna geçmek için üst araç çubuğunun en sağındaki Google Earth küre logosunu seçin. Google Earth eklentisi yüklü değilse, yüklemeniz istenecektir.</p>\n"
+"\n"
+" <h4 id=\"creating-a-map\">Harita Oluşturma</h4>\n"
+" <p>Yeni bir harita oluşturmak için <a "
+"href=\"%(url_maps_browse)s\">Katkıda Bulunan Haritalar</a> sekmesine gidin ve "
+"kendi haritanızı oluşturun</p>\n"
+" <p>Bu sizi, temel katmanın yüklü olduğu Harita Oluşturucu'ya götürecektir.</p>\n"
+" <p>GeoNode'dan veri katmanları eklemek için, sol taraftaki katmanlar sekmesinin altında bulunan yeşil artı düğmesine tıklayın. Ekran. Bu, GeoNode'da bulunan tüm katmanları listeleyen bir iletişim kutusu açacaktır.</p>\n"
+" <p>Haritanıza katman eklemek için katmanları seçin ve <strong>Katman Ekle</strong>"
+" düğmesine basın. İşiniz bittiğinde, iletişim kutusunu kapatıp haritaya geri dönmek için <strong>Bitti</strong>'ye tıklayabilirsiniz.</p>\n"
+"\n"
+" <h5>Katmanları Yeniden Sıralama ve Kaldırma</h5>\n"
+" <p>Veri sekmesinde listelenen katmanların görüntülenme sırasını, adlarını sürükleyip bırakarak "
+"değiştirebilirsiniz. Haritadaki sıra bunu yansıtacak şekilde "
+"güncellenecektir. Bir katmanın görünürlüğünü kapatmak için işaretini kaldırın, "
+"tamamen kaldırmak içinse seçip kırmızı eksi düğmesine basın.</p>\n"
+"\n"
+" <h5>Haritanızı Kaydetme</h5>\n"
+" <p>Uygun bir katman kümesi ve yakınlaştırma seviyesi bulunduğunda, Başkalarının da görebilmesi için kaydetmek için "
+"zaman. Üst menüdeki Kaydet düğmesine tıklayın (üst araç çubuğundaki en soldaki simge, diskli bir harita görüntüsü) ve haritanın "
+"başlığını ve özetini doldurun.</p>\n"
+"\n"
+" <h4 id=\"exporting-a-map\">Harita Yayınlama</h4>\n"
+" <p>GeoNode'daki herhangi bir harita başka bir sitede veya blogda kullanılmak üzere yerleştirilebilir. Harita yayınlamak için:</p>\n"
+" <ol>\n"
+" <li>Topluluktaki veya harita sayfasındaki harita listesinden haritayı seçin ve "
+"ardından 'Haritayı yayınla' düğmesine basın.</li>\n"
+" <li>Sihirbazda widget için istediğiniz yüksekliği ve genişliği seçin."
+"</li>\n"
+" <li>Sihirbazda sağlanan HTML kod parçacığını herhangi bir HTML sayfasına veya "
+"iFrame destekleyen blog gönderisine kopyalayın.</li>\n"
+" </ol>\n"
+" <p>Bu, web sayfanıza veya blog gönderinize haritanızı gösteren etkileşimli bir widget ekleyecektir.</p>\n"
+" <p>Harita Oluşturucu'nun haritayı yayınlamak için bir düğmesi de olduğunu unutmayın. Başkalarının görmesini istediğiniz değişiklikler varsa, yayınlamadan önce haritayı kaydettiğinizden emin olun. "
+"Son görüntülenen sürümü değil, son kaydedilen sürümü yayınlar.</p>\n"
+"\n"
+" <h4 id=\"remixing-a-map\">Haritayı Yeniden Düzenleme</h4>\n"
+" <p>Mevcut herhangi bir harita, yeni bir harita için başlangıç ​​noktası olarak kullanılabilir.</p>\n"
+" <ol>\n"
+" <li>Haritayı Harita'da açın Besteci.</li>\n"
+" <li>Katmanları istediğiniz gibi ekleyin ve kaldırın.</li>\n"
+" <li>İlgi alanınızı vurgulamak için kaydırın ve yakınlaştırın.</li>\n"
+" <li><strong>ÖNEMLİ:</strong> Başlığı, özeti, iletişim bilgilerini ve etiketleri yeni haritayı yansıtacak şekilde güncelleyin.</li>\n"
+" <li>Haritayı kaydedin.</li>\n"
+" </ol>\n"
+" <p>Yeni haritanızı "
+"<a href=\"%(url_maps_browse)s\">Haritalar</a> sekmesinden aradığınızda görebileceksiniz.</p>\n"
+" "
+#: geonode/templates/help.html:71
+msgid "Sections"
+msgstr "Bölümler"
+
+#: geonode/templates/help.html:72
+msgid "Browsing Layers"
+msgstr "Katmanları Gözden Geçirme"
+
+#: geonode/templates/help.html:73
+msgid "Developer Access"
+msgstr "Geliştirici Erişimi"
+
+#: geonode/templates/help.html:74
+msgid "Browsing Maps"
+msgstr "Haritaları Gözden Geçirme"
+
+#: geonode/templates/help.html:75
+msgid "Creating a Map"
+msgstr "Harita Oluşturma"
+
+#: geonode/templates/help.html:76
+msgid "Exporting a Map"
+msgstr "Harita Dışa Aktarma"
+
+#: geonode/templates/help.html:77
+msgid "Remixing a Map"
+msgstr "Haritayı Yeniden Düzenleme"
+
+#: geonode/templates/invitations/email/email_invite_message.html:2
+#: geonode/templates/invitations/email/email_invite_message.txt:3
+msgid "Dear Sir/Madam,"
+msgstr "Sayın Yetkili,"
+
+#: geonode/templates/invitations/email/email_invite_message.html:3
+#, python-format
+msgid "is inviting you to join (%(site_name|urlencode)s)."
+msgstr "sizi (%(site_name|urlencode)s)'e katılmaya davet ediyor."
+
+#: geonode/templates/invitations/email/email_invite_message.html:5
+#, python-format
+msgid ""
+"To do so, please register at <a "
+"href=\"%(invite_url)s\">%(site_name|urlencode)s Registration</a>."
+msgstr ""
+"Bunu yapmak için lütfen <a "
+"href=\"%(invite_url)s\">%(site_name|urlencode)s Kayıt</a> adresinden kayıt olun."
+
+#: geonode/templates/invitations/email/email_invite_message.html:8
+#, python-format
+msgid ""
+"<strong>%(inviter_name)s</strong> is a member of the following group(s):"
+msgstr "<strong>%(inviter_name)s</strong> aşağıdaki grup(lar)ın bir üyesidir:"
+
+#: geonode/templates/invitations/email/email_invite_message.html:14
+#: geonode/templates/invitations/email/email_invite_message.txt:16
+msgid "We look forward to seeing you on the platform,"
+msgstr "Sizi platformda görmeyi dört gözle bekliyoruz."
+
+#: geonode/templates/invitations/email/email_invite_message.html:15
+#: geonode/templates/invitations/email/email_invite_message.txt:18
+msgid "The GeoNode team."
+msgstr "GeoNode ekibi."
+
+#: geonode/templates/invitations/email/email_invite_message.txt:5
+msgid "is inviting you to join"
+msgstr "sizi katılmaya davet ediyor"
+
+#: geonode/templates/invitations/email/email_invite_message.txt:7
+msgid "To do so, please register at"
+msgstr "Bunu yapmak için lütfen şu adrese kaydolun:"
+
+#: geonode/templates/invitations/email/email_invite_message.txt:9
+msgid ""
+"Once you receive the confirmation that your account is activated, you can "
+"notify"
+msgstr ""
+"Hesabınızın etkinleştirildiğine dair onayı aldıktan sonra "
+"bildirim verebilirsiniz."
+
+#: geonode/templates/invitations/email/email_invite_message.txt:9
+msgid "that you wish to join her/his group(s) through this link"
+msgstr "bu bağlantı aracılığıyla onun grup(lar)ına katılmak istediğinizi"
+
+#: geonode/templates/invitations/email/email_invite_message.txt:11
+msgid "is a member of the following group(s)"
+msgstr "aşağıdaki grup(lar)ın bir üyesidir:"
+
+#: geonode/templates/owner_rights_request.html:6
+msgid "Request permission"
+msgstr "İzin Talep Et"
+
+#: geonode/templates/owner_rights_request.html:8
+msgid "Request editing for resource: "
+msgstr "Kaynak için düzenleme talep et:"
+
+#: geonode/templates/owner_rights_request.html:9
+msgid "Back to resource"
+msgstr "Kaynağa geri dön"
+
+#: geonode/templates/owner_rights_request.html:16
+msgid "Send request"
+msgstr "Talebi Gönder"
+
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
+#: geonode/templates/pinax/notifications/account_active/full.txt:2
+msgid "Your account has been approved and is now active."
+msgstr "Hesabınız onaylandı ve artık aktiftir."
+
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
+#: geonode/templates/pinax/notifications/account_active/full.txt:3
+msgid "You can use the login form at"
+msgstr "Giriş formunu şu adreste kullanabilirsiniz:"
+
+#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
+msgid "Welcome at"
+msgstr "Hoş geldiniz"
+
+#: geonode/templates/pinax/notifications/account_active/short.txt:3
+msgid "Your account is now active"
+msgstr "Hesabınız artık aktiftir."
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:2
+msgid "User"
+msgstr "Kullanıcı"
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:4
+msgid "has requested access to the site."
+msgstr "siteye erişim talep etti."
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:4
+msgid ""
+"You can enable access by setting the user as active on the admin section"
+msgstr "Erişimi etkinleştirmek için kullanıcıyı yönetici bölümünde etkin olarak ayarlayabilirsiniz."
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:6
+msgid "has created an account and has access to the site."
+msgstr "bir hesap oluşturdu ve siteye erişimi var."
+
+#: geonode/templates/pinax/notifications/account_approve/short.txt:3
+msgid "A user has requested access to the site"
+msgstr "Bir kullanıcı siteye erişim talep etti."
+
+#: geonode/templates/pinax/notifications/dataset_approved/full.txt:2
+msgid "The following dataset was approved"
+msgstr "Aşağıdaki veri kümesi onaylandı:"
+
+#: geonode/templates/pinax/notifications/dataset_approved/full.txt:3
+#: geonode/templates/pinax/notifications/dataset_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/dataset_published/full.txt:3
+#: geonode/templates/pinax/notifications/dataset_rated/full.txt:5
+#: geonode/templates/pinax/notifications/dataset_updated/full.txt:3
+#: geonode/templates/pinax/notifications/document_approved/full.txt:3
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/document_published/full.txt:3
+#: geonode/templates/pinax/notifications/document_rated/full.txt:5
+#: geonode/templates/pinax/notifications/document_updated/full.txt:3
+#: geonode/templates/pinax/notifications/map_approved/full.txt:3
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/map_published/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:5
+#: geonode/templates/pinax/notifications/map_updated/full.txt:3
+msgid "owned by"
+msgstr "sahip olduğu"
+
+#: geonode/templates/pinax/notifications/dataset_approved/full.txt:4
+#: geonode/templates/pinax/notifications/dataset_created/full.txt:4
+#: geonode/templates/pinax/notifications/dataset_published/full.txt:4
+#: geonode/templates/pinax/notifications/dataset_rated/full.txt:6
+#: geonode/templates/pinax/notifications/dataset_updated/full.txt:4
+#: geonode/templates/pinax/notifications/document_rated/full.txt:6
+msgid "You can visit the dataset's detail page here"
+msgstr "Veri kümesinin detay sayfasını burada ziyaret edebilirsiniz."
+
+#: geonode/templates/pinax/notifications/dataset_approved/short.txt:3
+msgid "A dataset has been approved"
+msgstr "Bir veri kümesi onaylandı."
+
+#: geonode/templates/pinax/notifications/dataset_created/full.txt:2
+#: geonode/templates/pinax/notifications/dataset_rated/full.txt:2
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+#: geonode/templates/pinax/notifications/document_rated/full.txt:2
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+#: geonode/templates/pinax/notifications/map_rated/full.txt:2
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+msgid "The user"
+msgstr "Kullanıcı"
+
+#: geonode/templates/pinax/notifications/dataset_created/full.txt:2
+msgid "uploaded the following dataset"
+msgstr "aşağıdaki veri kümesini yükledi"
+
+#: geonode/templates/pinax/notifications/dataset_created/short.txt:3
+msgid "A new dataset has been uploaded"
+msgstr "Yeni bir veri kümesi yüklendi."
+
+#: geonode/templates/pinax/notifications/dataset_deleted/full.txt:2
+msgid "The following dataset was deleted"
+msgstr "Aşağıdaki veri kümesi silindi."
+
+#: geonode/templates/pinax/notifications/dataset_deleted/short.txt:3
+msgid "A dataset has been deleted"
+msgstr "Bir veri kümesi silindi."
+
+#: geonode/templates/pinax/notifications/dataset_published/full.txt:2
+msgid "The following dataset was published"
+msgstr "Aşağıdaki veri kümesi yayınlandı."
+
+#: geonode/templates/pinax/notifications/dataset_published/short.txt:3
+msgid "A dataset has been published"
+msgstr "Bir veri kümesi yayınlandı."
+
+#: geonode/templates/pinax/notifications/dataset_rated/full.txt:3
+#: geonode/templates/pinax/notifications/document_rated/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:3
+msgid "rated"
+msgstr "değerlendirildi"
+
+#: geonode/templates/pinax/notifications/dataset_rated/full.txt:4
+msgid "the following dataset"
+msgstr "aşağıdaki veri kümesi"
+
+#: geonode/templates/pinax/notifications/dataset_rated/short.txt:3
+msgid "A dataset has been rated"
+msgstr "Bir veri kümesi değerlendirildi."
+
+#: geonode/templates/pinax/notifications/dataset_updated/full.txt:2
+msgid "The following dataset was updated"
+msgstr "Aşağıdaki veri kümesi güncellendi."
+
+#: geonode/templates/pinax/notifications/dataset_updated/short.txt:3
+msgid "A dataset has been updated"
+msgstr "Bir veri kümesi güncellendi."
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:2
+msgid "The following document was approved"
+msgstr "Aşağıdaki belge onaylandı."
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:4
+#: geonode/templates/pinax/notifications/document_published/full.txt:4
+#: geonode/templates/pinax/notifications/document_updated/full.txt:4
+msgid "You can visit the document's detail page here"
+msgstr "Belgenin detay sayfasını burada ziyaret edebilirsiniz."
+
+#: geonode/templates/pinax/notifications/document_approved/short.txt:3
+msgid "A document has been approved"
+msgstr "Bir belge onaylandı."
+
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+msgid "uploaded the following document"
+msgstr "aşağıdaki belgeyi yükledi"
+
+#: geonode/templates/pinax/notifications/document_created/short.txt:3
+msgid "A document has been uploaded"
+msgstr "Bir belge yüklendi."
+
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
+msgid "The following document was deleted"
+msgstr "Aşağıdaki belge silindi."
+
+#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
+msgid "A document has been deleted"
+msgstr "Bir belge silindi."
+
+#: geonode/templates/pinax/notifications/document_published/full.txt:2
+msgid "The following document was published"
+msgstr "Aşağıdaki belge yayınlandı."
+
+#: geonode/templates/pinax/notifications/document_published/short.txt:3
+msgid "A document has been published"
+msgstr "Bir belge yayınlandı."
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:4
+msgid "the following document"
+msgstr "aşağıdaki belge"
+
+#: geonode/templates/pinax/notifications/document_rated/short.txt:3
+msgid "A document has been rated"
+msgstr "Bir belge değerlendirildi."
+
+#: geonode/templates/pinax/notifications/document_updated/full.txt:2
+msgid "The following document was updated"
+msgstr "Aşağıdaki belge güncellendi."
+
+#: geonode/templates/pinax/notifications/document_updated/short.txt:3
+msgid "A document has been updated"
+msgstr "Bir belge güncellendi."
+
+#: geonode/templates/pinax/notifications/email_body.txt:3
+msgid "You have received the following notice from"
+msgstr "Aşağıdaki bildirimi aldınız"
+
+#: geonode/templates/pinax/notifications/email_body.txt:8
+msgid "To change how you receive notifications, please go to "
+msgstr "Bildirimlerinizi nasıl alacağınızı değiştirmek için lütfen "
+
+#: geonode/templates/pinax/notifications/email_subject.txt:1
+#, python-format
+msgid "[%(current_site)s] %(message)s"
+msgstr "[%(current_site)s] %(message)s"
+
+#: geonode/templates/pinax/notifications/full.txt:1
+#: geonode/templates/pinax/notifications/short.txt:1
+#, python-format
+msgid "%(notice)s"
+msgstr "%(notice)s"
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:2
+msgid "The following map was approved"
+msgstr "Aşağıdaki harita onaylandı."
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:4
+#: geonode/templates/pinax/notifications/map_published/full.txt:4
+#: geonode/templates/pinax/notifications/map_rated/full.txt:6
+#: geonode/templates/pinax/notifications/map_updated/full.txt:4
+msgid "You can visit the map's detail page here"
+msgstr "Haritanın detay sayfasını burada ziyaret edebilirsiniz."
+
+#: geonode/templates/pinax/notifications/map_approved/short.txt:3
+msgid "A map has been approved"
+msgstr "Bir harita onaylandı."
+
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+msgid "created the following map"
+msgstr "aşağıdaki haritayı oluşturdu"
+
+#: geonode/templates/pinax/notifications/map_created/short.txt:3
+msgid "A map has been created"
+msgstr "Bir harita oluşturuldu."
+
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
+msgid "The following map was deleted"
+msgstr "Aşağıdaki harita silindi."
+
+#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
+msgid "A map has been deleted"
+msgstr "Bir harita silindi."
+
+#: geonode/templates/pinax/notifications/map_published/full.txt:2
+msgid "The following map was published"
+msgstr "Aşağıdaki harita yayınlandı."
+
+#: geonode/templates/pinax/notifications/map_published/short.txt:3
+msgid "A map has been published"
+msgstr "Bir harita yayınlandı."
+
+#: geonode/templates/pinax/notifications/map_rated/full.txt:4
+msgid "the following map"
+msgstr "aşağıdaki harita"
+
+#: geonode/templates/pinax/notifications/map_rated/short.txt:3
+msgid "A map has been rated"
+msgstr "Bir harita değerlendirildi."
+
+#: geonode/templates/pinax/notifications/map_updated/full.txt:2
+msgid "The following map was updated"
+msgstr "Aşağıdaki harita güncellendi."
+
+#: geonode/templates/pinax/notifications/map_updated/short.txt:3
+msgid "A map has been updated"
+msgstr "Bir harita güncellendi."
+
+#: geonode/templates/pinax/notifications/notice_settings.html:8
+#: geonode/templates/pinax/notifications/notice_settings.html:11
+msgid "Notification Settings"
+msgstr "Bildirim Ayarları"
+
+#: geonode/templates/pinax/notifications/notice_settings.html:15
+#, python-format
+msgid ""
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be "
+"sent. <a href=\"%(email_url)s\">Add one</a> now.\n"
+"        </p>\n"
+"        "
+msgstr ""
+"\n"
+" <p class=\"alert alert-warning\">\n"
+" <span class=\"warning\">Not</span>:\n"
+" Bildirimlerin gönderilebileceği doğrulanmış bir e-posta adresiniz yok. Şimdi <a href=\"%(email_url)s\">bir tane ekleyin</a>.\n"
+" </p>\n"
+" "
+
+#: geonode/templates/pinax/notifications/notice_settings.html:27
+msgid "Notification Type"
+msgstr "Bildirim Türü"
+
+#: geonode/templates/pinax/notifications/notice_settings.html:53
+msgid "Change"
+msgstr "Değiştir"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+msgid "requested you to download this resource"
+msgstr "bu kaynağı indirmenizi istedi"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
+msgid "Dataset"
+msgstr "Veri Kümesi"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
+msgid "Document"
+msgstr "Belge"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr "Lütfen kaynak sayfasına gidin ve isterseniz indirme izinlerini atayın."
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr "Bir kaynağın indirilmesi istendi."
+
+#: geonode/templates/privacy-cookies.html:4
+#: geonode/templates/privacy-cookies.html:8
+msgid "Privacy &#038; Cookies Policy"
+msgstr "Gizlilik &#038; Çerezler Politikası"
+
+#: geonode/templates/privacy-cookies.html:10
+msgid "Privacy &#038; Cookies Policy."
+msgstr "Gizlilik &#038; Çerezler Politikası."
+
+#: geonode/templates/search/_pagination.html:15
+msgid "page"
+msgstr "sayfa"
+
+#: geonode/templates/search/_pagination.html:15
+msgid "of"
+msgstr "için"
+
+#: geonode/templates/search/_search_user_content.html:10
+msgid "search"
+msgstr "ara"
+
+#: geonode/templates/search/_search_user_content.html:17
+msgid "Search by name"
+msgstr "İsimle ara"
+
+#: geonode/templates/search/_search_user_content.html:50
+msgid "Total"
+msgstr "Toplam"
+
+#: geonode/templates/search/_sort_filters.html:36
+#: geonode/templates/search/_sort_filters.html:42
+#: geonode/templates/search/_sort_filters.html:47
+msgid "Most recent"
+msgstr "En son"
+
+#: geonode/templates/search/_sort_filters.html:37
+#: geonode/templates/search/_sort_filters.html:43
+#: geonode/templates/search/_sort_filters.html:48
+msgid "Less recent"
+msgstr "Daha eski"
+
+#: geonode/templates/search/_sort_filters.html:38
+#: geonode/templates/search/_sort_filters.html:44
+#: geonode/templates/search/_sort_filters.html:49
+#: geonode/templates/search/_sort_filters.html:52
+msgid "A - Z"
+msgstr "A - Z"
+
+#: geonode/templates/search/_sort_filters.html:39
+#: geonode/templates/search/_sort_filters.html:45
+#: geonode/templates/search/_sort_filters.html:50
+#: geonode/templates/search/_sort_filters.html:53
+msgid "Z - A"
+msgstr "Z - A"
+
+#: geonode/templates/search/_sort_filters.html:40
+msgid "Most popular"
+msgstr "En popüler"
+
+#: geonode/templates/socialaccount/authentication_error.html:5
+#: geonode/templates/socialaccount/authentication_error.html:8
+msgid "Social Network Login Failure"
+msgstr "Sosyal Ağ Girişi Başarısızlığı"
+
+#: geonode/templates/socialaccount/authentication_error.html:10
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr "Sosyal ağ hesabınızla giriş yapmaya çalışırken bir hata oluştu."
+
+#: geonode/templates/socialaccount/authentication_error.html:12
+msgid "Code"
+msgstr "Kod"
+
+#: geonode/templates/socialaccount/authentication_error.html:13
+msgid "Exception"
+msgstr "İstisna"
+
+#: geonode/templates/socialaccount/connections.html:7
+#: geonode/templates/socialaccount/connections.html:10
+msgid "Account Connections"
+msgstr "Hesap Bağlantıları"
+
+#: geonode/templates/socialaccount/connections.html:13
+msgid ""
+"You can sign in to your account using any of the following already connected "
+"third party accounts:"
+msgstr "Hesabınıza giriş yapmak için aşağıda listelenen bağlı üçüncü taraf hesaplarını kullanabilirsiniz."
+
+#: geonode/templates/socialaccount/connections.html:39
+msgid ""
+"You currently have no social network accounts connected to this account."
+msgstr "Bu hesaba bağlı sosyal ağ hesabınız yok."
+
+#: geonode/templates/socialaccount/connections.html:46
+msgid "Add a 3rd Party Account"
+msgstr "Üçüncü Taraf Hesabı Ekle"
+
+#: geonode/templates/socialaccount/login_cancelled.html:5
+#: geonode/templates/socialaccount/login_cancelled.html:9
+msgid "Login Cancelled"
+msgstr "Giriş İptal Edildi"
+
+#: geonode/templates/socialaccount/login_cancelled.html:13
+#, python-format
+msgid ""
+"You decided to cancel logging in to our site using one of your existing "
+"accounts. If this was a mistake, please proceed to <a "
+"href=\"%(login_url)s\">sign in</a>."
+msgstr ""
+"Mevcut hesaplarınızdan birini kullanarak sitemize giriş yapmayı iptal etmeye karar verdiniz. Bu bir hataysa, lütfen <a "
+"href=\"%(login_url)s\">giriş yap</a>'a geçin."
+
+#: geonode/templates/socialaccount/signup.html:6
+msgid "Signup"
+msgstr "Kayıt Ol"
+
+#: geonode/templates/socialaccount/signup.html:9
+#: geonode/templates/socialaccount/signup.html:20
+msgid "Sign Up"
+msgstr "Kayıt Ol"
+
+#: geonode/templates/socialaccount/signup.html:11
+#, python-format
+msgid ""
+"You are about to use your %(provider_name)s account to login to\n"
+"%(site_name)s. As a final step, please complete the following form:"
+msgstr ""
+"%(provider_name)s hesabınızı kullanarak giriş yapmak üzeresiniz\n"
+"%(site_name)s. Son adım olarak lütfen aşağıdaki formu doldurun:"
+#: geonode/templates/socialaccount/snippets/provider_list.html:19
+#: geonode/templates/socialaccount/snippets/remaining_providers_list.html:19
+msgid "Sign in with"
+msgstr "İle giriş yap"
+
+#: geonode/templates/socialaccount/snippets/provider_list.html:21
+#: geonode/templates/socialaccount/snippets/remaining_providers_list.html:21
+msgid "Connect with"
+msgstr "Bağlan"
+
+#: geonode/templates/socialaccount/snippets/provider_list.html:23
+#: geonode/templates/socialaccount/snippets/remaining_providers_list.html:23
+msgid "Sign up with"
+msgstr "Kayıt Ol"
+
+#: geonode/themes/apps.py:26
+msgid "GeoNode Themes Library"
+msgstr "GeoNode Temalar Kütüphanesi"
+
+#: geonode/themes/models.py:36
+msgid "Fill in this section with markdown"
+msgstr "Bu bölümü markdown ile doldurun."
+
+#: geonode/themes/models.py:41
+msgid "Check this if the jumbotron background image already contains text"
+msgstr "Eğer jumbotron arka plan resmi zaten metin içeriyorsa bunu işaretleyin."
+
+#: geonode/themes/models.py:43
+msgid "Disabling this slide will hide it from the slide show"
+msgstr "Bu slidi devre dışı bırakmak, slayt gösterisinden gizleyecektir."
+
+#: geonode/themes/models.py:80
+msgid "Choose between using jumbotron background and slide show"
+msgstr "Jumbotron arka planı ve slayt gösterisi kullanma arasında seçim yapın."
+
+#: geonode/upload/api/exceptions.py:33
+msgid "Total upload size exceeded. Please try again with smaller files."
+msgstr "Toplam yükleme boyutu aşıldı. Lütfen daha küçük dosyalarla tekrar deneyin."
+
+#: geonode/upload/api/exceptions.py:40
+msgid ""
+"The number of active parallel uploads exceeds. Wait for the pending ones to "
+"finish."
+msgstr "Aktif paralel yüklemelerin sayısı aşıldı. Bekleyenlerin bitmesini bekleyin."
+
+#: geonode/upload/api/views.py:77
+#, python-brace-format
+msgid "The limit `{instance.slug}` should not be deleted."
+msgstr "Limit `{instance.slug}` silinmemelidir."
+
+#: geonode/upload/api/views.py:99
+msgid "The limit `default_max_parallel_uploads` should not be deleted."
+msgstr "Limit `default_max_parallel_uploads` silinmemelidir."
+
+#: geonode/upload/celery_tasks.py:154
+msgid "geonode.upload.import_resource"
+msgstr "geonode.upload.import_resource"
+
+#: geonode/upload/celery_tasks.py:236
+msgid "geonode.upload.publish_resource"
+msgstr "geonode.upload.publish_resource"
+
+#: geonode/upload/celery_tasks.py:338
+msgid "geonode.upload.create_geonode_resource"
+msgstr "geonode.upload.create_geonode_resource"
+
+#: geonode/upload/celery_tasks.py:418
+msgid "geonode.upload.copy_geonode_resource"
+msgstr "geonode.upload.copy_geonode_resource"
+
+#: geonode/upload/celery_tasks.py:607
+msgid "geonode.upload.copy_dynamic_model"
+msgstr "geonode.upload.copy_dynamic_model"
+
+#: geonode/upload/celery_tasks.py:687
+msgid "geonode.upload.copy_geonode_data_table"
+msgstr "geonode.upload.copy_geonode_data_table"
+
+#: geonode/upload/celery_tasks.py:761
+msgid "geonode.upload.rollback"
+msgstr "geonode.upload.rollback"
+
+#: geonode/upload/models.py:82
+msgid "The maximum file size allowed for upload (bytes)."
+msgstr "Yükleme için izin verilen maksimum dosya boyutu (bayt)."
+
+#: geonode/upload/models.py:115
+msgid "The maximum number of parallel uploads (0 to 32767)."
+msgstr "Maksimum paralel yükleme sayısı (0 ile 32767 arasında)."
+
+#: geonode/upload/templates/upload/dataset_upload_metadata_base.html:12
+msgid "Explore Datasets"
+msgstr "Veri Setlerini Keşfet"
+
+#: geonode/upload/templates/upload/dataset_upload_metadata_base.html:13
+msgid "Upload Dataset Metadata"
+msgstr "Veri Seti Meta Verisini Yükle"
+
+#: geonode/upload/utils.py:52
+msgid "rollback"
+msgstr "geri alma"
+
+#: geonode/upload/utils.py:53
+msgid "resource_metadata_upload"
+msgstr "kaynak_meta_veri_yükleme"
+
+#: geonode/upload/utils.py:54
+msgid "resource_style_upload"
+msgstr "kaynak_stil_yükleme"
+
+#: geonode/upload/utils.py:55
+msgid "replace"
+msgstr "değiştirme"
+
+#: geonode/upload/utils.py:128
+#, python-brace-format
+msgid ""
+"The number of active parallel uploads exceeds {max_parallel_uploads}. Wait "
+"for the pending ones to finish."
+msgstr ""
+"Aktif paralel yükleme sayısı {max_parallel_uploads} sayısını aşıyor. Bekleyenlerin tamamlanmasını bekleyin."
+#: geonode/upload/utils.py:137
+msgid ""
+"Total upload size exceeds {filesizeformat(max_size)}. Please try again with "
+"smaller files."
+msgstr ""
+"Toplam yükleme boyutu {filesizeformat(max_size)} boyutunu aşıyor. Lütfen daha küçük dosyalarla tekrar deneyin."
+#: geonode/utils.py:627
+msgid "Permission Denied"
+msgstr "İzin Reddedildi"
