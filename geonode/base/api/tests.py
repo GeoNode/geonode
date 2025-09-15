@@ -3935,25 +3935,18 @@ class MapCachingTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        self.user = get_user_model().objects.create_user(
-            username="test_user_123", password="password"
-        )
-        self.map = create_single_map(
-            owner=self.user, title="test map", name="test_map"
-        )
-        self.datasets = [
-            create_single_dataset(name=f"dataset_{i}", owner=self.user)
-            for i in range(5)
-        ]
+        self.user = get_user_model().objects.create_user(username="test_user_123", password="password")
+        self.map = create_single_map(owner=self.user, title="test map", name="test_map")
+        self.datasets = [create_single_dataset(name=f"dataset_{i}", owner=self.user) for i in range(5)]
         for i, dataset in enumerate(self.datasets):
             MapLayer.objects.create(map=self.map, name=dataset.name, dataset=dataset, order=i)
             perm_spec = {
-            "users": {
-                self.user.username: [
-                    "view_resourcebase",
-                ]
-            },
-            "groups": {},
+                "users": {
+                    self.user.username: [
+                        "view_resourcebase",
+                    ]
+                },
+                "groups": {},
             }
             dataset.set_permissions(perm_spec)
 

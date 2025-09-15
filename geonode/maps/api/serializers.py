@@ -27,7 +27,6 @@ from geonode.base.api.serializers import (
     DetailUrlField,
     BaseDynamicModelSerializer,
     ResourceBaseSerializer,
-    PermsSerializer,
     LinksSerializer,
 )
 from geonode.layers.api.serializers import FeatureInfoTemplateField, StyleSerializer
@@ -121,7 +120,7 @@ class MapLayerDatasetSerializer(DynamicModelSerializer):
             "styles",
             "ptype",
         )
-    
+
     def get_perms(self, instance):
         """
         Returns the permissions for the dataset instance using  cache.
