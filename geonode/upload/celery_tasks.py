@@ -258,7 +258,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             raise Exception("dataset is invalid")
 
         _datastore.prepare_import(**kwargs)
-        _datastore.start_import(execution_id, **kwargs)
+        _datastore.start_import(execution_id, self.name, **kwargs)
 
         """
         since the call to the orchestrator can changed based on the handler

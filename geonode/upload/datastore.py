@@ -69,11 +69,15 @@ class DataStoreManager:
         """
         return self.handler().prepare_import(self.files, self.execution_id, **kwargs)
 
-    def start_import(self, execution_id, **kwargs):
+    def start_import(self, execution_id, task_name, **kwargs):
         """
         call the resource handler object to perform the import phase
         """
-        return self.handler().import_resource(self.files, execution_id, **kwargs)
+        layer_names = self.handler().import_resource(self.files, execution_id, **kwargs)
+
+        # Register the tasks_status with the created key alternates
+        orchestrator.register_task_status(execution_id, layer_names, task_name, status="RUNNING")
+        return
 
     def upsert_validation(self, execution_id, **kwargs):
         """
@@ -85,7 +89,19 @@ class DataStoreManager:
         """
         Call the resource handler to perform the upsert operation.
         """
-        return self.handler().upsert_data(self.files, execution_id, **kwargs)
+        upsert_success, result = self.handler().upsert_data(self.files, execution_id, **kwargs)
+        
+        # register the task as RUNNING
+        layer_name = result.get("layer_name", None)
+        
+        orchestrator.register_task_status(
+            execution_id,
+            layer_name,
+            self.name,
+            status="RUNNING"
+        )
+        
+        return upsert_success, result
 
     def refresh_geonode_resource(self, execution_id, **kwargs):
         """
