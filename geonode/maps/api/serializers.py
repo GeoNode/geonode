@@ -33,6 +33,7 @@ from geonode.base.api.serializers import (
 from geonode.layers.api.serializers import FeatureInfoTemplateField, StyleSerializer
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +103,7 @@ class MapLayerDatasetSerializer(DynamicModelSerializer):
     styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
     featureinfo_custom_template = FeatureInfoTemplateField()
 
-    perms = DynamicRelationField(PermsSerializer, source="id", read_only=True)
+    perms = serializers.SerializerMethodField(read_only=True)
     links = DynamicRelationField(LinksSerializer, source="id", read_only=True)
 
     class Meta:
@@ -120,6 +121,18 @@ class MapLayerDatasetSerializer(DynamicModelSerializer):
             "styles",
             "ptype",
         )
+    
+    def get_perms(self, instance):
+        """
+        Returns the permissions for the dataset instance using  cache.
+        """
+        request = self.context.get("request")
+        permissions = (
+            permissions_registry.get_perms(instance=instance, user=request.user, use_cache=True)
+            if request and request.user and instance
+            else []
+        )
+        return permissions
 
 
 class MapLayerSerializer(DynamicModelSerializer):
