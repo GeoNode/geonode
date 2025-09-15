@@ -2208,6 +2208,7 @@ SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
     "importer_upload",
     "document_upload",
+    "base-resources-assets",
 )
 
 INSTALLED_APPS += (
@@ -2318,5 +2319,8 @@ AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"
 
 # Group default logo url
 GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
+
+UPSERT_CHUNK_SIZE = ast.literal_eval(os.getenv("UPSERT_CHUNK_SIZE", "1000"))
+
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
 FILE_UPLOAD_PERMISSIONS = 0o777

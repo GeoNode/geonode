@@ -18,8 +18,6 @@
 #########################################################################
 from abc import ABC
 
-from geonode.security.utils import AdvancedSecurityWorkflowManager
-
 
 class BasePermissionsHandler(ABC):
     """
@@ -55,6 +53,8 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
 
     @staticmethod
     def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+
         # Fixup Advanced Workflow permissions
         return AdvancedSecurityWorkflowManager.get_permissions(
             instance.uuid,

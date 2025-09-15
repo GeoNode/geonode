@@ -173,6 +173,7 @@ class ImporterViewSet(DynamicModelViewSet):
 
                 input_params = {
                     **{"files": _files, "handler_module_path": str(handler)},
+                    **{"temporary_files": _files},
                     **extracted_params,
                 }
 
