@@ -1069,7 +1069,7 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException(
                 "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled"
             )
-        
+
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
 

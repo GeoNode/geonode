@@ -353,12 +353,7 @@ class ImportOrchestrator:
         return self.load_handler(handler_module_path).perform_last_step(execution_id)
 
     def register_task_status(
-        self, 
-        exec_id: str, 
-        layer_names: str | list[str], 
-        step: str, 
-        status: str = "PENDING",
-        persist=True
+        self, exec_id: str, layer_names: str | list[str], step: str, status: str = "PENDING", persist=True
     ) -> None:
         """
         Register or update task status for one or more layers in an ExecutionRequest.
@@ -376,7 +371,7 @@ class ImportOrchestrator:
 
         if persist:
             self.update_execution_request_status(execution_id=exec_id, tasks=_exec.tasks)
-        
+
         return _exec.tasks
 
 

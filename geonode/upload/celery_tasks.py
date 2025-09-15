@@ -689,14 +689,16 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
 
     try:
         # Register the tasks_status with the created key alternates
-        task_status = orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING", persist=False)
+        task_status = orchestrator.register_task_status(
+            exec_id, layer_name, actual_step, status="RUNNING", persist=False
+        )
 
         orchestrator.update_execution_request_status(
             execution_id=exec_id,
             last_updated=timezone.now(),
             func_name="copy_dynamic_model",
             step=gettext_lazy("geonode.upload.copy_dynamic_model"),
-            tasks=task_status
+            tasks=task_status,
         )
         additional_kwargs = {}
 
