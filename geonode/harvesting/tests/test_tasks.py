@@ -19,6 +19,7 @@
 from unittest import mock
 
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 from django.utils.timezone import now
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -158,3 +159,192 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             mock_harvester.initiate_update_harvestable_resources.assert_called()
             mock_harvester.is_harvesting_due.assert_called()
             mock_harvester.initiate_perform_harvesting.assert_called()
+
+    @mock.patch("geonode.harvesting.tasks.transaction.on_commit")
+    @mock.patch("geonode.harvesting.tasks.models")
+    def test_harvest_resources_with_chunks(
+        self,
+        mock_models,
+        mock_on_commit,
+    ):
+        mock_session = mock.MagicMock()
+        mock_session.status = mock_session.STATUS_ON_GOING
+        mock_session.harvester.update_availability.return_value = True
+        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+
+        harvestable_resource_ids = list(range(5))
+
+        with mock.patch("geonode.harvesting.tasks.queue_next_chunk_batch.apply_async") as mock_apply_async:
+            with override_settings(CHUNK_SIZE=2, MAX_PARALLEL_QUEUE_CHUNKS=2):
+                tasks.harvest_resources(harvestable_resource_ids, self.harvesting_session.id)
+
+                # Simulate transaction.on_commit callback being run
+                assert mock_on_commit.called
+                callback = mock_on_commit.call_args[0][0]
+                callback()
+
+            # Now apply_async should have been called
+            mock_apply_async.assert_called_once()
+            _, kwargs = mock_apply_async.call_args
+
+            expected_expires = 5 * 20 + 300  # 5 resources * 20 + 300 buffer = 400
+            expected_time_limit = 2 * 2 * 20 + 300  # CHUNK_SIZE * MAX_PARALLEL_QUEUE_CHUNKS * 20 + 300 = 380
+
+            self.assertEqual(kwargs["expires"], expected_expires)
+            self.assertEqual(kwargs["time_limit"], expected_time_limit)
+
+    @mock.patch("geonode.harvesting.tasks.transaction.on_commit")
+    @mock.patch("geonode.harvesting.tasks.models")
+    def test_harvest_resources_without_chunks(self, mock_models, mock_on_commit):
+        mock_session = mock.MagicMock()
+        mock_session.status = mock_session.STATUS_ON_GOING
+        mock_session.harvester.update_availability.return_value = True
+        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+
+        harvestable_resource_ids = list(range(5))
+
+        with mock.patch("geonode.harvesting.tasks.chord") as mock_chord:
+            mock_workflow = mock.MagicMock()
+            mock_chord.return_value = mock_workflow
+
+            with override_settings(CHUNK_SIZE=100, MAX_PARALLEL_QUEUE_CHUNKS=2):
+                tasks.harvest_resources(harvestable_resource_ids, self.harvesting_session.id)
+
+                # Check that transaction.on_commit was called
+                self.assertTrue(mock_on_commit.called)
+                callback = mock_on_commit.call_args[0][0]
+
+                # Simulate the transaction commit
+                callback()
+
+            # Check that chord was built with correct number of subtasks
+            self.assertTrue(mock_chord.called)
+            subtasks = mock_chord.call_args[0][0]  # This is the list of resource tasks
+            self.assertEqual(len(subtasks), len(harvestable_resource_ids))
+
+            # Check that apply_async was called on the workflow
+            mock_workflow.apply_async.assert_called_once()
+
+    @mock.patch("geonode.harvesting.tasks.logger")
+    @mock.patch("geonode.harvesting.tasks.models")
+    def test_harvest_resources_aborted_session(self, mock_models, mock_logger):
+        mock_session = mock.MagicMock()
+        mock_session.status = mock_session.STATUS_ABORTED
+        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+
+        tasks.harvest_resources([1, 2, 3], self.harvesting_session.id)
+
+        mock_logger.debug.assert_any_call("Session has been aborted, skipping...")
+        # Ensure nothing else happened
+        mock_session.harvester.update_availability.assert_not_called()
+
+    @mock.patch("geonode.harvesting.tasks.finish_asynchronous_session")
+    @mock.patch("geonode.harvesting.tasks.logger")
+    @mock.patch("geonode.harvesting.tasks.models")
+    def test_harvest_resources_no_ids(self, mock_models, mock_logger, mock_finish):
+        mock_session = mock.MagicMock()
+        mock_session.status = mock_session.STATUS_ON_GOING
+        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+
+        tasks.harvest_resources([], self.harvesting_session.id)
+
+        mock_logger.debug.assert_any_call("harvest_resources - Nothing to do...")
+        mock_finish.assert_called_once_with(
+            self.harvesting_session.id,
+            mock_models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_OK,
+            final_details="No resources to harvest",
+        )
+
+    @mock.patch("geonode.harvesting.tasks.finish_asynchronous_session")
+    @mock.patch("geonode.harvesting.tasks.logger")
+    @mock.patch("geonode.harvesting.tasks.models")
+    def test_harvest_resources_harvester_unavailable(self, mock_models, mock_logger, mock_finish):
+        mock_session = mock.MagicMock()
+        mock_session.status = mock_session.STATUS_ON_GOING
+        mock_session.harvester.name = "TestHarvester"
+        mock_session.harvester.remote_url = "http://remote"
+        mock_session.harvester.update_availability.return_value = False
+        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+
+        tasks.harvest_resources([1, 2, 3], self.harvesting_session.id)
+
+        mock_logger.warning.assert_called_once_with(
+            "Skipping harvesting for harvester 'TestHarvester' because remote 'http://remote' is unavailable"
+        )
+        mock_finish.assert_called_once_with(
+            self.harvesting_session.id,
+            mock_session.STATUS_FINISHED_ALL_FAILED,
+            final_details=mock_logger.warning.call_args[0][0],
+        )
+
+    @mock.patch("geonode.harvesting.tasks.chord")
+    def test_queue_next_chunk_batch_schedules_next_batch(self, mock_chord):
+        chunk_groups = [[[1, 2], [3]], [[4, 5]]]
+        session_id = 42
+        batch_index = 0
+        dynamic_expiration = 900
+        dynamic_time_limit = 1800
+
+        mock_chord_obj = mock.Mock()
+        mock_chord.return_value = mock_chord_obj
+
+        tasks.queue_next_chunk_batch(
+            chunk_groups=chunk_groups,
+            harvesting_session_id=session_id,
+            batch_index=batch_index,
+            dynamic_expiration=dynamic_expiration,
+            dynamic_time_limit=dynamic_time_limit,
+        )
+
+        # Check that chord() was called
+        self.assertEqual(mock_chord.call_count, 3)
+        chords_args, chords_kwargs = mock_chord.call_args
+
+        chords_in_batch = chords_args[0]
+        next_batch = chords_kwargs["body"]
+
+        # Expect 2 chunks in batch 0 → 2 chords
+        self.assertEqual(len(chords_in_batch), 2)
+
+        # Check next_batch is queue_next_chunk_batch task for batch 1
+        self.assertEqual(next_batch.args[2], 1)
+
+        # Final: check apply_async was called
+        mock_chord.return_value.apply_async.assert_called_once()
+
+    @mock.patch("geonode.harvesting.tasks.chord")
+    @mock.patch("geonode.harvesting.tasks._finish_harvesting")
+    @mock.patch("geonode.harvesting.tasks._handle_harvesting_error")
+    def test_queue_next_chunk_batch_adds_global_finalizer_on_last_batch(
+        self, mock_handle_error, mock_finish_harvesting, mock_chord
+    ):
+        chunk_groups = [[[1, 2], [3]], [[4, 5]]]
+        session_id = 42
+        batch_index = 1
+        dynamic_expiration = 900
+        dynamic_time_limit = 1800
+
+        mock_chord_obj = mock.Mock()
+        mock_chord.return_value = mock_chord_obj
+
+        tasks.queue_next_chunk_batch(
+            chunk_groups=chunk_groups,
+            harvesting_session_id=session_id,
+            batch_index=batch_index,
+            dynamic_expiration=dynamic_expiration,
+            dynamic_time_limit=dynamic_time_limit,
+        )
+
+        # Ensure global finalizer was built and passed to chords_in_batch
+        self.assertTrue(mock_finish_harvesting.s.called)
+        self.assertTrue(mock_handle_error.s.called)
+
+        chord_args, chord_kwargs = mock_chord.call_args
+        chords_in_batch = chord_args[0]
+
+        # Expect 1 chunk + 1 global finalizer = 2 entries in chords_in_batch
+        self.assertEqual(len(chords_in_batch), 2)
+        self.assertIn(mock_finish_harvesting.s.return_value.on_error.return_value.set.return_value, chords_in_batch)
+
+        # Final: check apply_async was called
+        mock_chord.return_value.apply_async.assert_called_once()

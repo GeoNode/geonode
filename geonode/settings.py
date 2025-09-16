@@ -1758,6 +1758,11 @@ CELERY_ACCEPT_CONTENT = [
     CELERY_RESULT_SERIALIZER,
 ]
 
+# Define chunk size (number of resources per chunk) and how many chunks can be inserted
+# in the queue in case of harvesting hundreds of resources
+CHUNK_SIZE = os.environ.get("CHUNK_SIZE", 100)
+MAX_PARALLEL_QUEUE_CHUNKS = os.environ.get("MAX_PARALLEL_QUEUE_CHUNKS", 2)
+
 # Set Tasks Queues
 # CELERY_TASK_DEFAULT_QUEUE = "default"
 # CELERY_TASK_DEFAULT_EXCHANGE = "default"

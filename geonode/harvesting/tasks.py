@@ -29,6 +29,9 @@ from django.db.models import (
 )
 from django.db.models.functions import Concat
 from django.utils import timezone
+from django.conf import settings
+from django.db import transaction
+
 from geonode.celery_app import app
 
 from . import models
@@ -114,7 +117,7 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
         harvester.harvestable_resources.filter(should_be_harvested=True).values_list("id", flat=True)
     )
     if len(harvestable_resources) > 0:
-        harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id), expiration=30)
+        harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id))
     else:
         message = "harvesting_dispatcher - Nothing to do"
         logger.debug(message)
@@ -126,70 +129,107 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 @app.task(
     bind=True,
     queue="geonode",
-    expires=30,
+    expires=120,
     time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
-def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesting_session_id: int):
+def harvest_resources(
+    self,
+    harvestable_resource_ids: typing.List[int],
+    harvesting_session_id: int,
+):
     """Harvest a list of remote resources that all belong to the same harvester."""
     session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
-    if session.status != session.STATUS_ABORTED:
-        if len(harvestable_resource_ids) > 0:
-            harvester = session.harvester
-            if harvester.update_availability():
-                harvester.status = harvester.STATUS_PERFORMING_HARVESTING
-                harvester.save()
-                session.status = session.STATUS_ON_GOING
-                session.total_records_to_process = len(harvestable_resource_ids)
-                session.save()
-                resource_tasks = []
-                for harvestable_resource_id in harvestable_resource_ids:
-                    resource_tasks.append(
-                        _harvest_resource.signature(args=(harvestable_resource_id, harvesting_session_id))
-                    )
-                harvesting_finalizer = _finish_harvesting.signature(
-                    args=(harvesting_session_id,), immutable=True
-                ).on_error(
-                    _handle_harvesting_error.signature(
-                        kwargs={
-                            "harvesting_session_id": harvesting_session_id,
-                        }
-                    )
-                )
-                harvesting_workflow = chord(resource_tasks, body=harvesting_finalizer)
-                harvesting_workflow.apply_async(args=(), expiration=30)
-            else:
-                message = (
-                    f"Skipping harvesting for harvester {harvester.name!r} because the "
-                    f"remote {harvester.remote_url!r} seems to be unavailable"
-                )
-                logger.warning(message)
-                finish_asynchronous_session(
-                    harvesting_session_id, session.STATUS_FINISHED_ALL_FAILED, final_details=message
-                )
-        else:
-            message = "harvest_resources - Nothing to do..."
-            logger.debug(message)
-            finish_asynchronous_session(
-                harvesting_session_id,
-                models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_OK,
-                final_details=message,
-            )
-    else:
+    if session.status == session.STATUS_ABORTED:
         logger.debug("Session has been aborted, skipping...")
+        return
+
+    if not harvestable_resource_ids:
+        logger.debug("harvest_resources - Nothing to do...")
+        finish_asynchronous_session(
+            harvesting_session_id,
+            models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_OK,
+            final_details="No resources to harvest",
+        )
+        return
+
+    harvester = session.harvester
+
+    if not harvester.update_availability():
+        message = f"Skipping harvesting for harvester {harvester.name!r} because remote {harvester.remote_url!r} is unavailable"
+        logger.warning(message)
+        finish_asynchronous_session(harvesting_session_id, session.STATUS_FINISHED_ALL_FAILED, final_details=message)
+        return
+
+    harvester.status = harvester.STATUS_PERFORMING_HARVESTING
+    harvester.save()
+
+    session.status = session.STATUS_ON_GOING
+    session.total_records_to_process = len(harvestable_resource_ids)
+    session.save()
+
+    # Definition of the expiration time
+    task_dynamic_expiration = calculate_dynamic_expiration(len(harvestable_resource_ids))
+
+    harvestable_resources_limit = settings.CHUNK_SIZE
+
+    if len(harvestable_resource_ids) <= harvestable_resources_limit:
+        # No chunking, just one chord for all resources
+        resource_tasks = [
+            _harvest_resource.signature((rid, harvesting_session_id)).set(expires=task_dynamic_expiration)
+            for rid in harvestable_resource_ids
+        ]
+        finalizer = (
+            _finish_harvesting.signature((harvesting_session_id,), immutable=True)
+            .on_error(_handle_harvesting_error.signature(kwargs={"harvesting_session_id": harvesting_session_id}))
+            .set(expires=task_dynamic_expiration)
+        )
+        harvesting_workflow = chord(resource_tasks, body=finalizer)
+        transaction.on_commit(lambda: harvesting_workflow.apply_async())
+
+    else:
+        # Chunk the resource IDs only, NOT the Celery tasks
+        chunks = list(chunked(harvestable_resource_ids))
+        max_parallel_chunks = settings.MAX_PARALLEL_QUEUE_CHUNKS
+        chunk_groups = list(chunked(chunks, max_parallel_chunks))
+
+        # Estimate dynamic time limit
+        dynamic_time_limit = calculate_dynamic_time_limit()
+
+        logger.debug(f"Chunk groups: {chunk_groups}")
+
+        transaction.on_commit(
+            lambda: queue_next_chunk_batch.apply_async(
+                args=(chunk_groups, harvesting_session_id),
+                kwargs={
+                    "batch_index": 0,
+                    "dynamic_expiration": task_dynamic_expiration,
+                    "dynamic_time_limit": dynamic_time_limit,
+                },
+                expires=task_dynamic_expiration,
+                time_limit=dynamic_time_limit,
+                immutable=True,
+            )
+        )
 
 
 @app.task(
     bind=True,
     queue="geonode",
-    expires=30,
     time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
 def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id: int):
-    """Harvest a single resource from the input harvestable resource id"""
+    """
+    Harvest a single resource from the input harvestable resource id
+
+    NOTE:
+    The expiration time (`expires`) of this task is set dynamically when the task
+    is created or chained, not via the decorator. This allows the expiration to be
+    calculated based on the current workload or batch size.
+    """
     session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
     if session.status != session.STATUS_ABORTING:
         harvestable_resource = models.HarvestableResource.objects.get(pk=harvestable_resource_id)
@@ -236,12 +276,18 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
 @app.task(
     bind=True,
     queue="geonode",
-    expires=30,
     time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
 def _finish_harvesting(self, harvesting_session_id: int):
+    """
+    Finalize the harvesting session by setting its final status and logging the result.
+
+    NOTE:
+    The expiration time is set dynamically when this task is scheduled,
+    so the decorator does NOT specify an expires parameter.
+    """
     session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
     harvester = session.harvester
     if session.status == session.STATUS_ABORTING:
@@ -252,6 +298,84 @@ def _finish_harvesting(self, harvesting_session_id: int):
         final_status = session.STATUS_FINISHED_ALL_OK
     finish_asynchronous_session(harvesting_session_id, final_status=final_status, final_details=message)
     logger.debug(f"(harvester: {harvester.pk!r} - session: {harvesting_session_id!r}) " f"{message}")
+
+
+@app.task(bind=True, queue="geonode", time_limit=600, acks_late=False, ignore_result=False)
+def _finish_harvesting_chunk(self, _results, harvesting_session_id: int):
+    """
+    Optionally log chunk completion, but do NOT change final status here
+
+    NOTE:
+    The expiration time is set dynamically when this task is scheduled,
+    so the decorator does NOT specify an expires parameter.
+    """
+    logger.debug(f"Chunk finished for session {harvesting_session_id} with {len(_results)} resources.")
+
+
+@app.task(
+    bind=True,
+    queue="geonode",
+    time_limit=600,
+    acks_late=False,
+    ignore_result=False,
+)
+def queue_next_chunk_batch(
+    self,
+    chunk_groups: list,
+    harvesting_session_id: int,
+    batch_index: int = 0,
+    dynamic_expiration: int | None = None,
+    dynamic_time_limit: int | None = None,
+):
+    """
+    Queue the next batch of chunk (group of harvestable resources)
+    chords (default is 2 at a time).
+
+    NOTE:
+    The dynamic_expiration parameter controls the dynamic expiration time for all subtasks and chords.
+    """
+
+    if dynamic_expiration is None:
+        dynamic_expiration = 600  # fallback expiration (10 minutes)
+
+    if batch_index >= len(chunk_groups):
+        logger.debug(f"All batches completed for session {harvesting_session_id}")
+        return
+
+    logger.debug(
+        f"Queueing batch {batch_index + 1}/{len(chunk_groups)} for session {harvesting_session_id} with expires={dynamic_expiration}"
+    )
+
+    current_chunk_group = chunk_groups[batch_index]
+    chords_in_batch = []
+
+    for chunk in current_chunk_group:
+        resource_tasks = [
+            _harvest_resource.s(rid, harvesting_session_id).set(expires=dynamic_expiration) for rid in chunk
+        ]
+
+        chunk_finalizer = _finish_harvesting_chunk.s(harvesting_session_id).set(expires=dynamic_expiration)
+        chords_in_batch.append(chord(resource_tasks, body=chunk_finalizer))
+
+    # Add global finalizer only to the last batch
+    is_last_batch = batch_index == len(chunk_groups) - 1
+    if is_last_batch:
+        global_finalizer = (
+            _finish_harvesting.s(harvesting_session_id)
+            .on_error(_handle_harvesting_error.s(harvesting_session_id))
+            .set(expires=dynamic_expiration)
+        )
+        chords_in_batch.append(global_finalizer)
+
+    next_batch = queue_next_chunk_batch.s(
+        chunk_groups,
+        harvesting_session_id,
+        batch_index + 1,
+        dynamic_expiration=dynamic_expiration,
+        dynamic_time_limit=dynamic_time_limit,
+    ).set(expires=dynamic_expiration, time_limit=dynamic_time_limit, immutable=True)
+
+    chord(chords_in_batch, body=next_batch).apply_async()
 
 
 @app.task(
@@ -540,3 +664,54 @@ def update_asynchronous_session(
     if additional_details is not None:
         update_kwargs["details"] = Concat("details", Value(f"\n{additional_details}"))
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+
+
+def calculate_dynamic_expiration(
+    num_resources: int,
+    estimated_duration_per_resource: int = 20,
+    buffer_time: int = 300,
+) -> int:
+    """
+    Calculate a dynamic expiration time (in seconds)
+    depending on the harvestable resources
+
+    Args:
+        num_resources (int): Number of resources/tasks.
+        estimated_duration_per_resource (int): Estimated time per resource in seconds.
+        buffer_time (int): Additional buffer time in seconds.
+
+    Returns:
+        estimation time in seconds.
+    """
+    return num_resources * estimated_duration_per_resource + buffer_time
+
+
+def calculate_dynamic_time_limit(
+    estimated_duration_per_resource: int = 20,
+    buffer_time: int = 300,
+) -> int:
+    """
+    Calculate a dynamic time_limit (in seconds)
+    depending on the chunk and batch size
+
+    Args:
+        batch_size (int): Number of resources that are inserted in the queue at once.
+        estimated_duration_per_resource (int): Estimated time per resource in seconds.
+        buffer_time (int): Additional buffer time in seconds.
+
+    Returns:
+        time_limit in seconds.
+    """
+
+    chunk_size = settings.CHUNK_SIZE
+    max_parallel_queue_chunks = settings.MAX_PARALLEL_QUEUE_CHUNKS
+
+    batch_size = chunk_size * max_parallel_queue_chunks
+    estimated_time_limit = batch_size * estimated_duration_per_resource + buffer_time
+
+    return estimated_time_limit
+
+
+def chunked(iterable, chunk_size=100):
+    for i in range(0, len(iterable), chunk_size):
+        yield iterable[i : i + chunk_size]
