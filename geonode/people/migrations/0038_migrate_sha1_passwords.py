@@ -11,11 +11,12 @@ def forwards_func(apps, schema_editor):
         algorithm, salt, sha1_hash = user.password.split("$", 2)
         user.password = hasher.encode_sha1_hash(sha1_hash, salt)
         user.save(update_fields=["password"])
+    pass
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("people", "0036_merge_20210706_0951"),
+        ("people", "0037_alter_profile_keywords"),
     ]
 
     operations = [
