@@ -1,4 +1,18 @@
+'''
+This file includes code originally from the Django project
+(https://www.djangoproject.com/), which is licensed under the BSD 3-Clause License.
+
+Copyright (c) Django Software Foundation and individual contributors.
+All rights reserved.
+
+This file is distributed as part of a larger work licensed under the
+GNU General Public License version 3 (GPLv3).  Use of this file must
+comply with both the above BSD license for the portions derived from Django
+and the GPLv3 license for the combined work.
+'''
+
 import hashlib
+import warnings
 import math
 from django.utils.translation import gettext_noop as _
 from django.utils.crypto import (
@@ -6,6 +20,7 @@ from django.utils.crypto import (
     constant_time_compare,
 )
 from django.contrib.auth.hashers import PBKDF2SHA1PasswordHasher, BasePasswordHasher
+from django.utils.deprecation import RemovedInDjango51Warning
 
 
 def mask_hash(hash, show=6, char="*"):
@@ -25,12 +40,17 @@ def must_update_salt(salt, expected_entropy):
 
 class SHA1PasswordHasher(BasePasswordHasher):
     """
-    This is the legecy SHA1 password hasher which will be removed in future releases.
+    The SHA1 password hashing algorithm (not recommended)
     """
 
     algorithm = "sha1"
 
     def __init__(self, *args, **kwargs):
+        warnings.warn(
+            "django.contrib.auth.hashers.SHA1PasswordHasher is deprecated.",
+            RemovedInDjango51Warning,
+            stacklevel=2,
+        )
         super().__init__(*args, **kwargs)
 
     def encode(self, password, salt):
