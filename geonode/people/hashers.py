@@ -20,7 +20,6 @@ from django.utils.crypto import (
     constant_time_compare,
 )
 from django.contrib.auth.hashers import PBKDF2SHA1PasswordHasher, BasePasswordHasher
-from django.utils.deprecation import RemovedInDjango51Warning
 
 
 def mask_hash(hash, show=6, char="*"):
@@ -46,11 +45,6 @@ class SHA1PasswordHasher(BasePasswordHasher):
     algorithm = "sha1"
 
     def __init__(self, *args, **kwargs):
-        warnings.warn(
-            "django.contrib.auth.hashers.SHA1PasswordHasher is deprecated.",
-            RemovedInDjango51Warning,
-            stacklevel=2,
-        )
         super().__init__(*args, **kwargs)
 
     def encode(self, password, salt):
