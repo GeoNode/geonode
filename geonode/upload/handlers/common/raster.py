@@ -565,11 +565,9 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
         raise InvalidGeoTiffException(
             "The original file of the dataset is not available, Is not possible to copy the dataset"
         )
-    
+
     # Register task status
-    orchestrator.register_task_status(
-            exec_id, layer_name, actual_step, status="RUNNING"
-        )
+    orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING")
 
     new_file_location = orchestrator.load_handler(handler_module_path).copy_original_file(original_dataset)
 

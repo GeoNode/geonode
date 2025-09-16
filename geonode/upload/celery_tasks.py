@@ -84,6 +84,16 @@ class UpdateTaskClass(Task):
     max_retries = 3
     track_started = True
 
+    def on_success(self, retval, task_id, args, kwargs):
+        """
+        Called when the task succeeds.
+        Updates tasks_status for all alternates.
+        """
+        task_name = self.name
+        execution_id = args[0]
+
+        self.set_task_status(task_name, execution_id, "SUCCESS")
+
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """
         Called when the task fails.
@@ -92,22 +102,7 @@ class UpdateTaskClass(Task):
         task_name = self.name
         execution_id = args[0]
 
-        _exec = orchestrator.get_execution_object(execution_id)
-        tasks_status = _exec.tasks or {}
-
-        # Only drop the placeholder if real alternates exist
-        if "pending_alternate" in tasks_status and any(alt != "pending_alternate" for alt in tasks_status):
-            tasks_status.pop("pending_alternate")
-
-        # Mark all alternates (or placeholder) as FAILED for this task
-        for alternate_key, status_dict in tasks_status.items():
-            status_dict[task_name] = "FAILED"
-
-        # Update ExecutionRequest tasks dict first
-        orchestrator.update_execution_request_status(
-            execution_id=execution_id,
-            tasks=tasks_status,
-        )
+        self.set_task_status(task_name, execution_id, "FAILED")
 
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
@@ -136,27 +131,32 @@ class UpdateTaskClass(Task):
             tasks=tasks_status,
         )
 
-    def on_success(self, retval, task_id, args, kwargs):
+    def set_task_status(self, task_name, execution_id, status):
         """
-        Called when the task succeeds.
-        Updates tasks_status for all alternates.
+        Set the task status for the on_success and on_failure celery methods
         """
-        task_name = self.name
-        execution_id = args[0]
-
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
-        # Only drop the placeholder if real alternates exist
-        if "pending_alternate" in tasks_status and any(alt != "pending_alternate" for alt in tasks_status):
-            tasks_status.pop("pending_alternate")
+        # identify real alternates (exclude the placeholder)
+        real_alternates = {key: val for key, val in tasks_status.items() if key != "pending_alternate"}
 
-        # Mark all alternates (or placeholder) as SUCCESS for this task
+        # merge placeholder into real alternates only for missing fields
+        if "pending_alternate" in tasks_status and real_alternates:
+            placeholder_status = tasks_status.pop("pending_alternate")
+            for real_key, real_status in real_alternates.items():
+                for k, v in placeholder_status.items():
+                    # only fill in fields that are not already set
+                    if k not in real_status:
+                        real_status[k] = v
+
+        # Mark all alternates (or placeholder) as FAILED for this task
         for alternate_key, status_dict in tasks_status.items():
-            status_dict[task_name] = "SUCCESS"
+            status_dict[task_name] = status
 
+        # Update ExecutionRequest tasks dict first
         orchestrator.update_execution_request_status(
-            execution_id,
+            execution_id=execution_id,
             tasks=tasks_status,
         )
 
