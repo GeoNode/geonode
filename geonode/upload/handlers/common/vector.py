@@ -391,6 +391,7 @@ class BaseVectorFileHandler(BaseHandler):
         celery_group = None
         # list to collect all the alternates:
         layer_names = []
+        alternates = []
         task_name = "geonode.upload.import_resource"
 
         try:
@@ -431,6 +432,7 @@ class BaseVectorFileHandler(BaseHandler):
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
 
                     layer_names.append(layer_name)
+                    alternates.append(alternate)
 
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
@@ -471,7 +473,7 @@ class BaseVectorFileHandler(BaseHandler):
                 """
                 drop_dynamic_model_schema(dynamic_model)
             raise e
-        return layer_names
+        return layer_names, alternates, execution_id
 
     def _select_valid_layers(self, all_layers):
         layers = []

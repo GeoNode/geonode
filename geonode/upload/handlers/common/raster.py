@@ -33,7 +33,7 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, import_orchestrator
+from geonode.upload.celery_tasks import ErrorBaseTaskClass, UpdateTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
@@ -543,7 +543,7 @@ class BaseRasterFileHandler(BaseHandler):
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_raster_file",
     queue="geonode.upload.copy_raster_file",
     max_retries=1,
@@ -564,6 +564,11 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
     if not original_dataset.files:
         raise InvalidGeoTiffException(
             "The original file of the dataset is not available, Is not possible to copy the dataset"
+        )
+    
+    # Register task status
+    orchestrator.register_task_status(
+            exec_id, layer_name, actual_step, status="RUNNING"
         )
 
     new_file_location = orchestrator.load_handler(handler_module_path).copy_original_file(original_dataset)

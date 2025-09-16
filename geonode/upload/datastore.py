@@ -73,7 +73,7 @@ class DataStoreManager:
         """
         call the resource handler object to perform the import phase
         """
-        layer_names = self.handler().import_resource(self.files, execution_id, **kwargs)
+        layer_names, _, _ = self.handler().import_resource(self.files, execution_id, **kwargs)
 
         # Register the tasks_status with the created key alternates
         orchestrator.register_task_status(execution_id, layer_names, task_name, status="RUNNING")
