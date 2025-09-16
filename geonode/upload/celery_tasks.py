@@ -18,6 +18,7 @@
 #########################################################################
 import logging
 import os
+import sys
 from typing import Optional
 
 from celery import Task
@@ -276,6 +277,16 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            self.on_failure(
+                exc=e,
+                task_id=getattr(self.request, "id", None),
+                args=(execution_id, handler_module_path, action),
+                kwargs=kwargs,
+                einfo=sys.exc_info(),
+            )
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
 
 
@@ -379,6 +390,17 @@ def publish_resource(
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            self.on_failure(
+                exc=e,
+                task_id=getattr(self.request, "id", None),
+                args=(execution_id, handler_module_path, action),
+                kwargs=kwargs,
+                einfo=sys.exc_info(),
+            )
+
         raise PublishResourceException(detail=error_handler(e, execution_id))
 
 
@@ -482,6 +504,16 @@ def create_geonode_resource(
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            self.on_failure(
+                exc=e,
+                task_id=getattr(self.request, "id", None),
+                args=(execution_id, handler_module_path, action),
+                kwargs=kwargs,
+                einfo=sys.exc_info(),
+            )
         raise ResourceCreationException(detail=error_handler(e))
 
 
@@ -959,6 +991,15 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             error=e,
             **kwargs,
         )
+        # Explicitly call on_failure only if running in sync mode
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            self.on_failure(
+                exc=e,
+                task_id=getattr(self.request, "id", None),
+                args=(execution_id, handler_module_path, action),
+                kwargs=kwargs,
+                einfo=sys.exc_info(),
+            )
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
 
 
@@ -1039,4 +1080,13 @@ def refresh_geonode_resource(
             error=e,
             **kwargs,
         )
+        # Explicitly call on_failure only if running in sync mode
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            self.on_failure(
+                exc=e,
+                task_id=getattr(self.request, "id", None),
+                args=(execution_id, handler_module_path, action),
+                kwargs=kwargs,
+                einfo=sys.exc_info(),
+            )
         raise ResourceCreationException(detail=error_handler(e))
