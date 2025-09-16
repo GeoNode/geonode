@@ -24,22 +24,37 @@ import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
-from django.template.defaultfilters import slugify
+import xml.etree.ElementTree as ET
 
 from geonode import GeoNodeException
 from geonode.layers.models import Dataset
 from geonode.layers.utils import get_valid_name
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import gs_catalog, ogc_server_settings, create_geoserver_db_featurestore
-
+from geonode.upload.handlers.utils import create_alternate
+import uuid
 
 logger = logging.getLogger(__name__)
 
 BBOX = [-180, -90, 180, 90]
 DATA_QUALITY_MESSAGE = "Created with GeoNode"
+ATTRIBUTE_TYPE_MAP = {
+    "string": "java.lang.String",
+    "float": "java.lang.Float",
+    "integer": "java.lang.Integer",
+    "date": "java.util.Date",
+    "Point": "com.vividsolutions.jts.geom.Point",
+    "LineString": "com.vividsolutions.jts.geom.LineString",
+    "Polygon": "com.vividsolutions.jts.geom.Polygon"
+}
+RESTRICTION_OPTIONS_TYPE_MAP = {
+    "string": "string",
+    "float": "float",
+    "integer": "int"
+}
 
 
-def create_dataset(name, title, owner_name, geometry_type, attributes=None):
+def create_dataset(title, owner_name, geometry_type, attributes=None):
     """
     Create an empty layer in GeoServer and register it in GeoNode.
     """
@@ -48,7 +63,8 @@ def create_dataset(name, title, owner_name, geometry_type, attributes=None):
         msg = "geometry must be Point, LineString or Polygon"
         logger.error(msg)
         raise GeoNodeException(msg)
-    name = get_valid_name(name)
+    execution_id = str(uuid.uuid4())
+    name = create_alternate(get_valid_name(title.replace(".", "_").lower()), execution_id)
     # we can proceed
     logger.debug("Creating the layer in GeoServer")
     workspace, datastore = create_gs_dataset(name, title, geometry_type, attributes)
@@ -87,66 +103,7 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
         to_update["is_published"] = to_update["was_published"] = False
 
     resource_manager.update(layer.uuid, instance=layer, vals=to_update)
-    resource_manager.set_thumbnail(None, instance=layer)
     return layer
-
-
-def get_attributes(geometry_type, json_attrs=None):
-    """
-    Convert a json representation of attributes to a Python representation.
-
-    parameters:
-
-    json_attrs
-    {
-      "field_str": "string",
-      "field_int": "integer",
-      "field_date": "date",
-      "field_float": "float"
-    }
-
-    geometry_type: a string which can be "Point", "LineString" or "Polygon"
-
-    Output:
-    [
-         ['the_geom', u'com.vividsolutions.jts.geom.Polygon', {'nillable': False}],
-         ['field_str', 'java.lang.String', {'nillable': True}],
-         ['field_int', 'java.lang.Integer', {'nillable': True}],
-         ['field_date', 'java.util.Date', {'nillable': True}],
-         ['field_float', 'java.lang.Float', {'nillable': True}]
-    ]
-    """
-
-    lattrs = []
-    gattr = []
-    gattr.append("the_geom")
-    gattr.append(f"com.vividsolutions.jts.geom.{geometry_type}")
-    gattr.append({"nillable": False})
-    lattrs.append(gattr)
-    if json_attrs:
-        jattrs = json.loads(json_attrs)
-        for jattr in jattrs.items():
-            lattr = []
-            attr_name = slugify(jattr[0])
-            attr_type = jattr[1].lower()
-            if len(attr_name) == 0:
-                msg = f"You must provide an attribute name for attribute of type {attr_type}"
-                logger.error(msg)
-                raise GeoNodeException(msg)
-            if attr_type not in ("float", "date", "string", "integer"):
-                msg = f"{attr_type} is not a valid type for attribute {attr_name}"
-                logger.error(msg)
-                raise GeoNodeException(msg)
-            if attr_type == "date":
-                attr_type = f"java.util.{(attr_type[:1].upper() + attr_type[1:])}"
-            else:
-                attr_type = f"java.lang.{(attr_type[:1].upper() + attr_type[1:])}"
-            lattr.append(attr_name)
-            lattr.append(attr_type)
-            lattr.append({"nillable": True})
-            lattrs.append(lattr)
-    return lattrs
-
 
 def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
     """
@@ -156,6 +113,77 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
     ds = create_geoserver_db_featurestore(store_name=dsname, workspace=workspace)
     return ds
 
+def validate_attributes(attributes_dict):
+    for name in attributes_dict:
+        info = attributes_dict[name]
+        attr_type = info.get("type")
+        attr_options = info.get("options")
+        attr_range = info.get("range")
+        if len(name) == 0:
+            msg = f"You must provide an attribute name for attribute of type {attr_type}"
+            logger.error(msg)
+            raise GeoNodeException(msg)
+        if not ATTRIBUTE_TYPE_MAP.get(attr_type):
+            msg = f"{attr_type} is not a valid type for attribute {name}"
+            logger.error(msg)
+            raise GeoNodeException(msg)
+        if attr_type == "date" and attr_options:
+            msg = f"{attr_type} does not support options restriction"
+            logger.error(msg)
+            raise GeoNodeException(msg)
+        if attr_type in ["date", "string"] and attr_range:
+            msg = f"{attr_type} does not support range restriction"
+            logger.error(msg)
+            raise GeoNodeException(msg)
+    return True
+
+def should_apply_restrictions(attributes_dict):
+    for name in attributes_dict:
+        info = attributes_dict[name]
+        attr_options = info.get("options")
+        attr_range = info.get("range")
+        if attr_options or attr_range:
+            return True
+    return False
+
+def add_attributes_to_xml(attributes_dict, xml):
+    root = ET.fromstring(xml)
+    attributes_tag = root.find("attributes")
+    for name in attributes_dict:
+        info = attributes_dict[name]
+        attr_name = name
+        attr_type = ATTRIBUTE_TYPE_MAP.get(info.get("type"))
+        attr_nillable = "false"
+        if info.get("nillable"):
+            attr_nillable = "true"
+        attribute_tag = ET.SubElement(attributes_tag, "attribute")
+        ET.SubElement(attribute_tag, "name").text = f"{attr_name}"
+        ET.SubElement(attribute_tag, "binding").text = f"{attr_type}"
+        ET.SubElement(attribute_tag, "nillable").text = f"{attr_nillable}"
+    return ET.tostring(root)
+
+def apply_restrictions_to_xml(attributes_dict, xml):
+    root = ET.fromstring(xml)
+    attributes_tag = root.find("attributes")
+    for attribute in attributes_tag.findall("attribute"):
+        name = attribute.find("name").text
+        info = attributes_dict.get(name, None)
+        if info:
+            restrictions_range = info.get("range")
+            if restrictions_range:
+                min_restrictions_range = restrictions_range.get("min", None)
+                max_restrictions_range = restrictions_range.get("max", None)
+                range_tag = ET.SubElement(attribute, "range")
+                if min_restrictions_range != None:
+                    ET.SubElement(range_tag, "min").text = f"{min_restrictions_range}"
+                if max_restrictions_range != None:
+                    ET.SubElement(range_tag, "max").text = f"{max_restrictions_range}"
+            restrictions_options = info.get("options")
+            if restrictions_options:
+                options_tag = ET.SubElement(attribute, "options")
+                for option in restrictions_options:
+                    ET.SubElement(options_tag, RESTRICTION_OPTIONS_TYPE_MAP.get(info.get("type"))).text = f"{option}"
+    return ET.tostring(root)
 
 def create_gs_dataset(name, title, geometry_type, attributes=None):
     """
@@ -186,41 +214,66 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
             logger.error(msg)
             raise GeoNodeException(msg)
 
-    attributes = get_attributes(geometry_type, attributes)
-    attributes_block = "<attributes>"
-    for spec in attributes:
-        att_name, binding, opts = spec
-        nillable = opts.get("nillable", False)
-        attributes_block += (
-            "<attribute>"
-            f"<name>{att_name}</name>"
-            f"<binding>{binding}</binding>"
-            f"<nillable>{nillable}</nillable>"
-            "</attribute>"
-        )
-    attributes_block += "</attributes>"
-
     # TODO implement others srs and not only EPSG:4326
-    xml = (
+    base_xml = (
         "<featureType>"
         f"<name>{name}</name>"
         f"<nativeName>{native_name}</nativeName>"
         f"<title>{title}</title>"
         "<srs>EPSG:4326</srs>"
         f"<latLonBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[2]}</maxx><miny>{BBOX[1]}</miny><maxy>{BBOX[3]}</maxy>"
-        f"<crs>EPSG:4326</crs></latLonBoundingBox>"
-        f"{attributes_block}"
+        "<crs>EPSG:4326</crs></latLonBoundingBox>"
+        "<attributes></attributes>"
         "</featureType>"
     )
 
+    # structure example for attributes_dict
+    # {
+    #   "field_str": { "type": "string" },
+    #   "field_int": { "type": "integer" },
+    #   "field_date": { "type":"date" },
+    #   "field_float": { "type": "float" },
+    #   "field_str_options": { "type": "string", "nillable": False, "options": ["A", "B", "C"] },
+    #   "field_int_options": { "type": "integer", "nillable": False, "options": [1, 2, 3] },
+    #   "field_int_range": { "type": "integer", "nillable": False, "range": { "min": 1, "max": 10 } },
+    #   "field_float_options": { "type": "integer", "nillable": False, "options": [1.2, 2.4, 3.6] },
+    #   "field_float_range": { "type": "integer", "nillable": False, "range": { "min": 1.5, "max": 10.5 } },
+    # }
+    attributes_dict = json.loads(attributes)
+
+    validate_attributes(attributes_dict)
+
+    xml = add_attributes_to_xml({
+        **attributes_dict,
+        # include geometry as available attribute
+        "geom": {
+            "type": geometry_type,
+            "nillable": False
+        }
+    }, base_xml)
+
     url = f"{ogc_server_settings.rest}/workspaces/{workspace.name}/datastores/{datastore.name}/featuretypes"
-    headers = {"Content-Type": "application/xml"}
+    headers = { "Content-Type": "application/xml" }
     _user, _password = ogc_server_settings.credentials
+
     req = requests.post(url, data=xml, headers=headers, auth=(_user, _password))
     if req.status_code != 201:
         logger.error(f"Request status code was: {req.status_code}")
         logger.error(f"Response was: {req.text}")
         raise Exception(f"Dataset could not be created in GeoServer {req.text}")
+
+    if should_apply_restrictions(attributes_dict):
+        # At the moment GeoServer is not able to register the restrictions on the initial POST
+        # we are sending a GET request to retrieve the generated and updated featureType xml from GeoServer
+        # because it may includes additional attributes (e.g. fid primary key)
+        # then we send an additional PUT request to store the assigned restrictions
+        get_req = requests.get(f"{url}/{name}.xml", headers=headers, auth=(_user, _password))
+        if get_req.status_code == 200:
+            restrictions_xml = apply_restrictions_to_xml(attributes_dict, get_req.text)
+            restrictions_req = requests.put(f"{url}/{name}", data=restrictions_xml, headers=headers, auth=(_user, _password))
+            if restrictions_req.status_code != 201:
+                logger.error(f"PUT restrictions request status code was: {restrictions_req.status_code}")
+                logger.error(f"PUT restrictions response was: {restrictions_req.text}")
 
     cat.reload()
     return workspace, datastore

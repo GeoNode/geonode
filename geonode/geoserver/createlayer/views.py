@@ -23,12 +23,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
 from django.shortcuts import redirect
+from django.http import JsonResponse
 
 from geonode.security.permissions import DEFAULT_PERMS_SPEC
 
 from .forms import NewDatasetForm
 from .utils import create_dataset
-
 
 @login_required
 def dataset_create(request, template="createlayer/dataset_create.html"):
@@ -38,19 +38,22 @@ def dataset_create(request, template="createlayer/dataset_create.html"):
     error = None
     if request.method == "POST":
         form = NewDatasetForm(request.POST)
+        format = request.GET.get("f", None)
         if form.is_valid():
             try:
-                name = form.cleaned_data["name"]
-                name = slugify(name.replace(".", "_"))
                 title = form.cleaned_data["title"]
                 geometry_type = form.cleaned_data["geometry_type"]
                 attributes = form.cleaned_data["attributes"]
                 permissions = DEFAULT_PERMS_SPEC
-                layer = create_dataset(name, title, request.user.username, geometry_type, attributes)
+                layer = create_dataset(title, request.user.username, geometry_type, attributes)
                 layer.set_permissions(json.loads(permissions), created=True)
+                if format == 'json':
+                    return JsonResponse({ 'pk': layer.pk, 'detail_url': layer.detail_url })
                 return redirect(layer)
             except Exception as e:
                 error = f"{e} ({type(e)})"
+                if format == 'json':
+                    return JsonResponse({ 'error': error })
     else:
         form = NewDatasetForm()
 

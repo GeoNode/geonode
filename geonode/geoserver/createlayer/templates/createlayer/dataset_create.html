@@ -87,7 +87,7 @@
       $('.attr-definition').each(function(i, obj) {
           attr_name = obj.childNodes[0].value;
           attr_type = obj.childNodes[1].value;
-          attrs[attr_name] = attr_type;
+          attrs[attr_name] = { type: attr_type };
       });
       $('#attributes').val(JSON.stringify(attrs));
     });

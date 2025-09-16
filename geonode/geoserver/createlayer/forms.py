@@ -32,7 +32,6 @@ class NewDatasetForm(forms.Form):
     A form to create an empty layer in PostGIS.
     """
 
-    name = forms.CharField(label=_("Dataset name"), max_length=255)
     title = forms.CharField(label=_("Dataset title"), max_length=255)
     geometry_type = forms.ChoiceField(label=_("Geometry type"), choices=GEOMETRY_TYPES)
 
