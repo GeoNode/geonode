@@ -1,4 +1,4 @@
-'''
+"""
 This file includes code originally from the Django project
 (https://www.djangoproject.com/), which is licensed under the BSD 3-Clause License.
 
@@ -9,10 +9,9 @@ This file is distributed as part of a larger work licensed under the
 GNU General Public License version 3 (GPLv3).  Use of this file must
 comply with both the above BSD license for the portions derived from Django
 and the GPLv3 license for the combined work.
-'''
+"""
 
 import hashlib
-import warnings
 import math
 from django.utils.translation import gettext_noop as _
 from django.utils.crypto import (
