@@ -1313,7 +1313,7 @@ def import_with_ogr2ogr(
     If the layer should be overwritten, the option is appended dynamically
     """
     try:
-        ogr_exe = "/usr/bin/ogr2ogr"
+        ogr_exe = "/usr/local/bin/ogr2ogr"
 
         options = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
             files, original_name, ovverwrite_layer, alternate
@@ -1326,7 +1326,6 @@ def import_with_ogr2ogr(
             options += f" | PGPASSWORD={_datastore['PASSWORD']} psql -d {_datastore['NAME']} -h {_datastore['HOST']} -p {_datastore.get('PORT', 5432)} -U {_datastore['USER']} -f -"
 
         commands = [ogr_exe] + options.split(" ")
-
         process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
         stdout, stderr = process.communicate()
         if (

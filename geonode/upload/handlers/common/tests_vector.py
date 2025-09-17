@@ -253,7 +253,7 @@ class TestBaseVectorFileHandler(TestCase):
         _datastore = settings.DATABASES["datastore"]
         _open.assert_called_once()
         _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
+            "/usr/local/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
             + os.getenv("DATABASE_HOST", "localhost")
             + " port=5432 user='"
             + _datastore["USER"]
@@ -289,7 +289,7 @@ class TestBaseVectorFileHandler(TestCase):
 
         _open.assert_called_once()
         _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
+            "/usr/local/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
             + os.getenv("DATABASE_HOST", "localhost")
             + " port=5432 user='"
             + _datastore["USER"]

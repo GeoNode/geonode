@@ -21,17 +21,31 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     python3-all-dev python3-dev \
     python3-gdal python3-psycopg2 python3-ldap \
     python3-pip python3-lxml \
-    uwsgi uwsgi-plugin-python3 python3-gdbm python-is-python3 gdal-bin
+    uwsgi uwsgi-plugin-python3 python3-gdbm python-is-python3 cmake
 
 RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharutils
 # RUN git clone https://salsa.debian.org/debian-gis-team/proj.git /tmp/proj
 # RUN cd /tmp/proj && debuild -i -us -uc -b && dpkg -i ../*.deb
 
+WORKDIR /tmp
+RUN wget https://download.osgeo.org/gdal/CURRENT/gdal-3.11.4.tar.gz
+RUN tar -xvf gdal-3.11.4.tar.gz
+RUN cd gdal-3.11.4
+RUN mkdir build
+RUN cd build
+RUN cmake /tmp/gdal-3.11.4
+RUN cmake --build . --parallel 8
+RUN cmake --build . --parallel 8 --target install
+RUN ldconfig
+
+WORKDIR /usr/src/geonode
+
+
 # Install pip packages
 RUN pip3 install uwsgi \
     && pip install pip --upgrade \
     && pip install wheel==0.38.1 \
-    && pip install pygdal==$(gdal-config --version).*
+    && pip install GDAL==$(gdal-config --version).*
 
 # Install "sherlock" to be used with "memcached"
 RUN pip install sherlock
