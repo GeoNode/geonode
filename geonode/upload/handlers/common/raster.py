@@ -35,14 +35,14 @@ from geonode.resource.models import ExecutionRequest
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_tasks import UpdateTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
+
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from osgeo import gdal
-from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
 from geonode.assets.handlers import asset_handler_registry
+from geonode.assets.models import Asset
 
 logger = logging.getLogger("importer")
 
@@ -228,6 +228,12 @@ class BaseRasterFileHandler(BaseHandler):
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
+            # kwargs may be unwrapped by publish_resource; support both forms
+            nl = kwargs.get("new_file_location") or kwargs.get("kwargs", {}).get("new_file_location", {})
+            raster_path = None
+            if nl:
+                files_list = nl.get("files") or []
+                raster_path = files_list[0] if files_list else None
             return [
                 {
                     "name": alternate,
@@ -236,7 +242,7 @@ class BaseRasterFileHandler(BaseHandler):
                     )
                     .first()
                     .srid,
-                    "raster_path": kwargs["kwargs"].get("new_file_location").get("files")[0],
+                    "raster_path": raster_path,
                 }
             ]
 
@@ -503,11 +509,21 @@ class BaseRasterFileHandler(BaseHandler):
         new_alternate: str,
         **kwargs,
     ):
+        # Extract cloned asset reference from kwargs (supports both asset and asset_id)
+        _nl = (
+            kwargs.get("kwargs", {}).get("new_file_location", {})
+            if "kwargs" in kwargs
+            else kwargs.get("new_file_location", {})
+        )
+        _asset = _nl.get("asset")
+        _asset_id = _nl.get("asset_id")
+        if not _asset and _asset_id:
+            _asset = Asset.objects.filter(pk=_asset_id).first()
         resource = self.create_geonode_resource(
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
-            asset=kwargs.get("kwargs", {}).get("new_file_location", {}).get("asset", []),
+            asset=_asset,
         )
         resource.refresh_from_db()
         return resource

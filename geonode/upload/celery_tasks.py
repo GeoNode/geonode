@@ -61,6 +61,9 @@ from geonode.upload.utils import (
     find_key_recursively,
     ImporterRequestAction as ira,
 )
+from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
+from geonode.assets.handlers import asset_handler_registry
+from geonode.assets.utils import get_default_asset
 
 logger = logging.getLogger("importer")
 
@@ -1104,3 +1107,59 @@ def refresh_geonode_resource(
         # Explicitly call on_failure only if running in sync mode
         call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise ResourceCreationException(detail=error_handler(e))
+
+
+@importer_app.task(
+    base=ErrorBaseTaskClass,
+    name="geonode.upload.copy_raster_file",
+    queue="geonode.upload.copy_raster_file",
+    max_retries=1,
+    acks_late=False,
+    ignore_result=False,
+    task_track_started=True,
+)
+def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
+    """
+    Perform a copy of the original raster file"""
+
+    original_dataset = ResourceBase.objects.filter(alternate=alternate)
+    if not original_dataset.exists():
+        raise InvalidGeoTiffException("Dataset required does not exists")
+
+    original_dataset = original_dataset.first()
+
+    # Ensure the dataset has at least one Asset associated
+    original_asset = get_default_asset(original_dataset)
+    if not original_asset:
+        raise InvalidGeoTiffException("The original asset of the dataset is not available; cannot copy the dataset")
+
+    # Clone the asset using its handler (this copies the underlying files currently clones default one)
+    cloned_asset = asset_handler_registry.get_handler(original_asset).clone(original_asset)
+    new_file_location = {
+        "files": cloned_asset.location if getattr(cloned_asset, "location", None) else [],
+        "asset_id": cloned_asset.id,
+    }
+    if not new_file_location["files"]:
+        raise InvalidGeoTiffException("Could not determine the location of the copied file")
+
+    new_dataset_alternate = create_alternate(original_dataset.title, exec_id)
+
+    additional_kwargs = {
+        "original_dataset_alternate": original_dataset.alternate,
+        "new_dataset_alternate": new_dataset_alternate,
+        "new_file_location": new_file_location,
+    }
+
+    task_params = (
+        {},
+        exec_id,
+        handler_module_path,
+        actual_step,
+        layer_name,
+        new_dataset_alternate,
+        action,
+    )
+
+    import_orchestrator.apply_async(task_params, additional_kwargs)
+
+    return "copy_raster", layer_name, alternate, exec_id
