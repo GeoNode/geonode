@@ -18,7 +18,6 @@
 #########################################################################
 import logging
 import os
-import sys
 from typing import Optional
 
 from celery import Task
@@ -57,6 +56,7 @@ from geonode.upload.settings import (
 )
 from geonode.upload.utils import (
     call_rollback_function,
+    call_on_failure,
     error_handler,
     find_key_recursively,
     ImporterRequestAction as ira,
@@ -279,14 +279,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         )
 
         # Explicitly call on_failure only if running in sync mode
-        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
-            self.on_failure(
-                exc=e,
-                task_id=getattr(self.request, "id", None),
-                args=(execution_id, handler_module_path, action),
-                kwargs=kwargs,
-                einfo=sys.exc_info(),
-            )
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
 
 
@@ -392,15 +385,7 @@ def publish_resource(
         )
 
         # Explicitly call on_failure only if running in sync mode
-        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
-            self.on_failure(
-                exc=e,
-                task_id=getattr(self.request, "id", None),
-                args=(execution_id, handler_module_path, action),
-                kwargs=kwargs,
-                einfo=sys.exc_info(),
-            )
-
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
         raise PublishResourceException(detail=error_handler(e, execution_id))
 
 
@@ -506,18 +491,12 @@ def create_geonode_resource(
         )
 
         # Explicitly call on_failure only if running in sync mode
-        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
-            self.on_failure(
-                exc=e,
-                task_id=getattr(self.request, "id", None),
-                args=(execution_id, handler_module_path, action),
-                kwargs=kwargs,
-                einfo=sys.exc_info(),
-            )
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
         raise ResourceCreationException(detail=error_handler(e))
 
 
 @importer_app.task(
+    bind=True,
     base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_resource",
     queue="geonode.upload.copy_geonode_resource",
@@ -526,7 +505,7 @@ def create_geonode_resource(
     ignore_result=False,
     task_track_started=True,
 )
-def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
+def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
     """
     Copy the geonode resource and create a new one. an assert is performed to be sure that the new resource
     have the new generated alternate
@@ -626,6 +605,8 @@ def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_m
             error=e,
             **kwargs,
         )
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs)
         raise CopyResourceException(detail=e)
     return exec_id, new_alternate
 
@@ -707,12 +688,13 @@ def create_dynamic_structure(
 
 
 @importer_app.task(
+    bind=True,
     base=UpdateTaskClass,
     name="geonode.upload.copy_dynamic_model",
     queue="geonode.upload.copy_dynamic_model",
     task_track_started=True,
 )
-def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
+def copy_dynamic_model(self, exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
@@ -791,17 +773,21 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
             error=e,
             **{**kwargs, **additional_kwargs},
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs)
         raise CopyResourceException(detail=e)
     return exec_id, kwargs
 
 
 @importer_app.task(
+    bind=True,
     base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_data_table",
     queue="geonode.upload.copy_geonode_data_table",
     task_track_started=True,
 )
-def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handlers_module_path, action, **kwargs):
+def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, handlers_module_path, action, **kwargs):
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
@@ -853,6 +839,9 @@ def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handler
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, exec_id, handlers_module_path, action, kwargs)
         raise CopyResourceException(detail=e)
     return exec_id, kwargs
 
@@ -960,7 +949,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         if not is_valid:
             raise UpsertException(errors)
 
-        upsert_success, result = _datastore.upsert_data(execution_id, **kwargs)
+        upsert_success, result = _datastore.upsert_data(execution_id, self.name, **kwargs)
 
         orchestrator.update_execution_request_obj(_exec, {"output_params": {"upsert": result}})
 
@@ -991,15 +980,9 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             error=e,
             **kwargs,
         )
+
         # Explicitly call on_failure only if running in sync mode
-        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
-            self.on_failure(
-                exc=e,
-                task_id=getattr(self.request, "id", None),
-                args=(execution_id, handler_module_path, action),
-                kwargs=kwargs,
-                einfo=sys.exc_info(),
-            )
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
 
 
@@ -1080,13 +1063,7 @@ def refresh_geonode_resource(
             error=e,
             **kwargs,
         )
+
         # Explicitly call on_failure only if running in sync mode
-        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
-            self.on_failure(
-                exc=e,
-                task_id=getattr(self.request, "id", None),
-                args=(execution_id, handler_module_path, action),
-                kwargs=kwargs,
-                einfo=sys.exc_info(),
-            )
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
         raise ResourceCreationException(detail=error_handler(e))

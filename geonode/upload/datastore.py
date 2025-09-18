@@ -85,7 +85,7 @@ class DataStoreManager:
         """
         return self.handler().upsert_validation(self.files, execution_id, **kwargs)
 
-    def upsert_data(self, execution_id, **kwargs):
+    def upsert_data(self, execution_id, task_name, **kwargs):
         """
         Call the resource handler to perform the upsert operation.
         """
@@ -94,7 +94,7 @@ class DataStoreManager:
         # register the task as RUNNING
         layer_name = result.get("layer_name", None)
 
-        orchestrator.register_task_status(execution_id, layer_name, self.name, status="RUNNING")
+        orchestrator.register_task_status(execution_id, layer_name, task_name, status="RUNNING")
 
         return upsert_success, result
 

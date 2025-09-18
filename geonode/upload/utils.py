@@ -17,6 +17,7 @@
 #
 #########################################################################
 import enum
+import sys
 from geonode.resource.manager import ResourceManager
 from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.base.models import ResourceBase
@@ -103,6 +104,21 @@ def call_rollback_function(
     kwargs["previous_action"] = prev_action
     kwargs["error"] = error_handler(error, exec_id=execution_id)
     import_orchestrator.apply_async(task_params, kwargs)
+
+
+def call_on_failure(task, exc, execution_id, handler_module_path, action, kwargs):
+    """
+    Helper method for calling the on_failure
+    in case of the SYNC mode
+    """
+    if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+        task.on_failure(
+            exc=exc,
+            task_id=getattr(task.request, "id", None),
+            args=(execution_id, handler_module_path, action),
+            kwargs=kwargs,
+            einfo=sys.exc_info(),
+        )
 
 
 def find_key_recursively(obj, key):
