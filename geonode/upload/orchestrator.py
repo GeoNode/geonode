@@ -182,6 +182,9 @@ class ImportOrchestrator:
                     action,
                 )
 
+                # We create the layer key through which the layer is stored in the tasks schema
+                kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id)).lower()
+
             # continuing to the next step
             importer_app.tasks.get(next_step).apply_async(task_params, kwargs)
             return execution_id

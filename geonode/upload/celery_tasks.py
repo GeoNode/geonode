@@ -92,8 +92,9 @@ class UpdateTaskClass(Task):
         """
         task_name = self.name
         execution_id = args[0]
+        layer_key = kwargs.get("layer_key", None)
 
-        self.set_task_status(task_name, execution_id, "SUCCESS")
+        self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """
@@ -102,8 +103,9 @@ class UpdateTaskClass(Task):
         """
         task_name = self.name
         execution_id = args[0]
+        layer_key = kwargs.get("layer_key", None)
 
-        self.set_task_status(task_name, execution_id, "FAILED")
+        self.set_task_status(task_name, execution_id, layer_key, "FAILED")
 
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
@@ -132,7 +134,7 @@ class UpdateTaskClass(Task):
             tasks=tasks_status,
         )
 
-    def set_task_status(self, task_name, execution_id, status):
+    def set_task_status(self, task_name, execution_id, layer_key, status):
         """
         Set the task status for the on_success and on_failure celery methods
         """
@@ -151,7 +153,7 @@ class UpdateTaskClass(Task):
                     if k not in real_status:
                         real_status[k] = v
 
-        # Mark all alternates (or placeholder) as FAILED for this task
+        # Mark the status for all alternates (or placeholder)
         for alternate_key, status_dict in tasks_status.items():
             status_dict[task_name] = status
 
@@ -454,6 +456,9 @@ def create_geonode_resource(
                 alternate=alternate,
                 execution_id=execution_id,
             )
+
+        if layer_name == 'example2__point3':
+            raise Exception("wrong")
 
         handler.create_asset_and_link(resource, _files, action=_exec.action)
 
