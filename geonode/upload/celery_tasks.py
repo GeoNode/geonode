@@ -93,7 +93,8 @@ class UpdateTaskClass(Task):
         """
         task_name = self.name
         execution_id = args[0]
-        layer_key = kwargs.get("layer_key", None)
+        # layer = _key = kwargs.get("layer_key", None)
+        layer_key = find_key_recursively(kwargs, 'layer_key')
 
         self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
 
