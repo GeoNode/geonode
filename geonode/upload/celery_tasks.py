@@ -43,6 +43,7 @@ from geonode.upload.datastore import DataStoreManager
 from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     create_alternate,
+    create_layer_key,
     drop_dynamic_model_schema,
     evaluate_error,
     get_uuid,
@@ -121,18 +122,18 @@ class UpdateTaskClass(Task):
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
-        # If no alternates exist yet (import task), use the placeholder
+        # If no layer exist yet (import task), use the placeholder
         if not tasks_status:
-            tasks_status["pending_alternate"] = {}
+            tasks_status["pending_layer"] = {}
 
-        # Mark task as RUNNING for all existing alternates (or placeholder)
-        for alternate_key, status_dict in tasks_status.items():
-            status_dict[task_name] = "PENDING"
+        for layer_key, status_dict in tasks_status.items():
+            if status_dict.get(task_name) is None:
+                status_dict[task_name] = "PENDING"
 
-        orchestrator.update_execution_request_status(
-            execution_id,
-            tasks=tasks_status,
-        )
+            orchestrator.update_execution_request_status(
+                execution_id,
+                tasks=tasks_status,
+            )
 
     def set_task_status(self, task_name, execution_id, layer_key, status):
         """
@@ -142,20 +143,28 @@ class UpdateTaskClass(Task):
         tasks_status = _exec.tasks or {}
 
         # identify real alternates (exclude the placeholder)
-        real_alternates = {key: val for key, val in tasks_status.items() if key != "pending_alternate"}
+        real_layernames = {key: val for key, val in tasks_status.items() if key != "pending_layer"}
 
-        # merge placeholder into real alternates only for missing fields
-        if "pending_alternate" in tasks_status and real_alternates:
-            placeholder_status = tasks_status.pop("pending_alternate")
-            for real_key, real_status in real_alternates.items():
+        # merge placeholder into real layer names only for missing fields
+        if "pending_layer" in tasks_status and real_layernames:
+            placeholder_status = tasks_status.pop("pending_layer")
+            for real_key, real_status in real_layernames.items():
                 for k, v in placeholder_status.items():
                     # only fill in fields that are not already set
                     if k not in real_status:
                         real_status[k] = v
 
+        
+        if task_name == "geonode.upload.import_resource":
+            # in case of the import_resource we define the same
+            # status to all the layers (in case of multiple layers)
+            for layer_key, status_dict in tasks_status.items():
+                status_dict[task_name] = status
+        
         # Mark the status for all alternates (or placeholder)
-        for alternate_key, status_dict in tasks_status.items():
-            status_dict[task_name] = status
+        else:
+            if layer_key in tasks_status:
+                tasks_status[layer_key][task_name] = status
 
         # Update ExecutionRequest tasks dict first
         orchestrator.update_execution_request_status(
@@ -456,9 +465,6 @@ def create_geonode_resource(
                 alternate=alternate,
                 execution_id=execution_id,
             )
-
-        if layer_name == 'example2__point3':
-            raise Exception("wrong")
 
         handler.create_asset_and_link(resource, _files, action=_exec.action)
 
