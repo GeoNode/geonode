@@ -11,7 +11,7 @@ RUN echo "deb https://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg m
 
 # Prepraing dependencies
 RUN apt-get install -y \
-    libgdal-dev libpq-dev libxml2-dev \
+    libpq-dev libxml2-dev libproj-dev \
     libxml2 libxslt1-dev zlib1g-dev libjpeg-dev \
     libmemcached-dev libldap2-dev libsasl2-dev libffi-dev
 
@@ -19,7 +19,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     gcc vim zip gettext geoip-bin cron \
     postgresql-client-15 \
     python3-all-dev python3-dev \
-    python3-gdal python3-psycopg2 python3-ldap \
+    python3-psycopg2 python3-ldap \
     python3-pip python3-lxml \
     uwsgi uwsgi-plugin-python3 python3-gdbm python-is-python3 cmake
 
@@ -28,7 +28,7 @@ RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharut
 # RUN cd /tmp/proj && debuild -i -us -uc -b && dpkg -i ../*.deb
 
 WORKDIR /tmp
-RUN wget https://download.osgeo.org/gdal/CURRENT/gdal-3.11.4.tar.gz
+RUN wget https://download.osgeo.org/gdal/3.11.4/gdal-3.11.4.tar.gz
 RUN tar -xvf gdal-3.11.4.tar.gz
 RUN cd gdal-3.11.4
 RUN mkdir build
