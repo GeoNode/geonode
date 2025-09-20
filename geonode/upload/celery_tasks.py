@@ -93,8 +93,7 @@ class UpdateTaskClass(Task):
         """
         task_name = self.name
         execution_id = args[0]
-        # layer = _key = kwargs.get("layer_key", None)
-        layer_key = find_key_recursively(kwargs, 'layer_key')
+        layer_key = find_key_recursively(kwargs, "layer_key")
 
         self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
 
@@ -105,7 +104,7 @@ class UpdateTaskClass(Task):
         """
         task_name = self.name
         execution_id = args[0]
-        layer_key = kwargs.get("layer_key", None)
+        layer_key = find_key_recursively(kwargs, "layer_key")
 
         self.set_task_status(task_name, execution_id, layer_key, "FAILED")
 
@@ -144,27 +143,40 @@ class UpdateTaskClass(Task):
         tasks_status = _exec.tasks or {}
 
         # identify real alternates (exclude the placeholder)
-        real_layernames = {key: val for key, val in tasks_status.items() if key != "pending_layer"}
+        if "pending_layer" in tasks_status:
+            placeholder_status = tasks_status["pending_layer"]
 
-        # merge placeholder into real layer names only for missing fields
-        if "pending_layer" in tasks_status and real_layernames:
-            placeholder_status = tasks_status.pop("pending_layer")
-            for real_key, real_status in real_layernames.items():
-                for k, v in placeholder_status.items():
-                    # only fill in fields that are not already set
-                    if k not in real_status:
-                        real_status[k] = v
+            # Only merge if layer_key is defined
+            if layer_key is not None:
+                # ensure real layer exists
+                if layer_key not in tasks_status:
+                    tasks_status[layer_key] = {}
 
-        
+                status_dict = tasks_status[layer_key]
+
+                # merge only missing task statuses
+                for task, task_status in placeholder_status.items():
+                    if task not in status_dict:
+                        status_dict[task] = task_status
+
+            # Remove pending_layer if all real layers have at least one task status
+            real_layers = [k for k in tasks_status if k != "pending_layer"]
+            if real_layers:
+                tasks_status.pop("pending_layer")
+
         if task_name == "geonode.upload.import_resource":
             # in case of the import_resource we define the same
             # status to all the layers (in case of multiple layers)
             for layer_key, status_dict in tasks_status.items():
                 status_dict[task_name] = status
-        
+
         # Mark the status for all alternates (or placeholder)
         else:
-            if layer_key in tasks_status:
+            if layer_key is not None:
+                # Ensure the layer exists
+                if layer_key not in tasks_status:
+                    tasks_status[layer_key] = {}
+
                 tasks_status[layer_key][task_name] = status
 
         # Update ExecutionRequest tasks dict first
@@ -397,7 +409,7 @@ def publish_resource(
         )
 
         # Explicitly call on_failure only if running in sync mode
-        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise PublishResourceException(detail=error_handler(e, execution_id))
 
 
@@ -503,7 +515,7 @@ def create_geonode_resource(
         )
 
         # Explicitly call on_failure only if running in sync mode
-        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise ResourceCreationException(detail=error_handler(e))
 
 
@@ -618,7 +630,7 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
             **kwargs,
         )
         # Explicitly call on_failure only if running in sync mode
-        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs)
+        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs, layer_name)
         raise CopyResourceException(detail=e)
     return exec_id, new_alternate
 
@@ -787,7 +799,7 @@ def copy_dynamic_model(self, exec_id, actual_step, layer_name, alternate, handle
         )
 
         # Explicitly call on_failure only if running in sync mode
-        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs)
+        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs, layer_name)
         raise CopyResourceException(detail=e)
     return exec_id, kwargs
 
@@ -981,7 +993,8 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         )
 
         layer_name = result.get("layer_name", None)
-         # We create the layer key through which the layer is stored in the tasks schema
+
+        # We create the layer key through which the layer is stored in the tasks schema
         kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id)).lower()
 
         import_orchestrator.apply_async(task_params, kwargs)
@@ -998,7 +1011,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         )
 
         # Explicitly call on_failure only if running in sync mode
-        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
 
 
@@ -1081,5 +1094,5 @@ def refresh_geonode_resource(
         )
 
         # Explicitly call on_failure only if running in sync mode
-        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise ResourceCreationException(detail=error_handler(e))
