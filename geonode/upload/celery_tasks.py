@@ -85,6 +85,9 @@ class ErrorBaseTaskClass(Task):
 class UpdateTaskClass(Task):
     max_retries = 3
     track_started = True
+    # We need a flag to check if the current task is the import_resource
+    # since it handles all the layers at the same time
+    bulk: bool = False
 
     def on_success(self, retval, task_id, args, kwargs):
         """
@@ -141,6 +144,8 @@ class UpdateTaskClass(Task):
         """
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
+        # check if this task is bulk
+        bulk = getattr(self, "bulk", False)  # True for import_resource
 
         # identify real alternates (exclude the placeholder)
         if "pending_layer" in tasks_status:
@@ -164,7 +169,7 @@ class UpdateTaskClass(Task):
             if real_layers:
                 tasks_status.pop("pending_layer")
 
-        if task_name == "geonode.upload.import_resource":
+        if bulk:
             # in case of the import_resource we define the same
             # status to all the layers (in case of multiple layers)
             for layer_key, status_dict in tasks_status.items():
@@ -260,6 +265,9 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
     """
     # Updating status to running
     try:
+        # mark this task as bulk
+        self.bulk = True
+
         orchestrator.update_execution_request_status(
             execution_id=execution_id,
             last_updated=timezone.now(),
