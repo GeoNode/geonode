@@ -213,6 +213,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
                 "success": {"create": 1, "update": 1},
             },
             "errors": {"create": [], "update": []},
+            "layer_name": "original",
         }
         self.assertDictEqual(expected, data)
         schema = ModelSchema.objects.filter(name=exec_obj.geonode_resource.alternate.split(":")[-1]).first()

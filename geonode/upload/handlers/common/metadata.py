@@ -95,7 +95,8 @@ class MetadataFileHandler(BaseHandler):
         dataset.refresh_from_db()
 
         orchestrator.evaluate_execution_progress(execution_id, handler_module_path=str(self))
-        return dataset
+        # return a tuple of three for conscistency with the other import_resource methods
+        return dataset, execution_id, dataset.alternate
 
     def _get_resource(self, _exec):
         pk = _exec.input_params.get("resource_pk")

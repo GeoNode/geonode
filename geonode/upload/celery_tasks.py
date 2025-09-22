@@ -957,6 +957,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             Returns:
                     None
     """
+    layer_name = None  # ensure defined even if an exception occurs
     # Updating status to running
     try:
         kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs

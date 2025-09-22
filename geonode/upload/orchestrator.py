@@ -26,6 +26,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from geonode.base.models import ResourceBase
+from geonode.layers.models import Dataset
 from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
@@ -356,18 +357,22 @@ class ImportOrchestrator:
         return self.load_handler(handler_module_path).perform_last_step(execution_id)
 
     def register_task_status(
-        self, exec_id: str, layer_names: str | list[str], step: str, status: str = "PENDING", persist=True
+        self, exec_id: str, layer_refs: str | Dataset | list[str], step: str, status: str = "PENDING", persist=True
     ) -> None:
         """
         Register or update task status for one or more layers in an ExecutionRequest.
         """
-        if isinstance(layer_names, str):
-            layer_names = [layer_names]
+        # Normalize input to a list
+        if isinstance(layer_refs, (str, Dataset)):
+            layer_refs = [layer_refs]
 
         _exec = self.get_execution_object(exec_id)
 
-        for layer_name in layer_names:
-            layer_key = create_layer_key(layer_name, str(_exec.exec_id)).lower()
+        for layer in layer_refs:
+            # Extract the name if it's a Dataset
+            layer = layer.name if isinstance(layer, Dataset) else str(layer)
+
+            layer_key = create_layer_key(layer, str(_exec.exec_id)).lower()
             if layer_key not in _exec.tasks:
                 _exec.tasks[layer_key] = {}
             _exec.tasks[layer_key][step] = status
