@@ -105,7 +105,6 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         is_valid,
         importer,
     ):
-        user = get_user_model().objects.first()
 
         exec_id = orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
