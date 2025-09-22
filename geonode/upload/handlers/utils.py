@@ -150,11 +150,6 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
     else:
         output_params = {"errors": [_log], "failed_layers": [args[-1]]}
 
-    celery_task.update_state(
-        task_id=task_id,
-        state="FAILURE",
-        meta={"exec_id": str(exec_id.exec_id), "reason": _log},
-    )
     orchestrator.update_execution_request_status(execution_id=str(exec_id.exec_id), output_params=output_params)
 
     orchestrator.evaluate_execution_progress(
