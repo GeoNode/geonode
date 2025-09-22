@@ -53,6 +53,10 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
             return True
         return False
 
+    @property
+    def have_table(self):
+        return False
+
     @staticmethod
     def is_valid_url(url, **kwargs):
         BaseRemoteResourceHandler.is_valid_url(url)

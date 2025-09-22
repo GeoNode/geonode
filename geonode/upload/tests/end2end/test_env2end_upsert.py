@@ -80,7 +80,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         self.admin.is_staff = True
         self.admin.save()
         for el in Dataset.objects.all():
-            el.delete()
+            try:
+                el.delete()
+            except:  # noqa
+                continue
 
     def tearDown(self) -> None:
         super().tearDown()
@@ -193,7 +196,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_geojson.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
-        payload["upsert_key"] = "ogc_fid"
+        payload["upsert_key"] = "id"
 
         # time to upsert the data
         self.client.force_login(self.admin)
