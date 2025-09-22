@@ -33,7 +33,7 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, UpdateTaskClass, import_orchestrator
+from geonode.upload.celery_tasks import UpdateTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
