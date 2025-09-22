@@ -146,5 +146,5 @@ selenium-requests==2.0.4
 webdriver_manager==4.0.1
 
 # Security and audit
-cryptography==45.0.5
+cryptography==46.0.1
 jwcrypto>=1.5.6
