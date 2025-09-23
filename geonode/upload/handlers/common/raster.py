@@ -35,11 +35,12 @@ from geonode.resource.models import ExecutionRequest
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_tasks import UpdateTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
-
+from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from osgeo import gdal
+from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.models import Asset
@@ -582,15 +583,25 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
 
     original_dataset = original_dataset.first()
 
-    if not original_dataset.files:
-        raise InvalidGeoTiffException(
-            "The original file of the dataset is not available, Is not possible to copy the dataset"
-        )
-
     # Register task status
     orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING")
 
-    new_file_location = orchestrator.load_handler(handler_module_path).copy_original_file(original_dataset)
+    # Ensure the dataset has at least one Asset associated
+    filters = {"link__resource": original_dataset, "title": "Original"}
+    if not Asset.objects.filter().exists():
+        raise InvalidGeoTiffException(
+            "The dataset does not have any original asset associated; cannot copy the dataset"
+        )
+    original_asset = Asset.objects.filter(**filters).last()
+
+    # Clone will be done for original asset and later in code other asset in asset will be linked to the new resource
+    cloned_asset = asset_handler_registry.get_handler(original_asset).clone(original_asset)
+    new_file_location = {
+        "files": cloned_asset.location if getattr(cloned_asset, "location", None) else [],
+        "asset_id": cloned_asset.id,
+    }
+    if not new_file_location["files"]:
+        raise InvalidGeoTiffException("Could not determine the location of the copied file")
 
     new_dataset_alternate = create_alternate(original_dataset.title, exec_id)
 
