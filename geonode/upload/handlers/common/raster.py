@@ -526,7 +526,9 @@ class BaseRasterFileHandler(BaseHandler):
             execution_id=str(_exec.exec_id),
             asset=_asset,
         )
-        assets_to_link = Asset.objects.filter(link__resource=resource).exclude(title="Original") # Exclude already linked asset 
+        assets_to_link = Asset.objects.filter(link__resource=resource).exclude(
+            title="Original"
+        )  # Exclude already linked asset
         [create_link(new_resource, asset) for asset in assets_to_link]  # Link other assets to the new resource
         new_resource.refresh_from_db()
         return new_resource

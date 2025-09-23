@@ -63,7 +63,6 @@ from geonode.upload.utils import (
 )
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.assets.handlers import asset_handler_registry
-from geonode.assets.utils import get_default_asset
 from geonode.assets.models import Asset
 
 logger = logging.getLogger("importer")
@@ -1132,7 +1131,9 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
     # Ensure the dataset has at least one Asset associated
     filters = {"link__resource": original_dataset, "title": "Original"}
     if not Asset.objects.filter().exists():
-        raise InvalidGeoTiffException("The dataset does not have any original asset associated; cannot copy the dataset")
+        raise InvalidGeoTiffException(
+            "The dataset does not have any original asset associated; cannot copy the dataset"
+        )
     original_asset = Asset.objects.filter(**filters).last()
 
     # Clone will be done for original asset and later in code other asset in asset will be linked to the new resource
