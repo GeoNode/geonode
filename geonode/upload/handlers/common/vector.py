@@ -20,6 +20,7 @@ import ast
 import tempfile
 from datetime import datetime
 from itertools import islice
+from xml.sax.saxutils import escape
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
 from geonode.storage.manager import StorageManager
@@ -642,13 +643,14 @@ class BaseVectorFileHandler(BaseHandler):
         """
         Dynamically creates a VRT file to sanitize field names.
         """
-        # Used sanitized layer name for the VRT layer
+        # Used the sanitized layer name for the VRT layer
         vrt_layer_name = self.fixup_name(layer.GetName())
 
+        # Start VRT content, defining the source file and layer
         vrt_content = f"""<OGRVRTDataSource>
-          <OGRVRTLayer name="{vrt_layer_name}">
-            <SrcDataSource>{source_filepath}</SrcDataSource>
-            <SrcLayer>{layer.GetName()}</SrcLayer>
+          <OGRVRTLayer name="{escape(vrt_layer_name)}">
+            <SrcDataSource>{escape(source_filepath)}</SrcDataSource>
+            <SrcLayer>{escape(layer.GetName())}</SrcLayer>
         """
 
         # Map original field names to sanitized names using fixup_name
@@ -658,13 +660,13 @@ class BaseVectorFileHandler(BaseHandler):
             original_name = field_defn.GetName()
             sanitized_name = self.fixup_name(original_name)
             field_type = field_defn.GetTypeName()
-            vrt_content += f'    <Field name="{sanitized_name}" src="{original_name}" type="{field_type}" />\n'
+            vrt_content += f'    <Field name="{escape(sanitized_name)}" src="{escape(original_name)}" type="{escape(field_type)}" />\n'
 
         vrt_content += """  </OGRVRTLayer>
         </OGRVRTDataSource>
         """
 
-        # Write to a temporary file that ogr2ogr will use will be deleted after use
+        # Write to a temporary file that ogr2ogr will use and will be deleted later after use
         vrt_fd, vrt_filename = tempfile.mkstemp(suffix=".vrt")
         with os.fdopen(vrt_fd, "w") as f:
             f.write(vrt_content)
@@ -1373,7 +1375,7 @@ def import_with_ogr2ogr(
         process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
         stdout, stderr = process.communicate()
 
-        if files.get("vrt_file"):
+        if files.get("vrt_file") and os.path.exists(files["vrt_file"]):
             os.remove(files["vrt_file"])
 
         if (
