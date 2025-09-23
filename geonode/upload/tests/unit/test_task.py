@@ -105,16 +105,16 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         is_valid,
         importer,
     ):
+        user = get_user_model().objects.first()
 
         exec_id = orchestrator.create_execution_request(
-            user=get_user_model().objects.first(),
+            user=get_user_model().objects.get(username=user),
             func_name="dummy_func",
             step="dummy_step",
-            input_params={
-                "files": self.existing_file,
-                "store_spatial_files": True,
-                "handler_module_path": "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
-            },
+            input_params={"files": self.existing_file, 
+                          "store_spatial_files": True,
+                          "handler_module_path": "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
+                          },
         )
 
         is_valid.side_effect = Exception("Invalid format type")
