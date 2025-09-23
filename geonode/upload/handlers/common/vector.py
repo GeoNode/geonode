@@ -17,6 +17,7 @@
 #
 #########################################################################
 import ast
+import tempfile
 from datetime import datetime
 from itertools import islice
 from django.db import connections
@@ -260,7 +261,9 @@ class BaseVectorFileHandler(BaseHandler):
                 _datastore["USER"],
                 _datastore["PASSWORD"],
             )
-        options += f'"{files.get("base_file")}"' + " "
+
+        input_file = files.get("vrt_file") or files.get("base_file")
+        options += f'"{input_file}"' + " "
 
         options += f'-nln {alternate} "{original_name}"'
 
@@ -414,6 +417,11 @@ class BaseVectorFileHandler(BaseHandler):
                     )
                     # and layer.GetGeometryColumn() is not None
                 ):
+                    vrt_filename, vrt_layer_name = self._create_vrt_file(layer, files.get("base_file"))
+
+                    _files = files.copy()
+                    _files["vrt_file"] = vrt_filename
+
                     # update the execution request object
                     # setup dynamic model and retrieve the group task needed for tun the async workflow
                     # create the async task for create the resource into geonode_data with ogr2ogr
@@ -433,8 +441,8 @@ class BaseVectorFileHandler(BaseHandler):
 
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
-                        files,
-                        layer.GetName().lower(),
+                        _files,
+                        vrt_layer_name,
                         should_be_overwritten,
                         alternate,
                     )
@@ -594,7 +602,9 @@ class BaseVectorFileHandler(BaseHandler):
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
-        layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+        layer_schema = [
+            {"name": self.fixup_name(x.name), "class_name": self._get_type(x), "null": True} for x in layer.schema
+        ]
         if (
             layer.GetGeometryColumn()
             or self.default_geometry_column_name
@@ -627,6 +637,39 @@ class BaseVectorFileHandler(BaseHandler):
         )
 
         return dynamic_model_schema, celery_group
+
+    def _create_vrt_file(self, layer, source_filepath):
+        """
+        Dynamically creates a VRT file to sanitize field names.
+        """
+        # Used sanitized layer name for the VRT layer
+        vrt_layer_name = self.fixup_name(layer.GetName())
+
+        vrt_content = f"""<OGRVRTDataSource>
+          <OGRVRTLayer name="{vrt_layer_name}">
+            <SrcDataSource>{source_filepath}</SrcDataSource>
+            <SrcLayer>{layer.GetName()}</SrcLayer>
+        """
+
+        # Map original field names to sanitized names using fixup_name
+        layer_defn = layer.GetLayerDefn()
+        for i in range(layer_defn.GetFieldCount()):
+            field_defn = layer_defn.GetFieldDefn(i)
+            original_name = field_defn.GetName()
+            sanitized_name = self.fixup_name(original_name)
+            field_type = field_defn.GetTypeName()
+            vrt_content += f'    <Field name="{sanitized_name}" src="{original_name}" type="{field_type}" />\n'
+
+        vrt_content += """  </OGRVRTLayer>
+        </OGRVRTDataSource>
+        """
+
+        # Write to a temporary file that ogr2ogr will use will be deleted after use
+        vrt_fd, vrt_filename = tempfile.mkstemp(suffix=".vrt")
+        with os.fdopen(vrt_fd, "w") as f:
+            f.write(vrt_content)
+
+        return vrt_filename, vrt_layer_name
 
     def promote_to_multi(self, geometry_name: str):
         """
@@ -1329,6 +1372,10 @@ def import_with_ogr2ogr(
 
         process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
         stdout, stderr = process.communicate()
+
+        if files.get("vrt_file"):
+            os.remove(files["vrt_file"])
+
         if (
             stderr is not None
             and stderr != b""
@@ -1345,6 +1392,8 @@ def import_with_ogr2ogr(
             raise Exception(f"{message} for layer {alternate}")
         return "ogr2ogr", alternate, execution_id
     except Exception as e:
+        if files.get("vrt_file") and os.path.exists(files.get("vrt_file")):
+            os.remove(files["vrt_file"])
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,

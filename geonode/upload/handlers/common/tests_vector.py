@@ -69,6 +69,59 @@ class TestBaseVectorFileHandler(TestCase):
         expected = "Task: foo_task_name raised an error during actions for layer: alternate: my exception"
         self.assertEqual(expected, actual)
 
+    def test_create_vrt_file_with_special_chars(self):
+        """
+        Test that _create_vrt_file correctly sanitizes layer and field names
+        with spaces and special characters, and generates a valid VRT file.
+        """
+        handler = ShapeFileHandler()
+        source_filepath = "source file.shp"
+
+        mock_layer = MagicMock(spec=ogr.Layer)
+        mock_layer.GetName.return_value = "Layer With Spaces"
+        mock_layer.GetGeomType.return_value = ogr.wkbPolygon
+
+        mock_field_1 = MagicMock()
+        mock_field_1.GetName.return_value = "Field 1 (m)"
+        mock_field_1.GetTypeName.return_value = "String"
+
+        mock_field_2 = MagicMock()
+        mock_field_2.GetName.return_value = "another-field"
+        mock_field_2.GetTypeName.return_value = "Real"
+
+        mock_field_3 = MagicMock()
+        mock_field_3.GetName.return_value = "field/with/slash"
+        mock_field_3.GetTypeName.return_value = "Integer"
+
+        mock_layer_defn = MagicMock()
+        mock_layer_defn.GetFieldCount.return_value = 3
+        mock_layer_defn.GetFieldDefn.side_effect = [mock_field_1, mock_field_2, mock_field_3]
+
+        mock_layer.GetLayerDefn.return_value = mock_layer_defn
+
+        vrt_filename, vrt_layer_name = None, None
+        try:
+            vrt_filename, vrt_layer_name = handler._create_vrt_file(mock_layer, source_filepath)
+
+            self.assertIsNotNone(vrt_filename)
+            self.assertTrue(os.path.exists(vrt_filename))
+            self.assertEqual(vrt_layer_name, "layer_with_spaces")
+
+            with open(vrt_filename, "r") as f:
+                vrt_content = f.read()
+
+            self.assertIn('<OGRVRTLayer name="layer_with_spaces">', vrt_content)
+            self.assertIn(f"<SrcDataSource>{source_filepath}</SrcDataSource>", vrt_content)
+            self.assertIn("<SrcLayer>Layer With Spaces</SrcLayer>", vrt_content)
+
+            self.assertIn('<Field name="field_1_m" src="Field 1 (m)" type="String" />', vrt_content)
+            self.assertIn('<Field name="another_field" src="another-field" type="Real" />', vrt_content)
+            self.assertIn('<Field name="fieldwithslash" src="field/with/slash" type="Integer" />', vrt_content)
+
+        finally:
+            if vrt_filename and os.path.exists(vrt_filename):
+                os.remove(vrt_filename)
+
     def test_create_dynamic_model_fields(self):
         try:
             # Prepare the test
