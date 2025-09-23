@@ -996,8 +996,8 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             execution_id,
             handler_module_path,
             "geonode.upload.upsert_data",
-            resource.title, # layer_name
-            resource.alternate.split(":")[-1], # alternate
+            resource.title,  # layer_name
+            resource.alternate.split(":")[-1],  # alternate
             action,
         )
 
