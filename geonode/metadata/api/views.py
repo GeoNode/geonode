@@ -151,7 +151,7 @@ def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
     qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).order_by("label")
     # if q := request.query_params.get("q", None):
     if q := request.GET.get("q", None):
-        qs = qs.filter(label__istartswith=q)
+        qs = qs.filter(label__icontains=q)
 
     ret = []
     for tkl in qs.all():
@@ -176,7 +176,7 @@ def categories_autocomplete(request: WSGIRequest):
     qs = TopicCategory.objects.order_by("gn_description")
 
     if q := request.GET.get("q", None):
-        qs = qs.filter(gn_description__istartswith=q)
+        qs = qs.filter(gn_description__icontains=q)
 
     ret = []
     for record in qs.all():
@@ -194,7 +194,7 @@ def licenses_autocomplete(request: WSGIRequest):
     qs = License.objects.order_by("name")
 
     if q := request.GET.get("q", None):
-        qs = qs.filter(name__istartswith=q)
+        qs = qs.filter(name__icontains=q)
 
     ret = []
     for record in qs.all():

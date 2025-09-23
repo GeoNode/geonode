@@ -29,7 +29,6 @@ from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.shapefile.serializer import ShapeFileSerializer
 from geonode.upload.orchestrator import ImportOrchestrator
 from django.utils import timezone
-from geonode.assets.handlers import asset_handler_registry
 
 from geonode.resource.models import ExecutionRequest
 
@@ -196,18 +195,6 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         with open(fake_path, "w"):
             pass
 
-        user = get_user_model().objects.first()
-        asset_handler = asset_handler_registry.get_default_handler()
-
-        asset = asset_handler.create(
-            title="Original",
-            owner=user,
-            description=None,
-            type="gpkg",
-            files=[fake_path],
-            clone_files=False,
-        )
-
         self.assertTrue(os.path.exists(fake_path))
         # we need to create first the execution
         _uuid = self.orchestrator.create_execution_request(
@@ -217,8 +204,6 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
             input_params={
                 "files": {"base_file": fake_path},
                 "store_spatial_files": True,
-                "asset_id": asset.id,
-                "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
             },
         )
         _uuid = str(_uuid)
@@ -279,103 +264,119 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         # cleanup
         req.delete()
 
-    def test_evaluate_execution_progress_should_continue_if_some_task_is_not_finished(self):
-        exec_id = str(
-            self.orchestrator.create_execution_request(
-                user=get_user_model().objects.first(),
-                func_name="test",
-                step="test",
-            )
+    def test_evaluate_execution_progress_should_continue_if_some_task_is_not_finished(
+        self,
+    ):
+        """
+        Execution should stay READY or RUNNING if at least one task is still in progress.
+        """
+
+        # Create an execution request with expected datasets > 0
+        exec_uuid = self.orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="test",
+            step="test",
+            input_params={"total_layers": 2},  # <-- ensures is_last_dataset=False
         )
 
-        # Mock AsyncResult to return different states
-        with patch("geonode.upload.orchestrator.AsyncResult") as mock_async_result:
-            started_mock = MagicMock()
-            started_mock.state = "STARTED"
+        # Simulate tasks: one running, one success
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_uuid)
+        exec_request_obj.tasks = {
+            "layer_1": {"test": "RUNNING"},
+            "layer_2": {"test": "SUCCESS"},
+        }
+        exec_request_obj.save()
 
-            success_mock = MagicMock()
-            success_mock.state = "SUCCESS"
+        # Call method under test
+        result = self.orchestrator.evaluate_execution_progress(exec_uuid)
 
-            mock_async_result.side_effect = [started_mock, success_mock]
+        # Assert method does not return anything
+        assert result is None
 
-            with self.assertLogs(level="INFO") as _log:
-                result = self.orchestrator.evaluate_execution_progress(exec_id)
+        # Reload execution object
+        exec_request_obj.refresh_from_db()
 
-        # Should return None because not all tasks are finished
-        self.assertIsNone(result)
-        # Check that no "all tasks are done" log was created
-        self.assertFalse(any("all tasks are done" in message for message in _log.output))
+        # Assert execution is still in progress (READY or RUNNING)
+        assert exec_request_obj.status in [
+            ExecutionRequest.STATUS_READY,
+            ExecutionRequest.STATUS_RUNNING,
+        ]
 
-    @patch("geonode.upload.orchestrator.AsyncResult")
-    def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self, mock_async):
+    def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self):
         """
         Should set it to FAILURE if all the executions are done and at least 1 is failed
         """
-        # create the celery task execution request
-        os.makedirs(settings.ASSETS_ROOT, exist_ok=True)
-        fake_path = f"{settings.ASSETS_ROOT}/file.txt"
-        with open(fake_path, "w"):
-            pass
 
-        user = get_user_model().objects.first()
-        asset_handler = asset_handler_registry.get_default_handler()
-
-        asset = asset_handler.create(
-            title="Original",
-            owner=user,
-            description=None,
-            type="gpkg",
-            files=[fake_path],
-            clone_files=False,
+        # Create execution request
+        exec_uuid = self.orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="test",
+            step="test",
+            input_params={},
         )
 
-        exec_id = str(
-            self.orchestrator.create_execution_request(
-                user=user,
-                func_name="test",
-                step="test",
-                input_params={
-                    "asset_id": asset.id,
-                    "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
-                    "task_ids": ["fake-task-FAILED"],  # simulate failed task
-                },
-            )
+        # Simulate tasks: one failed, one succeeded
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_uuid)
+        exec_request_obj.tasks = {
+            "layer_1": {"test": "FAILED"},
+            "layer_2": {"test": "SUCCESS"},
+        }
+        exec_request_obj.save()
+
+        self.orchestrator.evaluate_execution_progress(exec_uuid, _log="Test failure")
+
+        exec_request_obj.refresh_from_db()
+
+        # Assert execution status is FAILED
+        assert exec_request_obj.status == ExecutionRequest.STATUS_FAILED
+
+        # Tasks dict should remain unchanged
+        assert exec_request_obj.tasks["layer_1"]["test"] == "FAILED"
+        assert exec_request_obj.tasks["layer_2"]["test"] == "SUCCESS"
+
+    def test_evaluate_execution_progress_should_set_as_completed(self):
+        """
+        Should mark execution as FINISHED when all tasks are successful
+        and the last dataset is reached.
+        """
+
+        # Create execution request with expected layers = 1
+        exec_uuid = self.orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="test",
+            step="test",
+            input_params={"total_layers": 1},  # ensures last dataset check will pass
         )
 
-        # simulate async results with a MagicMock
-        def fake_async(task_id):
-            mock_result = MagicMock()
-            if "FAILED" in task_id:
-                mock_result.state = "FAILURE"
-            else:
-                mock_result.state = "SUCCESS"
-            return mock_result
+        # Simulate a SUCCESS task
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_uuid)
+        exec_request_obj.tasks = {
+            "layer_1": {"test": "SUCCESS"},
+        }
+        exec_request_obj.save()
 
-        mock_async.side_effect = fake_async
+        from geonode.base.models import ResourceBase
+        from geonode.upload.models import ResourceHandlerInfo
 
-        # evaluate progress
-        self.orchestrator.evaluate_execution_progress(exec_id)
-
-        # check stored status
-        exec_request = ExecutionRequest.objects.get(exec_id=exec_id)
-        self.assertEqual(exec_request.status, "failed")
-
-    @patch("geonode.upload.orchestrator.AsyncResult")
-    def test_evaluate_execution_progress_should_set_as_completed(self, mock_async):
-        exec_id = str(
-            self.orchestrator.create_execution_request(
-                user=get_user_model().objects.first(),
-                func_name="test",
-                step="test",
-            )
+        resource = ResourceBase.objects.create(
+            title="Test resource",
+            owner=get_user_model().objects.first(),
         )
 
-        # mock AsyncResult to always succeed
-        mock_result = MagicMock()
-        mock_result.state = "SUCCESS"
-        mock_async.return_value = mock_result
+        # Link ResourceHandlerInfo to both the execution and resource
+        ResourceHandlerInfo.objects.create(
+            execution_request=exec_request_obj,
+            handler_module_path="dummy.handler",
+            resource=resource,
+        )
 
-        self.orchestrator.evaluate_execution_progress(exec_id)
+        # Call method under test
+        self.orchestrator.evaluate_execution_progress(exec_uuid)
 
-        exec_request = ExecutionRequest.objects.get(exec_id=exec_id)
-        self.assertEqual(exec_request.status, "finished")
+        exec_request_obj.refresh_from_db()
+
+        # Assert execution is marked as FINISHED
+        assert exec_request_obj.status == ExecutionRequest.STATUS_FINISHED
+
+        # Tasks dict should remain SUCCESS
+        assert exec_request_obj.tasks["layer_1"]["test"] == "SUCCESS"

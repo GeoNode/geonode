@@ -22,20 +22,22 @@ from typing import Optional
 from uuid import UUID
 import zipfile
 
-from celery import states
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.module_loading import import_string
-from celery.result import AsyncResult
+from geonode.base.models import ResourceBase
+from geonode.layers.models import Dataset
 from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
 from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer
+from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
+from geonode.upload.handlers.utils import create_layer_key
 from geonode.upload.utils import error_handler
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -84,6 +86,8 @@ class ImportOrchestrator:
                 return _serializer
         logger.info("specific serializer not found, fallback on the default one")
         is_overwrite_flow = _data.get("overwrite_existing_layer", False)
+        if _data.get("action") == ira.UPSERT.value:
+            return UpsertImporterSerializer
         if isinstance(is_overwrite_flow, str):
             is_overwrite_flow = ast.literal_eval(is_overwrite_flow.title())
         return OverwriteImporterSerializer if is_overwrite_flow else ImporterSerializer
@@ -179,6 +183,9 @@ class ImportOrchestrator:
                     action,
                 )
 
+                # We create the layer key through which the layer is stored in the tasks schema
+                kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id)).lower()
+
             # continuing to the next step
             importer_app.tasks.get(next_step).apply_async(task_params, kwargs)
             return execution_id
@@ -237,44 +244,48 @@ class ImportOrchestrator:
         )
 
     def evaluate_execution_progress(self, execution_id, _log=None, handler_module_path=None):
+
         from geonode.upload.models import ResourceHandlerInfo
 
         """
-        The execution id is a mandatory argument for the task
-        We use that to filter out all the task execution that are still in progress.
-        if any is failed, we raise it.
+        Evaluate the progress of an execution request.
+        Uses _exec.tasks to track the status of all alternates/tasks while it sets
+        the execution request as failed, partially failed, or calls _evaluate_last_dataset.
         """
 
         _exec = self.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
         expected_dataset = _exec.input_params.get("total_layers", 0)
         actual_dataset = ResourceHandlerInfo.objects.filter(execution_request=_exec).count()
         is_last_dataset = actual_dataset >= expected_dataset
-        execution_id = str(execution_id)  # force it as string to be sure
 
-        task_ids = _exec.input_params.get("task_ids", [])
-        task_results = [AsyncResult(task_id) for task_id in task_ids]
-
+        # Check if any data exists (ResourceHandlerInfo) for this execution
         _has_data = ResourceHandlerInfo.objects.filter(execution_request__exec_id=execution_id).exists()
 
-        if any(tr.state not in [states.SUCCESS, states.FAILURE] for tr in task_results):
-            self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
-        elif any(tr.state == states.FAILURE for tr in task_results):
-            """
-            Should set it fail if all the execution are done and at least 1 is failed
-            """
-            # failed = [x.task_id for x in exec_result.filter(status=states.FAILURE)]
-            # _log_message = f"For the execution ID {execution_id} The following celery task are failed: {failed}"
-            if _has_data:
-                log = list(set(self.get_execution_object(execution_id).output_params.get("failed_layers", ["Unknown"])))
-                logger.error(log)
-                self.set_as_partially_failed(execution_id=execution_id, reason=log)
-                self._last_step(execution_id, handler_module_path)
+        # Flatten all statuses across alternates
+        all_statuses = [status for alt_dict in tasks_status.values() for status in alt_dict.values()]
 
-            elif is_last_dataset:
+        if any(status in {"RUNNING", "PENDING"} for status in all_statuses):
+            # Some tasks still in progress
+            self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
+
+        elif "FAILED" in all_statuses:
+            # At least one task failed
+            failed_alternates = [alt for alt, status_dict in tasks_status.items() if "FAILED" in status_dict.values()]
+
+            if _has_data and failed_alternates:
+                # Partial import: some layers imported, some failed
+                logger.error(f"Partial failure for execution {execution_id}: {failed_alternates}")
+                self.set_as_partially_failed(execution_id=execution_id, reason=failed_alternates)
+                self._last_step(execution_id, handler_module_path)
+            else:
+                # Nothing imported or only a single layer expected
+                logger.error(f"Execution {execution_id} failed completely.")
                 self.set_as_failed(execution_id=execution_id, reason=_log)
-            elif expected_dataset == 1 and not _has_data:
-                self.set_as_failed(execution_id=execution_id, reason=_log)
+
         else:
+            # All tasks succeeded
             self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
 
     def _evaluate_last_dataset(self, is_last_dataset, _log, execution_id, handler_module_path):
@@ -306,7 +317,7 @@ class ImportOrchestrator:
         """
         execution = ExecutionRequest.objects.create(
             user=user,
-            geonode_resource=resource,
+            geonode_resource=ResourceBase.objects.filter(pk=resource).first().get_real_instance() if resource else None,
             func_name=func_name,
             step=step,
             input_params=input_params,
@@ -344,6 +355,32 @@ class ImportOrchestrator:
         if not handler_module_path:
             return
         return self.load_handler(handler_module_path).perform_last_step(execution_id)
+
+    def register_task_status(
+        self, exec_id: str, layer_refs: str | Dataset | list[str], step: str, status: str = "PENDING", persist=True
+    ) -> None:
+        """
+        Register or update task status for one or more layers in an ExecutionRequest.
+        """
+        # Normalize input to a list
+        if isinstance(layer_refs, (str, Dataset)):
+            layer_refs = [layer_refs]
+
+        _exec = self.get_execution_object(exec_id)
+
+        for layer in layer_refs:
+            # Extract the name if it's a Dataset
+            layer = layer.name if isinstance(layer, Dataset) else str(layer)
+
+            layer_key = create_layer_key(layer, str(_exec.exec_id)).lower()
+            if layer_key not in _exec.tasks:
+                _exec.tasks[layer_key] = {}
+            _exec.tasks[layer_key][step] = status
+
+        if persist:
+            self.update_execution_request_status(execution_id=exec_id, tasks=_exec.tasks)
+
+        return _exec.tasks
 
 
 orchestrator = ImportOrchestrator()

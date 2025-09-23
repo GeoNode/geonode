@@ -188,28 +188,59 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         tasks.check_harvester_available(1000)
         mock_harvester.update_availability.assert_called()
 
+    @mock.patch("geonode.harvesting.tasks.calculate_dynamic_expiration")
     @mock.patch("geonode.harvesting.tasks._handle_harvestable_resources_update_error")
     @mock.patch("geonode.harvesting.tasks._finish_harvestable_resources_update")
     @mock.patch("geonode.harvesting.tasks._update_harvestable_resources_batch")
     @mock.patch("geonode.harvesting.tasks.chord")
     @mock.patch("geonode.harvesting.tasks.models")
     def test_update_harvestable_resources_sends_batched_requests(
-        self, mock_models, mock_chord, mock_batch, mock_finalizer, mock_error_handler
+        self,
+        mock_models,
+        mock_chord,
+        mock_batch,
+        mock_finalizer,
+        mock_error_handler,
+        mock_calculate_expiration,
     ):
-        """Verify that the `update_harvestable_resources` task creates a celery chord with the batched task, a finalizer and an error handler."""
+        """Verify that `update_harvestable_resources` creates a celery chord with expiration."""
+
+        # Set up mock harvester and session
         mock_worker = mock.MagicMock()
         mock_worker.get_num_available_resources.return_value = 1
-        mock_harvester = mock.MagicMock(models.Harvester)
-        mock_models.Harvester.objects.get.return_value = mock_harvester
+
+        mock_harvester = mock.MagicMock()
         mock_harvester.get_harvester_worker.return_value = mock_worker
+        mock_harvester.update_availability.return_value = True
 
-        tasks.update_harvestable_resources("fake harvester id")
+        mock_session = mock.MagicMock()
+        mock_session.status = models.AsynchronousHarvestingSession.STATUS_ON_GOING
+        mock_session.harvester = mock_harvester
 
-        mock_batch.signature.assert_called()
-        mock_finalizer.signature.assert_called()
-        mock_error_handler.signature.assert_called()
-        mock_chord.assert_called()
-        mock_chord.return_value.apply_async.assert_called()
+        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+
+        mock_calculate_expiration.return_value = 123
+
+        # Setup the finalizer signature and its chained call
+        mock_finalizer_sig = mock.MagicMock(name="finalizer_signature")
+        mock_finalizer_on_error = mock.MagicMock(name="finalizer_on_error")
+        mock_finalizer_sig.on_error.return_value = mock_finalizer_on_error
+        mock_finalizer.signature.return_value = mock_finalizer_sig
+
+        # Run the task
+        tasks.update_harvestable_resources("fake_session_id")
+
+        # Assert expiration was calculated
+        mock_calculate_expiration.assert_called_once_with(1)
+
+        # Assert batch task had expiration set
+        mock_batch.signature.return_value.set.assert_any_call(expires=123)
+
+        # Assert finalizer had expiration set via the on_error chain
+        mock_finalizer_on_error.set.assert_called_once_with(expires=123)
+
+        # Assert chord was called with expiration
+        mock_chord.return_value.apply_async.assert_called_once_with(args=(), expires=123)
 
     def test_harvesting_scheduler(self):
         mock_harvester = mock.MagicMock(spec=models.Harvester).return_value

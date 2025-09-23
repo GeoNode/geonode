@@ -29,10 +29,10 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
+from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
-from geonode.assets.handlers import asset_handler_registry
 
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
+from geonode.upload.celery_tasks import UpdateTaskClass
 
 
 class TestGPKGHandler(TestCase):
@@ -127,22 +127,8 @@ class TestGPKGHandler(TestCase):
         # Copy the file to the temporary folder
         shutil.copy(self.valid_gpkg, "/tmp")
 
-        user = get_user_model().objects.first()
-        asset_handler = asset_handler_registry.get_default_handler()
-
-        # Create asset
-        asset = asset_handler.create(
-            title="Original",
-            owner=user,
-            description=None,
-            type="gpkg",
-            files=["/tmp/valid.gpkg"],
-            clone_files=False,
-        )
-
-        # Create execution request
         exec_id = orchestrator.create_execution_request(
-            user=user,
+            user=get_user_model().objects.first(),
             func_name="funct1",
             step="step",
             input_params={
@@ -150,30 +136,41 @@ class TestGPKGHandler(TestCase):
                 "skip_existing_layer": True,
                 "store_spatial_file": False,
                 "handler_module_path": str(self.handler),
-                "asset_id": asset.id,
-                "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
-                "task_ids": ["fake-task-id"],  # <-- Add a dummy task ID
             },
         )
 
-        exec_request = orchestrator.get_execution_object(exec_id)
+        celery_task_handler = UpdateTaskClass()
+        celery_task_handler.name = "funct1"
 
-        # Mock AsyncResult to simulate a failing Celery task
-        with patch("geonode.upload.orchestrator.AsyncResult") as mock_async:
-            mock_result = MagicMock()
-            mock_result.state = states.FAILURE
-            mock_async.return_value = mock_result
+        """
+        The progress evaluation will raise and exception
+        """
+        # Simulate layer creation for the test
+        layer_key = "layer_1"
+        kwargs = {"kwargs": {"layer_key": layer_key}}
+        action = "test_action"
+        handler_module_path = str(self.handler)
+        fake_task_id = "test-task-id"  # simulate a Celery task ID
 
-            # Trigger the error handler
-            celery_task_handler = SingleMessageErrorHandler()
-            celery_task_handler.on_failure(
-                exc=Exception("exception raised"),
-                task_id=str(exec_request.exec_id),
-                args=[str(exec_request.exec_id), "other_args"],
-                kwargs={},
-                einfo=None,
-            )
+        # Simulate task failure
+        celery_task_handler.on_failure(
+            exc=Exception("exception raised"),
+            task_id=fake_task_id,
+            args=(str(exec_id), handler_module_path, action),
+            kwargs=kwargs,
+            einfo=None,
+        )
 
-        # Refresh and assert status
-        exec_request.refresh_from_db()
-        self.assertEqual(exec_request.status, "failed")
+        # Fetch the ExecutionRequest object from DB
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_id)
+
+        # Assert overall execution status
+        assert exec_request_obj.status == "failed"
+
+        # Assert task-level status
+        tasks_status = exec_request_obj.tasks
+        assert tasks_status[layer_key]["funct1"] == "FAILED"
+
+        # Assert the error was recorded
+        errors = exec_request_obj.output_params.get("errors", [])
+        assert any("exception raised" in str(e) for e in errors)

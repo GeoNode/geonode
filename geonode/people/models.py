@@ -30,21 +30,19 @@ from django.db.models.deletion import ProtectedError
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractUser, Permission, UserManager
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
-from geonode.base.models import Configuration, ResourceBase
+from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupProfile
-from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
 
 from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
 
-from geonode.security.utils import can_approve, can_feature, can_publish
-
+from geonode.security.registry import permissions_registry
 from .utils import format_address
 from .signals import (
     do_login,
@@ -204,29 +202,7 @@ class Profile(AbstractUser):
 
     @property
     def perms(self):
-        perms = set()
-        if self.is_superuser or self.is_staff:
-            # return all permissions for admins
-            perms.update(PERMISSIONS.values())
-
-        user_groups = self.groups.values_list("name", flat=True)
-        group_perms = (
-            Permission.objects.filter(group__name__in=user_groups).distinct().values_list("codename", flat=True)
-        )
-        for p in group_perms:
-            if p in PERMISSIONS:
-                # return constant names defined by GeoNode
-                perms.add(PERMISSIONS[p])
-            else:
-                # add custom permissions
-                perms.add(p)
-
-        # check READ_ONLY mode
-        config = Configuration.load()
-        if config.read_only:
-            # exclude permissions affected by readonly
-            perms = [perm for perm in perms if perm not in READ_ONLY_AFFECTED_PERMISSIONS]
-        return list(perms)
+        return permissions_registry.get_db_perms_by_user(self)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -284,13 +260,13 @@ class Profile(AbstractUser):
                 return self.can_feature(resource)
 
     def can_approve(self, resource):
-        return can_approve(self, resource)
+        return permissions_registry.user_can_approve(self, resource)
 
     def can_publish(self, resource):
-        return can_publish(self, resource)
+        return permissions_registry.user_can_publish(self, resource)
 
     def can_feature(self, resource):
-        return can_feature(self, resource)
+        return permissions_registry.user_can_feature(self, resource)
 
 
 def get_anonymous_user_instance(user_model):

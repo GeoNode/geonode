@@ -111,7 +111,11 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             user=get_user_model().objects.get(username=user),
             func_name="dummy_func",
             step="dummy_step",
-            input_params={"files": self.existing_file, "store_spatial_files": True},
+            input_params={
+                "files": self.existing_file,
+                "store_spatial_files": True,
+                "handler_module_path": "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
+            },
         )
 
         is_valid.side_effect = Exception("Invalid format type")
@@ -608,6 +612,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
 
     @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
     @patch.dict(os.environ, {"IMPORTER_ENABLE_DYN_MODELS": "True"})
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=True)
     def test_copy_dynamic_model_should_work(self, async_call):
         try:
             name = str(self.exec_id)

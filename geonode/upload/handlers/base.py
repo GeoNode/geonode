@@ -78,6 +78,10 @@ class BaseHandler(ABC):
         return cls.TASKS.get(action)
 
     @property
+    def have_table(self):
+        return True
+
+    @property
     def default_geometry_column_name(self):
         return "geometry"
 
@@ -199,6 +203,12 @@ class BaseHandler(ABC):
             )
             # updating the execution id params
             orchestrator.update_execution_request_obj(_exec_obj, {"input_params": _data})
+            # removing zip file
+            if "zip_file" in files and os.path.exists(files["zip_file"]):
+                os.remove(files["zip_file"])
+            if "kmz_file" in files and os.path.exists(files["kmz_file"]):
+                os.remove(files["kmz_file"])
+
         return _data, execution_id
 
     def fixup_name(self, name):
@@ -300,14 +310,17 @@ class BaseHandler(ABC):
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
 
-    def create_asset_and_link(self, resource, files):
+    def create_asset_and_link(self, resource, files, action=None):
         if not files:
             return
+        asset_name = (
+            Path(files.get("base_file")).stem if action in [ira.REPLACE.value, ira.UPSERT.value] else "Original"
+        )
         asset, _ = create_asset_and_link(
             resource=resource,
             owner=resource.owner,
             files=files.values(),
-            title="Original",
+            title=asset_name,
             asset_type=Path(files.get("base_file")).suffix.replace(".", ""),
             clone_files=True,
         )

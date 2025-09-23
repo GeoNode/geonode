@@ -89,3 +89,10 @@ class HandlerException(APIException):
     default_detail = "base handler exception"
     default_code = "handler_exception"
     category = "handler"
+
+
+class UpsertException(APIException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    default_detail = "upsert exception"
+    default_code = "upsert_exception"
+    category = "handler"

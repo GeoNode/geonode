@@ -24,6 +24,7 @@ from geonode.resource.models import ExecutionRequest
 import logging
 from dynamic_models.schema import ModelSchemaEditor
 from django.utils.module_loading import import_string
+from django.utils.encoding import force_str
 from uuid import UUID
 
 from geonode.upload.publisher import DataPublisher
@@ -93,6 +94,16 @@ def create_alternate(layer_name, execution_id):
     return alternate
 
 
+def create_layer_key(layer_name, execution_id):
+    """
+    Generate a layer key for a specific execution
+    in order to be stored in the 'tasks field of
+    the ExecutionRequest by the importer
+    Format: layername_executionid
+    """
+    return f"{layer_name}_{execution_id}"
+
+
 def drop_dynamic_model_schema(schema_model):
     if schema_model:
         schema = ModelSchemaEditor(initial_model=schema_model.name, db_name="datastore")
@@ -134,22 +145,11 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
     # creting the log message
     _log = handler.create_error_log(exc, celery_task.name, *args)
 
-    if output_params.get("errors"):
-        output_params.get("errors").append(_log)
-        output_params.get("failed_layers", []).append(args[-1] if args else [])
-        failed = list(set(output_params.get("failed_layers", [])))
-        output_params["failed_layers"] = failed
-    else:
-        output_params = {"errors": [_log], "failed_layers": [args[-1]]}
+    output_params.setdefault("errors", []).append(_log)
+    output_params.setdefault("failed_layers", []).append(force_str(args[-1]) if args else "")
+    output_params["failed_layers"] = list(dict.fromkeys(output_params["failed_layers"]))
 
-    celery_task.update_state(
-        task_id=task_id,
-        state="FAILURE",
-        meta={"exec_id": str(exec_id.exec_id), "reason": _log},
-    )
-    orchestrator.update_execution_request_status(
-        execution_id=str(exec_id.exec_id), output_params=output_params, status=ExecutionRequest.STATUS_FAILED
-    )
+    orchestrator.update_execution_request_status(execution_id=str(exec_id.exec_id), output_params=output_params)
 
     orchestrator.evaluate_execution_progress(
         get_uuid(args), _log=str(exc.detail if hasattr(exc, "detail") else exc.args[0])

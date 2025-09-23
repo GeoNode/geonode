@@ -568,7 +568,6 @@ def check_harvester_available(self, harvester_id: int):
 @app.task(
     bind=True,
     queue="geonode",
-    expires=30,
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -579,49 +578,75 @@ def update_harvestable_resources(self, refresh_session_id: int):
     # of resources because these have potentially been individually selected by the
     # user, which means we are not interested in all of them
     session = models.AsynchronousHarvestingSession.objects.get(pk=refresh_session_id)
-    if session.status != session.STATUS_ABORTED:
-        session.status = session.STATUS_ON_GOING
-        session.save()
-        harvester = session.harvester
-        if harvester.update_availability():
-            harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
-            harvester.save()
-            worker = harvester.get_harvester_worker()
-            try:
-                num_resources = worker.get_num_available_resources()
-            except (NotImplementedError, base.HarvestingException) as exc:
-                _handle_harvestable_resources_update_error(
-                    self.request.id, refresh_session_id=refresh_session_id, raised_exception=exc
-                )
-            else:
-                harvester.num_harvestable_resources = num_resources
-                harvester.save()
-                session.total_records_to_process = num_resources
-                session.save()
-                page_size = 10
-                total_pages = math.ceil(num_resources / page_size)
-                batches = []
-                for page in range(total_pages):
-                    batches.append(
-                        _update_harvestable_resources_batch.signature(
-                            args=(refresh_session_id, page, page_size),
-                        )
-                    )
-                update_finalizer = _finish_harvestable_resources_update.signature(
-                    args=(refresh_session_id,), immutable=True
-                ).on_error(
-                    _handle_harvestable_resources_update_error.signature(
-                        kwargs={"refresh_session_id": refresh_session_id}
-                    )
-                )
-                update_workflow = chord(batches, body=update_finalizer)
-                update_workflow.apply_async(args=(), expiration=30)
-        else:
+
+    if session.status == session.STATUS_ABORTED:
+        logger.debug("Session has been aborted, skipping...")
+        return
+
+    session.status = session.STATUS_ON_GOING
+    session.save()
+
+    harvester = session.harvester
+
+    try:
+
+        if not harvester.update_availability():
             finish_asynchronous_session(
                 refresh_session_id, session.STATUS_FINISHED_ALL_FAILED, final_details="Harvester is not available"
             )
-    else:
-        logger.debug("Session has been aborted, skipping...")
+            return
+
+        harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
+        harvester.save()
+
+        worker = harvester.get_harvester_worker()
+        try:
+            num_resources = worker.get_num_available_resources()
+            # definition of the dynamic expiration time
+            task_expiration_time = calculate_dynamic_expiration(num_resources)
+        except (NotImplementedError, base.HarvestingException) as exc:
+            logger.exception("Failed to get number of available resources for harvester %s", harvester.id)
+            details = f"Failed to get number of available resources: {exc}"
+            finish_asynchronous_session(
+                refresh_session_id,
+                models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_FAILED,
+                final_details=details,
+            )
+            return
+
+        harvester.num_harvestable_resources = num_resources
+        harvester.save()
+        session.total_records_to_process = num_resources
+        session.save()
+        page_size = 10
+        total_pages = math.ceil(num_resources / page_size)
+        batches = []
+        for page in range(total_pages):
+            batches.append(
+                _update_harvestable_resources_batch.signature(
+                    args=(refresh_session_id, page, page_size),
+                ).set(expires=task_expiration_time)
+            )
+        update_finalizer = (
+            _finish_harvestable_resources_update.signature(args=(refresh_session_id,), immutable=True)
+            .on_error(
+                _handle_harvestable_resources_update_error.signature(kwargs={"refresh_session_id": refresh_session_id})
+            )
+            .set(expires=task_expiration_time)
+        )
+
+        update_workflow = chord(batches, body=update_finalizer)
+        update_workflow.apply_async(args=(), expires=task_expiration_time)
+        logger.info(f"Applying harvesting chord with expiration in {task_expiration_time} seconds")
+
+    except Exception as exc:
+        logger.exception("Unexpected error during update_harvestable_resources for harvester %s", harvester.id)
+        details = f"Unexpected error: {exc}"
+        finish_asynchronous_session(
+            refresh_session_id,
+            models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_FAILED,
+            final_details=details,
+        )
 
 
 @app.task(

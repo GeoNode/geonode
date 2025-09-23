@@ -33,7 +33,7 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, import_orchestrator
+from geonode.upload.celery_tasks import UpdateTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
@@ -159,8 +159,8 @@ class BaseRasterFileHandler(BaseHandler):
         if not isinstance(asset_handler_registry.get_default_handler(), LocalAssetHandler):
             raise ImportException("Only LocalAsset can be used for publishing raster data")
 
-    def create_asset_and_link(self, resource, files):
-        asset = super().create_asset_and_link(resource, files)
+    def create_asset_and_link(self, resource, files, action=None):
+        asset = super().create_asset_and_link(resource, files, action=action)
         # after the asset is created, we need to update the geoserver location
         # otherwise geoserver is not able to read the tiff file
         from geonode.upload.publisher import DataPublisher
@@ -307,7 +307,7 @@ class BaseRasterFileHandler(BaseHandler):
                     alternate = dataset.alternate.split(":")[-1]
                     orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
                 else:
-                    user_datasets = Dataset.objects.filter(owner=_exec.user, alternate=f"{workspace.name}:{layer_name}")
+                    user_datasets = Dataset.objects.filter(alternate=f"{workspace.name}:{layer_name}")
 
                     dataset_exists = user_datasets.exists()
 
@@ -529,21 +529,21 @@ class BaseRasterFileHandler(BaseHandler):
         """
         pass
 
-    def _publish_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
+    def _publish_resource_rollback(self, exec_id, instance_name=None, *args, **kwargs):
         """
         We delete the resource from geoserver
         """
         logger.info(
-            f"Rollback publishing step in progress for execid: {exec_id} resource published was: {istance_name}"
+            f"Rollback publishing step in progress for execid: {exec_id} resource published was: {instance_name}"
         )
         exec_object = orchestrator.get_execution_object(exec_id)
         handler_module_path = exec_object.input_params.get("handler_module_path")
         publisher = DataPublisher(handler_module_path=handler_module_path)
-        publisher.delete_resource(istance_name)
+        publisher.delete_resource(instance_name)
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_raster_file",
     queue="geonode.upload.copy_raster_file",
     max_retries=1,
@@ -565,6 +565,9 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
         raise InvalidGeoTiffException(
             "The original file of the dataset is not available, Is not possible to copy the dataset"
         )
+
+    # Register task status
+    orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING")
 
     new_file_location = orchestrator.load_handler(handler_module_path).copy_original_file(original_dataset)
 
