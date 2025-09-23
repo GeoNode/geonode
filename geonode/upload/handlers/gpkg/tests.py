@@ -17,8 +17,6 @@
 #
 #########################################################################
 import shutil
-from unittest.mock import patch, MagicMock
-from celery import states
 
 from django.test import TestCase, override_settings
 from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException

@@ -22,7 +22,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.api.serializer import ImporterSerializer
 from geonode.upload.handlers.base import BaseHandler
