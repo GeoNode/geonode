@@ -234,8 +234,9 @@ class BaseHandler(ABC):
         We use replace because it looks to be one of the fasted options:
         https://stackoverflow.com/questions/3411771/best-way-to-replace-multiple-characters-in-a-string
         """
-        if name and name[0].isnumeric():
-            name = f"_{name[1:]}"
+        prefix = name[0]
+        if prefix.isnumeric():
+            name = name.replace(name[0], "_")
         return (
             name.lower()
             .replace("-", "_")
