@@ -66,6 +66,15 @@ class SparseHandler(MetadataHandler):
             case _:
                 pass
 
+        # some heuristics for finding stuff to be localized
+        for sub in ("then", "else",):
+            properties = schema.get(sub, {}).get("properties", {})
+            for prop_name, subschema in properties.items():
+                self._recurse_localization(context, subschema, lang, prop_name)
+        for item in schema.get("oneOf", []):
+            if title:=item.get("title", None):
+                item["title"] = MetadataHandler._localize_label(context, lang, title)
+
     def _recurse_thesauri_autocomplete(self, d):
         if isinstance(d, dict):
             # Check if target_key is in the current dict
