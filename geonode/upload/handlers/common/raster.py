@@ -43,6 +43,7 @@ from osgeo import gdal
 from geonode.storage.manager import storage_manager
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.models import Asset
+from geonode.assets.utils import create_link
 
 logger = logging.getLogger("importer")
 
@@ -519,14 +520,16 @@ class BaseRasterFileHandler(BaseHandler):
         _asset_id = _nl.get("asset_id")
         if not _asset and _asset_id:
             _asset = Asset.objects.filter(pk=_asset_id).first()
-        resource = self.create_geonode_resource(
+        new_resource = self.create_geonode_resource(
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
             asset=_asset,
         )
-        resource.refresh_from_db()
-        return resource
+        assets_to_link = Asset.objects.filter(link__resource=resource).exclude(title="Original") # Exclude already linked asset 
+        [create_link(new_resource, asset) for asset in assets_to_link]  # Link other assets to the new resource
+        new_resource.refresh_from_db()
+        return new_resource
 
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
