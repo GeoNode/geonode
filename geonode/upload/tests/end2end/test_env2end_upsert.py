@@ -211,9 +211,9 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         expected = {
             "success": True,
             "data": {
-                "total": 2,
+                "total": 3,
                 "update": 1,
-                "create": 1,
+                "create": 2,
             },
         }
         self.assertDictEqual(expected, data)
