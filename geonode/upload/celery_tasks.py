@@ -263,10 +263,10 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             Returns:
                     None
     """
-    
+
     # Set the bulk flag as True (only for the import_resource task)
     self.bulk = True
-    
+
     # Updating status to running
     try:
         orchestrator.update_execution_request_status(
