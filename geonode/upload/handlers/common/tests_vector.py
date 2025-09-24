@@ -35,6 +35,7 @@ from geonode.resource.models import ExecutionRequest
 from dynamic_models.models import ModelSchema
 from osgeo import ogr
 from django.test.utils import override_settings
+from geonode.upload.utils import create_vrt_file
 
 
 class TestBaseVectorFileHandler(TestCase):
@@ -71,10 +72,9 @@ class TestBaseVectorFileHandler(TestCase):
 
     def test_create_vrt_file_with_special_chars(self):
         """
-        Test that _create_vrt_file correctly sanitizes layer and field names
+        Test that create_vrt_file correctly sanitizes layer and field names
         with spaces and special characters, and generates a valid VRT file.
         """
-        handler = ShapeFileHandler()
         source_filepath = "source file.shp"
 
         mock_layer = MagicMock(spec=ogr.Layer)
@@ -95,13 +95,13 @@ class TestBaseVectorFileHandler(TestCase):
 
         mock_layer_defn = MagicMock()
         mock_layer_defn.GetFieldCount.return_value = 3
-        mock_layer_defn.GetFieldDefn.side_effect = [mock_field_1, mock_field_2, mock_field_3]
+        mock_layer_defn.GetFieldDefn.side_effect = [mock_field_1, mock_field_2, mock_field_3].__getitem__
 
         mock_layer.GetLayerDefn.return_value = mock_layer_defn
 
         vrt_filename, vrt_layer_name = None, None
         try:
-            vrt_filename, vrt_layer_name = handler._create_vrt_file(mock_layer, source_filepath)
+            vrt_filename, vrt_layer_name = create_vrt_file(mock_layer, source_filepath)
 
             self.assertIsNotNone(vrt_filename)
             self.assertTrue(os.path.exists(vrt_filename))

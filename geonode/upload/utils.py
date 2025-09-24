@@ -17,6 +17,8 @@
 #
 #########################################################################
 import enum
+import tempfile
+import os
 from geonode.resource.manager import ResourceManager
 from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.base.models import ResourceBase
@@ -30,6 +32,8 @@ from django.template.defaultfilters import filesizeformat
 from geonode.resource.models import ExecutionRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.template.loader import render_to_string
+
 
 
 def get_max_upload_size(slug):
@@ -46,6 +50,38 @@ def get_max_upload_parallelism_limit(slug):
     except ObjectDoesNotExist:
         max_number = getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
     return max_number
+
+def create_vrt_file(layer, source_filepath):
+    """
+    Dynamically creates a VRT file to sanitize field names.
+    """
+    from geonode.upload.handlers.base import BaseHandler
+    
+    vrt_layer_name = BaseHandler().fixup_name(layer.GetName())
+    
+    layer_defn = layer.GetLayerDefn()
+    fields = [
+        {
+            "name": BaseHandler().fixup_name(layer_defn.GetFieldDefn(i).GetName()),
+            "src": layer_defn.GetFieldDefn(i).GetName(),
+            "type": layer_defn.GetFieldDefn(i).GetTypeName(),
+        }
+        for i in range(layer_defn.GetFieldCount())
+    ]
+    
+    context = {
+        'layer_name': vrt_layer_name,
+        'source_filepath': source_filepath,
+        'original_layer_name': layer.GetName(),
+        'fields': fields
+    }
+    vrt_content = render_to_string('upload/vrt_template.xml', context)
+    
+    vrt_fd, vrt_filename = tempfile.mkstemp(suffix=".vrt")
+    with os.fdopen(vrt_fd, "w") as f:
+        f.write(vrt_content)
+    
+    return vrt_filename, vrt_layer_name
 
 
 class ImporterRequestAction(enum.Enum):
@@ -184,3 +220,6 @@ class UploadLimitValidator:
                 ).values_list("input_params__total_layers", flat=True),
             )
         )
+
+
+

@@ -17,7 +17,6 @@
 #
 #########################################################################
 import ast
-import tempfile
 from datetime import datetime
 from itertools import islice
 from xml.sax.saxutils import escape
@@ -65,6 +64,8 @@ from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
+from geonode.upload.utils import create_vrt_file
+
 
 
 logger = logging.getLogger("importer")
@@ -263,8 +264,8 @@ class BaseVectorFileHandler(BaseHandler):
                 _datastore["PASSWORD"],
             )
 
-        input_file = files.get("vrt_file") or files.get("base_file")
-        options += f'"{input_file}"' + " "
+        temp_vrt_file = files.get("temp_vrt_file")  #vrt file is aready created in import_resource and passed inside files
+        options += f'"{temp_vrt_file}"' + " "
 
         options += f'-nln {alternate} "{original_name}"'
 
@@ -418,10 +419,10 @@ class BaseVectorFileHandler(BaseHandler):
                     )
                     # and layer.GetGeometryColumn() is not None
                 ):
-                    vrt_filename, vrt_layer_name = self._create_vrt_file(layer, files.get("base_file"))
+                    vrt_filename, vrt_layer_name = create_vrt_file(layer, files.get("base_file"))
 
                     _files = files.copy()
-                    _files["vrt_file"] = vrt_filename
+                    _files["temp_vrt_file"] = vrt_filename
 
                     # update the execution request object
                     # setup dynamic model and retrieve the group task needed for tun the async workflow
@@ -639,39 +640,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         return dynamic_model_schema, celery_group
 
-    def _create_vrt_file(self, layer, source_filepath):
-        """
-        Dynamically creates a VRT file to sanitize field names.
-        """
-        # Used the sanitized layer name for the VRT layer
-        vrt_layer_name = self.fixup_name(layer.GetName())
-
-        # Start VRT content, defining the source file and layer
-        vrt_content = f"""<OGRVRTDataSource>
-          <OGRVRTLayer name="{escape(vrt_layer_name)}">
-            <SrcDataSource>{escape(source_filepath)}</SrcDataSource>
-            <SrcLayer>{escape(layer.GetName())}</SrcLayer>
-        """
-
-        # Map original field names to sanitized names using fixup_name
-        layer_defn = layer.GetLayerDefn()
-        for i in range(layer_defn.GetFieldCount()):
-            field_defn = layer_defn.GetFieldDefn(i)
-            original_name = field_defn.GetName()
-            sanitized_name = self.fixup_name(original_name)
-            field_type = field_defn.GetTypeName()
-            vrt_content += f'    <Field name="{escape(sanitized_name)}" src="{escape(original_name)}" type="{escape(field_type)}" />\n'
-
-        vrt_content += """  </OGRVRTLayer>
-        </OGRVRTDataSource>
-        """
-
-        # Write to a temporary file that ogr2ogr will use and will be deleted later after use
-        vrt_fd, vrt_filename = tempfile.mkstemp(suffix=".vrt")
-        with os.fdopen(vrt_fd, "w") as f:
-            f.write(vrt_content)
-
-        return vrt_filename, vrt_layer_name
 
     def promote_to_multi(self, geometry_name: str):
         """
@@ -1375,8 +1343,8 @@ def import_with_ogr2ogr(
         process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
         stdout, stderr = process.communicate()
 
-        if files.get("vrt_file") and os.path.exists(files["vrt_file"]):
-            os.remove(files["vrt_file"])
+        if files.get("temp_vrt_file") and os.path.exists(files["temp_vrt_file"]):
+            os.remove(files["temp_vrt_file"])
 
         if (
             stderr is not None
@@ -1394,8 +1362,8 @@ def import_with_ogr2ogr(
             raise Exception(f"{message} for layer {alternate}")
         return "ogr2ogr", alternate, execution_id
     except Exception as e:
-        if files.get("vrt_file") and os.path.exists(files.get("vrt_file")):
-            os.remove(files["vrt_file"])
+        if files.get("temp_vrt_file") and os.path.exists(files.get("temp_vrt_file")):
+            os.remove(files["temp_vrt_file"])
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,

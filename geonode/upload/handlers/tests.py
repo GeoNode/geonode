@@ -94,7 +94,7 @@ class TestHandlersUtils(TestCase):
         self.assertEqual(expected_name, actual)
 
     def test_fixup_name_replace_digits_with_special_character(self):
-        layer_name = "1layername!#%"
-        expected_name = "_layername_"
+        layer_name = "5Test-Name# \\&.()!$%*+@[]~end"
+        expected_name = "_test_name____end"
         actual = BaseHandler().fixup_name(layer_name)
         self.assertEqual(expected_name, actual)
