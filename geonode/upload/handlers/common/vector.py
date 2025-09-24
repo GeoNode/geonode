@@ -1142,27 +1142,27 @@ class BaseVectorFileHandler(BaseHandler):
 
     def _create_error_log(self, exec_obj, layers, feature_to_save, errors):
         logger.error(
-                "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
-            )
-            # cleaning up the feature from memory
+            "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
+        )
+        # cleaning up the feature from memory
         del feature_to_save
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
         fieldnames = errors_to_print[0].keys()
         log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
         log_location = f"{settings.UPSERT_LOG_LOCATION}/{log_name}"
         with open(log_location, "w", newline="") as csvfile:
-                # Create a DictWriter object. It maps dictionaries to output rows.
+            # Create a DictWriter object. It maps dictionaries to output rows.
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(errors_to_print)
 
         self.create_asset_and_link(
-                exec_obj.geonode_resource,
-                exec_obj.input_params.get("files"),
-                action=exec_obj.action,
-                asset_name=log_name,
-            )
-            # cleanup the tmp file
+            exec_obj.geonode_resource,
+            exec_obj.input_params.get("files"),
+            action=exec_obj.action,
+            asset_name=log_name,
+        )
+        # cleanup the tmp file
         os.remove(log_location)
 
         raise UpsertException("Some errors found, please check the error log attached")
