@@ -1109,7 +1109,10 @@ class BaseVectorFileHandler(BaseHandler):
             )
 
         if errors:
-            self._create_error_log(exec_obj, layers, feature_to_save, errors)
+            # if some error is found, is useless to keep the VALID feature in memeory, we can just ignore it and proceed:        
+            # cleaning up the feature from memory
+            del feature_to_save
+            self._create_error_log(exec_obj, layers, errors)
 
         if feature_to_save:
             try:
@@ -1140,12 +1143,10 @@ class BaseVectorFileHandler(BaseHandler):
             },
         }
 
-    def _create_error_log(self, exec_obj, layers, feature_to_save, errors):
+    def _create_error_log(self, exec_obj, layers, errors):
         logger.error(
             "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
         )
-        # cleaning up the feature from memory
-        del feature_to_save
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
         fieldnames = errors_to_print[0].keys()
         log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
@@ -1176,7 +1177,6 @@ class BaseVectorFileHandler(BaseHandler):
         # looping over the chunk data
         for feature in data_chunk:
             feature_as_dict = feature.items()
-            errors.append(feature_as_dict | {"reason": "The value X is invalid"})
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
@@ -1188,7 +1188,6 @@ class BaseVectorFileHandler(BaseHandler):
                 continue
 
             if not errors:
-                # if some error is found, is useless to keep the VALID feature in memeory, we can just ignore it and proceed:
                 if feature_as_dict.get(upsert_key) in value_in_db:
                     # if the key is present, we need to update the object
                     # the geometry must be treated manually
@@ -1203,9 +1202,9 @@ class BaseVectorFileHandler(BaseHandler):
         return feature_to_save, errors
 
     def validate_feature_constraints(self, feature):
-        # to be implemented
-        # expected ouput:
-        # errors.append(feature | {"reason": "The value X is invalid"})
+        # TODO: validation process for each feature will be implemented later
+        # expected ouput (to be reviewed):
+        # feature | {"reason": "The value X is invalid"}
 
         return feature, True
 
