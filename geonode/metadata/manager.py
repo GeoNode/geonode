@@ -164,7 +164,10 @@ class MetadataManager:
                     ),
                 )
         try:
-            resource.save()
+            resource.get_real_concrete_instance_class().objects.filter(id=resource.id).update(
+                **context.setdefault("base")
+            )
+            resource.refresh_from_db()
         except Exception as e:
             logger.warning(f"Error while updating schema instance: {e}")
             MetadataHandler._set_error(
