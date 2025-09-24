@@ -1345,19 +1345,20 @@ class TestDeletableAssetKey(GeoNodeBaseTestSupport):
         data = serializer.data
         links = data.get("links", [])  # get value from LinksSerializer
 
-        # Check each link that has extras with content and deletable properties
-        for link in links:
-            extras = link.get("extras", {})
-            if extras and "deletable" in extras and "content" in extras:
-                content = extras["content"]
-                title = content.get("title", "")
-                deletable = extras["deletable"]
-                if title == "Original":
-                    self.assertFalse(
-                        deletable, f"Link with title 'Original' should have deletable=False, but got {deletable}"
-                    )
-                elif title == "Test Asset for Deletion":
-                    self.assertTrue(
-                        deletable,
-                        f"Link with title 'Test Asset for Deletion' should have deletable=True, but got {deletable}",
-                    )
+        # Create a mapping from asset title to the link's deletable status
+        deletable_status_by_title = {
+            link.get("extras", {}).get("content", {}).get("title"): link.get("extras", {}).get("deletable")
+            for link in links
+            if link.get("extras", {}).get("content", {}).get("title")
+        }
+        # Assertions for specific asset titles
+        self.assertIn("Test Asset for Deletion", deletable_status_by_title)
+        self.assertTrue(
+            deletable_status_by_title["Test Asset for Deletion"],
+            "Link with title 'Test Asset for Deletion' should have deletable=True",
+        )
+        self.assertIn("Original", deletable_status_by_title)
+        self.assertFalse(
+            deletable_status_by_title["Original"],
+            "Link with title 'Original' should have deletable=False",
+        )
