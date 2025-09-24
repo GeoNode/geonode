@@ -1119,7 +1119,7 @@ class BaseVectorFileHandler(BaseHandler):
                 OriginalResource.objects.bulk_create(
                     feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
                 )
-            except Exception as e:
+            except Exception:
                 logger.exception("Error occurred during bulk upsert in upsert_data.")
                 raise UpsertException("An internal error occurred during upsert operation.")
 
