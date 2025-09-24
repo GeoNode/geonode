@@ -1080,15 +1080,12 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
         # use ogr2ogr to read the uploaded files values for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        update_error = []
-        create_error = []
         valid_create = 0
         valid_update = 0
         layers = self._select_valid_layers(all_layers)
         if not layers:
             raise UpsertException("No valid layers were found in the file provided")
         # we can upsert just 1 layer at time
-        total_feature = layers[0].GetFeatureCount()
         layer_iterator = iter(layers[0])
         feature_to_save = []
         errors = []
@@ -1100,16 +1097,18 @@ class BaseVectorFileHandler(BaseHandler):
             if not data_chunk:
                 break
 
-            feature_to_save, errors = self._process_features(
+            feature_to_save, errors, valid_update, valid_create = self._process_features(
                 data_chunk,
                 model_instance=OriginalResource,
                 upsert_key=upsert_key,
                 feature_to_save=feature_to_save,
                 errors=errors,
+                valid_update=valid_update,
+                valid_create=valid_create,
             )
 
         if errors:
-            # if some error is found, is useless to keep the VALID feature in memeory, we can just ignore it and proceed:        
+            # if some error is found, is useless to keep the VALID feature in memeory, we can just ignore it and proceed:
             # cleaning up the feature from memory
             del feature_to_save
             self._create_error_log(exec_obj, layers, errors)
@@ -1127,19 +1126,12 @@ class BaseVectorFileHandler(BaseHandler):
             handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
         )
 
-        if (total_feature - len(update_error) - len(create_error)) == 0:
-            raise UpsertException("All the entries provided raised error, execution is going to be stopped")
-
-        return not update_error and not create_error, {
-            "success": not update_error and not create_error,
-            "errors": {"create": create_error, "update": update_error},
+        return {
+            "success": True,
             "data": {
-                "total": {
-                    "success": valid_update + valid_create,
-                    "error": len(create_error) + len(update_error),
-                },
-                "success": {"update": valid_update, "create": valid_create},
-                "error": {"update": len(update_error), "create": len(create_error)},
+                "total": valid_update + valid_create,
+                "update": valid_update,
+                "create": valid_create,
             },
         }
 
@@ -1168,7 +1160,9 @@ class BaseVectorFileHandler(BaseHandler):
 
         raise UpsertException("Some errors found, please check the error log attached")
 
-    def _process_features(self, data_chunk, model_instance, upsert_key, feature_to_save, errors):
+    def _process_features(
+        self, data_chunk, model_instance, upsert_key, feature_to_save, errors, valid_update, valid_create
+    ):
         # getting all the upsert_key value from the data chunk
         # retrieving the data from the DB
         value_in_db = model_instance.objects.filter(
@@ -1182,7 +1176,7 @@ class BaseVectorFileHandler(BaseHandler):
             geom = feature.GetGeometryRef()
             feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
 
-            feature_as_dict, is_valid = self.validate_feature_constraints(feature_as_dict.get(upsert_key))
+            feature_as_dict, is_valid = self.validate_feature_constraints(feature_as_dict)
             if not is_valid:
                 errors.append(feature)
                 continue
@@ -1195,11 +1189,13 @@ class BaseVectorFileHandler(BaseHandler):
                     for key, value in feature_as_dict.items():
                         setattr(obj, key, value)
                     feature_to_save.append(obj)
+                    valid_update += 1
                 else:
                     # if the key is not present, we can create a new instance
                     feature_to_save.append(model_instance(**feature_as_dict))
+                    valid_create += 1
 
-        return feature_to_save, errors
+        return feature_to_save, errors, valid_update, valid_create
 
     def validate_feature_constraints(self, feature):
         # TODO: validation process for each feature will be implemented later
