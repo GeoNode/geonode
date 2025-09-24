@@ -35,7 +35,6 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 
-
 def get_max_upload_size(slug):
     try:
         max_size = UploadSizeLimit.objects.get(slug=slug).max_size
@@ -51,14 +50,15 @@ def get_max_upload_parallelism_limit(slug):
         max_number = getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
     return max_number
 
+
 def create_vrt_file(layer, source_filepath):
     """
     Dynamically creates a VRT file to sanitize field names.
     """
     from geonode.upload.handlers.base import BaseHandler
-    
+
     vrt_layer_name = BaseHandler().fixup_name(layer.GetName())
-    
+
     layer_defn = layer.GetLayerDefn()
     fields = [
         {
@@ -68,19 +68,19 @@ def create_vrt_file(layer, source_filepath):
         }
         for i in range(layer_defn.GetFieldCount())
     ]
-    
+
     context = {
-        'layer_name': vrt_layer_name,
-        'source_filepath': source_filepath,
-        'original_layer_name': layer.GetName(),
-        'fields': fields
+        "layer_name": vrt_layer_name,
+        "source_filepath": source_filepath,
+        "original_layer_name": layer.GetName(),
+        "fields": fields,
     }
-    vrt_content = render_to_string('upload/vrt_template.xml', context)
-    
+    vrt_content = render_to_string("upload/vrt_template.xml", context)
+
     vrt_fd, vrt_filename = tempfile.mkstemp(suffix=".vrt")
     with os.fdopen(vrt_fd, "w") as f:
         f.write(vrt_content)
-    
+
     return vrt_filename, vrt_layer_name
 
 
@@ -220,6 +220,3 @@ class UploadLimitValidator:
                 ).values_list("input_params__total_layers", flat=True),
             )
         )
-
-
-

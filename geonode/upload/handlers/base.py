@@ -240,11 +240,11 @@ class BaseHandler(ABC):
             name = name.replace(name[0], "_")
         name = name.lower()
         # Replace specific chars with underscore in one pass
-        name = re.sub(r'[-# \\&]', '_', name)
-        
+        name = re.sub(r"[-# \\&]", "_", name)
+
         # Remove unwanted characters in one pass
-        name = re.sub(r'[.(),!"$%\'*+/:;<=>?@\[\]^`{|}~]', '', name)
-        
+        name = re.sub(r'[.(),!"$%\'*+/:;<=>?@\[\]^`{|}~]', "", name)
+
         return name[:62]
 
     def extract_resource_to_publish(self, files, layer_name, alternate, **kwargs):

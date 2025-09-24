@@ -19,7 +19,6 @@
 import ast
 from datetime import datetime
 from itertools import islice
-from xml.sax.saxutils import escape
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
 from geonode.storage.manager import StorageManager
@@ -65,7 +64,6 @@ from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file
-
 
 
 logger = logging.getLogger("importer")
@@ -264,7 +262,9 @@ class BaseVectorFileHandler(BaseHandler):
                 _datastore["PASSWORD"],
             )
 
-        temp_vrt_file = files.get("temp_vrt_file")  #vrt file is aready created in import_resource and passed inside files
+        temp_vrt_file = files.get(
+            "temp_vrt_file"
+        )  # vrt file is aready created in import_resource and passed inside files
         options += f'"{temp_vrt_file}"' + " "
 
         options += f'-nln {alternate} "{original_name}"'
@@ -639,7 +639,6 @@ class BaseVectorFileHandler(BaseHandler):
         )
 
         return dynamic_model_schema, celery_group
-
 
     def promote_to_multi(self, geometry_name: str):
         """
