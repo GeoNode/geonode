@@ -226,6 +226,7 @@ class BaseHandler(MetadataHandler):
                 field_value = SUBHANDLERS[field_name].deserialize(field_value)
 
             setattr(resource, field_name, field_value)
+            context.setdefault("base", {})[field_name] = field_value
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
             self._set_error(
