@@ -245,12 +245,15 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
 
     xml = add_attributes_to_xml({
         **attributes_dict,
-        # include geometry as available attribute
+        # include geometry as an available attribute
         "geom": {
             "type": geometry_type,
             "nillable": False
         }
     }, base_xml)
+
+    if should_apply_restrictions(attributes_dict):
+        xml = apply_restrictions_to_xml(attributes_dict, xml)
 
     url = f"{ogc_server_settings.rest}/workspaces/{workspace.name}/datastores/{datastore.name}/featuretypes"
     headers = { "Content-Type": "application/xml" }
@@ -261,19 +264,6 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
         logger.error(f"Request status code was: {req.status_code}")
         logger.error(f"Response was: {req.text}")
         raise Exception(f"Dataset could not be created in GeoServer {req.text}")
-
-    if should_apply_restrictions(attributes_dict):
-        # At the moment GeoServer is not able to register the restrictions on the initial POST
-        # we are sending a GET request to retrieve the generated and updated featureType xml from GeoServer
-        # because it may includes additional attributes (e.g. fid primary key)
-        # then we send an additional PUT request to store the assigned restrictions
-        get_req = requests.get(f"{url}/{name}.xml", headers=headers, auth=(_user, _password))
-        if get_req.status_code == 200:
-            restrictions_xml = apply_restrictions_to_xml(attributes_dict, get_req.text)
-            restrictions_req = requests.put(f"{url}/{name}", data=restrictions_xml, headers=headers, auth=(_user, _password))
-            if restrictions_req.status_code != 201:
-                logger.error(f"PUT restrictions request status code was: {restrictions_req.status_code}")
-                logger.error(f"PUT restrictions response was: {restrictions_req.text}")
 
     cat.reload()
     return workspace, datastore
