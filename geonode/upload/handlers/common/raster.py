@@ -39,6 +39,7 @@ from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
+from geonode.upload.utils import find_key_recursively
 from osgeo import gdal
 from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
@@ -231,7 +232,7 @@ class BaseRasterFileHandler(BaseHandler):
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
             # kwargs may be unwrapped by publish_resource; support both forms
-            nl = kwargs.get("new_file_location") or kwargs.get("kwargs", {}).get("new_file_location", {})
+            nl = find_key_recursively(kwargs, "new_file_location") or {}
             raster_path = None
             if nl:
                 files_list = nl.get("files") or []
@@ -512,11 +513,7 @@ class BaseRasterFileHandler(BaseHandler):
         **kwargs,
     ):
         # Extract cloned asset reference from kwargs (supports both asset and asset_id)
-        _nl = (
-            kwargs.get("kwargs", {}).get("new_file_location", {})
-            if "kwargs" in kwargs
-            else kwargs.get("new_file_location", {})
-        )
+        _nl = find_key_recursively(kwargs, "new_file_location") or {}
         _asset = _nl.get("asset")
         _asset_id = _nl.get("asset_id")
         if not _asset and _asset_id:
