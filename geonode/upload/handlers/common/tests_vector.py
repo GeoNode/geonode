@@ -35,7 +35,7 @@ from geonode.resource.models import ExecutionRequest
 from dynamic_models.models import ModelSchema
 from osgeo import ogr
 from django.test.utils import override_settings
-from geonode.upload.utils import create_vrt_file
+from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 
 
 class TestBaseVectorFileHandler(TestCase):
@@ -121,6 +121,48 @@ class TestBaseVectorFileHandler(TestCase):
         finally:
             if vrt_filename and os.path.exists(vrt_filename):
                 os.remove(vrt_filename)
+
+    def test_has_incompatible_field_names(self):
+        """
+        Test that has_incompatible_field_names correctly identifies layers
+        with field names that need sanitization.
+        """
+
+        # layer with incompatible field names
+        mock_layer_incompatible = MagicMock(spec=ogr.Layer)
+        mock_layer_incompatible.GetName.return_value = "Layer With Spaces"
+
+        mock_field_1 = MagicMock()
+        mock_field_1.GetName.return_value = "Field 1 (m)"
+
+        mock_field_2 = MagicMock()
+        mock_field_2.GetName.return_value = "another-#field"
+
+        mock_layer_defn_incompatible = MagicMock()
+        mock_layer_defn_incompatible.GetFieldCount.return_value = 2
+        mock_layer_defn_incompatible.GetFieldDefn.side_effect = [mock_field_1, mock_field_2].__getitem__
+
+        mock_layer_incompatible.GetLayerDefn.return_value = mock_layer_defn_incompatible
+
+        self.assertTrue(has_incompatible_field_names(mock_layer_incompatible))
+
+        # layer with compatible field names
+        mock_layer_compatible = MagicMock(spec=ogr.Layer)
+        mock_layer_compatible.GetName.return_value = "compatible_layer"
+
+        mock_field_3 = MagicMock()
+        mock_field_3.GetName.return_value = "field_one"
+
+        mock_field_4 = MagicMock()
+        mock_field_4.GetName.return_value = "field_two"
+
+        mock_layer_defn_compatible = MagicMock()
+        mock_layer_defn_compatible.GetFieldCount.return_value = 2
+        mock_layer_defn_compatible.GetFieldDefn.side_effect = [mock_field_3, mock_field_4].__getitem__
+
+        mock_layer_compatible.GetLayerDefn.return_value = mock_layer_defn_compatible
+
+        self.assertFalse(has_incompatible_field_names(mock_layer_compatible))
 
     def test_create_dynamic_model_fields(self):
         try:
