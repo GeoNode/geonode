@@ -51,6 +51,28 @@ def get_max_upload_parallelism_limit(slug):
     return max_number
 
 
+def has_incompatible_field_names(layer):
+    """
+    Checks if any of the layer's field names contain special
+    characters that need sanitization, Currently used to check if VRT need to be created or not.
+    """
+    from geonode.upload.handlers.base import BaseHandler
+
+    def _name_needs_sanitization(name):
+        # fixup_name lowercases, replaces special chars, and truncates.
+        # If the sanitized name is different from just the lowercased name,
+        # it means special characters were involved that need handling.
+        return BaseHandler().fixup_name(name) != name.lower()
+
+    layer_defn = layer.GetLayerDefn()
+    for i in range(layer_defn.GetFieldCount()):
+        field_name = layer_defn.GetFieldDefn(i).GetName()
+        if _name_needs_sanitization(field_name):
+            return True
+
+    return False
+
+
 def create_vrt_file(layer, source_filepath):
     """
     Dynamically creates a VRT file to sanitize field names.

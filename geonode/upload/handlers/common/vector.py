@@ -63,7 +63,7 @@ from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
-from geonode.upload.utils import create_vrt_file
+from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 
 
 logger = logging.getLogger("importer")
@@ -418,10 +418,11 @@ class BaseVectorFileHandler(BaseHandler):
                     )
                     # and layer.GetGeometryColumn() is not None
                 ):
-                    vrt_filename, vrt_layer_name = create_vrt_file(layer, files.get("base_file"))
-
                     _files = files.copy()
-                    _files["temp_vrt_file"] = vrt_filename
+                    vrt_layer_name = None
+                    if has_incompatible_field_names(layer):
+                        vrt_filename, vrt_layer_name = create_vrt_file(layer, files.get("base_file"))
+                        _files["temp_vrt_file"] = vrt_filename
 
                     # update the execution request object
                     # setup dynamic model and retrieve the group task needed for tun the async workflow
@@ -443,7 +444,7 @@ class BaseVectorFileHandler(BaseHandler):
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
                         _files,
-                        vrt_layer_name,
+                        vrt_layer_name or layer.GetName().lower(),
                         should_be_overwritten,
                         alternate,
                     )
