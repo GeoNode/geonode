@@ -67,8 +67,8 @@ logger = logging.getLogger("importer")
 
 class ErrorBaseTaskClass(Task):
     """
-    Basic Error task class. This class is used for tasks 
-    that are not tracked through the ExecutionRequest object, 
+    Basic Error task class. This class is used for tasks
+    that are not tracked through the ExecutionRequest object,
     e.g., import_orchestrator.
     """
 
@@ -89,15 +89,19 @@ class UpdateTaskClass(Task):
     # since it handles all the layers at the same time
     bulk: bool = False
 
+    def _get_task_context(self, args, kwargs):
+        """Extract common task context values."""
+        task_name = self.name
+        execution_id = args[0]
+        layer_key = find_key_recursively(kwargs, "layer_key")
+        return task_name, execution_id, layer_key
+
     def on_success(self, retval, task_id, args, kwargs):
         """
         Called when the task succeeds.
         Updates tasks_status for all alternates.
         """
-        task_name = self.name
-        execution_id = args[0]
-        layer_key = find_key_recursively(kwargs, "layer_key")
-
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
         self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
@@ -105,10 +109,7 @@ class UpdateTaskClass(Task):
         Called when the task fails.
         Updates the ExecutionRequest.tasks dict and delegates logging/error handling to evaluate_error.
         """
-        task_name = self.name
-        execution_id = args[0]
-        layer_key = find_key_recursively(kwargs, "layer_key")
-
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
         self.set_task_status(task_name, execution_id, layer_key, "FAILED")
 
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
