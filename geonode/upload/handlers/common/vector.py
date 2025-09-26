@@ -21,6 +21,8 @@ import csv
 
 from datetime import datetime
 from itertools import islice
+from pathlib import Path
+import tempfile
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
 from geonode.storage.manager import StorageManager
@@ -1143,21 +1145,25 @@ class BaseVectorFileHandler(BaseHandler):
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
         fieldnames = errors_to_print[0].keys()
         log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
-        log_location = f"{settings.UPSERT_LOG_LOCATION}/{log_name}"
-        with open(log_location, "w", newline="") as csvfile:
-            # Create a DictWriter object. It maps dictionaries to output rows.
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(errors_to_print)
+        # with tempfile.TemporaryDirectory() as temp_dir_str:
+        # with tempfile.NamedTemporaryFile(mode='w+t') as tmp_file:
+        with tempfile.TemporaryDirectory() as temp_dir_str:
+            temp_dir = Path(temp_dir_str)
+            subfolder_path = temp_dir / "upsert_logs"
+            subfolder_path.mkdir(parents=True, exist_ok=True)
+            csv_file_path = subfolder_path / log_name
+            with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
+                # Create a DictWriter object. It maps dictionaries to output rows.
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(errors_to_print)
 
-        self.create_asset_and_link(
-            exec_obj.geonode_resource,
-            exec_obj.input_params.get("files"),
-            action=exec_obj.action,
-            asset_name=log_name,
-        )
-        # cleanup the tmp file
-        os.remove(log_location)
+                self.create_asset_and_link(
+                    exec_obj.geonode_resource,
+                    files={"base_file": str(csv_file_path)},
+                    action=exec_obj.action,
+                    asset_name=log_name,
+                )
 
         raise UpsertException("Some errors found, please check the error log attached")
 
@@ -1172,6 +1178,7 @@ class BaseVectorFileHandler(BaseHandler):
         # looping over the chunk data
         for feature in data_chunk:
             feature_as_dict = feature.items()
+            errors.append(feature_as_dict | {"reason": "The value X is invalid"})
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
