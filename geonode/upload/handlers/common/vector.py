@@ -39,7 +39,6 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
 from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
@@ -1302,7 +1301,7 @@ def import_next_step(
 
 
 @importer_app.task(
-    base=SingleMessageErrorHandler,
+    base=ErrorBaseTaskClass,
     name="geonode.upload.import_with_ogr2ogr",
     queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,

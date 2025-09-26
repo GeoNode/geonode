@@ -40,7 +40,6 @@ from geonode.upload.api.exceptions import (
 )
 from geonode.upload.celery_app import importer_app
 from geonode.upload.datastore import DataStoreManager
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     create_alternate,
     create_layer_key,
@@ -68,8 +67,9 @@ logger = logging.getLogger("importer")
 
 class ErrorBaseTaskClass(Task):
     """
-    Basic Error task class. Is common to all the base tasks of the import pahse
-    it defines a on_failure method which set the task as "failed" with some extra information
+    Basic Error task class. This class is used for tasks 
+    that are not tracked through the ExecutionRequest object, 
+    e.g., import_orchestrator.
     """
 
     max_retries = 3
@@ -645,7 +645,7 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
 
 
 @importer_app.task(
-    base=SingleMessageErrorHandler,
+    base=ErrorBaseTaskClass,
     name="geonode.upload.create_dynamic_structure",
     queue="geonode.upload.create_dynamic_structure",
     max_retries=1,
