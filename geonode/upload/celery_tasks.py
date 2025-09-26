@@ -1006,7 +1006,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         layer_name = result.get("layer_name", None)
 
         # We create the layer key through which the layer is stored in the tasks schema
-        kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id)).lower()
+        kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id))
 
         import_orchestrator.apply_async(task_params, kwargs)
 
