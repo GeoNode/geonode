@@ -1092,7 +1092,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         self._validate_single_feature(exec_obj, OriginalResource, upsert_key, layers, iter(layers[0]))
 
-        valid_create, valid_update = self._commit_upsert(OriginalResource, upsert_key, iter(layers[0]))
+        valid_create, valid_update = self._commit_upsert(model, OriginalResource, upsert_key, iter(layers[0]))
 
         self.create_resourcehandlerinfo(
             handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
@@ -1107,7 +1107,7 @@ class BaseVectorFileHandler(BaseHandler):
             },
         }
 
-    def _commit_upsert(self, OriginalResource, upsert_key, layer_iterator):
+    def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator):
         valid_create = 0
         valid_update = 0
         with transaction.atomic():
@@ -1122,6 +1122,7 @@ class BaseVectorFileHandler(BaseHandler):
 
                     valid_update, valid_create = self._save_feature(
                         data_chunk,
+                        model_obj=model_obj,
                         model_instance=OriginalResource,
                         upsert_key=upsert_key,
                         valid_update=valid_update,
@@ -1195,7 +1196,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         return errors
 
-    def _save_feature(self, data_chunk, model_instance, upsert_key, valid_update, valid_create):
+    def _save_feature(self, data_chunk, model_obj, model_instance, upsert_key, valid_update, valid_create):
         # getting all the upsert_key value from the data chunk
         # retrieving the data from the DB
         value_in_db = model_instance.objects.filter(
@@ -1226,7 +1227,7 @@ class BaseVectorFileHandler(BaseHandler):
                 feature_to_save.append(model_instance(**feature_as_dict))
                 valid_create += 1
             try:
-                schema_fields = [f.name for f in model_instance.fields.filter(kwargs__primary_key__isnull=True)]
+                schema_fields = [f.name for f in model_obj.fields.filter(kwargs__primary_key__isnull=True)]
                 model_instance.objects.bulk_create(
                     feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
                 )
