@@ -1128,7 +1128,8 @@ class BaseVectorFileHandler(BaseHandler):
                         valid_create=valid_create,
                     )
             except Exception as e:
-                raise UpsertException(f"Some error has occured during the upser save, all feature are rolled back: {e}")
+                logger.error("Exception during upsert save: %s", e, exc_info=True)
+                raise UpsertException("An internal error occurred during upsert save. All features are rolled back.")
         return valid_create, valid_update
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
