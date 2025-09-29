@@ -28,7 +28,7 @@ from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
-from geonode.assets.utils import get_default_asset
+from geonode.assets.utils import get_default_asset, is_asset_deletable
 from geonode.people import Roles
 from django.http import QueryDict
 from deprecated import deprecated
@@ -580,8 +580,10 @@ class LinksSerializer(DynamicModelSerializer):
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
             if lnk.asset:
+                deletable = is_asset_deletable(lnk.asset)
                 extras = {
                     "type": "asset",
+                    "deletable": deletable,
                     "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
                 }
                 if request and permissions_registry.user_has_perm(
