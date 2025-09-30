@@ -1,0 +1,9 @@
+<OGRVRTDataSource>
+  <OGRVRTLayer name="{{ layer_name|escape }}">
+    <SrcDataSource>{{ source_filepath|escape }}</SrcDataSource>
+    <SrcLayer>{{ original_layer_name|escape }}</SrcLayer>
+    {% for field in fields %}
+    <Field name="{{ field.name|escape }}" src="{{ field.src|escape }}" type="{{ field.type|escape }}" />
+    {% endfor %}
+  </OGRVRTLayer>
+</OGRVRTDataSource>

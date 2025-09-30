@@ -63,6 +63,7 @@ from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
+from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 
 
 logger = logging.getLogger("importer")
@@ -260,7 +261,10 @@ class BaseVectorFileHandler(BaseHandler):
                 _datastore["USER"],
                 _datastore["PASSWORD"],
             )
-        options += f'"{files.get("base_file")}"' + " "
+        # vrt file is aready created in import_resource and vrt will be auto detected by ogr2ogr
+        # and also the base_file will work so can be used as alternative for fallback which will also be autodeteced by ogr2ogr.
+        input_file = files.get("temp_vrt_file") or files.get("base_file")
+        options += f'"{input_file}"' + " "
 
         options += f'-nln {alternate} "{original_name}"'
 
@@ -414,6 +418,12 @@ class BaseVectorFileHandler(BaseHandler):
                     )
                     # and layer.GetGeometryColumn() is not None
                 ):
+                    _files = files.copy()
+                    vrt_layer_name = None
+                    if has_incompatible_field_names(layer):
+                        vrt_filename, vrt_layer_name = create_vrt_file(layer, files.get("base_file"))
+                        _files["temp_vrt_file"] = vrt_filename
+
                     # update the execution request object
                     # setup dynamic model and retrieve the group task needed for tun the async workflow
                     # create the async task for create the resource into geonode_data with ogr2ogr
@@ -433,8 +443,8 @@ class BaseVectorFileHandler(BaseHandler):
 
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
-                        files,
-                        layer.GetName().lower(),
+                        _files,
+                        vrt_layer_name or layer.GetName().lower(),
                         should_be_overwritten,
                         alternate,
                     )
@@ -594,7 +604,9 @@ class BaseVectorFileHandler(BaseHandler):
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
-        layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+        layer_schema = [
+            {"name": self.fixup_name(x.name), "class_name": self._get_type(x), "null": True} for x in layer.schema
+        ]
         if (
             layer.GetGeometryColumn()
             or self.default_geometry_column_name
@@ -1329,6 +1341,10 @@ def import_with_ogr2ogr(
 
         process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
         stdout, stderr = process.communicate()
+
+        if files.get("temp_vrt_file") and os.path.exists(files["temp_vrt_file"]):
+            os.remove(files["temp_vrt_file"])
+
         if (
             stderr is not None
             and stderr != b""
@@ -1345,6 +1361,8 @@ def import_with_ogr2ogr(
             raise Exception(f"{message} for layer {alternate}")
         return "ogr2ogr", alternate, execution_id
     except Exception as e:
+        if files.get("temp_vrt_file") and os.path.exists(files.get("temp_vrt_file")):
+            os.remove(files["temp_vrt_file"])
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,
