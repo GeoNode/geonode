@@ -23,10 +23,13 @@ from celery.canvas import Signature
 from celery import group
 from django.conf import settings
 from django.test import TestCase
+from django.urls import reverse
 from mock import MagicMock, patch
+from geonode.upload.api.exceptions import UpsertException
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_with_ogr2ogr
 from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
+from geonode.upload.handlers.geojson.handler import GeoJsonFileHandler
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
 from geonode.upload.handlers.shapefile.handler import ShapeFileHandler
 from geonode.upload.orchestrator import orchestrator
@@ -35,6 +38,10 @@ from geonode.resource.models import ExecutionRequest
 from dynamic_models.models import ModelSchema
 from osgeo import ogr
 from django.test.utils import override_settings
+from geoserver.catalog import Catalog
+
+from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
+from geonode.utils import OGC_Servers_Handler
 
 
 class TestBaseVectorFileHandler(TestCase):
@@ -419,4 +426,103 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(
             str(exept.exception),
             "Was not possible to find the upsert key, upsert is aborted",
+        )
+
+
+class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
+    """
+    Tests for the basic functionality of the upsert methods
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.handler = BaseVectorFileHandler()
+        cls.json_handler = GeoJsonFileHandler()
+        cls.user = get_user_model().objects.exclude(username="Anonymous").first()
+        cls.original = {
+            "base_file": f"{project_dir}/tests/fixture/upsert/original.json",
+        }
+        cls.upsert_geojson = {
+            "base_file": f"{project_dir}/tests/fixture/upsert/upsert.json",
+        }
+
+        cls.url = reverse("importer_upload")
+        ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
+
+        _user, _password = ogc_server_settings.credentials
+
+        cls.cat = Catalog(service_url=ogc_server_settings.rest, username=_user, password=_password)
+
+    def setUp(self) -> None:
+        self.admin, _ = get_user_model().objects.get_or_create(username="admin")
+        self.admin.is_superuser = True
+        self.admin.is_staff = True
+        self.admin.save()
+
+    def test_upsert_data_without_dynamic_model_schema(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.original, "skip_existing_layer": True, "resource_pk": data.pk},
+        )
+        with self.assertRaises(UpsertException) as exp:
+            self.handler.upsert_data(self.original, exec_id)
+
+        self.assertEqual(
+            str(exp.exception),
+            "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled",
+        )
+
+    def test_upsert_data_raise_error_if_upsert_key_is_not_defined(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": self.original,
+                "skip_existing_layer": True,
+                "resource_pk": data.pk,
+                "upsert_key": None,
+            },
+        )
+        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
+
+        with self.assertRaises(UpsertException) as exp:
+            self.handler.upsert_data(self.original, exec_id)
+
+        self.assertEqual(str(exp.exception), "Was not possible to find the upsert key, upsert is aborted")
+
+    def test_validate_single_feature_raise_error(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": self.original,
+                "skip_existing_layer": True,
+                "resource_pk": data.pk,
+                "upsert_key": "id",
+            },
+        )
+        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
+
+        with self.assertRaises(Exception) as exp:
+            self.json_handler.upsert_data(self.original, exec_id)
+
+        self.assertEqual(
+            str(exp.exception), "An internal error occurred during upsert save. All features are rolled back."
         )
