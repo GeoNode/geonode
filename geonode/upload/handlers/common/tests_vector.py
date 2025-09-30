@@ -45,7 +45,6 @@ from geonode.utils import OGC_Servers_Handler
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 
 
-
 class TestBaseVectorFileHandler(TestCase):
     databases = ("default", "datastore")
 
