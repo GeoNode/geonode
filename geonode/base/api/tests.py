@@ -3929,3 +3929,44 @@ class ResourceBaseMetadataXMLTest(GeoNodeBaseTestSupport):
         response = self.client.get(url)
         # user is authenticated but dont have permission
         self.assertEqual(response.status_code, 403)
+
+
+class MapCachingTest(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.create_user(username="test_user_123", password="password")
+        self.map = create_single_map(owner=self.user, title="test map", name="test_map")
+        self.datasets = [create_single_dataset(name=f"dataset_{i}", owner=self.user) for i in range(5)]
+        for i, dataset in enumerate(self.datasets):
+            MapLayer.objects.create(map=self.map, name=dataset.name, dataset=dataset, order=i)
+            perm_spec = {
+                "users": {
+                    self.user.username: [
+                        "view_resourcebase",
+                    ]
+                },
+                "groups": {},
+            }
+            dataset.set_permissions(perm_spec)
+
+    def test_map_layer_permission_caching(self):
+        self.client.login(username="test_user_123", password="password")
+        url = f"/api/v2/maps/{self.map.pk}/?api_preset=viewer_common&api_preset=map_viewer"
+
+        # First call, should cache permissions
+        response1 = self.client.get(url)
+        self.assertEqual(response1.status_code, 200)
+        data1 = response1.json()
+
+        # Second call, should use cached permissions
+        response2 = self.client.get(url)
+        self.assertEqual(response2.status_code, 200)
+        data2 = response2.json()
+
+        # Check that the responses are the same
+        self.assertEqual(data1.keys(), data2.keys())
+
+        # Check that the permissions in the layers are the same
+        for layer1, layer2 in zip(data1["map"]["maplayers"], data2["map"]["maplayers"]):
+            self.assertEqual(layer1["dataset"]["perms"], layer2["dataset"]["perms"])
