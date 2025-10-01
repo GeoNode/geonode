@@ -1518,7 +1518,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             success, message = unlink_asset(resource, asset)
 
             if success:
-                return Response({"message": message}, status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": message}, status=status.HTTP_200_OK)
             else:
                 return Response({"message": message}, status=status.HTTP_403_FORBIDDEN)
 
