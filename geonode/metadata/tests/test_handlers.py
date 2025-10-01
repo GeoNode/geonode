@@ -1533,7 +1533,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
             about__in=["http://example.com/keyword1", "http://example.com/keyword2"]
         )
 
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             updated_keywords.order_by("id"), expected_keywords.order_by("id"), transform=lambda x: x
         )
 
