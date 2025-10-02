@@ -27,6 +27,8 @@ from geonode.assets.models import (
     Asset,
     LocalAsset,
 )
+from rest_framework import serializers
+from geonode.assets.utils import is_asset_deletable
 
 
 logger = logging.getLogger(__name__)
@@ -64,12 +66,16 @@ class AssetSerializer(DynamicModelSerializer):
     owner = SimpleUserSerializer(embed=False)
     asset_type = ClassTypeField()
     subinfo = AssetSubclassField()
+    deletable = serializers.SerializerMethodField()
 
     class Meta:
         model = Asset
         name = "asset"
         # fields = ("pk", "title", "description", "type", "owner", "created")
-        fields = ("pk", "title", "description", "type", "owner", "created", "asset_type", "subinfo")
+        fields = ("pk", "title", "description", "type", "owner", "created", "asset_type", "subinfo", "deletable")
+
+    def get_deletable(self, obj):
+        return is_asset_deletable(obj)
 
 
 class LocalAssetSerializer(AssetSerializer):
