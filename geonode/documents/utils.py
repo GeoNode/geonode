@@ -66,7 +66,8 @@ def get_download_response(request, docid, attachment=False):
     and an http response if they have no permissions to download it.
     """
     document = get_object_or_404(Document, pk=docid)
-
+    logger.info(f"FILE PATH {document.files}")
+    logger.info(f"FILE EXSIST {storage_manager.exists(document.files[0])}")
     if not request.user.has_perm("base.download_resourcebase", obj=document.get_self_resource()):
         return HttpResponse(
             loader.render_to_string(
