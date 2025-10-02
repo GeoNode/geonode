@@ -984,7 +984,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         if not is_valid:
             raise UpsertException(errors)
 
-        result = _datastore.upsert_data(execution_id, **kwargs)
+        result = _datastore.upsert_data(execution_id, self.name, **kwargs)
 
         orchestrator.update_execution_request_obj(_exec, {"output_params": {"upsert": result}})
 

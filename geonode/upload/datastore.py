@@ -93,14 +93,14 @@ class DataStoreManager:
         """
         Call the resource handler to perform the upsert operation.
         """
-        upsert_success, result = self.handler().upsert_data(self.files, execution_id, **kwargs)
+        result = self.handler().upsert_data(self.files, execution_id, **kwargs)
 
         # register the task as RUNNING
-        layer_name = result.get("layer_name", None)
+        layer_name = result.pop("layer_name", None)
 
         orchestrator.register_task_status(execution_id, layer_name, task_name, status="RUNNING")
 
-        return upsert_success, result
+        return result
 
     def refresh_geonode_resource(self, execution_id, **kwargs):
         """

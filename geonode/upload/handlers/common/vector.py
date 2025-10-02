@@ -1125,6 +1125,7 @@ class BaseVectorFileHandler(BaseHandler):
                 "update": valid_update,
                 "create": valid_create,
             },
+            "layer_name": original_resource.title,
         }
 
     def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator):
