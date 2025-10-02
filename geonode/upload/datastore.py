@@ -51,6 +51,13 @@ class DataStoreManager:
             return self.handler.is_valid_url(url)
         return False
 
+    def _import_and_register(self, execution_id, task_name, **kwargs):
+        """
+        Private method to handle resource import and register task status.
+        """
+        layer_names, _, _ = self.handler().import_resource(self.files, execution_id, **kwargs)
+        orchestrator.register_task_status(execution_id, layer_names, task_name, status="RUNNING")
+
     def pre_processing(self, **kwargs):
         self.handler().pre_processing(self.files, self.execution_id, **kwargs)
         # always update the files after the pre-processing
@@ -69,11 +76,12 @@ class DataStoreManager:
         """
         return self.handler().prepare_import(self.files, self.execution_id, **kwargs)
 
-    def start_import(self, execution_id, **kwargs):
+    def start_import(self, execution_id, task_name, **kwargs):
         """
         call the resource handler object to perform the import phase
         """
-        return self.handler().import_resource(self.files, execution_id, **kwargs)
+        self._import_and_register(execution_id, task_name, **kwargs)
+        return
 
     def upsert_validation(self, execution_id, **kwargs):
         """
@@ -81,11 +89,18 @@ class DataStoreManager:
         """
         return self.handler().upsert_validation(self.files, execution_id, **kwargs)
 
-    def upsert_data(self, execution_id, **kwargs):
+    def upsert_data(self, execution_id, task_name, **kwargs):
         """
         Call the resource handler to perform the upsert operation.
         """
-        return self.handler().upsert_data(self.files, execution_id, **kwargs)
+        result = self.handler().upsert_data(self.files, execution_id, **kwargs)
+
+        # register the task as RUNNING
+        layer_name = result.pop("layer_name", None)
+
+        orchestrator.register_task_status(execution_id, layer_name, task_name, status="RUNNING")
+
+        return result
 
     def refresh_geonode_resource(self, execution_id, **kwargs):
         """

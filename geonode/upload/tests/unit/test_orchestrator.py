@@ -29,7 +29,6 @@ from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.shapefile.serializer import ShapeFileSerializer
 from geonode.upload.orchestrator import ImportOrchestrator
 from django.utils import timezone
-from django_celery_results.models import TaskResult
 
 from geonode.resource.models import ExecutionRequest
 
@@ -268,78 +267,116 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
     def test_evaluate_execution_progress_should_continue_if_some_task_is_not_finished(
         self,
     ):
-        # create the celery task result entry
-        try:
-            exec_id = str(
-                self.orchestrator.create_execution_request(
-                    user=get_user_model().objects.first(),
-                    func_name="test",
-                    step="test",
-                )
-            )
+        """
+        Execution should stay READY or RUNNING if at least one task is still in progress.
+        """
 
-            started_entry = TaskResult.objects.create(task_id="task_id_started", status="STARTED", task_args=exec_id)
-            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
-            with self.assertLogs(level="INFO") as _log:
-                result = self.orchestrator.evaluate_execution_progress(exec_id)
+        # Create an execution request with expected datasets > 0
+        exec_uuid = self.orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="test",
+            step="test",
+            input_params={"total_layers": 2},  # <-- ensures is_last_dataset=False
+        )
 
-            self.assertIsNone(result)
-            self.assertEqual(
-                f"INFO:importer:Execution with ID {exec_id} is completed. All tasks are done",
-                _log.output[0],
-            )
+        # Simulate tasks: one running, one success
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_uuid)
+        exec_request_obj.tasks = {
+            "layer_1": {"test": "RUNNING"},
+            "layer_2": {"test": "SUCCESS"},
+        }
+        exec_request_obj.save()
 
-        finally:
-            if started_entry:
-                started_entry.delete()
-            if success_entry:
-                success_entry.delete()
+        # Call method under test
+        result = self.orchestrator.evaluate_execution_progress(exec_uuid)
+
+        # Assert method does not return anything
+        assert result is None
+
+        # Reload execution object
+        exec_request_obj.refresh_from_db()
+
+        # Assert execution is still in progress (READY or RUNNING)
+        assert exec_request_obj.status in [
+            ExecutionRequest.STATUS_READY,
+            ExecutionRequest.STATUS_RUNNING,
+        ]
 
     def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self):
         """
         Should set it fail if all the execution are done and at least 1 is failed
         """
-        # create the celery task result entry
-        os.makedirs(settings.ASSETS_ROOT, exist_ok=True)
 
-        fake_path = f"{settings.ASSETS_ROOT}/file.txt"
-        with open(fake_path, "w"):
-            pass
+        # Create execution request
+        exec_uuid = self.orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="test",
+            step="test",
+            input_params={},
+        )
 
-        try:
-            exec_id = str(
-                self.orchestrator.create_execution_request(
-                    user=get_user_model().objects.first(),
-                    func_name="test",
-                    step="test",
-                    input_params={},
-                )
-            )
+        # Simulate tasks: one failed, one succeeded
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_uuid)
+        exec_request_obj.tasks = {
+            "layer_1": {"test": "FAILED"},
+            "layer_2": {"test": "SUCCESS"},
+        }
+        exec_request_obj.save()
 
-            FAILED_entry = TaskResult.objects.create(task_id="task_id_FAILED", status="FAILURE", task_args=exec_id)
-            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
-            self.orchestrator.evaluate_execution_progress(exec_id)
+        self.orchestrator.evaluate_execution_progress(exec_uuid, _log="Test failure")
 
-        finally:
-            if FAILED_entry:
-                FAILED_entry.delete()
-            if success_entry:
-                success_entry.delete()
+        exec_request_obj.refresh_from_db()
+
+        # Assert execution status is FAILED
+        assert exec_request_obj.status == ExecutionRequest.STATUS_FAILED
+
+        # Tasks dict should remain unchanged
+        assert exec_request_obj.tasks["layer_1"]["test"] == "FAILED"
+        assert exec_request_obj.tasks["layer_2"]["test"] == "SUCCESS"
 
     def test_evaluate_execution_progress_should_set_as_completed(self):
-        try:
-            exec_id = str(
-                self.orchestrator.create_execution_request(
-                    user=get_user_model().objects.first(),
-                    func_name="test",
-                    step="test",
-                )
-            )
+        """
+        Should mark execution as FINISHED when all tasks are successful
+        and the last dataset is reached.
+        """
 
-            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
+        # Create execution request with expected layers = 1
+        exec_uuid = self.orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="test",
+            step="test",
+            input_params={"total_layers": 1},  # ensures last dataset check will pass
+        )
 
-            self.orchestrator.evaluate_execution_progress(exec_id)
+        # Simulate a SUCCESS task
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_uuid)
+        exec_request_obj.tasks = {
+            "layer_1": {"test": "SUCCESS"},
+        }
+        exec_request_obj.save()
 
-        finally:
-            if success_entry:
-                success_entry.delete()
+        from geonode.base.models import ResourceBase
+        from geonode.upload.models import ResourceHandlerInfo
+
+        resource = ResourceBase.objects.create(
+            title="Test resource",
+            owner=get_user_model().objects.first(),
+        )
+
+        # Link ResourceHandlerInfo to both the execution and resource
+        ResourceHandlerInfo.objects.create(
+            execution_request=exec_request_obj,
+            handler_module_path="dummy.handler",
+            resource=resource,
+        )
+
+        # Call method under test
+        self.orchestrator.evaluate_execution_progress(exec_uuid)
+
+        exec_request_obj.refresh_from_db()
+
+        # Assert execution is marked as FINISHED
+        assert exec_request_obj.status == ExecutionRequest.STATUS_FINISHED
+
+        # Tasks dict should remain SUCCESS
+        assert exec_request_obj.tasks["layer_1"]["test"] == "SUCCESS"

@@ -44,7 +44,6 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
 from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
@@ -403,6 +402,11 @@ class BaseVectorFileHandler(BaseHandler):
         orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
         dynamic_model = None
         celery_group = None
+        # list to collect all the alternates:
+        layer_names = []
+        alternates = []
+        task_name = "geonode.upload.import_resource"
+
         try:
             if len(layers) == 0:
                 raise Exception("No valid layers found")
@@ -446,6 +450,9 @@ class BaseVectorFileHandler(BaseHandler):
                     else:
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
 
+                    layer_names.append(layer_name)
+                    alternates.append(alternate)
+
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
                         _files,
@@ -469,12 +476,13 @@ class BaseVectorFileHandler(BaseHandler):
                         import_next_step.s(
                             execution_id,
                             str(self),  # passing the handler module path
-                            "geonode.upload.import_resource",
+                            task_name,
                             layer_name,
                             alternate,
                             **kwargs,
                         )
                     )
+
         except Exception as e:
             logger.error(e)
             if dynamic_model:
@@ -484,7 +492,7 @@ class BaseVectorFileHandler(BaseHandler):
                 """
                 drop_dynamic_model_schema(dynamic_model)
             raise e
-        return
+        return layer_names, alternates, execution_id
 
     def _select_valid_layers(self, all_layers):
         layers = []
@@ -1117,6 +1125,7 @@ class BaseVectorFileHandler(BaseHandler):
                 "update": valid_update,
                 "create": valid_create,
             },
+            "layer_name": original_resource.title,
         }
 
     def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator):
@@ -1363,7 +1372,7 @@ def import_next_step(
 
 
 @importer_app.task(
-    base=SingleMessageErrorHandler,
+    base=ErrorBaseTaskClass,
     name="geonode.upload.import_with_ogr2ogr",
     queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,
