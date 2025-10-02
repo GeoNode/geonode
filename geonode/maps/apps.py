@@ -25,6 +25,7 @@ from django.apps import AppConfig
 
 class MapsAppConfig(NotificationsAppConfigBase, AppConfig):
     name = "geonode.maps"
+    default_auto_field = "django.db.models.BigAutoField"
     NOTIFICATIONS = (
         (
             "map_created",

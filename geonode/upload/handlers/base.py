@@ -22,6 +22,7 @@ import os
 from pathlib import Path
 from typing import List
 import zipfile
+import re
 
 from geonode.assets.utils import create_asset_and_link
 from geonode.resource.enumerator import ExecutionRequestAction as exa
@@ -237,18 +238,14 @@ class BaseHandler(ABC):
         prefix = name[0]
         if prefix.isnumeric():
             name = name.replace(name[0], "_")
-        return (
-            name.lower()
-            .replace("-", "_")
-            .replace(" ", "_")
-            .replace("#", "_")
-            .replace("\\", "_")
-            .replace(".", "")
-            .replace(")", "")
-            .replace("(", "")
-            .replace(",", "")
-            .replace("&", "")[:62]
-        )
+        name = name.lower()
+        # Replace specific chars with underscore in one pass
+        name = re.sub(r"[-# \\&]", "_", name)
+
+        # Remove unwanted characters in one pass
+        name = re.sub(r'[.(),!"$%\'*+/:;<=>?@\[\]^`{|}~]', "", name)
+
+        return name[:62]
 
     def extract_resource_to_publish(self, files, layer_name, alternate, **kwargs):
         """
@@ -323,10 +320,10 @@ class BaseHandler(ABC):
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
 
-    def create_asset_and_link(self, resource, files, action=None):
+    def create_asset_and_link(self, resource, files, action=None, asset_name=None):
         if not files:
             return
-        asset_name = (
+        asset_name = asset_name or (
             Path(files.get("base_file")).stem if action in [ira.REPLACE.value, ira.UPSERT.value] else "Original"
         )
         asset, _ = create_asset_and_link(

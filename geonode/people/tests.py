@@ -37,6 +37,8 @@ from geonode.people import profileextractors
 
 from geonode.base.populate_test_data import all_public, create_models, create_single_dataset, remove_models
 from geonode.security.registry import permissions_registry
+from geonode.people.hashers import SHA1PasswordHasher
+from geonode.people.hashers import PBKDF2SHA1WrappedSHA1PasswordHasher
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
@@ -1298,3 +1300,25 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # since the payload say "default"
         self.assertTrue(resource_to_transfer.owner == new_owner)
         self.assertTrue(second_resource.owner == new_owner)
+
+    def test_migrate_sha1_passwords(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="sha1user", password="password")
+        # Manually hash the password using SHA1 and save it directly to the database
+        hasher = SHA1PasswordHasher()
+        encoded_password = hasher.encode("password", "salt")
+        User.objects.filter(pk=user.pk).update(password=encoded_password)
+        user.refresh_from_db()
+        self.assertTrue(user.password.startswith("sha1"))
+        # forward function logic on migration to pbkdf2sha1_wrapped_sha1
+        new_hasher = PBKDF2SHA1WrappedSHA1PasswordHasher()
+        algorithm, salt, sha1_hash = user.password.split("$", 2)
+        user.password = new_hasher.encode_sha1_hash(sha1_hash, salt)
+        user.save(update_fields=["password"])
+        user.refresh_from_db()
+        self.assertFalse(user.password.startswith("sha1"))
+        self.assertTrue(user.password.startswith("pbkdf2sha1_wrapped_sha1"))
+        # Check that the user can still log in with their original password
+        self.assertTrue(user.check_password("password"))
+        # after checking it should be migrated to default hash
+        self.assertTrue(user.password.startswith("pbkdf2_sha1"))

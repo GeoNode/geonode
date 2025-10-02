@@ -24,6 +24,7 @@ from django.apps import AppConfig
 
 class DocumentsAppConfig(NotificationsAppConfigBase, AppConfig):
     name = "geonode.documents"
+    default_auto_field = "django.db.models.BigAutoField"
     NOTIFICATIONS = (
         (
             "document_created",

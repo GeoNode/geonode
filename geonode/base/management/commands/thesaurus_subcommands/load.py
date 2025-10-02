@@ -55,7 +55,7 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
     filename = input_file.name if isinstance(input_file, UploadedFile) else input_file
     rdf_format = guess_format(filename)
     if not identifier:
-        identifier, _ = path.splitext(path.basename(filename))
+        identifier = path.basename(filename).split('.')[0]
         logger.info(f"Missing identifier param: Inferring thesaurus identifier as '{identifier}'")
 
     g.parse(input_file, format=rdf_format, publicID=FAKE_BASE_URI)
