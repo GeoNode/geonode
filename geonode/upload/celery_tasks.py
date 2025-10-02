@@ -40,7 +40,6 @@ from geonode.upload.api.exceptions import (
 )
 from geonode.upload.celery_app import importer_app
 from geonode.upload.datastore import DataStoreManager
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     create_alternate,
     create_layer_key,
@@ -68,8 +67,9 @@ logger = logging.getLogger("importer")
 
 class ErrorBaseTaskClass(Task):
     """
-    Basic Error task class. Is common to all the base tasks of the import pahse
-    it defines a on_failure method which set the task as "failed" with some extra information
+    Basic Error task class. This class is used for tasks
+    that are not tracked through the ExecutionRequest object,
+    e.g., import_orchestrator.
     """
 
     max_retries = 3
@@ -89,15 +89,19 @@ class UpdateTaskClass(Task):
     # since it handles all the layers at the same time
     bulk: bool = False
 
+    def _get_task_context(self, args, kwargs):
+        """Extract common task context values."""
+        task_name = self.name
+        execution_id = args[0]
+        layer_key = find_key_recursively(kwargs, "layer_key")
+        return task_name, execution_id, layer_key
+
     def on_success(self, retval, task_id, args, kwargs):
         """
         Called when the task succeeds.
         Updates tasks_status for all alternates.
         """
-        task_name = self.name
-        execution_id = args[0]
-        layer_key = find_key_recursively(kwargs, "layer_key")
-
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
         self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
@@ -105,10 +109,7 @@ class UpdateTaskClass(Task):
         Called when the task fails.
         Updates the ExecutionRequest.tasks dict and delegates logging/error handling to evaluate_error.
         """
-        task_name = self.name
-        execution_id = args[0]
-        layer_key = find_key_recursively(kwargs, "layer_key")
-
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
         self.set_task_status(task_name, execution_id, layer_key, "FAILED")
 
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
@@ -645,7 +646,7 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
 
 
 @importer_app.task(
-    base=SingleMessageErrorHandler,
+    base=ErrorBaseTaskClass,
     name="geonode.upload.create_dynamic_structure",
     queue="geonode.upload.create_dynamic_structure",
     max_retries=1,
@@ -983,12 +984,9 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         if not is_valid:
             raise UpsertException(errors)
 
-        upsert_success, result = _datastore.upsert_data(execution_id, self.name, **kwargs)
+        result = _datastore.upsert_data(execution_id, self.name, **kwargs)
 
         orchestrator.update_execution_request_obj(_exec, {"output_params": {"upsert": result}})
-
-        if not upsert_success:
-            raise UpsertException("Upsert has failed, please verify the log for more information")
 
         resource = ResourceBase.objects.get(pk=_exec.input_params.get("resource_pk"))
 
@@ -1005,7 +1003,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         layer_name = result.get("layer_name", None)
 
         # We create the layer key through which the layer is stored in the tasks schema
-        kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id)).lower()
+        kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id))
 
         import_orchestrator.apply_async(task_params, kwargs)
 

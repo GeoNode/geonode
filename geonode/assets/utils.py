@@ -201,6 +201,17 @@ def rollback_asset_and_link(asset, link):
         logger.error(f"Could not rollback asset[{asset}] and link[{link}]", exc_info=e)
 
 
+def is_asset_deletable(asset: Asset):
+    """
+    Checks if an asset can be deleted.
+    currently Assets with titles "Original" or "Files" are protected and cannot be deleted.
+    Further logics can be added here.
+    """
+    if asset.title in ["Original", "Files"]:
+        return False
+    return True
+
+
 def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True):
     """
     Unlinks an asset from a resource. By default, the asset is deleted.
@@ -214,8 +225,7 @@ def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True
         * If the asset is only linked to the provided resource, the asset itself is deleted,
           which in turn triggers the deletion of the associated files.
     """
-    if asset.title in ["Original", "Files"]:
-        logger.info(f"Asset '{asset.title}' is protected and will not be unlinked or deleted.")
+    if not is_asset_deletable(asset):
         return False, "Asset is protected and will not be unlinked or deleted."
 
     link = Link.objects.filter(resource=resource, asset=asset).first()

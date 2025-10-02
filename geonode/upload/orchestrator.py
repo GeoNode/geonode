@@ -184,7 +184,7 @@ class ImportOrchestrator:
                 )
 
                 # We create the layer key through which the layer is stored in the tasks schema
-                kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id)).lower()
+                kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id))
 
             # continuing to the next step
             importer_app.tasks.get(next_step).apply_async(task_params, kwargs)
@@ -372,7 +372,7 @@ class ImportOrchestrator:
             # Extract the name if it's a Dataset
             layer = layer.name if isinstance(layer, Dataset) else str(layer)
 
-            layer_key = create_layer_key(layer, str(_exec.exec_id)).lower()
+            layer_key = create_layer_key(layer, str(_exec.exec_id))
             if layer_key not in _exec.tasks:
                 _exec.tasks[layer_key] = {}
             _exec.tasks[layer_key][step] = status

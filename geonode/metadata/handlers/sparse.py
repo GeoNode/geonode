@@ -24,6 +24,7 @@ from rest_framework.reverse import reverse
 
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
+from geonode.metadata.i18n import get_localized_tkeywords
 from geonode.metadata.models import SparseField
 
 logger = logging.getLogger(__name__)
@@ -66,27 +67,48 @@ class SparseHandler(MetadataHandler):
             case _:
                 pass
 
-    def _recurse_thesauri_autocomplete(self, d):
+        # some heuristics for finding stuff to be localized
+        for sub in (
+            "then",
+            "else",
+        ):
+            properties = schema.get(sub, {}).get("properties", {})
+            for prop_name, subschema in properties.items():
+                self._recurse_localization(context, subschema, lang, prop_name)
+        for item in schema.get("oneOf", []):
+            if title := item.get("title", None):
+                item["title"] = MetadataHandler._localize_label(context, lang, title)
+
+    def _recurse_thesauri_autocomplete(self, d, lang):
         if isinstance(d, dict):
             # Check if target_key is in the current dict
             if thesaurus_id := d.get("geonode:thesaurus", None):
                 d.setdefault("ui:options", {})["geonode-ui:autocomplete"] = reverse(
                     "metadata_autocomplete_tkeywords", kwargs={"thesaurusid": thesaurus_id}
                 )
+            elif thesaurus_id := d.get("geonode:thesaurus-embed", None):
+                self._add_thesaurus_options(d, thesaurus_id, lang)
+
             # Recurse into each value
             for value in d.values():
-                self._recurse_thesauri_autocomplete(value)
+                self._recurse_thesauri_autocomplete(value, lang)
         elif isinstance(d, list):
             # Recurse into each item of the list
             for item in d:
-                self._recurse_thesauri_autocomplete(item)
+                self._recurse_thesauri_autocomplete(item, lang)
+
+    def _add_thesaurus_options(self, d, thesaurus_id, lang):
+        oneof = []
+        for keyword in get_localized_tkeywords(lang, thesaurus_id):
+            oneof.append({"const": keyword["about"], "title": keyword["label"]})
+        d["oneOf"] = oneof
 
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
         for field_name, field_info in self.registry.fields().items():
             subschema = copy.deepcopy(field_info["schema"])
             self._recurse_localization(context, subschema, lang, field_name)
-            self._recurse_thesauri_autocomplete(subschema)
+            self._recurse_thesauri_autocomplete(subschema, lang)
             self._add_subschema(jsonschema, field_name, subschema, after_what=field_info["after"])
 
             # add the handler info to the dictionary if it doesn't exist
