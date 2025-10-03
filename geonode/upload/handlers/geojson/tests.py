@@ -144,7 +144,8 @@ class TestGeoJsonFileHandler(TestCase):
             + _datastore["PASSWORD"]
             + '\' " "'
             + self.valid_files.get("base_file")
-            + '" -nln alternate "dataset" -lco GEOMETRY_NAME=geometry',
+            + '" -lco FID=fid'
+            + ' -nln alternate "dataset" -lco GEOMETRY_NAME=geometry',
             stdout=-1,
             stderr=-1,
             shell=True,  # noqa

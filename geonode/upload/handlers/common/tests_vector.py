@@ -363,7 +363,8 @@ class TestBaseVectorFileHandler(TestCase):
             + _datastore["PASSWORD"]
             + '\' " "'
             + self.valid_files.get("base_file")
-            + '" -nln alternate "dataset"',
+            + '" -lco FID=fid'
+            + ' -nln alternate "dataset"',
             stdout=-1,
             stderr=-1,
             shell=True,  # noqa
@@ -399,7 +400,8 @@ class TestBaseVectorFileHandler(TestCase):
             + _datastore["PASSWORD"]
             + '\' " "'
             + self.valid_files.get("base_file")
-            + '" -nln alternate "dataset"',
+            + '" -lco FID=fid'
+            + ' -nln alternate "dataset"',
             stdout=-1,
             stderr=-1,
             shell=True,  # noqa
