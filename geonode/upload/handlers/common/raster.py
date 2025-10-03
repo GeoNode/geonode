@@ -503,6 +503,18 @@ class BaseRasterFileHandler(BaseHandler):
             return
         return self.create_resourcehandlerinfo(handler_module_path, resource, execution_id, **kwargs)
 
+    def _prepare_assets_for_copy(self, resource, kwargs):
+        """
+        Prepare assets for copying.
+        It gets the cloned asset and identifies other assets to be linked.
+        """
+        _nl = find_key_recursively(kwargs, "new_file_location") or {}
+        _asset_id = _nl.get("asset_id")
+        cloned_asset = Asset.objects.filter(pk=_asset_id).first() if _asset_id else None
+
+        assets_to_link = Asset.objects.filter(link__resource=resource).exclude(title="Original")
+        return cloned_asset, assets_to_link
+
     def copy_geonode_resource(
         self,
         alternate: str,
@@ -512,22 +524,17 @@ class BaseRasterFileHandler(BaseHandler):
         new_alternate: str,
         **kwargs,
     ):
-        # Extract cloned asset reference from kwargs (supports both asset and asset_id)
-        _nl = find_key_recursively(kwargs, "new_file_location") or {}
-        _asset = _nl.get("asset")
-        _asset_id = _nl.get("asset_id")
-        if not _asset and _asset_id:
-            _asset = Asset.objects.filter(pk=_asset_id).first()
+        cloned_asset, assets_to_link = self._prepare_assets_for_copy(resource, kwargs)
+
         new_resource = self.create_geonode_resource(
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
-            asset=_asset,
+            asset=cloned_asset,
         )
-        assets_to_link = Asset.objects.filter(link__resource=resource).exclude(
-            title="Original"
-        )  # Exclude already linked asset
-        [create_link(new_resource, asset) for asset in assets_to_link]  # Link other assets to the new resource
+
+        [create_link(new_resource, asset) for asset in assets_to_link]
+
         new_resource.refresh_from_db()
         return new_resource
 
@@ -591,7 +598,7 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
         )
     original_asset = Asset.objects.filter(**filters).last()
 
-    # Clone will be done for original asset and later in code other asset in asset will be linked to the new resource
+    # The original asset is cloned here, as it is required for the creation of the new cloned resource. Other associated assets will be linked to the new resource later in the process.
     cloned_asset = asset_handler_registry.get_handler(original_asset).clone(original_asset)
     new_file_location = {
         "files": cloned_asset.location if getattr(cloned_asset, "location", None) else [],
