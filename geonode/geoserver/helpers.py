@@ -66,6 +66,7 @@ from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.resource.utils import is_remote_resource
 
 from geonode.utils import (
     OGC_Servers_Handler,
@@ -1928,14 +1929,14 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
         # Don't run this signal handler if it is a tile layer or a remote store (Service)
         #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-        _is_remote_instance = hasattr(instance, "subtype") and getattr(instance, "subtype") in ["tileStore", "remote"]
+        _is_remote_instance = is_remote_resource(instance)
 
-        # Let's reset the connections first
-        gs_catalog._cache.clear()
-        gs_catalog.reset()
-
-        gs_resource = None
         if not _is_remote_instance:
+            # Let's reset the connections first
+            gs_catalog._cache.clear()
+            gs_catalog.reset()
+
+            gs_resource = None
             values = {"title": instance.title, "abstract": instance.raw_abstract}
             _tries = 0
 
@@ -2073,7 +2074,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
         # Refreshing dataset links
         logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")
-        set_resource_default_links(instance, instance, prune=_is_remote_instance)
+        set_resource_default_links(instance, instance, prune=True, is_remote=_is_remote_instance)
 
         # Refreshing CSW records
         logger.debug(f"... Updating the Catalogue entries for Dataset {instance.title}")
