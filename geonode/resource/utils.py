@@ -492,3 +492,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
             dataset_post_save(instance, *args, **kwargs)
 
         metadata_post_save(instance, *args, **kwargs)
+
+
+def is_remote_resource(resource):
+    return hasattr(resource, "subtype") and getattr(resource, "subtype") in ["tileStore", "remote"]
