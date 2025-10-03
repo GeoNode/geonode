@@ -17,6 +17,7 @@
 #
 #########################################################################
 import shutil
+
 from django.test import TestCase, override_settings
 from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException
 from django.contrib.auth import get_user_model
@@ -121,8 +122,7 @@ class TestGPKGHandler(TestCase):
 
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_single_message_error_handler(self):
-        # lets copy the file to the temporary folder
-        # later will be removed
+        # Copy the file to the temporary folder
         shutil.copy(self.valid_gpkg, "/tmp")
 
         exec_id = orchestrator.create_execution_request(

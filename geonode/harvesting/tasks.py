@@ -304,22 +304,24 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
 
         # Update execution request
         if not result:
-            failures = output.get("failures", [])
-            failures.append(
-                {
-                    "resource_id": harvestable_resource_id,
-                    "status": "failed",
-                    "details": harvesting_message,
-                    "timestamp": timestamp,
-                }
-            )
-            output["failures"] = failures
-
-        log_entry = f"[{timestamp}] {harvesting_message}"
-        exec_req.log = (exec_req.log or "") + log_entry + "\n"
-        exec_req.output_params = output
-        exec_req.last_updated = now_
-        exec_req.save(update_fields=["output_params", "last_updated", "log"])
+            with transaction.atomic():
+                # Lock the row to prevent concurrent overwrites
+                exec_req = ExecutionRequest.objects.select_for_update().get(exec_id=execution_id)
+                output = exec_req.output_params or {}
+                failures = output.get("failures", [])
+                failures.append(
+                    {
+                        "resource_id": harvestable_resource_id,
+                        "status": "failed",
+                        "details": harvesting_message,
+                        "timestamp": timestamp,
+                    }
+                )
+                output["failures"] = failures
+                exec_req.output_params = output
+                exec_req.log = (exec_req.log or "") + f"[{timestamp}] {harvesting_message}\n"
+                exec_req.last_updated = now_
+                exec_req.save(update_fields=["output_params", "last_updated", "log"])
 
         return {
             "resource_id": harvestable_resource_id,
@@ -336,25 +338,24 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
         details_msg = f"Unexpected error while harvesting resource {harvestable_resource_id}"
 
         try:
-            exec_req = ExecutionRequest.objects.get(exec_id=execution_id)
-            output = exec_req.output_params or {}
-            failures = output.get("failures", [])
-            failures.append(
-                {
-                    "resource_id": harvestable_resource_id,
-                    "status": "failed",
-                    "details": details_msg,
-                    "error": error_msg,
-                    "timestamp": timestamp,
-                }
-            )
-            output["failures"] = failures
-
-            log_entry = f"[{timestamp}] {details_msg}: {error_msg}"
-            exec_req.log = (exec_req.log or "") + log_entry + "\n"
-            exec_req.output_params = output
-            exec_req.last_updated = now_
-            exec_req.save(update_fields=["output_params", "last_updated", "log"])
+            with transaction.atomic():
+                exec_req = ExecutionRequest.objects.select_for_update().get(exec_id=execution_id)
+                output = exec_req.output_params or {}
+                failures = output.get("failures", [])
+                failures.append(
+                    {
+                        "resource_id": harvestable_resource_id,
+                        "status": "failed",
+                        "details": details_msg,
+                        "error": error_msg,
+                        "timestamp": timestamp,
+                    }
+                )
+                output["failures"] = failures
+                exec_req.output_params = output
+                exec_req.log = (exec_req.log or "") + f"[{timestamp}] {details_msg}: {error_msg}\n"
+                exec_req.last_updated = now_
+                exec_req.save(update_fields=["output_params", "last_updated", "log"])
 
         except Exception:
             logger.exception("Failed to update execution request during final error handling")

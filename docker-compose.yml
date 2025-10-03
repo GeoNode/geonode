@@ -144,12 +144,12 @@ services:
     #ports:
     #  - "5432:5432"
 
-  # Vanilla RabbitMQ service. This is needed by celery
-  rabbitmq:
-    image: rabbitmq:3-alpine
-    container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
+  # Vanilla Redis service. This is needed by celery
+  redis:
+    image: redis:7-alpine
+    container_name: redis4${COMPOSE_PROJECT_NAME}
     volumes:
-      - rabbitmq:/var/lib/rabbitmq
+      - redisdata:/data
     restart: unless-stopped
 
 volumes:
@@ -171,5 +171,5 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-data
   tmp:
     name: ${COMPOSE_PROJECT_NAME}-tmp
-  rabbitmq:
-    name: ${COMPOSE_PROJECT_NAME}-rabbitmq
+  redisdata:
+    name: ${COMPOSE_PROJECT_NAME}-redisdata
