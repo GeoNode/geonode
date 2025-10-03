@@ -509,11 +509,13 @@ class BaseRasterFileHandler(BaseHandler):
         It gets the cloned asset and identifies other assets to be linked.
         """
         _nl = find_key_recursively(kwargs, "new_file_location") or {}
+        _asset = _nl.get("asset")
         _asset_id = _nl.get("asset_id")
-        cloned_asset = Asset.objects.filter(pk=_asset_id).first() if _asset_id else None
+        if not _asset and _asset_id:
+            _asset = Asset.objects.filter(pk=_asset_id).first()
 
         assets_to_link = Asset.objects.filter(link__resource=resource).exclude(title="Original")
-        return cloned_asset, assets_to_link
+        return _asset, assets_to_link
 
     def copy_geonode_resource(
         self,
