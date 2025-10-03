@@ -23,7 +23,7 @@ import tempfile
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from geonode.upload.api.exceptions import InvalidInputFileException
 
 from geonode.upload.celery_tasks import (
@@ -48,6 +48,8 @@ from dynamic_models.models import ModelSchema, FieldSchema
 from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload import project_dir
+from geonode.assets.utils import create_asset_and_link
+from geonode.assets.models import Asset
 
 from geonode.upload.tests.utils import (
     ImporterBaseTestSupport,
@@ -680,3 +682,76 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
         mock_cursor.execute.assert_called_once()
         mock_cursor.execute.assert_called()
         async_call.assert_called_once()
+
+
+class TestRasterCopy(ImporterBaseTestSupport):
+    def setUp(self):
+        self.user = get_user_model().objects.first()
+        self.existing_file = f"{project_dir}/tests/fixture/test_raster.tif"
+        self.original_alternate = "geonode:test_raster"
+        self.new_alternate = "geonode:test_raster_copy"
+        self.dataset = create_single_dataset(name="test_raster")
+        self.dataset.alternate = self.original_alternate
+        self.dataset.save()
+        for title in ["Original", "Extra Asset"]:
+            create_asset_and_link(
+                self.dataset,
+                self.user,
+                [self.existing_file],
+                title=title,
+                asset_type="raster",
+            )
+
+    def tearDown(self):
+        if Dataset.objects.filter(alternate=self.original_alternate).exists():
+            Dataset.objects.filter(alternate=self.original_alternate).delete()
+        if Dataset.objects.filter(alternate=self.new_alternate).exists():
+            Dataset.objects.filter(alternate=self.new_alternate).delete()
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @patch("geonode.upload.handlers.common.raster.create_alternate")
+    @patch("geonode.upload.publisher.Catalog")
+    @patch("geonode.geoserver.manager.geoserver_create_style")
+    @patch("geonode.resource.manager.ResourceManager.set_thumbnail")
+    def test_raster_copy_workflow(self, mock_set_thumbnail, mock_create_style, MockCatalog, mock_create_alternate):
+        mock_workspace = MagicMock()
+        mock_workspace.name = "geonode"
+        MockCatalog.return_value.get_workspace.return_value = mock_workspace
+
+        mock_store = MagicMock()
+        MockCatalog.return_value.get_store.return_value = mock_store
+
+        mock_resource = MagicMock()
+        mock_resource.projection = "EPSG:4326"
+        MockCatalog.return_value.get_resource.return_value = mock_resource
+
+        mock_create_alternate.return_value = self.new_alternate.split(":")[-1]
+
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="dummy_func",
+            step="dummy_step",
+            action=ExecutionRequestAction.COPY.value,
+            input_params={
+                "files": {"base_file": self.existing_file},
+                "store_spatial_files": True,
+                "handler_module_path": "geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler",
+                "original_dataset_alternate": self.original_alternate,
+            },
+        )
+
+        import_orchestrator(
+            files={"base_file": self.existing_file},
+            execution_id=str(exec_id),
+            handler="geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler",
+            action=ExecutionRequestAction.COPY.value,
+            step="start_copy",
+            layer_name="test_raster",
+            alternate=self.original_alternate,
+        )
+
+        self.assertTrue(Dataset.objects.filter(alternate=self.new_alternate).exists())
+
+        new_dataset = Dataset.objects.get(alternate=self.new_alternate)
+        self.assertEqual(Asset.objects.filter(link__resource=new_dataset).count(), 2)
+        self.assertTrue(Asset.objects.filter(link__resource=new_dataset, title="Original").exists())
