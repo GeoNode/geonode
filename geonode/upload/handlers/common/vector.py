@@ -106,6 +106,8 @@ class BaseVectorFileHandler(BaseHandler):
         ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
 
+    default_pk_column_name = "fid"
+
     @property
     def have_table(self):
         return True
@@ -113,11 +115,6 @@ class BaseVectorFileHandler(BaseHandler):
     @property
     def default_geometry_column_name(self):
         return "geometry"
-
-    @property
-    def default_pk_column_name(self):
-        # ref https://github.com/GeoNode/geonode/issues/13563
-        return "fid"
 
     @property
     def supported_file_extension_config(self):
@@ -273,7 +270,7 @@ class BaseVectorFileHandler(BaseHandler):
         # vrt file is aready created in import_resource and vrt will be auto detected by ogr2ogr
         # and also the base_file will work so can be used as alternative for fallback which will also be autodeteced by ogr2ogr.
         input_file = files.get("temp_vrt_file") or files.get("base_file")
-        options += f'"{input_file}"' + " -lco FID=fid "
+        options += f'"{input_file}"' + f" -lco FID={BaseVectorFileHandler.default_pk_column_name} "
 
         options += f'-nln {alternate} "{original_name}"'
 
