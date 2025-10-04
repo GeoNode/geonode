@@ -103,12 +103,18 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         mock_update_asynchronous_session.assert_called()
         assert result["status"] == "success"
 
+    @mock.patch("geonode.harvesting.tasks.ExecutionRequest.objects.select_for_update")
     @mock.patch("geonode.harvesting.tasks.update_asynchronous_session")
     @mock.patch("geonode.resource.models.ExecutionRequest.objects.get")
     @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
     @mock.patch("geonode.harvesting.tasks.models.HarvestableResource.objects.get")
     def test_harvest_resource_does_not_update_geonode_when_remote_resource_does_not_exist(
-        self, mock_get_resource, mock_get_session, mock_get_exec_req, mock_update_asynchronous_session
+        self,
+        mock_get_resource,
+        mock_get_session,
+        mock_get_exec_req,
+        mock_update_asynchronous_session,
+        mock_select_for_update,
     ):
         """Test that GeoNode is not updated if remote resource cannot be harvested."""
 
@@ -125,6 +131,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         mock_exec_req = mock.MagicMock()
         mock_exec_req.output_params = {}
         mock_get_exec_req.return_value = mock_exec_req
+        mock_select_for_update.return_value.get.return_value = mock_exec_req
 
         # Mock worker with None returned from get_resource
         mock_worker = mock.MagicMock()

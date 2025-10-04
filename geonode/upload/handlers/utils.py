@@ -135,6 +135,8 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
     if exec_id.status == ExecutionRequest.STATUS_FAILED:
         logger.info("Execution is already in status FAILED")
         return
+    if exec_id.status == ExecutionRequest.STATUS_FINISHED:
+        logger.info("Execution was 'finished', forcing update to FAILURE")
 
     logger.error(f"Task FAILED with ID: {str(exec_id.exec_id)}, reason: {exc}")
 

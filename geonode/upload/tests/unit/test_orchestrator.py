@@ -304,7 +304,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
 
     def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self):
         """
-        Should set it fail if all the execution are done and at least 1 is failed
+        Should set it to FAILURE if all the executions are done and at least 1 is failed
         """
 
         # Create execution request
