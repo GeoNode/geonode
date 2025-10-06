@@ -1200,6 +1200,7 @@ def get_legend_url(
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
     from django.utils.translation import gettext_lazy
+    from geonode.resource.utils import is_remote_resource
 
     is_remote = is_remote_resource(instance)
     # Prune old links
@@ -1212,7 +1213,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
         from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
-        from geonode.resource.utils import is_remote_resource
 
         # Compute parameters for the new links
         logger.debug(" -- Resource Links[Compute parameters for the new links]...")
