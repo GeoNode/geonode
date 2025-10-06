@@ -2074,7 +2074,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
         # Refreshing dataset links
         logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")
-        set_resource_default_links(instance, instance, prune=True, is_remote=_is_remote_instance)
+        set_resource_default_links(instance, instance, prune=_is_remote_instance)
 
         # Refreshing CSW records
         logger.debug(f"... Updating the Catalogue entries for Dataset {instance.title}")

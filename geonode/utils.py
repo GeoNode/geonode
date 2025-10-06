@@ -1197,10 +1197,11 @@ def get_legend_url(
     )
 
 
-def set_resource_default_links(instance, layer, prune=False, is_remote=False, **kwargs):
+def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
     from django.utils.translation import gettext_lazy
 
+    is_remote = is_remote_resource(instance)
     # Prune old links
     if prune:
         logger.debug(" -- Resource Links[Prune old links]...")
@@ -1211,6 +1212,7 @@ def set_resource_default_links(instance, layer, prune=False, is_remote=False, **
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
         from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
+        from geonode.resource.utils import is_remote_resource
 
         # Compute parameters for the new links
         logger.debug(" -- Resource Links[Compute parameters for the new links]...")
@@ -1261,6 +1263,9 @@ def set_resource_default_links(instance, layer, prune=False, is_remote=False, **
                     width = int(height * dataAspect)
                     # Rewriting BBOX as a plain string
                     bbox = ",".join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
+
+                else:
+                    bbox = instance.bbox_string
             except Exception as e:
                 logger.exception(e)
                 bbox = instance.bbox_string
