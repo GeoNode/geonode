@@ -367,7 +367,7 @@ def publish_resource(
         _overwrite = _exec.input_params.get("overwrite_existing_layer")
 
         _publisher = DataPublisher(handler_module_path)
-
+        kwargs.update({"execution_id": execution_id})
         # extracting the crs and the resource name, are needed for publish the resource
         data = _publisher.extract_resource_to_publish(_files, action, layer_name, alternate, **kwargs)
         if data:
@@ -714,10 +714,19 @@ def create_dynamic_structure(
                 row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
 
     if row_to_insert:
-        # the build creation improves the overall permformance with the DB
-        FieldSchema.objects.bulk_create(row_to_insert, 30)
+        if dynamic_model_schema.managed:
+            # we have to loop in order to generate the schema of the table
+            for field in row_to_insert:
+                if field.name == "fid":
+                    with connections[os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")].cursor() as cursor:
+                        cursor.execute(f"ALTER TABLE {dynamic_model_schema.name} RENAME COLUMN id TO fid;")
+                else:
+                    field.save()
+        else:
+            # the build creation improves the overall permformance with the DB
+            FieldSchema.objects.bulk_create(row_to_insert, 30)
+            # fixing the schema model in django
 
-    del row_to_insert
     return "dynamic_model", layer_name, execution_id
 
 

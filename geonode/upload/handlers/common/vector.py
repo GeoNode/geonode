@@ -112,7 +112,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     @property
     def default_geometry_column_name(self):
-        return "geometry"
+        return "geom"
 
     @property
     def supported_file_extension_config(self):
@@ -243,7 +243,7 @@ class BaseVectorFileHandler(BaseHandler):
             catalog.delete(res, purge="all", recurse=True)
 
     @staticmethod
-    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate):
+    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file
@@ -552,7 +552,10 @@ class BaseVectorFileHandler(BaseHandler):
             - celery_group -> the celery group of the field creation
         """
 
-        layer_name = self.fixup_name(layer.GetName())
+        layer_name = self.fixup_name(layer.GetName() if isinstance(layer, ogr.Layer) else layer)
+        is_dynamic_model_managed = orchestrator.get_execution_object(execution_id).input_params.get(
+            "is_dynamic_model_managed", False
+        )
         workspace = DataPublisher(None).workspace
         user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
         dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
@@ -575,7 +578,7 @@ class BaseVectorFileHandler(BaseHandler):
             dynamic_schema = ModelSchema.objects.create(
                 name=layer_name,
                 db_name="datastore",
-                managed=False,
+                managed=is_dynamic_model_managed,
                 db_table_name=layer_name,
             )
         elif (
@@ -591,7 +594,7 @@ class BaseVectorFileHandler(BaseHandler):
             dynamic_schema, _ = ModelSchema.objects.get_or_create(
                 name=layer_name,
                 db_name="datastore",
-                managed=False,
+                managed=is_dynamic_model_managed,
                 db_table_name=layer_name,
             )
         else:
@@ -617,6 +620,26 @@ class BaseVectorFileHandler(BaseHandler):
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
+
+        layer_schema = self._define_dynamic_layer_scema(layer, execution_id=execution_id)
+
+        if not return_celery_group:
+            return layer_schema
+
+        # ones we have the schema, here we create a list of chunked value
+        # so the async task will handle max of 30 field per task
+        list_chunked = [layer_schema[i : i + 30] for i in range(0, len(layer_schema), 30)]  # noqa
+
+        # definition of the celery group needed to run the async workflow.
+        # in this way each task of the group will handle only 30 field
+        celery_group = group(
+            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
+            for schema in list_chunked
+        )
+
+        return dynamic_model_schema, celery_group
+
+    def _define_dynamic_layer_scema(self, layer, **kwargs):
         layer_schema = [
             {"name": self.fixup_name(x.name), "class_name": self._get_type(x), "null": True} for x in layer.schema
         ]
@@ -637,21 +660,7 @@ class BaseVectorFileHandler(BaseHandler):
                 }
             ]
 
-        if not return_celery_group:
-            return layer_schema
-
-        # ones we have the schema, here we create a list of chunked value
-        # so the async task will handle max of 30 field per task
-        list_chunked = [layer_schema[i : i + 30] for i in range(0, len(layer_schema), 30)]  # noqa
-
-        # definition of the celery group needed to run the async workflow.
-        # in this way each task of the group will handle only 30 field
-        celery_group = group(
-            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
-            for schema in list_chunked
-        )
-
-        return dynamic_model_schema, celery_group
+        return layer_schema
 
     def promote_to_multi(self, geometry_name: str):
         """
@@ -734,6 +743,7 @@ class BaseVectorFileHandler(BaseHandler):
                     # getting the relative model schema
                     schema = ModelSchema.objects.filter(name=table_name).first()
                     # creating the field needed as primary key
+                    schema.managed = False
                     pk_field = FieldSchema(
                         name=column[0],
                         model_schema=schema,
@@ -741,6 +751,7 @@ class BaseVectorFileHandler(BaseHandler):
                         kwargs={"null": False, "primary_key": True},
                     )
                     pk_field.save()
+                    schema.save()
 
         return saved_dataset
 
@@ -1396,7 +1407,7 @@ def import_with_ogr2ogr(
         ogr_exe = "/usr/bin/ogr2ogr"
 
         options = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
-            files, original_name, ovverwrite_layer, alternate
+            files, original_name, ovverwrite_layer, alternate, execution_id=execution_id
         )
         _datastore = settings.DATABASES["datastore"]
 
