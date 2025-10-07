@@ -68,6 +68,8 @@ from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
+from geonode.upload.registry import feature_constraint_registry
+from django.core.exceptions import ValidationError
 
 
 logger = logging.getLogger("importer")
@@ -1087,6 +1089,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # getting the related model schema for the resource
         original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
+        self.real_instance = original_resource.get_real_instance()
         model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
         if not model:
             raise UpsertException(
@@ -1156,6 +1159,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
         errors = []
+        feature_constraint_registry.init_handlers(self.real_instance)
         while True:
             # Create an iterator for the next chunk
             data_chunk = list(islice(layer_iterator, settings.UPSERT_CHUNK_SIZE))
@@ -1192,12 +1196,12 @@ class BaseVectorFileHandler(BaseHandler):
                 writer.writeheader()
                 writer.writerows(errors_to_print)
 
-                self.create_asset_and_link(
-                    exec_obj.geonode_resource,
-                    files={"base_file": str(csv_file_path)},
-                    action=exec_obj.action,
-                    asset_name=log_name,
-                )
+            self.create_asset_and_link(
+                exec_obj.geonode_resource,
+                files={"base_file": str(csv_file_path)},
+                action=exec_obj.action,
+                asset_name=log_name,
+            )
 
         raise UpsertException("Some errors found, please check the error log attached")
 
@@ -1212,7 +1216,7 @@ class BaseVectorFileHandler(BaseHandler):
 
             feature_as_dict, is_valid = self.validate_feature_constraints(feature_as_dict)
             if not is_valid:
-                errors.append(feature)
+                errors.append(feature_as_dict)
                 continue
 
         return errors
@@ -1259,11 +1263,12 @@ class BaseVectorFileHandler(BaseHandler):
         return valid_update, valid_create
 
     def validate_feature_constraints(self, feature):
-        # TODO: validation process for each feature will be implemented later
-        # expected ouput (to be reviewed):
-        # feature | {"reason": "The value X is invalid"}
-
-        return feature, True
+        try:
+            feature_constraint_registry.validate(feature)
+            return feature, True
+        except ValidationError as e:
+            feature["error"] = str(e)
+            return feature, False
 
     def extract_upsert_key(self, exec_obj, dynamic_model_instance):
         # first we check if the upsert key is passed by the call

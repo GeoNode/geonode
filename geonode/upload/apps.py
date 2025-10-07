@@ -25,8 +25,15 @@ class UploadAppConfig(AppConfig):
 
     def ready(self):
         """Finalize setup"""
+        init_feature_constraint_registry()
         run_setup_hooks()
         super(UploadAppConfig, self).ready()
+
+
+def init_feature_constraint_registry():
+    from geonode.upload.registry import feature_constraint_registry
+
+    feature_constraint_registry.init_registry()
 
 
 def run_setup_hooks(*args, **kwargs):
