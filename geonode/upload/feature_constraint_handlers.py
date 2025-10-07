@@ -98,12 +98,18 @@ class GeoserverFeatureConstraintHandler(BaseFeatureConstraintHandler):
     def _validate_range(self, attribute_name, value, range_info):
         min_val = range_info.get("min")
         max_val = range_info.get("max")
-        if min_val is not None and float(value) < float(min_val):
+        try:
+            value_as_float = float(value)
+        except (ValueError, TypeError):
+            raise ValidationError(
+                f'Value "{value}" for attribute "{attribute_name}" is not a valid number for range validation.'
+            )
+        if min_val is not None and value_as_float < float(min_val):
             raise ValidationError(
                 f'Invalid value for attribute "{attribute_name}". '
                 f"Value {value} is less than the minimum allowed value of {min_val}."
             )
-        if max_val is not None and float(value) > float(max_val):
+        if max_val is not None and value_as_float > float(max_val):
             raise ValidationError(
                 f'Invalid value for attribute "{attribute_name}". '
                 f"Value {value} is greater than the maximum allowed value of {max_val}."
