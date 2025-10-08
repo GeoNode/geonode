@@ -26,6 +26,7 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_next_step
 from osgeo import ogr
 from geonode.upload.handlers.empty_dataset.serializer import EmptyDatasetSerializer
+from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 
 logger = logging.getLogger("importer")
@@ -50,6 +51,21 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
+    # we dont need the upload action for the empty dataset
+    TASKS = BaseVectorFileHandler.TASKS.copy()
+    TASKS.pop(exa.UPLOAD.value)
+    # but we need the create one via the UI
+    TASKS.update(
+        {
+            exa.CREATE.value: (
+                "start_import",
+                "geonode.upload.import_resource",
+                "geonode.upload.publish_resource",
+                "geonode.upload.create_geonode_resource",
+            )
+        }
+    )
+
     @property
     def supported_file_extension_config(self):
         return {}
@@ -66,6 +82,14 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
             return True
 
         return False
+
+    @staticmethod
+    def can_do(action) -> bool:
+        """
+        This endpoint will return True or False if with the info provided
+        the handler is able to handle the file or not
+        """
+        return action in EmptyDatasetHandler.TASKS
 
     @staticmethod
     def has_serializer(_data) -> bool:
