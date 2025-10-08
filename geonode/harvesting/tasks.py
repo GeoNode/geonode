@@ -42,7 +42,7 @@ from .harvesters import base
 logger = logging.getLogger(__name__)
 
 
-@app.task(bind=True, queue="geonode", expires=30, time_limit=600, acks_late=False, ignore_result=False)
+@app.task(bind=True, queue="harvesting", expires=30, time_limit=600, acks_late=False, ignore_result=False)
 def harvesting_scheduler(self):
     """Check whether any of the configured harvesters needs to be run or not.
 
@@ -86,7 +86,7 @@ def harvesting_scheduler(self):
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -130,7 +130,7 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     expires=120,
     time_limit=600,
     acks_late=False,
@@ -233,7 +233,7 @@ def harvest_resources(
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -370,7 +370,7 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -425,7 +425,7 @@ def _finish_harvesting(self, harvesting_session_id: int, execution_id: str):
         logger.exception(f"Failed to finalize harvesting session {harvesting_session_id}: {exc}")
 
 
-@app.task(bind=True, queue="geonode", time_limit=600, acks_late=False, ignore_result=False)
+@app.task(bind=True, queue="harvesting", time_limit=600, acks_late=False, ignore_result=False)
 def _finish_harvesting_chunk(self, _results, harvesting_session_id: int):
     """
     Optionally log chunk completion, but do NOT change final status here
@@ -439,7 +439,7 @@ def _finish_harvesting_chunk(self, _results, harvesting_session_id: int):
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -508,7 +508,7 @@ def queue_next_chunk_batch(
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -554,7 +554,7 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
 @app.task(
     bind=True,
     # name='geonode.harvesting.tasks.check_harvester_available',
-    queue="geonode",
+    queue="harvesting",
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -567,7 +567,7 @@ def check_harvester_available(self, harvester_id: int):
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -651,7 +651,7 @@ def update_harvestable_resources(self, refresh_session_id: int):
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -693,7 +693,7 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -719,7 +719,7 @@ def _finish_harvestable_resources_update(self, refresh_session_id: int):
 
 @app.task(
     bind=True,
-    queue="geonode",
+    queue="harvesting",
     expires=30,
     time_limit=600,
     acks_late=False,
