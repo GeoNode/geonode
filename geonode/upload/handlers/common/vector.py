@@ -1363,7 +1363,7 @@ def import_next_step(
             actual_step,
             layer_name,
             alternate,
-            exa.UPLOAD.value,
+            _exec.input_params.get("action", exa.UPLOAD.value),
         )
 
         import_orchestrator.apply_async(task_params, kwargs)
@@ -1371,7 +1371,7 @@ def import_next_step(
         call_rollback_function(
             execution_id,
             handlers_module_path=handlers_module_path,
-            prev_action=exa.UPLOAD.value,
+            prev_action=_exec.input_params.get("action", exa.UPLOAD.value),
             layer=layer_name,
             alternate=alternate,
             error=e,
