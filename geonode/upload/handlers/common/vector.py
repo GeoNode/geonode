@@ -112,7 +112,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     @property
     def default_geometry_column_name(self):
-        return "geom"
+        return "geometry"
 
     @property
     def supported_file_extension_config(self):
@@ -621,7 +621,7 @@ class BaseVectorFileHandler(BaseHandler):
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
 
-        layer_schema = self._define_dynamic_layer_scema(layer, execution_id=execution_id)
+        layer_schema = self._define_dynamic_layer_schema(layer, execution_id=execution_id)
 
         if not return_celery_group:
             return layer_schema
@@ -639,7 +639,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         return dynamic_model_schema, celery_group
 
-    def _define_dynamic_layer_scema(self, layer, **kwargs):
+    def _define_dynamic_layer_schema(self, layer, **kwargs):
         layer_schema = [
             {"name": self.fixup_name(x.name), "class_name": self._get_type(x), "null": True} for x in layer.schema
         ]

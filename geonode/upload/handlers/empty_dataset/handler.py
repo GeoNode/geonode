@@ -184,7 +184,7 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
     def _get_type(self, _type):
         return EMPTY_DATASET_SUPPORTED_TYPES.get(_type)
 
-    def _define_dynamic_layer_scema(self, layer, **kwargs):
+    def _define_dynamic_layer_schema(self, layer, **kwargs):
         exec_obj = orchestrator.get_execution_object(kwargs.get("execution_id"))
         input_params = exec_obj.input_params
         layer_schema = [
@@ -209,24 +209,6 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
             {"name": "fid", "class_name": "django.db.models.BigAutoField", "null": False, "primary_key": True}
         ]
         return layer_schema
-
-    @staticmethod
-    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
-        """
-        Define the ogr2ogr command to be executed.
-        This is a default command that is needed to import a vector file
-        """
-        converter = {"string": "VARCHAR(250)", "float": "DOUBLE PRECISION", "int": "NUMERIC", "date": "DATE"}
-        # vsizero will let ogr2ogr ignore the input file
-        exec_obj = orchestrator.get_execution_object(exec_id=kwargs.get("execution_id"))
-        column_string = ""
-        base = BaseVectorFileHandler.create_ogr2ogr_command(
-            {"base_file": "/vsizero/"}, original_name, ovverwrite_layer, alternate
-        )
-        # name:VARCHAR(50),value:NUMERIC,timestamp:TIMESTAMP
-        for element in exec_obj.input_params.get("attributes"):
-            column_string += f"{element['name']}:{converter.get(element['type'])},"
-        return base + f'-lco "GEOMETRY_TYPE=POINT" -lco "FID=ogc_fid" -lco "COLUMN_TYPES={column_string}"'
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         return [{"name": alternate or layer_name, "crs": "EPSG:4326", "exec_id": kwargs.get("exec_id")}]
