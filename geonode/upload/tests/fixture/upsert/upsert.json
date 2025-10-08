@@ -15,7 +15,7 @@
           },
           "properties":
           {
-              "ogc_fid": 999,
+              "fid": 999,
               "id": 999,
               "st_area_shape": 192656942.39615256,
               "st_length_shape": 117499.50756699985,
@@ -39,7 +39,7 @@
           },
           "properties":
           {
-              "ogc_fid": 123,
+              "fid": 123,
               "id": 123,
               "st_area_shape": 192656942.39615256,
               "st_length_shape": 117499.50756699985,
@@ -63,7 +63,7 @@
           },
           "properties":
           {
-              "ogc_fid": 1,
+              "fid": 1,
               "id": 1,
               "st_area_shape": 192656942.39615256,
               "st_length_shape": 117499.50756699985,
