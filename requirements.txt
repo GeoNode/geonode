@@ -109,7 +109,7 @@ google-cloud-storage==2.16.0
 boto3==1.39.3
 
 # Django Caches
-whitenoise==6.6.0
+whitenoise==6.11.0
 
 # Contribs
 xmltodict<0.13.1
