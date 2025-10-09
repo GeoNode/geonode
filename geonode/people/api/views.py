@@ -40,7 +40,6 @@ from geonode.people.utils import get_available_users
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from geonode.resource.manager import resource_manager
-from geonode.security.registry import permissions_registry
 
 
 logger = logging.getLogger()
@@ -208,22 +207,8 @@ class UserViewSet(DynamicModelViewSet):
                 we can use the resource manager because inside it will automatically update
                 the owner
                 """
-                try:
-                    # putting the resource in dirty state
-                    instance.set_dirty_state()
-                    # updating the perms with the new owner
-                    perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
-                    prev_owner = get_user_model().objects.filter(pk=previous_owner).first()
-
-                    if prev_owner and not prev_owner.is_superuser:
-                        perms["users"].pop(prev_owner)
-                    # calling the registry to update the perms
-                    resource_manager.set_permissions(instance.uuid, instance, owner=target or user, permissions=perms)
-                except Exception as e:
-                    logger.exeption(e)
-                finally:
-                    # clearing the dirty state
-                    instance.clear_dirty_state()
+                prev_owner = get_object_or_404(get_user_model(), id=previous_owner)
+                resource_manager.transfer_ownership(instance, target, prev_owner)
 
             return Response("Resources transfered successfully", status=200)
 

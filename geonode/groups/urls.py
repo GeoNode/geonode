@@ -56,5 +56,6 @@ urlpatterns = [  # 'geonode.groups.views',
     re_path(r"^group/(?P<slug>[-\w]+)/activity/$", GroupActivityView.as_view(), name="group_activity"),
     re_path(r"^autocomplete/$", views.GroupProfileAutocomplete.as_view(), name="autocomplete_groups"),
     re_path(r"^autocomplete_category/$", views.GroupCategoryAutocomplete.as_view(), name="autocomplete_category"),
+    re_path(r"^autocomplete_users/$", views.UserAutocomplete.as_view(), name="autocomplete_users"),
     re_path(r"^dataset/permission/$", SetGroupDatasetPermission.as_view(), name="set_group_dataset_permissions"),
 ]

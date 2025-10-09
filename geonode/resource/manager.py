@@ -53,7 +53,7 @@ from geonode.security.utils import (
 from geonode.security.registry import permissions_registry
 
 from . import settings as rm_settings
-from .utils import update_resource, resourcebase_post_save
+from .utils import update_resource, resourcebase_post_save, is_remote_resource
 from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links, create_link
 
 from ..base import enumerations
@@ -63,6 +63,7 @@ from ..documents.models import Document
 from ..layers.models import Dataset, Attribute
 from ..maps.models import Map
 from ..storage.manager import storage_manager
+
 
 logger = logging.getLogger(__name__)
 
@@ -203,9 +204,11 @@ class ResourceManager(ResourceManagerInterface):
         uuid = uuid or _resource.uuid
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
+                permissions_registry.delete_resource_permissions_cache(instance=_resource)
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
                 _resource.set_dirty_state()
                 try:
+
                     if isinstance(_resource.get_real_instance(), Dataset):
                         """
                         - Remove any associated style to the dataset, if it is not used by other datasets.
@@ -489,17 +492,33 @@ class ResourceManager(ResourceManagerInterface):
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
+    def transfer_ownership(self, instance, new_owner, previous_owner):
+        """
+        This method updates the resource’s ownership and adjusts permissions accordingly removing the previous owner's access and assigning it to the new owner.
+        """
+        try:
+            instance.set_dirty_state()
+            perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+            if previous_owner and not previous_owner.is_superuser:
+                perms["users"].pop(previous_owner, None)
+            self.set_permissions(instance.uuid, instance, owner=new_owner, permissions=perms)
+        except Exception as e:
+            logger.exception(e)
+        finally:
+            instance.clear_dirty_state()
+
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         """Remove object permissions on given resource.
         If is a layer removes the layer specific permissions then the
         resourcebase permissions.
         """
+
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
-                    logger.debug(f"Removing all permissions on {_resource}")
                     from geonode.layers.models import Dataset
 
                     _dataset = (
@@ -525,8 +544,16 @@ class ResourceManager(ResourceManagerInterface):
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
                         object_pk=_resource.id,
                     ).delete()
-                    if not self._concrete_resource_manager.remove_permissions(uuid, instance=_resource):
-                        raise Exception("Could not complete concrete manager operation successfully!")
+                    if is_remote_resource(_resource):
+                        # Remote resources live on external GeoServers, no GeoFence rules to remove
+                        logger.debug("Skipping remove_permissions for remote resource %s", _resource)
+                    else:
+                        success = self._concrete_resource_manager.remove_permissions(
+                            uuid,
+                            instance=_resource,
+                        )
+                        if not success:
+                            raise Exception(f"Could not remove permissions for local resource {_resource}")
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
@@ -549,6 +576,7 @@ class ResourceManager(ResourceManagerInterface):
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource = _resource.get_real_instance()
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             logger.debug(f"Finalizing (permissions and notifications) on resource {instance}")
@@ -800,15 +828,20 @@ class ResourceManager(ResourceManagerInterface):
                         )
 
                     # Fixup GIS Backend Security Rules Accordingly
-                    if not self._concrete_resource_manager.set_permissions(
-                        uuid,
-                        instance=_resource,
-                        owner=owner,
-                        permissions=permissions_registry.get_perms(instance=_resource),
-                        created=created,
-                    ):
-                        # This might not be a severe error. E.g. for datasets outside of local GeoServer
-                        logger.error(Exception("Could not complete concrete manager operation successfully!"))
+                    if is_remote_resource(_resource):
+                        # Remote resources live on external GeoServers, no GeoFence sync needed
+                        logger.debug("Skipping set_permissions for remote resource %s", _resource)
+                    else:
+                        # Local resources need GeoFence / GeoServer permission sync
+                        success = self._concrete_resource_manager.set_permissions(
+                            uuid,
+                            instance=_resource,
+                            owner=owner,
+                            permissions=permissions_registry.get_perms(instance=_resource),
+                            created=created,
+                        )
+                        if not success:
+                            logger.warning("Could not sync permissions to GeoServer for resource %s", _resource)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:

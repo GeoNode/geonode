@@ -29,8 +29,8 @@ from django.conf import settings
 
 
 _DEFAULT_HARVESTERS: typing.Final = [
-    "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker",
     "geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+    "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker",
     "geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker",
 ]
 

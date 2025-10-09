@@ -28,7 +28,7 @@ from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
-from geonode.assets.utils import get_default_asset
+from geonode.assets.utils import get_default_asset, is_asset_deletable
 from geonode.people import Roles
 from django.http import QueryDict
 from deprecated import deprecated
@@ -575,17 +575,23 @@ class LinksSerializer(DynamicModelSerializer):
         links = Link.objects.filter(
             resource_id=instance,  # link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS", "image", "metadata"]
         )
+        request = self.context.get("request", None)
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
             if lnk.asset:
+                deletable = is_asset_deletable(lnk.asset)
                 extras = {
                     "type": "asset",
+                    "deletable": deletable,
                     "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
                 }
-                extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
-                    lnk.asset
-                )
+                if request and permissions_registry.user_has_perm(
+                    request.user, lnk.resource.get_self_resource(), "download_resourcebase", include_virtual=True
+                ):
+                    extras["content"]["download_url"] = asset_handler_registry.get_handler(
+                        lnk.asset
+                    ).create_download_url(lnk.asset)
                 formatted_link["extras"] = extras
 
         return ret
@@ -661,7 +667,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     download_url = DownloadLinkField(read_only=True)
     favorite = FavoriteField(read_only=True)
     download_urls = DownloadArrayLinkField(read_only=True)
-    perms = DynamicRelationField(PermsSerializer, source="id", read_only=True)
+    perms = serializers.SerializerMethodField(read_only=True)
     links = DynamicRelationField(LinksSerializer, source="id", read_only=True)
 
     # Deferred fields
@@ -787,6 +793,18 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             if not user.can_change_resource_field(instance, field) and field in validated_data:
                 validated_data.pop(field)
         return super().update(instance, validated_data)
+
+    def get_perms(self, instance):
+        """
+        Returns the permissions for the resource instance using Django cache.
+        """
+        request = self.context.get("request")
+        permissions = (
+            permissions_registry.get_perms(instance=instance, user=request.user, use_cache=True)
+            if request and request.user and instance
+            else []
+        )
+        return permissions
 
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)

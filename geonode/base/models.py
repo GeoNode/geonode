@@ -31,7 +31,6 @@ from PIL import Image
 
 from django.db import transaction
 from django.db import models
-from django.db.models import Max
 from django.conf import settings
 from django.utils.html import escape
 from django.utils.timezone import now
@@ -989,16 +988,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _notification_sent = False
         _group_status_changed = False
         _approval_status_changed = False
-
+        send_create_notification = False
         if hasattr(self, "class_name") and (self.pk is None or notify):
-            if self.pk is None and (self.title or getattr(self, "name", None)):
-                # Resource Created
-                if not self.title and getattr(self, "name", None):
-                    self.title = getattr(self, "name", None)
-                notice_type_label = f"{self.class_name.lower()}_created"
-                recipients = get_notification_recipients(notice_type_label, resource=self)
-                send_notification(recipients, notice_type_label, {"resource": self})
-            elif self.pk:
+            # if self.pk is None and (self.title or getattr(self, "name", None)):
+            #    # Resource Created
+            #    if not self.title and getattr(self, "name", None):
+            #        self.title = getattr(self, "name", None)
+            #    notice_type_label = f"{self.class_name.lower()}_created"
+            #    recipients = get_notification_recipients(notice_type_label, resource=self)
+            #    send_notification(recipients, notice_type_label, {"resource": self})
+            if self.pk:
                 # Group has changed
                 _group_status_changed = self.group != ResourceBase.objects.get(pk=self.get_self_resource().pk).group
 
@@ -1031,15 +1030,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     send_notification(recipients, notice_type_label, {"resource": self})
 
         if self.pk is None:
-            _initial_value = ResourceBase.objects.aggregate(Max("pk"))["pk__max"]
-            if not _initial_value:
-                _initial_value = 1
-            else:
-                _initial_value += 1
+            # behaviour changed with Djagno 5.2
+            base = ResourceBase.objects
+            _initial_value = 1 if not base.exists() else base.order_by("pk").last().id + 1
             _next_value = get_next_value("ResourceBase", initial_value=_initial_value)  # type(self).__name__,
             if _initial_value > _next_value:
                 Sequence.objects.filter(name="ResourceBase").update(last=_initial_value)
                 _next_value = _initial_value
+            send_create_notification = True
 
             self.pk = self.id = _next_value
 
@@ -1049,6 +1047,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.uuid = str(uuid.uuid4())
         super().save(*args, **kwargs)
 
+        if send_create_notification:
+            # changed in Django 5.2, the we can get the title via the assets only if the resource is saved
+            if not self.title and hasattr(self, "name") and getattr(self, "name", None):
+                self.title = getattr(self, "name", None)
+            notice_type_label = f"{self.__class__.__name__.lower()}_created"
+            recipients = get_notification_recipients(notice_type_label, resource=self)
+            send_notification(recipients, notice_type_label, {"resource": self})
         # Update workflow permissions
         if _approval_status_changed or _group_status_changed:
             self.set_permissions(
@@ -1231,7 +1236,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             "regions",
             "title",
         ]
-        if self.restriction_code_type == "otherRestrictions":
+        if self.restriction_code_type and self.restriction_code_type.identifier == "otherRestrictions":
             required_fields.append("constraints_other")
         filled_fields = []
         for required_field in required_fields:

@@ -250,9 +250,9 @@ EXTRA_LANG_INFO = {
 AUTH_USER_MODEL = os.getenv("AUTH_USER_MODEL", "people.Profile")
 
 PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.SHA1PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "geonode.people.hashers.PBKDF2SHA1WrappedSHA1PasswordHasher",  # Wrapped Hasher
     # 'django.contrib.auth.hashers.Argon2PasswordHasher',
     # 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     # 'django.contrib.auth.hashers.BCryptPasswordHasher',
@@ -336,9 +336,11 @@ MEMCACHED_LOCK_EXPIRE = int(os.getenv("MEMCACHED_LOCK_EXPIRE", 3600))
 MEMCACHED_LOCK_TIMEOUT = int(os.getenv("MEMCACHED_LOCK_TIMEOUT", 10))
 
 CACHES = {
-    # DUMMY CACHE FOR DEVELOPMENT
+    # Local Memory CACHE FOR DEVELOPMENT
     "default": {
-        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
     },
     "memcached": {"BACKEND": MEMCACHED_BACKEND, "LOCATION": MEMCACHED_LOCATION},
     # MEMCACHED EXAMPLE
@@ -370,13 +372,24 @@ CACHES = {
         "TIMEOUT": 600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
     },
+    "services": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
 }
+
+PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
+
+# define service cache timeout
+SERVICE_CACHE_EXPIRATION_TIME = int(os.getenv("SERVICE_CACHE_EXPIRATION_TIME", 600))
 
 if MEMCACHED_ENABLED:
     CACHES["default"] = {
         "BACKEND": MEMCACHED_BACKEND,
         "LOCATION": MEMCACHED_LOCATION,
     }
+    CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
 
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
 WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv("WHITENOISE_MANIFEST_STRICT", "False"))
@@ -470,10 +483,9 @@ INSTALLED_APPS = (
     "django_filters",
     "mptt",
     "storages",
-    "floppyforms",
+    # "floppyforms",
     "tinymce",
     "widget_tweaks",
-    "django_celery_results",
     "markdownify",
     "django_user_agents",
     # REST APIs
@@ -831,7 +843,7 @@ MIDDLEWARE = (
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
 # Sessions
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
 SESSION_ENGINE = os.environ.get("SESSION_ENGINE", "django.contrib.sessions.backends.db")
 if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.contrib.sessions.backends.cache"):
     SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested
@@ -1692,21 +1704,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # ########################################################################### #
 # ASYNC SETTINGS
 # ########################################################################### #
-# async signals can be the same as broker url
-# but they should have separate setting anyway
-# use amqp://localhost for local rabbitmq server
-"""
-    sudo apt-get install -y erlang
-    sudo apt-get install rabbitmq-server
 
-    sudo update-rc.d rabbitmq-server enable
-
-    sudo rabbitmqctl stop_app
-    sudo rabbitmqctl reset
-    sudo rabbitmqctl start_app
-
-    sudo rabbitmqctl list_queues
-"""
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
 BROKER_HEARTBEAT = 0
@@ -1722,20 +1720,27 @@ BROKER_TRANSPORT_OPTIONS = {
 CELERY_LOADER = os.environ.get("CELERY_LOADER", "geonode.loaders.GeoNodeCeleryTaksLoader")
 
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get("ASYNC_SIGNALS", "False"))
-RABBITMQ_SIGNALS_BROKER_URL = "amqp://localhost:5672"
-# REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
+REDIS_SIGNALS_BROKER_URL = os.environ.get("BROKER_URL", "redis://localhost:6379/0")
 LOCAL_SIGNALS_BROKER_URL = "memory://"
 
-if ASYNC_SIGNALS:
-    _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
-else:
-    _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-CELERY_RESULT_BACKEND = "django-db"
+# In testing, it should not be used Redis as Celery backend
 
-CELERY_BROKER_URL = os.environ.get("BROKER_URL", _BROKER_URL)
+TESTING = "test" in sys.argv
+
+if TESTING:
+    _BROKER_URL = "memory://"
+    CELERY_BROKER_URL = _BROKER_URL
+    CELERY_RESULT_BACKEND = "cache+memory://"
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+else:
+    _BROKER_URL = REDIS_SIGNALS_BROKER_URL if ASYNC_SIGNALS else LOCAL_SIGNALS_BROKER_URL
+    CELERY_BROKER_URL = os.environ.get("BROKER_URL", _BROKER_URL)
+    CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get("CELERY_RESULT_PERSISTENT", "False"))
 CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get("CELERY_IGNORE_RESULT", "False"))
 
+CELERY_RESULT_EXPIRES = 86400
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get("CELERY_ACKS_LATE", "True"))
 
@@ -1779,6 +1784,7 @@ CELERY_TASK_QUEUES = (
     Queue("security", GEONODE_EXCHANGE, routing_key="security", priority=0),
     Queue("management_commands_http", GEONODE_EXCHANGE, routing_key="management_commands_http", priority=0),
     Queue("clery_cleanup", GEONODE_EXCHANGE, routing_key="clery_cleanup", priority=0),
+    Queue("harvesting", GEONODE_EXCHANGE, routing_key="harvesting", priority=0),
 )
 
 if USE_GEOSERVER:
@@ -2195,6 +2201,7 @@ SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
     "importer_upload",
     "document_upload",
+    "base-resources-assets",
 )
 
 INSTALLED_APPS += (
@@ -2250,11 +2257,19 @@ CELERY_TASK_QUEUES += (
     ),
     Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
     Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
+    Queue("geonode.upload.upsert_data", GEONODE_EXCHANGE, routing_key="geonode.upload.upsert_data"),
+    Queue(
+        "geonode.upload.refresh_geonode_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.refresh_geonode_resource",
+    ),
 )
 
 DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
 
 IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS", "[]"))
+
+IMPORTER_ENABLE_DYN_MODELS = ast.literal_eval(os.getenv("IMPORTER_ENABLE_DYN_MODELS", "True"))
 
 INSTALLED_APPS += ("geonode.facets",)
 GEONODE_APPS += ("geonode.facets",)
@@ -2297,3 +2312,10 @@ AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"
 
 # Group default logo url
 GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
+
+UPSERT_CHUNK_SIZE = ast.literal_eval(os.getenv("UPSERT_CHUNK_SIZE", "1000"))
+UPSERT_LIMIT_ERROR_LOG = ast.literal_eval(os.getenv("UPSERT_LIMIT_ERROR_LOG", "1000"))
+UPSERT_LOG_LOCATION = os.getenv("UPSERT_LOG_LOCATION", "/tmp")
+
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
+FILE_UPLOAD_PERMISSIONS = 0o777

@@ -17,6 +17,9 @@
 #
 #########################################################################
 import enum
+import sys
+import tempfile
+import os
 from geonode.resource.manager import ResourceManager
 from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.base.models import ResourceBase
@@ -25,11 +28,13 @@ from geonode.upload.api.exceptions import (
     FileUploadLimitException,
     UploadParallelismLimitException,
 )
+from geonode.upload.handlers.utils import create_layer_key
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from django.template.defaultfilters import filesizeformat
 from geonode.resource.models import ExecutionRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.template.loader import render_to_string
 
 
 def get_max_upload_size(slug):
@@ -48,14 +53,73 @@ def get_max_upload_parallelism_limit(slug):
     return max_number
 
 
+def has_incompatible_field_names(layer):
+    """
+    Checks if any of the layer's field names contain special
+    characters that need sanitization, Currently used to check if VRT need to be created or not.
+    """
+    from geonode.upload.handlers.base import BaseHandler
+
+    def _name_needs_sanitization(name):
+        # fixup_name lowercases, replaces special chars, and truncates.
+        # If the sanitized name is different from just the lowercased name,
+        # it means special characters were involved that need handling.
+        return BaseHandler().fixup_name(name) != name.lower()
+
+    layer_defn = layer.GetLayerDefn()
+    for i in range(layer_defn.GetFieldCount()):
+        field_name = layer_defn.GetFieldDefn(i).GetName()
+        if _name_needs_sanitization(field_name):
+            return True
+
+    return False
+
+
+def create_vrt_file(layer, source_filepath):
+    """
+    Dynamically creates a VRT file to sanitize field names.
+    """
+    from geonode.upload.handlers.base import BaseHandler
+
+    vrt_layer_name = BaseHandler().fixup_name(layer.GetName())
+
+    layer_defn = layer.GetLayerDefn()
+    fields = [
+        {
+            "name": BaseHandler().fixup_name(layer_defn.GetFieldDefn(i).GetName()),
+            "src": layer_defn.GetFieldDefn(i).GetName(),
+            "type": layer_defn.GetFieldDefn(i).GetTypeName(),
+        }
+        for i in range(layer_defn.GetFieldCount())
+    ]
+
+    context = {
+        "layer_name": vrt_layer_name,
+        "source_filepath": source_filepath,
+        "original_layer_name": layer.GetName(),
+        "fields": fields,
+    }
+    vrt_content = render_to_string("upload/vrt_template.xml", context)
+
+    vrt_fd, vrt_filename = tempfile.mkstemp(suffix=".vrt")
+    with os.fdopen(vrt_fd, "w") as f:
+        f.write(vrt_content)
+
+    return vrt_filename, vrt_layer_name
+
+
 class ImporterRequestAction(enum.Enum):
     ROLLBACK = _("rollback")
     RESOURCE_METADATA_UPLOAD = _("resource_metadata_upload")
     RESOURCE_STYLE_UPLOAD = _("resource_style_upload")
     REPLACE = _("replace")
+    UPSERT = _("upsert")
 
 
 def error_handler(exc, exec_id=None):
+    err = f'{str(exc.detail if hasattr(exc, "detail") else exc.args[0])}'
+    if "Request:" in err:
+        return err
     return f'{str(exc.detail if hasattr(exc, "detail") else exc.args[0])}. Request: {exec_id}'
 
 
@@ -99,6 +163,27 @@ def call_rollback_function(
     kwargs["previous_action"] = prev_action
     kwargs["error"] = error_handler(error, exec_id=execution_id)
     import_orchestrator.apply_async(task_params, kwargs)
+
+
+def call_on_failure(task, exc, execution_id, handler_module_path, action, kwargs, layer_name=None):
+    """
+    Helper method for calling the on_failure
+    in case of the SYNC mode
+    """
+    if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+        # Ensure kwargs has the inner dict
+        kwargs_inner = kwargs.get("kwargs") or {}
+        if layer_name:
+            kwargs_inner["layer_key"] = create_layer_key(layer_name, execution_id)
+        kwargs["kwargs"] = kwargs_inner
+
+        task.on_failure(
+            exc=exc,
+            task_id=getattr(task.request, "id", None),
+            args=(execution_id, handler_module_path, action),
+            kwargs=kwargs,
+            einfo=sys.exc_info(),
+        )
 
 
 def find_key_recursively(obj, key):

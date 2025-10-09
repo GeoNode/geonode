@@ -18,14 +18,18 @@
 #########################################################################
 from abc import ABC
 import logging
+import os
+from pathlib import Path
 from typing import List
+import zipfile
+import re
 
+from geonode.assets.utils import create_asset_and_link
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
+from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
-from django_celery_results.models import TaskResult
-from django.db.models import Q
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
 
@@ -75,6 +79,10 @@ class BaseHandler(ABC):
         return cls.TASKS.get(action)
 
     @property
+    def have_table(self):
+        return True
+
+    @property
     def default_geometry_column_name(self):
         return "geometry"
 
@@ -83,7 +91,7 @@ class BaseHandler(ABC):
         pk = self.supported_file_extension_config.get("id", None)
         if pk is None:
             raise ImportException(
-                "PK must be defined, check that supported_file_extension_config had been correctly defined, it cannot be empty"
+                "PK must be defined, check that supported_file_extension_config is correctly defined, it cannot be empty"
             )
         return pk
 
@@ -161,17 +169,6 @@ class BaseHandler(ABC):
         from geonode.upload.orchestrator import orchestrator
         from geonode.upload.models import ResourceHandlerInfo
 
-        # as last step, we delete the celery task to keep the number of rows under control
-        lower_exec_id = execution_id.replace("-", "_").lower()
-        TaskResult.objects.filter(
-            Q(task_args__icontains=lower_exec_id)
-            | Q(task_kwargs__icontains=lower_exec_id)
-            | Q(result__icontains=lower_exec_id)
-            | Q(task_args__icontains=execution_id)
-            | Q(task_kwargs__icontains=execution_id)
-            | Q(result__icontains=execution_id)
-        ).delete()
-
         _exec = orchestrator.get_execution_object(execution_id)
 
         resource_output_params = [
@@ -182,6 +179,38 @@ class BaseHandler(ABC):
         _exec.save()
 
         return _exec
+
+    def pre_processing(self, files, execution_id, **kwargs):
+        from geonode.upload.orchestrator import orchestrator
+
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        _data = _exec_obj.input_params.copy()
+        # unzipping the file
+        if "zip_file" in files or "kmz_file" in files:
+            # if a zipfile is provided, we need to unzip it before searching for an handler
+            zipname = Path(files["base_file"]).stem
+            # extract all the file content
+            with zipfile.ZipFile(files["base_file"], "r") as z:
+                z.extractall(path=os.path.dirname(files["base_file"]))
+            # getting the path of the extracted files
+            unzipped_path = [entry.path for entry in os.scandir(os.path.dirname(files["base_file"]))]
+            # updating paths in the data paylad
+            _data.update(
+                {
+                    **{"original_zip_name": zipname},
+                    # should be converted to string because the Path is not json serializable
+                    **{"files": {k: str(v) for k, v in organize_files_by_ext(unzipped_path).items()}},
+                }
+            )
+            # updating the execution id params
+            orchestrator.update_execution_request_obj(_exec_obj, {"input_params": _data})
+            # removing zip file
+            if "zip_file" in files and os.path.exists(files["zip_file"]):
+                os.remove(files["zip_file"])
+            if "kmz_file" in files and os.path.exists(files["kmz_file"]):
+                os.remove(files["kmz_file"])
+
+        return _data, execution_id
 
     def fixup_name(self, name):
         """
@@ -196,18 +225,14 @@ class BaseHandler(ABC):
         prefix = name[0]
         if prefix.isnumeric():
             name = name.replace(name[0], "_")
-        return (
-            name.lower()
-            .replace("-", "_")
-            .replace(" ", "_")
-            .replace("#", "_")
-            .replace("\\", "_")
-            .replace(".", "")
-            .replace(")", "")
-            .replace("(", "")
-            .replace(",", "")
-            .replace("&", "")[:62]
-        )
+        name = name.lower()
+        # Replace specific chars with underscore in one pass
+        name = re.sub(r"[-# \\&]", "_", name)
+
+        # Remove unwanted characters in one pass
+        name = re.sub(r'[.(),!"$%\'*+/:;<=>?@\[\]^`{|}~]', "", name)
+
+        return name[:62]
 
     def extract_resource_to_publish(self, files, layer_name, alternate, **kwargs):
         """
@@ -281,6 +306,22 @@ class BaseHandler(ABC):
 
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
+
+    def create_asset_and_link(self, resource, files, action=None, asset_name=None):
+        if not files:
+            return
+        asset_name = asset_name or (
+            Path(files.get("base_file")).stem if action in [ira.REPLACE.value, ira.UPSERT.value] else "Original"
+        )
+        asset, _ = create_asset_and_link(
+            resource=resource,
+            owner=resource.owner,
+            files=files.values(),
+            title=asset_name,
+            asset_type=Path(files.get("base_file")).suffix.replace(".", ""),
+            clone_files=True,
+        )
+        return asset
 
     def overwrite_resourcehandlerinfo(
         self,

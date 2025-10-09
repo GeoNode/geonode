@@ -96,6 +96,9 @@ from geonode.resource.api.tasks import resouce_service_dispatcher
 from guardian.shortcuts import assign_perm
 from geonode.security.registry import permissions_registry
 
+from django.contrib.auth.models import AnonymousUser
+from django.core.cache import cache
+
 logger = logging.getLogger(__name__)
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
@@ -3588,3 +3591,382 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
         request.user = AnonymousUser()
         return request
+
+
+class TestAPIPermissionCache(GeoNodeBaseTestSupport):
+    """
+    API tests to verify cache for user, group, resource operations
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.admin_user = get_user_model().objects.get(username="admin")
+        cls.test_user = get_user_model().objects.create_user(
+            username=f"test_user_{uuid4()}", email="test_user@example.com", password="testpass123"
+        )
+        cls.test_user_owner = get_user_model().objects.create_user(
+            username=f"test_user_owner{uuid4()}", email="test_user_owner@example.com", password="testpass123"
+        )
+        cls.test_group, _ = Group.objects.get_or_create(name="test-group")
+        cls.test_group_profile = GroupProfile.objects.create(
+            group=cls.test_group, title="Test Group", slug="test-group", access="public"
+        )
+        cls.anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
+
+    def setUp(self):
+        cache.clear()
+        self.client.login(username="admin", password="admin")
+
+    def _create_test_resource(self, owner=None):
+        """Helper method to create a test resource with permissions"""
+        if owner is None:
+            owner = self.test_user_owner
+
+        resource = ResourceBase.objects.create(
+            title=f"test_resource_{uuid4()}",
+            uuid=str(uuid4()),
+            owner=owner,
+            abstract="Test resource for API testing",
+            subtype="vector",
+            is_approved=True,
+            is_published=True,
+        )
+
+        perm_spec = {
+            "users": {
+                self.test_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "delete_resourcebase",
+                ],
+                self.admin_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                ],
+            },
+            "groups": {
+                self.test_group.name: ["view_resourcebase"],
+                self.anonymous_group.name: ["view_resourcebase"],
+            },
+        }
+        resource.set_permissions(perm_spec)
+        return resource
+
+    def _populate_cache_for_resource(self, resource):
+        """Helper method to populate cache for a resource"""
+        cache_keys = {}
+
+        permissions_registry.get_perms(instance=resource, user=self.test_user, use_cache=True)
+        cache_keys["test_user"] = f"resource_perms:{resource.pk}:user:{self.test_user.pk}"
+
+        permissions_registry.get_perms(instance=resource, user=self.admin_user, use_cache=True)
+        cache_keys["admin_user"] = f"resource_perms:{resource.pk}:user:{self.admin_user.pk}"
+
+        anonymous_user = AnonymousUser()
+        permissions_registry.get_perms(instance=resource, user=anonymous_user, use_cache=True)
+        cache_keys["anonymous"] = f"resource_perms:{resource.pk}:anonymous"
+
+        permissions_registry.get_perms(instance=resource, group=self.test_group, use_cache=True)
+        cache_keys["group"] = f"resource_perms:{resource.pk}:group:{self.test_group.pk}"
+
+        permissions_registry.get_perms(instance=resource, use_cache=True)
+        cache_keys["all"] = f"resource_perms:{resource.pk}:__ALL__"
+
+        return cache_keys
+
+    def test_user_delete_api_cache_invalidation(self):
+        """Test that cache is properly invalidated when user is deleted via API"""
+        temp_user = get_user_model().objects.create_user(
+            username=f"temp_user_{uuid4()}", email="temp@example.com", password="temppass123"
+        )
+
+        resource = self._create_test_resource()
+        perm_spec = {"users": {temp_user.username: ["view_resourcebase", "change_resourcebase"]}, "groups": {}}
+        resource.set_permissions(perm_spec)
+
+        permissions_registry.get_perms(instance=resource, user=temp_user, use_cache=True)
+        temp_user_cache_key = f"resource_perms:{resource.pk}:user:{temp_user.pk}"
+
+        self.assertIsNotNone(cache.get(temp_user_cache_key))
+
+        other_cache_keys = self._populate_cache_for_resource(resource)
+        for key in other_cache_keys.values():
+            self.assertIsNotNone(cache.get(key))
+
+        response = self.client.delete(reverse("users-detail", kwargs={"pk": temp_user.pk}))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(get_user_model().objects.filter(pk=temp_user.pk).exists())
+
+        self.assertIsNone(cache.get(temp_user_cache_key), "Cache should be cleared after user deletion via API")
+
+        for cache_type, cache_key in other_cache_keys.items():
+            self.assertIsNotNone(
+                cache.get(cache_key), f"Cache for {cache_type} should not be affected by user deletion"
+            )
+
+    def test_group_delete_api_cache_invalidation(self):
+        """Test that cache is properly invalidated when group is deleted via API"""
+        temp_group_profile = GroupProfile.objects.create(title="Temp Group", slug="temp-group-test", access="public")
+
+        temp_group = temp_group_profile.group
+
+        resource = self._create_test_resource()
+        new_perm_spec = {
+            "users": {},
+            "groups": {
+                f"{temp_group.name}": [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "change_resourcebase_permissions",
+                    "delete_resourcebase",
+                ],
+            },
+        }
+        resource.set_permissions(new_perm_spec)
+
+        permissions_registry.get_perms(instance=resource, group=temp_group, use_cache=True)
+        temp_group_cache_key = f"resource_perms:{resource.pk}:group:{temp_group.pk}"
+
+        self.assertIsNotNone(cache.get(temp_group_cache_key))
+
+        print(cache.get(temp_group_cache_key), "temp_group_cache_key")
+        print(temp_group_cache_key, "temp_group_cache_key")
+
+        other_cache_keys = self._populate_cache_for_resource(resource)
+        for key in other_cache_keys.values():
+            self.assertIsNotNone(cache.get(key))
+
+        response = self.client.post(reverse("group_remove", args=[temp_group_profile.slug]))
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertFalse(GroupProfile.objects.filter(pk=temp_group.pk).exists())
+
+        self.assertIsNone(cache.get(temp_group_cache_key), "Cache should be cleared after group deletion via API")
+
+        for cache_type, cache_key in other_cache_keys.items():
+            self.assertIsNotNone(
+                cache.get(cache_key), f"Cache for {cache_type} should not be affected by group deletion"
+            )
+
+    def test_resource_delete_api_cache_invalidation(self):
+        """Test that cache is properly invalidated when resource is deleted via API"""
+        resource = self._create_test_resource()
+
+        cache_keys = self._populate_cache_for_resource(resource)
+
+        for cache_type, cache_key in cache_keys.items():
+            self.assertIsNotNone(cache.get(cache_key), f"Cache for {cache_type} should exist before deletion")
+
+        other_resource = self._create_test_resource()
+        other_cache_key = f"resource_perms:{other_resource.pk}:user:{self.test_user.pk}"
+        permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(other_cache_key))
+
+        response = self.client.delete(reverse("base-resources-detail", kwargs={"pk": resource.pk}))
+
+        self.assertEqual(response.status_code, 204)
+
+        self.assertFalse(ResourceBase.objects.filter(pk=resource.pk).exists())
+
+        for cache_type, cache_key in cache_keys.items():
+            self.assertIsNone(
+                cache.get(cache_key), f"Cache for {cache_type} should be cleared after resource deletion via API"
+            )
+
+        self.assertIsNotNone(cache.get(other_cache_key), "Cache for other resources should not be affected")
+
+    def tearDown(self):
+        cache.clear()
+        super().tearDown()
+
+    @classmethod
+    def tearDownClass(cls):
+        ResourceBase.objects.filter(owner=cls.test_user).delete()
+        cls.test_user.delete()
+        cls.test_user_owner.delete()
+        if hasattr(cls, "test_group_profile"):
+            cls.test_group_profile.delete()
+        if hasattr(cls, "test_group"):
+            cls.test_group.delete()
+        super().tearDownClass()
+
+
+class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        self.user_viewer = get_user_model().objects.create_user(username="viewer", password="viewer_password")
+        self.user_downloader = get_user_model().objects.create_user(
+            username="downloader", password="downloader_password"
+        )
+        self.dataset = create_single_dataset(name="test_dataset_for_download_permission")
+
+        dataset_files = [
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
+        ]
+        create_asset_and_link(
+            self.dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
+
+        perm_spec = {
+            "users": {
+                self.user_viewer.username: [
+                    "view_resourcebase",
+                ],
+                self.user_downloader.username: [
+                    "view_resourcebase",
+                    "download_resourcebase",
+                ],
+            },
+            "groups": {},
+        }
+        self.dataset.set_permissions(perm_spec)
+
+    def test_asset_download_link_permission(self):
+        """
+        Ensure that the download link is only visible to users with download permissions.
+        """
+        self.client.login(username="viewer", password="viewer_password")
+        url = f"/api/v2/datasets/{self.dataset.pk}"
+        response = self.client.get(f"{url}", format="json")
+        self.assertEqual(response.status_code, 200)
+
+        links = response.data.get("dataset").get("links", [])
+        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
+        self.assertIsNotNone(asset_link)
+        self.assertNotIn("download_url", asset_link.get("extras", {}).get("content", {}))
+
+        self.client.login(username="downloader", password="downloader_password")
+        response = self.client.get(f"{url}", format="json")
+        self.assertEqual(response.status_code, 200)
+
+        links = response.data.get("dataset").get("links", [])
+        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
+        self.assertIsNotNone(asset_link)
+        self.assertIn("download_url", asset_link.get("extras", {}).get("content", {}))
+
+
+class ResourceBaseMetadataXMLTest(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        self.dataset = create_single_dataset(name="test_dataset_for_metadata_xml")
+        self.dataset.metadata_xml = """
+            <gmd:MD_Metadata xmlns:gmd="test">
+                <gmd:fileIdentifier>
+                    <gco:CharacterString>test_dataset_for_metadata_xml</gco:CharacterString>
+                </gmd:fileIdentifier>
+            </gmd:MD_Metadata>
+            """
+        self.dataset.save()
+        self.anonymous_user = get_anonymous_user()
+        self.user1 = get_user_model().objects.create_user(username="test_user123", password="password")
+        self.user2 = get_user_model().objects.create_user(username="test_user_2", password="password")
+        self.anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
+
+    def test_download_metadata_xml_anonymous_user_with_permission(self):
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        url = f"{url}/iso_metadata_xml/"
+        perm_spec = {
+            "users": {},
+            "groups": {
+                self.anonymous_group.name: ["view_resourcebase"],
+            },
+        }
+        self.dataset.set_permissions(perm_spec)
+        response = self.client.get(url)
+        # user is not authenticated but has permission from anonymous group
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertIn(b"test_dataset_for_metadata_xml", response.content)
+
+    def test_download_metadata_xml_anonymous_user_without_permission(self):
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        perm_spec = {
+            "users": {},
+            "groups": {
+                self.anonymous_group.name: [],
+            },
+        }
+        self.dataset.set_permissions(perm_spec)
+        url = f"{url}/iso_metadata_xml/"
+        response = self.client.get(url)
+        # user is not authenticated and dont have permission
+        self.assertEqual(response.status_code, 401)
+
+    def test_download_metadata_xml_authenticated_user_with_permission(self):
+        perm_spec = {
+            "users": {
+                self.user1: [
+                    "view_resourcebase",
+                ],
+            },
+            "groups": {},
+        }
+        self.dataset.set_permissions(perm_spec)
+        self.client.login(username="test_user123", password="password")
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        url = f"{url}/iso_metadata_xml/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertIn(b"test_dataset_for_metadata_xml", response.content)
+
+    def test_download_metadata_xml_authenticated_user_without_permission(self):
+        perm_spec = {
+            "users": {
+                self.user2: [],
+            },
+            "groups": {},
+        }
+        self.dataset.set_permissions(perm_spec)
+        self.client.login(username="test_user_2", password="password")
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        url = f"{url}/iso_metadata_xml/"
+        response = self.client.get(url)
+        # user is authenticated but dont have permission
+        self.assertEqual(response.status_code, 403)
+
+
+class MapCachingTest(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.create_user(username="test_user_123", password="password")
+        self.map = create_single_map(owner=self.user, title="test map", name="test_map")
+        self.datasets = [create_single_dataset(name=f"dataset_{i}", owner=self.user) for i in range(5)]
+        for i, dataset in enumerate(self.datasets):
+            MapLayer.objects.create(map=self.map, name=dataset.name, dataset=dataset, order=i)
+            perm_spec = {
+                "users": {
+                    self.user.username: [
+                        "view_resourcebase",
+                    ]
+                },
+                "groups": {},
+            }
+            dataset.set_permissions(perm_spec)
+
+    def test_map_layer_permission_caching(self):
+        self.client.login(username="test_user_123", password="password")
+        url = f"/api/v2/maps/{self.map.pk}/?api_preset=viewer_common&api_preset=map_viewer"
+
+        # First call, should cache permissions
+        response1 = self.client.get(url)
+        self.assertEqual(response1.status_code, 200)
+        data1 = response1.json()
+
+        # Second call, should use cached permissions
+        response2 = self.client.get(url)
+        self.assertEqual(response2.status_code, 200)
+        data2 = response2.json()
+
+        # Check that the responses are the same
+        self.assertEqual(data1.keys(), data2.keys())
+
+        # Check that the permissions in the layers are the same
+        for layer1, layer2 in zip(data1["map"]["maplayers"], data2["map"]["maplayers"]):
+            self.assertEqual(layer1["dataset"]["perms"], layer2["dataset"]["perms"])
