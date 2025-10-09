@@ -112,7 +112,7 @@ boto3==1.39.3
 whitenoise==6.6.0
 
 # Contribs
-xmltodict<0.13.1
+xmltodict<1.0.3
 inflection>=0.4.0
 mock<6.0.0
 python-dateutil==2.9.0.post0
