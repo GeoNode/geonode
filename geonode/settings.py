@@ -2301,8 +2301,16 @@ GEONODE_APPS += ("geonode.assets",)
 
 PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
+    "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
 ]
+
+EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
+    os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "False")
+)
+EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
+    os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "False")
+)
 
 # Django-Avatar - Change default templates to Geonode based
 AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
