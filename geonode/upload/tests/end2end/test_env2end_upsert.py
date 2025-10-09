@@ -251,6 +251,5 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertFalse(response.json().get("success", True))
         self.assertTrue("errors" in response.json())
         self.assertTrue(
-            "All the feature in the file must have the fid field correctly populated. Number of None value: all"
-            in response.json()["errors"][0]
+            "The columns in the source and target do not match they must be equal" in response.json()["errors"][0]
         )
