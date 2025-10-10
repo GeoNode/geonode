@@ -39,7 +39,7 @@ def create_harvestable_resource(geonode_resource, service_url):
         # if exists, we need to be sure that the resource from geonode is getting connected
         if not hresource.geonode_resource:
             hresource.geonode_resource = geonode_resource
-            hresource.should_be_harvested = True
+            hresource.should_be_harvested = False
             hresource.save()
         elif hresource.geonode_resource.pk != geonode_resource.pk:
             logger.warning(

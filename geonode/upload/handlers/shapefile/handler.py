@@ -29,6 +29,7 @@ from pathlib import Path
 
 from geonode.upload.handlers.shapefile.exceptions import InvalidShapeFileException
 from geonode.upload.handlers.shapefile.serializer import OverwriteShapeFileSerializer, ShapeFileSerializer
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -55,6 +56,16 @@ class ShapeFileHandler(BaseVectorFileHandler):
         }
 
     @staticmethod
+    def can_do(action) -> bool:
+        """
+        Evaluate if the handler can take care of a specific action.
+        Each action (import/copy/etc...) can define different step so
+        the Handler must be ready to handle them. If is not in the actual
+        flow the already in place flow is followd
+        """
+        return action in ShapeFileHandler.TASKS
+
+    @staticmethod
     def can_handle(_data) -> bool:
         """
         This endpoint will return True or False if with the info provided
@@ -70,6 +81,8 @@ class ShapeFileHandler(BaseVectorFileHandler):
     def has_serializer(data) -> bool:
         _base = data.get("base_file")
         if not _base:
+            return False
+        if data.get("action") == ira.UPSERT.value:
             return False
         if _base.endswith("shp") if isinstance(_base, str) else _base.name.endswith("shp"):
             is_overwrite_flow = data.get("overwrite_existing_layer", False)
@@ -94,6 +107,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
+            "upsert_key": _data.pop("upsert_key", None),
         }
 
         return additional_params, _data
@@ -196,7 +210,30 @@ class ShapeFileHandler(BaseVectorFileHandler):
         If needed change the name of the geometry, by promoting it to Multi
         example if is Point -> MultiPoint
         Needed for the shapefiles
+        Later this is used to map the geometry coming from ogr2ogr with a django class
         """
         if "Multi" not in geometry_name and "Point" not in geometry_name:
             return f"Multi {geometry_name.title()}"
         return geometry_name
+
+    def promote_geom_to_multi(self, geom):
+        """
+        Convert the GetGeometryType object into Multi
+        example if is Point -> MultiPoint
+        Needed for the shapefiles
+        """
+        match geom.GetGeometryType():
+            case ogr.wkbMultiLineString | ogr.wkbMultiPolygon:
+                # if is already multi, we dont need to do anything
+                return geom
+            case ogr.wkbLineString:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiLineString)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case ogr.wkbPolygon:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiPolygon)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case _:
+                # we dont convert points
+                return geom

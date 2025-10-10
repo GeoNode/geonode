@@ -69,6 +69,10 @@ class BaseRemoteResourceHandler(BaseHandler):
             return RemoteResourceSerializer
         return False
 
+    @property
+    def have_table(self):
+        return False
+
     @staticmethod
     def can_handle(_data) -> bool:
         """

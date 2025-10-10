@@ -19,5 +19,5 @@
 import os
 
 STORAGE_MANAGER_CONCRETE_CLASS = os.environ.get(
-    "STORAGE_MANAGER_CONCRETE_CLASS", "geonode.storage.manager.DefaultStorageManager"
+    "STORAGE_MANAGER_CONCRETE_CLASS", "geonode.storage.manager.FileSystemStorageManager"
 )

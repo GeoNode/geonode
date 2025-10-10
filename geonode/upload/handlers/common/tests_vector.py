@@ -23,17 +23,26 @@ from celery.canvas import Signature
 from celery import group
 from django.conf import settings
 from django.test import TestCase
+from django.urls import reverse
 from mock import MagicMock, patch
+from geonode.upload.api.exceptions import UpsertException
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_with_ogr2ogr
 from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
+from geonode.upload.handlers.geojson.handler import GeoJsonFileHandler
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
+from geonode.upload.handlers.shapefile.handler import ShapeFileHandler
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
 from dynamic_models.models import ModelSchema
 from osgeo import ogr
 from django.test.utils import override_settings
+from geoserver.catalog import Catalog
+
+from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
+from geonode.utils import OGC_Servers_Handler
+from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 
 
 class TestBaseVectorFileHandler(TestCase):
@@ -67,6 +76,100 @@ class TestBaseVectorFileHandler(TestCase):
         )
         expected = "Task: foo_task_name raised an error during actions for layer: alternate: my exception"
         self.assertEqual(expected, actual)
+
+    def test_create_vrt_file_with_special_chars(self):
+        """
+        Test that create_vrt_file correctly sanitizes layer and field names
+        with spaces and special characters, and generates a valid VRT file.
+        """
+        source_filepath = "source file.shp"
+
+        mock_layer = MagicMock(spec=ogr.Layer)
+        mock_layer.GetName.return_value = "Layer With Spaces"
+        mock_layer.GetGeomType.return_value = ogr.wkbPolygon
+
+        mock_field_1 = MagicMock()
+        mock_field_1.GetName.return_value = "Field 1 (m)"
+        mock_field_1.GetTypeName.return_value = "String"
+
+        mock_field_2 = MagicMock()
+        mock_field_2.GetName.return_value = "another-field"
+        mock_field_2.GetTypeName.return_value = "Real"
+
+        mock_field_3 = MagicMock()
+        mock_field_3.GetName.return_value = "field/with/slash"
+        mock_field_3.GetTypeName.return_value = "Integer"
+
+        mock_layer_defn = MagicMock()
+        mock_layer_defn.GetFieldCount.return_value = 3
+        mock_layer_defn.GetFieldDefn.side_effect = [mock_field_1, mock_field_2, mock_field_3].__getitem__
+
+        mock_layer.GetLayerDefn.return_value = mock_layer_defn
+
+        vrt_filename, vrt_layer_name = None, None
+        try:
+            vrt_filename, vrt_layer_name = create_vrt_file(mock_layer, source_filepath)
+
+            self.assertIsNotNone(vrt_filename)
+            self.assertTrue(os.path.exists(vrt_filename))
+            self.assertEqual(vrt_layer_name, "layer_with_spaces")
+
+            with open(vrt_filename, "r") as f:
+                vrt_content = f.read()
+
+            self.assertIn('<OGRVRTLayer name="layer_with_spaces">', vrt_content)
+            self.assertIn(f"<SrcDataSource>{source_filepath}</SrcDataSource>", vrt_content)
+            self.assertIn("<SrcLayer>Layer With Spaces</SrcLayer>", vrt_content)
+
+            self.assertIn('<Field name="field_1_m" src="Field 1 (m)" type="String" />', vrt_content)
+            self.assertIn('<Field name="another_field" src="another-field" type="Real" />', vrt_content)
+            self.assertIn('<Field name="fieldwithslash" src="field/with/slash" type="Integer" />', vrt_content)
+
+        finally:
+            if vrt_filename and os.path.exists(vrt_filename):
+                os.remove(vrt_filename)
+
+    def test_has_incompatible_field_names(self):
+        """
+        Test that has_incompatible_field_names correctly identifies layers
+        with field names that need sanitization.
+        """
+
+        # layer with incompatible field names
+        mock_layer_incompatible = MagicMock(spec=ogr.Layer)
+        mock_layer_incompatible.GetName.return_value = "Layer With Spaces"
+
+        mock_field_1 = MagicMock()
+        mock_field_1.GetName.return_value = "Field 1 (m)"
+
+        mock_field_2 = MagicMock()
+        mock_field_2.GetName.return_value = "another-#field"
+
+        mock_layer_defn_incompatible = MagicMock()
+        mock_layer_defn_incompatible.GetFieldCount.return_value = 2
+        mock_layer_defn_incompatible.GetFieldDefn.side_effect = [mock_field_1, mock_field_2].__getitem__
+
+        mock_layer_incompatible.GetLayerDefn.return_value = mock_layer_defn_incompatible
+
+        self.assertTrue(has_incompatible_field_names(mock_layer_incompatible))
+
+        # layer with compatible field names
+        mock_layer_compatible = MagicMock(spec=ogr.Layer)
+        mock_layer_compatible.GetName.return_value = "compatible_layer"
+
+        mock_field_3 = MagicMock()
+        mock_field_3.GetName.return_value = "field_one"
+
+        mock_field_4 = MagicMock()
+        mock_field_4.GetName.return_value = "field_two"
+
+        mock_layer_defn_compatible = MagicMock()
+        mock_layer_defn_compatible.GetFieldCount.return_value = 2
+        mock_layer_defn_compatible.GetFieldDefn.side_effect = [mock_field_3, mock_field_4].__getitem__
+
+        mock_layer_compatible.GetLayerDefn.return_value = mock_layer_defn_compatible
+
+        self.assertFalse(has_incompatible_field_names(mock_layer_compatible))
 
     def test_create_dynamic_model_fields(self):
         try:
@@ -131,6 +234,16 @@ class TestBaseVectorFileHandler(TestCase):
                 step="step",
                 input_params={"files": self.valid_files, "skip_existing_layer": True},
             )
+
+            if overwrite:
+                resource = self.handler.create_geonode_resource(
+                    "layer_name",
+                    "layer_alternate",
+                    str(exec_id),
+                )
+                ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                    input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": resource.pk}
+                )
 
             layers = ogr.Open(self.valid_gpkg)
 
@@ -366,3 +479,145 @@ class TestBaseVectorFileHandler(TestCase):
         expected_output = {"resources": [{"id": resource.pk, "detail_url": resource.detail_url}]}
         exec_obj.refresh_from_db()
         self.assertDictEqual(expected_output, exec_obj.output_params)
+
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=False)
+    def test_upsert_validation_should_fail(self):
+        """
+        The test should fail since the dynamic model generation is not enabled
+        """
+        handler = ShapeFileHandler()
+        with self.assertRaises(Exception) as exept:
+            handler.upsert_validation(["files"], 123)
+
+        self.assertIsNotNone(exept)
+        self.assertEqual(
+            str(exept.exception),
+            "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
+        )
+
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=True)
+    @patch("geonode.upload.handlers.common.vector.ModelSchema")
+    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.extract_upsert_key")
+    def test_upsert_data_should_fail_if_upsertkey_is_not_provided(self, upsert_function, schema):
+        """
+        The test should fail since the upsert key provided is empty/Null and
+        was not possible to extract the key from the DB schema
+        """
+        schema.return_value = MagicMock()
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": data.pk},
+        )
+
+        upsert_function.return_value = None
+        handler = ShapeFileHandler()
+        with self.assertRaises(Exception) as exept:
+            handler.upsert_data(["files"], exec_id)
+
+        self.assertIsNotNone(exept)
+        self.assertEqual(
+            str(exept.exception),
+            "Was not possible to find the upsert key, upsert is aborted",
+        )
+
+
+class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
+    """
+    Tests for the basic functionality of the upsert methods
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.handler = BaseVectorFileHandler()
+        cls.json_handler = GeoJsonFileHandler()
+        cls.user = get_user_model().objects.exclude(username="Anonymous").first()
+        cls.original = {
+            "base_file": f"{project_dir}/tests/fixture/upsert/original.json",
+        }
+        cls.upsert_geojson = {
+            "base_file": f"{project_dir}/tests/fixture/upsert/upsert.json",
+        }
+
+        cls.url = reverse("importer_upload")
+        ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
+
+        _user, _password = ogc_server_settings.credentials
+
+        cls.cat = Catalog(service_url=ogc_server_settings.rest, username=_user, password=_password)
+
+    def setUp(self) -> None:
+        self.admin, _ = get_user_model().objects.get_or_create(username="admin")
+        self.admin.is_superuser = True
+        self.admin.is_staff = True
+        self.admin.save()
+
+    def test_upsert_data_without_dynamic_model_schema(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.original, "skip_existing_layer": True, "resource_pk": data.pk},
+        )
+        with self.assertRaises(UpsertException) as exp:
+            self.handler.upsert_data(self.original, exec_id)
+
+        self.assertEqual(
+            str(exp.exception),
+            "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled",
+        )
+
+    def test_upsert_data_raise_error_if_upsert_key_is_not_defined(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": self.original,
+                "skip_existing_layer": True,
+                "resource_pk": data.pk,
+                "upsert_key": None,
+            },
+        )
+        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
+
+        with self.assertRaises(UpsertException) as exp:
+            self.handler.upsert_data(self.original, exec_id)
+
+        self.assertEqual(str(exp.exception), "Was not possible to find the upsert key, upsert is aborted")
+
+    def test_validate_single_feature_raise_error(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": self.original,
+                "skip_existing_layer": True,
+                "resource_pk": data.pk,
+                "upsert_key": "id",
+            },
+        )
+        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
+
+        with self.assertRaises(Exception) as exp:
+            self.json_handler.upsert_data(self.original, exec_id)
+
+        self.assertEqual(
+            str(exp.exception), "An internal error occurred during upsert save. All features are rolled back."
+        )

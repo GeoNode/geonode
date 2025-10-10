@@ -66,6 +66,7 @@ from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.resource.utils import is_remote_resource
 
 from geonode.utils import (
     OGC_Servers_Handler,
@@ -997,6 +998,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     else:
         server_url = ogc_server_settings.LOCATION
     if layer.subtype in ["tileStore", "remote"] and layer.remote_service.ptype == "gxp_arcrestsource":
+        logger.info(f"Getting info for {layer.subtype} '{layer.alternate or layer.typename}'")
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
@@ -1006,20 +1008,22 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 [n["name"], _esri_types[n["type"]]] for n in body["fields"] if n.get("name") and n.get("type")
             ]
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(
+                f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'", exc_info=True
+            )
             attribute_map = []
     elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
         typename = layer.alternate if layer.alternate else layer.typename
+        logger.info(f"Getting WFS info for {layer.subtype} '{typename}'")
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
         dft_query = urlencode(
             {"service": "wfs", "version": "1.0.0", "request": "DescribeFeatureType", "typename": typename}
         )
         dft_url = urljoin(dft_url_path, f"ows?{dft_query}")
+        logger.debug(f"WFS URL is {dft_url}")
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
-            req, body = http_client.get(dft_url, user=_user)
-            doc = dlxml.fromstring(body.encode())
+            doc = _get_xml(dft_url)
             xsd = "{http://www.w3.org/2001/XMLSchema}"
             path = f".//{xsd}extension/{xsd}sequence/{xsd}element"
             attribute_map = [
@@ -1028,8 +1032,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 if n.attrib.get("name") and n.attrib.get("type")
             ]
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(
+                f"Error while retrieving WFS info for {layer.subtype} '{typename}'... will try WMS", exc_info=True
+            )
             attribute_map = []
             # Try WMS instead
             dft_url = (
@@ -1054,7 +1059,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 )
             )
             try:
-                req, body = http_client.get(dft_url, user=_user)
+                logger.info(f"Getting WMS info for {layer.subtype} '{layer.alternate or layer.typename}'")
+                logger.debug(f"WMS URL is {dft_url}")
+                body = _get_from_catalog(dft_url)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll("th"):
                     if field.string is None:
@@ -1063,21 +1070,19 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                         field_name = field.string
                     attribute_map.append([field_name, "xsd:string"])
             except Exception:
-                tb = traceback.format_exc()
-                logger.debug(tb)
+                logger.warning(f"Error while retrieving WMS info for {layer.subtype} '{typename}'", exc_info=True)
                 attribute_map = []
     elif layer.subtype in ["raster"]:
         typename = layer.alternate if layer.alternate else layer.typename
+        logger.info(f"Getting WCS info for {layer.subtype} '{typename}'")
         dc_url = f"{server_url}wcs?{urlencode({'service': 'wcs', 'version': '1.1.0', 'request': 'DescribeCoverage', 'identifiers': typename})}"
         try:
-            req, body = http_client.get(dc_url, user=_user)
-            doc = dlxml.fromstring(body.encode())
+            doc = _get_xml(dc_url)
             wcs = "{http://www.opengis.net/wcs/1.1.1}"
             path = f".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key"
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(f"Error while retrieving WCS info for {layer.subtype} '{typename}'", exc_info=True)
             attribute_map = []
     # Get attribute statistics & package for call to really_set_attributes()
     attribute_stats = defaultdict(dict)
@@ -1093,6 +1098,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             else:
                 result = None
             attribute_stats[layer.name][field] = result
+    logger.info(f"Found {len(attribute_map)} attributes for {layer.subtype}")
     set_attributes(layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats)
 
 
@@ -1923,14 +1929,14 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
         # Don't run this signal handler if it is a tile layer or a remote store (Service)
         #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-        _is_remote_instance = hasattr(instance, "subtype") and getattr(instance, "subtype") in ["tileStore", "remote"]
+        _is_remote_instance = is_remote_resource(instance)
 
-        # Let's reset the connections first
-        gs_catalog._cache.clear()
-        gs_catalog.reset()
-
-        gs_resource = None
         if not _is_remote_instance:
+            # Let's reset the connections first
+            gs_catalog._cache.clear()
+            gs_catalog.reset()
+
+            gs_resource = None
             values = {"title": instance.title, "abstract": instance.raw_abstract}
             _tries = 0
 
@@ -2157,3 +2163,19 @@ def ows_endpoint_in_path(path):
         or re.match(r".*(?<!w[a-z]s)/(w.*s)/.*$", path, re.IGNORECASE)
         or re.match(r".*(?<!ows)/(ows)/.*$", path, re.IGNORECASE)
     )
+
+
+def _get_from_catalog(url):
+    resp = gs_catalog.http_request(url)
+    if resp.status_code == 200:
+        return resp.content
+    else:
+        logger.debug(f"Request at {url} returned code {resp.status_code} and content {resp.content}")
+        raise Exception(f"Request returned code {resp.status_code}")
+
+
+def _get_xml(url):
+    content = _get_from_catalog(url)
+    if isinstance(content, bytes):
+        content = content.decode("UTF-8")
+    return dlxml.fromstring(content.encode())

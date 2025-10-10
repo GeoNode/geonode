@@ -3,21 +3,23 @@ import logging
 import os
 import shutil
 
+
 from django.conf import settings
 from django.http import HttpResponse, StreamingHttpResponse
 from django.urls import reverse
 from django_downloadview import DownloadResponse
 from zipstream import ZipStream
+from pathlib import Path
 
 from geonode.assets.handlers import asset_handler_registry, AssetHandlerInterface, AssetDownloadHandlerInterface
 from geonode.assets.models import LocalAsset
-from geonode.storage.manager import DefaultStorageManager, StorageManager
+from geonode.storage.manager import FileSystemStorageManager, StorageManager
 from geonode.utils import build_absolute_uri, mkdtemp
 
 logger = logging.getLogger(__name__)
 
 _asset_storage_manager = StorageManager(
-    concrete_storage_manager=DefaultStorageManager(location=os.path.dirname(settings.ASSETS_ROOT))
+    concrete_storage_manager=FileSystemStorageManager(location=os.path.dirname(settings.ASSETS_ROOT))
 )
 
 
@@ -60,8 +62,27 @@ class LocalAssetHandler(AssetHandlerInterface):
         if not files:
             raise ValueError("File(s) expected")
 
-        if clone_files:
-            files = self._copy_data(files)
+        local_files = [f for f in files if isinstance(f, (str, Path))]
+        in_memory_files = [f for f in files if not isinstance(f, (str, Path))]
+        final_files = []
+        asset_dir = None
+
+        if local_files:
+            if clone_files:
+                dir_name = os.path.dirname(local_files[0])
+                asset_dir = self._clone_data(dir_name)
+                if asset_dir:
+                    final_files.extend([_f.replace(dir_name, asset_dir) for _f in local_files])
+            else:
+                final_files.extend(local_files)
+
+        if in_memory_files:
+            if asset_dir is None:
+                logger.info("Creating asset dir for in-memory files")
+                asset_dir = self._create_asset_dir()
+            storage = StorageManager(remote_files={f.name: f for f in in_memory_files})
+            cloned_files = storage.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
+            final_files.extend([str(p) for p in cloned_files.values()])
 
         asset = LocalAsset(
             title=title,
@@ -69,7 +90,7 @@ class LocalAssetHandler(AssetHandlerInterface):
             type=type,
             owner=owner,
             created=datetime.datetime.now(),
-            location=files,
+            location=final_files,
         )
         asset.save()
         return asset
@@ -124,6 +145,11 @@ class LocalAssetHandler(AssetHandlerInterface):
 
         shutil.copytree(source_dir, new_path, dirs_exist_ok=True)
 
+        # fixing in case the permissions on the newly clonsed files:
+        if settings.FILE_UPLOAD_PERMISSIONS is not None:
+            for _file in os.listdir(new_path):
+                os.chmod(os.path.join(new_path, _file), settings.FILE_UPLOAD_PERMISSIONS)
+
         return new_path
 
     def clone(self, source: LocalAsset) -> LocalAsset:
@@ -153,13 +179,13 @@ class LocalAssetHandler(AssetHandlerInterface):
 
     @classmethod
     def _is_file_managed(cls, file) -> bool:
-        assets_root = os.path.normpath(settings.ASSETS_ROOT)
+        assets_root = os.path.join(os.path.normpath(settings.ASSETS_ROOT), "")
         return file.startswith(assets_root)
 
     @classmethod
     def _are_files_managed(cls, asset: LocalAsset) -> bool:
         """
-        :param files: files to be checked
+        :param asset: asset pointing to the files to be checked
         :return: True if all files are managed, False is no file is managed
         :raise: ValueError if both managed and unmanaged files are in the list
         """

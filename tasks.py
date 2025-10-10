@@ -541,6 +541,7 @@ def _prepare_site_fixture():
     with open("/tmp/default_site.json", "w") as fixturefile:
         json.dump(default_fixture, fixturefile)
 
+
 def _prepare_admin_fixture(admin_password, admin_email):
     from django.contrib.auth.hashers import make_password
 

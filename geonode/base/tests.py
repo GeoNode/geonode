@@ -21,6 +21,8 @@ import json
 import logging
 import os
 import requests
+import importlib
+from django.apps import apps
 from PIL import Image
 from io import BytesIO
 from uuid import uuid4
@@ -63,7 +65,10 @@ from geonode.base.models import (
     Thesaurus,
     ThesaurusKeyword,
     generate_thesaurus_reference,
+    Link,
 )
+from geonode.assets.tests import ONE_JSON
+from geonode.assets.utils import create_asset
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
@@ -78,6 +83,7 @@ from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.resource.manager import resource_manager
+from geonode.base.api.serializers import ResourceBaseSerializer
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
@@ -1293,3 +1299,66 @@ class TestResourceBaseViewSetQueryset(TestCase):
         original_pks = [obj.pk for obj in original_list]
         optimized_pks = [obj.pk for obj in optimized_list]
         self.assertEqual(original_pks, optimized_pks)
+
+
+class FixOtherRestrictionsTest(GeoNodeBaseTestSupport):
+
+    def test_fix_otherrestrictions_codetype(self):
+        from geonode.base.models import RestrictionCodeType
+        from django.db.models import Q
+
+        migration_module = importlib.import_module(
+            "geonode.base.migrations.0094_fix_otherrestrictions_codetype"
+        )  # importing migration module to test
+        fix_otherrestrictions_codetype = migration_module.fix_otherrestrictions_codetype
+
+        updated = RestrictionCodeType.objects.filter(
+            Q(identifier="limitation not listed") | Q(identifier="otherRestrictions")
+        ).update(
+            identifier="limitation not listed", description="otherRestrictions", gn_description="otherRestrictions"
+        )
+
+        self.assertEqual(updated, 1, "Expected one record to be updated")
+
+        fix_otherrestrictions_codetype(apps=apps, schema_editor=None)  # calling the migration function to correct
+
+        with self.assertRaises(RestrictionCodeType.DoesNotExist):
+            RestrictionCodeType.objects.get(identifier="limitation not listed")
+
+        fixed_obj = RestrictionCodeType.objects.get(identifier="otherRestrictions")
+        self.assertEqual(fixed_obj.description, "limitation not listed")
+        self.assertEqual(fixed_obj.gn_description, "limitation not listed")
+
+
+class TestDeletableAssetKey(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.resource = create_single_dataset("test_resource")
+        self.asset1 = create_asset(self.user, asset_type="document", title="Test Asset for Deletion", files=[ONE_JSON])
+        self.asset2 = create_asset(self.user, asset_type="document", title="Original", files=[ONE_JSON])
+        self.link = Link.objects.create(resource=self.resource, asset=self.asset1, name="test_link")
+        self.link2 = Link.objects.create(resource=self.resource, asset=self.asset2, name="test_link_2")
+
+    def test_deletable_extra_property(self):
+        serializer = ResourceBaseSerializer(instance=self.resource)
+        data = serializer.data
+        links = data.get("links", [])  # get value from LinksSerializer
+
+        # Create a mapping from asset title to the link's deletable status
+        deletable_status_by_title = {
+            link.get("extras", {}).get("content", {}).get("title"): link.get("extras", {}).get("deletable")
+            for link in links
+            if link.get("extras", {}).get("content", {}).get("title")
+        }
+        # Assertions for specific asset titles
+        self.assertIn("Test Asset for Deletion", deletable_status_by_title)
+        self.assertTrue(
+            deletable_status_by_title["Test Asset for Deletion"],
+            "Link with title 'Test Asset for Deletion' should have deletable=True",
+        )
+        self.assertIn("Original", deletable_status_by_title)
+        self.assertFalse(
+            deletable_status_by_title["Original"],
+            "Link with title 'Original' should have deletable=False",
+        )

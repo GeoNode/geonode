@@ -3794,3 +3794,179 @@ class TestAPIPermissionCache(GeoNodeBaseTestSupport):
         if hasattr(cls, "test_group"):
             cls.test_group.delete()
         super().tearDownClass()
+
+
+class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        self.user_viewer = get_user_model().objects.create_user(username="viewer", password="viewer_password")
+        self.user_downloader = get_user_model().objects.create_user(
+            username="downloader", password="downloader_password"
+        )
+        self.dataset = create_single_dataset(name="test_dataset_for_download_permission")
+
+        dataset_files = [
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
+        ]
+        create_asset_and_link(
+            self.dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
+
+        perm_spec = {
+            "users": {
+                self.user_viewer.username: [
+                    "view_resourcebase",
+                ],
+                self.user_downloader.username: [
+                    "view_resourcebase",
+                    "download_resourcebase",
+                ],
+            },
+            "groups": {},
+        }
+        self.dataset.set_permissions(perm_spec)
+
+    def test_asset_download_link_permission(self):
+        """
+        Ensure that the download link is only visible to users with download permissions.
+        """
+        self.client.login(username="viewer", password="viewer_password")
+        url = f"/api/v2/datasets/{self.dataset.pk}"
+        response = self.client.get(f"{url}", format="json")
+        self.assertEqual(response.status_code, 200)
+
+        links = response.data.get("dataset").get("links", [])
+        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
+        self.assertIsNotNone(asset_link)
+        self.assertNotIn("download_url", asset_link.get("extras", {}).get("content", {}))
+
+        self.client.login(username="downloader", password="downloader_password")
+        response = self.client.get(f"{url}", format="json")
+        self.assertEqual(response.status_code, 200)
+
+        links = response.data.get("dataset").get("links", [])
+        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
+        self.assertIsNotNone(asset_link)
+        self.assertIn("download_url", asset_link.get("extras", {}).get("content", {}))
+
+
+class ResourceBaseMetadataXMLTest(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        self.dataset = create_single_dataset(name="test_dataset_for_metadata_xml")
+        self.dataset.metadata_xml = """
+            <gmd:MD_Metadata xmlns:gmd="test">
+                <gmd:fileIdentifier>
+                    <gco:CharacterString>test_dataset_for_metadata_xml</gco:CharacterString>
+                </gmd:fileIdentifier>
+            </gmd:MD_Metadata>
+            """
+        self.dataset.save()
+        self.anonymous_user = get_anonymous_user()
+        self.user1 = get_user_model().objects.create_user(username="test_user123", password="password")
+        self.user2 = get_user_model().objects.create_user(username="test_user_2", password="password")
+        self.anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
+
+    def test_download_metadata_xml_anonymous_user_with_permission(self):
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        url = f"{url}/iso_metadata_xml/"
+        perm_spec = {
+            "users": {},
+            "groups": {
+                self.anonymous_group.name: ["view_resourcebase"],
+            },
+        }
+        self.dataset.set_permissions(perm_spec)
+        response = self.client.get(url)
+        # user is not authenticated but has permission from anonymous group
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertIn(b"test_dataset_for_metadata_xml", response.content)
+
+    def test_download_metadata_xml_anonymous_user_without_permission(self):
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        perm_spec = {
+            "users": {},
+            "groups": {
+                self.anonymous_group.name: [],
+            },
+        }
+        self.dataset.set_permissions(perm_spec)
+        url = f"{url}/iso_metadata_xml/"
+        response = self.client.get(url)
+        # user is not authenticated and dont have permission
+        self.assertEqual(response.status_code, 401)
+
+    def test_download_metadata_xml_authenticated_user_with_permission(self):
+        perm_spec = {
+            "users": {
+                self.user1: [
+                    "view_resourcebase",
+                ],
+            },
+            "groups": {},
+        }
+        self.dataset.set_permissions(perm_spec)
+        self.client.login(username="test_user123", password="password")
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        url = f"{url}/iso_metadata_xml/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertIn(b"test_dataset_for_metadata_xml", response.content)
+
+    def test_download_metadata_xml_authenticated_user_without_permission(self):
+        perm_spec = {
+            "users": {
+                self.user2: [],
+            },
+            "groups": {},
+        }
+        self.dataset.set_permissions(perm_spec)
+        self.client.login(username="test_user_2", password="password")
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.pk})
+        url = f"{url}/iso_metadata_xml/"
+        response = self.client.get(url)
+        # user is authenticated but dont have permission
+        self.assertEqual(response.status_code, 403)
+
+
+class MapCachingTest(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.create_user(username="test_user_123", password="password")
+        self.map = create_single_map(owner=self.user, title="test map", name="test_map")
+        self.datasets = [create_single_dataset(name=f"dataset_{i}", owner=self.user) for i in range(5)]
+        for i, dataset in enumerate(self.datasets):
+            MapLayer.objects.create(map=self.map, name=dataset.name, dataset=dataset, order=i)
+            perm_spec = {
+                "users": {
+                    self.user.username: [
+                        "view_resourcebase",
+                    ]
+                },
+                "groups": {},
+            }
+            dataset.set_permissions(perm_spec)
+
+    def test_map_layer_permission_caching(self):
+        self.client.login(username="test_user_123", password="password")
+        url = f"/api/v2/maps/{self.map.pk}/?api_preset=viewer_common&api_preset=map_viewer"
+
+        # First call, should cache permissions
+        response1 = self.client.get(url)
+        self.assertEqual(response1.status_code, 200)
+        data1 = response1.json()
+
+        # Second call, should use cached permissions
+        response2 = self.client.get(url)
+        self.assertEqual(response2.status_code, 200)
+        data2 = response2.json()
+
+        # Check that the responses are the same
+        self.assertEqual(data1.keys(), data2.keys())
+
+        # Check that the permissions in the layers are the same
+        for layer1, layer2 in zip(data1["map"]["maplayers"], data2["map"]["maplayers"]):
+            self.assertEqual(layer1["dataset"]["perms"], layer2["dataset"]["perms"])
