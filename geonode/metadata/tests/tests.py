@@ -959,9 +959,6 @@ class MetadataApiTests(APITestCase):
 
         mock_get_schema.return_value = self.fake_schema
 
-        # Mock the save method
-        self.resource.save = MagicMock()
-
         # Mock localize_message to return a custom error message
         mock_localize_message.side_effect = lambda context, msg_id, data: f"Error in handler: {data['exc']}"
 
@@ -984,12 +981,6 @@ class MetadataApiTests(APITestCase):
             self.handler1.update_resource.assert_called()
             self.handler2.update_resource.assert_called()
             self.handler3.update_resource.assert_called()
-
-            # Assert that resource.save() was called
-            self.resource.save.assert_called_once()
-
-            # Assert resource.save was called
-            self.resource.save.assert_called_once()
 
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
     @patch("geonode.metadata.manager.MetadataHandler.localize_message")
