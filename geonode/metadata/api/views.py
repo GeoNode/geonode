@@ -117,6 +117,7 @@ class MetadataViewSet(ViewSet):
                         if request.method == "PUT"
                         else metadata_manager.update_schema_instance_partial(resource, request.data, request.user, lang)
                     )
+                    resource.refresh_from_db()
                     resource.save()  # we want to trigger all the post_save signals
                 except Exception as e:
                     logger.warning(f"Error while updating schema instance: {e}")
