@@ -67,7 +67,10 @@ class GeoserverFeatureConstraintHandler(BaseFeatureConstraintHandler):
                 try:
                     self._validate_attribute(attribute_name, value, self.restrictions[attribute_name])
                 except ValidationError as e:
-                    errors.append(str(e))
+                    if hasattr(e, "messages"):
+                        errors.extend(e.messages if isinstance(e.messages, list) else [e.messages])
+                    else:
+                        errors.append(str(e))
         if errors:
             raise ValidationError(errors)
 

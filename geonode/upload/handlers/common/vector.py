@@ -1267,7 +1267,8 @@ class BaseVectorFileHandler(BaseHandler):
             feature_constraint_registry.validate(feature)
             return feature, True
         except ValidationError as e:
-            feature["error"] = str(e)
+            errors = e.messages if hasattr(e, "messages") else [str(e)]
+            feature["error"] = " | ".join(errors)
             return feature, False
 
     def extract_upsert_key(self, exec_obj, dynamic_model_instance):
