@@ -55,6 +55,7 @@ from geonode.upload.settings import (
     IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
 )
 from geonode.upload.utils import (
+    DEFAULT_PK_COLUMN_NAME,
     call_rollback_function,
     call_on_failure,
     error_handler,
@@ -715,9 +716,13 @@ def create_dynamic_structure(
 
     if row_to_insert:
         if dynamic_model_schema.managed:
-            # we have to loop in order to generate the schema of the table
+            # If the dynamic mode schema is managed we have to save each single field
+            # one by one. Doing this will allow Django to create column in the database
             for field in row_to_insert:
-                if field.name == "fid":
+                if field.name == DEFAULT_PK_COLUMN_NAME:
+                    # django automatically created a column name ID and use it as primary key by default
+                    # if we try to create the column FID as needed, it will raise error.
+                    # in this way we will just update the name from ID to FID
                     with connections[os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")].cursor() as cursor:
                         cursor.execute(f"ALTER TABLE {dynamic_model_schema.name} RENAME COLUMN id TO fid;")
                 else:
