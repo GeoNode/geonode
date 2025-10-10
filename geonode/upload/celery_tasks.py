@@ -724,7 +724,9 @@ def create_dynamic_structure(
                     # if we try to create the column FID as needed, it will raise error.
                     # in this way we will just update the name from ID to FID
                     with connections[os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")].cursor() as cursor:
-                        cursor.execute(f"ALTER TABLE {dynamic_model_schema.name} RENAME COLUMN id TO fid;")
+                        cursor.execute(
+                            f"ALTER TABLE {dynamic_model_schema.name} RENAME COLUMN id TO {DEFAULT_PK_COLUMN_NAME};"
+                        )
                 else:
                     field.save()
         else:

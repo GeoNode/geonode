@@ -65,6 +65,10 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {}
 
+    @property
+    def default_geometry_column_name(self):
+        return "geom"
+
     @staticmethod
     def can_handle(_data) -> bool:
         """

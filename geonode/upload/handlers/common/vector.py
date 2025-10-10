@@ -112,7 +112,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     @property
     def default_geometry_column_name(self):
-        return "geometry"
+        return "geom"
 
     @property
     def supported_file_extension_config(self):
@@ -729,14 +729,20 @@ class BaseVectorFileHandler(BaseHandler):
         if settings.IMPORTER_ENABLE_DYN_MODELS and self.have_table:
             from django.db import connections
 
+            # then we can check for the PK
             column = None
             connection = connections["datastore"]
             table_name = saved_dataset.alternate.split(":")[1]
+
+            schema = ModelSchema.objects.filter(name=table_name).first()
+            schema.managed = False
+            schema.save()
+
             with connection.cursor() as cursor:
                 column = connection.introspection.get_primary_key_columns(cursor, table_name)
             if column:
                 # getting the relative model schema
-                schema = ModelSchema.objects.filter(name=table_name).first()
+                # better to always ensure that the schema is NOT managed
                 field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
                 if field:
                     field.kwargs.update({"primary_key": True})
@@ -750,10 +756,6 @@ class BaseVectorFileHandler(BaseHandler):
                         kwargs={"null": False, "primary_key": True},
                     )
                     pk_field.save()
-
-                # better to always ensure that the schema is NOT managed
-                schema.managed = False                
-                schema.save()
 
         return saved_dataset
 
