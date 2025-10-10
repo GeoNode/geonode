@@ -1200,7 +1200,9 @@ def get_legend_url(
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
     from django.utils.translation import gettext_lazy
+    from geonode.resource.utils import is_remote_resource
 
+    is_remote = is_remote_resource(instance)
     # Prune old links
     if prune:
         logger.debug(" -- Resource Links[Prune old links]...")
@@ -1220,7 +1222,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Parse Dataset BBOX and SRID
         bbox = None
         srid = instance.srid if instance.srid else getattr(settings, "DEFAULT_MAP_CRS", "EPSG:4326")
-        if not prune and instance.srid and instance.bbox_polygon:
+
+        if is_remote or (not prune and instance.srid and instance.bbox_polygon):
             bbox = instance.bbox_string
         else:
             try:
@@ -1260,6 +1263,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     width = int(height * dataAspect)
                     # Rewriting BBOX as a plain string
                     bbox = ",".join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
+
                 else:
                     bbox = instance.bbox_string
             except Exception as e:

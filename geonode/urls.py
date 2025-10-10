@@ -156,7 +156,6 @@ if "django_select2" in settings.INSTALLED_APPS:
     ]
 
 urlpatterns += i18n_patterns(
-    re_path(r"^grappelli/", include("grappelli.urls")),
     re_path(r"^admin/", admin.site.urls, name="admin"),
 )
 

@@ -462,7 +462,6 @@ INSTALLED_APPS = (
     "modeltranslation",
     "dal",
     "dal_select2",
-    "grappelli",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -599,8 +598,6 @@ DYNAMIC_REST = {
     # path registered, links will default back to being resource-relative urls
     "ENABLE_HOST_RELATIVE_LINKS": True,
 }
-
-GRAPPELLI_ADMIN_TITLE = os.getenv("GRAPPELLI_ADMIN_TITLE", "GeoNode")
 
 # Documents application
 try:
@@ -1784,6 +1781,7 @@ CELERY_TASK_QUEUES = (
     Queue("security", GEONODE_EXCHANGE, routing_key="security", priority=0),
     Queue("management_commands_http", GEONODE_EXCHANGE, routing_key="management_commands_http", priority=0),
     Queue("clery_cleanup", GEONODE_EXCHANGE, routing_key="clery_cleanup", priority=0),
+    Queue("harvesting", GEONODE_EXCHANGE, routing_key="harvesting", priority=0),
 )
 
 if USE_GEOSERVER:
