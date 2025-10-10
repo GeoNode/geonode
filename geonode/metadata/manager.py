@@ -197,10 +197,10 @@ class MetadataManager:
         # Let's create a full instance by using the old one, merged with the payload
         old_instance = self.build_schema_instance(resource, lang)
         old_instance.update(json_instance)
-        new_request = object()
-        new_request.__setattr__("data", old_instance)
-        new_request.__setattr__("user", user)
-        return self.update_schema_instance(resource, new_request, lang, partial=json_instance.keys())
+        fake_req = lambda: None
+        fake_req.data = old_instance
+        fake_req.user = user
+        return self.update_schema_instance(resource, fake_req, lang, partial=json_instance.keys())
 
 
 def _create_test_errors(schema, errors, path, msg_template, create_message=True):
