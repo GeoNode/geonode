@@ -735,15 +735,14 @@ class BaseVectorFileHandler(BaseHandler):
             with connection.cursor() as cursor:
                 column = connection.introspection.get_primary_key_columns(cursor, table_name)
             if column:
+                # getting the relative model schema
+                schema = ModelSchema.objects.filter(name=table_name).first()
                 field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
                 if field:
                     field.kwargs.update({"primary_key": True})
                     field.save()
                 else:
-                    # getting the relative model schema
-                    schema = ModelSchema.objects.filter(name=table_name).first()
                     # creating the field needed as primary key
-                    schema.managed = False
                     pk_field = FieldSchema(
                         name=column[0],
                         model_schema=schema,
@@ -751,7 +750,10 @@ class BaseVectorFileHandler(BaseHandler):
                         kwargs={"null": False, "primary_key": True},
                     )
                     pk_field.save()
-                    schema.save()
+
+                # better to always ensure that the schema is NOT managed
+                schema.managed = False                
+                schema.save()
 
         return saved_dataset
 
