@@ -146,7 +146,7 @@ class TestEmptyDatasetHandler(TestCase):
             expected_schema = [
                 {"name": "field_int", "class_name": "django.db.models.IntegerField", "null": False},
                 {"name": "field_str", "class_name": "django.db.models.CharField", "null": False},
-                {"name": "geometry", "class_name": None, "dim": 2, "authority": "EPSG:4326"},
+                {"name": "geom", "class_name": None, "dim": 2, "authority": "EPSG:4326"},
                 {"name": "fid", "class_name": "django.db.models.BigAutoField", "null": False, "primary_key": True},
             ]
             output_schema = self.handler._define_dynamic_layer_schema(None, execution_id=str(exec_req.exec_id))
