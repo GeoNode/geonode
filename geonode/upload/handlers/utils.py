@@ -31,6 +31,13 @@ from geonode.upload.publisher import DataPublisher
 
 logger = logging.getLogger("importer")
 
+EMPTY_DATASET_SUPPORTED_TYPES = {
+    "integer": "django.db.models.IntegerField",
+    "date": "django.db.models.DateField",
+    "float": "django.db.models.FloatField",
+    "string": "django.db.models.CharField",
+}
+
 
 STANDARD_TYPE_MAPPING = {
     "Integer64": "django.db.models.IntegerField",

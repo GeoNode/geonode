@@ -37,6 +37,9 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 
+DEFAULT_PK_COLUMN_NAME = "fid"
+
+
 def get_max_upload_size(slug):
     try:
         max_size = UploadSizeLimit.objects.get(slug=slug).max_size

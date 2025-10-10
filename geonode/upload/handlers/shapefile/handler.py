@@ -164,7 +164,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         return ogr.GetDriverByName("ESRI Shapefile")
 
     @staticmethod
-    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate):
+    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file
