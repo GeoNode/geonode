@@ -171,7 +171,8 @@ class TestShapeFileFileHandler(TestCase):
             + _datastore["PASSWORD"]
             + '\' " "'
             + self.valid_shp.get("base_file")
-            + '" -nln alternate "dataset" -lco precision=no -lco GEOMETRY_NAME=geometry ',
+            + '" -lco FID=fid'
+            + ' -nln alternate "dataset" -lco precision=no -lco GEOMETRY_NAME=geometry ',
             stdout=-1,
             stderr=-1,
             shell=True,  # noqa
