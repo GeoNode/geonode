@@ -519,6 +519,111 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertFalse(dataset.user_can(bobby, "change_dataset_data"))
         self.assertTrue(dataset.user_can(bobby, "change_dataset_style"))
 
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=False,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
+    )
+    def test_special_groups_flags_disabled_only_admin_and_staff_receive(self):
+        """
+        - Only administrators and staff users receive both flags if is false.
+        - Editors and owners do not receive the flags.
+        """
+        admin = get_user_model().objects.get(username="admin")
+        bobby = get_user_model().objects.get(username="bobby")  # non-staff
+
+        dataset = Dataset.objects.filter(subtype="vector").first()
+        assign_perm("change_resourcebase", bobby, dataset.get_self_resource())
+        assign_perm("change_resourcebase_metadata", bobby, dataset.get_self_resource())
+
+        # Admin should have both flags
+        admin_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=admin)
+        self.assertIn("can_manage_anonymous_permissions", admin_perms)
+        self.assertIn("can_manage_registered_member_permissions", admin_perms)
+
+        # Editor (non-staff) should not have the flags when settings are False
+        editor_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=bobby)
+        self.assertNotIn("can_manage_anonymous_permissions", editor_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", editor_perms)
+
+        # Owner (non-staff) should also NOT have the flags when settings are False
+        owned_dataset = Dataset.objects.filter(owner=bobby).first()
+        owner_perms = permissions_registry.get_perms(instance=owned_dataset.get_self_resource(), user=bobby)
+        self.assertNotIn("can_manage_anonymous_permissions", owner_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", owner_perms)
+
+        # Staff user should receive both flags even without explicit edit perms
+        staff_user = get_user_model().objects.create_user(
+            username="staff_user", email="staff@example.com", password="staffpass"
+        )
+        try:
+            staff_user.is_staff = True
+            staff_user.save()
+            staff_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=staff_user)
+            self.assertIn("can_manage_anonymous_permissions", staff_perms)
+            self.assertIn("can_manage_registered_member_permissions", staff_perms)
+        finally:
+            staff_user.delete()
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=True,
+    )
+    def test_special_groups_flags_enabled_editors_and_owners_receive(self):
+        """
+        - Any API-permissions for a user who can edit (owner or with edit perms) include both flags by default(True/True).
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(subtype="vector").first()
+        assign_perm("change_resourcebase", bobby, dataset.get_self_resource())
+        assign_perm("change_resourcebase_metadata", bobby, dataset.get_self_resource())
+
+        editor_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", editor_perms)
+        self.assertIn("can_manage_registered_member_permissions", editor_perms)
+
+        # Owner should get both flags by default without needing explicit edit perms
+        owned_dataset = Dataset.objects.filter(owner=bobby).first()
+        owner_perms = permissions_registry.get_perms(instance=owned_dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", owner_perms)
+        self.assertIn("can_manage_registered_member_permissions", owner_perms)
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
+    )
+    def test_special_groups_flags_per_setting_independence(self):
+        """
+        - If Anonymous=True and Registered=False, editors/owners receive only anonymous flag.
+        - Staff and admins still receive both due to privileged status.
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(subtype="vector").first()
+        assign_perm("change_resourcebase", bobby, dataset.get_self_resource())
+        assign_perm("change_resourcebase_metadata", bobby, dataset.get_self_resource())
+
+        editor_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", editor_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", editor_perms)
+
+        # Owner should receive only the allowed flag (anonymous) and not the other one
+        owned_dataset = Dataset.objects.filter(owner=bobby).first()
+        owner_perms = permissions_registry.get_perms(instance=owned_dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", owner_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", owner_perms)
+
+        # Staff user should receive both flags even when one flag is disabled for editors
+        staff_user = get_user_model().objects.create_user(
+            username="staff_indep", email="staff_indep@example.com", password="staffpass"
+        )
+        try:
+            staff_user.is_staff = True
+            staff_user.save()
+            staff_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=staff_user)
+            self.assertIn("can_manage_anonymous_permissions", staff_perms)
+            self.assertIn("can_manage_registered_member_permissions", staff_perms)
+        finally:
+            staff_user.delete()
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
         """Test that Dataset is correctly synchronized with guardian:

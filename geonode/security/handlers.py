@@ -17,6 +17,7 @@
 #
 #########################################################################
 from abc import ABC
+from django.conf import settings
 
 
 class BasePermissionsHandler(ABC):
@@ -44,6 +45,53 @@ class BasePermissionsHandler(ABC):
         By default we dont provide any additional perms
         """
         return perms_payload
+
+
+class SpecialGroupsPermissionsHandler(BasePermissionsHandler):
+    """
+    Adds two computed permissions to the user's permissions list for a resource:
+    - can_manage_anonymous_permissions
+    - can_manage_registered_member_permissions
+    """
+
+    @staticmethod
+    def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
+        from geonode.security.permissions import EDIT_PERMISSIONS
+
+        if not include_virtual:
+            return perms_payload
+
+        perms_copy = perms_payload.copy()
+        users = perms_payload.get("users", {})
+
+        def _has_edit(perms_list, u):
+            if not perms_list:
+                return False
+            # Basic check via explicit change permissions or ownership
+            if u == instance.owner:
+                return True
+            edit_markers = EDIT_PERMISSIONS
+            return any(p in edit_markers for p in perms_list)
+
+        for u, perms in users.items():
+            updated = set(perms or [])
+            # CONDITIONS
+            allow_editors_anonymous = getattr(settings, "EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", True)
+            allow_editors_registered = getattr(settings, "EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", True)
+            is_admin_or_staff = getattr(u, "is_superuser", False) or getattr(u, "is_staff", False)
+            can_edit = _has_edit(perms, u)
+
+            grant_anonymous = is_admin_or_staff or (allow_editors_anonymous and can_edit)
+            grant_registered = is_admin_or_staff or (allow_editors_registered and can_edit)
+
+            if grant_anonymous:
+                updated.add("can_manage_anonymous_permissions")
+            if grant_registered:
+                updated.add("can_manage_registered_member_permissions")
+
+            perms_copy["users"][u] = list(updated)
+
+        return perms_copy
 
 
 class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
