@@ -75,12 +75,11 @@ class SpecialGroupsPermissionsHandler(BasePermissionsHandler):
 
         for u, perms in users.items():
             updated = set(perms or [])
-
+            # CONDITIONS
+            allow_editors_anonymous = getattr(settings, "EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", True)
+            allow_editors_registered = getattr(settings, "EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", True)
             is_admin_or_staff = getattr(u, "is_superuser", False) or getattr(u, "is_staff", False)
             can_edit = _has_edit(perms, u)
-
-            allow_editors_anonymous = getattr(settings, "EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", False)
-            allow_editors_registered = getattr(settings, "EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", False)
 
             grant_anonymous = is_admin_or_staff or (allow_editors_anonymous and can_edit)
             grant_registered = is_admin_or_staff or (allow_editors_registered and can_edit)
