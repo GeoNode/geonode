@@ -1,4 +1,4 @@
-FROM gdal_starter
+FROM geonode/geonode-base:latest-gdal-311
 LABEL GeoNode development team
 
 # copy local geonode src inside container
