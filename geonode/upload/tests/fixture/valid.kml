@@ -2,7 +2,7 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:ns2="http://www.google.com/kml/ext/2.2" xmlns:ns3="http://www.w3.org/2005/Atom" xmlns:ns4="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
     <Document>
         <Schema name="sample_point_dataset_1" id="sample_point_dataset_1">
-            <SimpleField type="int" name="ogc_fid"/>
+            <SimpleField type="int" name="fid"/>
             <SimpleField type="string" name="id"/>
             <SimpleField type="string" name="name"/>
         </Schema>
@@ -11,7 +11,7 @@
             <Placemark id="sample_point_dataset.1">
                 <ExtendedData>
                     <SchemaData schemaUrl="#sample_point_dataset_1">
-                        <SimpleData name="ogc_fid">1</SimpleData>
+                        <SimpleData name="fid">1</SimpleData>
                         <SimpleData name="id">1</SimpleData>
                         <SimpleData name="name">test</SimpleData>
                     </SchemaData>
@@ -23,7 +23,7 @@
             <Placemark id="sample_point_dataset.2">
                 <ExtendedData>
                     <SchemaData schemaUrl="#sample_point_dataset_1">
-                        <SimpleData name="ogc_fid">2</SimpleData>
+                        <SimpleData name="fid">2</SimpleData>
                         <SimpleData name="id">2</SimpleData>
                         <SimpleData name="name">test 2</SimpleData>
                     </SchemaData>

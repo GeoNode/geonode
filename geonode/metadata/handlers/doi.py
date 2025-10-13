@@ -47,3 +47,4 @@ class DOIHandler(MetadataHandler):
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         resource.doi = json_instance.get(field_name, None)
+        context.setdefault("base", {})[field_name] = json_instance.get(field_name, None)

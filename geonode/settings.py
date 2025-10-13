@@ -462,7 +462,6 @@ INSTALLED_APPS = (
     "modeltranslation",
     "dal",
     "dal_select2",
-    "grappelli",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -486,7 +485,6 @@ INSTALLED_APPS = (
     # "floppyforms",
     "tinymce",
     "widget_tweaks",
-    "django_celery_results",
     "markdownify",
     "django_user_agents",
     # REST APIs
@@ -600,8 +598,6 @@ DYNAMIC_REST = {
     # path registered, links will default back to being resource-relative urls
     "ENABLE_HOST_RELATIVE_LINKS": True,
 }
-
-GRAPPELLI_ADMIN_TITLE = os.getenv("GRAPPELLI_ADMIN_TITLE", "GeoNode")
 
 # Documents application
 try:
@@ -1705,21 +1701,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # ########################################################################### #
 # ASYNC SETTINGS
 # ########################################################################### #
-# async signals can be the same as broker url
-# but they should have separate setting anyway
-# use amqp://localhost for local rabbitmq server
-"""
-    sudo apt-get install -y erlang
-    sudo apt-get install rabbitmq-server
 
-    sudo update-rc.d rabbitmq-server enable
-
-    sudo rabbitmqctl stop_app
-    sudo rabbitmqctl reset
-    sudo rabbitmqctl start_app
-
-    sudo rabbitmqctl list_queues
-"""
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
 BROKER_HEARTBEAT = 0
@@ -1735,20 +1717,27 @@ BROKER_TRANSPORT_OPTIONS = {
 CELERY_LOADER = os.environ.get("CELERY_LOADER", "geonode.loaders.GeoNodeCeleryTaksLoader")
 
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get("ASYNC_SIGNALS", "False"))
-RABBITMQ_SIGNALS_BROKER_URL = "amqp://localhost:5672"
-# REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
+REDIS_SIGNALS_BROKER_URL = os.environ.get("BROKER_URL", "redis://localhost:6379/0")
 LOCAL_SIGNALS_BROKER_URL = "memory://"
 
-if ASYNC_SIGNALS:
-    _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
-else:
-    _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-CELERY_RESULT_BACKEND = "django-db"
+# In testing, it should not be used Redis as Celery backend
 
-CELERY_BROKER_URL = os.environ.get("BROKER_URL", _BROKER_URL)
+TESTING = "test" in sys.argv
+
+if TESTING:
+    _BROKER_URL = "memory://"
+    CELERY_BROKER_URL = _BROKER_URL
+    CELERY_RESULT_BACKEND = "cache+memory://"
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+else:
+    _BROKER_URL = REDIS_SIGNALS_BROKER_URL if ASYNC_SIGNALS else LOCAL_SIGNALS_BROKER_URL
+    CELERY_BROKER_URL = os.environ.get("BROKER_URL", _BROKER_URL)
+    CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get("CELERY_RESULT_PERSISTENT", "False"))
 CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get("CELERY_IGNORE_RESULT", "False"))
 
+CELERY_RESULT_EXPIRES = 86400
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get("CELERY_ACKS_LATE", "True"))
 
@@ -1792,6 +1781,7 @@ CELERY_TASK_QUEUES = (
     Queue("security", GEONODE_EXCHANGE, routing_key="security", priority=0),
     Queue("management_commands_http", GEONODE_EXCHANGE, routing_key="management_commands_http", priority=0),
     Queue("clery_cleanup", GEONODE_EXCHANGE, routing_key="clery_cleanup", priority=0),
+    Queue("harvesting", GEONODE_EXCHANGE, routing_key="harvesting", priority=0),
 )
 
 if USE_GEOSERVER:

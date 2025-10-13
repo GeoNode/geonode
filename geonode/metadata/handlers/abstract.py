@@ -156,7 +156,7 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def _get_tkl_labels(context, lang: str | None, text: str):
-        return context["labels"].get(text, None)
+        return context.get("labels", {}).get(text, None)
 
     @staticmethod
     def _localize_subschema_labels(context, subschema: dict, lang: str, property_name: str = None):

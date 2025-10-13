@@ -44,7 +44,6 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
 from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
@@ -106,6 +105,8 @@ class BaseVectorFileHandler(BaseHandler):
         ),
         ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
+
+    default_pk_column_name = "fid"
 
     @property
     def have_table(self):
@@ -269,7 +270,7 @@ class BaseVectorFileHandler(BaseHandler):
         # vrt file is aready created in import_resource and vrt will be auto detected by ogr2ogr
         # and also the base_file will work so can be used as alternative for fallback which will also be autodeteced by ogr2ogr.
         input_file = files.get("temp_vrt_file") or files.get("base_file")
-        options += f'"{input_file}"' + " "
+        options += f'"{input_file}"' + f" -lco FID={BaseVectorFileHandler.default_pk_column_name} "
 
         options += f'-nln {alternate} "{original_name}"'
 
@@ -403,6 +404,11 @@ class BaseVectorFileHandler(BaseHandler):
         orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
         dynamic_model = None
         celery_group = None
+        # list to collect all the alternates:
+        layer_names = []
+        alternates = []
+        task_name = "geonode.upload.import_resource"
+
         try:
             if len(layers) == 0:
                 raise Exception("No valid layers found")
@@ -446,6 +452,9 @@ class BaseVectorFileHandler(BaseHandler):
                     else:
                         alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
 
+                    layer_names.append(layer_name)
+                    alternates.append(alternate)
+
                     ogr_res = self.get_ogr2ogr_task_group(
                         execution_id,
                         _files,
@@ -469,12 +478,13 @@ class BaseVectorFileHandler(BaseHandler):
                         import_next_step.s(
                             execution_id,
                             str(self),  # passing the handler module path
-                            "geonode.upload.import_resource",
+                            task_name,
                             layer_name,
                             alternate,
                             **kwargs,
                         )
                     )
+
         except Exception as e:
             logger.error(e)
             if dynamic_model:
@@ -484,7 +494,7 @@ class BaseVectorFileHandler(BaseHandler):
                 """
                 drop_dynamic_model_schema(dynamic_model)
             raise e
-        return
+        return layer_names, alternates, execution_id
 
     def _select_valid_layers(self, all_layers):
         layers = []
@@ -1043,15 +1053,15 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException("No valid layers found in the provided file for upsert.")
 
         layer = layers[0]
-        # evaluate if some of the ogc_fid entry is null. if is null we stop the workflow
-        # the user should provide the completed list with the ogc_fid set
-        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "ogc_fid" IS NULL'
+        # evaluate if some of the fid entry is null. if is null we stop the workflow
+        # the user should provide the completed list with the fid set
+        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "fid" IS NULL'
 
         # Execute the SQL query to the layer
         result = all_layers.ExecuteSQL(sql_query)
         if not result or (result and result.GetFeatureCount() > 0):
             raise UpsertException(
-                f"All the feature in the file must have the ogc_fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
+                f"All the feature in the file must have the fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
             )
 
         # Will generate the same schema as the target_resource_schema
@@ -1117,6 +1127,7 @@ class BaseVectorFileHandler(BaseHandler):
                 "update": valid_update,
                 "create": valid_create,
             },
+            "layer_name": original_resource.title,
         }
 
     def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator):
@@ -1258,7 +1269,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def extract_upsert_key(self, exec_obj, dynamic_model_instance):
         # first we check if the upsert key is passed by the call
-        key = exec_obj.input_params.get("upsert_key", "ogc_fid")
+        key = exec_obj.input_params.get("upsert_key", "fid")
         if not key:
             # if the upsert key is not passed, we use the primary key as upsert key
             # the primary key is defined in the Fields of the dynamic model
@@ -1363,7 +1374,7 @@ def import_next_step(
 
 
 @importer_app.task(
-    base=SingleMessageErrorHandler,
+    base=ErrorBaseTaskClass,
     name="geonode.upload.import_with_ogr2ogr",
     queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,

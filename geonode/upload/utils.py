@@ -17,6 +17,7 @@
 #
 #########################################################################
 import enum
+import sys
 import tempfile
 import os
 from geonode.resource.manager import ResourceManager
@@ -27,6 +28,7 @@ from geonode.upload.api.exceptions import (
     FileUploadLimitException,
     UploadParallelismLimitException,
 )
+from geonode.upload.handlers.utils import create_layer_key
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from django.template.defaultfilters import filesizeformat
 from geonode.resource.models import ExecutionRequest
@@ -161,6 +163,27 @@ def call_rollback_function(
     kwargs["previous_action"] = prev_action
     kwargs["error"] = error_handler(error, exec_id=execution_id)
     import_orchestrator.apply_async(task_params, kwargs)
+
+
+def call_on_failure(task, exc, execution_id, handler_module_path, action, kwargs, layer_name=None):
+    """
+    Helper method for calling the on_failure
+    in case of the SYNC mode
+    """
+    if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+        # Ensure kwargs has the inner dict
+        kwargs_inner = kwargs.get("kwargs") or {}
+        if layer_name:
+            kwargs_inner["layer_key"] = create_layer_key(layer_name, execution_id)
+        kwargs["kwargs"] = kwargs_inner
+
+        task.on_failure(
+            exc=exc,
+            task_id=getattr(task.request, "id", None),
+            args=(execution_id, handler_module_path, action),
+            kwargs=kwargs,
+            einfo=sys.exc_info(),
+        )
 
 
 def find_key_recursively(obj, key):

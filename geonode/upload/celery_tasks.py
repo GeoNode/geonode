@@ -40,9 +40,9 @@ from geonode.upload.api.exceptions import (
 )
 from geonode.upload.celery_app import importer_app
 from geonode.upload.datastore import DataStoreManager
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     create_alternate,
+    create_layer_key,
     drop_dynamic_model_schema,
     evaluate_error,
     get_uuid,
@@ -56,6 +56,7 @@ from geonode.upload.settings import (
 )
 from geonode.upload.utils import (
     call_rollback_function,
+    call_on_failure,
     error_handler,
     find_key_recursively,
     ImporterRequestAction as ira,
@@ -66,8 +67,9 @@ logger = logging.getLogger("importer")
 
 class ErrorBaseTaskClass(Task):
     """
-    Basic Error task class. Is common to all the base tasks of the import pahse
-    it defines a on_failure method which set the task as "failed" with some extra information
+    Basic Error task class. This class is used for tasks
+    that are not tracked through the ExecutionRequest object,
+    e.g., import_orchestrator.
     """
 
     max_retries = 3
@@ -78,6 +80,116 @@ class ErrorBaseTaskClass(Task):
         # args (Tuple) - Original arguments for the task that failed.
         # kwargs (Dict) - Original keyword arguments for the task that failed.
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
+
+
+class UpdateTaskClass(Task):
+    max_retries = 3
+    track_started = True
+    # We need a flag to check if the current task is the import_resource
+    # since it handles all the layers at the same time
+    bulk: bool = False
+
+    def _get_task_context(self, args, kwargs):
+        """Extract common task context values."""
+        task_name = self.name
+        execution_id = args[0]
+        layer_key = find_key_recursively(kwargs, "layer_key")
+        return task_name, execution_id, layer_key
+
+    def on_success(self, retval, task_id, args, kwargs):
+        """
+        Called when the task succeeds.
+        Updates tasks_status for all alternates.
+        """
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
+        self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        """
+        Called when the task fails.
+        Updates the ExecutionRequest.tasks dict and delegates logging/error handling to evaluate_error.
+        """
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
+        self.set_task_status(task_name, execution_id, layer_key, "FAILED")
+
+        # Delegate the rest (errors, failed_layers, status) to evaluate_error
+        evaluate_error(self, exc, task_id, args, kwargs, einfo)
+
+    def before_start(self, task_id, args, kwargs):
+        """
+        Called before the task runs.
+        Marks the task as RUNNING for all alternates (or placeholder if none).
+        """
+        execution_id = args[0]
+        task_name = self.name
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # If no layer exist yet (import task), use the placeholder
+        if not tasks_status:
+            tasks_status["pending_layer"] = {}
+
+        for layer_key, status_dict in tasks_status.items():
+            if status_dict.get(task_name) is None:
+                status_dict[task_name] = "PENDING"
+
+            orchestrator.update_execution_request_status(
+                execution_id,
+                tasks=tasks_status,
+            )
+
+    def set_task_status(self, task_name, execution_id, layer_key, status):
+        """
+        Set the task status for the on_success and on_failure celery methods
+        """
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+        # check if this task is bulk
+        bulk = getattr(self, "bulk", False)  # True for import_resource
+
+        # identify real alternates (exclude the placeholder)
+        if "pending_layer" in tasks_status:
+            placeholder_status = tasks_status["pending_layer"]
+
+            # Only merge if layer_key is defined
+            if layer_key is not None:
+                # ensure real layer exists
+                if layer_key not in tasks_status:
+                    tasks_status[layer_key] = {}
+
+                status_dict = tasks_status[layer_key]
+
+                # merge only missing task statuses
+                for task, task_status in placeholder_status.items():
+                    if task not in status_dict:
+                        status_dict[task] = task_status
+
+            # Remove pending_layer if all real layers have at least one task status
+            real_layers = [k for k in tasks_status if k != "pending_layer"]
+            if real_layers:
+                tasks_status.pop("pending_layer")
+
+        if bulk:
+            # in case of the import_resource we define the same
+            # status to all the layers (in case of multiple layers)
+            for layer_key, status_dict in tasks_status.items():
+                status_dict[task_name] = status
+
+        # Mark the status for all alternates (or placeholder)
+        else:
+            if layer_key is not None:
+                # Ensure the layer exists
+                if layer_key not in tasks_status:
+                    tasks_status[layer_key] = {}
+
+                tasks_status[layer_key][task_name] = status
+
+        # Update ExecutionRequest tasks dict first
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            tasks=tasks_status,
+        )
 
 
 @importer_app.task(
@@ -132,7 +244,7 @@ def import_orchestrator(
 
 @importer_app.task(
     bind=True,
-    # base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.import_resource",
     queue="geonode.upload.import_resource",
     max_retries=1,
@@ -152,6 +264,10 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             Returns:
                     None
     """
+
+    # Set the bulk flag as True (only for the import_resource task)
+    self.bulk = True
+
     # Updating status to running
     try:
         orchestrator.update_execution_request_status(
@@ -177,7 +293,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             raise Exception("dataset is invalid")
 
         _datastore.prepare_import(**kwargs)
-        _datastore.start_import(execution_id, **kwargs)
+        _datastore.start_import(execution_id, self.name, **kwargs)
 
         """
         since the call to the orchestrator can changed based on the handler
@@ -195,12 +311,15 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
 
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.publish_resource",
     queue="geonode.upload.publish_resource",
     max_retries=3,
@@ -298,12 +417,15 @@ def publish_resource(
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise PublishResourceException(detail=error_handler(e, execution_id))
 
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.create_geonode_resource",
     queue="geonode.upload.create_geonode_resource",
     max_retries=1,
@@ -401,11 +523,15 @@ def create_geonode_resource(
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise ResourceCreationException(detail=error_handler(e))
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    bind=True,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_resource",
     queue="geonode.upload.copy_geonode_resource",
     max_retries=1,
@@ -413,7 +539,7 @@ def create_geonode_resource(
     ignore_result=False,
     task_track_started=True,
 )
-def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
+def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
     """
     Copy the geonode resource and create a new one. an assert is performed to be sure that the new resource
     have the new generated alternate
@@ -513,12 +639,14 @@ def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_m
             error=e,
             **kwargs,
         )
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs, layer_name)
         raise CopyResourceException(detail=e)
     return exec_id, new_alternate
 
 
 @importer_app.task(
-    base=SingleMessageErrorHandler,
+    base=ErrorBaseTaskClass,
     name="geonode.upload.create_dynamic_structure",
     queue="geonode.upload.create_dynamic_structure",
     max_retries=1,
@@ -594,12 +722,13 @@ def create_dynamic_structure(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    bind=True,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_dynamic_model",
     queue="geonode.upload.copy_dynamic_model",
     task_track_started=True,
 )
-def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
+def copy_dynamic_model(self, exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
@@ -607,11 +736,17 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
     from geonode.upload.celery_tasks import import_orchestrator
 
     try:
+        # Register the tasks_status with the created key alternates
+        task_status = orchestrator.register_task_status(
+            exec_id, layer_name, actual_step, status="RUNNING", persist=False
+        )
+
         orchestrator.update_execution_request_status(
             execution_id=exec_id,
             last_updated=timezone.now(),
             func_name="copy_dynamic_model",
             step=gettext_lazy("geonode.upload.copy_dynamic_model"),
+            tasks=task_status,
         )
         additional_kwargs = {}
 
@@ -672,17 +807,21 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
             error=e,
             **{**kwargs, **additional_kwargs},
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, exec_id, handler_module_path, action, kwargs, layer_name)
         raise CopyResourceException(detail=e)
     return exec_id, kwargs
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    bind=True,
+    base=UpdateTaskClass,
     name="geonode.upload.copy_geonode_data_table",
     queue="geonode.upload.copy_geonode_data_table",
     task_track_started=True,
 )
-def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handlers_module_path, action, **kwargs):
+def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, handlers_module_path, action, **kwargs):
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
@@ -734,6 +873,9 @@ def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handler
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, exec_id, handlers_module_path, action, kwargs)
         raise CopyResourceException(detail=e)
     return exec_id, kwargs
 
@@ -793,7 +935,7 @@ def dynamic_model_error_callback(*args, **kwargs):
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.upsert_data",
     queue="geonode.upload.upsert_data",
     max_retries=3,
@@ -817,6 +959,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             Returns:
                     None
     """
+    layer_name = None  # ensure defined even if an exception occurs
     # Updating status to running
     try:
         kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
@@ -841,7 +984,7 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         if not is_valid:
             raise UpsertException(errors)
 
-        result = _datastore.upsert_data(execution_id, **kwargs)
+        result = _datastore.upsert_data(execution_id, self.name, **kwargs)
 
         orchestrator.update_execution_request_obj(_exec, {"output_params": {"upsert": result}})
 
@@ -852,10 +995,15 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             execution_id,
             handler_module_path,
             "geonode.upload.upsert_data",
-            resource.alternate.split(":")[-1],
-            resource.alternate.split(":")[-1],
+            resource.title,  # layer_name
+            resource.alternate.split(":")[-1],  # alternate
             action,
         )
+
+        layer_name = result.get("layer_name", None)
+
+        # We create the layer key through which the layer is stored in the tasks schema
+        kwargs["layer_key"] = create_layer_key(layer_name, str(execution_id))
 
         import_orchestrator.apply_async(task_params, kwargs)
 
@@ -869,12 +1017,15 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise InvalidInputFileException(detail=error_handler(e, execution_id))
 
 
 @importer_app.task(
     bind=True,
-    base=ErrorBaseTaskClass,
+    base=UpdateTaskClass,
     name="geonode.upload.refresh_geonode_resource",
     queue="geonode.upload.refresh_geonode_resource",
     max_retries=1,
@@ -949,4 +1100,7 @@ def refresh_geonode_resource(
             error=e,
             **kwargs,
         )
+
+        # Explicitly call on_failure only if running in sync mode
+        call_on_failure(self, e, execution_id, handler_module_path, action, kwargs, layer_name)
         raise ResourceCreationException(detail=error_handler(e))

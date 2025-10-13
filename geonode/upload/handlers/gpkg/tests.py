@@ -17,6 +17,7 @@
 #
 #########################################################################
 import shutil
+
 from django.test import TestCase, override_settings
 from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException
 from django.contrib.auth import get_user_model
@@ -26,10 +27,10 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
+from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
-from django_celery_results.models import TaskResult
 
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
+from geonode.upload.celery_tasks import UpdateTaskClass
 
 
 class TestGPKGHandler(TestCase):
@@ -121,8 +122,7 @@ class TestGPKGHandler(TestCase):
 
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_single_message_error_handler(self):
-        # lets copy the file to the temporary folder
-        # later will be removed
+        # Copy the file to the temporary folder
         shutil.copy(self.valid_gpkg, "/tmp")
 
         exec_id = orchestrator.create_execution_request(
@@ -137,18 +137,38 @@ class TestGPKGHandler(TestCase):
             },
         )
 
-        started_entry = TaskResult.objects.create(task_id=str(exec_id), status="STARTED", task_args=str(exec_id))
+        celery_task_handler = UpdateTaskClass()
+        celery_task_handler.name = "funct1"
 
-        celery_task_handler = SingleMessageErrorHandler()
         """
         The progress evaluation will raise and exception
         """
+        # Simulate layer creation for the test
+        layer_key = "layer_1"
+        kwargs = {"kwargs": {"layer_key": layer_key}}
+        action = "test_action"
+        handler_module_path = str(self.handler)
+        fake_task_id = "test-task-id"  # simulate a Celery task ID
+
+        # Simulate task failure
         celery_task_handler.on_failure(
             exc=Exception("exception raised"),
-            task_id=started_entry.task_id,
-            args=[str(exec_id), "other_args"],
-            kwargs={},
+            task_id=fake_task_id,
+            args=(str(exec_id), handler_module_path, action),
+            kwargs=kwargs,
             einfo=None,
         )
 
-        self.assertEqual("FAILURE", TaskResult.objects.get(task_id=str(exec_id)).status)
+        # Fetch the ExecutionRequest object from DB
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_id)
+
+        # Assert overall execution status
+        assert exec_request_obj.status == "failed"
+
+        # Assert task-level status
+        tasks_status = exec_request_obj.tasks
+        assert tasks_status[layer_key]["funct1"] == "FAILED"
+
+        # Assert the error was recorded
+        errors = exec_request_obj.output_params.get("errors", [])
+        assert any("exception raised" in str(e) for e in errors)
