@@ -16,7 +16,7 @@ RUN apt-get install -y \
     libmemcached-dev libldap2-dev libsasl2-dev libffi-dev
 
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    gcc vim zip gettext geoip-bin cron \
+    gcc vim zip gettext geoip-bin cron libgeos-dev \
     postgresql-client-15 \
     python3-all-dev python3-dev \
     python3-gdal python3-psycopg2 python3-ldap \
