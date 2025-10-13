@@ -25,7 +25,7 @@ zipstream-ng==1.8.0
 # Django Apps
 django-allauth==0.63.6
 django-appconf==1.0.6
-django-filter==24.2
+django-filter==25.2
 django-imagekit==5.0.0
 django-taggit==5.0.1
 django-markdownify==0.9.5
