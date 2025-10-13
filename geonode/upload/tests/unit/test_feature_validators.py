@@ -20,12 +20,12 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 from unittest.mock import patch, MagicMock
 from django.core.exceptions import ValidationError
-from geonode.upload.feature_constraint_handlers import GeoserverFeatureConstraintHandler
+from geonode.upload.feature_validators import GeoserverFeatureValidator
 from geonode.base.populate_test_data import create_single_dataset
 from django.contrib.auth import get_user_model
 
 
-class TestFeatureConstraintHandlers(GeoNodeBaseTestSupport):
+class TestFeatureValidators(GeoNodeBaseTestSupport):
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
@@ -37,7 +37,7 @@ class TestFeatureConstraintHandlers(GeoNodeBaseTestSupport):
         mock_feature_type.attributes_restrictions = {"attribute1": {"restrictions": {"enumeration": ["a", "b", "c"]}}}
         mock_get_resource.return_value = mock_feature_type
 
-        handler = GeoserverFeatureConstraintHandler(self.dataset)
+        handler = GeoserverFeatureValidator(self.dataset)
 
         self.assertEqual(len(handler.restrictions), 1)
         self.assertIn("attribute1", handler.restrictions)
@@ -51,7 +51,7 @@ class TestFeatureConstraintHandlers(GeoNodeBaseTestSupport):
         }
         mock_get_resource.return_value = mock_feature_type
 
-        handler = GeoserverFeatureConstraintHandler(self.dataset)
+        handler = GeoserverFeatureValidator(self.dataset)
         feature = {"attribute1": "a", "attribute2": 5}
 
         try:
@@ -65,7 +65,7 @@ class TestFeatureConstraintHandlers(GeoNodeBaseTestSupport):
         mock_feature_type.attributes_restrictions = {"attribute1": {"restrictions": {"enumeration": ["a", "b", "c"]}}}
         mock_get_resource.return_value = mock_feature_type
 
-        handler = GeoserverFeatureConstraintHandler(self.dataset)
+        handler = GeoserverFeatureValidator(self.dataset)
         feature = {"attribute1": "d"}
 
         with self.assertRaises(ValidationError):
@@ -77,7 +77,7 @@ class TestFeatureConstraintHandlers(GeoNodeBaseTestSupport):
         mock_feature_type.attributes_restrictions = {"attribute2": {"restrictions": {"range": {"min": 0, "max": 10}}}}
         mock_get_resource.return_value = mock_feature_type
 
-        handler = GeoserverFeatureConstraintHandler(self.dataset)
+        handler = GeoserverFeatureValidator(self.dataset)
         feature = {"attribute2": 11}
 
         with self.assertRaises(ValidationError):
@@ -87,7 +87,7 @@ class TestFeatureConstraintHandlers(GeoNodeBaseTestSupport):
         self.dataset.subtype = "raster"
         self.dataset.save()
 
-        handler = GeoserverFeatureConstraintHandler(self.dataset)
+        handler = GeoserverFeatureValidator(self.dataset)
         feature = {"attribute1": "a"}
 
         try:

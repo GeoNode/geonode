@@ -68,7 +68,7 @@ from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
-from geonode.upload.registry import feature_constraint_registry
+from geonode.upload.registry import feature_validators_registry
 from django.core.exceptions import ValidationError
 
 
@@ -1159,7 +1159,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
         errors = []
-        feature_constraint_registry.init_handlers(self.real_instance)
+        feature_validators_registry.init_handlers(self.real_instance)
         while True:
             # Create an iterator for the next chunk
             data_chunk = list(islice(layer_iterator, settings.UPSERT_CHUNK_SIZE))
@@ -1214,7 +1214,7 @@ class BaseVectorFileHandler(BaseHandler):
             geom = feature.GetGeometryRef()
             feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
 
-            feature_as_dict, is_valid = self.validate_feature_constraints(feature_as_dict)
+            feature_as_dict, is_valid = self.validate_feature(feature_as_dict)
             if not is_valid:
                 errors.append(feature_as_dict)
                 continue
@@ -1262,9 +1262,9 @@ class BaseVectorFileHandler(BaseHandler):
 
         return valid_update, valid_create
 
-    def validate_feature_constraints(self, feature):
+    def validate_feature(self, feature):
         try:
-            feature_constraint_registry.validate(feature)
+            feature_validators_registry.validate(feature)
             return feature, True
         except ValidationError as e:
             errors = e.messages if hasattr(e, "messages") else [str(e)]

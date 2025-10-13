@@ -19,12 +19,12 @@
 
 from django.conf import settings
 from django.utils.module_loading import import_string
-from geonode.upload.feature_constraint_handlers import BaseFeatureConstraintHandler
+from geonode.upload.feature_validators import BaseFeatureValidator
 
 
-class FeatureConstraintRegistry:
+class FeatureValidatorsRegistry:
     """
-    A registry for feature constraint handlers.
+    A registry for feature validation.
     """
 
     REGISTRY = []
@@ -59,7 +59,7 @@ class FeatureConstraintRegistry:
 
     @classmethod
     def get_registry(cls):
-        return FeatureConstraintRegistry.REGISTRY
+        return FeatureValidatorsRegistry.REGISTRY
 
     def sanity_checks(self):
         for item in self.REGISTRY:
@@ -74,14 +74,14 @@ class FeatureConstraintRegistry:
 
     def __check_item(self, item):
         """
-        Ensure that the handler is a subclass of BaseFeatureConstraintHandler
+        Ensure that the handler is a subclass of BaseFeatureValidator
         """
-        if not issubclass(item, BaseFeatureConstraintHandler):
-            raise Exception(f"Handler {item} is not a subclass of BaseFeatureConstraintHandler")
+        if not issubclass(item, BaseFeatureValidator):
+            raise Exception(f"Handler {item} is not a subclass of BaseFeatureValidator")
 
     def _register(self):
-        for module_path in settings.FEATURE_CONSTRAINT_HANDLERS:
+        for module_path in settings.FEATURE_VALIDATORS:
             self.add(module_path)
 
 
-feature_constraint_registry = FeatureConstraintRegistry()
+feature_validators_registry = FeatureValidatorsRegistry()

@@ -25,9 +25,9 @@ from django.core.exceptions import ValidationError
 logger = logging.getLogger(__name__)
 
 
-class BaseFeatureConstraintHandler:
+class BaseFeatureValidator:
     """
-    Base class for feature constraint handlers.
+    Base class for feature validators.
     """
 
     def __init__(self, dataset):
@@ -41,7 +41,7 @@ class BaseFeatureConstraintHandler:
         raise NotImplementedError
 
 
-class GeoserverFeatureConstraintHandler(BaseFeatureConstraintHandler):
+class GeoserverFeatureValidator(BaseFeatureValidator):
     """
     Validates features against constraints defined in GeoServer's DescribeFeatureType.
     """
