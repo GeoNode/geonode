@@ -95,7 +95,7 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
         This endpoint should return (if set) the custom serializer used in the API
         to validate the input resource
         """
-        if _data.get("attributes") and _data.get("action") in EmptyDatasetHandler.TASKS:
+        if _data.get("attributes", None) is not None and _data.get("action") in EmptyDatasetHandler.TASKS:
             return EmptyDatasetSerializer
 
     @staticmethod
