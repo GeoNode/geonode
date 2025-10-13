@@ -2614,12 +2614,15 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             was_published=False,
             group=self.resource_group.group,
         )
-
         self.owner_perms = ["view_resourcebase", "download_resourcebase"]
         self.edit_perms = ["change_resourcebase", "change_resourcebase_metadata"]
         self.dataset_perms = ["change_dataset_style", "change_dataset_data"]
         self.adv_owner_limit = ["delete_resourcebase", "change_resourcebase_permissions", "publish_resourcebase"]
         self.safe_perms = ["download_resourcebase", "view_resourcebase"]
+        self.additional_perms = [
+            "can_manage_anonymous_permissions",
+            "can_manage_registered_member_permissions",
+        ]  # By default(it is dynamic based on setting) editors/owner will get this if it is not changed on settings
         self.data = {
             "resource-title": self.resource.title,
             "resource-owner": self.author.id,
@@ -2642,7 +2645,8 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         # Assert inital assignment of permissions to groups and users
         resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
         self.assertSetEqual(
-            set(resource_perm_specs["users"][self.author]), set(self.owner_perms + self.edit_perms + self.dataset_perms)
+            set(resource_perm_specs["users"][self.author]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms + self.additional_perms),
         )
         self.assertSetEqual(
             set(resource_perm_specs["users"][self.member_with_perms]), set(self.owner_perms + self.dataset_perms)

@@ -3511,6 +3511,8 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
                         "view_resourcebase",
                         "change_resourcebase_metadata",
                         "change_resourcebase",
+                        "can_manage_anonymous_permissions",  # dynamic permission added from SpecialGroupPermissionsHandler
+                        "can_manage_registered_member_permissions",  # dynamic permission added from SpecialGroupPermissionsHandler
                     ]
                 )
             },
