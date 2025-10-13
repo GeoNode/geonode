@@ -39,11 +39,12 @@ from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 
-
+from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links, create_link
 from geonode.base.models import ResourceBase, LinkedResource
+from geonode.documents.tasks import create_document_thumbnail
+from geonode.metadata.manager import metadata_manager
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.thumbs.utils import ThumbnailAlgorithms
-from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
 from geonode.security.utils import (
     perms_as_set,
@@ -54,7 +55,6 @@ from geonode.security.registry import permissions_registry
 
 from . import settings as rm_settings
 from .utils import update_resource, resourcebase_post_save, is_remote_resource
-from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links, create_link
 
 from ..base import enumerations
 from ..security.utils import AdvancedSecurityWorkflowManager
@@ -360,6 +360,10 @@ class ResourceManager(ResourceManagerInterface):
                         vals=vals,
                         extra_metadata=extra_metadata,
                     )
+
+                    if ji := custom.get("jsoninstance", None):
+                        metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
+
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
 
                     # The following is only a demo proof of concept for a pluggable WF subsystem
