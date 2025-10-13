@@ -127,7 +127,7 @@ django-cors-headers==4.3.1
 django-user-agents==0.4.0
 
 # production
-uWSGI==2.0.30
+uWSGI==2.0.31
 docker==7.0.0
 invoke==2.2.0
 
