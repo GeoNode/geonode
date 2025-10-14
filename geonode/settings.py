@@ -2305,13 +2305,6 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
 ]
 
-EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
-    os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "True")
-)
-EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
-    os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "True")
-)
-
 # Django-Avatar - Change default templates to Geonode based
 AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
 AVATAR_CHANGE_TEMPLATE = "people/avatar/change.html"
@@ -2326,3 +2319,10 @@ UPSERT_LOG_LOCATION = os.getenv("UPSERT_LOG_LOCATION", "/tmp")
 
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
 FILE_UPLOAD_PERMISSIONS = 0o777
+
+EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
+    os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "True")
+)
+EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
+    os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "True")
+)

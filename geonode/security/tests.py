@@ -2051,6 +2051,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [],
                     self.group_member: [],
@@ -2078,6 +2080,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "view_resourcebase",
@@ -2089,6 +2093,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase",
                         "feature_resourcebase",
                         "change_resourcebase_permissions",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
@@ -2099,6 +2105,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.anonymous_user: ["view_resourcebase"],
                 },
@@ -2136,6 +2144,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -2149,6 +2159,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                         "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2168,6 +2180,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -2181,6 +2195,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                         "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2214,6 +2230,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     self.author: [
                         "download_resourcebase",
                         "view_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -2227,6 +2245,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                         "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2239,6 +2259,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     self.author: [
                         "download_resourcebase",
                         "view_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -2252,6 +2274,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "change_dataset_data",
                         "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2304,6 +2328,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [],
                     self.group_member: [],
@@ -2328,6 +2354,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "view_resourcebase",
@@ -2339,9 +2367,16 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_dataset_style",
                         "feature_resourcebase",
                         "change_resourcebase_permissions",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["view_resourcebase"],
-                    self.not_group_member: ["view_resourcebase", "change_resourcebase"],
+                    self.not_group_member: [
+                        "view_resourcebase",
+                        "change_resourcebase",
+                        "can_manage_anonymous_permissions",
+                        "can_manage_registered_member_permissions",
+                    ],  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     self.anonymous_user: ["view_resourcebase"],
                 },
             ),
@@ -2370,6 +2405,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.author: [
                 "download_resourcebase",
                 "view_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: [
                 "change_resourcebase",
@@ -2383,6 +2420,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "change_dataset_style",
                 "change_dataset_data",
                 "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2396,6 +2435,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "change_dataset_style",
                 "change_dataset_data",
                 "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
         }
         try:
@@ -2434,6 +2475,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.author: [
                 "download_resourcebase",
                 "view_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2467,6 +2510,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2500,6 +2545,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: [
                 "change_resourcebase",
@@ -2514,6 +2561,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "change_dataset_style",
                 "change_dataset_data",
                 "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2527,6 +2576,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "change_dataset_style",
                 "change_dataset_data",
                 "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
         }
         for authorized_subject, expected_perms in expected.items():
@@ -2646,8 +2697,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         # Assert inital assignment of permissions to groups and users
         resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
         self.assertSetEqual(
-            set(resource_perm_specs["users"][self.author]),
-            set(self.owner_perms + self.edit_perms + self.dataset_perms),
+            set(resource_perm_specs["users"][self.author]), set(self.owner_perms + self.edit_perms + self.dataset_perms)
         )
         self.assertSetEqual(
             set(resource_perm_specs["users"][self.member_with_perms]), set(self.owner_perms + self.dataset_perms)

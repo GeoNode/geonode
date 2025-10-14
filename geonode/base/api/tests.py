@@ -374,7 +374,7 @@ class BaseApiTests(APITestCase):
                 "can_manage_registered_member_permissions",
             },
             set(perms),
-        )  ## if user has edit permission/owner, By default it("can_manage_anonymous_permissions","can_manage_registered_member_permissions") will get this permission unless rule changed on settings.
+        )  # if user has edit permission/owner, By default it("can_manage_anonymous_permissions","can_manage_registered_member_permissions") will get this permission unless rule changed on settings.
 
     def test_get_self_user_details_outside_registered_member(self):
         try:
