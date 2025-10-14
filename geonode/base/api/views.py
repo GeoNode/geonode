@@ -616,46 +616,49 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     input_params={"uuid": request_params.get("uuid", resource.uuid)},
                 )
             elif request.method == "PUT":
-
                 user_perms = permissions_registry.get_perms(user=request.user, instance=resource)
-                if (
-                    "can_manage_anonymous_permissions" not in user_perms
-                    or "can_manage_registered_member_permissions" not in user_perms
-                ):
-                    # checking it reverse way because in put we also get the unchanged permissions so need to see if it changed or not
-                    # Get current permissions
-                    current_perms_compact = perms_spec.compact
-                    current_groups_perms = {
-                        str(g["id"]): g.get("permissions") for g in current_perms_compact.get("groups", [])
-                    }
-                    # Get incoming permissions
-                    incoming_perms_compact = request.data
-                    incoming_groups_perms = {
-                        str(g["id"]): g.get("permissions") for g in incoming_perms_compact.get("groups", [])
-                    }
+                if request.data.get("groups"):
+                    # PUT includes all permissions (changed + unchanged). Compare current vs incoming
+                    # to detect actual changes before blocking. Users should only be blocked if they're
+                    # changing permissions they don't have access to, not for including unchanged ones.
+                    current_groups_perms = None
+                    anonymous_group = Group.objects.get(name="anonymous")
+                    registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+                    for g in request.data.get("groups"):
+                        group_id = g.get("id")
+                        if group_id == anonymous_group.id and "can_manage_anonymous_permissions" not in user_perms:
+                            if current_groups_perms is None:
+                                current_perms_compact = perms_spec.compact
+                                current_groups_perms = {
+                                    str(g["id"]): g.get("permissions") for g in current_perms_compact.get("groups", [])
+                                }
 
-                    anonymous_group_id = Group.objects.get(name="anonymous").id
-                    registered_group_id = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).id
+                            current_perm = current_groups_perms.get(str(anonymous_group.id))
+                            incoming_perm = g.get("permissions")
 
-                    # Check Anonymous Group
-                    if "can_manage_anonymous_permissions" not in user_perms:
-                        current_anon_perm = current_groups_perms.get(anonymous_group_id)
-                        incoming_anon_perm = incoming_groups_perms.get(anonymous_group_id)
-                        if current_anon_perm != incoming_anon_perm:
-                            return Response(
-                                {"message": "You are not allowed to change permissions for anonymous users."},
-                                status=status.HTTP_403_FORBIDDEN,
-                            )
+                            if current_perm != incoming_perm:
+                                return Response(
+                                    {"message": "You are not allowed to change permissions for anonymous users."},
+                                    status=status.HTTP_403_FORBIDDEN,
+                                )
+                        if (
+                            group_id == registered_group.id
+                            and "can_manage_registered_member_permissions" not in user_perms
+                        ):
+                            if current_groups_perms is None:
+                                current_perms_compact = perms_spec.compact
+                                current_groups_perms = {
+                                    str(g["id"]): g.get("permissions") for g in current_perms_compact.get("groups", [])
+                                }
 
-                    # Check Registered Group
-                    if "can_manage_registered_member_permissions" not in user_perms:
-                        current_reg_perm = current_groups_perms.get(registered_group_id)
-                        incoming_reg_perm = incoming_groups_perms.get(registered_group_id)
-                        if current_reg_perm != incoming_reg_perm:
-                            return Response(
-                                {"message": "You are not allowed to change permissions for registered users."},
-                                status=status.HTTP_403_FORBIDDEN,
-                            )
+                            current_perm = current_groups_perms.get(str(registered_group.id))
+                            incoming_perm = g.get("permissions")
+
+                            if current_perm != incoming_perm:
+                                return Response(
+                                    {"message": "You are not allowed to change permissions for registered users."},
+                                    status=status.HTTP_403_FORBIDDEN,
+                                )
 
                 perms_spec_compact = PermSpecCompact(request.data, resource)
 
