@@ -182,8 +182,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         url = "http://example.org/test/test/../../image.tiff"
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
-        self.assertDictContainsSubset(
-            {
+        expected_subset = {
                 "Content-Type": "image/tiff",
                 "Vary": "Authorization, Accept-Language, Cookie, origin",
                 "X-Content-Type-Options": "nosniff",
@@ -194,9 +193,9 @@ class ProxyTest(GeoNodeBaseTestSupport):
                 "Content-Language": "en",
                 "Content-Length": "11",
                 "Content-Disposition": 'attachment; filename="filename.tif"',
-            },
-            dict(response.headers.copy()),
-        )
+            }
+        self.assertTrue(expected_subset.items() <= dict(response.headers.copy()).items())
+
 
     def test_proxy_url_forgery(self):
         import geonode.proxy.views

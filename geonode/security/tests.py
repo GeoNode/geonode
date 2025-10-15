@@ -272,7 +272,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             MIDDLEWARE=settings.MIDDLEWARE + ("geonode.security.middleware.LoginRequiredMiddleware",)
         ):
             response = self.client.get(reverse("users-list"))
-            self.assertEquals(response.status_code, 302, "LoginRequiredMiddleware redirects the anonymouse user")
+            self.assertEqual(response.status_code, 302, "LoginRequiredMiddleware redirects the anonymouse user")
             self.assertTrue(reverse("account_login") in response.url, "LoginRequiredMiddleware login redirection")
 
             admin = get_user_model().objects.filter(is_superuser=True).first()
@@ -280,13 +280,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             response = self.client.get(
                 reverse("users-list"), HTTP_AUTHORIZATION=f"Basic {base64.b64encode(b'admin:admin').decode()}"
             )
-            self.assertEquals(
+            self.assertEqual(
                 response.status_code, 200, "LoginRequiredMiddleware passed the Basic Auth without any issues"
             )
 
             access_token = get_or_create_token(admin)
             response = self.client.get(reverse("users-list"), HTTP_AUTHORIZATION=f"Bearer {access_token.token}")
-            self.assertEquals(
+            self.assertEqual(
                 response.status_code, 200, "LoginRequiredMiddleware passed the Bearer token without any issues"
             )
 
@@ -294,7 +294,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 ENABLE_APIKEY_LOGIN=True,
             ):
                 response = self.client.get(f"{reverse('users-list')}?apikey={access_token.token}")
-                self.assertEquals(
+                self.assertEqual(
                     response.status_code, 200, "LoginRequiredMiddleware passed the API Ley param without any issues"
                 )
 
@@ -307,7 +307,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         "email": "user1withapyley@email.com",
                     },
                 )
-                self.assertEquals(
+                self.assertEqual(
                     response.status_code, 201, "LoginRequiredMiddleware allowed the API Key to create a new user"
                 )
                 Profile.objects.get(username="user1withapyley").delete()  # cleanup
