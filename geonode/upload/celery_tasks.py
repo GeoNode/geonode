@@ -204,7 +204,7 @@ class UpdateDynamicTaskClass(Task):
         task_name = self.name
         execution_id = args[0]
         layer_key = find_key_recursively(kwargs, "layer_key")
-        
+
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
@@ -223,7 +223,6 @@ class UpdateDynamicTaskClass(Task):
 
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
-    
 
 
 @importer_app.task(
