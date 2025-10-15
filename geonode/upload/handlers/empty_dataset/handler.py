@@ -20,6 +20,7 @@ import logging
 
 from celery import chord, group
 from geonode.upload.api.exceptions import ImportException
+from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.empty_dataset.utils import (
     add_attributes_to_xml,
     apply_restrictions_to_xml,
@@ -213,26 +214,32 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         return [{"name": alternate or layer_name, "crs": "EPSG:4326", "exec_id": kwargs.get("exec_id")}]
 
+    def handle_thumbnail(self, saved_dataset, _exec):
+        """
+        we can skip the thumbnail creation for an empty dataset
+        """
+        pass
+
     @staticmethod
     def publish_resources(resources, catalog, store, workspace):
         # result = BaseVectorFileHandler().publish_resources(resources, catalog, store, workspace)
         res = resources[0]
         exec_obj = orchestrator.get_execution_object(exec_id=res.get("exec_id"))
         attributes = exec_obj.input_params.get("attributes")
-
-        validate_attributes(attributes)
+        normalized_attributes = {BaseHandler().fixup_name(key): value for key, value in attributes.items()}
+        validate_attributes(normalized_attributes)
 
         xml = add_attributes_to_xml(
             {
-                **attributes,
+                **normalized_attributes,
                 # include geometry as an available attribute
                 "geom": {"type": exec_obj.input_params.get("geom"), "nillable": False},
             },
             base_xml.format(name=res.get("name")),
         )
 
-        if should_apply_restrictions(attributes):
-            xml = apply_restrictions_to_xml(attributes, xml)
+        if should_apply_restrictions(normalized_attributes):
+            xml = apply_restrictions_to_xml(normalized_attributes, xml)
 
         url = f"{catalog.service_url}/workspaces/{workspace.name}/datastores/{store.name}/featuretypes"
         req = catalog.http_request(url, data=xml, method="POST", headers={"Content-Type": "application/xml"})

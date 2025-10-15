@@ -720,8 +720,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         self.handle_xml_file(saved_dataset, _exec)
         self.handle_sld_file(saved_dataset, _exec)
-
-        resource_manager.set_thumbnail(None, instance=saved_dataset)
+        self.handle_thumbnail(saved_dataset, _exec)
 
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
@@ -823,6 +822,9 @@ class BaseVectorFileHandler(BaseHandler):
             sld_uploaded=True if _path else False,
             vals={"dirty_state": True},
         )
+
+    def handle_thumbnail(self, saved_dataset: Dataset, _exec: ExecutionRequest):
+        resource_manager.set_thumbnail(None, instance=saved_dataset)
 
     def create_resourcehandlerinfo(
         self,
