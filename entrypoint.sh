@@ -2,14 +2,15 @@
 
 # Exit script in case of error
 set -e
+source /usr/src/venv/bin/activate
 
 INVOKE_LOG_STDOUT=${INVOKE_LOG_STDOUT:-FALSE}
 invoke () {
     if [ $INVOKE_LOG_STDOUT = 'true' ] || [ $INVOKE_LOG_STDOUT = 'True' ]
     then
-        /usr/local/bin/invoke $@
+        $(which invoke) $@
     else
-        /usr/local/bin/invoke $@ > /usr/src/geonode/invoke.log 2>&1
+        $(which invoke) $@ > /usr/src/geonode/invoke.log 2>&1
     fi
     echo "$@ tasks done"
 }

@@ -49,7 +49,7 @@ git+https://github.com/geopython/pycsw.git@3.0.0-beta1#egg=pycsw
 pyproj<3.7.0
 OWSLib==0.31.0
 SQLAlchemy==2.0.43 # required by PyCSW
-Shapely==1.8.5.post1
+Shapely==2.1.2
 mercantile==1.2.1
 numpy==1.26.*
 Jinja2==3.1.4
