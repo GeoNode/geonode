@@ -22,6 +22,7 @@ import csv
 from datetime import datetime
 from itertools import islice
 from pathlib import Path
+import shutil
 import tempfile
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
@@ -1401,7 +1402,7 @@ def import_with_ogr2ogr(
     If the layer should be overwritten, the option is appended dynamically
     """
     try:
-        ogr_exe = "/usr/local/bin/ogr2ogr"
+        ogr_exe = shutil.which("ogr2ogr")
 
         options = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
             files, original_name, ovverwrite_layer, alternate
