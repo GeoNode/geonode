@@ -569,7 +569,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         dynamic_schema_exists = dynamic_schema.exists()
         dataset_exists = user_datasets.exists()
-        alternate = create_alternate(layer_name, execution_id)
 
         if dataset_exists and dynamic_schema_exists and should_be_overwritten:
             """
@@ -598,11 +597,12 @@ class BaseVectorFileHandler(BaseHandler):
             it comes here when the layer should not be overrided so we append the UUID
             to the layer to let it proceed to the next steps
             """
+            layer_name = create_alternate(layer_name, execution_id)
             dynamic_schema, _ = ModelSchema.objects.get_or_create(
-                name=alternate,
+                name=layer_name,
                 db_name="datastore",
                 managed=False,
-                db_table_name=alternate,
+                db_table_name=layer_name,
             )
         else:
             raise ImportException("Error during the upload of the gpkg file. The dataset does not exists")
@@ -614,9 +614,8 @@ class BaseVectorFileHandler(BaseHandler):
             overwrite=should_be_overwritten,
             execution_id=execution_id,
             layer_name=layer_name,
-            alternate=alternate,
         )
-        return dynamic_model, alternate, celery_group
+        return dynamic_model, layer_name, celery_group
 
     def create_dynamic_model_fields(
         self,
@@ -625,7 +624,6 @@ class BaseVectorFileHandler(BaseHandler):
         overwrite: bool = None,
         execution_id: str = None,
         layer_name: str = None,
-        alternate: str = None,
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
@@ -664,8 +662,8 @@ class BaseVectorFileHandler(BaseHandler):
                 schema,
                 dynamic_model_schema.id,
                 overwrite,
-                alternate,
-                layer_key=create_layer_key(layer_name, str(execution_id)),
+                layer_name,
+                layer_key=create_layer_key(layer.GetName(), str(execution_id)),
             )
             for schema in list_chunked
         )

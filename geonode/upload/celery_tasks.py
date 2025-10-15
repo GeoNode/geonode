@@ -82,16 +82,27 @@ class ErrorBaseTaskClass(Task):
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
 
-class BaseTaskClass(Task):
-    """
-    Base class for the task status tracking
-    """
-
+class UpdateTaskClass(Task):
     max_retries = 3
     track_started = True
     # We need a flag to check if the current task is the import_resource
     # since it handles all the layers at the same time
     bulk: bool = False
+
+    def _get_task_context(self, args, kwargs):
+        """Extract common task context values."""
+        task_name = self.name
+        execution_id = args[0]
+        layer_key = find_key_recursively(kwargs, "layer_key")
+        return task_name, execution_id, layer_key
+
+    def on_success(self, retval, task_id, args, kwargs):
+        """
+        Called when the task succeeds.
+        Updates tasks_status for all alternates.
+        """
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
+        self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """
@@ -104,12 +115,29 @@ class BaseTaskClass(Task):
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
-    def _get_task_context(self, args, kwargs):
-        """Extract common task context values."""
-        task_name = self.name
+    def before_start(self, task_id, args, kwargs):
+        """
+        Called before the task runs.
+        Marks the task as RUNNING for all alternates (or placeholder if none).
+        """
         execution_id = args[0]
-        layer_key = find_key_recursively(kwargs, "layer_key")
-        return task_name, execution_id, layer_key
+        task_name = self.name
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # If no layer exist yet (import task), use the placeholder
+        if not tasks_status:
+            tasks_status["pending_layer"] = {}
+
+        for layer_key, status_dict in tasks_status.items():
+            if status_dict.get(task_name) is None:
+                status_dict[task_name] = "PENDING"
+
+            orchestrator.update_execution_request_status(
+                execution_id,
+                tasks=tasks_status,
+            )
 
     def set_task_status(self, task_name, execution_id, layer_key, status):
         """
@@ -164,43 +192,38 @@ class BaseTaskClass(Task):
         )
 
 
-class UpdateTaskClass(BaseTaskClass):
+class UpdateDynamicTaskClass(Task):
+    max_retries = 3
+    track_started = True
 
-    def on_success(self, retval, task_id, args, kwargs):
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
         """
-        Called when the task succeeds.
-        Updates tasks_status for all alternates.
+        Called when the task fails.
+        Updates the ExecutionRequest.tasks dict and delegates logging/error handling to evaluate_error.
         """
-        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
-        self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
-
-    def before_start(self, task_id, args, kwargs):
-        """
-        Called before the task runs.
-        Marks the task as RUNNING for all alternates (or placeholder if none).
-        """
-        execution_id = args[0]
         task_name = self.name
-
+        execution_id = args[0]
+        layer_key = find_key_recursively(kwargs, "layer_key")
+        
         _exec = orchestrator.get_execution_object(execution_id)
         tasks_status = _exec.tasks or {}
 
-        # If no layer exist yet (import task), use the placeholder
-        if not tasks_status:
-            tasks_status["pending_layer"] = {}
+        if layer_key is not None:
+            # Ensure the layer exists
+            if layer_key not in tasks_status:
+                tasks_status[layer_key] = {}
 
-        for layer_key, status_dict in tasks_status.items():
-            if status_dict.get(task_name) is None:
-                status_dict[task_name] = "PENDING"
+            tasks_status[layer_key][task_name] = "FAILED"
 
-            orchestrator.update_execution_request_status(
-                execution_id,
-                tasks=tasks_status,
-            )
+        # Update ExecutionRequest tasks dict first
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            tasks=tasks_status,
+        )
 
-
-class UpdateDynamicTaskClass(BaseTaskClass):
-    pass
+        # Delegate the rest (errors, failed_layers, status) to evaluate_error
+        evaluate_error(self, exc, task_id, args, kwargs, einfo)
+    
 
 
 @importer_app.task(
