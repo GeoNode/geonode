@@ -42,12 +42,18 @@ from dynamic_models.schema import ModelSchemaEditor
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
+from geonode.upload.celery_tasks import (
+    ErrorBaseTaskClass,
+    FieldSchema,
+    create_dynamic_structure,
+    UpdateDynamicTaskClass,
+)
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
     drop_dynamic_model_schema,
+    create_layer_key,
 )
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
@@ -563,6 +569,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         dynamic_schema_exists = dynamic_schema.exists()
         dataset_exists = user_datasets.exists()
+        alternate = create_alternate(layer_name, execution_id)
 
         if dataset_exists and dynamic_schema_exists and should_be_overwritten:
             """
@@ -591,12 +598,11 @@ class BaseVectorFileHandler(BaseHandler):
             it comes here when the layer should not be overrided so we append the UUID
             to the layer to let it proceed to the next steps
             """
-            layer_name = create_alternate(layer_name, execution_id)
             dynamic_schema, _ = ModelSchema.objects.get_or_create(
-                name=layer_name,
+                name=alternate,
                 db_name="datastore",
                 managed=False,
-                db_table_name=layer_name,
+                db_table_name=alternate,
             )
         else:
             raise ImportException("Error during the upload of the gpkg file. The dataset does not exists")
@@ -608,8 +614,9 @@ class BaseVectorFileHandler(BaseHandler):
             overwrite=should_be_overwritten,
             execution_id=execution_id,
             layer_name=layer_name,
+            alternate=alternate,
         )
-        return dynamic_model, layer_name, celery_group
+        return dynamic_model, alternate, celery_group
 
     def create_dynamic_model_fields(
         self,
@@ -618,6 +625,7 @@ class BaseVectorFileHandler(BaseHandler):
         overwrite: bool = None,
         execution_id: str = None,
         layer_name: str = None,
+        alternate: str = None,
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
@@ -651,7 +659,14 @@ class BaseVectorFileHandler(BaseHandler):
         # definition of the celery group needed to run the async workflow.
         # in this way each task of the group will handle only 30 field
         celery_group = group(
-            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
+            create_dynamic_structure.s(
+                execution_id,
+                schema,
+                dynamic_model_schema.id,
+                overwrite,
+                alternate,
+                layer_key=create_layer_key(layer_name, str(execution_id)),
+            )
             for schema in list_chunked
         )
 
@@ -921,6 +936,7 @@ class BaseVectorFileHandler(BaseHandler):
             handler_module_path,
             should_be_overwritten,
             alternate,
+            layer_key=create_layer_key(layer.lower(), str(execution_id)),
         )
 
     def _get_execution_request_object(self, execution_id: str):
@@ -1380,7 +1396,7 @@ def import_next_step(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateDynamicTaskClass,
     name="geonode.upload.import_with_ogr2ogr",
     queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,
@@ -1395,6 +1411,7 @@ def import_with_ogr2ogr(
     handler_module_path: str,
     ovverwrite_layer=False,
     alternate=None,
+    **kwargs,
 ):
     """
     Perform the ogr2ogr command to import he gpkg inside geonode_data

@@ -82,27 +82,16 @@ class ErrorBaseTaskClass(Task):
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
 
-class UpdateTaskClass(Task):
+class BaseTaskClass(Task):
+    """
+    Base class for the task status tracking
+    """
+
     max_retries = 3
     track_started = True
     # We need a flag to check if the current task is the import_resource
     # since it handles all the layers at the same time
     bulk: bool = False
-
-    def _get_task_context(self, args, kwargs):
-        """Extract common task context values."""
-        task_name = self.name
-        execution_id = args[0]
-        layer_key = find_key_recursively(kwargs, "layer_key")
-        return task_name, execution_id, layer_key
-
-    def on_success(self, retval, task_id, args, kwargs):
-        """
-        Called when the task succeeds.
-        Updates tasks_status for all alternates.
-        """
-        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
-        self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """
@@ -115,29 +104,12 @@ class UpdateTaskClass(Task):
         # Delegate the rest (errors, failed_layers, status) to evaluate_error
         evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
-    def before_start(self, task_id, args, kwargs):
-        """
-        Called before the task runs.
-        Marks the task as RUNNING for all alternates (or placeholder if none).
-        """
-        execution_id = args[0]
+    def _get_task_context(self, args, kwargs):
+        """Extract common task context values."""
         task_name = self.name
-
-        _exec = orchestrator.get_execution_object(execution_id)
-        tasks_status = _exec.tasks or {}
-
-        # If no layer exist yet (import task), use the placeholder
-        if not tasks_status:
-            tasks_status["pending_layer"] = {}
-
-        for layer_key, status_dict in tasks_status.items():
-            if status_dict.get(task_name) is None:
-                status_dict[task_name] = "PENDING"
-
-            orchestrator.update_execution_request_status(
-                execution_id,
-                tasks=tasks_status,
-            )
+        execution_id = args[0]
+        layer_key = find_key_recursively(kwargs, "layer_key")
+        return task_name, execution_id, layer_key
 
     def set_task_status(self, task_name, execution_id, layer_key, status):
         """
@@ -190,6 +162,45 @@ class UpdateTaskClass(Task):
             execution_id=execution_id,
             tasks=tasks_status,
         )
+
+
+class UpdateTaskClass(BaseTaskClass):
+
+    def on_success(self, retval, task_id, args, kwargs):
+        """
+        Called when the task succeeds.
+        Updates tasks_status for all alternates.
+        """
+        task_name, execution_id, layer_key = self._get_task_context(args, kwargs)
+        self.set_task_status(task_name, execution_id, layer_key, "SUCCESS")
+
+    def before_start(self, task_id, args, kwargs):
+        """
+        Called before the task runs.
+        Marks the task as RUNNING for all alternates (or placeholder if none).
+        """
+        execution_id = args[0]
+        task_name = self.name
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        # If no layer exist yet (import task), use the placeholder
+        if not tasks_status:
+            tasks_status["pending_layer"] = {}
+
+        for layer_key, status_dict in tasks_status.items():
+            if status_dict.get(task_name) is None:
+                status_dict[task_name] = "PENDING"
+
+            orchestrator.update_execution_request_status(
+                execution_id,
+                tasks=tasks_status,
+            )
+
+
+class UpdateDynamicTaskClass(BaseTaskClass):
+    pass
 
 
 @importer_app.task(
@@ -646,7 +657,7 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateDynamicTaskClass,
     name="geonode.upload.create_dynamic_structure",
     queue="geonode.upload.create_dynamic_structure",
     max_retries=1,
@@ -660,6 +671,7 @@ def create_dynamic_structure(
     dynamic_model_schema_id: int,
     overwrite: bool,
     layer_name: str,
+    **kwargs,
 ):
     def _create_field(dynamic_model_schema, field, _kwargs):
         # common method to define the Field Schema object
