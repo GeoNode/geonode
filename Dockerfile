@@ -1,4 +1,4 @@
-FROM gdal_test_1
+FROM geonode/geonode-base:latest-ubuntu-24.04
 LABEL GeoNode development team
 
 # copy local geonode src inside container
