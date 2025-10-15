@@ -66,8 +66,8 @@ from geonode.base.api.filters import (
     FavoriteFilter,
     TKeywordsFilter,
 )
-from geonode.groups.models import Group, GroupProfile
-from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
+from geonode.groups.models import GroupProfile, Group
+from geonode.security.permissions import get_compact_perms_list, PermSpec
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
@@ -109,6 +109,7 @@ from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
+from geonode.base.utils import patch_perms
 
 import logging
 
@@ -616,51 +617,18 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     input_params={"uuid": request_params.get("uuid", resource.uuid)},
                 )
             elif request.method == "PUT":
-                user_perms = permissions_registry.get_perms(user=request.user, instance=resource)
+                user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
                 if request.data.get("groups"):
-                    # PUT includes all permissions (changed + unchanged). Compare current vs incoming
-                    # to detect actual changes before blocking. Users should only be blocked if they're
-                    # changing permissions they don't have access to, not for including unchanged ones.
-                    current_groups_perms = None
-                    anonymous_group = Group.objects.get(name="anonymous")
-                    registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
-                    for g in request.data.get("groups"):
-                        group_id = g.get("id")
-                        if group_id == anonymous_group.id and "can_manage_anonymous_permissions" not in user_perms:
-                            if current_groups_perms is None:
-                                current_perms_compact = perms_spec.compact
-                                current_groups_perms = {
-                                    str(g["id"]): g.get("permissions") for g in current_perms_compact.get("groups", [])
-                                }
-
-                            current_perm = current_groups_perms.get(str(anonymous_group.id))
-                            incoming_perm = g.get("permissions")
-
-                            if current_perm != incoming_perm:
-                                return Response(
-                                    {"message": "You are not allowed to change permissions for anonymous users."},
-                                    status=status.HTTP_403_FORBIDDEN,
-                                )
-                        if (
-                            group_id == registered_group.id
-                            and "can_manage_registered_member_permissions" not in user_perms
-                        ):
-                            if current_groups_perms is None:
-                                current_perms_compact = perms_spec.compact
-                                current_groups_perms = {
-                                    str(g["id"]): g.get("permissions") for g in current_perms_compact.get("groups", [])
-                                }
-
-                            current_perm = current_groups_perms.get(str(registered_group.id))
-                            incoming_perm = g.get("permissions")
-
-                            if current_perm != incoming_perm:
-                                return Response(
-                                    {"message": "You are not allowed to change permissions for registered users."},
-                                    status=status.HTTP_403_FORBIDDEN,
-                                )
-
-                perms_spec_compact = PermSpecCompact(request.data, resource)
+                    excluded_ids = []
+                    if "can_manage_anonymous_permissions" not in user_perms:
+                        anonymous_group = Group.objects.get(name="anonymous")
+                        excluded_ids.append(anonymous_group.id)
+                    if "can_manage_registered_member_permissions" not in user_perms:
+                        registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+                        excluded_ids.append(registered_group.id)
+                    if excluded_ids:
+                        request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
+                perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
@@ -672,35 +640,23 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     action="permissions",
                     input_params={
                         "uuid": request_params.get("uuid", resource.uuid),
-                        "permissions": perms_spec_compact.extended,
+                        "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get("created", False),
                     },
                 )
             elif request.method == "PATCH":
-                user_perms = permissions_registry.get_perms(user=request.user, instance=resource)
-                # check if the user can manage public and registered members permissions
+                user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
                 if request.data.get("groups"):
-                    anonymous_group = Group.objects.get(name="anonymous")
-                    registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
-                    for g in request.data.get("groups"):
-                        if g.get("id") == anonymous_group.id and "can_manage_anonymous_permissions" not in user_perms:
-                            return Response(
-                                {"message": "You are not allowed to change permissions for anonymous users"},
-                                status=status.HTTP_403_FORBIDDEN,
-                            )
-                        if (
-                            g.get("id") == registered_group.id
-                            and "can_manage_registered_member_permissions" not in user_perms
-                        ):
-                            return Response(
-                                {"message": "You are not allowed to change permissions for registered users."},
-                                status=status.HTTP_403_FORBIDDEN,
-                            )
-
-                perms_spec_compact_patch = PermSpecCompact(request.data, resource)
-                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
-                perms_spec_compact_resource.merge(perms_spec_compact_patch)
-
+                    excluded_ids = []
+                    if "can_manage_anonymous_permissions" not in user_perms:
+                        anonymous_group = Group.objects.get(name="anonymous")
+                        excluded_ids.append(anonymous_group.id)
+                    if "can_manage_registered_member_permissions" not in user_perms:
+                        registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+                        excluded_ids.append(registered_group.id)
+                    if excluded_ids:
+                        request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
+                perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
                 resource.set_dirty_state()
