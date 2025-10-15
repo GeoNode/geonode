@@ -2302,6 +2302,10 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
 ]
 
+FEATURE_VALIDATORS = [
+    "geonode.upload.feature_validators.GeoserverFeatureValidator",
+]
+
 # Django-Avatar - Change default templates to Geonode based
 AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
 AVATAR_CHANGE_TEMPLATE = "people/avatar/change.html"

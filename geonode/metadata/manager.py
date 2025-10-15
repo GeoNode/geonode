@@ -19,9 +19,11 @@
 
 import logging
 import copy
+from types import SimpleNamespace
 
 from django.utils.translation import gettext as _
 
+from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.i18n import I18nCache
@@ -136,8 +138,7 @@ class MetadataManager:
             if partial:
                 if fieldname not in partial:
                     continue
-                else:
-                    logger.debug(f"Storing partial field {fieldname}")
+                logger.debug(f"Storing partial field {fieldname}")
             handler = self.handlers[subschema["geonode:handler"]]
             try:
                 handler.update_resource(resource, fieldname, json_instance, context, errors)
@@ -164,12 +165,12 @@ class MetadataManager:
                     ),
                 )
         try:
-            resource.get_real_concrete_instance_class().objects.filter(id=resource.id).update(
-                **context.setdefault("base")
-            )
-            resource.refresh_from_db()
+            if basefields := context.get("base", None):
+                ResourceBase.objects.filter(id=resource.id).update(**basefields)
+                resource.get_real_concrete_instance_class().objects.filter(id=resource.id).update(**basefields)
+                resource.refresh_from_db()
         except Exception as e:
-            logger.warning(f"Error while updating schema instance: {e}")
+            logger.warning(f"Error while updating schema instance: {e}", exc_info=e)
             MetadataHandler._set_error(
                 errors, [], MetadataHandler.localize_message(context, "metadata_error_save", {"exc": e})
             )
@@ -193,13 +194,13 @@ class MetadataManager:
         return errors
 
     def update_schema_instance_partial(self, resource, json_instance, user, lang=None) -> dict:
+        if not json_instance:
+            return {}
         # We can't loop on the payload's field, since post_ or pre_ methods may rely on the whole instance
         # Let's create a full instance by using the old one, merged with the payload
         old_instance = self.build_schema_instance(resource, lang)
         old_instance.update(json_instance)
-        fake_req = lambda: None
-        fake_req.data = old_instance
-        fake_req.user = user
+        fake_req = SimpleNamespace(data=old_instance, user=user)
         return self.update_schema_instance(resource, fake_req, lang, partial=json_instance.keys())
 
 
