@@ -36,6 +36,7 @@ from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeyword
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
 from geonode.groups.models import GroupProfile
+from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.i18n import get_localized_label
 from geonode.metadata.manager import metadata_manager
 from geonode.people.utils import get_available_users
@@ -77,7 +78,7 @@ class MetadataViewSet(ViewSet):
     # Handle the JSON schema instance
     @action(
         detail=False,
-        methods=["get", "put"],
+        methods=["get", "put", "patch"],
         url_path=r"instance/(?P<pk>\d+)",
         url_name="schema_instance",
         permission_classes=[
@@ -86,6 +87,7 @@ class MetadataViewSet(ViewSet):
                     "default": {
                         "GET": ["base.view_resourcebase"],
                         "PUT": ["change_resourcebase_metadata"],
+                        "PATCH": ["change_resourcebase_metadata"],
                     }
                 }
             )
@@ -102,13 +104,26 @@ class MetadataViewSet(ViewSet):
                     schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent": 3}
                 )
 
-            elif request.method == "PUT":
+            elif request.method in ("PUT", "PATCH"):
                 logger.debug(f"handling request {request.method}")
                 # try:
                 #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
                 # except Exception as e:
                 #     logger.warning(f"Can't parse JSON {request.data}: {e}")
-                errors = metadata_manager.update_schema_instance(resource, request, lang)
+                errors = {}
+                try:
+                    errors = (
+                        metadata_manager.update_schema_instance(resource, request, lang)
+                        if request.method == "PUT"
+                        else metadata_manager.update_schema_instance_partial(resource, request.data, request.user, lang)
+                    )
+                    resource.refresh_from_db()
+                    resource.save()  # we want to trigger all the post_save signals
+                except Exception as e:
+                    logger.warning(f"Error while updating schema instance: {e}")
+                    MetadataHandler._set_error(
+                        errors, [], MetadataHandler.localize_message({}, "metadata_error_save", {"exc": e})
+                    )
 
                 msg_t = (
                     ("m_metadata_update_error", "Some errors were found while updating the resource")

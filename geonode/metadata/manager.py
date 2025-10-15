@@ -19,9 +19,11 @@
 
 import logging
 import copy
+from types import SimpleNamespace
 
 from django.utils.translation import gettext as _
 
+from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.i18n import I18nCache
@@ -115,8 +117,7 @@ class MetadataManager:
 
         return instance
 
-    def update_schema_instance(self, resource, request_obj, lang=None) -> dict:
-
+    def update_schema_instance(self, resource, request_obj, lang=None, partial=None) -> dict:
         # Definition of the json instance
         json_instance = request_obj.data
 
@@ -134,6 +135,10 @@ class MetadataManager:
         errors = {}
 
         for fieldname, subschema in schema["properties"].items():
+            if partial:
+                if fieldname not in partial:
+                    continue
+                logger.debug(f"Storing partial field {fieldname}")
             handler = self.handlers[subschema["geonode:handler"]]
             try:
                 handler.update_resource(resource, fieldname, json_instance, context, errors)
@@ -160,9 +165,12 @@ class MetadataManager:
                     ),
                 )
         try:
-            resource.save()
+            if basefields := context.get("base", None):
+                ResourceBase.objects.filter(id=resource.id).update(**basefields)
+                resource.get_real_concrete_instance_class().objects.filter(id=resource.id).update(**basefields)
+                resource.refresh_from_db()
         except Exception as e:
-            logger.warning(f"Error while updating schema instance: {e}")
+            logger.warning(f"Error while updating schema instance: {e}", exc_info=e)
             MetadataHandler._set_error(
                 errors, [], MetadataHandler.localize_message(context, "metadata_error_save", {"exc": e})
             )
@@ -184,6 +192,16 @@ class MetadataManager:
             _create_test_errors(schema, errors, [], "TEST: field <{schema_type}>'{path}' PUT request")
 
         return errors
+
+    def update_schema_instance_partial(self, resource, json_instance, user, lang=None) -> dict:
+        if not json_instance:
+            return {}
+        # We can't loop on the payload's field, since post_ or pre_ methods may rely on the whole instance
+        # Let's create a full instance by using the old one, merged with the payload
+        old_instance = self.build_schema_instance(resource, lang)
+        old_instance.update(json_instance)
+        fake_req = SimpleNamespace(data=old_instance, user=user)
+        return self.update_schema_instance(resource, fake_req, lang, partial=json_instance.keys())
 
 
 def _create_test_errors(schema, errors, path, msg_template, create_message=True):

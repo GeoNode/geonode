@@ -918,8 +918,6 @@ class MetadataApiTests(APITestCase):
         expected_context = {"labels": {}, "user": self.test_user_1}
 
         mock_get_schema.return_value = self.fake_schema
-        # Mock the save method
-        self.resource.save = MagicMock()
 
         with patch.dict(metadata_manager.handlers, self.fake_handlers, clear=True):
 
@@ -945,9 +943,6 @@ class MetadataApiTests(APITestCase):
             # Assert no errors were raised
             self.assertEqual(errors, {})
 
-            # Check that resource.save() is called
-            self.resource.save.assert_called_once()
-
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
     @patch("geonode.metadata.manager.MetadataHandler.localize_message")
     def test_update_schema_instance_with_handler_error(self, mock_localize_message, mock_get_schema):
@@ -958,9 +953,6 @@ class MetadataApiTests(APITestCase):
         mock_request.user = self.test_user_1
 
         mock_get_schema.return_value = self.fake_schema
-
-        # Mock the save method
-        self.resource.save = MagicMock()
 
         # Mock localize_message to return a custom error message
         mock_localize_message.side_effect = lambda context, msg_id, data: f"Error in handler: {data['exc']}"
@@ -984,46 +976,3 @@ class MetadataApiTests(APITestCase):
             self.handler1.update_resource.assert_called()
             self.handler2.update_resource.assert_called()
             self.handler3.update_resource.assert_called()
-
-            # Assert that resource.save() was called
-            self.resource.save.assert_called_once()
-
-            # Assert resource.save was called
-            self.resource.save.assert_called_once()
-
-    @patch("geonode.metadata.manager.metadata_manager.get_schema")
-    @patch("geonode.metadata.manager.MetadataHandler.localize_message")
-    def test_update_schema_instance_with_db_error(self, mock_localize_message, mock_get_schema):
-
-        # Fake request with data and user
-        mock_request = MagicMock()
-        mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
-        mock_request.user = self.test_user_1
-
-        mock_get_schema.return_value = self.fake_schema
-
-        mock_localize_message.side_effect = (
-            lambda context, msg_id, data: f"Error while saving the resource: {data['exc']}"
-        )
-
-        # Mock save method with an exception
-        self.resource.save = MagicMock(side_effect=Exception("Error during the resource save"))
-
-        with patch.dict(metadata_manager.handlers, self.fake_handlers, clear=True):
-
-            self.handler1.update_resource.side_effect = None
-            self.handler2.update_resource.side_effect = None
-            self.handler3.update_resource.side_effect = None
-
-            # Call the method under test
-            errors = metadata_manager.update_schema_instance(self.resource, mock_request)
-
-            # Assert that update_resource was called for each handler
-            self.handler1.update_resource.assert_called()
-            self.handler2.update_resource.assert_called()
-            self.handler3.update_resource.assert_called()
-
-            # Assert that save raised an error and was recorded
-            self.resource.save.assert_called_once()
-            self.assertIn("__errors", errors)
-            self.assertEqual(errors["__errors"], ["Error while saving the resource: Error during the resource save"])
