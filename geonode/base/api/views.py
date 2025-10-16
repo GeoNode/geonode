@@ -616,7 +616,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     action="permissions",
                     input_params={"uuid": request_params.get("uuid", resource.uuid)},
                 )
-            elif request.method == "PUT":
+            elif request.method in ["PUT", "PATCH"]:
                 user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
                 if request.data.get("groups"):
                     excluded_ids = []
@@ -630,33 +630,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                         request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
                 perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
 
-                if resource.dirty_state:
-                    raise Exception("Cannot update if the resource is in dirty state")
-                resource.set_dirty_state()
-                _exec_request = ExecutionRequest.objects.create(
-                    user=request.user,
-                    func_name="set_permissions",
-                    geonode_resource=resource,
-                    action="permissions",
-                    input_params={
-                        "uuid": request_params.get("uuid", resource.uuid),
-                        "permissions": perms_spec_compact_resource.extended,
-                        "created": request_params.get("created", False),
-                    },
-                )
-            elif request.method == "PATCH":
-                user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
-                if request.data.get("groups"):
-                    excluded_ids = []
-                    if "can_manage_anonymous_permissions" not in user_perms:
-                        anonymous_group = Group.objects.get(name="anonymous")
-                        excluded_ids.append(anonymous_group.id)
-                    if "can_manage_registered_member_permissions" not in user_perms:
-                        registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
-                        excluded_ids.append(registered_group.id)
-                    if excluded_ids:
-                        request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
-                perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
                 resource.set_dirty_state()
