@@ -64,7 +64,7 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
-    image: geonode/nginx:1.26.3-latest
+    image: geonode/nginx:1.28.0-v1
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
       - .env
@@ -91,7 +91,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.24.4-latest
+    image: geonode/geoserver:2.27.2-latest
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -117,7 +117,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.24.4-latest
+    image: geonode/geoserver_data:2.27.2-latest
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:

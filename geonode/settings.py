@@ -462,7 +462,6 @@ INSTALLED_APPS = (
     "modeltranslation",
     "dal",
     "dal_select2",
-    "grappelli",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -599,8 +598,6 @@ DYNAMIC_REST = {
     # path registered, links will default back to being resource-relative urls
     "ENABLE_HOST_RELATIVE_LINKS": True,
 }
-
-GRAPPELLI_ADMIN_TITLE = os.getenv("GRAPPELLI_ADMIN_TITLE", "GeoNode")
 
 # Documents application
 try:
@@ -2303,6 +2300,10 @@ GEONODE_APPS += ("geonode.assets",)
 PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+]
+
+FEATURE_VALIDATORS = [
+    "geonode.upload.feature_validators.GeoserverFeatureValidator",
 ]
 
 # Django-Avatar - Change default templates to Geonode based

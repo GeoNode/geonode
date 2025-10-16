@@ -95,5 +95,5 @@ class UpsertImporterSerializer(ImporterSerializer):
             "resource_pk",
         )
 
-    upsert_key = serializers.CharField(required=False)
+    upsert_key = serializers.CharField(required=False, default="fid")
     resource_pk = serializers.IntegerField(required=True)

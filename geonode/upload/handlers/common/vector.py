@@ -68,6 +68,8 @@ from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
 from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
+from geonode.upload.registry import feature_validators_registry
+from django.core.exceptions import ValidationError
 
 
 logger = logging.getLogger("importer")
@@ -105,6 +107,8 @@ class BaseVectorFileHandler(BaseHandler):
         ),
         ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
+
+    default_pk_column_name = "fid"
 
     @property
     def have_table(self):
@@ -268,7 +272,7 @@ class BaseVectorFileHandler(BaseHandler):
         # vrt file is aready created in import_resource and vrt will be auto detected by ogr2ogr
         # and also the base_file will work so can be used as alternative for fallback which will also be autodeteced by ogr2ogr.
         input_file = files.get("temp_vrt_file") or files.get("base_file")
-        options += f'"{input_file}"' + " "
+        options += f'"{input_file}"' + f" -lco FID={BaseVectorFileHandler.default_pk_column_name} "
 
         options += f'-nln {alternate} "{original_name}"'
 
@@ -1051,15 +1055,15 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException("No valid layers found in the provided file for upsert.")
 
         layer = layers[0]
-        # evaluate if some of the ogc_fid entry is null. if is null we stop the workflow
-        # the user should provide the completed list with the ogc_fid set
-        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "ogc_fid" IS NULL'
+        # evaluate if some of the fid entry is null. if is null we stop the workflow
+        # the user should provide the completed list with the fid set
+        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "fid" IS NULL'
 
         # Execute the SQL query to the layer
         result = all_layers.ExecuteSQL(sql_query)
         if not result or (result and result.GetFeatureCount() > 0):
             raise UpsertException(
-                f"All the feature in the file must have the ogc_fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
+                f"All the feature in the file must have the fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
             )
 
         # Will generate the same schema as the target_resource_schema
@@ -1087,6 +1091,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # getting the related model schema for the resource
         original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
+        self.real_instance = original_resource.get_real_instance()
         model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
         if not model:
             raise UpsertException(
@@ -1156,6 +1161,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
         errors = []
+        feature_validators_registry.init_handlers(self.real_instance)
         while True:
             # Create an iterator for the next chunk
             data_chunk = list(islice(layer_iterator, settings.UPSERT_CHUNK_SIZE))
@@ -1192,12 +1198,12 @@ class BaseVectorFileHandler(BaseHandler):
                 writer.writeheader()
                 writer.writerows(errors_to_print)
 
-                self.create_asset_and_link(
-                    exec_obj.geonode_resource,
-                    files={"base_file": str(csv_file_path)},
-                    action=exec_obj.action,
-                    asset_name=log_name,
-                )
+            self.create_asset_and_link(
+                exec_obj.geonode_resource,
+                files={"base_file": str(csv_file_path)},
+                action=exec_obj.action,
+                asset_name=log_name,
+            )
 
         raise UpsertException("Some errors found, please check the error log attached")
 
@@ -1210,9 +1216,9 @@ class BaseVectorFileHandler(BaseHandler):
             geom = feature.GetGeometryRef()
             feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
 
-            feature_as_dict, is_valid = self.validate_feature_constraints(feature_as_dict)
+            feature_as_dict, is_valid = self.validate_feature(feature_as_dict)
             if not is_valid:
-                errors.append(feature)
+                errors.append(feature_as_dict)
                 continue
 
         return errors
@@ -1258,16 +1264,18 @@ class BaseVectorFileHandler(BaseHandler):
 
         return valid_update, valid_create
 
-    def validate_feature_constraints(self, feature):
-        # TODO: validation process for each feature will be implemented later
-        # expected ouput (to be reviewed):
-        # feature | {"reason": "The value X is invalid"}
-
-        return feature, True
+    def validate_feature(self, feature):
+        try:
+            feature_validators_registry.validate(feature)
+            return feature, True
+        except ValidationError as e:
+            errors = e.messages if hasattr(e, "messages") else [str(e)]
+            feature["error"] = " | ".join(errors)
+            return feature, False
 
     def extract_upsert_key(self, exec_obj, dynamic_model_instance):
         # first we check if the upsert key is passed by the call
-        key = exec_obj.input_params.get("upsert_key", "ogc_fid")
+        key = exec_obj.input_params.get("upsert_key", "fid")
         if not key:
             # if the upsert key is not passed, we use the primary key as upsert key
             # the primary key is defined in the Fields of the dynamic model

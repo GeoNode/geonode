@@ -39,10 +39,13 @@ from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
+from geonode.upload.utils import find_key_recursively
 from osgeo import gdal
 from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
 from geonode.assets.handlers import asset_handler_registry
+from geonode.assets.models import Asset
+from geonode.assets.utils import create_link
 
 logger = logging.getLogger("importer")
 
@@ -228,6 +231,12 @@ class BaseRasterFileHandler(BaseHandler):
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
+            # kwargs may be unwrapped by publish_resource; support both forms
+            nl = find_key_recursively(kwargs, "new_file_location") or {}
+            raster_path = None
+            if nl:
+                files_list = nl.get("files") or []
+                raster_path = files_list[0] if files_list else None
             return [
                 {
                     "name": alternate,
@@ -236,7 +245,7 @@ class BaseRasterFileHandler(BaseHandler):
                     )
                     .first()
                     .srid,
-                    "raster_path": kwargs["kwargs"].get("new_file_location").get("files")[0],
+                    "raster_path": raster_path,
                 }
             ]
 
@@ -494,6 +503,20 @@ class BaseRasterFileHandler(BaseHandler):
             return
         return self.create_resourcehandlerinfo(handler_module_path, resource, execution_id, **kwargs)
 
+    def _prepare_assets_for_copy(self, resource, kwargs):
+        """
+        Prepare assets for copying.
+        It gets the cloned asset and identifies other assets to be linked.
+        """
+        _nl = find_key_recursively(kwargs, "new_file_location") or {}
+        _asset = _nl.get("asset")
+        _asset_id = _nl.get("asset_id")
+        if not _asset and _asset_id:
+            _asset = Asset.objects.filter(pk=_asset_id).first()
+
+        assets_to_link = Asset.objects.filter(link__resource=resource).exclude(title="Original")
+        return _asset, assets_to_link
+
     def copy_geonode_resource(
         self,
         alternate: str,
@@ -503,14 +526,19 @@ class BaseRasterFileHandler(BaseHandler):
         new_alternate: str,
         **kwargs,
     ):
-        resource = self.create_geonode_resource(
+        cloned_asset, assets_to_link = self._prepare_assets_for_copy(resource, kwargs)
+
+        new_resource = self.create_geonode_resource(
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
-            asset=kwargs.get("kwargs", {}).get("new_file_location", {}).get("asset", []),
+            asset=cloned_asset,
         )
-        resource.refresh_from_db()
-        return resource
+
+        [create_link(new_resource, asset) for asset in assets_to_link]
+
+        new_resource.refresh_from_db()
+        return new_resource
 
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
@@ -561,15 +589,25 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
 
     original_dataset = original_dataset.first()
 
-    if not original_dataset.files:
-        raise InvalidGeoTiffException(
-            "The original file of the dataset is not available, Is not possible to copy the dataset"
-        )
-
     # Register task status
     orchestrator.register_task_status(exec_id, layer_name, actual_step, status="RUNNING")
 
-    new_file_location = orchestrator.load_handler(handler_module_path).copy_original_file(original_dataset)
+    # Ensure the dataset has at least one Asset associated
+    filters = {"link__resource": original_dataset, "title": "Original"}
+    if not Asset.objects.filter().exists():
+        raise InvalidGeoTiffException(
+            "The dataset does not have any original asset associated; cannot copy the dataset"
+        )
+    original_asset = Asset.objects.filter(**filters).last()
+
+    # The original asset is cloned here, as it is required for the creation of the new cloned resource. Other associated assets will be linked to the new resource later in the process.
+    cloned_asset = asset_handler_registry.get_handler(original_asset).clone(original_asset)
+    new_file_location = {
+        "files": cloned_asset.location if getattr(cloned_asset, "location", None) else [],
+        "asset_id": cloned_asset.id,
+    }
+    if not new_file_location["files"]:
+        raise InvalidGeoTiffException("Could not determine the location of the copied file")
 
     new_dataset_alternate = create_alternate(original_dataset.title, exec_id)
 

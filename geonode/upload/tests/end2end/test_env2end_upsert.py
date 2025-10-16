@@ -196,7 +196,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.upsert_geojson.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
-        payload["upsert_key"] = "id"
+        payload["upsert_key"] = "fid"
 
         # time to upsert the data
         self.client.force_login(self.admin)
@@ -240,7 +240,7 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.default_shp.items()}
         payload["resource_pk"] = prev_dataset.pk
         payload["action"] = "upsert"
-        payload["upsert_key"] = "ogc_fid"
+        payload["upsert_key"] = "fid"
 
         # time to upsert the data
         self.client.force_login(self.admin)
@@ -251,6 +251,5 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertFalse(response.json().get("success", True))
         self.assertTrue("errors" in response.json())
         self.assertTrue(
-            "All the feature in the file must have the ogc_fid field correctly populated. Number of None value: all"
-            in response.json()["errors"][0]
+            "The columns in the source and target do not match they must be equal" in response.json()["errors"][0]
         )

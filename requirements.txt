@@ -37,7 +37,6 @@ django-downloadview==2.3.0
 django-polymorphic==3.1.0
 django-tastypie<0.15.0
 django-tinymce==3.7.1
-django-grappelli==4.0.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.5.0
 django-sequences==3.0
@@ -89,7 +88,7 @@ geonode-oauth-toolkit==2.2.2.2
 geonode-announcements==2.0.2.2
 django-activity-stream==2.0.0
 gn-arcrest==10.5.6
-geoserver-restconfig~=2.0.15
+git+https://github.com/GeoNode/geoserver-restconfig.git@master#egg=geoserver-restconfig
 gn-gsimporter==2.0.4
 gisdata==0.5.4
 
