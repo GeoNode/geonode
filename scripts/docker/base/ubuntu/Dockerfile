@@ -35,7 +35,13 @@ RUN . /usr/src/venv/bin/activate
 RUN pip3 install uwsgi \
     && pip install pip --upgrade \
     && pip install wheel==0.38.1 \
+    && pip install invoke==2.2.0 \
     && pip install GDAL==3.8.4
+
+# Create symlink for "invoke" command 
+# Required after installing via pip inside a virtualenv and avoid changing the 
+# entrypoint.sh in existing GeoNode Projects where /usr/local/bin/invoke is used
+RUN ln -s $(which invoke) /usr/local/bin/invoke
 
 # Install "sherlock" to be used with "memcached"
 RUN pip install sherlock
