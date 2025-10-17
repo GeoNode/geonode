@@ -1179,18 +1179,20 @@ class BaseVectorFileHandler(BaseHandler):
             # cleaning up the feature from memory
             self._create_error_log(exec_obj, layers, errors)
 
+    def __get_csv_headers(self):
+        constrained_attributes = []
+        for handler in feature_validators_registry.HANDLERS:
+            if hasattr(handler, "restrictions"):
+                constrained_attributes.extend(handler.restrictions.keys())
+        return ["fid"] + constrained_attributes + ["error"]
+
     def _create_error_log(self, exec_obj, layers, errors):
         logger.error(
             "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
         )
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
 
-        constrained_attributes = []
-        for handler in feature_validators_registry.HANDLERS:
-            if hasattr(handler, "restrictions"):
-                constrained_attributes.extend(handler.restrictions.keys())
-
-        fieldnames = ["fid"] + constrained_attributes + ["error"]
+        fieldnames = self.__get_csv_headers()
 
         log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
 
