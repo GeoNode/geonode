@@ -26,6 +26,14 @@ from geonode.base.populate_test_data import create_single_dataset
 from geonode.upload.handlers.empty_dataset.utils import add_attributes_to_xml, validate_attributes, base_xml
 
 
+class FakeObj:
+    name = "GeoNode"
+    status_code = 201
+
+    def raise_for_status(self):
+        return
+
+
 class TestEmptyDatasetHandler(TestCase):
     databases = ("default", "datastore")
 
@@ -176,9 +184,7 @@ class TestEmptyDatasetHandler(TestCase):
                     "is_empty": True,
                 },
             )
-            foo = namedtuple("FakeObj", field_names=["name", "status_code"])
-            foo.name = "GeoNode"
-            foo.status_code = 201
+            foo = FakeObj()
             catalog = MagicMock()
             catalog.http_request.return_value = foo
             resources = [{"name": "my_empty_dataset", "crs": "EPSG:4326", "exec_id": str(exec_req.exec_id)}]
