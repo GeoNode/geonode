@@ -39,6 +39,7 @@ from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.security.utils import AdvancedSecurityWorkflowManager
 from geonode.thumbs.utils import get_thumbs, remove_thumb
 from geonode.utils import get_legend_url
+from geonode.security.permissions import PermSpecCompact
 
 logger = logging.getLogger("geonode.base.utils")
 
@@ -213,3 +214,13 @@ def remove_country_from_languagecode(language: str):
 
     lang, _, _ = language.lower().partition("-")
     return lang
+
+
+def patch_perms(updated_perms_compact, current_perms_compact, resource):
+    """
+    Patch updated permission changes with current permissions.
+    """
+    perms_spec_compact_patch = PermSpecCompact(updated_perms_compact, resource)
+    perms_spec_compact_resource = PermSpecCompact(current_perms_compact, resource)
+    perms_spec_compact_resource.merge(perms_spec_compact_patch)
+    return perms_spec_compact_resource
