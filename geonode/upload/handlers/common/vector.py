@@ -43,12 +43,18 @@ from dynamic_models.schema import ModelSchemaEditor
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
+from geonode.upload.celery_tasks import (
+    ErrorBaseTaskClass,
+    FieldSchema,
+    create_dynamic_structure,
+    UpdateDynamicTaskClass,
+)
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
     drop_dynamic_model_schema,
+    create_layer_key,
 )
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
@@ -652,7 +658,14 @@ class BaseVectorFileHandler(BaseHandler):
         # definition of the celery group needed to run the async workflow.
         # in this way each task of the group will handle only 30 field
         celery_group = group(
-            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
+            create_dynamic_structure.s(
+                execution_id,
+                schema,
+                dynamic_model_schema.id,
+                overwrite,
+                layer_name,
+                layer_key=create_layer_key(layer.GetName(), str(execution_id)),
+            )
             for schema in list_chunked
         )
 
@@ -921,6 +934,7 @@ class BaseVectorFileHandler(BaseHandler):
             handler_module_path,
             should_be_overwritten,
             alternate,
+            layer_key=create_layer_key(layer.lower(), str(execution_id)),
         )
 
     def _get_execution_request_object(self, execution_id: str):
@@ -1391,7 +1405,7 @@ def import_next_step(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateDynamicTaskClass,
     name="geonode.upload.import_with_ogr2ogr",
     queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,
@@ -1406,6 +1420,7 @@ def import_with_ogr2ogr(
     handler_module_path: str,
     ovverwrite_layer=False,
     alternate=None,
+    **kwargs,
 ):
     """
     Perform the ogr2ogr command to import he gpkg inside geonode_data
