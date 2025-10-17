@@ -128,7 +128,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 action=ExecutionRequestAction.UPLOAD.value,
                 handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
-        expected_msg = f"Invalid format type. Request: {str(exec_id)}"
+        expected_msg = "Invalid format type"
         self.assertEqual(expected_msg, str(_exc.exception.detail))
         ExecutionRequest.objects.filter(exec_id=str(exec_id)).delete()
 
