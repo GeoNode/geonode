@@ -30,7 +30,7 @@ django-imagekit==5.0.0
 django-taggit==5.0.1
 django-markdownify==0.9.5
 django-mptt==0.16.0
-django-modeltranslation==0.18.13
+django-modeltranslation==0.19.17
 django-treebeard==4.7.1
 django-guardian<2.4.1
 django-downloadview==2.3.0
