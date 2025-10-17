@@ -119,7 +119,7 @@ def translate_polygons(
     """
     ref.: https://towardsdatascience.com/around-the-world-in-80-lines-crossing-the-antimeridian-with-python-and-shapely-c87c9b6e1513
     """
-    for polygon in geometry_collection:
+    for polygon in [geometry_collection]:
         (minx, _, maxx, _) = polygon.bounds
         if minx < -180:
             geo_polygon = affinity.translate(polygon, xoff=360)

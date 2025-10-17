@@ -649,8 +649,8 @@ class TestFacets(GeoNodeBaseTestSupport):
             },
         }
 
-        url_filtered = f"{reverse('get_facet',args=['group'])}?filter{{group.in}}={self.group_admin.id}&include_topics=true&key={self.group_admin.id}"
-        url_base = f"{reverse('get_facet',args=['group'])}"
+        url_filtered = f"{reverse('get_facet', args=['group'])}?filter{{group.in}}={self.group_admin.id}&include_topics=true&key={self.group_admin.id}"
+        url_base = f"{reverse('get_facet', args=['group'])}"
 
         response_filtered = self.client.get(url_filtered)
         response_dict_filtered = response_filtered.json()
@@ -672,7 +672,7 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     def test_group_facets_are_filtered_by_words(self):
         # there are some groups and the facets return them
-        url = f"{reverse('get_facet',args=['group'])}"
+        url = f"{reverse('get_facet', args=['group'])}"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code, response.json())
@@ -680,7 +680,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertTrue(response.json().get("topics", {}).get("total", 0) > 0)
 
         # topic_contains with real name should return 1
-        url = f"{reverse('get_facet',args=['group'])}?topic_contains=UserAdmin"
+        url = f"{reverse('get_facet', args=['group'])}?topic_contains=UserAdmin"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code, response.json())
@@ -688,7 +688,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertEqual(1, response.json().get("topics", {}).get("total", 0))
 
         # topic_contains with a random string to be searched for should be 0
-        url = f"{reverse('get_facet',args=['group'])}?topic_contains=abc123scfuqbrwefbasascgiu"
+        url = f"{reverse('get_facet', args=['group'])}?topic_contains=abc123scfuqbrwefbasascgiu"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code, response.json())

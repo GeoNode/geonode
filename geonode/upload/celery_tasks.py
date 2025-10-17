@@ -978,6 +978,9 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
     layer_name = None  # ensure defined even if an exception occurs
     # Updating status to running
     try:
+        # we set the bulk is True to force the on_failure/on_success methods
+        # to set the corresponding status in case the task fails before the layer_name creation
+        self.bulk = True
         kwargs = kwargs.get("kwargs") if "kwargs" in kwargs else kwargs
 
         orchestrator.update_execution_request_status(
