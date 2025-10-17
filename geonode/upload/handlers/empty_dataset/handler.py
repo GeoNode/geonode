@@ -243,7 +243,10 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
         if should_apply_restrictions(normalized_attributes):
             xml = apply_restrictions_to_xml(normalized_attributes, xml)
 
-        url = f"{catalog.service_url}/workspaces/{workspace.name}/datastores/{store.name}/featuretypes/{res.get("name")}"
+        url = (
+            f"{catalog.service_url}/workspaces/{workspace.name}/datastores/{store.name}/featuretypes/{res.get("name")}"
+        )
+
         req = catalog.http_request(url, data=xml, method="PUT", headers={"Content-Type": "application/xml"})
         req.raise_for_status()
         return True
