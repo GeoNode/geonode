@@ -22,6 +22,7 @@ import csv
 from datetime import datetime
 from itertools import islice
 from pathlib import Path
+import shutil
 import tempfile
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
@@ -1252,14 +1253,14 @@ class BaseVectorFileHandler(BaseHandler):
                 # if the key is not present, we can create a new instance
                 feature_to_save.append(model_instance(**feature_as_dict))
                 valid_create += 1
-            try:
-                schema_fields = [f.name for f in model_obj.fields.filter(kwargs__primary_key__isnull=True)]
-                model_instance.objects.bulk_create(
-                    feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
-                )
-            except Exception:
-                logger.exception("Error occurred during bulk upsert in upsert_data.")
-                raise UpsertException("An internal error occurred during upsert operation.")
+        try:
+            schema_fields = [f.name for f in model_obj.fields.filter(kwargs__primary_key__isnull=True)]
+            model_instance.objects.bulk_create(
+                feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
+            )
+        except Exception:
+            logger.exception("Error occurred during bulk upsert in upsert_data.")
+            raise UpsertException("An internal error occurred during upsert operation.")
 
         return valid_update, valid_create
 
@@ -1400,7 +1401,7 @@ def import_with_ogr2ogr(
     If the layer should be overwritten, the option is appended dynamically
     """
     try:
-        ogr_exe = "/usr/bin/ogr2ogr"
+        ogr_exe = shutil.which("ogr2ogr")
 
         options = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
             files, original_name, ovverwrite_layer, alternate
@@ -1413,7 +1414,6 @@ def import_with_ogr2ogr(
             options += f" | PGPASSWORD={_datastore['PASSWORD']} psql -d {_datastore['NAME']} -h {_datastore['HOST']} -p {_datastore.get('PORT', 5432)} -U {_datastore['USER']} -f -"
 
         commands = [ogr_exe] + options.split(" ")
-
         process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
         stdout, stderr = process.communicate()
 

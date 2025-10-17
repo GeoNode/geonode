@@ -1,4 +1,4 @@
-FROM geonode/geonode-base:latest-ubuntu-22.04
+FROM geonode/geonode-base:latest-ubuntu-24.04
 LABEL GeoNode development team
 
 # copy local geonode src inside container
@@ -22,6 +22,7 @@ RUN chmod +x /usr/bin/celery-cmd
 # RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade  -e . \
 #     cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
 
+RUN . /usr/src/venv/bin/activate
 RUN yes w | pip install --src /usr/src -r requirements.txt &&\
     yes w | pip install -e .
 

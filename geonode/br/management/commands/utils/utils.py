@@ -287,7 +287,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
                 f" -h {db_host} -p {str(db_port)} -d {db_name}"
                 f" -U {db_user} --role={db_user} "
                 f' -t "{table_name}" '
-                f' {"-c" if not preserve_tables else "" } '
+                f' {"-c" if not preserve_tables else ""} '
                 f" {os.path.join(source_folder, filename)} "
             )
             ret = subprocess.call(command, env={"PGPASSWORD": db_passwd}, shell=True)
