@@ -1205,7 +1205,9 @@ class BaseVectorFileHandler(BaseHandler):
                 asset_name=log_name,
             )
 
-        raise UpsertException("Some errors found, please check the error log attached")
+        raise UpsertException(
+            "Some validations failed. Errors are reported inside a CSV file that can be found inside the assets panel."
+        )
 
     def _validate_feature(self, data_chunk, model_instance, upsert_key, errors):
         # looping over the chunk data
