@@ -1184,7 +1184,14 @@ class BaseVectorFileHandler(BaseHandler):
             "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
         )
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
-        fieldnames = errors_to_print[0].keys()
+
+        constrained_attributes = []
+        for handler in feature_validators_registry.HANDLERS:
+            if hasattr(handler, "restrictions"):
+                constrained_attributes.extend(handler.restrictions.keys())
+
+        fieldnames = ["fid"] + constrained_attributes + ["error"]
+
         log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
 
         with tempfile.TemporaryDirectory() as temp_dir_str:
@@ -1194,7 +1201,7 @@ class BaseVectorFileHandler(BaseHandler):
             csv_file_path = subfolder_path / log_name
             with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
                 # Create a DictWriter object. It maps dictionaries to output rows.
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames, extrasaction="ignore")
                 writer.writeheader()
                 writer.writerows(errors_to_print)
 
