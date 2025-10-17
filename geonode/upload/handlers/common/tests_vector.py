@@ -528,10 +528,10 @@ class TestBaseVectorFileHandler(TestCase):
     def test_get_error_file_csv_headers(self):
         handler = BaseVectorFileHandler()
         mock_validator = MagicMock()
-        mock_validator.restrictions = {"type": {"restrictions": {"enumeration": ["type1"]}}}
-        with patch("geonode.upload.handlers.common.vector.feature_validators_registry.HANDLERS", [mock_validator]):
-            headers = handler.__get_csv_headers()
-            self.assertEqual(headers, ["fid", "type", "error"])
+        mock_validator.restrictions = {'type': {'restrictions': {'enumeration': ['type1']}}}
+        with patch('geonode.upload.handlers.common.vector.feature_validators_registry.HANDLERS', [mock_validator]):
+            headers = handler._BaseVectorFileHandler__get_csv_headers()
+            self.assertEqual(headers, ['fid', 'type', 'error'])
 
 
 class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
