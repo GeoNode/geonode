@@ -190,7 +190,8 @@ class TasksTestCase(GeoNodeBaseTestSupport):
 
     @mock.patch("geonode.harvesting.tasks.models.Harvester")
     def test_check_harvester_available(self, mock_harvester_model):
-        mock_harvester = mock.MagicMock(spec=models.Harvester).return_value
+
+        mock_harvester = mock_harvester_model
         mock_harvester_model.objects.get.return_value = mock_harvester
         tasks.check_harvester_available(1000)
         mock_harvester.update_availability.assert_called()

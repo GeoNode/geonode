@@ -19,7 +19,7 @@ def list_thesauri():
         else:
             # DISABLED
             # [0..n]
-            card = f'[{t.card_min}..{t.card_max if t.card_max!=-1 else "N"}]  '
+            card = f'[{t.card_min}..{t.card_max if t.card_max != -1 else "N"}]  '
         logger.info(
             f'id:{t.id:2} sort:{t.order:3} {card} name={t.identifier.ljust(max_id_len)} title="{t.title}" URI:{t.about}\n'
         )
