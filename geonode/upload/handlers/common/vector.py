@@ -863,7 +863,6 @@ class BaseVectorFileHandler(BaseHandler):
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
-            asset=get_default_asset(resource),
         )
 
         copy_assets_and_links(resource, target=new_resource)
