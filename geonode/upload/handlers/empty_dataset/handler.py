@@ -222,7 +222,8 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
 
     @staticmethod
     def publish_resources(resources, catalog, store, workspace):
-        # result = BaseVectorFileHandler().publish_resources(resources, catalog, store, workspace)
+        # creating the gs resource as always
+        BaseVectorFileHandler().publish_resources(resources, catalog, store, workspace)
         res = resources[0]
         exec_obj = orchestrator.get_execution_object(exec_id=res.get("exec_id"))
         attributes = exec_obj.input_params.get("attributes")
@@ -231,6 +232,7 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
 
         xml = add_attributes_to_xml(
             {
+                **{DEFAULT_PK_COLUMN_NAME: {"type": "integer", "nillable": False}},
                 **normalized_attributes,
                 # include geometry as an available attribute
                 "geom": {"type": exec_obj.input_params.get("geom"), "nillable": False},
@@ -241,11 +243,7 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
         if should_apply_restrictions(normalized_attributes):
             xml = apply_restrictions_to_xml(normalized_attributes, xml)
 
-        url = f"{catalog.service_url}/workspaces/{workspace.name}/datastores/{store.name}/featuretypes"
-        req = catalog.http_request(url, data=xml, method="POST", headers={"Content-Type": "application/xml"})
-        if req.status_code != 201:
-            logger.error(f"Request status code was: {req.status_code}")
-            logger.error(f"Response was: {req.text}")
-            raise Exception(f"Dataset could not be created in GeoServer {req.text}")
-
+        url = f"{catalog.service_url}/workspaces/{workspace.name}/datastores/{store.name}/featuretypes/{res.get("name")}"
+        req = catalog.http_request(url, data=xml, method="PUT", headers={"Content-Type": "application/xml"})
+        req.raise_for_status()
         return True
