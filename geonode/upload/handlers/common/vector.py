@@ -43,12 +43,18 @@ from dynamic_models.schema import ModelSchemaEditor
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
+from geonode.upload.celery_tasks import (
+    ErrorBaseTaskClass,
+    FieldSchema,
+    create_dynamic_structure,
+    UpdateDynamicTaskClass,
+)
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
     drop_dynamic_model_schema,
+    create_layer_key,
 )
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
@@ -636,7 +642,14 @@ class BaseVectorFileHandler(BaseHandler):
         # definition of the celery group needed to run the async workflow.
         # in this way each task of the group will handle only 30 field
         celery_group = group(
-            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
+            create_dynamic_structure.s(
+                execution_id,
+                schema,
+                dynamic_model_schema.id,
+                overwrite,
+                layer_name,
+                layer_key=create_layer_key(layer.GetName(), str(execution_id)),
+            )
             for schema in list_chunked
         )
 
@@ -936,6 +949,7 @@ class BaseVectorFileHandler(BaseHandler):
             handler_module_path,
             should_be_overwritten,
             alternate,
+            layer_key=create_layer_key(layer.lower(), str(execution_id)),
         )
 
     def _get_execution_request_object(self, execution_id: str):
@@ -1194,12 +1208,21 @@ class BaseVectorFileHandler(BaseHandler):
             # cleaning up the feature from memory
             self._create_error_log(exec_obj, layers, errors)
 
+    def __get_csv_headers(self):
+        constrained_attributes = []
+        for handler in feature_validators_registry.HANDLERS:
+            if hasattr(handler, "restrictions"):
+                constrained_attributes.extend(handler.restrictions.keys())
+        return ["fid"] + constrained_attributes + ["error"]
+
     def _create_error_log(self, exec_obj, layers, errors):
         logger.error(
             "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
         )
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
-        fieldnames = errors_to_print[0].keys()
+
+        fieldnames = self.__get_csv_headers()
+
         log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
 
         with tempfile.TemporaryDirectory() as temp_dir_str:
@@ -1209,7 +1232,7 @@ class BaseVectorFileHandler(BaseHandler):
             csv_file_path = subfolder_path / log_name
             with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
                 # Create a DictWriter object. It maps dictionaries to output rows.
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames, extrasaction="ignore")
                 writer.writeheader()
                 writer.writerows(errors_to_print)
 
@@ -1220,7 +1243,9 @@ class BaseVectorFileHandler(BaseHandler):
                 asset_name=log_name,
             )
 
-        raise UpsertException("Some errors found, please check the error log attached")
+        raise UpsertException(
+            "Some validations failed. Errors are reported inside a CSV file that can be found inside the assets panel."
+        )
 
     def _validate_feature(self, data_chunk, model_instance, upsert_key, errors):
         # looping over the chunk data
@@ -1395,7 +1420,7 @@ def import_next_step(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateDynamicTaskClass,
     name="geonode.upload.import_with_ogr2ogr",
     queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,
@@ -1410,6 +1435,7 @@ def import_with_ogr2ogr(
     handler_module_path: str,
     ovverwrite_layer=False,
     alternate=None,
+    **kwargs,
 ):
     """
     Perform the ogr2ogr command to import he gpkg inside geonode_data

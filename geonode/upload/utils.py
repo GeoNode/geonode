@@ -121,9 +121,7 @@ class ImporterRequestAction(enum.Enum):
 
 def error_handler(exc, exec_id=None):
     err = f'{str(exc.detail if hasattr(exc, "detail") else exc.args[0])}'
-    if "Request:" in err:
-        return err
-    return f'{str(exc.detail if hasattr(exc, "detail") else exc.args[0])}. Request: {exec_id}'
+    return err
 
 
 class ImporterConcreteManager(GeoServerResourceManager):

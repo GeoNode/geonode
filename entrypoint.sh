@@ -2,7 +2,6 @@
 
 # Exit script in case of error
 set -e
-source /usr/src/venv/bin/activate
 
 INVOKE_LOG_STDOUT=${INVOKE_LOG_STDOUT:-FALSE}
 invoke () {
