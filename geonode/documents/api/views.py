@@ -124,7 +124,7 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
             if file:
                 manager = StorageManager(remote_files={"base_file": file})
                 if file_from_doc:
-                    stored_file_path = manager.save(file if isinstance(file, str) else file.name,file_from_doc)
+                    stored_file_path = manager.save(file if isinstance(file, str) else file.name, file_from_doc)
                     payload["files"] = [stored_file_path]
                 else:
                     manager.clone_remote_files()
@@ -137,7 +137,9 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
 
             resource.set_missing_info()
             resourcebase_post_save(resource.get_real_instance())
-            resource_manager.set_permissions(None, instance=resource, permissions=resource.get_all_level_info(), created=True)
+            resource_manager.set_permissions(
+                None, instance=resource, permissions=resource.get_all_level_info(), created=True
+            )
             resource.handle_moderated_uploads()
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
             return resource
@@ -154,4 +156,3 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
     @action(detail=True, methods=["get"])
     def linked_resources(self, request, pk=None, *args, **kwargs):
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
-
