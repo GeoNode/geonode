@@ -1178,6 +1178,8 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
                 "change_resourcebase_metadata",
                 "change_dataset_data",
                 "change_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/onwer, By default it will get this permission unless rule changed on settings.
             }
 
             dataset, args, username, opts = self._create_arguments(perms_type="edit")
@@ -1205,6 +1207,8 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
                 "publish_resourcebase",
                 "change_dataset_data",
                 "download_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/onwer, By default it will get this permission unless rule changed on settings.
             }
 
             dataset, args, username, opts = self._create_arguments(perms_type="manage")
