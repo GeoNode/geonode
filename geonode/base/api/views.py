@@ -66,8 +66,8 @@ from geonode.base.api.filters import (
     FavoriteFilter,
     TKeywordsFilter,
 )
-from geonode.groups.models import GroupProfile
-from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
+from geonode.groups.models import GroupProfile, Group
+from geonode.security.permissions import get_compact_perms_list, PermSpec
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
@@ -109,6 +109,7 @@ from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
+from geonode.base.utils import patch_perms
 
 import logging
 
@@ -615,29 +616,25 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     action="permissions",
                     input_params={"uuid": request_params.get("uuid", resource.uuid)},
                 )
-            elif request.method == "PUT":
-
-                perms_spec_compact = PermSpecCompact(request.data, resource)
-
-                if resource.dirty_state:
-                    raise Exception("Cannot update if the resource is in dirty state")
-                resource.set_dirty_state()
-                _exec_request = ExecutionRequest.objects.create(
-                    user=request.user,
-                    func_name="set_permissions",
-                    geonode_resource=resource,
-                    action="permissions",
-                    input_params={
-                        "uuid": request_params.get("uuid", resource.uuid),
-                        "permissions": perms_spec_compact.extended,
-                        "created": request_params.get("created", False),
-                    },
-                )
-            elif request.method == "PATCH":
-
-                perms_spec_compact_patch = PermSpecCompact(request.data, resource)
-                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
-                perms_spec_compact_resource.merge(perms_spec_compact_patch)
+            elif request.method in ["PUT", "PATCH"]:
+                user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
+                if request.data.get("groups"):
+                    excluded_ids = []
+                    if "can_manage_anonymous_permissions" not in user_perms:
+                        anonymous_group = Group.objects.get(name="anonymous")
+                        excluded_ids.append(anonymous_group.id)
+                        logger.info(
+                            f"User {request.user.username} cannot manage anonymous permissions on resource {resource.pk}"
+                        )
+                    if "can_manage_registered_member_permissions" not in user_perms:
+                        registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+                        excluded_ids.append(registered_group.id)
+                        logger.info(
+                            f"User {request.user.username} cannot manage registered members permissions on resource {resource.pk}"
+                        )
+                    if excluded_ids:
+                        request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
+                perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
