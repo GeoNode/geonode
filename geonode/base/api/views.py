@@ -623,9 +623,15 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     if "can_manage_anonymous_permissions" not in user_perms:
                         anonymous_group = Group.objects.get(name="anonymous")
                         excluded_ids.append(anonymous_group.id)
+                        logger.info(
+                            f"User {request.user.username} cannot manage anonymous permissions on resource {resource.pk}"
+                        )
                     if "can_manage_registered_member_permissions" not in user_perms:
                         registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
                         excluded_ids.append(registered_group.id)
+                        logger.info(
+                            f"User {request.user.username} cannot manage registered members permissions on resource {resource.pk}"
+                        )
                     if excluded_ids:
                         request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
                 perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
