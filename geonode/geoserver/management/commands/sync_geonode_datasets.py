@@ -91,9 +91,10 @@ def sync_geonode_datasets(
                     "Stopping process because --ignore-errors was not set and an error was found.", stack_info=True
                 )
                 return
-    logger.info(f"There are {len(dataset_errors)} layers which could not be updated because of errors")
-    for dataset_error in dataset_errors:
-        logger.info(dataset_error)
+    if dataset_errors:
+        logger.info(f"There are {len(dataset_errors)} layers which could not be updated because of errors")
+        for dataset_error in dataset_errors:
+            logger.info(dataset_error)
 
 
 class Command(BaseCommand):
