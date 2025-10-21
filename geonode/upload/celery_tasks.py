@@ -881,7 +881,10 @@ def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, h
 
         with transaction.atomic():
             with connections[db_name].cursor() as cursor:
-                cursor.execute(f'CREATE TABLE {new_dataset_alternate} AS TABLE "{original_dataset_alternate}";')
+                cursor.execute(
+                    f'CREATE TABLE {new_dataset_alternate} (LIKE "{original_dataset_alternate}" INCLUDING ALL);'
+                    f'INSERT INTO {new_dataset_alternate} SELECT * FROM "{original_dataset_alternate}";'
+                )
 
         task_params = (
             {},
