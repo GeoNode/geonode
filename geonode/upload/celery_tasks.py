@@ -21,7 +21,6 @@ import os
 from typing import Optional
 
 from celery import Task
-from django.db import connections, transaction
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy
@@ -859,6 +858,8 @@ def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, h
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
+    from geonode.upload.handlers.common.vector import BaseVectorFileHandler
+
     try:
         orchestrator.update_execution_request_status(
             execution_id=exec_id,
@@ -879,12 +880,7 @@ def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, h
             if schema_exists:
                 db_name = schema_exists.db_name
 
-        with transaction.atomic():
-            with connections[db_name].cursor() as cursor:
-                cursor.execute(
-                    f'CREATE TABLE {new_dataset_alternate} (LIKE "{original_dataset_alternate}" INCLUDING ALL);'
-                    f'INSERT INTO {new_dataset_alternate} SELECT * FROM "{original_dataset_alternate}";'
-                )
+        BaseVectorFileHandler.copy_table_with_ogr2ogr(original_dataset_alternate, new_dataset_alternate, db_name)
 
         task_params = (
             {},
