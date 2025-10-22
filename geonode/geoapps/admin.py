@@ -19,8 +19,6 @@
 
 from django.contrib import admin
 
-from modeltranslation.admin import TabbedTranslationAdmin
-
 from geonode.geoapps.models import GeoApp
 from geonode.base.admin import ResourceBaseAdminForm
 
@@ -31,7 +29,7 @@ class GeoAppAdminForm(ResourceBaseAdminForm):
         fields = "__all__"
 
 
-class GeoAppAdmin(TabbedTranslationAdmin):
+class GeoAppAdmin(admin.ModelAdmin):
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display_links = ("title",)
     list_display = (

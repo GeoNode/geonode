@@ -20,7 +20,6 @@
 from django import forms
 from slugify import slugify
 from django.utils.translation import gettext_lazy as _
-from modeltranslation.forms import TranslationModelForm
 
 from django.contrib.auth import get_user_model
 
@@ -28,7 +27,7 @@ from geonode.groups.models import GroupProfile
 from geonode.base.widgets import TaggitSelect2Custom
 
 
-class GroupForm(TranslationModelForm):
+class GroupForm(forms.ModelForm):
     slug = forms.SlugField(
         help_text=_("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         widget=forms.HiddenInput,
