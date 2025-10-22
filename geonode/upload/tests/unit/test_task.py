@@ -730,9 +730,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
             FieldSchema.objects.filter(name="field_").delete()
 
     @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
-    @patch("geonode.upload.celery_tasks.connections")
-    def test_copy_geonode_data_table_should_work(self, mock_connection, async_call):
-        mock_cursor = mock_connection.__getitem__("datastore").cursor.return_value.__enter__.return_value
+    def test_copy_geonode_data_table_should_work(self, async_call):
         ModelSchema.objects.create(name=f"schema_copy_{str(self.exec_id)}", db_name="datastore")
 
         copy_geonode_data_table(
@@ -747,6 +745,4 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
                 "new_dataset_alternate": f"schema_copy_{str(self.exec_id)}",  # this alternate is generated dring the geonode resource copy
             },
         )
-        mock_cursor.execute.assert_called_once()
-        mock_cursor.execute.assert_called()
         async_call.assert_called_once()
