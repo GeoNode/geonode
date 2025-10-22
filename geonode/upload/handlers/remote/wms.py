@@ -138,7 +138,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             resource.set_bbox_polygon(remote_bbox, "EPSG:4326")
             resource_manager.set_thumbnail(None, instance=resource)
 
-        harvester_url = _exec.input_params.get("parsed_url", None)
+        harvester_url = _exec.input_params.get("ows_url", None)
         if harvester_url:
             # call utils to connect harvester and resource
             create_harvestable_resource(resource, service_url=harvester_url)
