@@ -506,12 +506,6 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
 
         # creating remote service
         # for the test we have to pass via the proxy
-        harvester = Harvester.objects.create(
-            remote_url="http://localhost:8000/proxy/",
-            name="Test",
-            default_owner=self.user,
-            harvester_type="geonode.harvesting.harvesters.wms.OgcWmsHarvester",
-        )
         _, wms = WebMapService(
             f"{os.getenv('GEOSERVER_LOCATION')}ows?service=WMS&version=1.3.0&request=GetCapabilities"
         )
@@ -519,9 +513,8 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
         res = wms[next(iter(wms.contents))]
         import urllib.parse
 
-        url = urllib.parse.quote(
-            f"{os.getenv('GEOSERVER_LOCATION')}ows?service=WMS&version=1.3.0&request=GetCapabilities", safe=""
-        )
+        normal_url = f"{os.getenv('GEOSERVER_LOCATION')}ows?service=WMS&version=1.3.0&request=GetCapabilities"
+        url = urllib.parse.quote(normal_url, safe="")
         payload = {
             "url": f"http://localhost:8000/proxy/?url={url}",
             "title": "Remote Title",
@@ -530,6 +523,12 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
             "parse_remote_metadata": True,
             "action": "upload",
         }
+        harvester = Harvester.objects.create(
+            remote_url=f"http://localhost:8000/proxy/?url={url}",
+            name="Test",
+            default_owner=self.user,
+            harvester_type="geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+        )
         initial_name = res.title.lower().replace(" ", "_")
         assert_payload = {
             "subtype": "remote",
