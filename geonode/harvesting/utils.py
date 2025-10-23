@@ -29,7 +29,7 @@ def create_harvestable_resource(geonode_resource, service_url):
     Will generate a Harvestable resource, if the service_url is passed
     it tries to connect it with an existing harvester
     """
-    harvester = Harvester.objects.filter(remote_url__startswith=service_url).first()
+    harvester = Harvester.objects.filter(remote_url=service_url).first()
     if not harvester:
         logger.warning("The WMS layer does not belong to any known remote service")
         return
