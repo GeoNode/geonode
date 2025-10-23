@@ -29,7 +29,7 @@ jobs:
           working_directory: ./
 
       - run:
-          name: Start the  
+          name: Start the stack
           command: docker-compose --env-file .env_test -f docker-compose-test.yml up -d
           working_directory: ./
 
@@ -94,11 +94,6 @@ jobs:
                 command: |
                   docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F <<parameters.codecov_name>>'
                 working_directory: ./
-
-      - run:
-          name: Stop the stack  
-          command: docker-compose --env-file .env_test -f docker-compose-test.yml down -v
-          working_directory: ./
 
 workflows:
 

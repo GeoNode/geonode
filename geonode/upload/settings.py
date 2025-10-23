@@ -38,4 +38,5 @@ SYSTEM_HANDLERS = [
     "geonode.upload.handlers.tiles3d.handler.Tiles3DFileHandler",
     "geonode.upload.handlers.remote.tiles3d.RemoteTiles3DResourceHandler",
     "geonode.upload.handlers.remote.wms.RemoteWMSResourceHandler",
+    "geonode.upload.handlers.empty_dataset.handler.EmptyDatasetHandler",
 ]
