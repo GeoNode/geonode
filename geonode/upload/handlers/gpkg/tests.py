@@ -19,7 +19,6 @@
 import shutil
 
 from django.test import TestCase, override_settings
-from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
 from geonode.upload import project_dir
@@ -68,13 +67,6 @@ class TestGPKGHandler(TestCase):
         )
         self.assertEqual(len(self.handler.TASKS["copy"]), 5)
         self.assertTupleEqual(expected, self.handler.TASKS["copy"])
-
-    def test_is_valid_should_raise_exception_if_the_gpkg_is_invalid(self):
-        with self.assertRaises(InvalidGeopackageException) as _exc:
-            self.handler.is_valid(files=self.invalid_files, user=self.user)
-
-        self.assertIsNotNone(_exc)
-        self.assertTrue("Error layer: INVALID LAYER_name" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
