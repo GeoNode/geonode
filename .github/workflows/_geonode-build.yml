@@ -1,0 +1,84 @@
+name: GeoNode Build & Test (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      test_suite:
+        required: false
+        type: string
+        default: ""
+      codecov_name:
+        required: false
+        type: string
+        default: "default"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build cache
+        uses: actions/download-artifact@v4
+        with:
+          name: buildx-cache
+          path: /tmp/.buildx-cache
+
+      - name: Load Docker cache
+        run: |
+          echo "Cache restored for this job:"
+          du -sh /tmp/.buildx-cache || true
+
+      - name: Start stack
+        run: docker-compose --env-file .env_test -f docker-compose-test.yml up -d
+
+      - name: Wait for services
+        run: |
+          n=1
+          m=10
+          until [ $n -gt $m ]
+          do
+            sleep 60
+            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
+            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
+            echo ""
+            echo "Waited $n min (out of $m min)"
+            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then
+              break
+            fi
+            echo "Not healthy yet..."
+            docker ps
+            n=$((n+1))
+          done
+          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
+
+      - name: Run tests
+        if: ${{ inputs.test_suite != '' }}
+        run: |
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+        timeout-minutes: 10
+
+      - name: Upload to Codecov
+        if: ${{ inputs.test_suite != '' }}
+        run: |
+          docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+            "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F ${{ inputs.codecov_name }}"
+
+      - name: Debug logs
+        if: failure()
+        run: |
+          docker ps
+          docker logs django4geonode --tail 1000 || true
+          docker logs geoserver4geonode --tail 1000 || true
+          docker logs celery4geonode --tail 1000 || true
+
+      - name: Stop the stack
+        if: always()
+        run: docker-compose --env-file .env_test -f docker-compose-test.yml down -v
