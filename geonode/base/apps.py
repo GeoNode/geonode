@@ -36,4 +36,9 @@ class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
             _("Request resource change"),
             _("Owner has requested permissions to modify a resource"),
         ),
+        (
+            "resourcebase_created",
+            _("Resource is created"),
+            _("Resource is created"),
+        ),
     )
