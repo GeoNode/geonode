@@ -128,10 +128,10 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
             harvesting_session_id, models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_OK, final_details=message
         )
 
+
 @app.task(
     bind=True,
-    # keep the harvesting monitor in a different queue
-    queue="geonode",
+    queue="harvesting",
     time_limit=600,
     acks_late=False,
     ignore_result=False,
@@ -139,7 +139,7 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: int, delay: int = 30):
     """
     Task to monitor a harvesting session and call finalizer if it gets stuck.
-        
+
     :param harvesting_session_id: ID of AsynchronousHarvestingSession
     :param workflow_time: Expected workflow duration in seconds
     :param delay: Delay in seconds before re-checking if session is still ongoing
@@ -171,6 +171,7 @@ def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: 
     except Exception as exc:
         logger.exception(f"Watchdog failed for session {harvesting_session_id}: {exc}")
 
+
 @app.task(
     bind=True,
     queue="harvesting",
@@ -186,14 +187,6 @@ def harvest_resources(
 ):
     """Harvest a list of remote resources that all belong to the same harvester."""
     session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
-
-    # Call the harvesting session monitor
-    workflow_time = calculate_dynamic_expiration(len(harvestable_resource_ids), buffer_time=1200)
-    monitor_delay = 60  # check every 60 seconds
-    harvesting_session_monitor.apply_async(
-        args=(harvesting_session_id, workflow_time, monitor_delay),
-        countdown=0,
-    )
 
     if session.status == session.STATUS_ABORTED:
         logger.debug("Session has been aborted, skipping...")
@@ -222,6 +215,15 @@ def harvest_resources(
     session.status = session.STATUS_ON_GOING
     session.total_records_to_process = len(harvestable_resource_ids)
     session.save()
+
+    # Call the harvesting session monitor
+    # workflow_time = calculate_dynamic_expiration(len(harvestable_resource_ids), buffer_time=1200)
+    workflow_time = 60
+    monitor_delay = 5  # check every 60 seconds
+    harvesting_session_monitor.apply_async(
+        args=(harvesting_session_id, workflow_time, monitor_delay),
+        countdown=0,
+    )
 
     # Definition of the expiration time
     task_dynamic_expiration = calculate_dynamic_expiration(len(harvestable_resource_ids))
