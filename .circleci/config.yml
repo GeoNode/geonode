@@ -109,43 +109,49 @@ workflows:
           codecov_name: smoke_tests
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers
+          test_suite: ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers --durations=30
       - build:
           name: geonode_test_suite
           codecov_name: main_tests
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a and '\''geoserver'\'' not in a and '\''upload'\'' not in a]))") geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests
+          test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS[:int(len(settings.GEONODE_APPS)/2)] if '\''security'\'' not in a and '\''geoserver'\'' not in a and '\''upload'\'' not in a]))") geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests  --durations=30
       - build:
           name: geonode_test_security
           codecov_name: security_tests
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' in a]))")
+          test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' in a]))") --durations=30
       - build:
           name: geonode_test_gis_backend
           codecov_name: gis
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''geoserver'\'' in a]))")
+          test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''geoserver'\'' in a]))") --durations=30
       - build:
           name: geonode_test_rest_apis
           codecov_name: api
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests
+          test_suite: ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.geoapps.api.tests --durations=30
+      - build:
+          name: geonode_test_rest_apis2
+          codecov_name: api
+          load_docker_cache: false
+          save_docker_cache: false
+          test_suite: ./tests/test.sh geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests --durations=30
       - build:
           name: geonode_test_csw
           codecov_name: csw
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests
+          test_suite: ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --durations=30
       - build:
           name: geonode_upload
           codecov_name: importer
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./tests/test.sh geonode.upload          
+          test_suite: ./tests/test.sh geonode.upload --durations=30 
       # TODO
       # - build:
       #     name: geonode_test_integration_upload
