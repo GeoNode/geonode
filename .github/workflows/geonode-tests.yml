@@ -1,6 +1,11 @@
 name: GeoNode Test Suites
 
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+      - 3.x
+  workflow_dispatch:
 
 jobs:
   # -------------------------
@@ -17,7 +22,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Cache condivisa per tutti i job di questo run
+      # Cache condivisa tra job dello stesso run
       - name: Restore Docker build cache
         uses: actions/cache@v4
         with:
@@ -30,68 +35,201 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
 
-      - name: Save Docker build cache
-        if: always()
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: geonode-cache-${{ github.run_id }}
-
   # -------------------------
-  # TEST JOBS (riutilizzano cache)
+  # TEMPLATE PER TUTTI I TEST JOB
   # -------------------------
   geonode_test_suite_smoke:
     name: Smoke Tests
     needs: build_images
-    uses: ./.github/workflows/_geonode-build.yml
-    with:
-      codecov_name: smoke_tests
-      test_suite: ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
 
+      - name: Start stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+
+      - name: Wait for services
+        run: |
+          n=1; m=10
+          until [ $n -gt $m ]; do
+            sleep 60
+            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
+            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
+            echo "Waited $n min (out of $m)"
+            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then break; fi
+            docker ps
+            n=$((n+1))
+          done
+          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
+
+      - name: Run smoke tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c \
+            "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();"
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c \
+            "CREATE EXTENSION IF NOT EXISTS postgis;"
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+            "./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers"
+
+      - name: Upload coverage to Codecov
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+            "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F smoke_tests"
+
+      - name: Show logs (on fail)
+        if: failure()
+        run: |
+          docker ps
+          docker logs django4geonode --tail 1000 || true
+          docker logs geoserver4geonode --tail 1000 || true
+          docker logs celery4geonode --tail 1000 || true
+
+      - name: Stop stack
+        if: always()
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+
+  # -------------------------
+  # MAIN TEST SUITE
+  # -------------------------
   geonode_test_suite:
     name: Main Tests
     needs: build_images
-    uses: ./.github/workflows/_geonode-build.yml
-    with:
-      codecov_name: main_tests
-      test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write(' '.join([a+'.tests' for a in settings.GEONODE_APPS if 'security' not in a and 'geoserver' not in a and 'upload' not in a]))") geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
 
+      - name: Start stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+
+      - name: Wait for services
+        run: |
+          n=1; m=10
+          until [ $n -gt $m ]; do
+            sleep 60
+            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
+            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
+            echo "Waited $n min (out of $m)"
+            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then break; fi
+            docker ps
+            n=$((n+1))
+          done
+          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
+
+      - name: Run main test suite
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+            "./tests/test.sh $(python -c \"import sys;from geonode import settings;sys.stdout.write(' '.join([a+'.tests' for a in settings.GEONODE_APPS if 'security' not in a and 'geoserver' not in a and 'upload' not in a]))\") geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests"
+
+      - name: Upload coverage
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+            "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F main_tests"
+
+      - name: Stop stack
+        if: always()
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+
+  # -------------------------
+  # SECURITY TESTS
+  # -------------------------
   geonode_test_security:
     name: Security Tests
     needs: build_images
-    uses: ./.github/workflows/_geonode-build.yml
-    with:
-      codecov_name: security_tests
-      test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write(' '.join([a+'.tests' for a in settings.GEONODE_APPS if 'security' in a]))")
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+      - run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+            "./tests/test.sh $(python -c \"import sys;from geonode import settings;sys.stdout.write(' '.join([a+'.tests' for a in settings.GEONODE_APPS if 'security' in a]))\")"
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+        if: always()
 
+  # -------------------------
+  # GIS BACKEND TESTS
+  # -------------------------
   geonode_test_gis_backend:
     name: GIS Backend Tests
     needs: build_images
-    uses: ./.github/workflows/_geonode-build.yml
-    with:
-      codecov_name: gis
-      test_suite: ./tests/test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write(' '.join([a+'.tests' for a in settings.GEONODE_APPS if 'geoserver' in a]))")
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+          "./tests/test.sh $(python -c \"import sys;from geonode import settings;sys.stdout.write(' '.join([a+'.tests' for a in settings.GEONODE_APPS if 'geoserver' in a]))\")"
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+        if: always()
 
+  # -------------------------
+  # REST API TESTS
+  # -------------------------
   geonode_test_rest_apis:
     name: REST API Tests
     needs: build_images
-    uses: ./.github/workflows/_geonode-build.yml
-    with:
-      codecov_name: api
-      test_suite: ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+          "./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests"
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+        if: always()
 
+  # -------------------------
+  # CSW TESTS
+  # -------------------------
   geonode_test_csw:
     name: CSW Tests
     needs: build_images
-    uses: ./.github/workflows/_geonode-build.yml
-    with:
-      codecov_name: csw
-      test_suite: ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+          "./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests"
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+        if: always()
 
+  # -------------------------
+  # UPLOAD TESTS
+  # -------------------------
   geonode_upload:
     name: Upload Tests
     needs: build_images
-    uses: ./.github/workflows/_geonode-build.yml
-    with:
-      codecov_name: importer
-      test_suite: ./tests/test.sh geonode.upload
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+          "./tests/test.sh geonode.upload"
+      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+        if: always()
