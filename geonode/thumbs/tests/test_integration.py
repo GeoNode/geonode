@@ -88,7 +88,8 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         }
     )
     @patch.object(WebMapService_1_1_1, "getmap")
-    def test_tile_background_retries(self, request_mock):
+    @patch("geonode.utils.request")
+    def test_tile_background_retries(self, request_mock, req):
         request_mock.return_value = None
 
         width = 240
