@@ -2327,3 +2327,28 @@ EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
 EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "True")
 )
+
+INSTALLED_APPS += ("geonode.indexing",)
+GEONODE_APPS += ("geonode.indexing",)
+
+METADATA_INDEXES = {
+    "title": ["title"],
+    "title_abstract": ["title", "abstract"],
+    "all": ["title", "abstract", "supplemental_information"],
+}
+
+# you can get the language name in psql using "\dF"
+MULTILANG_POSTGRES_LANGS = {
+    None: "simple",
+    "en": "english",
+    "it": "italian",
+    "es": "spanish",
+}
+
+
+#
+# INSTALLED_APPS += ("rndt",)
+# GEONODE_APPS += ("rndt",)
+#
+# CATALOG_METADATA_TEMPLATE = "xml/template-rndt.xml"
+
