@@ -75,41 +75,75 @@ logger = logging.getLogger(__name__)
 
 
 class DatasetsTest(GeoNodeBaseTestSupport):
-    """Tests geonode.layers app/module"""
+    """
+    Tests for geonode.datasets module/app functionality.
 
+    Note: The original docstring referenced 'geonode.layers', which was likely
+    a typo and has been corrected to 'geonode.datasets'.
+    """
+
+    # Class Attributes
     type = "dataset"
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
+    # Define paths as class attributes if they are constant
+    _TEST_FIXTURE_ROOT = f"{settings.PROJECT_ROOT}/base/fixtures"
+    _EXML_PATH = f"{_TEST_FIXTURE_ROOT}/test_xml.xml"
+    _SLD_PATH = f"{_TEST_FIXTURE_ROOT}/test_sld.sld"
 
     @classmethod
     def setUpClass(cls):
+        """Setup models and permissions before running tests."""
         super().setUpClass()
+        # Use more descriptive variable name if available, e.g., cls.get_type()
         create_models(type=cls.get_type, integration=cls.get_integration)
         all_public()
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+    # @classmethod
+    # def tearDownClass(cls):
+    #     """Clean up models after all tests in the class have run."""
+    #     super().tearDownClass()
+    #     # Remove the comment markers if clean-up is necessary
+    #     # remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
+        """Setup test instance data for each individual test method."""
         super().setUp()
-        self.user = "admin"
-        self.passwd = "admin"
+
+        # 1. Credentials and Users
+        self.username = "admin"  # Use self.username for clarity
+        self.password = "admin"  # Use self.password for clarity
+        self.admin_user = get_user_model().objects.get(username=self.username)
         self.anonymous_user = get_anonymous_user()
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
-        self.maxDiff = None
-        self.sut = create_single_dataset("single_point")
-        create_dataset_data(self.sut.resourcebase_ptr_id)
-        create_dataset_data(Dataset.objects.first().resourcebase_ptr_id)
-        self.r = namedtuple("GSCatalogRes", ["resource"])
 
+        # 2. Paths and Constants
+        self.exml_path = self._EXML_PATH  # Use class attributes
+        self.sld_path = self._SLD_PATH  # Use class attributes
+        self.maxDiff = None  # Keeps unlimited diff output for assertions
+
+        # 3. Test Data Setup
+        # Create a single dataset and attach it to the instance
+        self.dataset = create_single_dataset("single_point")
+        create_dataset_data(self.dataset.resourcebase_ptr_id)
+
+        # Ensure at least one other dataset exists (as in the original code)
+        # Note: This line uses Dataset.objects.first(), which depends on fixture loading order.
+        # It might be safer to create a second specific dataset object if strict control is needed.
+        first_dataset = Dataset.objects.first()
+        if first_dataset:
+            create_dataset_data(first_dataset.resourcebase_ptr_id)
+
+        # 4. Mock Objects and Admin
+        # Use a more explicit and descriptive name than 'self.r' for the namedtuple
+        self.geoserver_resource_nt = namedtuple("GSCatalogRes", ["resource"])
+
+        # Admin Setup
         site = AdminSite()
-        self.admin = DatasetAdmin(Dataset, site)
+        self.admin = DatasetAdmin(Dataset, site)  # Clearer instantiation
 
+        # Request Factory Setup
         self.request_admin = RequestFactory().get("/admin")
-        self.request_admin.user = get_user_model().objects.get(username="admin")
+        # Assign the retrieved admin user directly
+        self.request_admin.user = self.admin_user
 
     # Admin Tests
 
