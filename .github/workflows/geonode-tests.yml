@@ -3,49 +3,43 @@ name: GeoNode Test Suites
 on: [push, workflow_dispatch]
 
 jobs:
+  # -------------------------
+  # BUILD IMMAGINI
+  # -------------------------
   build_images:
     name: Build and cache Docker images
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Crea una chiave cache univoca per ogni run manuale
-      - name: Define cache key
-        id: cache-key
-        run: echo "key=geonode-cache-${{ github.run_id }}" >> $GITHUB_OUTPUT
-
-      - name: Restore Docker layer cache
+      # Cache condivisa per tutti i job di questo run
+      - name: Restore Docker build cache
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ steps.cache-key.outputs.key }}
+          key: geonode-cache-${{ github.run_id }}
 
-      - name: Build stack (using cache)
+      - name: Build the stack (Docker Compose v2)
         run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml build \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            --progress plain
+          docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
         env:
           DOCKER_BUILDKIT: 1
-          BUILDKIT_CACHE: /tmp/.buildx-cache
 
-      - name: Export cache for next jobs
+      - name: Save Docker build cache
         if: always()
-        run: |
-          echo "Cache directory after build:"
-          du -sh /tmp/.buildx-cache || true
-
-      - name: Upload build cache
-        uses: actions/upload-artifact@v4
+        uses: actions/cache@v4
         with:
-          name: buildx-cache
           path: /tmp/.buildx-cache
+          key: geonode-cache-${{ github.run_id }}
 
-  # Ogni job usa la cache e non rebuilda
+  # -------------------------
+  # TEST JOBS (riutilizzano cache)
+  # -------------------------
   geonode_test_suite_smoke:
     name: Smoke Tests
     needs: build_images
