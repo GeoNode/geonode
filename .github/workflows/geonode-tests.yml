@@ -1,11 +1,6 @@
 name: GeoNode Test Suites
 
-on:
-  push:
-    branches:
-      - main
-      - 3.x
-  workflow_dispatch:
+on: [push, workflow_dispatch]
 
 jobs:
   # -------------------------
