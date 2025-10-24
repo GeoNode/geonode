@@ -294,8 +294,8 @@ jobs:
 
   geonode_upload:
     name: Upload Tests
-      needs: [build_images, geonode_test_suite_smoke]
-      runs-on: ubuntu-24.04
+    needs: [build_images, geonode_test_suite_smoke]
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
