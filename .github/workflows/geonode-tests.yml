@@ -19,7 +19,7 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
 
       - name: List built images
-        run: docker images ls
+        run: docker images
 
 #      - name: Save built Docker images
 #        run: |
