@@ -265,20 +265,21 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             mock_harvester.is_harvesting_due.assert_called()
             mock_harvester.initiate_perform_harvesting.assert_called()
 
-    
     @mock.patch("geonode.harvesting.tasks.transaction.on_commit")
     @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
     def test_harvest_resources_with_chunks(self, mock_get, mock_on_commit):
-        mock_session = mock.MagicMock(spec=[
-            "status",
-            "STATUS_ON_GOING",
-            "STATUS_ABORTING",
-            "STATUS_ABORTED",
-            "harvester",
-            "started_at",
-            "save",
-            "id",
-        ])
+        mock_session = mock.MagicMock(
+            spec=[
+                "status",
+                "STATUS_ON_GOING",
+                "STATUS_ABORTING",
+                "STATUS_ABORTED",
+                "harvester",
+                "started_at",
+                "save",
+                "id",
+            ]
+        )
         mock_session.STATUS_ON_GOING = "ON_GOING"
         mock_session.STATUS_ABORTING = "ABORTING"
         mock_session.STATUS_ABORTED = "ABORTED"
@@ -313,16 +314,18 @@ class TasksTestCase(GeoNodeBaseTestSupport):
     @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
     def test_harvest_resources_without_chunks(self, mock_get, mock_on_commit):
         # Mock session with explicit spec and STATUS constants
-        mock_session = mock.MagicMock(spec=[
-        "status",
-        "STATUS_ON_GOING",
-        "STATUS_ABORTING",
-        "STATUS_ABORTED",
-        "harvester",
-        "started_at",
-        "save",
-        "id",
-        ])
+        mock_session = mock.MagicMock(
+            spec=[
+                "status",
+                "STATUS_ON_GOING",
+                "STATUS_ABORTING",
+                "STATUS_ABORTED",
+                "harvester",
+                "started_at",
+                "save",
+                "id",
+            ]
+        )
         mock_session.STATUS_ON_GOING = "ON_GOING"
         mock_session.STATUS_ABORTING = "ABORTING"
         mock_session.STATUS_ABORTED = "ABORTED"
