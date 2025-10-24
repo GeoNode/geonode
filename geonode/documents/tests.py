@@ -52,7 +52,7 @@ from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document
 
-from geonode.base.populate_test_data import all_public, create_models, create_single_doc, remove_models
+from geonode.base.populate_test_data import all_public, create_models, create_single_doc
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
@@ -64,6 +64,9 @@ TEST_GIF = os.path.join(os.path.dirname(__file__), "tests/data/img.gif")
 
 class DocumentsTest(GeoNodeBaseTestSupport):
     type = "document"
+    IMAGE_BYTES = (
+        b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+    )
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
@@ -75,23 +78,20 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_models(type=cls.get_type, integration=cls.get_integration)
+        # ... model creation
+        create_models("map")
+        create_models("document")
         all_public()
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+        # Moved static computations here:
+        cls.project_root = os.path.abspath(os.path.dirname(__file__))
+        cls.anonymous_user = get_anonymous_user()
 
     def setUp(self):
         super().setUp()
-        create_models("map")
-        self.project_root = os.path.abspath(os.path.dirname(__file__))
-        self.imgfile = io.BytesIO(
-            b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00"
-            b"\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
-        )
-        self.anonymous_user = get_anonymous_user()
+        self.project_root = self.__class__.project_root
+        self.anonymous_user = self.__class__.anonymous_user
+        self.imgfile = io.BytesIO(self.__class__.IMAGE_BYTES)
 
     def test_document_mimetypes_rendering(self):
         ARCHIVETYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "archive"]
@@ -464,18 +464,29 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
 
 class DocumentModerationTestCase(GeoNodeBaseTestSupport):
-    def setUp(self):
-        super().setUp()
-        self.user = "admin"
-        self.passwd = "admin"
+
+    @classmethod
+    def setUpClass(cls):
+        """Runs once for the entire test class."""
+        super().setUpClass()
         create_models(type=b"document")
         create_models(type=b"map")
-        self.project_root = os.path.abspath(os.path.dirname(__file__))
-        self.document_upload_url = f"{(reverse('document_upload'))}?no__redirect=true"
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = "test@email.com"
-        self.u.is_active = True
-        self.u.save()
+        cls.project_root = os.path.abspath(os.path.dirname(__file__))
+        cls.document_upload_url = f"{(reverse('document_upload'))}?no__redirect=true"
+
+        cls.user = "admin"
+        cls.passwd = "admin"
+        cls.u = get_user_model().objects.get(username=cls.user)
+        cls.u.email = "test@email.com"
+        cls.u.is_active = True
+        cls.u.save()
+
+    def setUp(self):
+        """Runs before every test method (Now only runs what's essential)."""
+        super().setUp()
+        self.u = self.__class__.u  # Assign the pre-configured user instance
+        self.project_root = self.__class__.project_root
+        self.document_upload_url = self.__class__.document_upload_url
 
     def _get_input_path(self):
         base_path = gisdata.GOOD_DATA
@@ -501,22 +512,48 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
 
 class DocumentsNotificationsTestCase(NotificationsTestsHelper):
-    def setUp(self):
-        self.user = "admin"
-        self.passwd = "admin"
+    # Static data can be defined once as class attributes
+    ADMIN_USERNAME = "admin"
+    ADMIN_PASSWD = "admin"
+    NORMAL_USERNAME = "norman"
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once for the entire test class.
+        Database operations and static object initialization go here.
+        """
+        super().setUpClass()
         create_models(type=b"document")
-        self.anonymous_user = get_anonymous_user()
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = "test@email.com"
-        self.u.is_active = True
-        self.u.is_superuser = True
-        self.u.save()
-        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.u)
-        self.norman = get_user_model().objects.get(username="norman")
-        self.norman.email = "norman@email.com"
-        self.norman.is_active = True
-        self.norman.save()
-        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.norman)
+        cls.admin_user = get_user_model().objects.get(username=cls.ADMIN_USERNAME)
+        cls.admin_user.email = "test@email.com"
+        cls.admin_user.is_active = True
+        cls.admin_user.is_superuser = True
+        cls.admin_user.save()
+        cls.norman_user = get_user_model().objects.get(username=cls.NORMAL_USERNAME)
+        cls.norman_user.email = "norman@email.com"
+        cls.norman_user.is_active = True
+        cls.norman_user.save()
+
+        cls.anonymous_user = get_anonymous_user()
+
+        NotificationsTestsHelper().setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, cls.admin_user)
+        NotificationsTestsHelper().setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, cls.norman_user)
+
+    def setUp(self):
+        """
+        Runs before every test method.
+        Only quick attribute assignments go here.
+        """
+        # Call super().setUp() if necessary for the test runner
+        super().setUp()
+
+        # Assign the pre-configured attributes to the test instance
+        self.user = self.__class__.ADMIN_USERNAME
+        self.passwd = self.__class__.ADMIN_PASSWD
+        self.u = self.__class__.admin_user
+        self.norman = self.__class__.norman_user
+        self.anonymous_user = self.__class__.anonymous_user
 
     def testDocumentsNotifications(self):
         with self.settings(
@@ -541,19 +578,45 @@ class DocumentsNotificationsTestCase(NotificationsTestsHelper):
 
 
 class DocumentViewTestCase(GeoNodeBaseTestSupport):
+
+    # Fixtures are correctly placed here, running once before setUpClass
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
-    def setUp(self):
-        self.not_admin = get_user_model().objects.create(username="r-lukaku", is_active=True)
-        self.not_admin.set_password("very-secret")
-        self.not_admin.save()
-        self.test_doc = resource_manager.create(
+    # Define static data as class attributes
+    NOT_ADMIN_USERNAME = "r-lukaku"
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once for the entire test class. Database writes and static data setup go here.
+        """
+        super().setUpClass()
+
+        cls.not_admin = get_user_model().objects.create(username=cls.NOT_ADMIN_USERNAME, is_active=True)
+        cls.not_admin.set_password("very-secret")
+        cls.not_admin.save()  # Two database writes (create + save password) run only once!
+
+        cls.test_doc = resource_manager.create(
             None,
             resource_type=Document,
-            defaults=dict(files=[TEST_GIF], owner=self.not_admin, title="test", is_approved=True),
+            defaults=dict(files=[TEST_GIF], owner=cls.not_admin, title="test", is_approved=True),
         )
-        self.perm_spec = {"users": {"AnonymousUser": []}}
-        self.doc_link_url = reverse("document_link", args=(self.test_doc.pk,))
+
+        cls.perm_spec = {"users": {"AnonymousUser": []}}
+
+        cls.doc_link_url = reverse("document_link", args=(cls.test_doc.pk,))
+
+    def setUp(self):
+        """
+        Runs before every test method. Only quick attribute assignments go here.
+        """
+        super().setUp()
+
+        # Assign pre-configured attributes to the test instance
+        self.not_admin = self.__class__.not_admin
+        self.test_doc = self.__class__.test_doc
+        self.perm_spec = self.__class__.perm_spec
+        self.doc_link_url = self.__class__.doc_link_url
 
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)

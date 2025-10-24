@@ -90,7 +90,7 @@ class AssetViewSet(DynamicModelViewSet):
 
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/download(?:/(?P<path>.*))?",  # noqa
+        url_path=r"(?P<pk>\d+)/download(?:/(?P<path>.*))?",
         # url_name="asset-download",
         methods=["get"],
     )
@@ -99,7 +99,7 @@ class AssetViewSet(DynamicModelViewSet):
 
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/link(?:/(?P<path>.*))?",  # noqa
+        url_path=r"(?P<pk>\d+)/link(?:/(?P<path>.*))?",
         # url_name="asset-link",
         methods=["get"],
     )

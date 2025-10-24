@@ -675,7 +675,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     )
     @action(
         detail=False,
-        url_path="(?P<resource_id>\d+)/set_thumbnail_from_bbox",  # noqa
+        url_path=r"(?P<resource_id>\d+)/set_thumbnail_from_bbox",
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
@@ -744,7 +744,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     )
     @action(
         detail=False,
-        url_path="(?P<resource_id>\d+)/delete_thumbnail",  # noqa
+        url_path=r"(?P<resource_id>\d+)/delete_thumbnail",
         url_name="delete-thumbnail",
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
@@ -800,7 +800,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     )
     @action(
         detail=False,
-        url_path="create/(?P<resource_type>\w+)",  # noqa
+        url_path=r"create/(?P<resource_type>\w+)",
         url_name="resource-service-create",
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],

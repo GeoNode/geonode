@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.urls import reverse
-from rest_framework.test import APITransactionTestCase
+from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode import settings
@@ -34,13 +34,16 @@ from geonode.documents.models import Document
 logger = logging.getLogger(__name__)
 
 
-class DocumentsApiTests(APITransactionTestCase):
+class DocumentsApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
+
+    def setUp(self):
         self.admin = get_user_model().objects.get(username="admin")
         self.url = reverse("documents-list")
         self.invalid_file_path = f"{settings.PROJECT_ROOT}/tests/data/thesaurus.rdf"
