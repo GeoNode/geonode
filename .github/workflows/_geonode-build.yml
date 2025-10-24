@@ -1,6 +1,16 @@
 name: GeoNode Test Suites
 
-on: [push, workflow_dispatch]
+on:
+  workflow_call:
+    inputs:
+      test_suite:
+        required: false
+        type: string
+        default: ""
+      codecov_name:
+        required: false
+        type: string
+        default: "default"
 
 jobs:
   # -------------------------
