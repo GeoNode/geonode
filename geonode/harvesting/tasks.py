@@ -20,6 +20,7 @@
 import math
 import logging
 import typing
+from datetime import timedelta
 
 from celery import chord
 from django.core.exceptions import ValidationError
@@ -130,6 +131,52 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 
 @app.task(
     bind=True,
+    # We define the geonode queue so that the main worker runs this task
+    queue="geonode",
+    time_limit=600,
+    acks_late=False,
+    ignore_result=False,
+)
+def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: int, delay: int = 30):
+    """
+    Task to monitor a harvesting session and call finalizer if it gets stuck.
+
+    :param harvesting_session_id: ID of AsynchronousHarvestingSession
+    :param workflow_time: Expected workflow duration in seconds
+    :param delay: Delay in seconds before re-checking if session is still ongoing
+    """
+    try:
+        session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
+
+        if session.status not in [session.STATUS_ON_GOING, session.STATUS_ABORTING]:
+            logger.info(f"Session {harvesting_session_id} is not ongoing. Harvesting session monitor task exiting.")
+            return
+
+        now_ = timezone.now()
+        expected_finish = session.started + timedelta(seconds=workflow_time)
+
+        if now_ > expected_finish:
+            logger.warning(f"Session {harvesting_session_id} appears stuck. Running finalizer.")
+            # Call your finalizer directly
+            _finish_harvesting.delay(harvesting_session_id, execution_id=None)
+        else:
+            logger.debug(
+                f"Session {harvesting_session_id} still ongoing. Rescheduling Harvesting session monitor in {delay}s."
+            )
+            # Reschedule itself
+            harvesting_session_monitor.apply_async(
+                args=(harvesting_session_id, workflow_time, delay),
+                countdown=delay,
+            )
+
+    except models.AsynchronousHarvestingSession.DoesNotExist:
+        logger.warning(f"Session {harvesting_session_id} does not exist. Harvesting session monitor exiting.")
+    except Exception as exc:
+        logger.exception(f"Harvesting session monitor failed for session {harvesting_session_id}: {exc}")
+
+
+@app.task(
+    bind=True,
     queue="harvesting",
     expires=120,
     time_limit=600,
@@ -143,6 +190,7 @@ def harvest_resources(
 ):
     """Harvest a list of remote resources that all belong to the same harvester."""
     session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
+
     if session.status == session.STATUS_ABORTED:
         logger.debug("Session has been aborted, skipping...")
         return
@@ -170,6 +218,14 @@ def harvest_resources(
     session.status = session.STATUS_ON_GOING
     session.total_records_to_process = len(harvestable_resource_ids)
     session.save()
+
+    # Call the harvesting session monitor
+    workflow_time = calculate_dynamic_expiration(len(harvestable_resource_ids), buffer_time=1200)
+    monitor_delay = 60
+    harvesting_session_monitor.apply_async(
+        args=(harvesting_session_id, workflow_time, monitor_delay),
+        countdown=0,
+    )
 
     # Definition of the expiration time
     task_dynamic_expiration = calculate_dynamic_expiration(len(harvestable_resource_ids))
@@ -822,7 +878,7 @@ def update_asynchronous_session(
 def calculate_dynamic_expiration(
     num_resources: int,
     estimated_duration_per_resource: int = 20,
-    buffer_time: int = 300,
+    buffer_time: int = 600,
 ) -> int:
     """
     Calculate a dynamic expiration time (in seconds)
