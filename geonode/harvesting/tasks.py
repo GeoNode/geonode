@@ -220,9 +220,8 @@ def harvest_resources(
     session.save()
 
     # Call the harvesting session monitor
-    # workflow_time = calculate_dynamic_expiration(len(harvestable_resource_ids), buffer_time=1200)
-    workflow_time = 60
-    monitor_delay = 5  # check every 60 seconds
+    workflow_time = calculate_dynamic_expiration(len(harvestable_resource_ids), buffer_time=1200)
+    monitor_delay = 60
     harvesting_session_monitor.apply_async(
         args=(harvesting_session_id, workflow_time, monitor_delay),
         countdown=0,
