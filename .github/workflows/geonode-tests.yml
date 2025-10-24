@@ -137,7 +137,7 @@ jobs:
       - run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS if \"security\" not in a and \"geoserver\" not in a and \"upload\" not in a]))") &&
-            .tests/test.sh $TESTS --duration=30 --failfast"
+            .tests/test.sh $TESTS --duration=30 --failfast
           '
       - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -176,7 +176,7 @@ jobs:
       - run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"security\" in a]))") &&
-            .tests/test.sh $TESTS --duration=30 --failfast"
+            .tests/test.sh $TESTS --duration=30 --failfast
           '
       - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -215,7 +215,7 @@ jobs:
       - run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"geoserver\" in a]))") &&
-            .tests/test.sh $TESTS --duration=30 --failfast"
+            .tests/test.sh $TESTS --duration=30 --failfast
           '
       - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -252,8 +252,9 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
       - run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
-            ".tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast"
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            .tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
+          '
       - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
@@ -289,8 +290,9 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
       - run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
-            ".tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast"
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            .tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
+          '
       - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
@@ -326,8 +328,9 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
       - run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
-            ".tests/test.sh geonode.upload --duration=30 --failfast"
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            .tests/test.sh geonode.upload --duration=30 --failfast
+          '
       - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
