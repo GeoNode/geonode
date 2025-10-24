@@ -14,16 +14,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx (local)
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
-
       - name: Build all services (Docker Compose v2)
         run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain --load
-        env:
-          DOCKER_BUILDKIT: 1
+          docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
 
       - name: Save built Docker images
         run: |
