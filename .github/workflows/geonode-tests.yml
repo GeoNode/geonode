@@ -7,7 +7,7 @@ jobs:
   # BUILD DOCKER IMAGES AND SHARE AS ARTIFACTS
   # -------------------------------------------------
   build_and_test:
-    name: Build and export Docker images
+    name: Build and Run Tests
     runs-on: ubuntu-24.04
 
     steps:
@@ -50,7 +50,7 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
 
-      - name: Run smoke tests
+      - name: Run tests
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
           TESTS=$(python -c "import sys;from geonode import settings;print(' '.join([a+'.tests' for a in settings.GEONODE_APPS]))") && 
