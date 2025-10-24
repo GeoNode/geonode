@@ -18,6 +18,7 @@
 #########################################################################
 import logging
 from django.conf import settings
+from geonode.harvesting.utils import create_harvestable_resource
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.services import enumerations
@@ -61,7 +62,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         """
         payload, original_data = BaseRemoteResourceHandler.extract_params_from_data(_data, action=action)
         if action != exa.COPY.value:
-            payload["lookup"] = original_data.pop("lookup", None)
+            payload["identifier"] = original_data.pop("identifier", None)
             payload["bbox"] = original_data.pop("bbox", None)
             payload["parse_remote_metadata"] = original_data.pop("parse_remote_metadata", None)
 
@@ -80,7 +81,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         to_update = {
             "ows_url": ows_url,
             "parsed_url": parsed_url,
-            "remote_resource_id": _exec.input_params.get("lookup", None),
+            "remote_resource_id": _exec.input_params.get("identifier", None),
         }
         if _exec.input_params.get("parse_remote_metadata", False):
             try:
@@ -100,7 +101,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
 
     def get_wms_resource(self, _exec):
         _, wms = WebMapService(_exec.input_params.get("url"))
-        wms_resource = wms[_exec.input_params.get("lookup")]
+        wms_resource = wms[_exec.input_params.get("identifier")]
         return wms_resource
 
     def generate_alternate(
@@ -114,7 +115,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
     ):
         """
         For WMS we dont want to generate an alternate, otherwise we cannot use
-        the alternate to lookup the layer in the remote service
+        the alternate to identifier the layer in the remote service
         """
         return layer_name, payload_alternate
 
@@ -136,6 +137,12 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         if remote_bbox:
             resource.set_bbox_polygon(remote_bbox, "EPSG:4326")
             resource_manager.set_thumbnail(None, instance=resource)
+
+        harvester_url = _exec.input_params.get("parsed_url", None)
+        if harvester_url:
+            # call utils to connect harvester and resource
+            create_harvestable_resource(resource, service_url=harvester_url)
+
         return resource
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):

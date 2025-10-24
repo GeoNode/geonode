@@ -25,11 +25,11 @@ class RemoteWMSSerializer(RemoteResourceSerializer):
         model = RemoteResourceSerializer.Meta.model
         ref_name = "RemoteWMSSerializer"
         fields = RemoteResourceSerializer.Meta.fields + (
-            "lookup",
+            "identifier",
             "bbox",
             "parse_remote_metadata",
         )
 
-    lookup = serializers.CharField(required=True)
+    identifier = serializers.CharField(required=True)
     bbox = serializers.ListField(required=False)
     parse_remote_metadata = serializers.BooleanField(required=False, default=False)

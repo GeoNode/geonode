@@ -41,7 +41,7 @@ class TestRemoteWMSResourceHandler(TestCase):
             "url": "http://invalid.com",
             "type": "invalid",
             "title": "This will fail",
-            "lookup": "abc124",
+            "identifier": "abc124",
             "bbox": ["1", "2", "3", "4"],
             "parse_remote_metadata": False,
         }
@@ -49,7 +49,7 @@ class TestRemoteWMSResourceHandler(TestCase):
             "url": cls.valid_url,
             "type": "wms",
             "title": "This will fail",
-            "lookup": "abc124",
+            "identifier": "abc124",
             "bbox": ["1", "2", "3", "4"],
             "parse_remote_metadata": False,
         }
@@ -58,7 +58,7 @@ class TestRemoteWMSResourceHandler(TestCase):
             "url": cls.valid_url,
             "type": "wms",
             "title": "This will fail",
-            "lookup": "abc124",
+            "identifier": "abc124",
             "bbox": ["1", "2", "3", "4"],
             "parse_remote_metadata": True,
         }
@@ -123,7 +123,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertTrue("title" in actual)
         self.assertTrue("url" in actual)
         self.assertTrue("type" in actual)
-        self.assertTrue("lookup" in actual)
+        self.assertTrue("identifier" in actual)
         self.assertTrue("parse_remote_metadata" in actual)
         self.assertTrue("bbox" in actual)
 
