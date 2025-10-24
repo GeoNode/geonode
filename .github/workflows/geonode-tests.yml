@@ -18,73 +18,65 @@ jobs:
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
 
-      - name: List built images
-        run: docker images
+      - name: Save built Docker images
+        run: |
+          mkdir -p docker_images
+          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-24.04
 
-#      - name: Save built Docker images
-#        run: |
-#          mkdir -p docker_images
-#          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-24.04
-#          docker save -o docker_images/geoserver.tar geonode/geoserver:2.24.4-latest
-#          docker save -o docker_images/db.tar geonode/postgis:15-3.5-latest || true
-#
-#      - name: Upload Docker images as artifact
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: docker-images
-#          path: docker_images
-#          retention-days: 1  # automatically expires after 1 day
-#
-#  geonode_test_suite_smoke:
-#    name: Test tests location
-#    needs: build_images
-#    runs-on: ubuntu-24.04
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#
-#      - name: Download built Docker images
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: docker-images
-#          path: docker_images
-#
-#      - name: Load Docker images
-#        run: |
-#          docker load -i docker_images/django.tar
-#          docker load -i docker_images/geoserver.tar
-#          docker load -i docker_images/db.tar || true
-#          docker load -i docker_images/celery.tar || true
-#
-#      - name: Start the stack
-#        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-#        working-directory: ${{ github.workspace }}
-#
-#      - name: Wait for services to become healthy
-#        run: |
-#          n=1
-#          m=10
-#          until [ $n -gt $m ]
-#          do
-#            sleep 60
-#            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
-#            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
-#            echo "⏳ Waited $n min (of $m)"
-#            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then
-#              break
-#            fi
-#            docker ps
-#            n=$((n+1))
-#          done
-#          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
-#        working-directory: ${{ github.workspace }}
-#
-#      - name: Run smoke tests
-#        run: |
-#          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
-#            "pwd && ls -all /usr/src/geonode"
-#        working-directory: ${{ github.workspace }}
+      - name: Upload Docker images as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+          retention-days: 1  # automatically expires after 1 day
+
+  geonode_test_suite_smoke:
+    name: Test tests location
+    needs: build_images
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built Docker images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+
+      - name: Load Docker images
+        run: |
+          docker load -i docker_images/django.tar
+
+      - name: Start the stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+        working-directory: ${{ github.workspace }}
+
+      - name: Wait for services to become healthy
+        run: |
+          n=1
+          m=10
+          until [ $n -gt $m ]
+          do
+            sleep 60
+            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
+            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
+            echo "⏳ Waited $n min (of $m)"
+            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then
+              break
+            fi
+            docker ps
+            n=$((n+1))
+          done
+          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
+        working-directory: ${{ github.workspace }}
+
+      - name: Run smoke tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
+            "pwd && ls -all /usr/src/geonode"
+        working-directory: ${{ github.workspace }}
 #
 #      - name: Stop stack (always)
 #        if: always()
