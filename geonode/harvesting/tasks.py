@@ -149,7 +149,7 @@ def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: 
         session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
 
         if session.status not in [session.STATUS_ON_GOING, session.STATUS_ABORTING]:
-            logger.info(f"Session {harvesting_session_id} is not ongoing. Watchdog exiting.")
+            logger.info(f"Session {harvesting_session_id} is not ongoing. Harvesting session monitor task exiting.")
             return
 
         now_ = timezone.now()
@@ -160,7 +160,9 @@ def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: 
             # Call your finalizer directly
             _finish_harvesting.delay(harvesting_session_id, execution_id=None)
         else:
-            logger.debug(f"Session {harvesting_session_id} still ongoing. Rescheduling watchdog in {delay}s.")
+            logger.debug(
+                f"Session {harvesting_session_id} still ongoing. Rescheduling Harvesting session monitor in {delay}s."
+            )
             # Reschedule itself
             harvesting_session_monitor.apply_async(
                 args=(harvesting_session_id, workflow_time, delay),
@@ -168,9 +170,9 @@ def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: 
             )
 
     except models.AsynchronousHarvestingSession.DoesNotExist:
-        logger.warning(f"Session {harvesting_session_id} does not exist. Watchdog exiting.")
+        logger.warning(f"Session {harvesting_session_id} does not exist. Harvesting session monitor exiting.")
     except Exception as exc:
-        logger.exception(f"Watchdog failed for session {harvesting_session_id}: {exc}")
+        logger.exception(f"Harvesting session monitor failed for session {harvesting_session_id}: {exc}")
 
 
 @app.task(

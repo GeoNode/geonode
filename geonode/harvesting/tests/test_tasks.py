@@ -18,7 +18,7 @@
 #########################################################################
 from unittest import mock
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import override_settings
@@ -624,3 +624,74 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         updated_log = mock_exec_req.log
         assert "Harvesting completed with errors" in updated_log
         assert mock_exec_req.status == ExecutionRequest.STATUS_FINISHED
+
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_monitor_exits_when_not_ongoing(self, mock_get):
+        mock_session = mock.MagicMock()
+        mock_session.status = "FINISHED"
+        mock_session.STATUS_ON_GOING = "ON_GOING"
+        mock_session.STATUS_ABORTING = "ABORTING"
+        mock_get.return_value = mock_session
+
+        tasks.harvesting_session_monitor(1, 60)
+        mock_get.assert_called_once()
+
+    @mock.patch("geonode.harvesting.tasks.harvesting_session_monitor.apply_async")
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_monitor_reschedules_itself(self, mock_get, mock_apply_async):
+        current_time = now()
+        mock_session = mock.MagicMock()
+        mock_session.status = "ON_GOING"
+        mock_session.STATUS_ON_GOING = "ON_GOING"
+        mock_session.STATUS_ABORTING = "ABORTING"
+        mock_session.started = current_time
+        mock_get.return_value = mock_session
+
+        tasks.harvesting_session_monitor(1, 3600, delay=5)
+        mock_apply_async.assert_called_once()
+
+    @mock.patch("geonode.harvesting.tasks._finish_harvesting.delay")
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_monitor_triggers_finalizer_if_stuck(self, mock_get, mock_delay):
+        mock_session = mock.MagicMock()
+        mock_session.status = "ON_GOING"
+        mock_session.STATUS_ON_GOING = "ON_GOING"
+        mock_session.STATUS_ABORTING = "ABORTING"
+        mock_session.started = now() - timedelta(hours=1)
+        mock_get.return_value = mock_session
+
+        tasks.harvesting_session_monitor(1, workflow_time=60)
+        mock_delay.assert_called_once_with(1, execution_id=None)
+
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_monitor_session_does_not_exist(self, mock_get):
+        mock_get.side_effect = models.AsynchronousHarvestingSession.DoesNotExist
+
+        # Capture logs from the correct logger
+        with self.assertLogs("geonode.harvesting.tasks", level="WARNING") as log_cm:
+            tasks.harvesting_session_monitor(999, 60)
+
+        # Check that the warning about non-existing session was logged
+        self.assertTrue(
+            any(
+                "Session 999 does not exist. Harvesting session monitor exiting." in message
+                for message in log_cm.output
+            )
+        )
+
+        # Ensure the get() was called
+        mock_get.assert_called_once_with(pk=999)
+
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_monitor_handles_exception(self, mock_get):
+        # Force an exception
+        mock_get.side_effect = RuntimeError("boom")
+
+        # Capture logs from the correct logger
+        with self.assertLogs("geonode.harvesting.tasks", level="ERROR") as log_cm:
+            tasks.harvesting_session_monitor(1, 60)
+
+        # Check that the exception was logged
+        self.assertTrue(
+            any("Harvesting session monitor failed for session 1: boom" in message for message in log_cm.output)
+        )
