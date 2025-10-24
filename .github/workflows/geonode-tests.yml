@@ -6,7 +6,7 @@ jobs:
   # -------------------------------------------------
   # BUILD DOCKER IMAGES AND SHARE AS ARTIFACTS
   # -------------------------------------------------
-  build_images:
+  build_and_test:
     name: Build and export Docker images
     runs-on: ubuntu-24.04
 
@@ -78,27 +78,3 @@ jobs:
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
         working-directory: ${{ github.workspace }}
 
-      
-
-
-
-  # -------------------------------------------------
-  # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END
-  # -------------------------------------------------
-  cleanup_artifacts:
-    name: Cleanup Artifacts
-    needs:
-      - geonode_test_suite_smoke
-      - geonode_test_suite
-      - geonode_test_security
-      - geonode_test_gis_backend
-      - geonode_test_rest_apis
-      - geonode_test_csw
-      - geonode_upload
-    runs-on: ubuntu-24.04
-    if: always()
-    steps:
-      - name: Delete all uploaded artifacts
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          failOnError: false
