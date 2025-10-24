@@ -26,7 +26,7 @@ jobs:
 
       - name: Build stack (using cache)
         run: |
-          docker-compose --env-file .env_test -f docker-compose-test.yml build \
+          docker compose --env-file .env_test -f docker-compose-test.yml build \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             --progress plain
         env:
