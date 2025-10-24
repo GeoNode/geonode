@@ -36,10 +36,13 @@ logger = logging.getLogger(__name__)
 class GeoAppsApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
+
+    def setUp(self):
         self.admin = get_user_model().objects.get(username="admin")
         self.bobby = get_user_model().objects.get(username="bobby")
         self.norman = get_user_model().objects.get(username="norman")
