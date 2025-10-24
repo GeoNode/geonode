@@ -24,6 +24,7 @@ from types import SimpleNamespace
 from django.utils.translation import gettext as _
 
 from geonode.base.models import ResourceBase
+from geonode.indexing.manager import index_manager
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.i18n import I18nCache
@@ -187,6 +188,17 @@ class MetadataManager:
                         context, "metadata_error_post_save", {"handler": handler.__class__.__name__, "exc": e}
                     ),
                 )
+
+        try:
+            index_manager.update_index(resource.id, schema, json_instance)
+        except Exception as e:
+            logger.error(f"Error while indexing", exc_info=e)
+            MetadataHandler._set_error(
+                errors,
+                [],
+                MetadataHandler.localize_message(context, "metadata_error_indexing", {"exc": e}),
+            )
+
         # TESTING ONLY
         if "_error_" in resource.title.lower():
             _create_test_errors(schema, errors, [], "TEST: field <{schema_type}>'{path}' PUT request")
