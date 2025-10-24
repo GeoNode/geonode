@@ -14,19 +14,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx (local)
         uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
 
       - name: Build all services (Docker Compose v2)
         run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
+          docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain --load
         env:
           DOCKER_BUILDKIT: 1
 
       - name: Save built Docker images
         run: |
           mkdir -p docker_images
-          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-22.04
+          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-24.04
           docker save -o docker_images/geoserver.tar geonode/geoserver:2.24.4-latest
           docker save -o docker_images/db.tar geonode/postgis:15-3.5-latest || true
 
