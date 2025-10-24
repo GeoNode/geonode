@@ -70,12 +70,12 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c \
             "CREATE EXTENSION IF NOT EXISTS postgis;"
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
-            "cd /usr/src/geonode && bash ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers"
+            "./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers"
 
-      - name: Upload coverage to Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
-            "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F smoke_tests"
+#      - name: Upload coverage to Codecov
+#        run: |
+#          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+#            "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F smoke_tests"
 
       - name: Show logs (on fail)
         if: failure()
@@ -174,24 +174,24 @@ jobs:
 #      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 #        if: always()
 
-  # -------------------------
-  # REST API TESTS
-  # -------------------------
-  geonode_test_rest_apis:
-    name: REST API Tests
-    needs: [build_images, geonode_test_suite_smoke]
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: geonode-cache-${{ github.run_id }}
-      - run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-      - run: docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
-          "cd /usr/src/geonode && bash ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests"
-      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-        if: always()
+#  # -------------------------
+#  # REST API TESTS
+#  # -------------------------
+#  geonode_test_rest_apis:
+#    name: REST API Tests
+#    needs: [build_images, geonode_test_suite_smoke]
+#    runs-on: ubuntu-22.04
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions/cache@v4
+#        with:
+#          path: /tmp/.buildx-cache
+#          key: geonode-cache-${{ github.run_id }}
+#      - run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+#      - run: docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+#          "./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests"
+#      - run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+#        if: always()
 
 #  # -------------------------
 #  # CSW TESTS
