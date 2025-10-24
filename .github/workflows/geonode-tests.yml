@@ -26,10 +26,9 @@ jobs:
       - name: Save built Docker images
         run: |
           mkdir -p docker_images
-          docker save -o docker_images/django.tar django4geonode
-          docker save -o docker_images/geoserver.tar geoserver4geonode
-          docker save -o docker_images/db.tar db4geonode || true
-          docker save -o docker_images/celery.tar celery4geonode || true
+          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-22.04
+          docker save -o docker_images/geoserver.tar geonode/geoserver:2.24.4-latest
+          docker save -o docker_images/db.tar geonode/postgis:15-3.5-latest || true
 
       - name: Upload Docker images as artifact
         uses: actions/upload-artifact@v4
