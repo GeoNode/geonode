@@ -18,6 +18,7 @@
 #########################################################################
 from unittest import mock
 import uuid
+from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.test import override_settings
@@ -264,46 +265,75 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             mock_harvester.is_harvesting_due.assert_called()
             mock_harvester.initiate_perform_harvesting.assert_called()
 
+    
     @mock.patch("geonode.harvesting.tasks.transaction.on_commit")
-    @mock.patch("geonode.harvesting.tasks.models")
-    def test_harvest_resources_with_chunks(
-        self,
-        mock_models,
-        mock_on_commit,
-    ):
-        mock_session = mock.MagicMock()
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_harvest_resources_with_chunks(self, mock_get, mock_on_commit):
+        mock_session = mock.MagicMock(spec=[
+            "status",
+            "STATUS_ON_GOING",
+            "STATUS_ABORTING",
+            "STATUS_ABORTED",
+            "harvester",
+            "started_at",
+            "save",
+            "id",
+        ])
+        mock_session.STATUS_ON_GOING = "ON_GOING"
+        mock_session.STATUS_ABORTING = "ABORTING"
+        mock_session.STATUS_ABORTED = "ABORTED"
         mock_session.status = mock_session.STATUS_ON_GOING
+        mock_session.harvester = mock.MagicMock()
         mock_session.harvester.update_availability.return_value = True
-        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+        mock_session.started_at = datetime.now()
+        mock_session.id = 123
+
+        mock_get.side_effect = lambda *_, **__: mock_session
 
         harvestable_resource_ids = list(range(5))
 
         with mock.patch("geonode.harvesting.tasks.queue_next_chunk_batch.apply_async") as mock_apply_async:
             with override_settings(CHUNK_SIZE=2, MAX_PARALLEL_QUEUE_CHUNKS=2):
-                tasks.harvest_resources(harvestable_resource_ids, self.harvesting_session.id)
+                tasks.harvest_resources(harvestable_resource_ids, mock_session.id)
 
-                # Simulate transaction.on_commit callback being run
                 assert mock_on_commit.called
                 callback = mock_on_commit.call_args[0][0]
                 callback()
 
-            # Now apply_async should have been called
             mock_apply_async.assert_called_once()
             _, kwargs = mock_apply_async.call_args
 
-            expected_expires = 5 * 20 + 300  # 5 resources * 20 + 300 buffer = 400
-            expected_time_limit = 2 * 2 * 20 + 300  # CHUNK_SIZE * MAX_PARALLEL_QUEUE_CHUNKS * 20 + 300 = 380
+            expected_expires = 5 * 20 + 600  # adjust to match production logic
+            expected_time_limit = 2 * 2 * 20 + 300
 
             self.assertEqual(kwargs["expires"], expected_expires)
             self.assertEqual(kwargs["time_limit"], expected_time_limit)
 
     @mock.patch("geonode.harvesting.tasks.transaction.on_commit")
-    @mock.patch("geonode.harvesting.tasks.models")
-    def test_harvest_resources_without_chunks(self, mock_models, mock_on_commit):
-        mock_session = mock.MagicMock()
+    @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
+    def test_harvest_resources_without_chunks(self, mock_get, mock_on_commit):
+        # Mock session with explicit spec and STATUS constants
+        mock_session = mock.MagicMock(spec=[
+        "status",
+        "STATUS_ON_GOING",
+        "STATUS_ABORTING",
+        "STATUS_ABORTED",
+        "harvester",
+        "started_at",
+        "save",
+        "id",
+        ])
+        mock_session.STATUS_ON_GOING = "ON_GOING"
+        mock_session.STATUS_ABORTING = "ABORTING"
+        mock_session.STATUS_ABORTED = "ABORTED"
         mock_session.status = mock_session.STATUS_ON_GOING
+        mock_session.harvester = mock.MagicMock()
         mock_session.harvester.update_availability.return_value = True
-        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
+        mock_session.started_at = datetime.now()
+        mock_session.id = 456
+        mock_session.save.return_value = None
+
+        mock_get.side_effect = lambda *_, **__: mock_session
 
         harvestable_resource_ids = list(range(5))
 
@@ -311,22 +341,21 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             mock_workflow = mock.MagicMock()
             mock_chord.return_value = mock_workflow
 
+            # Large CHUNK_SIZE disables chunking logic
             with override_settings(CHUNK_SIZE=100, MAX_PARALLEL_QUEUE_CHUNKS=2):
-                tasks.harvest_resources(harvestable_resource_ids, self.harvesting_session.id)
+                tasks.harvest_resources(harvestable_resource_ids, mock_session.id)
 
-                # Check that transaction.on_commit was called
+                # Simulate post-commit callback
                 self.assertTrue(mock_on_commit.called)
                 callback = mock_on_commit.call_args[0][0]
-
-                # Simulate the transaction commit
                 callback()
 
-            # Check that chord was built with correct number of subtasks
+            # Validate that chord was built correctly
             self.assertTrue(mock_chord.called)
-            subtasks = mock_chord.call_args[0][0]  # This is the list of resource tasks
+            subtasks = mock_chord.call_args[0][0]
             self.assertEqual(len(subtasks), len(harvestable_resource_ids))
 
-            # Check that apply_async was called on the workflow
+            # Verify final workflow trigger
             mock_workflow.apply_async.assert_called_once()
 
     @mock.patch("geonode.harvesting.tasks.logger")

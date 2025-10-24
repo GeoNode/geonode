@@ -131,7 +131,8 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 
 @app.task(
     bind=True,
-    queue="harvesting",
+    # We define the geonode queue so that the main worker runs this task
+    queue="geonode",
     time_limit=600,
     acks_late=False,
     ignore_result=False,
