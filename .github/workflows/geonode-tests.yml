@@ -69,7 +69,7 @@ jobs:
               geonode.geoapps.api.tests \
               geonode.upload \
               geonode.tests.csw \
-              geonode.catalogue.backends.tests
+              geonode.catalogue.backends.tests --duration=30
           '
         working-directory: ${{ github.workspace }}
 
