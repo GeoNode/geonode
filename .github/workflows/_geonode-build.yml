@@ -31,7 +31,7 @@ jobs:
           du -sh /tmp/.buildx-cache || true
 
       - name: Start stack
-        run: docker-compose --env-file .env_test -f docker-compose-test.yml up -d
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
 
       - name: Wait for services
         run: |
@@ -56,19 +56,19 @@ jobs:
       - name: Run tests
         if: ${{ inputs.test_suite != '' }}
         run: |
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
         timeout-minutes: 10
 
       - name: Upload to Codecov
         if: ${{ inputs.test_suite != '' }}
         run: |
-          docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c \
             "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F ${{ inputs.codecov_name }}"
 
       - name: Debug logs
@@ -81,4 +81,4 @@ jobs:
 
       - name: Stop the stack
         if: always()
-        run: docker-compose --env-file .env_test -f docker-compose-test.yml down -v
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
