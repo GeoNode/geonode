@@ -30,8 +30,12 @@ jobs:
           path: docker_images
           retention-days: 1  # automatically expires after 1 day
 
+
+  # -------------------------------------------------
+  # SMOKE TESTS (BLOCKING)
+  # -------------------------------------------------
   geonode_test_suite_smoke:
-    name: Test tests location
+    name: Smoke Tests
     needs: build_images
     runs-on: ubuntu-24.04
 
@@ -53,65 +57,6 @@ jobs:
         run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
         working-directory: ${{ github.workspace }}
 
-      - name: Wait for services to become healthy
-        run: |
-          n=1
-          m=10
-          until [ $n -gt $m ]
-          do
-            sleep 60
-            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
-            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
-            echo "⏳ Waited $n min (of $m)"
-            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then
-              break
-            fi
-            docker ps
-            n=$((n+1))
-          done
-          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
-        working-directory: ${{ github.workspace }}
-
-      - name: Run smoke tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
-            "pwd && ls -all /usr/src/geonode"
-        working-directory: ${{ github.workspace }}
-#
-#      - name: Stop stack (always)
-#        if: always()
-#        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-#        working-directory: ${{ github.workspace }}
-
-#  # -------------------------------------------------
-#  # SMOKE TESTS (BLOCKING)
-#  # -------------------------------------------------
-#  geonode_test_suite_smoke:
-#    name: Smoke Tests
-#    needs: build_images
-#    runs-on: ubuntu-24.04
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#
-#      - name: Download built Docker images
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: docker-images
-#          path: docker_images
-#
-#      - name: Load Docker images
-#        run: |
-#          docker load -i docker_images/django.tar
-#          docker load -i docker_images/geoserver.tar
-#          docker load -i docker_images/db.tar || true
-#          docker load -i docker_images/celery.tar || true
-#
-#      - name: Start the stack
-#        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-#        working-directory: ${{ github.workspace }}
-#
 #      - name: Wait for services to become healthy
 #        run: |
 #          n=1
@@ -130,19 +75,19 @@ jobs:
 #          done
 #          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
 #        working-directory: ${{ github.workspace }}
-#
-#      - name: Run smoke tests
-#        run: |
-#          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
-#            "cd /usr/src/geonode && bash tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers"
-#        working-directory: ${{ github.workspace }}
-#
-#      - name: Stop stack (always)
-#        if: always()
-#        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-#        working-directory: ${{ github.workspace }}
-#
-#
+
+      - name: Run smoke tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc \
+            "./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers"
+        working-directory: ${{ github.workspace }}
+
+      - name: Stop stack (always)
+        if: always()
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+        working-directory: ${{ github.workspace }}
+
+
 #  # -------------------------------------------------
 #  # OTHER TEST SUITES (DEPEND ON SMOKE)
 #  # -------------------------------------------------
