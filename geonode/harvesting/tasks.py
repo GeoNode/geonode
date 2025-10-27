@@ -137,7 +137,7 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
     acks_late=False,
     ignore_result=False,
 )
-def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: int, delay: int = 30):
+def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: int, delay: int = 30, execution_id: str = None):
     """
     Task to monitor a harvesting session and call finalizer if it gets stuck.
 
@@ -158,7 +158,7 @@ def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: 
         if now_ > expected_finish:
             logger.warning(f"Session {harvesting_session_id} appears stuck. Running finalizer.")
             # Call your finalizer directly
-            _finish_harvesting.delay(harvesting_session_id, execution_id=None)
+            _finish_harvesting.delay(harvesting_session_id, execution_id)
         else:
             logger.debug(
                 f"Session {harvesting_session_id} still ongoing. Rescheduling Harvesting session monitor in {delay}s."
@@ -166,6 +166,7 @@ def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: 
             # Reschedule itself
             harvesting_session_monitor.apply_async(
                 args=(harvesting_session_id, workflow_time, delay),
+                kwargs={"execution_id": execution_id},
                 countdown=delay,
             )
 
@@ -219,20 +220,6 @@ def harvest_resources(
     session.total_records_to_process = len(harvestable_resource_ids)
     session.save()
 
-    # Call the harvesting session monitor
-    if settings.HARVESTING_MONITOR_ENABLED:
-        workflow_time = calculate_dynamic_expiration(len(harvestable_resource_ids), buffer_time=1200)
-        monitor_delay = getattr(settings, "HARVESTING_MONITOR_DELAY", 60)
-
-        logger.debug(
-            f"Starting harvesting session monitor for session {harvesting_session_id} "
-            f"with workflow_time={workflow_time}s, delay={monitor_delay}s"
-        )
-        harvesting_session_monitor.apply_async(
-            args=(harvesting_session_id, workflow_time, monitor_delay),
-            countdown=0,
-        )
-
     # Definition of the expiration time
     task_dynamic_expiration = calculate_dynamic_expiration(len(harvestable_resource_ids))
 
@@ -253,6 +240,21 @@ def harvest_resources(
 
     # Request ID, which will be passed to the _harvest_resource sub-tasks
     execution_id = str(exec_request.exec_id)
+
+    # Call the harvesting session monitor
+    if settings.HARVESTING_MONITOR_ENABLED:
+        workflow_time = calculate_dynamic_expiration(len(harvestable_resource_ids), buffer_time=1200)
+        monitor_delay = getattr(settings, "HARVESTING_MONITOR_DELAY", 60)
+
+        logger.debug(
+            f"Starting harvesting session monitor for session {harvesting_session_id} "
+            f"with workflow_time={workflow_time}s, delay={monitor_delay}s"
+        )
+        harvesting_session_monitor.apply_async(
+            args=(harvesting_session_id, workflow_time, monitor_delay),
+            kwargs={"execution_id": execution_id},
+            countdown=0,
+        )
 
     if len(harvestable_resource_ids) <= harvestable_resources_limit:
         # No chunking, just one chord for all resources
