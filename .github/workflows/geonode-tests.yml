@@ -30,6 +30,11 @@ jobs:
           path: docker_images
           retention-days: 1  # automatically expires after 1 day
 
+      - name: Coverage comment
+        id: coverage_comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
 
   # -------------------------------------------------
   # SMOKE TESTS (BLOCKING)
@@ -56,25 +61,6 @@ jobs:
       - name: Start the stack
         run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
         working-directory: ${{ github.workspace }}
-
-#      - name: Wait for services to become healthy
-#        run: |
-#          n=1
-#          m=10
-#          until [ $n -gt $m ]
-#          do
-#            sleep 60
-#            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
-#            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
-#            echo "⏳ Waited $n min (of $m)"
-#            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then
-#              break
-#            fi
-#            docker ps
-#            n=$((n+1))
-#          done
-#          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
-#        working-directory: ${{ github.workspace }}
 
       - name: Setup test databases
         run: |
@@ -372,3 +358,25 @@ jobs:
         uses: geekyeggo/delete-artifact@v5
         with:
           failOnError: false
+
+  # ----------------
+  # COVERAGE COMMENT
+  # ----------------
+  cleanup_artifacts:
+    name: Coverage
+    needs:
+      - geonode_test_suite_smoke
+      - geonode_test_suite
+      - geonode_test_security
+      - geonode_test_gis_backend
+      - geonode_test_rest_apis
+      - geonode_test_csw
+      - geonode_upload
+    runs-on: ubuntu-24.04
+    if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+    steps:
+      - name: Delete all uploaded artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage-comment-action
+          path: python-coverage-comment-action.txt
