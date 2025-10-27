@@ -50,7 +50,6 @@ from geonode import geoserver
 from geonode.base.models import Link
 from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
-from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.proxy.utils import ProxyUrlsRegistry
 
@@ -58,9 +57,10 @@ TEST_DOMAIN = ".github.com"
 TEST_URL = f"https://help{TEST_DOMAIN}/"
 
 
-class ProxyTest(GeoNodeBaseTestSupport):
+class ProxyTest(TestCase):
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         create_single_dataset("dataset")
         # FIXME(Ariel): These tests do not work when the computer is offline.
         cls.proxy_url = "/proxy/"
@@ -254,18 +254,15 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
 
-class DownloadResourceTestCase(GeoNodeBaseTestSupport):
+class DownloadResourceTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         create_single_dataset("CA")
 
     def setUp(self):
         super().setUp()
         self.maxDiff = None
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_download_url_with_not_existing_file(self):
@@ -357,6 +354,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
 class OWSApiTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         create_single_dataset(name="dataset")
 
     def setUp(self):
@@ -366,10 +364,6 @@ class OWSApiTestCase(TestCase):
         for lyr in q[:3]:
             lyr.link_type = "OGC:WMS"
             lyr.save()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     def test_ows_api(self):
         url = "/api/ows_endpoints/"
@@ -384,7 +378,7 @@ class OWSApiTestCase(TestCase):
 
 
 @override_settings(SITEURL="http://localhost:8000")
-class TestProxyTags(GeoNodeBaseTestSupport):
+class TestProxyTags(TestCase):
     def setUp(self):
         self.maxDiff = None
         self.resource = create_single_dataset("foo_dataset")
