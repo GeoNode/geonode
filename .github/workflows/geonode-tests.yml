@@ -57,6 +57,25 @@ jobs:
         run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
         working-directory: ${{ github.workspace }}
 
+#      - name: Wait for services to become healthy
+#        run: |
+#          n=1
+#          m=10
+#          until [ $n -gt $m ]
+#          do
+#            sleep 60
+#            DJANGO_STATUS=$(docker inspect --format='{{.State.Health.Status}}' django4geonode)
+#            GEOSERVER_STATUS=$(docker inspect --format='{{.State.Health.Status}}' geoserver4geonode)
+#            echo "⏳ Waited $n min (of $m)"
+#            if [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]; then
+#              break
+#            fi
+#            docker ps
+#            n=$((n+1))
+#          done
+#          [[ $DJANGO_STATUS == healthy && $GEOSERVER_STATUS == healthy ]]
+#        working-directory: ${{ github.workspace }}
+
       - name: Setup test databases
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
@@ -73,13 +92,6 @@ jobs:
             ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast
           '
         working-directory: ${{ github.workspace }}
-
-      - name: codecov
-        run:
-          name: Run code quality checks
-          command: |
-                  docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F geonode_smoke'
-          working_directory: ./
 
       - name: Stop stack (always)
         if: always()
