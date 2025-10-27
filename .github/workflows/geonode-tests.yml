@@ -66,14 +66,13 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
 
-      - name: Run smoke tests and collect coverage
+      - name: Run smoke tests
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            # test.sh should run coverage and save the .coverage data file
             ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast
           '
         working-directory: ${{ github.workspace }}
-        
+
       # === NEW STEP: Extract the coverage data file from the container ===
       - name: Save coverage data 💾
         run: |
@@ -94,9 +93,8 @@ jobs:
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
         working-directory: ${{ github.workspace }}
 
-
   # -------------------------------------------------
-  # OTHER TEST SUITES (DEPEND ON SMOKE) - REPEAT ARTIFACT LOGIC
+  # OTHER TEST SUITES (DEPEND ON SMOKE)
   # -------------------------------------------------
   geonode_test_suite:
     name: Main Tests
@@ -130,8 +128,8 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
           docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
-          
-      - name: Run tests and collect coverage
+      
+      - name: Run tests
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS if \"security\" not in a and \"geoserver\" not in a and \"upload\" not in a]))") &&
@@ -141,6 +139,7 @@ jobs:
       - name: Save coverage data 💾
         run: |
           mkdir -p coverage_data
+          # Assuming .coverage file is created in the django service working directory
           docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
       
       # === NEW STEP: Upload coverage data as an artifact ===
@@ -150,21 +149,300 @@ jobs:
           name: coverage-data
           path: coverage_data/.coverage.${{ github.job }}
           retention-days: 1
-          
+
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
-  # **NOTE:** Repeat the "Save coverage data" and "Upload coverage artifact" steps 
-  # for geonode_test_security, geonode_test_gis_backend, geonode_test_rest_apis, geonode_test_csw, and geonode_upload jobs.
-  # This ensures all coverage data files are saved with a unique name (.coverage.job_name) 
-  # and uploaded to the 'coverage-data' artifact group.
 
-  # -------------------------------------------------
-  # COVERAGE REPORT JOB
-  # -------------------------------------------------
-  coverage_report:
-    name: Generate and Upload Coverage Report 📈
-    needs: 
+  geonode_test_security:
+    name: Security Tests
+    needs: [build_images, geonode_test_suite_smoke]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built Docker images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+
+      - name: Load Docker images
+        run: |
+          docker load -i docker_images/django.tar
+
+      - name: Start the stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+        working-directory: ${{ github.workspace }}
+
+      - name: Setup test databases
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+      
+      - name: Run tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"security\" in a]))") &&
+            ./tests/test.sh $TESTS --duration=30 --failfast
+          '
+      # === NEW STEP: Extract the coverage data file from the container ===
+      - name: Save coverage data 💾
+        run: |
+          mkdir -p coverage_data
+          # Assuming .coverage file is created in the django service working directory
+          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
+      
+      # === NEW STEP: Upload coverage data as an artifact ===
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          path: coverage_data/.coverage.${{ github.job }}
+          retention-days: 1
+
+      - name: Stop containers
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+
+
+  geonode_test_gis_backend:
+    name: GIS Backend Tests
+    needs: [build_images, geonode_test_suite_smoke]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built Docker images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+
+      - name: Load Docker images
+        run: |
+          docker load -i docker_images/django.tar
+
+      - name: Start the stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+        working-directory: ${{ github.workspace }}
+
+      - name: Setup test databases
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+
+      - name: Run tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"geoserver\" in a]))") &&
+            ./tests/test.sh $TESTS --duration=30 --failfast
+          '
+      # === NEW STEP: Extract the coverage data file from the container ===
+      - name: Save coverage data 💾
+        run: |
+          mkdir -p coverage_data
+          # Assuming .coverage file is created in the django service working directory
+          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
+      
+      # === NEW STEP: Upload coverage data as an artifact ===
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          path: coverage_data/.coverage.${{ github.job }}
+          retention-days: 1
+
+      - name: Stop containers
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+
+
+  geonode_test_rest_apis:
+    name: REST API Tests
+    needs: [build_images, geonode_test_suite_smoke]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built Docker images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+
+      - name: Load Docker images
+        run: |
+          docker load -i docker_images/django.tar
+
+      - name: Start the stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+        working-directory: ${{ github.workspace }}
+
+      - name: Setup test databases
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+      
+      - name: Run tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
+          '
+      # === NEW STEP: Extract the coverage data file from the container ===
+      - name: Save coverage data 💾
+        run: |
+          mkdir -p coverage_data
+          # Assuming .coverage file is created in the django service working directory
+          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
+      
+      # === NEW STEP: Upload coverage data as an artifact ===
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          path: coverage_data/.coverage.${{ github.job }}
+          retention-days: 1
+
+      - name: Stop containers
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+
+
+  geonode_test_csw:
+    name: CSW Tests
+    needs: [build_images, geonode_test_suite_smoke]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built Docker images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+
+      - name: Load Docker images
+        run: |
+          docker load -i docker_images/django.tar
+
+      - name: Start the stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+        working-directory: ${{ github.workspace }}
+
+      - name: Setup test databases
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+      
+      - name: Run tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
+          '
+      # === NEW STEP: Extract the coverage data file from the container ===
+      - name: Save coverage data 💾
+        run: |
+          mkdir -p coverage_data
+          # Assuming .coverage file is created in the django service working directory
+          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
+      
+      # === NEW STEP: Upload coverage data as an artifact ===
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          path: coverage_data/.coverage.${{ github.job }}
+          retention-days: 1
+
+
+      - name: Stop containers
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+
+
+  geonode_upload:
+    name: Upload Tests
+    needs: [build_images, geonode_test_suite_smoke]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built Docker images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+
+      - name: Load Docker images
+        run: |
+          docker load -i docker_images/django.tar
+
+      - name: Start the stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+        working-directory: ${{ github.workspace }}
+
+      - name: Setup test databases
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+      
+      - name: Run tests
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
+            ./tests/test.sh geonode.upload --duration=30 --failfast
+          '# UPLOAD THE COVERAGE FILE AS AN ARTIFACT
+
+      # === NEW STEP: Extract the coverage data file from the container ===
+      - name: Save coverage data 💾
+        run: |
+          mkdir -p coverage_data
+          # Assuming .coverage file is created in the django service working directory
+          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
+      
+      # === NEW STEP: Upload coverage data as an artifact ===
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          path: coverage_data/.coverage.${{ github.job }}
+          retention-days: 1
+
+      - name: Stop containers
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+
+  # ----------------
+  # COVERAGE COMMENT
+  # ----------------
+  coverage:
+    name: Coverage
+    needs:
       - geonode_test_suite_smoke
       - geonode_test_suite
       - geonode_test_security
@@ -172,70 +450,27 @@ jobs:
       - geonode_test_rest_apis
       - geonode_test_csw
       - geonode_upload
-    runs-on: ubuntu-latest # No need for a heavy-duty runner, or build images.
-    if: always() # Run even if one test job fails, to get partial coverage data
-
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      # === NEW STEP: Download all coverage data files ===
-      - name: Download coverage data
-        uses: actions/download-artifact@v4
+      - name: Coverage comment
+        id: coverage_comment
+        uses: py-cov-action/python-coverage-comment-action@v3
         with:
-          name: coverage-data
-          path: .
-          
-      # === NEW STEP: Install coverage tools ===
-      - name: Install coverage tools
-        run: |
-          # Install Python and coverage utility
-          sudo apt-get update && sudo apt-get install python3-pip -y
-          pip3 install coverage
-      
-      # === NEW STEP: Combine all coverage data files ===
-      # The downloaded files are named .coverage.job_name
-      - name: Combine coverage data
-        run: |
-          # The 'coverage' tool automatically finds and combines files matching .coverage.*
-          # We need to rename them to .coverage.<hash> for 'coverage combine' to pick them up
-          for f in ./.coverage.*; do mv "$f" "./.coverage.$(basename "$f")"; done
-          coverage combine --keep # Combine all .coverage.* files into one .coverage file
-          
-      # === NEW STEP: Generate the XML report ===
-      - name: Generate Cobertura XML Report
-        run: |
-          # Assuming you want to report coverage for the 'geonode' package
-          # The source code is available because of 'actions/checkout@v4'
-          coverage xml --include=geonode/* -o coverage.xml
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Delete all uploaded artifacts
+        uses: actions/upload-artifact@v4
+        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+        with:
+          name: python-coverage-comment-action
+          path: python-coverage-comment-action.txt
 
-      # === NEW STEP: Upload the report to Codecov ===
-      - name: Upload coverage to Codecov 🚀
-        uses: codecov/codecov-action@v4
-        with:
-          # Use the generated XML file
-          files: ./coverage.xml
-          # Set token if the repo is private or you require security enforcement
-          # token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true # Recommended setting to fail the CI if the upload fails
-          verbose: true # Optional: Increase verbosity for debugging
-          
   # -------------------------------------------------
   # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END
   # -------------------------------------------------
   cleanup_artifacts:
     name: Cleanup Artifacts
     needs:
-      # ... (All previous test jobs)
-      - geonode_test_suite_smoke
-      - geonode_test_suite
-      - geonode_test_security
-      - geonode_test_gis_backend
-      - geonode_test_rest_apis
-      - geonode_test_csw
-      - geonode_upload
-      # === ADD THE NEW COVERAGE JOB ===
-      - coverage_report 
+      - coverage
     runs-on: ubuntu-24.04
     if: always()
     steps:
