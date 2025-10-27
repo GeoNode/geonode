@@ -30,6 +30,7 @@ jobs:
           path: docker_images
           retention-days: 1  # automatically expires after 1 day
 
+
   # -------------------------------------------------
   # SMOKE TESTS (BLOCKING)
   # -------------------------------------------------
@@ -73,25 +74,17 @@ jobs:
           '
         working-directory: ${{ github.workspace }}
 
-      # === NEW STEP: Extract the coverage data file from the container ===
-      - name: Save coverage data 💾
-        run: |
-          mkdir -p coverage_data
-          # Assuming .coverage file is created in the django service working directory
-          docker compose --env-file .env_test -f docker-compose-test.yml cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
-      
-      # === NEW STEP: Upload coverage data as an artifact ===
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data
-          path: coverage_data/.coverage.${{ github.job }}
-          retention-days: 1
+      - run:
+          name: Run code quality checks
+          command: |
+                  docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F geonode_smoke'
+          working_directory: ./
 
       - name: Stop stack (always)
         if: always()
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
         working-directory: ${{ github.workspace }}
+
 
   # -------------------------------------------------
   # OTHER TEST SUITES (DEPEND ON SMOKE)
@@ -135,21 +128,6 @@ jobs:
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS if \"security\" not in a and \"geoserver\" not in a and \"upload\" not in a]))") &&
             ./tests/test.sh $TESTS --duration=30 --failfast
           '
-      # === NEW STEP: Extract the coverage data file from the container ===
-      - name: Save coverage data 💾
-        run: |
-          mkdir -p coverage_data
-          # Assuming .coverage file is created in the django service working directory
-          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
-      
-      # === NEW STEP: Upload coverage data as an artifact ===
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data
-          path: coverage_data/.coverage.${{ github.job }}
-          retention-days: 1
-
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -192,21 +170,6 @@ jobs:
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"security\" in a]))") &&
             ./tests/test.sh $TESTS --duration=30 --failfast
           '
-      # === NEW STEP: Extract the coverage data file from the container ===
-      - name: Save coverage data 💾
-        run: |
-          mkdir -p coverage_data
-          # Assuming .coverage file is created in the django service working directory
-          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
-      
-      # === NEW STEP: Upload coverage data as an artifact ===
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data
-          path: coverage_data/.coverage.${{ github.job }}
-          retention-days: 1
-
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -249,21 +212,6 @@ jobs:
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"geoserver\" in a]))") &&
             ./tests/test.sh $TESTS --duration=30 --failfast
           '
-      # === NEW STEP: Extract the coverage data file from the container ===
-      - name: Save coverage data 💾
-        run: |
-          mkdir -p coverage_data
-          # Assuming .coverage file is created in the django service working directory
-          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
-      
-      # === NEW STEP: Upload coverage data as an artifact ===
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data
-          path: coverage_data/.coverage.${{ github.job }}
-          retention-days: 1
-
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -305,21 +253,6 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
           '
-      # === NEW STEP: Extract the coverage data file from the container ===
-      - name: Save coverage data 💾
-        run: |
-          mkdir -p coverage_data
-          # Assuming .coverage file is created in the django service working directory
-          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
-      
-      # === NEW STEP: Upload coverage data as an artifact ===
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data
-          path: coverage_data/.coverage.${{ github.job }}
-          retention-days: 1
-
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -361,22 +294,6 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
           '
-      # === NEW STEP: Extract the coverage data file from the container ===
-      - name: Save coverage data 💾
-        run: |
-          mkdir -p coverage_data
-          # Assuming .coverage file is created in the django service working directory
-          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
-      
-      # === NEW STEP: Upload coverage data as an artifact ===
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data
-          path: coverage_data/.coverage.${{ github.job }}
-          retention-days: 1
-
-
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
@@ -417,31 +334,16 @@ jobs:
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             ./tests/test.sh geonode.upload --duration=30 --failfast
-          '# UPLOAD THE COVERAGE FILE AS AN ARTIFACT
-
-      # === NEW STEP: Extract the coverage data file from the container ===
-      - name: Save coverage data 💾
-        run: |
-          mkdir -p coverage_data
-          # Assuming .coverage file is created in the django service working directory
-          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
-      
-      # === NEW STEP: Upload coverage data as an artifact ===
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data
-          path: coverage_data/.coverage.${{ github.job }}
-          retention-days: 1
-
+          '
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
-  # ----------------
-  # COVERAGE COMMENT
-  # ----------------
-  coverage:
-    name: Coverage
+
+  # -------------------------------------------------
+  # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END
+  # -------------------------------------------------
+  cleanup_artifacts:
+    name: Cleanup Artifacts
     needs:
       - geonode_test_suite_smoke
       - geonode_test_suite
@@ -450,27 +352,6 @@ jobs:
       - geonode_test_rest_apis
       - geonode_test_csw
       - geonode_upload
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Coverage comment
-        id: coverage_comment
-        uses: py-cov-action/python-coverage-comment-action@v3
-        with:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Delete all uploaded artifacts
-        uses: actions/upload-artifact@v4
-        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
-        with:
-          name: python-coverage-comment-action
-          path: python-coverage-comment-action.txt
-
-  # -------------------------------------------------
-  # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END
-  # -------------------------------------------------
-  cleanup_artifacts:
-    name: Cleanup Artifacts
-    needs:
-      - coverage
     runs-on: ubuntu-24.04
     if: always()
     steps:
