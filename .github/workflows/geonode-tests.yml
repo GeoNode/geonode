@@ -373,7 +373,7 @@ jobs:
       - geonode_test_csw
       - geonode_upload
     runs-on: ubuntu-24.04
-    if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+    if: build_images.steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
     steps:
       - name: Delete all uploaded artifacts
         uses: actions/upload-artifact@v4
