@@ -189,3 +189,4 @@ workflows:
   #         load_docker_cache: false
   #         save_docker_cache: true
   #         test_suite: geonode.tests.smoke geonode.tests.integration $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))")
+
