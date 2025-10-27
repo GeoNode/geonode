@@ -30,12 +30,6 @@ jobs:
           path: docker_images
           retention-days: 1  # automatically expires after 1 day
 
-      - name: Coverage comment
-        id: coverage_comment
-        uses: py-cov-action/python-coverage-comment-action@v3
-        with:
-          GITHUB_TOKEN: ${{ github.token }}
-
   # -------------------------------------------------
   # SMOKE TESTS (BLOCKING)
   # -------------------------------------------------
@@ -374,6 +368,11 @@ jobs:
       - geonode_upload
     runs-on: ubuntu-24.04
     steps:
+      - name: Coverage comment
+        id: coverage_comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Delete all uploaded artifacts
         uses: actions/upload-artifact@v4
         with:
