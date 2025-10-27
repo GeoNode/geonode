@@ -58,15 +58,16 @@ TEST_URL = f"https://help{TEST_DOMAIN}/"
 
 
 class ProxyTest(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        create_single_dataset("dataset")
+        # FIXME(Ariel): These tests do not work when the computer is offline.
+        cls.proxy_url = "/proxy/"
+        cls.url = TEST_URL
+
     def setUp(self):
         super().setUp()
-        self.maxDiff = None
         self.admin = get_user_model().objects.get(username="admin")
-        create_models(type="dataset")
-
-        # FIXME(Ariel): These tests do not work when the computer is offline.
-        self.proxy_url = "/proxy/"
-        self.url = TEST_URL
 
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([TEST_DOMAIN]))
     def test_proxy_allowed_host(self):
@@ -253,10 +254,17 @@ class ProxyTest(GeoNodeBaseTestSupport):
 
 
 class DownloadResourceTestCase(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        create_single_dataset("CA")
+
     def setUp(self):
         super().setUp()
         self.maxDiff = None
-        create_models(type="dataset")
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_download_url_with_not_existing_file(self):
@@ -278,7 +286,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
     def test_download_url_with_existing_files(self, fopen, fexists):
         fexists.return_value = True
         fopen.return_value = SimpleUploadedFile("foo_file.shp", b"scc")
-        dataset = Dataset.objects.all().first()
+        dataset = Dataset.objects.filter(name="CA").first()
 
         dataset_files = [
             f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
