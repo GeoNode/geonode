@@ -362,7 +362,7 @@ jobs:
   # ----------------
   # COVERAGE COMMENT
   # ----------------
-  cleanup_artifacts:
+  coverage:
     name: Coverage
     needs:
       - geonode_test_suite_smoke
