@@ -30,6 +30,7 @@ import zipfile
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.test import TestCase
 from geonode.assets.utils import create_asset_and_link
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
@@ -50,7 +51,7 @@ from geonode.base.models import Link
 from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.populate_test_data import create_models, create_single_dataset
+from geonode.base.populate_test_data import create_single_dataset
 from geonode.proxy.utils import ProxyUrlsRegistry
 
 TEST_DOMAIN = ".github.com"
@@ -353,16 +354,22 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         asset.delete()
 
 
-class OWSApiTestCase(GeoNodeBaseTestSupport):
+class OWSApiTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        create_single_dataset(name="dataset")
+
     def setUp(self):
         super().setUp()
-        self.maxDiff = None
-        create_models(type="dataset")
         # prepare some WMS endpoints
         q = Link.objects.all()
         for lyr in q[:3]:
             lyr.link_type = "OGC:WMS"
             lyr.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
 
     def test_ows_api(self):
         url = "/api/ows_endpoints/"
