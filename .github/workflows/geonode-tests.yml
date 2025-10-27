@@ -69,7 +69,7 @@ jobs:
       - name: Run smoke tests
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast --data-file=.coverage.${{ matrix.os }}
+            ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast
           '
         working-directory: ${{ github.workspace }}
 
@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-geonode_test_suite_smoke
-          path: .coverage.${{ matrix.os }}
+          path: .coverage.geonode_test_suite_smoke
 
       - name: Stop stack (always)
         if: always()
@@ -124,13 +124,13 @@ jobs:
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS if \"security\" not in a and \"geoserver\" not in a and \"upload\" not in a]))") &&
-            ./tests/test.sh $TESTS --duration=30 --failfast --data-file=.coverage.${{ matrix.os }}
+            ./tests/test.sh $TESTS --duration=30 --failfast
           '
       - name: Upload coverage data artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-geonode_test_suite
-          path: .coverage.${{ matrix.os }}
+          path: .coverage.geonode_test_suite
 
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
@@ -172,13 +172,13 @@ jobs:
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"security\" in a]))") &&
-            ./tests/test.sh $TESTS --duration=30 --failfast --data-file=.coverage.${{ matrix.os }}
+            ./tests/test.sh $TESTS --duration=30 --failfast
           '
       - name: Upload coverage data artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-geonode_test_security
-          path: .coverage.${{ matrix.os }}
+          path: .coverage.geonode_test_security
 
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
@@ -220,13 +220,13 @@ jobs:
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"geoserver\" in a]))") &&
-            ./tests/test.sh $TESTS --duration=30 --failfast --data-file=.coverage.${{ matrix.os }}
+            ./tests/test.sh $TESTS --duration=30 --failfast
           '
       - name: Upload coverage data artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-geonode_test_gis_backend
-          path: .coverage.${{ matrix.os }}
+          path: .coverage.geonode_test_gis_backend
 
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
@@ -267,13 +267,13 @@ jobs:
       - name: Run tests
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast --data-file=.coverage.${{ matrix.os }}
+            ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
           '
       - name: Upload coverage data artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-geonode_test_rest_apis
-          path: .coverage.${{ matrix.os }}
+          path: .coverage.geonode_test_rest_apis
 
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
@@ -314,13 +314,13 @@ jobs:
       - name: Run tests
         run: |
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast --data-file=.coverage.${{ matrix.os }}
+            ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
           '
       - name: Upload coverage data artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-geonode_test_csw
-          path: .coverage.${{ matrix.os }}
+          path: .coverage.geonode_test_csw
 
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
@@ -368,7 +368,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-geonode_upload
-          path: .coverage.${{ matrix.os }}
+          path: .coverage.geonode_upload
 
       - name: Stop containers
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
