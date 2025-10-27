@@ -78,7 +78,7 @@ jobs:
         run: |
           mkdir -p coverage_data
           # Assuming .coverage file is created in the django service working directory
-          docker compose cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
+          docker compose --env-file .env_test -f docker-compose-test.yml cp django:/usr/src/geonode/.coverage coverage_data/.coverage.${{ github.job }}
       
       # === NEW STEP: Upload coverage data as an artifact ===
       - name: Upload coverage artifact
