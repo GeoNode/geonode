@@ -110,9 +110,8 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         super().setUp()
 
         # 1. Credentials and Users
-        self.username = "admin"  # Use self.username for clarity
-        self.password = "admin"  # Use self.password for clarity
-        self.admin_user = get_user_model().objects.get(username=self.username)
+        self.user = "admin"
+        self.admin_user = get_user_model().objects.get(username=self.user)
         self.anonymous_user = get_anonymous_user()
 
         # 2. Paths and Constants
