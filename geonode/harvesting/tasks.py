@@ -137,7 +137,9 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
     acks_late=False,
     ignore_result=False,
 )
-def harvesting_session_monitor(self, harvesting_session_id: int, workflow_time: int, delay: int = 30, execution_id: str = None):
+def harvesting_session_monitor(
+    self, harvesting_session_id: int, workflow_time: int, delay: int = 30, execution_id: str = None
+):
     """
     Task to monitor a harvesting session and call finalizer if it gets stuck.
 
