@@ -12,7 +12,7 @@ jobs:
   build_images:
     name: Build and export Docker images
     runs-on: ubuntu-24.04
-    if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.draft }}
+    if: ${{ github.event_name != 'pull_request' || (github.event.pull_request.user.login != 'dependabot[bot]' && !github.event.pull_request.draft) }}
 
     steps:
       - name: Checkout repository
@@ -53,7 +53,7 @@ jobs:
       test_command: >
         TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
         for a in settings.GEONODE_APPS if "security" not in a and "geoserver" not in a and "upload" not in a]))') &&
-        ./tests/test.sh $TESTS --duration=30 --failfast
+        ./tests/test.sh $TESTS geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests --duration=30 --failfast
 
   security:
     uses: ./.github/workflows/run-test-suite.yml
