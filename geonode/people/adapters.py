@@ -374,6 +374,7 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
         return user
 
     def pre_social_login(self, request, sociallogin):
+        """update user groups on each social login"""
         super().pre_social_login(request, sociallogin)
         user = sociallogin.user
         if user.pk:
