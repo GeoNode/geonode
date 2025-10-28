@@ -16,6 +16,7 @@ jobs:
         python-version: [ '3.12']
 
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.user.login != 'dependabot[bot]'}}
 
     steps:
     - name: Checkout repository

@@ -2,7 +2,7 @@
 Pillow==11.3.0
 lxml==5.2.1
 psycopg2==2.9.9
-Django==5.2
+Django==5.2.7
 
 # Other
 beautifulsoup4==4.12.3
@@ -149,5 +149,5 @@ selenium-requests==2.0.4
 webdriver_manager==4.0.1
 
 # Security and audit
-cryptography==45.0.5
+cryptography==46.0.3
 jwcrypto>=1.5.6
