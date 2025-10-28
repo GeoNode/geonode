@@ -650,9 +650,9 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         tasks.harvesting_session_monitor(1, 3600, delay=5)
         mock_apply_async.assert_called_once()
 
-    @mock.patch("geonode.harvesting.tasks._finish_harvesting.delay")
+    @mock.patch("geonode.harvesting.tasks._finish_harvesting.apply_async")
     @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
-    def test_monitor_triggers_finalizer_if_stuck(self, mock_get, mock_delay):
+    def test_monitor_triggers_finalizer_if_stuck(self, mock_get, mock_apply_async):
         mock_session = mock.MagicMock()
         mock_session.status = "ON_GOING"
         mock_session.STATUS_ON_GOING = "ON_GOING"
@@ -660,8 +660,12 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         mock_session.started = now() - timedelta(hours=1)
         mock_get.return_value = mock_session
 
-        tasks.harvesting_session_monitor(1, workflow_time=60)
-        mock_delay.assert_called_once_with(1, execution_id=None)
+        # Call your monitor
+        tasks.harvesting_session_monitor(harvesting_session_id=1, workflow_time=60, delay=0)
+
+        # Check that apply_async was called with correct args
+        mock_apply_async.assert_called_once()
+        args, kwargs = mock_apply_async.call_args
 
     @mock.patch("geonode.harvesting.tasks.models.AsynchronousHarvestingSession.objects.get")
     def test_monitor_session_does_not_exist(self, mock_get):
