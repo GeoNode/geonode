@@ -149,7 +149,7 @@ class ImporterViewSet(DynamicModelViewSet):
         }
 
         # clone the memory files into local file system
-        if "url" not in _data:
+        if "url" not in _data and not _data.get("is_empty", False):
             storage_manager = StorageManager(
                 remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
                 concrete_storage_manager=FileSystemStorageManager(),

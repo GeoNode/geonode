@@ -170,11 +170,6 @@ urlpatterns += [  # '',
 ]
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    if settings.CREATE_LAYER:
-        urlpatterns += [  # '',
-            re_path(r"^createlayer/", include("geonode.geoserver.createlayer.urls")),
-        ]
-
     from geonode.geoserver.views import get_capabilities
 
     # GeoServer Helper Views

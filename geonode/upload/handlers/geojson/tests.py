@@ -145,7 +145,7 @@ class TestGeoJsonFileHandler(TestCase):
             + '\' " "'
             + self.valid_files.get("base_file")
             + '" -lco FID=fid'
-            + ' -nln alternate "dataset" -lco GEOMETRY_NAME=geometry',
+            + ' -nln alternate "dataset" -lco GEOMETRY_NAME=geom',
             stdout=-1,
             stderr=-1,
             shell=True,  # noqa

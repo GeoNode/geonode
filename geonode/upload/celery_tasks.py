@@ -21,6 +21,7 @@ import os
 from typing import Optional
 
 from celery import Task
+from django.db import connections
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy
@@ -54,6 +55,7 @@ from geonode.upload.settings import (
     IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
 )
 from geonode.upload.utils import (
+    DEFAULT_PK_COLUMN_NAME,
     call_rollback_function,
     call_on_failure,
     error_handler,
@@ -399,7 +401,7 @@ def publish_resource(
         _overwrite = _exec.input_params.get("overwrite_existing_layer")
 
         _publisher = DataPublisher(handler_module_path)
-
+        kwargs.update({"exec_id": execution_id})
         # extracting the crs and the resource name, are needed for publish the resource
         data = _publisher.extract_resource_to_publish(_files, action, layer_name, alternate, **kwargs)
         if data:
@@ -747,10 +749,25 @@ def create_dynamic_structure(
                 row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
 
     if row_to_insert:
-        # the build creation improves the overall permformance with the DB
-        FieldSchema.objects.bulk_create(row_to_insert, 30)
+        if dynamic_model_schema.managed:
+            # If the dynamic mode schema is managed we have to save each single field
+            # one by one. Doing this will allow Django to create column in the database
+            for field in row_to_insert:
+                if field.name == DEFAULT_PK_COLUMN_NAME:
+                    # django automatically created a column name ID and use it as primary key by default
+                    # if we try to create the column FID as needed, it will raise error.
+                    # in this way we will just update the name from ID to FID
+                    with connections[os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")].cursor() as cursor:
+                        cursor.execute(
+                            f"ALTER TABLE {dynamic_model_schema.name} RENAME COLUMN id TO {DEFAULT_PK_COLUMN_NAME};"
+                        )
+                else:
+                    field.save()
+        else:
+            # the build creation improves the overall permformance with the DB
+            FieldSchema.objects.bulk_create(row_to_insert, 30)
+            # fixing the schema model in django
 
-    del row_to_insert
     return "dynamic_model", layer_name, execution_id
 
 
