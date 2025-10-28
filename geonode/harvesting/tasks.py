@@ -160,7 +160,9 @@ def harvesting_session_monitor(
         if now_ > expected_finish:
             logger.warning(f"Session {harvesting_session_id} appears stuck. Running finalizer.")
             # Call your finalizer directly
-            _finish_harvesting.delay(harvesting_session_id, execution_id)
+            _finish_harvesting.s(harvesting_session_id, execution_id, force_failure=True) \
+                .on_error(_handle_harvesting_error.s(harvesting_session_id=harvesting_session_id)) \
+                .apply_async()
         else:
             logger.debug(
                 f"Session {harvesting_session_id} still ongoing. Rescheduling Harvesting session monitor in {delay}s."
@@ -441,7 +443,7 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
     acks_late=False,
     ignore_result=False,
 )
-def _finish_harvesting(self, harvesting_session_id: int, execution_id: str):
+def _finish_harvesting(self, harvesting_session_id: int, execution_id: str, force_failure=False):
     """
     Finalize the harvesting session by marking it as completed and updating
     the ExecutionRequest status and log.
@@ -465,7 +467,10 @@ def _finish_harvesting(self, harvesting_session_id: int, execution_id: str):
         # we exclude the faiures with status: skipped
         failed_tasks_count = len(failures)
 
-        if session.status == session.STATUS_ABORTING:
+        if force_failure:
+            final_status = session.STATUS_FINISHED_SOME_FAILED
+            message = "Finalized with forced failure."     
+        elif session.status == session.STATUS_ABORTING:
             message = "Harvesting session aborted by user"
             final_status = session.STATUS_ABORTED
         elif failed_tasks_count > 0:
