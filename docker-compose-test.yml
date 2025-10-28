@@ -38,18 +38,6 @@ services:
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
     command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
 
-  # Celery worker that executes celery tasks created by Django.
-  celery:
-    << : *default-common-django
-    container_name: celery4${COMPOSE_PROJECT_NAME}
-    depends_on:
-      django:
-        condition: service_healthy
-    environment:
-      - IS_CELERY=True
-    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    command: "celery-cmd"
-
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
     image: geonode/nginx:1.28.0-v1
@@ -145,14 +133,6 @@ services:
     #ports:
     #  - "5432:5432"
 
-  # Vanilla Redis service. This is needed by celery
-  redis:
-    image: redis:7-alpine
-    container_name: redis4${COMPOSE_PROJECT_NAME}
-    volumes:
-      - redisdata:/data
-    restart: unless-stopped
-
 volumes:
   statics:
     name: ${COMPOSE_PROJECT_NAME}-statics
@@ -172,5 +152,3 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-data
   tmp:
     name: ${COMPOSE_PROJECT_NAME}-tmp
-  redisdata:
-    name: ${COMPOSE_PROJECT_NAME}-redisdata

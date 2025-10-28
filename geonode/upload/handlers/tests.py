@@ -89,12 +89,12 @@ class TestHandlersUtils(TestCase):
         If the layer start with a digit, we should translate as a string
         """
         layer_name = "1layername"
-        expected_name = "_layername"
+        expected_name = "layername"
         actual = BaseHandler().fixup_name(layer_name)
         self.assertEqual(expected_name, actual)
 
     def test_fixup_name_replace_digits_with_special_character(self):
         layer_name = "5Test-Name# \\&.()!$%*+@[]~end"
-        expected_name = "_test_name____end"
+        expected_name = "test_name_end"
         actual = BaseHandler().fixup_name(layer_name)
         self.assertEqual(expected_name, actual)

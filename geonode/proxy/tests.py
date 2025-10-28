@@ -30,6 +30,7 @@ import zipfile
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.test import TestCase
 from geonode.assets.utils import create_asset_and_link
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
@@ -49,24 +50,25 @@ from geonode import geoserver
 from geonode.base.models import Link
 from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
-from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.populate_test_data import create_models, create_single_dataset
+from geonode.base.populate_test_data import create_single_dataset
 from geonode.proxy.utils import ProxyUrlsRegistry
 
 TEST_DOMAIN = ".github.com"
 TEST_URL = f"https://help{TEST_DOMAIN}/"
 
 
-class ProxyTest(GeoNodeBaseTestSupport):
+class ProxyTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_single_dataset("dataset")
+        # FIXME(Ariel): These tests do not work when the computer is offline.
+        cls.proxy_url = "/proxy/"
+        cls.url = TEST_URL
+
     def setUp(self):
         super().setUp()
-        self.maxDiff = None
         self.admin = get_user_model().objects.get(username="admin")
-        create_models(type="dataset")
-
-        # FIXME(Ariel): These tests do not work when the computer is offline.
-        self.proxy_url = "/proxy/"
-        self.url = TEST_URL
 
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([TEST_DOMAIN]))
     def test_proxy_allowed_host(self):
@@ -252,11 +254,15 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
 
-class DownloadResourceTestCase(GeoNodeBaseTestSupport):
+class DownloadResourceTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_single_dataset("CA")
+
     def setUp(self):
         super().setUp()
         self.maxDiff = None
-        create_models(type="dataset")
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_download_url_with_not_existing_file(self):
@@ -278,7 +284,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
     def test_download_url_with_existing_files(self, fopen, fexists):
         fexists.return_value = True
         fopen.return_value = SimpleUploadedFile("foo_file.shp", b"scc")
-        dataset = Dataset.objects.all().first()
+        dataset = Dataset.objects.filter(name="CA").first()
 
         dataset_files = [
             f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
@@ -345,11 +351,14 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         asset.delete()
 
 
-class OWSApiTestCase(GeoNodeBaseTestSupport):
+class OWSApiTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_single_dataset(name="dataset")
+
     def setUp(self):
         super().setUp()
-        self.maxDiff = None
-        create_models(type="dataset")
         # prepare some WMS endpoints
         q = Link.objects.all()
         for lyr in q[:3]:
@@ -369,7 +378,7 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
 
 
 @override_settings(SITEURL="http://localhost:8000")
-class TestProxyTags(GeoNodeBaseTestSupport):
+class TestProxyTags(TestCase):
     def setUp(self):
         self.maxDiff = None
         self.resource = create_single_dataset("foo_dataset")
