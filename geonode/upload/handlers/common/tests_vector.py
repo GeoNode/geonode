@@ -533,6 +533,22 @@ class TestBaseVectorFileHandler(TestCase):
             headers = handler._BaseVectorFileHandler__get_csv_headers()
             self.assertEqual(headers, ["fid", "type", "error"])
 
+    @patch("geonode.upload.handlers.common.vector.Popen")
+    def test_copy_table_with_ogr2ogr(self, mock_popen):
+        comm = MagicMock()
+        comm.communicate.return_value = b"", b""
+        mock_popen.return_value = comm
+
+        BaseVectorFileHandler.copy_table_with_ogr2ogr("original_table", "new_table", "datastore")
+
+        mock_popen.assert_called_once()
+        call_args = mock_popen.call_args[0][0]
+
+        self.assertIn("ogr2ogr", call_args[0])
+        self.assertIn("-nln", call_args)
+        self.assertIn("new_table", call_args)
+        self.assertIn("original_table", call_args)
+
 
 class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
     """
