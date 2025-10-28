@@ -3,6 +3,7 @@ name: GeoNode Test Suites
 on: 
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 jobs:
   # -------------------------------------------------
@@ -11,7 +12,7 @@ jobs:
   build_images:
     name: Build and export Docker images
     runs-on: ubuntu-24.04
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.draft }}
 
     steps:
       - name: Checkout repository
