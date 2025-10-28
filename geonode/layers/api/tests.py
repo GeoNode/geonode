@@ -40,11 +40,14 @@ logger = logging.getLogger(__name__)
 class DatasetsApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
-    def setUp(self):
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+    @classmethod
+    def setUpTestData(cls):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
+
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
 
     def test_datasets(self):
         """

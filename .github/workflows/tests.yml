@@ -1,0 +1,121 @@
+name: GeoNode Test Suites
+
+on: 
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  # -------------------------------------------------
+  # BUILD DOCKER IMAGES AND SHARE AS ARTIFACTS
+  # -------------------------------------------------
+  build_images:
+    name: Build and export Docker images
+    runs-on: ubuntu-24.04
+    if: ${{ !github.event.pull_request.draft }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build all services (Docker Compose v2)
+        run: docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
+
+      - name: Save built Docker images
+        run: |
+          mkdir -p docker_images
+          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-24.04
+
+      - name: Upload Docker images as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-images
+          path: docker_images
+          retention-days: 1
+
+  # -------------------------------------------------
+  # REUSABLE WORKFLOW INVOCATIONS
+  # -------------------------------------------------
+  smoke:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: build_images
+    with:
+      suite_name: "Smoke Tests"
+      test_command: >
+        ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search
+        geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast
+
+  main:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "Main Tests"
+      test_command: >
+        TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
+        for a in settings.GEONODE_APPS if "security" not in a and "geoserver" not in a and "upload" not in a]))') &&
+        ./tests/test.sh $TESTS --duration=30 --failfast
+
+  security:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "Security Tests"
+      test_command: >
+        TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
+        for a in settings.GEONODE_APPS if "security" in a]))') &&
+        ./tests/test.sh $TESTS --duration=30 --failfast
+
+  gis_backend:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "GIS Backend Tests"
+      test_command: >
+        TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
+        for a in settings.GEONODE_APPS if "geoserver" in a]))') &&
+        ./tests/test.sh $TESTS --duration=30 --failfast
+
+  rest_apis:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "REST API Tests"
+      test_command: >
+        ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests
+        geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
+
+  csw:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "CSW Tests"
+      test_command: >
+        ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
+
+  upload:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "Upload Tests"
+      test_command: >
+        ./tests/test.sh geonode.upload --duration=30 --failfast
+
+  # -------------------------------------------------
+  # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END
+  # -------------------------------------------------
+  cleanup:
+    name: Cleanup Artifacts
+    needs:
+      - smoke
+      - main
+      - security
+      - gis_backend
+      - rest_apis
+      - csw
+      - upload
+    runs-on: ubuntu-24.04
+    if: always()
+    steps:
+      - name: Delete all uploaded artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          failOnError: false
