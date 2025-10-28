@@ -311,7 +311,7 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
             except SkipField:
                 pass
             else:
-                ret[field.source_attrs] = validated_value
+                ret[field.source] = validated_value
 
         if errors:
             raise exceptions.ValidationError(errors)
