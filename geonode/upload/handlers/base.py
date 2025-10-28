@@ -24,6 +24,8 @@ from typing import List
 import zipfile
 import re
 
+import slugify
+
 from geonode.assets.utils import create_asset_and_link
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
@@ -232,7 +234,7 @@ class BaseHandler(ABC):
         # Remove unwanted characters in one pass
         name = re.sub(r'[.(),!"$%\'*+/:;<=>?@\[\]^`{|}~]', "", name)
 
-        return name[:62]
+        return slugify.slugify(name[:62], separator="_")
 
     def extract_resource_to_publish(self, files, layer_name, alternate, **kwargs):
         """
