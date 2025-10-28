@@ -21,6 +21,7 @@ import os
 from typing import Optional
 
 from celery import Task
+from django.db import connections
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy
