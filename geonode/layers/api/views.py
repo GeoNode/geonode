@@ -105,7 +105,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
     )
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/metadata",  # noqa
+        url_path=r"(?P<pk>\d+)/metadata",
         url_name="replace-metadata",
         methods=["put"],
         serializer_class=DatasetMetadataSerializer,

@@ -289,6 +289,52 @@ class BaseVectorFileHandler(BaseHandler):
         return options
 
     @staticmethod
+    def copy_table_with_ogr2ogr(original_table_name: str, new_table_name: str, db_name: Optional[str] = None):
+        """
+        Copies a old existing table to new table using ogr2ogr.
+        """
+        db_name = db_name or os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
+        _datastore = settings.DATABASES[db_name]
+        db_connection_string = (
+            f"PG:host={_datastore['HOST']} dbname={_datastore['NAME']} "
+            f"user={_datastore['USER']} password={_datastore['PASSWORD']} "
+            f"port={_datastore.get('PORT', 5432)}"
+        )
+
+        ogr_exe = shutil.which("ogr2ogr")
+        if not ogr_exe:
+            raise Exception("ogr2ogr executable not found.")
+
+        command = [
+            ogr_exe,
+            "-f",
+            "PostgreSQL",
+            db_connection_string,
+            db_connection_string,
+            "-nln",
+            new_table_name,
+            original_table_name,
+            "-overwrite",
+        ]
+        process = Popen(command, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate()
+
+        if (
+            stderr is not None
+            and stderr != b""
+            and b"ERROR" in stderr
+            and b"error" in stderr
+            or b"Syntax error" in stderr
+        ):
+            try:
+                err = stderr.decode()
+            except Exception:
+                err = stderr.decode("latin1")
+            logger.error(f"Original error returned: {err}")
+            message = normalize_ogr2ogr_error(err, original_table_name)
+            raise Exception(f"ogr2ogr command failed with error: {message}")
+
+    @staticmethod
     def delete_resource(instance):
         """
         Base function to delete the resource with all the dependencies (dynamic model)
