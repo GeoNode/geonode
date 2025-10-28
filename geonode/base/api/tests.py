@@ -107,8 +107,8 @@ test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 class BaseApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json", "test_thesaurus.json"]
 
-    def setUp(self):
-        self.maxDiff = None
+    @classmethod
+    def setUpTestData(cls):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
@@ -366,7 +366,15 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
         perms = response.json().get("resources", [])[0].get("perms")
-        self.assertSetEqual({"view_resourcebase", "change_resourcebase"}, set(perms))
+        self.assertSetEqual(
+            {
+                "view_resourcebase",
+                "change_resourcebase",
+                "can_manage_anonymous_permissions",
+                "can_manage_registered_member_permissions",
+            },
+            set(perms),
+        )  # if user has edit permission/owner, By default it("can_manage_anonymous_permissions","can_manage_registered_member_permissions") will get this permission unless rule changed on settings.
 
     def test_get_self_user_details_outside_registered_member(self):
         try:
@@ -3511,6 +3519,8 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
                         "view_resourcebase",
                         "change_resourcebase_metadata",
                         "change_resourcebase",
+                        "can_manage_anonymous_permissions",  # dynamic permission added from SpecialGroupPermissionsHandler
+                        "can_manage_registered_member_permissions",  # dynamic permission added from SpecialGroupPermissionsHandler
                     ]
                 )
             },

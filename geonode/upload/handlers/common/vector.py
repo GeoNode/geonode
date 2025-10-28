@@ -43,12 +43,18 @@ from dynamic_models.schema import ModelSchemaEditor
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
-from geonode.upload.celery_tasks import ErrorBaseTaskClass, FieldSchema, create_dynamic_structure
+from geonode.upload.celery_tasks import (
+    ErrorBaseTaskClass,
+    FieldSchema,
+    create_dynamic_structure,
+    UpdateDynamicTaskClass,
+)
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
     drop_dynamic_model_schema,
+    create_layer_key,
 )
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
@@ -281,6 +287,52 @@ class BaseVectorFileHandler(BaseHandler):
             options += " -overwrite"
 
         return options
+
+    @staticmethod
+    def copy_table_with_ogr2ogr(original_table_name: str, new_table_name: str, db_name: Optional[str] = None):
+        """
+        Copies a old existing table to new table using ogr2ogr.
+        """
+        db_name = db_name or os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
+        _datastore = settings.DATABASES[db_name]
+        db_connection_string = (
+            f"PG:host={_datastore['HOST']} dbname={_datastore['NAME']} "
+            f"user={_datastore['USER']} password={_datastore['PASSWORD']} "
+            f"port={_datastore.get('PORT', 5432)}"
+        )
+
+        ogr_exe = shutil.which("ogr2ogr")
+        if not ogr_exe:
+            raise Exception("ogr2ogr executable not found.")
+
+        command = [
+            ogr_exe,
+            "-f",
+            "PostgreSQL",
+            db_connection_string,
+            db_connection_string,
+            "-nln",
+            new_table_name,
+            original_table_name,
+            "-overwrite",
+        ]
+        process = Popen(command, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate()
+
+        if (
+            stderr is not None
+            and stderr != b""
+            and b"ERROR" in stderr
+            and b"error" in stderr
+            or b"Syntax error" in stderr
+        ):
+            try:
+                err = stderr.decode()
+            except Exception:
+                err = stderr.decode("latin1")
+            logger.error(f"Original error returned: {err}")
+            message = normalize_ogr2ogr_error(err, original_table_name)
+            raise Exception(f"ogr2ogr command failed with error: {message}")
 
     @staticmethod
     def delete_resource(instance):
@@ -652,7 +704,14 @@ class BaseVectorFileHandler(BaseHandler):
         # definition of the celery group needed to run the async workflow.
         # in this way each task of the group will handle only 30 field
         celery_group = group(
-            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
+            create_dynamic_structure.s(
+                execution_id,
+                schema,
+                dynamic_model_schema.id,
+                overwrite,
+                layer_name,
+                layer_key=create_layer_key(layer.GetName(), str(execution_id)),
+            )
             for schema in list_chunked
         )
 
@@ -921,6 +980,7 @@ class BaseVectorFileHandler(BaseHandler):
             handler_module_path,
             should_be_overwritten,
             alternate,
+            layer_key=create_layer_key(layer.lower(), str(execution_id)),
         )
 
     def _get_execution_request_object(self, execution_id: str):
@@ -1391,7 +1451,7 @@ def import_next_step(
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateDynamicTaskClass,
     name="geonode.upload.import_with_ogr2ogr",
     queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,
@@ -1406,6 +1466,7 @@ def import_with_ogr2ogr(
     handler_module_path: str,
     ovverwrite_layer=False,
     alternate=None,
+    **kwargs,
 ):
     """
     Perform the ogr2ogr command to import he gpkg inside geonode_data

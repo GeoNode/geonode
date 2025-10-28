@@ -21,7 +21,6 @@ import os
 from typing import Optional
 
 from celery import Task
-from django.db import connections, transaction
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy
@@ -190,6 +189,39 @@ class UpdateTaskClass(Task):
             execution_id=execution_id,
             tasks=tasks_status,
         )
+
+
+class UpdateDynamicTaskClass(Task):
+    max_retries = 3
+    track_started = True
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        """
+        Called when the task fails.
+        Updates the ExecutionRequest.tasks dict and delegates logging/error handling to evaluate_error.
+        """
+        task_name = self.name
+        execution_id = args[0]
+        layer_key = find_key_recursively(kwargs, "layer_key")
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        tasks_status = _exec.tasks or {}
+
+        if layer_key is not None:
+            # Ensure the layer exists
+            if layer_key not in tasks_status:
+                tasks_status[layer_key] = {}
+
+            tasks_status[layer_key][task_name] = "FAILED"
+
+        # Update ExecutionRequest tasks dict first
+        orchestrator.update_execution_request_status(
+            execution_id=execution_id,
+            tasks=tasks_status,
+        )
+
+        # Delegate the rest (errors, failed_layers, status) to evaluate_error
+        evaluate_error(self, exc, task_id, args, kwargs, einfo)
 
 
 @importer_app.task(
@@ -646,7 +678,7 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
 
 
 @importer_app.task(
-    base=ErrorBaseTaskClass,
+    base=UpdateDynamicTaskClass,
     name="geonode.upload.create_dynamic_structure",
     queue="geonode.upload.create_dynamic_structure",
     max_retries=1,
@@ -660,6 +692,7 @@ def create_dynamic_structure(
     dynamic_model_schema_id: int,
     overwrite: bool,
     layer_name: str,
+    **kwargs,
 ):
     def _create_field(dynamic_model_schema, field, _kwargs):
         # common method to define the Field Schema object
@@ -825,6 +858,8 @@ def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, h
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
+    from geonode.upload.handlers.common.vector import BaseVectorFileHandler
+
     try:
         orchestrator.update_execution_request_status(
             execution_id=exec_id,
@@ -845,9 +880,7 @@ def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, h
             if schema_exists:
                 db_name = schema_exists.db_name
 
-        with transaction.atomic():
-            with connections[db_name].cursor() as cursor:
-                cursor.execute(f'CREATE TABLE {new_dataset_alternate} AS TABLE "{original_dataset_alternate}";')
+        BaseVectorFileHandler.copy_table_with_ogr2ogr(original_dataset_alternate, new_dataset_alternate, db_name)
 
         task_params = (
             {},
