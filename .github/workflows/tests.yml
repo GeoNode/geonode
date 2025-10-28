@@ -76,11 +76,10 @@ jobs:
 
       - name: Codecov
         run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F geonode_smoke'
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
         working-directory: ${{ github.workspace }}
 
-      - name: Stop stack (always)
-        if: always()
+      - name: Stop the stack
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
         working-directory: ${{ github.workspace }}
 
@@ -127,7 +126,13 @@ jobs:
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS if \"security\" not in a and \"geoserver\" not in a and \"upload\" not in a]))") &&
             ./tests/test.sh $TESTS --duration=30 --failfast
           '
-      - name: Stop containers
+        
+      - name: Codecov
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
+        working-directory: ${{ github.workspace }}
+
+      - name: Stop the stack
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
@@ -169,7 +174,12 @@ jobs:
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"security\" in a]))") &&
             ./tests/test.sh $TESTS --duration=30 --failfast
           '
-      - name: Stop containers
+      - name: Codecov
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
+        working-directory: ${{ github.workspace }}
+
+      - name: Stop the stack
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
@@ -211,7 +221,12 @@ jobs:
             TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"geoserver\" in a]))") &&
             ./tests/test.sh $TESTS --duration=30 --failfast
           '
-      - name: Stop containers
+      - name: Codecov
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
+        working-directory: ${{ github.workspace }}
+
+      - name: Stop the stack
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
@@ -252,9 +267,13 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
           '
-      - name: Stop containers
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+      - name: Codecov
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
+        working-directory: ${{ github.workspace }}
 
+      - name: Stop the stack
+        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
   geonode_test_csw:
     name: CSW Tests
@@ -293,7 +312,12 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
           '
-      - name: Stop containers
+      - name: Codecov
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
+        working-directory: ${{ github.workspace }}
+
+      - name: Stop the stack
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
@@ -334,7 +358,12 @@ jobs:
           docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
             ./tests/test.sh geonode.upload --duration=30 --failfast
           '
-      - name: Stop containers
+      - name: Codecov
+        run: |
+          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
+        working-directory: ${{ github.workspace }}
+
+      - name: Stop the stack
         run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
 
 
