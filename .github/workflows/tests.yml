@@ -3,9 +3,6 @@ name: GeoNode Test Suites
 on: [push, workflow_dispatch]
 
 jobs:
-  # -------------------------------------------------
-  # BUILD DOCKER IMAGES AND SHARE AS ARTIFACTS
-  # -------------------------------------------------
   build_images:
     name: Build and export Docker images
     runs-on: ubuntu-24.04
@@ -15,8 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build all services (Docker Compose v2)
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
+        run: docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
 
       - name: Save built Docker images
         run: |
@@ -28,358 +24,70 @@ jobs:
         with:
           name: docker-images
           path: docker_images
-          retention-days: 1  # automatically expires after 1 day
-
+          retention-days: 1
 
   # -------------------------------------------------
-  # SMOKE TESTS (BLOCKING)
+  # REUSABLE WORKFLOW INVOCATIONS
   # -------------------------------------------------
-  geonode_test_suite_smoke:
-    name: Smoke Tests
+
+  smoke:
+    uses: ./.github/workflows/run-test-suite.yml
     needs: build_images
-    runs-on: ubuntu-24.04
+    with:
+      suite_name: "Smoke Tests"
+      test_command: "./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast"
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  main:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "Main Tests"
+      test_command: |
+        TESTS=$(python -c "import sys; from geonode import settings; print(' '.join([a + '.tests' for a in settings.GEONODE_APPS if 'security' not in a and 'geoserver' not in a and 'upload' not in a]))")
+        ./tests/test.sh $TESTS --duration=30 --failfast
 
-      - name: Download built Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: docker_images
+  security:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "Security Tests"
+      test_command: |
+        TESTS=$(python -c "import sys; from geonode import settings; print(' '.join([a + '.tests' for a in settings.GEONODE_APPS if 'security' in a]))")
+        ./tests/test.sh $TESTS --duration=30 --failfast
 
-      - name: Load Docker images
-        run: |
-          docker load -i docker_images/django.tar
+  gis_backend:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "GIS Backend Tests"
+      test_command: |
+        TESTS=$(python -c "import sys; from geonode import settings; print(' '.join([a + '.tests' for a in settings.GEONODE_APPS if 'geoserver' in a]))")
+        ./tests/test.sh $TESTS --duration=30 --failfast
 
-      - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-        working-directory: ${{ github.workspace }}
+  rest_apis:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "REST API Tests"
+      test_command: "./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast"
 
-      - name: Setup test databases
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
+  csw:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "CSW Tests"
+      test_command: "./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast"
 
-      - name: Run smoke tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast
-          '
-        working-directory: ${{ github.workspace }}
+  upload:
+    uses: ./.github/workflows/run-test-suite.yml
+    needs: [build_images, smoke]
+    with:
+      suite_name: "Upload Tests"
+      test_command: "./tests/test.sh geonode.upload --duration=30 --failfast"
 
-      - name: Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
-        working-directory: ${{ github.workspace }}
-
-      - name: Stop the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-        working-directory: ${{ github.workspace }}
-
-
-  # -------------------------------------------------
-  # OTHER TEST SUITES (DEPEND ON SMOKE)
-  # -------------------------------------------------
-  geonode_test_suite:
-    name: Main Tests
-    needs: [build_images, geonode_test_suite_smoke]
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download built Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: docker_images
-
-      - name: Load Docker images
-        run: |
-          docker load -i docker_images/django.tar
-
-      - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-        working-directory: ${{ github.workspace }}
-
-      - name: Setup test databases
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
-      
-      - name: Run tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS if \"security\" not in a and \"geoserver\" not in a and \"upload\" not in a]))") &&
-            ./tests/test.sh $TESTS --duration=30 --failfast
-          '
-        
-      - name: Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
-        working-directory: ${{ github.workspace }}
-
-      - name: Stop the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-
-
-  geonode_test_security:
-    name: Security Tests
-    needs: [build_images, geonode_test_suite_smoke]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download built Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: docker_images
-
-      - name: Load Docker images
-        run: |
-          docker load -i docker_images/django.tar
-
-      - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-        working-directory: ${{ github.workspace }}
-
-      - name: Setup test databases
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
-      
-      - name: Run tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"security\" in a]))") &&
-            ./tests/test.sh $TESTS --duration=30 --failfast
-          '
-      - name: Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
-        working-directory: ${{ github.workspace }}
-
-      - name: Stop the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-
-
-  geonode_test_gis_backend:
-    name: GIS Backend Tests
-    needs: [build_images, geonode_test_suite_smoke]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download built Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: docker_images
-
-      - name: Load Docker images
-        run: |
-          docker load -i docker_images/django.tar
-
-      - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-        working-directory: ${{ github.workspace }}
-
-      - name: Setup test databases
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
-
-      - name: Run tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            TESTS=$(python -c "import sys; from geonode import settings; print(\" \".join([a + \".tests\" for a in settings.GEONODE_APPS  if \"geoserver\" in a]))") &&
-            ./tests/test.sh $TESTS --duration=30 --failfast
-          '
-      - name: Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
-        working-directory: ${{ github.workspace }}
-
-      - name: Stop the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-
-
-  geonode_test_rest_apis:
-    name: REST API Tests
-    needs: [build_images, geonode_test_suite_smoke]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download built Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: docker_images
-
-      - name: Load Docker images
-        run: |
-          docker load -i docker_images/django.tar
-
-      - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-        working-directory: ${{ github.workspace }}
-
-      - name: Setup test databases
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
-      
-      - name: Run tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
-          '
-      - name: Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
-        working-directory: ${{ github.workspace }}
-
-      - name: Stop the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-
-  geonode_test_csw:
-    name: CSW Tests
-    needs: [build_images, geonode_test_suite_smoke]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download built Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: docker_images
-
-      - name: Load Docker images
-        run: |
-          docker load -i docker_images/django.tar
-
-      - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-        working-directory: ${{ github.workspace }}
-
-      - name: Setup test databases
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
-      
-      - name: Run tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
-          '
-      - name: Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
-        working-directory: ${{ github.workspace }}
-
-      - name: Stop the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-
-
-  geonode_upload:
-    name: Upload Tests
-    needs: [build_images, geonode_test_suite_smoke]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download built Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: docker_images
-
-      - name: Load Docker images
-        run: |
-          docker load -i docker_images/django.tar
-
-      - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
-        working-directory: ${{ github.workspace }}
-
-      - name: Setup test databases
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "${{ inputs.test_suite }}"
-      
-      - name: Run tests
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -lc '
-            ./tests/test.sh geonode.upload --duration=30 --failfast
-          '
-      - name: Codecov
-        run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
-        working-directory: ${{ github.workspace }}
-
-      - name: Stop the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
-
-
-  # -------------------------------------------------
-  # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END
-  # -------------------------------------------------
-  cleanup_artifacts:
+  cleanup:
     name: Cleanup Artifacts
-    needs:
-      - geonode_test_suite_smoke
-      - geonode_test_suite
-      - geonode_test_security
-      - geonode_test_gis_backend
-      - geonode_test_rest_apis
-      - geonode_test_csw
-      - geonode_upload
+    needs: [smoke, main, security, gis_backend, rest_apis, csw, upload]
     runs-on: ubuntu-24.04
     if: always()
     steps:
