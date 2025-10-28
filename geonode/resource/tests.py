@@ -47,12 +47,26 @@ class ResourceManagerClassTest:
 
 
 class TestResourceManager(GeoNodeBaseTestSupport):
-    def setUp(self):
+    """
+    Tests for the GeoNode ResourceManager.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         create_models(b"dataset")
         create_models(b"map")
         create_models(b"document")
-        User = get_user_model()
-        self.user = User.objects.create(username="test", email="test@test.com")
+
+        cls.User = get_user_model()
+
+    def setUp(self):
+        super().setUp()
+        self.user = self.User.objects.create_user(
+            username="test",
+            email="test@test.com",
+        )
+
         self.rm = ResourceManager()
 
     def test_get_concrete_manager(self):
