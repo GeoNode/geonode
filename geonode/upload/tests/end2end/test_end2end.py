@@ -26,6 +26,7 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse
 from dynamic_models.models import FieldSchema, ModelSchema
+from geonode.harvesting.models import HarvestableResource, Harvester
 from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
@@ -161,7 +162,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                     if hasattr(target, key):
                         self.assertEqual(getattr(target, key), value)
                     else:
-                        logger.error(f"The attribute {key} doesn't belong to the resource.")
+                        logger.warning(f"The attribute {key} doesn't belong to the resource.")
             if keep_resource:
                 return resource.first()
         finally:
@@ -465,18 +466,23 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
 class ImporterWMSImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "ASYNC_SIGNALS": "False"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", ASYNC_SIGNALS=False)
-    @skip("To be updated without using development demo as source for the test")
     def test_import_wms(self):
         _, wms = WebMapService(
-            "https://development.demo.geonode.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities"
+            f"{os.getenv('GEOSERVER_LOCATION')}/ows?service=WMS&version=1.3.0&request=GetCapabilities"
         )
         resource_to_take = next(iter(wms.contents))
         res = wms[next(iter(wms.contents))]
+
+        import urllib.parse
+
+        url = urllib.parse.quote(
+            f"{os.getenv('GEOSERVER_LOCATION')}ows?service=WMS&version=1.3.0&request=GetCapabilities", safe=""
+        )
         payload = {
-            "url": "https://development.demo.geonode.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities",
+            "url": f"http://localhost:8000/proxy?url={url}",
             "title": "Remote Title",
             "type": "wms",
-            "lookup": resource_to_take,
+            "identifier": resource_to_take,
             "parse_remote_metadata": True,
             "action": "upload",
         }
@@ -489,3 +495,62 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
             "ptype": "gxp_wmscsource",
         }
         self._assertimport(payload, initial_name, skip_geoserver=True, assert_payload=assert_payload)
+
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "ASYNC_SIGNALS": "False"})
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", ASYNC_SIGNALS=False)
+    def test_import_wms_harvestable_resource_should_be_created(self):
+        """
+        The WMS import should generate the harvestable resource if the remote service URL
+        match with an exists harvester, so next time it will be managed by the harvester itself
+        """
+
+        # creating remote service
+        # for the test we have to pass via the proxy
+        _, wms = WebMapService(
+            f"{os.getenv('GEOSERVER_LOCATION')}ows?service=WMS&version=1.3.0&request=GetCapabilities"
+        )
+        resource_to_take = next(iter(wms.contents))
+        res = wms[next(iter(wms.contents))]
+        import urllib.parse
+
+        url = urllib.parse.quote(
+            f"{os.getenv('GEOSERVER_LOCATION')}ows?service=WMS&version=1.3.0&request=GetCapabilities", safe=""
+        )
+        geoserver = urllib.parse.quote(f"{os.getenv('GEOSERVER_LOCATION')}ows?service=WMS", safe="")
+        harvester = Harvester.objects.create(
+            remote_url=f"http://localhost:8000/proxy/?url={geoserver}",
+            name="Test",
+            default_owner=self.user,
+            harvester_type="geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+        )
+        payload = {
+            "url": f"http://localhost:8000/proxy/?url={url}",
+            "title": "Remote Title",
+            "type": "wms",
+            "identifier": resource_to_take,
+            "parse_remote_metadata": True,
+            "action": "upload",
+        }
+        initial_name = res.title.lower().replace(" ", "_")
+        assert_payload = {
+            "subtype": "remote",
+            "title": res.title,
+            "resource_type": "dataset",
+            "sourcetype": "REMOTE",
+            "ptype": "gxp_wmscsource",
+        }
+        try:
+            res = self._assertimport(
+                payload, initial_name, skip_geoserver=True, assert_payload=assert_payload, keep_resource=True
+            )
+
+            # check if the harvestabel resource has been created
+
+            obj = HarvestableResource.objects.filter(geonode_resource=res)
+
+            self.assertTrue(obj.exists())
+        except Exception as e:
+            raise e
+        finally:
+            if harvester:
+                harvester.delete()

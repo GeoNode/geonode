@@ -17,19 +17,21 @@
 #
 #########################################################################
 from rest_framework import serializers
-from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
+from dynamic_rest.serializers import DynamicModelSerializer
+
+from geonode.base.models import ResourceBase
 
 
-class RemoteWMSSerializer(RemoteResourceSerializer):
+class EmptyDatasetSerializer(DynamicModelSerializer):
     class Meta:
-        model = RemoteResourceSerializer.Meta.model
-        ref_name = "RemoteWMSSerializer"
-        fields = RemoteResourceSerializer.Meta.fields + (
-            "identifier",
-            "bbox",
-            "parse_remote_metadata",
-        )
+        ref_name = "EmptyDatasetSerializer"
+        model = ResourceBase
+        view_name = "importer_upload"
+        fields = ("title", "geom", "attributes", "action", "is_empty", "is_dynamic_model_managed")
 
-    identifier = serializers.CharField(required=True)
-    bbox = serializers.ListField(required=False)
-    parse_remote_metadata = serializers.BooleanField(required=False, default=False)
+    title = serializers.CharField()
+    geom = serializers.CharField()
+    attributes = serializers.JSONField()
+    action = serializers.CharField(required=True)
+    is_empty = serializers.BooleanField(default=True, read_only=True, required=False)
+    is_dynamic_model_managed = serializers.BooleanField(default=True, read_only=True, required=False)
