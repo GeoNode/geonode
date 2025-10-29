@@ -1763,6 +1763,8 @@ CELERY_ACCEPT_CONTENT = [
 # in the queue in case of harvesting hundreds of resources
 CHUNK_SIZE = os.environ.get("CHUNK_SIZE", 100)
 MAX_PARALLEL_QUEUE_CHUNKS = os.environ.get("MAX_PARALLEL_QUEUE_CHUNKS", 2)
+HARVESTING_MONITOR_ENABLED = ast.literal_eval(os.environ.get("HARVESTING_MONITOR_ENABLED", "True"))
+HARVESTING_MONITOR_DELAY = int(os.environ.get("HARVESTING_MONITOR_DELAY", 60))
 
 # Set Tasks Queues
 # CELERY_TASK_DEFAULT_QUEUE = "default"
