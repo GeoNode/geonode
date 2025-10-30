@@ -259,7 +259,6 @@ DEFAULT_MAP_CENTER = (os.environ.get("DEFAULT_MAP_CENTER_X", 0), os.environ.get(
 DEFAULT_MAP_ZOOM = int(os.environ.get("DEFAULT_MAP_ZOOM", 3))
 
 MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", None)
-BING_API_KEY = os.environ.get("BING_API_KEY", None)
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv("GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore")
@@ -391,52 +390,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         }
         DEFAULT_MS2_BACKGROUNDS = [
             MAPBOX_BASEMAPS,
-        ] + DEFAULT_MS2_BACKGROUNDS
-
-    if BING_API_KEY:
-        BING_BASEMAPS = [
-            {
-                "type": "bing",
-                "title": "Bing Aerial",
-                "name": "AerialWithLabels",
-                "source": "bing",
-                "group": "background",
-                "apiKey": "{{apiKey}}",
-                "visibility": True,
-            },
-            {
-                "type": "bing",
-                "title": "Bing RoadOnDemand",
-                "name": "RoadOnDemand",
-                "source": "bing",
-                "group": "background",
-                "apiKey": "{{apiKey}}",
-                "thumbURL": "%sstatic/mapstorestyle/img/bing_road_on_demand.png" % SITEURL,
-                "visibility": False,
-            },
-            {
-                "type": "bing",
-                "title": "Bing AerialWithLabelsOnDemand",
-                "name": "AerialWithLabelsOnDemand",
-                "source": "bing",
-                "group": "background",
-                "apiKey": "{{apiKey}}",
-                "thumbURL": "%sstatic/mapstorestyle/img/bing_aerial_w_labels.png" % SITEURL,
-                "visibility": False,
-            },
-            {
-                "type": "bing",
-                "title": "Bing CanvasDark",
-                "name": "CanvasDark",
-                "source": "bing",
-                "group": "background",
-                "apiKey": "{{apiKey}}",
-                "thumbURL": "%sstatic/mapstorestyle/img/bing_canvas_dark.png" % SITEURL,
-                "visibility": False,
-            },
-        ]
-        DEFAULT_MS2_BACKGROUNDS = [
-            BING_BASEMAPS,
         ] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
