@@ -61,6 +61,10 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     }
 
     @property
+    def have_table(self):
+        return False
+
+    @property
     def supported_file_extension_config(self):
         return {
             "id": "3dtiles",
