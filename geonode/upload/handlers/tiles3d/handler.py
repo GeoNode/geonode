@@ -228,6 +228,17 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         )
         return layer_name, alternate, execution_id
 
+    def pre_processing(self, files, execution_id, **kwargs):
+        _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
+        # removing the content file from the files location
+        if "content_file" in _data["files"]:
+            _data["files"].pop("content_file")
+
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        orchestrator.update_execution_request_obj(_exec_obj, {"input_params": _data})
+
+        return _data, execution_id
+
     def create_geonode_resource(
         self,
         layer_name: str,
@@ -236,13 +247,16 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         resource_type: Dataset = ...,
         asset=None,
     ):
-        # we want just the tileset.json as location of the asset
-        # asset.location = [path for path in asset.location if path.endswith(".json")]
-        # asset.save()
         exec_obj = orchestrator.get_execution_object(execution_id)
 
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
-        asset = self.create_asset_and_link(resource, files=exec_obj.input_params["files"], action=exec_obj.action)
+        asset = self.create_asset_and_link(
+            resource,
+            files=exec_obj.input_params["files"],
+            action=exec_obj.action,
+            asset_type="3dtiles",
+            extension="3dtiles",
+        )
 
         if isinstance(asset, LocalAsset):
             # fixing-up bbox for the 3dtile object
