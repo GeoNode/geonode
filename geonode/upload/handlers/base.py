@@ -309,7 +309,7 @@ class BaseHandler(ABC):
     def _get_execution_request_object(self, execution_id: str):
         return ExecutionRequest.objects.filter(exec_id=execution_id).first()
 
-    def create_asset_and_link(self, resource, files, action=None, asset_name=None):
+    def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
         if not files:
             return
         asset_name = asset_name or (
@@ -318,10 +318,11 @@ class BaseHandler(ABC):
         asset, _ = create_asset_and_link(
             resource=resource,
             owner=resource.owner,
-            files=files.values(),
+            files=list(set(files.values())),
             title=asset_name,
-            asset_type=Path(files.get("base_file")).suffix.replace(".", ""),
+            asset_type=asset_type or Path(files.get("base_file")).suffix.replace(".", ""),
             clone_files=True,
+            **kwargs,
         )
         return asset
 
