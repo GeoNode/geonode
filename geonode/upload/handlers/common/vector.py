@@ -612,7 +612,12 @@ class BaseVectorFileHandler(BaseHandler):
             "is_dynamic_model_managed", False
         )
         workspace = DataPublisher(None).workspace
-        user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
+
+        if resource_pk := orchestrator.get_execution_object(execution_id).input_params.get("resource_pk", None):
+            user_datasets = Dataset.objects.filter(owner=username, pk=resource_pk)
+        else:
+            user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
+
         dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
 
         dynamic_schema_exists = dynamic_schema.exists()
@@ -624,6 +629,7 @@ class BaseVectorFileHandler(BaseHandler):
             we just take the dynamic_model to overwrite the existing one
             """
             dynamic_schema = dynamic_schema.get()
+            layer_name = user_datasets.first().alternate.split(":")[-1]
         elif not dataset_exists and not dynamic_schema_exists:
             """
             cames here when is a new brand upload or when (for any reasons) the dataset exists but the
@@ -687,6 +693,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # definition of the celery group needed to run the async workflow.
         # in this way each task of the group will handle only 30 field
+        layer_name = layer.GetName() if not isinstance(layer, str) else layer_name
         celery_group = group(
             create_dynamic_structure.s(
                 execution_id,
@@ -694,7 +701,7 @@ class BaseVectorFileHandler(BaseHandler):
                 dynamic_model_schema.id,
                 overwrite,
                 layer_name,
-                layer_key=create_layer_key(layer.GetName(), str(execution_id)),
+                layer_key=create_layer_key(layer_name, str(execution_id)),
             )
             for schema in list_chunked
         )

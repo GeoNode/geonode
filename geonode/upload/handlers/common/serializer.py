@@ -19,6 +19,7 @@
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.models import ResourceBase
+from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 
 class RemoteResourceSerializer(DynamicModelSerializer):
@@ -34,6 +35,6 @@ class RemoteResourceSerializer(DynamicModelSerializer):
         required=True,
         help_text="Remote resource type, for example wms or 3dtiles. Is used by the handler to understand if can handle the resource",
     )
-    action = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
 
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)

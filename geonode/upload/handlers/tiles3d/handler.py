@@ -276,6 +276,10 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
 
         return resource
 
+    def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
+        if asset_type and kwargs.get("extension", None):
+            return super().create_asset_and_link(resource, files, action, asset_name, asset_type, **kwargs)
+
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
         return dict(
             resource_type="dataset",

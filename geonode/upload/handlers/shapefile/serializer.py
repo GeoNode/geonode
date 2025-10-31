@@ -19,6 +19,7 @@
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.models import ResourceBase
+from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 
 class ShapeFileSerializer(DynamicModelSerializer):
@@ -48,7 +49,7 @@ class ShapeFileSerializer(DynamicModelSerializer):
     store_spatial_files = serializers.BooleanField(required=False, default=True)
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
-    action = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
 
 
 class OverwriteShapeFileSerializer(ShapeFileSerializer):
