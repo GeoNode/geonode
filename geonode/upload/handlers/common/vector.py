@@ -608,12 +608,11 @@ class BaseVectorFileHandler(BaseHandler):
         """
 
         layer_name = self.fixup_name(layer.GetName() if isinstance(layer, ogr.Layer) else layer)
-        is_dynamic_model_managed = orchestrator.get_execution_object(execution_id).input_params.get(
-            "is_dynamic_model_managed", False
-        )
-        workspace = DataPublisher(None).workspace
+        _exec_obj = orchestrator.get_execution_object(execution_id)
 
-        if resource_pk := orchestrator.get_execution_object(execution_id).input_params.get("resource_pk", None):
+        is_dynamic_model_managed = _exec_obj.input_params.get("is_dynamic_model_managed", False)
+        workspace = DataPublisher(None).workspace
+        if resource_pk := _exec_obj.input_params.get("resource_pk", None):
             user_datasets = Dataset.objects.filter(owner=username, pk=resource_pk)
         else:
             user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")

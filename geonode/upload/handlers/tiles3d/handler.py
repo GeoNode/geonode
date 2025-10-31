@@ -277,6 +277,13 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return resource
 
     def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
+        """
+        Overrides the base handler to prevent double asset creation for 3D tiles.
+
+        This handler's `create_geonode_resource` method already creates the necessary asset.
+        This override ensures that the subsequent generic call from the celery task does not create a duplicate asset.
+        The asset is only created by calling the parent method if both `asset_type` and `extension` are explicitly provided.
+        """
         if asset_type and kwargs.get("extension", None):
             return super().create_asset_and_link(resource, files, action, asset_name, asset_type, **kwargs)
 
