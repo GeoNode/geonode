@@ -18,6 +18,7 @@
 #########################################################################
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
+from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 from geonode.base.models import ResourceBase
 
@@ -32,6 +33,6 @@ class EmptyDatasetSerializer(DynamicModelSerializer):
     title = serializers.CharField()
     geom = serializers.CharField()
     attributes = serializers.JSONField()
-    action = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.CREATE.value)
     is_empty = serializers.BooleanField(default=True, read_only=True, required=False)
     is_dynamic_model_managed = serializers.BooleanField(default=True, read_only=True, required=False)

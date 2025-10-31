@@ -18,6 +18,7 @@
 #########################################################################
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
+from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 from geonode.base.models import ResourceBase
 
@@ -32,4 +33,4 @@ class MetadataFileSerializer(DynamicModelSerializer):
     base_file = serializers.FileField()
     overwrite_existing_layer = serializers.BooleanField(required=False, default=True)
     resource_pk = serializers.IntegerField(required=True)
-    action = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
