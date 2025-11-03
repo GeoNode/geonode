@@ -3165,6 +3165,16 @@ class TestBaseConfigurationRuleHandler(GeoNodeBaseTestSupport):
         self.assertTrue(AccessToken.objects.filter(token=token2).exists(), "User2's token should exist in the database")
 
 
+@override_settings(
+    CACHES={
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "test-cache",
+            "TIMEOUT": 600,
+            "OPTIONS": {"MAX_ENTRIES": 10000},
+        }
+    }
+)
 class TestPermissionsCaching(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
