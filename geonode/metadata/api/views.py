@@ -53,8 +53,15 @@ class MetadataViewSet(ViewSet):
 
     queryset = ResourceBase.objects.all()
 
-    def list(self, request):
-        pass
+    def list(self, request, *args, **kwargs):
+        base = request.build_absolute_uri("").rstrip("/")
+        return Response(
+            {
+                "message": "Available metadata endpoints",
+                "schema": f"{base}/schema/",
+                "instance": f"{base}/instance/<pk>/",
+            }
+        )
 
     # Get the JSON schema
     # A pk argument is set for futured multiple schemas
