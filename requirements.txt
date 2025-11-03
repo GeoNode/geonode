@@ -72,7 +72,7 @@ djangorestframework==3.15.2
 djangorestframework-gis==1.2.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
-drf-spectacular==0.27.2
+drf-spectacular==0.29.0
 #dynamic-rest==2.3.0
 git+https://github.com/GeoNode/dynamic-rest@master#egg=dynamic-rest
 
