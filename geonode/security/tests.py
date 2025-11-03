@@ -86,6 +86,7 @@ from .utils import (
     get_users_with_perms,
     get_visible_resources,
 )
+from .request_configuration_handlers import BaseConfigurationRuleHandler
 
 from .permissions import PermSpec, PermSpecCompact
 from django.core.cache import cache
@@ -3086,16 +3087,84 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
 
 
-@override_settings(
-    CACHES={
-        "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-            "LOCATION": "test-cache",
-            "TIMEOUT": 600,
-            "OPTIONS": {"MAX_ENTRIES": 10000},
-        }
-    }
-)
+class TestBaseConfigurationRuleHandler(GeoNodeBaseTestSupport):
+    """Test case for BaseConfigurationRuleHandler"""
+
+    def _verify_rules(self, rules, expected_token, user_label=""):
+        """Helper method to verify the rules structure and content."""
+        # Verify the structure and content of the rules
+        self.assertEqual(len(rules), 3, f"{user_label}: Should have 3 rules")
+
+        # Test first rule (GEOSERVER_WEB_UI_LOCATION)
+        self.assertEqual(
+            rules[0]["urlPattern"],
+            "https://example.com/geoserver/.*",
+            f"{user_label}: Incorrect GEOSERVER_WEB_UI_LOCATION pattern",
+        )
+        self.assertEqual(
+            rules[0]["params"]["access_token"],
+            expected_token,
+            f"{user_label}: Token mismatch in GEOSERVER_WEB_UI_LOCATION rule",
+        )
+
+        # Test second rule (HOSTNAME/gs*)
+        self.assertEqual(
+            rules[1]["urlPattern"], "https://example.com/gs.*", f"{user_label}: Incorrect HOSTNAME/gs pattern"
+        )
+        self.assertEqual(
+            rules[1]["params"]["access_token"], expected_token, f"{user_label}: Token mismatch in HOSTNAME/gs rule"
+        )
+
+        # Test third rule (HOSTNAME/api/v2*)
+        self.assertEqual(
+            rules[2]["urlPattern"], "https://example.com/api/v2.*", f"{user_label}: Incorrect HOSTNAME/api/v2 pattern"
+        )
+        self.assertEqual(
+            rules[2]["headers"]["Authorization"],
+            f"Bearer {expected_token}",
+            f"{user_label}: Token mismatch in HOSTNAME/api/v2 rule",
+        )
+
+    @override_settings(GEOSERVER_WEB_UI_LOCATION="https://example.com/geoserver", HOSTNAME="https://example.com")
+    def test_get_rules_with_multiple_users(self):
+        """Test that get_rules returns the expected rules with valid tokens for multiple users."""
+        # Create test users
+        user1 = get_user_model().objects.create_user(
+            username="testuser1", password="testpass1", email="user1@example.com"
+        )
+
+        user2 = get_user_model().objects.create_user(
+            username="testuser2", password="testpass2", email="user2@example.com"
+        )
+
+        # Get or create tokens for the users
+        token1 = get_or_create_token(user1).token
+        token2 = get_or_create_token(user2).token
+
+        self.assertNotEqual(token1, token2, "Tokens should be unique per user")
+
+        # Initialize the handler
+        handler = BaseConfigurationRuleHandler()
+
+        # Test for user1
+        rules1 = handler.get_rules(user1)
+        self._verify_rules(rules1, token1, "user1")
+
+        # Test for user2
+        rules2 = handler.get_rules(user2)
+        self._verify_rules(rules2, token2, "user2")
+
+        # Verify tokens are used correctly for each user
+        self.assertEqual(rules1[0]["params"]["access_token"], token1, "User1's token should be used in the rules")
+        self.assertEqual(rules2[0]["params"]["access_token"], token2, "User2's token should be used in the rules")
+
+        # Verify tokens exist in the database
+        from oauth2_provider.models import AccessToken
+
+        self.assertTrue(AccessToken.objects.filter(token=token1).exists(), "User1's token should exist in the database")
+        self.assertTrue(AccessToken.objects.filter(token=token2).exists(), "User2's token should exist in the database")
+
+
 class TestPermissionsCaching(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
