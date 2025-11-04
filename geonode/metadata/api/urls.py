@@ -17,7 +17,8 @@
 #
 #########################################################################
 from django.urls import path
-from rest_framework import routers
+
+from geonode.api.urls import router
 
 from geonode.metadata.api import views
 from geonode.metadata.api.views import (
@@ -28,8 +29,7 @@ from geonode.metadata.api.views import (
     MetadataGroupAutocomplete,
 )
 
-router = routers.DefaultRouter()
-router.register(r"metadata", views.MetadataViewSet, basename="metadata")
+router.register(r"metadata", views.MetadataViewSet, "metadata")
 
 urlpatterns = router.urls + [
     path(
