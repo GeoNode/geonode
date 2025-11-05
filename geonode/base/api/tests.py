@@ -107,8 +107,8 @@ test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 class BaseApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json", "test_thesaurus.json"]
 
-    def setUp(self):
-        self.maxDiff = None
+    @classmethod
+    def setUpTestData(cls):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
@@ -1009,6 +1009,10 @@ class BaseApiTests(APITestCase):
         reversed_resource_titles = sorted(resource_titles.copy())
         self.assertNotEqual(resource_titles, reversed_resource_titles)
 
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=True,
+    )
     def test_perms_resources(self):
         """
         Ensure we can Get & Set Permissions across the Resource Base list.
@@ -1164,7 +1168,9 @@ class BaseApiTests(APITestCase):
             resource_perm_spec,
         )
 
-        # Remove perms to Norman
+        # Remove perms to Norman by explicitly setting permissions to "none".
+        # Note: Omitting a user from the request preserves their existing permissions.
+        # To actually remove permissions, you must explicitly set them to "none".
         resource_perm_spec = {
             "uuid": resource.uuid,
             "users": [
@@ -1175,6 +1181,16 @@ class BaseApiTests(APITestCase):
                     "last_name": bobby.last_name,
                     "avatar": build_absolute_uri(avatar_url(bobby)),
                     "permissions": "owner",
+                    "is_staff": False,
+                    "is_superuser": False,
+                },
+                {
+                    "id": norman.id,
+                    "username": norman.username,
+                    "first_name": norman.first_name,
+                    "last_name": norman.last_name,
+                    "avatar": build_absolute_uri(avatar_url(bobby)),
+                    "permissions": "none",
                     "is_staff": False,
                     "is_superuser": False,
                 },
@@ -2339,6 +2355,248 @@ class BaseApiTests(APITestCase):
                 ],
             },
             resource_perm_spec,
+        )
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=False,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
+    )
+    def test_resource_service_permissions_with_restricted_settings(self):
+        """
+        Test that when EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS and
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS are set to False,
+        only staff/admin users can modify anonymous and registered members permissions.
+        Non-staff editors should not be able to modify these groups' permissions.
+        """
+        resource = Dataset.objects.filter(owner__username="admin").first()
+        bobby = get_user_model().objects.get(username="bobby")
+
+        # Give bobby edit permissions on the resource including permission to manage permissions
+        resource.set_permissions(
+            {
+                "users": {
+                    bobby: [
+                        "base.change_resourcebase",
+                        "base.change_resourcebase_metadata",
+                        "base.change_resourcebase_permissions",
+                    ]
+                }
+            }
+        )
+
+        # Login as bobby (non-staff editor)
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+
+        anonymous_group = Group.objects.get(name="anonymous")
+        registered_group = Group.objects.get(name="registered-members")
+
+        # Try to update permissions including anonymous and registered members groups
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
+        perm_spec = {
+            "uuid": resource.uuid,
+            "groups": [
+                {
+                    "id": anonymous_group.id,
+                    "name": "anonymous",
+                    "permissions": "view",
+                },
+                {
+                    "id": registered_group.id,
+                    "name": "registered-members",
+                    "permissions": "download",
+                },
+            ],
+        }
+
+        response = self.client.put(set_perms_url, data=perm_spec, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        resp_js = json.loads(response.content.decode("utf-8"))
+        execution_id = resp_js.get("execution_id", "")
+        status_url = resp_js.get("status_url", None)
+        self.assertIsNotNone(status_url)
+        self.assertIsNotNone(execution_id)
+
+        for _cnt in range(0, 10):
+            response = self.client.get(f"{status_url}")
+            self.assertEqual(response.status_code, 200)
+            resp_js = json.loads(response.content.decode("utf-8"))
+            if resp_js.get("status", "") == "finished":
+                break
+            else:
+                resouce_service_dispatcher.apply((execution_id,))
+                sleep(3.0)
+
+        # Get the current permissions to verify anonymous and registered groups were excluded
+        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
+        response = self.client.get(get_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        resource_perm_spec = response.data
+
+        groups_in_response = {g["name"]: g["permissions"] for g in resource_perm_spec.get("groups", [])}
+
+        # The groups should still have their original permissions (not the ones bobby tried to set)
+        # Bobby tried to set anonymous to "view" and registered-members to "download"
+        # But since he lacks permissions, these changes should NOT have been applied
+        # Verify the permissions remain unchanged from their original state
+        self.assertIn("anonymous", groups_in_response)
+        self.assertIn("registered-members", groups_in_response)
+        # The permissions should NOT be what bobby tried to set
+        self.assertNotEqual(
+            groups_in_response.get("anonymous"), "view", "Bobby should not have been able to set anonymous to view"
+        )
+        self.assertNotEqual(
+            groups_in_response.get("registered-members"),
+            "download",
+            "Bobby should not have been able to set registered-members to download",
+        )
+
+        # login as admin (staff user) and verify admin can modify these permissions
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        perm_spec_admin = {
+            "uuid": resource.uuid,
+            "groups": [
+                {
+                    "id": anonymous_group.id,
+                    "name": "anonymous",
+                    "permissions": "view",
+                },
+                {
+                    "id": registered_group.id,
+                    "name": "registered-members",
+                    "permissions": "view",
+                },
+            ],
+        }
+
+        response = self.client.put(set_perms_url, data=perm_spec_admin, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        # Wait for async task to complete
+        resp_js = json.loads(response.content.decode("utf-8"))
+        execution_id = resp_js.get("execution_id", "")
+        status_url = resp_js.get("status_url", None)
+
+        for _cnt in range(0, 10):
+            response = self.client.get(f"{status_url}")
+            self.assertEqual(response.status_code, 200)
+            resp_js = json.loads(response.content.decode("utf-8"))
+            if resp_js.get("status", "") == "finished":
+                break
+            else:
+                resouce_service_dispatcher.apply((execution_id,))
+                sleep(3.0)
+
+        # Verify admin successfully modified the permissions
+        response = self.client.get(get_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        resource_perm_spec = response.data
+
+        # Admin should have been able to set permissions for these groups
+        groups_in_response = {g["name"]: g["permissions"] for g in resource_perm_spec.get("groups", [])}
+        self.assertIn("anonymous", groups_in_response)
+        self.assertIn("registered-members", groups_in_response)
+        # Verify admin successfully changed the permissions to what was requested
+        self.assertEqual(
+            groups_in_response.get("anonymous"), "view", "Admin should have been able to set anonymous to view"
+        )
+        self.assertEqual(
+            groups_in_response.get("registered-members"),
+            "view",
+            "Admin should have been able to set registered-members to view",
+        )
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
+    )
+    def test_resource_service_permissions_with_partial_restriction(self):
+        """
+        Test that when only EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS is False,
+        editors can modify anonymous permissions but not registered members permissions.
+        """
+        resource = Dataset.objects.filter(owner__username="admin").first()
+        bobby = get_user_model().objects.get(username="bobby")
+
+        # Give bobby edit permissions including permission to manage permissions
+        resource.set_permissions(
+            {
+                "users": {
+                    bobby: [
+                        "base.change_resourcebase",
+                        "base.change_resourcebase_metadata",
+                        "base.change_resourcebase_permissions",
+                    ]
+                }
+            }
+        )
+
+        # Login as bobby
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+
+        anonymous_group = Group.objects.get(name="anonymous")
+        registered_group = Group.objects.get(name="registered-members")
+
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
+        perm_spec = {
+            "uuid": resource.uuid,
+            "groups": [
+                {
+                    "id": anonymous_group.id,
+                    "name": "anonymous",
+                    "permissions": "view",
+                },
+                {
+                    "id": registered_group.id,
+                    "name": "registered-members",
+                    "permissions": "download",
+                },
+            ],
+        }
+
+        response = self.client.put(set_perms_url, data=perm_spec, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        resp_js = json.loads(response.content.decode("utf-8"))
+        execution_id = resp_js.get("execution_id", "")
+        status_url = resp_js.get("status_url", None)
+
+        for _cnt in range(0, 10):
+            response = self.client.get(f"{status_url}")
+            self.assertEqual(response.status_code, 200)
+            resp_js = json.loads(response.content.decode("utf-8"))
+            if resp_js.get("status", "") == "finished":
+                break
+            else:
+                resouce_service_dispatcher.apply((execution_id,))
+                sleep(3.0)
+
+        # Verify bobby could modify anonymous but not registered members
+        # The registered-members group should have been filtered out from bobby's request
+        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
+        response = self.client.get(get_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        resource_perm_spec = response.data
+
+        groups_in_response = {g["name"]: g["permissions"] for g in resource_perm_spec.get("groups", [])}
+
+        # Bobby tried to set anonymous to "view" and registered-members to "download"
+        # Since EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True, anonymous should be changed
+        # Since EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False, registered-members should NOT be changed
+        self.assertIn("anonymous", groups_in_response)
+        self.assertIn("registered-members", groups_in_response)
+
+        # Verify anonymous was successfully changed by bobby
+        self.assertEqual(
+            groups_in_response.get("anonymous"), "view", "Bobby should have been able to set anonymous to view"
+        )
+
+        # Verify registered-members was NOT changed by bobby
+        self.assertNotEqual(
+            groups_in_response.get("registered-members"),
+            "download",
+            "Bobby should not have been able to set registered-members to download",
         )
 
     def test_resource_service_copy(self):

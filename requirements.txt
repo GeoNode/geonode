@@ -2,7 +2,7 @@
 Pillow==11.3.0
 lxml==5.2.1
 psycopg2==2.9.9
-Django==5.2
+Django==5.2.7
 
 # Other
 beautifulsoup4==4.12.3
@@ -45,13 +45,13 @@ redis==6.2.0
 
 # geopython dependencies
 git+https://github.com/geopython/pycsw.git@3.0.0-beta1#egg=pycsw
-pyproj<3.7.0
+pyproj<3.8.0
 OWSLib==0.34.1
 SQLAlchemy==2.0.43 # required by PyCSW
 Shapely==2.1.2
 mercantile==1.2.1
 numpy==1.26.*
-Jinja2==3.1.4
+Jinja2==3.1.6
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
@@ -67,7 +67,7 @@ django-invitations<2.1.1
 django-recaptcha==4.0.0
 
 # REST
-djangorestframework==3.14.0
+djangorestframework==3.15.2
 djangorestframework-gis==1.2.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
@@ -92,8 +92,9 @@ gn-gsimporter==2.0.4
 gisdata==0.5.4
 
 # importer dependencies
-setuptools>=59
-pdok-geopackage-validator==0.8.5
+# blocked to <80 to avoid warning during the runtime for with py312 related to the polymorphic model
+setuptools>=59,<80
+pdok-geopackage-validator==0.14.4
 geonode-django-dynamic-model==0.4.0
 
 
@@ -121,7 +122,7 @@ pylibmc==1.6.3
 sherlock==0.4.1
 
 psutil==5.9.8
-django-cors-headers==4.3.1
+django-cors-headers==4.9.0
 django-user-agents==0.4.0
 
 # production
@@ -147,5 +148,5 @@ selenium-requests==2.0.4
 webdriver_manager==4.0.1
 
 # Security and audit
-cryptography==45.0.5
+cryptography==46.0.3
 jwcrypto>=1.5.6

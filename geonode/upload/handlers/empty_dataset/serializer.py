@@ -18,23 +18,21 @@
 #########################################################################
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
-from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 
+from geonode.base.models import ResourceBase
 
-class RemoteResourceSerializer(DynamicModelSerializer):
+
+class EmptyDatasetSerializer(DynamicModelSerializer):
     class Meta:
-        ref_name = "RemoteResourceSerializer"
+        ref_name = "EmptyDatasetSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ("url", "title", "type", "action", "overwrite_existing_layer")
+        fields = ("title", "geom", "attributes", "action", "is_empty", "is_dynamic_model_managed")
 
-    url = serializers.URLField(required=True, help_text="URL of the remote service / resource")
-    title = serializers.CharField(required=True, help_text="Title of the resource. Can be None or Empty")
-    type = serializers.CharField(
-        required=True,
-        help_text="Remote resource type, for example wms or 3dtiles. Is used by the handler to understand if can handle the resource",
-    )
-    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
-
-    overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
+    title = serializers.CharField()
+    geom = serializers.CharField()
+    attributes = serializers.JSONField()
+    action = serializers.CharField(required=False, default=exa.CREATE.value)
+    is_empty = serializers.BooleanField(default=True, read_only=True, required=False)
+    is_dynamic_model_managed = serializers.BooleanField(default=True, read_only=True, required=False)

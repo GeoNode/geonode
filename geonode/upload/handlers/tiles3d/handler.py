@@ -61,6 +61,10 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     }
 
     @property
+    def have_table(self):
+        return False
+
+    @property
     def supported_file_extension_config(self):
         return {
             "id": "3dtiles",
@@ -224,6 +228,17 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         )
         return layer_name, alternate, execution_id
 
+    def pre_processing(self, files, execution_id, **kwargs):
+        _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
+        # removing the content file from the files location
+        if "content_file" in _data["files"]:
+            _data["files"].pop("content_file")
+
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        orchestrator.update_execution_request_obj(_exec_obj, {"input_params": _data})
+
+        return _data, execution_id
+
     def create_geonode_resource(
         self,
         layer_name: str,
@@ -232,13 +247,16 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         resource_type: Dataset = ...,
         asset=None,
     ):
-        # we want just the tileset.json as location of the asset
-        # asset.location = [path for path in asset.location if path.endswith(".json")]
-        # asset.save()
         exec_obj = orchestrator.get_execution_object(execution_id)
 
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
-        asset = self.create_asset_and_link(resource, files=exec_obj.input_params["files"], action=exec_obj.action)
+        asset = self.create_asset_and_link(
+            resource,
+            files=exec_obj.input_params["files"],
+            action=exec_obj.action,
+            asset_type="3dtiles",
+            extension="3dtiles",
+        )
 
         if isinstance(asset, LocalAsset):
             # fixing-up bbox for the 3dtile object
@@ -257,6 +275,17 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
 
         return resource
+
+    def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
+        """
+        Overrides the base handler to prevent double asset creation for 3D tiles.
+
+        This handler's `create_geonode_resource` method already creates the necessary asset.
+        This override ensures that the subsequent generic call from the celery task does not create a duplicate asset.
+        The asset is only created by calling the parent method if both `asset_type` and `extension` are explicitly provided.
+        """
+        if asset_type and kwargs.get("extension", None):
+            return super().create_asset_and_link(resource, files, action, asset_name, asset_type, **kwargs)
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
         return dict(

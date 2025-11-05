@@ -21,6 +21,7 @@ from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
 from geonode.base.models import ResourceBase
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
+from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 
 class ImporterSerializer(DynamicModelSerializer):
@@ -42,7 +43,7 @@ class ImporterSerializer(DynamicModelSerializer):
     sld_file = serializers.FileField(required=False)
     store_spatial_files = serializers.BooleanField(required=False, default=True)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
-    action = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
 
 
 class OverwriteImporterSerializer(ImporterSerializer):

@@ -1452,7 +1452,6 @@ DEFAULT_MAP_CENTER_Y = ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_Y", "
 DEFAULT_MAP_ZOOM = int(os.environ.get("DEFAULT_MAP_ZOOM", 0))
 
 MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", None)
-BING_API_KEY = os.environ.get("BING_API_KEY", None)
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv("GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore")
@@ -1538,20 +1537,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
             "thumbURL": f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token={MAPBOX_ACCESS_TOKEN}",  # noqa
             "group": "background",
             "visibility": True,
-        }
-        DEFAULT_MS2_BACKGROUNDS = [
-            BASEMAP,
-        ] + DEFAULT_MS2_BACKGROUNDS
-
-    if BING_API_KEY:
-        BASEMAP = {
-            "type": "bing",
-            "title": "Bing Aerial",
-            "name": "AerialWithLabels",
-            "source": "bing",
-            "group": "background",
-            "apiKey": "{{apiKey}}",
-            "visibility": False,
         }
         DEFAULT_MS2_BACKGROUNDS = [
             BASEMAP,
@@ -1762,6 +1747,8 @@ CELERY_ACCEPT_CONTENT = [
 # in the queue in case of harvesting hundreds of resources
 CHUNK_SIZE = os.environ.get("CHUNK_SIZE", 100)
 MAX_PARALLEL_QUEUE_CHUNKS = os.environ.get("MAX_PARALLEL_QUEUE_CHUNKS", 2)
+HARVESTING_MONITOR_ENABLED = ast.literal_eval(os.environ.get("HARVESTING_MONITOR_ENABLED", "True"))
+HARVESTING_MONITOR_DELAY = int(os.environ.get("HARVESTING_MONITOR_DELAY", 60))
 
 # Set Tasks Queues
 # CELERY_TASK_DEFAULT_QUEUE = "default"
