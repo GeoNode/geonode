@@ -57,7 +57,6 @@ class MetadataViewSet(ViewSet):
         base = request.build_absolute_uri("").rstrip("/")
         return Response(
             {
-                "message": "Available metadata endpoints",
                 "schema": f"{base}/schema/",
                 "instance": f"{base}/instance/<pk>/",
             }
