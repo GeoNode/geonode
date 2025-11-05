@@ -134,7 +134,7 @@ urlpatterns += [
     re_path(r"^api/v2/", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
     # metadata views
-    re_path(r"^api/v2/", include("geonode.metadata.urls")),
+    re_path(r"^api/v2/", include("geonode.metadata.api.urls")),
     re_path(r"", include(api.urls)),
     re_path(
         r"uploads/upload",
