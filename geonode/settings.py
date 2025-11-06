@@ -2290,7 +2290,7 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
 ]
 
-REQUEST_CONFIGURATION_RULES_HANDLERS = []
+REQUEST_CONFIGURATION_RULES_HANDLERS = ["geonode.security.request_configuration_handlers.BaseConfigurationRuleHandler"]
 
 FEATURE_VALIDATORS = [
     "geonode.upload.feature_validators.GeoserverFeatureValidator",
