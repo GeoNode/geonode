@@ -36,11 +36,14 @@ from django.db.models import Q
 from django.urls import reverse
 from django.conf import settings
 from django.http import HttpRequest
-from django.test.testcases import TestCase
-from django.contrib.auth import get_user_model
+from django.test import TestCase, Client
 from django.test.utils import override_settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-
+from geonode.security.request_configuration_registry import (
+    BaseRequestConfigurationRuleHandler,
+    RequestConfigurationRulesRegistry,
+)
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode import geoserver
@@ -3736,3 +3739,195 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         temp_user.delete()
         temp_group_profile.delete()
         temp_group.delete()
+
+
+# First mock handler for testing
+class MockRuleHandler1(BaseRequestConfigurationRuleHandler):
+    def get_rules(self, user):
+        return [
+            {"urlPattern": "https://example.com/api/v1/.*", "params": {"access_token": "{securityToken}"}},
+            {"urlPattern": "https://example.com/data/.*", "headers": {"Authorization": "Bearer {securityToken}"}},
+        ]
+
+
+# Second mock handler for testing
+class MockRuleHandler2(BaseRequestConfigurationRuleHandler):
+    def get_rules(self, user):
+        return [
+            {"urlPattern": "https://example.com/admin/.*", "params": {"token": "{securityToken}"}},
+            {"urlPattern": "https://example.com/secure/.*", "headers": {"X-Auth-Token": "{securityToken}"}},
+        ]
+
+
+class TestRequestConfigurationRulesRegistry(GeoNodeBaseTestSupport):
+    """
+    Tests for RequestConfigurationRulesRegistry functionality.
+    """
+
+    def setUp(self):
+        self.registry = RequestConfigurationRulesRegistry()
+        self.registry.reset()  # Ensure a clean registry
+
+        # Create test user
+        User = get_user_model()
+        self.username = "testuser"
+        self.password = "testpass123"
+        self.user = User.objects.create_user(username=self.username, password=self.password, email="test@example.com")
+        self.registry.REGISTRY = [MockRuleHandler1, MockRuleHandler2]
+
+        # Create test client
+        self.client = Client()
+
+    def test_get_rules_returns_all_configured_rules(self):
+        """
+        Test that get_rules returns all rules from all registered handlers.
+        """
+        # Login the test user
+        self.client.login(username=self.username, password=self.password)
+
+        try:
+            # Get rules for authenticated user
+            result = self.registry.get_rules(self.user)
+
+            # Should return a dict with a 'rules' key
+            self.assertIn("rules", result)
+
+            # Should return 2 rules from MockHandler1 + 2 rules from MockHandler2
+            self.assertEqual(len(result["rules"]), 4)
+
+            # Verify all expected URL patterns are present
+            url_patterns = {rule["urlPattern"] for rule in result["rules"]}
+            expected_patterns = {
+                "https://example.com/api/v1/.*",
+                "https://example.com/data/.*",
+                "https://example.com/admin/.*",
+                "https://example.com/secure/.*",
+            }
+            self.assertEqual(url_patterns, expected_patterns)
+
+        finally:
+            # Cleanup
+            self.client.logout()
+
+    def test_get_rules_requires_authenticated_user(self):
+        """
+        Test that get_rules raises an exception for unauthenticated users.
+        """
+        # Ensure user is not logged in
+        self.client.logout()
+        # Test with anonymous user
+        anonymous_user = AnonymousUser()
+        with self.assertRaises(Exception) as context:
+            self.registry.get_rules(anonymous_user)
+        self.assertIn("User must be authenticated", str(context.exception))
+
+        # Test with logged-in user (should not raise exception)
+        self.client.login(username=self.username, password=self.password)
+        try:
+            # This should work because user is authenticated
+            result = self.registry.get_rules(self.user)
+            self.assertIn("rules", result)
+
+            # Get the current user from the request to ensure we have the correct auth state
+            from django.contrib.auth import get_user
+
+            request = HttpRequest()
+            request.session = self.client.session
+            current_user = get_user(request)
+
+            # This should also work because we're passing the user object directly
+            result = self.registry.get_rules(current_user)
+            self.assertIn("rules", result)
+
+        finally:
+            self.client.logout()
+
+        # After logout, get a fresh anonymous user
+        request = HttpRequest()
+        request.session = self.client.session
+        anonymous_user = get_user(request)
+
+        # Now this should raise an exception
+        with self.assertRaises(Exception) as context:
+            self.registry.get_rules(anonymous_user)
+        self.assertIn("User must be authenticated", str(context.exception))
+
+    def test_add_handler(self):
+        """Test adding a handler to the registry"""
+        # Reset and add a handler
+        self.registry.reset()
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+
+        self.assertEqual(len(self.registry.REGISTRY), 1)
+        self.assertEqual(self.registry.REGISTRY[0], MockRuleHandler1)
+        self.assertTrue(issubclass(self.registry.REGISTRY[0], BaseRequestConfigurationRuleHandler))
+
+    def test_remove_handler(self):
+        """Test removing a handler from the registry"""
+        self.registry.reset()
+
+        # Add a handler
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+        self.assertEqual(len(self.registry.REGISTRY), 1)
+
+        # Remove the handler
+        self.registry.remove("geonode.security.tests.MockRuleHandler1")
+
+        # Verify the registry is empty after removal
+        self.assertEqual(len(self.registry.REGISTRY), 0)
+
+    def test_remove_handler_with_multiple_handlers(self):
+        """Test removing one handler when multiple exist"""
+        self.registry.reset()
+
+        # Add multiple handlers
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+        self.registry.add("geonode.security.tests.MockRuleHandler2")
+
+        # Verify both handlers were added
+        self.assertEqual(len(self.registry.REGISTRY), 2)
+
+        # Remove one handler
+        self.registry.remove("geonode.security.tests.MockRuleHandler1")
+
+        # Verify only MockRuleHandler2 remains
+        self.assertEqual(len(self.registry.REGISTRY), 1)
+        self.assertEqual(self.registry.REGISTRY[0], MockRuleHandler2)
+
+    def test_reset_registry(self):
+        """Test resetting the registry"""
+        # Add some handlers
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+        self.registry.add("geonode.security.tests.MockRuleHandler2")
+
+        # Verify handlers were added
+        self.assertEqual(len(self.registry.REGISTRY), 2)
+
+        # Reset the registry
+        self.registry.reset()
+
+        # Verify the registry is empty
+        self.assertEqual(len(self.registry.REGISTRY), 0)
+
+    def test_get_rules_with_dynamically_added_handlers(self):
+        """Test that dynamically added handlers are used when getting rules"""
+        self.registry.reset()
+
+        # Add handlers dynamically
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+
+        # Get rules
+        result = self.registry.get_rules(self.user)
+        self.assertEqual(len(result["rules"]), 2)
+
+        # Add another handler
+        self.registry.add("geonode.security.tests.MockRuleHandler2")
+
+        # Get rules again - should now have 4 rules
+        result = self.registry.get_rules(self.user)
+        self.assertEqual(len(result["rules"]), 4)
+
+    def tearDown(self):
+        # Clean up test data
+        if hasattr(self, "user") and self.user:
+            self.user.delete()
