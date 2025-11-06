@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 import geonode.base.api.serializers as base_serializers
+
 from geonode.security.request_configuration_registry import request_configuration_rules_registry
 
 logger = logging.getLogger(__name__)
@@ -92,11 +93,5 @@ class RequestConfigurationRulesSerializer(serializers.Serializer):
     rules = serializers.SerializerMethodField()
 
     def get_rules(self, obj):
-        if obj.is_superuser:
-            rules = []
-            users = get_user_model().objects.all()
-            for user in users:
-                rules.extend(request_configuration_rules_registry.get_rules(user)["rules"])
-            return rules
         rules = request_configuration_rules_registry.get_rules(obj)["rules"]
         return rules

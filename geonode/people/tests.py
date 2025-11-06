@@ -1344,18 +1344,19 @@ class UserRulesAPITestCase(GeoNodeBaseTestSupport):
         self.token2 = get_or_create_token(self.user2)
         self.admin_token = get_or_create_token(self.admin)
 
-        # The URL pattern for the rules endpoint
-        self.url = "/api/v2/users/rules/"
+        self.user1_url = f"/api/v2/users/{self.user1.pk}/rules/"
+        self.user2_url = f"/api/v2/users/{self.user2.pk}/rules/"
+        self.admin_url = f"/api/v2/users/{self.admin.pk}/rules/"
 
     def test_anonymous_user_denied(self):
         """Anonymous users should not be able to access the endpoint."""
-        response = self.client.get(self.url)
+        response = self.client.get(self.user1_url)
         self.assertEqual(response.status_code, 401)
 
     def test_user_can_see_own_rules(self):
         """A user should be able to see their own rules with correct structure."""
         self.client.login(username="testuser1", password="testpass1")
-        response = self.client.get(self.url)
+        response = self.client.get(self.user1_url)
         self.assertEqual(response.status_code, 200)
 
         # Verify the response structure
@@ -1380,21 +1381,28 @@ class UserRulesAPITestCase(GeoNodeBaseTestSupport):
             if rule["urlPattern"] == f"{settings.HOSTNAME}/api/v2.*":
                 self.assertIn("headers", rule)
                 self.assertIn("Authorization", rule["headers"])
-                self.assertEqual(rule["headers"]["Authorization"], f"Bearer {self.token1}")
+                self.assertEqual(rule["headers"]["Authorization"], f"Bearer {self.token1.token}")
             else:
                 self.assertIn("params", rule)
                 self.assertIn("access_token", rule["params"])
-                self.assertEqual(rule["params"]["access_token"], str(self.token1))
+                self.assertEqual(rule["params"]["access_token"], self.token1.token)
 
         # Verify all expected patterns are present
         self.assertCountEqual(actual_patterns, expected_patterns)
 
     def test_user_cannot_see_other_users_rules(self):
         """A user should not be able to see another user's rules."""
-        # First, get user1's rules as user1
+        # Try to access user2's rules as user1 - should be denied
         self.client.login(username="testuser1", password="testpass1")
-        response1 = self.client.get(self.url)
+        response = self.client.get(self.user2_url)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("error", response.data)
+        self.assertIn("permission", str(response.data["error"]).lower())
+
+        # User1 should be able to see their own rules
+        response1 = self.client.get(self.user1_url)
         self.assertEqual(response1.status_code, 200)
+        self.assertIn("rules", response1.data)
 
         # Extract user1's tokens from the response
         user1_tokens = []
@@ -1407,7 +1415,7 @@ class UserRulesAPITestCase(GeoNodeBaseTestSupport):
 
         # Then, get user2's rules as user2
         self.client.login(username="testuser2", password="testpass2")
-        response2 = self.client.get(self.url)
+        response2 = self.client.get(self.user2_url)
         self.assertEqual(response2.status_code, 200)
 
         # Extract user2's tokens from the response
@@ -1427,31 +1435,48 @@ class UserRulesAPITestCase(GeoNodeBaseTestSupport):
         self.assertNotEqual(user1_tokens, user2_tokens)
 
         # Verify each token belongs to the correct user
-        self.assertIn(str(self.token1), user1_tokens)
-        self.assertIn(str(self.token2), user2_tokens)
-        self.assertNotIn(str(self.token2), user1_tokens)
-        self.assertNotIn(str(self.token1), user2_tokens)
+        self.assertIn(self.token1.token, user1_tokens)
+        self.assertIn(self.token2.token, user2_tokens)
+        self.assertNotIn(self.token2.token, user1_tokens)
+        self.assertNotIn(self.token1.token, user2_tokens)
 
     def test_admin_can_see_all_rules(self):
-        """An admin should be able to see all users' rules."""
+        """An admin should be able to see any user's rules."""
         self.client.login(username="admin", password="admin")
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
 
-        # Verify the response contains rules for all users
-        self.assertIn("rules", response.data)
-        self.assertIsInstance(response.data["rules"], list)
+        # Admin can see user1's rules
+        response1 = self.client.get(self.user1_url)
+        self.assertEqual(response1.status_code, 200)
+        self.assertIn("rules", response1.data)
+        self.assertIsInstance(response1.data["rules"], list)
 
-        # Collect all tokens from the response
-        tokens_in_response = set()
-        for rule in response.data["rules"]:
+        # Extract user1's tokens from admin's response
+        user1_tokens = []
+        for rule in response1.data["rules"]:
             if "params" in rule and "access_token" in rule["params"]:
-                tokens_in_response.add(rule["params"]["access_token"])
+                user1_tokens.append(rule["params"]["access_token"])
             elif "headers" in rule and "Authorization" in rule["headers"]:
-                # Extract token from "Bearer <token>"
                 token = rule["headers"]["Authorization"].split()[-1]
-                tokens_in_response.add(token)
+                user1_tokens.append(token)
 
-        # The response should contain both user1's and user2's tokens
-        self.assertIn(str(self.token1), tokens_in_response)
-        self.assertIn(str(self.token2), tokens_in_response)
+        # Admin can see user2's rules
+        response2 = self.client.get(self.user2_url)
+        self.assertEqual(response2.status_code, 200)
+        self.assertIn("rules", response2.data)
+        self.assertIsInstance(response2.data["rules"], list)
+
+        # Extract user2's tokens from admin's response
+        user2_tokens = []
+        for rule in response2.data["rules"]:
+            if "params" in rule and "access_token" in rule["params"]:
+                user2_tokens.append(rule["params"]["access_token"])
+            elif "headers" in rule and "Authorization" in rule["headers"]:
+                token = rule["headers"]["Authorization"].split()[-1]
+                user2_tokens.append(token)
+
+        # Verify admin can see both users' tokens
+        self.assertIn(self.token1.token, user1_tokens)
+        self.assertIn(self.token2.token, user2_tokens)
+
+        # Verify tokens are different
+        self.assertNotEqual(user1_tokens, user2_tokens)
