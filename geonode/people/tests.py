@@ -1440,7 +1440,7 @@ class UserRulesAPITestCase(GeoNodeBaseTestSupport):
         self.assertNotIn(self.token2.token, user1_tokens)
         self.assertNotIn(self.token1.token, user2_tokens)
 
-    def test_admin_also_can_only_see_own_rules(self):
+    def test_admin_can_only_see_own_rules_not_others(self):
         """An admin should only be able to see their own rules, not other users' rules."""
         self.client.login(username="admin", password="admin")
 
