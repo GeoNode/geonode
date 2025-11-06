@@ -123,10 +123,14 @@ class UserViewSet(DynamicModelViewSet):
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
         return paginator.get_paginated_response({"resources": serializer.data})
 
-    @action(detail=False, methods=["get"], url_path="rules", url_name="user_rules")
-    def rules(self, request):
-        user = request.user
-        serializer = RequestConfigurationRulesSerializer(user)
+    @action(detail=True, methods=["get"], url_path="rules", url_name="user_rules")
+    def rules(self, request, pk=None):
+        target_user = self.get_object()
+        if not (request.user.is_superuser):
+            if target_user.pk != request.user.pk:
+                return Response({"error": "You do not have permission to access this user's rules."}, status=403)
+            target_user = request.user
+        serializer = RequestConfigurationRulesSerializer(target_user)
         return Response(serializer.data)
 
     @extend_schema(
