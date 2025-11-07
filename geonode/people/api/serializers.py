@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 import geonode.base.api.serializers as base_serializers
+
 from geonode.security.request_configuration_registry import request_configuration_rules_registry
 
 logger = logging.getLogger(__name__)
