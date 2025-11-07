@@ -33,9 +33,9 @@ class BaseConfigurationRuleHandler(BaseRequestConfigurationRuleHandler):
 
         rules.extend(
             [
-                {"urlPattern": f"{settings.GEOSERVER_WEB_UI_LOCATION}/.*", "params": {"access_token": access_token}},
-                {"urlPattern": f"{settings.HOSTNAME}/gs.*", "params": {"access_token": access_token}},
-                {"urlPattern": f"{settings.HOSTNAME}/api/v2.*", "headers": {"Authorization": f"Bearer {access_token}"}},
+                {"urlPattern": f"{settings.GEOSERVER_WEB_UI_LOCATION.rstrip('/')}/.*", "params": {"access_token": access_token}},
+                {"urlPattern": f"{settings.SITEURL.rstrip('/')}/gs.*", "params": {"access_token": access_token}},
+                {"urlPattern": f"{settings.SITEURL.rstrip('/')}/api/v2.*", "headers": {"Authorization": f"Bearer {access_token}"}},
             ]
         )
         return rules
