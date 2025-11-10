@@ -10,14 +10,14 @@ import geonode.metadata.multilang as multi
 logger = logging.getLogger(__name__)
 
 
-class IndexManager:
+class TSVectorIndexManager:
 
     def __init__(self):
         self.LANGUAGES = multi.get_2letters_languages()
 
     def _gather_fields_values(self, jsonschema: dict, jsoninstance: dict):
         ml_fields = {}
-        nonml_fields = {}
+        non_ml_fields = {}
 
         involved_fields = {field for fields in settings.METADATA_INDEXES.values() for field in fields}
 
@@ -28,7 +28,7 @@ class IndexManager:
                 for lang, loc_field_name in multi.get_multilang_field_names(fieldname):
                     ml_fields[fieldname][lang] = jsoninstance.get(loc_field_name, "")
             else:
-                nonml_fields[fieldname] = jsoninstance.get(fieldname, None)
+                non_ml_fields[fieldname] = jsoninstance.get(fieldname, None)
 
         # 2nd loop: fill in missing title entries
         # i.e. if a title is missing the content for a given lang, it will be filled with the content
@@ -43,70 +43,60 @@ class IndexManager:
                         logger.debug(f"Filling in title for empty lang {lang}")
                         ml_fields["title"][lang] = merged
 
-        return nonml_fields, ml_fields
+        return non_ml_fields, ml_fields
 
-    def update_index(self, resource: ResourceBase, jsonschema: dict, jsoninstance: dict):
+    def update_index(self, resource_id, jsonschema: dict, jsoninstance: dict):
 
-        nonml_fields, ml_fields = self._gather_fields_values(jsonschema, jsoninstance)
+        non_ml_fields, ml_fields = self._gather_fields_values(jsonschema, jsoninstance)
 
         # 3rd loop: create indexes
         for index_name, index_fields in settings.METADATA_INDEXES.items():
 
-            if all(field in nonml_fields for field in index_fields):
+            if all(field in non_ml_fields for field in index_fields):
                 # this index is not localized
                 pg_lang = multi.get_pg_language(multi.get_default_language())
                 logger.debug(
-                    f"Creating non localized index - resource:{resource.id} index name:{index_name} default lang:{pg_lang}"
+                    f"Creating non localized index - resource:{resource_id} index name:{index_name} default lang:{pg_lang}"
                 )
-                index_text = " ".join((nonml_fields[f] for f in index_fields))
+                index_text = " ".join((non_ml_fields[f] for f in index_fields))
                 vector = Func(
                     Value(index_text), function="to_tsvector", template=f"%(function)s('{pg_lang}', %(expressions)s)"
                 )
 
                 ResourceIndex.objects.update_or_create(
-                    defaults={"vector": vector}, resource=resource, lang=None, name=index_name
+                    defaults={"vector": vector}, resource_id=resource_id, lang=None, name=index_name
                 )
                 # remove all localized indexes if any
                 ResourceIndex.objects.filter(
-                    resource=resource,
+                    resource_id=resource_id,
                     lang__isnull=False,
                     name=index_name,
                 ).delete()
 
             else:  # some indexed fields are multilang
                 # gather all non localized fields
-                non_multilang_text = " ".join((nonml_fields[f] for f in index_fields))
-                indexes = {}
+                non_ml_text = " ".join(non_ml_fields[f] for f in index_fields if f in non_ml_fields)
 
-                # compose indexes for each language
-                for index_field in index_fields:
-                    if index_field not in ml_fields:
-                        continue
-                    for lang, text in ml_fields[index_field]:
-                        old = indexes.setdefault(lang, "")
-                        indexes[lang] = f"{old} {text}"
+                for lang in self.LANGUAGES:
+                    logger.debug(f"Creating localized index {index_name} for resource {resource_id}")
 
-                # store indexes for each language
-                for lang, text in indexes.items():
-                    logger.debug(f"Creating localized index {index_name} for resource {resource.id}")
-
-                    pg_lang = multi.get_pg_language(lang)
+                    ml_text = " ".join(ml_fields[f][lang] for f in index_fields if f in ml_fields)
                     vector = Func(
-                        Value(f"{text} {non_multilang_text}"),
+                        Value(f"{ml_text} {non_ml_text}"),
                         function="to_tsvector",
-                        template=f"%(function)s('{pg_lang}', %(expressions)s)",
+                        template=f"%(function)s('{multi.get_pg_language(lang)}', %(expressions)s)",
                     )
 
                     ResourceIndex.objects.update_or_create(
-                        resource=resource, lang=lang, name=index_name, defaults={"vector": vector}
+                        resource_id=resource_id, lang=lang, name=index_name, defaults={"vector": vector}
                     )
 
                 # remove all non-localized indexes entries
                 ResourceIndex.objects.filter(
-                    resource=resource,
+                    resource_id=resource_id,
                     lang__isnull=True,
                     name=index_name,
                 ).delete()
 
 
-index_manager = IndexManager()
+index_manager = TSVectorIndexManager()

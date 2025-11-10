@@ -1,4 +1,3 @@
-
 from django.conf import settings
 
 MULTILANG_ANNOTATION = "geonode:multilang"
@@ -9,7 +8,7 @@ def is_multilang(fieldname: str, jsonschema: dict) -> bool:
 
 
 def get_2letters_languages():
-    return [l.split("-")[0] for l,_ in settings.LANGUAGES]
+    return [l.split("-")[0] for l, _ in settings.LANGUAGES]
 
 
 def get_multilang_field_names(base_name):

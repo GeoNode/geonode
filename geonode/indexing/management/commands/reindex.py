@@ -102,7 +102,7 @@ class Command(BaseCommand):
                         jsonschema = metadata_manager.get_schema()
                         jsoninstance = metadata_manager.build_schema_instance(resource)
                         if not dry_run:
-                            index_manager.update_index(resource, jsonschema, jsoninstance)
+                            index_manager.update_index(resource.id, jsonschema, jsoninstance)
                         good = True
 
                     except Exception as e:

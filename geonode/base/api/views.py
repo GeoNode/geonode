@@ -65,6 +65,7 @@ from geonode.base.api.filters import (
     FacetVisibleResourceFilter,
     FavoriteFilter,
     TKeywordsFilter,
+    ResourceIndexFilter,
 )
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
@@ -307,6 +308,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         TKeywordsFilter,
+        ResourceIndexFilter,
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,

@@ -2340,9 +2340,9 @@ METADATA_INDEXES = {
 # you can get the language name in psql using "\dF"
 MULTILANG_POSTGRES_LANGS = {
     None: "simple",
-    "en": "english",
-    "it": "italian",
-    "es": "spanish",
+    # "en": "english",
+    # "it": "italian",
+    # "es": "spanish",
 }
 
 
