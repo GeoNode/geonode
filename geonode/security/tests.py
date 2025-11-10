@@ -3125,7 +3125,7 @@ class TestBaseConfigurationRuleHandler(GeoNodeBaseTestSupport):
             f"{user_label}: Token mismatch in HOSTNAME/api/v2 rule",
         )
 
-    @override_settings(GEOSERVER_WEB_UI_LOCATION="https://example.com/geoserver", HOSTNAME="https://example.com")
+    @override_settings(GEOSERVER_WEB_UI_LOCATION="https://example.com/geoserver", SITEURL="https://example.com")
     def test_get_rules_with_multiple_users(self):
         """Test that get_rules returns the expected rules with valid tokens for multiple users."""
         # Create test users
