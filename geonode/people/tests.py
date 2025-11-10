@@ -1367,8 +1367,8 @@ class UserRulesAPITestCase(GeoNodeBaseTestSupport):
         # Expected patterns based on BaseConfigurationRuleHandler
         expected_patterns = [
             f"{settings.GEOSERVER_WEB_UI_LOCATION}/.*",
-            f"{settings.HOSTNAME}/gs.*",
-            f"{settings.HOSTNAME}/api/v2.*",
+            f"{settings.SITEURL}/gs.*",
+            f"{settings.SITEURL}/api/v2.*",
         ]
 
         # Collect actual patterns and verify structure
@@ -1378,7 +1378,7 @@ class UserRulesAPITestCase(GeoNodeBaseTestSupport):
             actual_patterns.append(rule["urlPattern"])
 
             # Check token in params or headers based on URL pattern
-            if rule["urlPattern"] == f"{settings.HOSTNAME}/api/v2.*":
+            if rule["urlPattern"] == f"{settings.SITEURL}/api/v2.*":
                 self.assertIn("headers", rule)
                 self.assertIn("Authorization", rule["headers"])
                 self.assertEqual(rule["headers"]["Authorization"], f"Bearer {self.token1.token}")
