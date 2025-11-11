@@ -614,10 +614,14 @@ class BaseVectorFileHandler(BaseHandler):
         workspace = DataPublisher(None).workspace
         if resource_pk := _exec_obj.input_params.get("resource_pk", None):
             user_datasets = Dataset.objects.filter(owner=username, pk=resource_pk)
+            user_dataset = user_datasets.first()
+            if user_dataset:
+                dynamic_schema = ModelSchema.objects.filter(name__iexact=user_dataset.name)
+            else:
+                dynamic_schema = ModelSchema.objects.none()
         else:
             user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
-
-        dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
+            dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
 
         dynamic_schema_exists = dynamic_schema.exists()
         dataset_exists = user_datasets.exists()
