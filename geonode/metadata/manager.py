@@ -108,6 +108,9 @@ class MetadataManager:
             except UnsetFieldException:
                 pass
 
+        for handler in self.handlers.values():
+            handler.post_serialization(resource, schema, instance, context)
+
         # TESTING ONLY
         if "error" in resource.title.lower():
             for fieldname in schema["properties"]:
@@ -134,6 +137,9 @@ class MetadataManager:
             handler.load_deserialization_context(resource, schema, context)
 
         errors = {}
+
+        for handler in self.handlers.values():
+            handler.pre_deserialization(resource, schema, json_instance, context)
 
         for fieldname, subschema in schema["properties"].items():
             if partial:

@@ -2345,6 +2345,11 @@ MULTILANG_POSTGRES_LANGS = {
     # "es": "spanish",
 }
 
+MULTILANG_FIELDS = (
+    # "title",
+    # "abstract",
+)
+
 
 #
 # INSTALLED_APPS += ("rndt",)

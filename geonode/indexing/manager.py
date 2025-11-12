@@ -3,9 +3,8 @@ import logging
 from django.db.models import Func, Value
 from django.conf import settings
 
-from geonode.base.models import ResourceBase
 from geonode.indexing.models import ResourceIndex
-import geonode.metadata.multilang as multi
+import geonode.metadata.multilang.utils as multi
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +22,7 @@ class TSVectorIndexManager:
 
         # first loop: gather values
         for fieldname in involved_fields:
-            if multi.is_multilang(fieldname, jsonschema):
+            if fieldname in settings.MULTILANG_FIELDS:
                 ml_fields[fieldname] = {}
                 for lang, loc_field_name in multi.get_multilang_field_names(fieldname):
                     ml_fields[fieldname][lang] = jsoninstance.get(loc_field_name, "")
