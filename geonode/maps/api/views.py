@@ -28,8 +28,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from geonode.base import register_event
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.mixins import AdvertisedListMixin
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
@@ -41,13 +40,14 @@ from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
 from geonode.maps.signals import map_changed_signal
+from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.manager import resource_manager
 from geonode.utils import resolve_object
 
 logger = logging.getLogger(__name__)
 
 
-class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows maps to be viewed or edited.
     """
@@ -61,6 +61,7 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        AdvertisedFilter,
         ExtentFilter,
         MapPermissionsFilter,
     ]

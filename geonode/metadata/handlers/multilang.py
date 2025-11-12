@@ -23,7 +23,7 @@ from django.conf import settings
 
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.handlers.sparse import sparse_field_registry
-import geonode.metadata.multilang as multi
+import geonode.metadata.multilang.utils as multi
 
 logger = logging.getLogger(__name__)
 

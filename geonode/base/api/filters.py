@@ -33,7 +33,7 @@ from geonode.base.bbox_utils import filter_bbox
 from geonode.base.models import ThesaurusKeyword
 from geonode.favorite.models import Favorite
 from geonode.indexing.models import ResourceIndex
-from geonode.metadata.multilang import get_2letters_languages, get_pg_language
+from geonode.metadata.multilang.utils import get_2letters_languages, get_pg_language
 
 logger = logging.getLogger(__name__)
 
@@ -182,4 +182,30 @@ class ResourceIndexFilter(BaseFilterBackend):
         )
 
         logger.debug(queryset.query)
+        return queryset
+
+
+class AdvertisedFilter(BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        # advertised
+        # if superuser, all resources will be visible, otherwise only the advertised one and
+        # the resource which the user is owner will be returned
+        user = request.user
+        try:
+            _filter = request.query_params.get("advertised", "None")
+            advertised = strtobool(_filter) if _filter.lower() != "all" else "all"
+        except Exception:
+            advertised = None
+
+        if advertised == "all":
+            pass
+        elif advertised is not None:
+            queryset = queryset.filter(advertised=advertised)
+        else:
+            is_admin = user.is_superuser if user and user.is_authenticated else False
+            if not is_admin and user and not user.is_anonymous:
+                queryset = (queryset.filter(advertised=True) | queryset.filter(owner=user)).distinct()
+            elif not user or user.is_anonymous:
+                queryset = queryset.filter(advertised=True)
+
         return queryset

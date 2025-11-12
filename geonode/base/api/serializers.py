@@ -29,6 +29,7 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from geonode.assets.utils import get_default_asset, is_asset_deletable
+from geonode.metadata.multilang.serializers import MultiLangOutputMixin
 from geonode.people import Roles
 from django.http import QueryDict
 from deprecated import deprecated
@@ -597,7 +598,7 @@ class LinksSerializer(DynamicModelSerializer):
         return ret
 
 
-class ResourceBaseSerializer(DynamicModelSerializer):
+class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
     pk = serializers.CharField(read_only=True)
     uuid = serializers.CharField(read_only=True)
     resource_type = serializers.CharField(required=False)

@@ -4,7 +4,7 @@ from django.db.models import Func, Value
 from django.conf import settings
 
 from geonode.indexing.models import ResourceIndex
-import geonode.metadata.multilang as multi
+import geonode.metadata.multilang.utils as multi
 
 logger = logging.getLogger(__name__)
 
