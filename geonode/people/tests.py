@@ -39,6 +39,7 @@ from geonode.base.populate_test_data import all_public, create_models, create_si
 from geonode.security.registry import permissions_registry
 from geonode.people.hashers import SHA1PasswordHasher
 from geonode.people.hashers import PBKDF2SHA1WrappedSHA1PasswordHasher
+from django.conf import settings
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
@@ -1322,3 +1323,156 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(user.check_password("password"))
         # after checking it should be migrated to default hash
         self.assertTrue(user.password.startswith("pbkdf2_sha1"))
+
+
+class UserRulesAPITestCase(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.admin = get_user_model().objects.get(username="admin")
+        self.user1 = get_user_model().objects.create_user(
+            username="testuser1", password="testpass1", email="user1@example.com"
+        )
+        self.user2 = get_user_model().objects.create_user(
+            username="testuser2", password="testpass2", email="user2@example.com"
+        )
+        self.anonymous = get_user_model().get_anonymous()
+
+        # Generate tokens for users
+        from geonode.base.auth import get_or_create_token
+
+        self.token1 = get_or_create_token(self.user1)
+        self.token2 = get_or_create_token(self.user2)
+        self.admin_token = get_or_create_token(self.admin)
+
+        self.user1_url = f"/api/v2/users/{self.user1.pk}/rules/"
+        self.user2_url = f"/api/v2/users/{self.user2.pk}/rules/"
+        self.admin_url = f"/api/v2/users/{self.admin.pk}/rules/"
+
+    def test_anonymous_user_denied(self):
+        """Anonymous users should not be able to access the endpoint."""
+        response = self.client.get(self.user1_url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_user_can_see_own_rules(self):
+        """A user should be able to see their own rules with correct structure."""
+        self.client.login(username="testuser1", password="testpass1")
+        response = self.client.get(self.user1_url)
+        self.assertEqual(response.status_code, 200)
+
+        # Verify the response structure
+        self.assertIn("rules", response.data)
+        self.assertIsInstance(response.data["rules"], list)
+        self.assertEqual(len(response.data["rules"]), 3)  # Should have 3 rules
+
+        # Expected patterns based on BaseConfigurationRuleHandler
+        expected_patterns = [
+            f"{settings.GEOSERVER_WEB_UI_LOCATION.rstrip('/')}/.*",
+            f"{settings.SITEURL.rstrip('/')}/gs.*",
+            f"{settings.SITEURL.rstrip('/')}/api/v2.*",
+        ]
+
+        # Collect actual patterns and verify structure
+        actual_patterns = []
+        for rule in response.data["rules"]:
+            self.assertIn("urlPattern", rule)
+            actual_patterns.append(rule["urlPattern"])
+
+            # Check token in params or headers based on URL pattern
+            if rule["urlPattern"] == f"{settings.SITEURL.rstrip('/')}/api/v2.*":
+                self.assertIn("headers", rule)
+                self.assertIn("Authorization", rule["headers"])
+                self.assertEqual(rule["headers"]["Authorization"], f"Bearer {self.token1.token}")
+            else:
+                self.assertIn("params", rule)
+                self.assertIn("access_token", rule["params"])
+                self.assertEqual(rule["params"]["access_token"], self.token1.token)
+
+        # Verify all expected patterns are present
+        self.assertCountEqual(actual_patterns, expected_patterns)
+
+    def test_user_cannot_see_other_users_rules(self):
+        """A user should not be able to see another user's rules."""
+        # Try to access user2's rules as user1 - should be denied
+        self.client.login(username="testuser1", password="testpass1")
+        response = self.client.get(self.user2_url)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("error", response.data)
+        self.assertIn("permission", str(response.data["error"]).lower())
+
+        # User1 should be able to see their own rules
+        response1 = self.client.get(self.user1_url)
+        self.assertEqual(response1.status_code, 200)
+        self.assertIn("rules", response1.data)
+
+        # Extract user1's tokens from the response
+        user1_tokens = []
+        for rule in response1.data["rules"]:
+            if "params" in rule and "access_token" in rule["params"]:
+                user1_tokens.append(rule["params"]["access_token"])
+            elif "headers" in rule and "Authorization" in rule["headers"]:
+                token = rule["headers"]["Authorization"].split()[-1]
+                user1_tokens.append(token)
+
+        # Then, get user2's rules as user2
+        self.client.login(username="testuser2", password="testpass2")
+        response2 = self.client.get(self.user2_url)
+        self.assertEqual(response2.status_code, 200)
+
+        # Extract user2's tokens from the response
+        user2_tokens = []
+        for rule in response2.data["rules"]:
+            if "params" in rule and "access_token" in rule["params"]:
+                user2_tokens.append(rule["params"]["access_token"])
+            elif "headers" in rule and "Authorization" in rule["headers"]:
+                token = rule["headers"]["Authorization"].split()[-1]
+                user2_tokens.append(token)
+
+        # Verify each user only sees their own tokens
+        self.assertEqual(len(user1_tokens), 3)  # 3 rules with tokens
+        self.assertEqual(len(user2_tokens), 3)  # 3 rules with tokens
+
+        # Verify the tokens are different between users
+        self.assertNotEqual(user1_tokens, user2_tokens)
+
+        # Verify each token belongs to the correct user
+        self.assertIn(self.token1.token, user1_tokens)
+        self.assertIn(self.token2.token, user2_tokens)
+        self.assertNotIn(self.token2.token, user1_tokens)
+        self.assertNotIn(self.token1.token, user2_tokens)
+
+    def test_admin_can_only_see_own_rules_not_others(self):
+        """An admin should only be able to see their own rules, not other users' rules."""
+        self.client.login(username="admin", password="admin")
+
+        # Admin should NOT be able to see user1's rules
+        response1 = self.client.get(self.user1_url)
+        self.assertEqual(response1.status_code, 403)
+        self.assertIn("error", response1.data)
+        self.assertIn("permission", str(response1.data["error"]).lower())
+
+        # Admin should NOT be able to see user2's rules
+        response2 = self.client.get(self.user2_url)
+        self.assertEqual(response2.status_code, 403)
+        self.assertIn("error", response2.data)
+        self.assertIn("permission", str(response2.data["error"]).lower())
+
+        # Admin should be able to see their own rules
+        response_admin = self.client.get(self.admin_url)
+        self.assertEqual(response_admin.status_code, 200)
+        self.assertIn("rules", response_admin.data)
+        self.assertIsInstance(response_admin.data["rules"], list)
+
+        # Extract admin's tokens from the response
+        admin_tokens = []
+        for rule in response_admin.data["rules"]:
+            if "params" in rule and "access_token" in rule["params"]:
+                admin_tokens.append(rule["params"]["access_token"])
+            elif "headers" in rule and "Authorization" in rule["headers"]:
+                token = rule["headers"]["Authorization"].split()[-1]
+                admin_tokens.append(token)
+
+        # Verify admin sees their own token, not other users' tokens
+        self.assertEqual(len(admin_tokens), 3)  # 3 rules with tokens
+        self.assertIn(self.admin_token.token, admin_tokens)
+        self.assertNotIn(self.token1.token, admin_tokens)
+        self.assertNotIn(self.token2.token, admin_tokens)

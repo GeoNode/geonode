@@ -36,11 +36,14 @@ from django.db.models import Q
 from django.urls import reverse
 from django.conf import settings
 from django.http import HttpRequest
-from django.test.testcases import TestCase
-from django.contrib.auth import get_user_model
+from django.test import TestCase, Client
 from django.test.utils import override_settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-
+from geonode.security.request_configuration_registry import (
+    BaseRequestConfigurationRuleHandler,
+    RequestConfigurationRulesRegistry,
+)
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode import geoserver
@@ -86,6 +89,7 @@ from .utils import (
     get_users_with_perms,
     get_visible_resources,
 )
+from .request_configuration_handlers import BaseConfigurationRuleHandler
 
 from .permissions import PermSpec, PermSpecCompact
 from django.core.cache import cache
@@ -3086,6 +3090,84 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
 
 
+class TestBaseConfigurationRuleHandler(GeoNodeBaseTestSupport):
+    """Test case for BaseConfigurationRuleHandler"""
+
+    def _verify_rules(self, rules, expected_token, user_label=""):
+        """Helper method to verify the rules structure and content."""
+        # Verify the structure and content of the rules
+        self.assertEqual(len(rules), 3, f"{user_label}: Should have 3 rules")
+
+        # Test first rule (GEOSERVER_WEB_UI_LOCATION)
+        self.assertEqual(
+            rules[0]["urlPattern"],
+            "https://example.com/geoserver/.*",
+            f"{user_label}: Incorrect GEOSERVER_WEB_UI_LOCATION pattern",
+        )
+        self.assertEqual(
+            rules[0]["params"]["access_token"],
+            expected_token,
+            f"{user_label}: Token mismatch in GEOSERVER_WEB_UI_LOCATION rule",
+        )
+
+        # Test second rule (HOSTNAME/gs*)
+        self.assertEqual(
+            rules[1]["urlPattern"], "https://example.com/gs.*", f"{user_label}: Incorrect HOSTNAME/gs pattern"
+        )
+        self.assertEqual(
+            rules[1]["params"]["access_token"], expected_token, f"{user_label}: Token mismatch in HOSTNAME/gs rule"
+        )
+
+        # Test third rule (HOSTNAME/api/v2*)
+        self.assertEqual(
+            rules[2]["urlPattern"], "https://example.com/api/v2.*", f"{user_label}: Incorrect HOSTNAME/api/v2 pattern"
+        )
+        self.assertEqual(
+            rules[2]["headers"]["Authorization"],
+            f"Bearer {expected_token}",
+            f"{user_label}: Token mismatch in HOSTNAME/api/v2 rule",
+        )
+
+    @override_settings(GEOSERVER_WEB_UI_LOCATION="https://example.com/geoserver", SITEURL="https://example.com")
+    def test_get_rules_with_multiple_users(self):
+        """Test that get_rules returns the expected rules with valid tokens for multiple users."""
+        # Create test users
+        user1 = get_user_model().objects.create_user(
+            username="testuser1", password="testpass1", email="user1@example.com"
+        )
+
+        user2 = get_user_model().objects.create_user(
+            username="testuser2", password="testpass2", email="user2@example.com"
+        )
+
+        # Get or create tokens for the users
+        token1 = get_or_create_token(user1).token
+        token2 = get_or_create_token(user2).token
+
+        self.assertNotEqual(token1, token2, "Tokens should be unique per user")
+
+        # Initialize the handler
+        handler = BaseConfigurationRuleHandler()
+
+        # Test for user1
+        rules1 = handler.get_rules(user1)
+        self._verify_rules(rules1, token1, "user1")
+
+        # Test for user2
+        rules2 = handler.get_rules(user2)
+        self._verify_rules(rules2, token2, "user2")
+
+        # Verify tokens are used correctly for each user
+        self.assertEqual(rules1[0]["params"]["access_token"], token1, "User1's token should be used in the rules")
+        self.assertEqual(rules2[0]["params"]["access_token"], token2, "User2's token should be used in the rules")
+
+        # Verify tokens exist in the database
+        from oauth2_provider.models import AccessToken
+
+        self.assertTrue(AccessToken.objects.filter(token=token1).exists(), "User1's token should exist in the database")
+        self.assertTrue(AccessToken.objects.filter(token=token2).exists(), "User2's token should exist in the database")
+
+
 @override_settings(
     CACHES={
         "default": {
@@ -3736,3 +3818,195 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         temp_user.delete()
         temp_group_profile.delete()
         temp_group.delete()
+
+
+# First mock handler for testing
+class MockRuleHandler1(BaseRequestConfigurationRuleHandler):
+    def get_rules(self, user):
+        return [
+            {"urlPattern": "https://example.com/api/v1/.*", "params": {"access_token": "{securityToken}"}},
+            {"urlPattern": "https://example.com/data/.*", "headers": {"Authorization": "Bearer {securityToken}"}},
+        ]
+
+
+# Second mock handler for testing
+class MockRuleHandler2(BaseRequestConfigurationRuleHandler):
+    def get_rules(self, user):
+        return [
+            {"urlPattern": "https://example.com/admin/.*", "params": {"token": "{securityToken}"}},
+            {"urlPattern": "https://example.com/secure/.*", "headers": {"X-Auth-Token": "{securityToken}"}},
+        ]
+
+
+class TestRequestConfigurationRulesRegistry(GeoNodeBaseTestSupport):
+    """
+    Tests for RequestConfigurationRulesRegistry functionality.
+    """
+
+    def setUp(self):
+        self.registry = RequestConfigurationRulesRegistry()
+        self.registry.reset()  # Ensure a clean registry
+
+        # Create test user
+        User = get_user_model()
+        self.username = "testuser"
+        self.password = "testpass123"
+        self.user = User.objects.create_user(username=self.username, password=self.password, email="test@example.com")
+        self.registry.REGISTRY = [MockRuleHandler1, MockRuleHandler2]
+
+        # Create test client
+        self.client = Client()
+
+    def test_get_rules_returns_all_configured_rules(self):
+        """
+        Test that get_rules returns all rules from all registered handlers.
+        """
+        # Login the test user
+        self.client.login(username=self.username, password=self.password)
+
+        try:
+            # Get rules for authenticated user
+            result = self.registry.get_rules(self.user)
+
+            # Should return a dict with a 'rules' key
+            self.assertIn("rules", result)
+
+            # Should return 2 rules from MockHandler1 + 2 rules from MockHandler2
+            self.assertEqual(len(result["rules"]), 4)
+
+            # Verify all expected URL patterns are present
+            url_patterns = {rule["urlPattern"] for rule in result["rules"]}
+            expected_patterns = {
+                "https://example.com/api/v1/.*",
+                "https://example.com/data/.*",
+                "https://example.com/admin/.*",
+                "https://example.com/secure/.*",
+            }
+            self.assertEqual(url_patterns, expected_patterns)
+
+        finally:
+            # Cleanup
+            self.client.logout()
+
+    def test_get_rules_requires_authenticated_user(self):
+        """
+        Test that get_rules raises an exception for unauthenticated users.
+        """
+        # Ensure user is not logged in
+        self.client.logout()
+        # Test with anonymous user
+        anonymous_user = AnonymousUser()
+        with self.assertRaises(Exception) as context:
+            self.registry.get_rules(anonymous_user)
+        self.assertIn("User must be authenticated", str(context.exception))
+
+        # Test with logged-in user (should not raise exception)
+        self.client.login(username=self.username, password=self.password)
+        try:
+            # This should work because user is authenticated
+            result = self.registry.get_rules(self.user)
+            self.assertIn("rules", result)
+
+            # Get the current user from the request to ensure we have the correct auth state
+            from django.contrib.auth import get_user
+
+            request = HttpRequest()
+            request.session = self.client.session
+            current_user = get_user(request)
+
+            # This should also work because we're passing the user object directly
+            result = self.registry.get_rules(current_user)
+            self.assertIn("rules", result)
+
+        finally:
+            self.client.logout()
+
+        # After logout, get a fresh anonymous user
+        request = HttpRequest()
+        request.session = self.client.session
+        anonymous_user = get_user(request)
+
+        # Now this should raise an exception
+        with self.assertRaises(Exception) as context:
+            self.registry.get_rules(anonymous_user)
+        self.assertIn("User must be authenticated", str(context.exception))
+
+    def test_add_handler(self):
+        """Test adding a handler to the registry"""
+        # Reset and add a handler
+        self.registry.reset()
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+
+        self.assertEqual(len(self.registry.REGISTRY), 1)
+        self.assertEqual(self.registry.REGISTRY[0], MockRuleHandler1)
+        self.assertTrue(issubclass(self.registry.REGISTRY[0], BaseRequestConfigurationRuleHandler))
+
+    def test_remove_handler(self):
+        """Test removing a handler from the registry"""
+        self.registry.reset()
+
+        # Add a handler
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+        self.assertEqual(len(self.registry.REGISTRY), 1)
+
+        # Remove the handler
+        self.registry.remove("geonode.security.tests.MockRuleHandler1")
+
+        # Verify the registry is empty after removal
+        self.assertEqual(len(self.registry.REGISTRY), 0)
+
+    def test_remove_handler_with_multiple_handlers(self):
+        """Test removing one handler when multiple exist"""
+        self.registry.reset()
+
+        # Add multiple handlers
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+        self.registry.add("geonode.security.tests.MockRuleHandler2")
+
+        # Verify both handlers were added
+        self.assertEqual(len(self.registry.REGISTRY), 2)
+
+        # Remove one handler
+        self.registry.remove("geonode.security.tests.MockRuleHandler1")
+
+        # Verify only MockRuleHandler2 remains
+        self.assertEqual(len(self.registry.REGISTRY), 1)
+        self.assertEqual(self.registry.REGISTRY[0], MockRuleHandler2)
+
+    def test_reset_registry(self):
+        """Test resetting the registry"""
+        # Add some handlers
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+        self.registry.add("geonode.security.tests.MockRuleHandler2")
+
+        # Verify handlers were added
+        self.assertEqual(len(self.registry.REGISTRY), 2)
+
+        # Reset the registry
+        self.registry.reset()
+
+        # Verify the registry is empty
+        self.assertEqual(len(self.registry.REGISTRY), 0)
+
+    def test_get_rules_with_dynamically_added_handlers(self):
+        """Test that dynamically added handlers are used when getting rules"""
+        self.registry.reset()
+
+        # Add handlers dynamically
+        self.registry.add("geonode.security.tests.MockRuleHandler1")
+
+        # Get rules
+        result = self.registry.get_rules(self.user)
+        self.assertEqual(len(result["rules"]), 2)
+
+        # Add another handler
+        self.registry.add("geonode.security.tests.MockRuleHandler2")
+
+        # Get rules again - should now have 4 rules
+        result = self.registry.get_rules(self.user)
+        self.assertEqual(len(result["rules"]), 4)
+
+    def tearDown(self):
+        # Clean up test data
+        if hasattr(self, "user") and self.user:
+            self.user.delete()
