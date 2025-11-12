@@ -1241,7 +1241,9 @@ class BaseVectorFileHandler(BaseHandler):
                     )
             except Exception as e:
                 logger.error("Exception during upsert save: %s", e, exc_info=True)
-                raise UpsertException("An internal error occurred during upsert save. All features are rolled back.")
+                raise UpsertException(
+                    f"An internal error occurred during upsert save. All features are rolled back. {e}"
+                )
         return valid_create, valid_update
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
@@ -1333,7 +1335,10 @@ class BaseVectorFileHandler(BaseHandler):
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
-            feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
+            code = geom.GetSpatialReference().GetAuthorityCode(None)
+            feature_as_dict.update(
+                {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
+            )
             to_process.append(feature_as_dict)
 
         for feature_as_dict in to_process:
@@ -1354,9 +1359,9 @@ class BaseVectorFileHandler(BaseHandler):
             model_instance.objects.bulk_create(
                 feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
             )
-        except Exception:
+        except Exception as e:
             logger.exception("Error occurred during bulk upsert in upsert_data.")
-            raise UpsertException("An internal error occurred during upsert operation.")
+            raise UpsertException(f"An internal error occurred during upsert operation. {e}")
 
         return valid_update, valid_create
 

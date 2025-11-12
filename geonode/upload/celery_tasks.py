@@ -733,6 +733,9 @@ def create_dynamic_structure(
             # setting the dimension for the gemetry. So that we can handle also 3d geometries
             _kwargs = {**_kwargs, **{"dim": field.get("dim")}}
 
+        if "authority" in field:
+            _kwargs = {**_kwargs, **{"srid": field.get("authority").split(":")[-1]}}
+
         # if is a new creation we generate the field model from scratch
         if not overwrite:
             row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
