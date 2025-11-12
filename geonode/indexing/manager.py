@@ -22,7 +22,7 @@ class TSVectorIndexManager:
 
         # first loop: gather values
         for fieldname in involved_fields:
-            if multi.is_multilang(fieldname, jsonschema):
+            if fieldname in settings.MULTILANG_FIELDS:
                 ml_fields[fieldname] = {}
                 for lang, loc_field_name in multi.get_multilang_field_names(fieldname):
                     ml_fields[fieldname][lang] = jsoninstance.get(loc_field_name, "")

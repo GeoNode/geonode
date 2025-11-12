@@ -2331,3 +2331,8 @@ MULTILANG_POSTGRES_LANGS = {
     # "it": "italian",
     # "es": "spanish",
 }
+
+MULTILANG_FIELDS = (
+    # "title",
+    # "abstract",
+)
