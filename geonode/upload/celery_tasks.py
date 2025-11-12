@@ -733,8 +733,10 @@ def create_dynamic_structure(
             # setting the dimension for the gemetry. So that we can handle also 3d geometries
             _kwargs = {**_kwargs, **{"dim": field.get("dim")}}
 
-        if "authority" in field:
-            _kwargs = {**_kwargs, **{"srid": field.get("authority").split(":")[-1]}}
+        if authority := field.get("authority"):
+            srid_str = authority.split(":")[-1]
+            if srid_str.isdigit():
+                _kwargs["srid"] = int(srid_str)
 
         # if is a new creation we generate the field model from scratch
         if not overwrite:
