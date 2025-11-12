@@ -1312,7 +1312,11 @@ class BaseVectorFileHandler(BaseHandler):
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
-            feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
+            if geom:
+                wkt = self.promote_geom_to_multi(geom).ExportToWkt()
+                if code := geom.GetSpatialReference().GetAuthorityCode(None):
+                    wkt = f"SRID={code};{wkt}"
+                feature_as_dict.update({self.default_geometry_column_name: wkt})
 
             feature_as_dict, is_valid = self.validate_feature(feature_as_dict)
             if not is_valid:
