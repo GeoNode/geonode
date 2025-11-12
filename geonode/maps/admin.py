@@ -20,8 +20,6 @@
 from django import forms
 from django.contrib import admin
 
-from modeltranslation.admin import TabbedTranslationAdmin
-
 from geonode.maps.models import Map, MapLayer
 from geonode.base.admin import ResourceBaseAdminForm, SparseInline
 
@@ -39,7 +37,7 @@ class MapAdminForm(ResourceBaseAdminForm):
         fields = "__all__"
 
 
-class MapAdmin(TabbedTranslationAdmin):
+class MapAdmin(admin.ModelAdmin):
     inlines = (
         MapLayerInline,
         SparseInline,
