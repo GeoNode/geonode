@@ -643,7 +643,6 @@ class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
 
         with self.assertRaises(Exception) as exp:
             self.json_handler.upsert_data(self.original, exec_id)
-
         self.assertEqual(
             str(exp.exception), "An internal error occurred during upsert save. All features are rolled back."
         )
