@@ -1241,9 +1241,7 @@ class BaseVectorFileHandler(BaseHandler):
                     )
             except Exception as e:
                 logger.error("Exception during upsert save: %s", e, exc_info=True)
-                raise UpsertException(
-                    "An internal error occurred during upsert save. All features are rolled back."
-                )
+                raise UpsertException("An internal error occurred during upsert save. All features are rolled back.")
         return valid_create, valid_update
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
@@ -1363,7 +1361,7 @@ class BaseVectorFileHandler(BaseHandler):
             model_instance.objects.bulk_create(
                 feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
             )
-        except Exception as e:
+        except Exception:
             logger.exception("Error occurred during bulk upsert in upsert_data.")
             raise UpsertException("An internal error occurred during upsert operation.")
 
