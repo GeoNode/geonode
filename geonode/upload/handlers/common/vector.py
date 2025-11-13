@@ -1242,7 +1242,7 @@ class BaseVectorFileHandler(BaseHandler):
             except Exception as e:
                 logger.error("Exception during upsert save: %s", e, exc_info=True)
                 raise UpsertException(
-                    f"An internal error occurred during upsert save. All features are rolled back. {e}"
+                    "An internal error occurred during upsert save. All features are rolled back."
                 )
         return valid_create, valid_update
 
