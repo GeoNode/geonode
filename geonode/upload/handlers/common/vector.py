@@ -1365,7 +1365,7 @@ class BaseVectorFileHandler(BaseHandler):
             )
         except Exception as e:
             logger.exception("Error occurred during bulk upsert in upsert_data.")
-            raise UpsertException(f"An internal error occurred during upsert operation. {e}")
+            raise UpsertException("An internal error occurred during upsert operation.")
 
         return valid_update, valid_create
 
