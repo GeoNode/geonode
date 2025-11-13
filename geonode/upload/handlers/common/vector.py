@@ -796,37 +796,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         saved_dataset.refresh_from_db()
 
-        # if dynamic model is enabled, we can save up with is the primary key of the table
-        if settings.IMPORTER_ENABLE_DYN_MODELS and self.have_table:
-            from django.db import connections
-
-            # then we can check for the PK
-            column = None
-            connection = connections["datastore"]
-            table_name = saved_dataset.alternate.split(":")[1]
-
-            schema = ModelSchema.objects.filter(name=table_name).first()
-            schema.managed = False
-            schema.save()
-
-            with connection.cursor() as cursor:
-                column = connection.introspection.get_primary_key_columns(cursor, table_name)
-            if column:
-                # getting the relative model schema
-                # better to always ensure that the schema is NOT managed
-                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
-                if field:
-                    field.kwargs.update({"primary_key": True})
-                    field.save()
-                else:
-                    # creating the field needed as primary key
-                    pk_field = FieldSchema(
-                        name=column[0],
-                        model_schema=schema,
-                        class_name="django.db.models.BigAutoField",
-                        kwargs={"null": False, "primary_key": True},
-                    )
-                    pk_field.save()
+        self.__fixup_primary_key(saved_dataset)
 
         return saved_dataset
 
@@ -1159,6 +1129,40 @@ class BaseVectorFileHandler(BaseHandler):
 
         return target_schema_fields, new_file_schema_fields
 
+    def __fixup_primary_key(self, saved_dataset):
+
+        # if dynamic model is enabled, we can save up with is the primary key of the table
+        if settings.IMPORTER_ENABLE_DYN_MODELS and self.have_table:
+            from django.db import connections
+
+            # then we can check for the PK
+            column = None
+            connection = connections["datastore"]
+            table_name = saved_dataset.alternate.split(":")[1]
+
+            schema = ModelSchema.objects.filter(name=table_name).first()
+            schema.managed = False
+            schema.save()
+
+            with connection.cursor() as cursor:
+                column = connection.introspection.get_primary_key_columns(cursor, table_name)
+            if column:
+                # getting the relative model schema
+                # better to always ensure that the schema is NOT managed
+                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
+                if field:
+                    field.kwargs.update({"primary_key": True})
+                    field.save()
+                else:
+                    # creating the field needed as primary key
+                    pk_field = FieldSchema(
+                        name=column[0],
+                        model_schema=schema,
+                        class_name="django.db.models.BigAutoField",
+                        kwargs={"null": False, "primary_key": True},
+                    )
+                    pk_field.save()
+
     def upsert_data(self, files, execution_id, **kwargs):
         """
         Function used to upsert the data for a vector resource.
@@ -1427,6 +1431,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
 
+        self.__fixup_primary_key(dataset)
         return dataset
 
 
