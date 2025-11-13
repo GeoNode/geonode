@@ -21,13 +21,19 @@ import logging
 from distutils.util import strtobool
 from itertools import groupby
 
+from django.contrib.postgres.search import SearchQuery
+from rest_framework import serializers
 from rest_framework.filters import SearchFilter, BaseFilterBackend
 
-from django.db.models import Subquery
+from django.db.models import Subquery, Q
+from django.conf import settings
+from django.utils.translation import get_language_from_request
 
+from geonode.base.bbox_utils import filter_bbox
 from geonode.base.models import ThesaurusKeyword
 from geonode.favorite.models import Favorite
-from geonode.base.bbox_utils import filter_bbox
+from geonode.indexing.models import ResourceIndex
+from geonode.metadata.multilang import get_2letters_languages, get_pg_language
 
 logger = logging.getLogger(__name__)
 
@@ -131,3 +137,49 @@ class FacetVisibleResourceFilter(BaseFilterBackend):
             _filter["id__in"] = [_facet.id for _facet in queryset if not _facet.resourcebase_set.exists()]
 
         return queryset.filter(**_filter)
+
+
+class ResourceIndexFilter(BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        def validate_lang(search_lang):
+            if search_lang not in get_2letters_languages():
+                logger.warning(f"Unknown search_lang {search_lang}")
+                return None
+            return search_lang
+
+        search_index = request.query_params.get("search_index", None)
+        search = request.query_params.get("search", None)
+
+        if not search_index or not search:
+            return queryset
+
+        if request.query_params.getlist("search_fields", None):
+            raise serializers.ValidationError("search_index and search_fields are mutually exclusive")
+
+        if search_index not in settings.METADATA_INDEXES:
+            raise serializers.ValidationError(f"Unknown index '{search_index}'")
+
+        search_lang = request.query_params.get("search_lang", None)
+        if search_lang:
+            search_lang = validate_lang(search_lang)
+        if not search_lang:
+            search_lang = get_language_from_request(request)[:2]
+            search_lang = validate_lang(search_lang)
+
+        lang_filter = Q(lang__isnull=True)
+        if search_lang:
+            lang_filter = lang_filter | Q(lang=search_lang)
+
+        pg_lang = get_pg_language(search_lang)
+
+        queryset = queryset.filter(
+            pk__in=Subquery(
+                ResourceIndex.objects.values_list("resource_id", flat=True)
+                .filter(name=search_index)
+                .filter(lang_filter)
+                .filter(vector=SearchQuery(search, config=pg_lang))
+            )
+        )
+
+        logger.debug(queryset.query)
+        return queryset
