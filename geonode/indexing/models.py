@@ -1,12 +1,8 @@
-import logging
-
 from django.contrib.postgres.indexes import GinIndex
-from django.db import models
 from django.contrib.postgres.search import SearchVectorField
+from django.db import models
 
 from geonode.base.models import ResourceBase
-
-logger = logging.getLogger(__name__)
 
 
 class ResourceIndex(models.Model):
@@ -31,9 +27,6 @@ class ResourceIndex(models.Model):
         unique_together = (("resource", "lang", "name"),)
 
         indexes = [
-            GinIndex(
-                fields=[
-                    "vector",
-                ]
-            )
+            GinIndex(fields=("vector",)),
+            # no index on lang or name because they will usually be very few
         ]

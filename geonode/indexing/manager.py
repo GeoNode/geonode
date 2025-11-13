@@ -57,7 +57,7 @@ class TSVectorIndexManager:
                 logger.debug(
                     f"Creating non localized index - resource:{resource_id} index name:{index_name} default lang:{pg_lang}"
                 )
-                index_text = " ".join((non_ml_fields[f] for f in index_fields))
+                index_text = " ".join(filter(None, (non_ml_fields[f] for f in index_fields)))
                 vector = Func(
                     Value(index_text), function="to_tsvector", template=f"%(function)s('{pg_lang}', %(expressions)s)"
                 )
@@ -74,12 +74,12 @@ class TSVectorIndexManager:
 
             else:  # some indexed fields are multilang
                 # gather all non localized fields
-                non_ml_text = " ".join(non_ml_fields[f] for f in index_fields if f in non_ml_fields)
+                non_ml_text = " ".join(filter(None, (non_ml_fields[f] for f in index_fields if f in non_ml_fields)))
 
                 for lang in self.LANGUAGES:
                     logger.debug(f"Creating localized index {index_name} for resource {resource_id}")
 
-                    ml_text = " ".join(ml_fields[f][lang] for f in index_fields if f in ml_fields)
+                    ml_text = " ".join(filter(None, (ml_fields[f][lang] for f in index_fields if f in ml_fields)))
                     vector = Func(
                         Value(f"{ml_text} {non_ml_text}"),
                         function="to_tsvector",
