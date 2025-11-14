@@ -969,7 +969,7 @@ GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
 try:
     # try to parse python notation, default in dockerized env
     ALLOWED_HOSTS = ast.literal_eval(os.getenv("ALLOWED_HOSTS"))
-except ValueError:
+except (ValueError, SyntaxError):
     # fallback to regular list of values separated with misc chars
     ALLOWED_HOSTS = (
         [HOSTNAME, "localhost", "django", "geonode"]
