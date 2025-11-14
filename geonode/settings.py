@@ -2144,7 +2144,6 @@ GEOIP_PATH = os.getenv("GEOIP_PATH", os.path.join(PROJECT_ROOT, "GeoIPCities.dat
 SEARCH_RESOURCES_EXTENDED = ast.literal_eval(os.getenv("SEARCH_RESOURCES_EXTENDED", "True"))
 
 
-
 """
 List of modules that implement the deletion rules for a user
 """
