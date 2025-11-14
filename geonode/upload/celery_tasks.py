@@ -714,6 +714,9 @@ def create_dynamic_structure(
 
     dynamic_model_schema = dynamic_model_schema.first()
 
+    # clearing existing fields for this chunk
+    FieldSchema.objects.filter(model_schema=dynamic_model_schema, name__in=(x["name"] for x in fields)).delete()
+
     row_to_insert = []
     for field in fields:
         # setup kwargs for the class provided
@@ -733,20 +736,13 @@ def create_dynamic_structure(
             # setting the dimension for the gemetry. So that we can handle also 3d geometries
             _kwargs = {**_kwargs, **{"dim": field.get("dim")}}
 
+        if authority := field.get("authority"):
+            srid_str = authority.split(":")[-1]
+            if srid_str.isdigit():
+                _kwargs["srid"] = int(srid_str)
+
         # if is a new creation we generate the field model from scratch
-        if not overwrite:
-            row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
-        else:
-            # otherwise if is an overwrite, we update the existing one and create the one that does not exists
-            _field_exists = FieldSchema.objects.filter(name=field["name"], model_schema=dynamic_model_schema)
-            if _field_exists.exists():
-                _field_exists.update(
-                    class_name=field["class_name"],
-                    model_schema=dynamic_model_schema,
-                    kwargs=_kwargs,
-                )
-            else:
-                row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
+        row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
 
     if row_to_insert:
         if dynamic_model_schema.managed:
@@ -765,7 +761,12 @@ def create_dynamic_structure(
                     field.save()
         else:
             # the build creation improves the overall permformance with the DB
-            FieldSchema.objects.bulk_create(row_to_insert, 30)
+            FieldSchema.objects.bulk_create(
+                row_to_insert,
+                update_conflicts=True,
+                update_fields=["name", "model_schema_id", "class_name", "kwargs"],
+                unique_fields=["id"],
+            )
             # fixing the schema model in django
 
     return "dynamic_model", layer_name, execution_id
