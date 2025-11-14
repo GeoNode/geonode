@@ -579,7 +579,7 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set(
         "set_all_datasets_metadata",
         "set_layers_permissions",
     ]
-    + ast.literal_eval(os.getenv("MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ", "[]"))
+    + ast.literal_eval(os.getenv("MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP", "[]"))
 )
 
 DYNAMIC_REST = {
