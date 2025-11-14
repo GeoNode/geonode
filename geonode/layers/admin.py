@@ -19,8 +19,6 @@
 
 from django.contrib import admin
 
-from modeltranslation.admin import TabbedTranslationAdmin
-
 from geonode.base.admin import ResourceBaseAdminForm, SparseInline
 from geonode.layers.models import Dataset, Attribute, Style
 
@@ -35,7 +33,7 @@ class DatasetAdminForm(ResourceBaseAdminForm):
         fields = "__all__"
 
 
-class DatasetAdmin(TabbedTranslationAdmin):
+class DatasetAdmin(admin.ModelAdmin):
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display = (
         "id",

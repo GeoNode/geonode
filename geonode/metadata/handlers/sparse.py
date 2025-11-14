@@ -115,10 +115,10 @@ class SparseHandler(MetadataHandler):
             if "geonode:handler" not in subschema:
                 subschema.update({"geonode:handler": "sparse"})
 
-            # # perform further specific initializations
-            # if init_func := field_info["init_func"]:
-            #     logger.debug(f"Running init for sparse field {field_name}")
-            #     init_func(field_name, subschema, lang)
+            # perform further specific initializations
+            if init_func := field_info["init_func"]:
+                logger.debug(f"Running init for sparse field {field_name}")
+                init_func(field_name, subschema, jsonschema, lang)
 
         return jsonschema
 
@@ -136,10 +136,6 @@ class SparseHandler(MetadataHandler):
     @staticmethod
     def set_sparse_field(context, fieldname, value):
         context[CONTEXT_ID]["fields"][fieldname] = value
-
-    @staticmethod
-    def _check_type(declared, checked):
-        return declared == checked or (type(declared) is list and checked in declared)
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]

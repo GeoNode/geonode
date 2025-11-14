@@ -354,12 +354,15 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         call_rollback_function.assert_called_once()
 
     @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=False)
     def test_copy_geonode_resource(self, async_call):
         alternate = "geonode:cloning"
         new_alternate = None
         try:
             rasource = create_single_dataset(name="cloning")
-
+            _exec = ExecutionRequest.objects.get(exec_id=str(self.exec_id))
+            _exec.input_params["title"] = "new_title"
+            _exec.save()
             exec_id, new_alternate = copy_geonode_resource(
                 str(self.exec_id),
                 "geonode.upload.copy_geonode_resource",

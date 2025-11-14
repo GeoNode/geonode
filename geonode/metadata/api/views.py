@@ -39,6 +39,7 @@ from geonode.groups.models import GroupProfile
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.i18n import get_localized_label
 from geonode.metadata.manager import metadata_manager
+from geonode.metadata.multilang import utils as multi
 from geonode.people.utils import get_available_users
 
 logger = logging.getLogger(__name__)
@@ -66,12 +67,7 @@ class MetadataViewSet(ViewSet):
     # A pk argument is set for futured multiple schemas
     @action(detail=False, methods=["get"], url_path=r"schema(?:/(?P<pk>\d+))?", url_name="schema")
     def schema(self, request, pk=None):
-        """
-        The user is able to export her/his keys with
-        resource scope.
-        """
-
-        lang = request.query_params.get("lang", get_language_from_request(request)[:2])
+        lang = multi.get_language(request)
         schema = metadata_manager.get_schema(lang)
 
         if schema:
