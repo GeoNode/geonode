@@ -1922,7 +1922,7 @@ GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
 try:
     # try to parse python notation, default in dockerized env
     AVATAR_PROVIDERS = ast.literal_eval(os.getenv("AVATAR_PROVIDERS"))
-except ValueError:
+except (ValueError, SyntaxError):
     # fallback to regular list of values separated with misc chars
     AVATAR_PROVIDERS = (
         (
