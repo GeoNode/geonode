@@ -1013,7 +1013,7 @@ if len(ADMIN_IP_WHITELIST) > 0:
 try:
     # try to parse python notation, default in dockerized env
     PROXY_ALLOWED_HOSTS = ast.literal_eval(os.getenv("PROXY_ALLOWED_HOSTS"))
-except ValueError:
+except (ValueError, SyntaxError):
     # fallback to regular list of values separated with misc chars
     PROXY_ALLOWED_HOSTS = (
         [
