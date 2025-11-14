@@ -18,7 +18,7 @@
 #########################################################################
 import ast
 import csv
-
+import re
 from datetime import datetime
 from itertools import islice
 from pathlib import Path
@@ -1338,6 +1338,16 @@ class BaseVectorFileHandler(BaseHandler):
         feature_to_save = []
         for feature in data_chunk:
             feature_as_dict = feature.items()
+            # evaluate if there is any date in the schema of the feature
+            schema = feature.DumpReadableAsString().split("\n")
+            if any(date_fields := [f for f in schema if "(Date)" in f and "(null)" not in f]):
+                # if any field schema as date is found, we can normalize the date
+                pattern = re.compile(r"^\s*(?P<label>.+?)\s*\(\s*(?P<type>.+?)\s*\)\s*=\s*(?P<date_value>.+)\s*$")
+                for fields in date_fields:
+                    match = pattern.search(fields)
+                    label = match.group("label")
+                    date_value = match.group("date_value")
+                    feature_as_dict[label] = date_value.replace("/", "-")
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()

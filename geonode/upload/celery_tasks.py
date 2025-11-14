@@ -714,8 +714,8 @@ def create_dynamic_structure(
 
     dynamic_model_schema = dynamic_model_schema.first()
 
-    # clearing existing fields
-    FieldSchema.objects.filter(model_schema=dynamic_model_schema).delete()
+    # clearing existing fields for this chunk
+    FieldSchema.objects.filter(model_schema=dynamic_model_schema, name__in=(x["name"] for x in fields)).delete()
 
     row_to_insert = []
     for field in fields:
