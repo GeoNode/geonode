@@ -2086,7 +2086,7 @@ UI_DEFAULT_MANDATORY_FIELDS = [
     "id_resource-data_quality_statement",
     "id_resource-restriction_code_type",
 ]
-UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv("UI_REQUIRED_FIELDS ", "[]"))
+UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv("UI_REQUIRED_FIELDS", "[]"))
 
 """
 Default schema used to store extra and dynamic metadata for the resource
