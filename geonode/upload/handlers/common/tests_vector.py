@@ -171,6 +171,29 @@ class TestBaseVectorFileHandler(TestCase):
 
         self.assertFalse(has_incompatible_field_names(mock_layer_compatible))
 
+    def test_define_dynamic_layer_schema_with_unknown_type(self):
+        """
+        Test that _define_dynamic_layer_schema correctly handles mixed geometry types.
+        """
+        handler = BaseVectorFileHandler()
+        handler.identify_authority = MagicMock(return_value="EPSG:4326")
+
+        mock_layer = MagicMock(spec=ogr.Layer)
+        mock_layer.GetGeomType.return_value = ogr.wkbUnknown
+        mock_layer.GetGeometryColumn.return_value = "geom"
+        mock_layer.schema = []
+        mock_layer.GetName.return_value = "test_layer"
+        schema = handler._define_dynamic_layer_schema(mock_layer)
+        self.assertEqual(len(schema), 1)
+        geom_field = schema[0]
+        self.assertEqual(geom_field["name"], "geom")
+        self.assertEqual(
+            geom_field["class_name"],
+            "django.contrib.gis.db.models.fields.GeometryField",
+        )
+        self.assertEqual(geom_field["dim"], 2)
+        self.assertEqual(geom_field["authority"], "EPSG:4326")
+
     def test_create_dynamic_model_fields(self):
         try:
             # Prepare the test
