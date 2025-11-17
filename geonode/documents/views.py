@@ -199,6 +199,7 @@ class DocumentUploadView(CreateView):
             except Exception:
                 logger.debug("Exif extraction failed.")
 
+        bbox_poly = BBOXHelper.from_xy(bbox).as_polygon() if bbox else None
         resource_manager.update(
             self.object.uuid,
             instance=self.object,
@@ -208,7 +209,8 @@ class DocumentUploadView(CreateView):
                 abstract=abstract,
                 date=date,
                 date_type="Creation",
-                bbox_polygon=BBOXHelper.from_xy(bbox).as_polygon() if bbox else None,
+                bbox_polygon=bbox_poly,
+                ll_bbox_polygon=bbox_poly,
             ),
             notify=True,
         )
