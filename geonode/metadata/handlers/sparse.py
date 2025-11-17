@@ -35,7 +35,8 @@ CONTEXT_ID = "sparse"
 
 class SparseFieldRegistry:
 
-    sparse_fields = {}
+    def __init__(self):
+        self.sparse_fields = {}
 
     def register(self, field_name: str, schema: dict, after: str = None, init_func=None):
         self.sparse_fields[field_name] = {"schema": schema, "after": after, "init_func": init_func}

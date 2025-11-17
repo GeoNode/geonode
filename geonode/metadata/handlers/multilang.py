@@ -30,6 +30,9 @@ logger = logging.getLogger(__name__)
 
 class MultiLangHandler(MetadataHandler):
 
+    def __init__(self, **kwargs):
+        self.sparse_registry = kwargs.get("registry", sparse_field_registry)
+
     def post_init(self):
         # register all multilang localized fields as sparse fields
         for property_name in settings.MULTILANG_FIELDS:
@@ -37,7 +40,7 @@ class MultiLangHandler(MetadataHandler):
             for lang, ml_property_name in multi.get_multilang_field_names(property_name):
                 ml_subschema = self._create_ml_subschema(property_name, lang)
                 logger.debug(f"Registering multilang sparse field {property_name} --> {ml_property_name}")
-                sparse_field_registry.register(
+                self.sparse_registry.register(
                     ml_property_name, ml_subschema, after=prev_field, init_func=self.init_func
                 )
                 prev_field = ml_property_name
@@ -61,6 +64,7 @@ class MultiLangHandler(MetadataHandler):
     def update_schema(self, jsonschema, context, lang=None):
         for property_name in settings.MULTILANG_FIELDS:
             # validate constraints
+            logging.debug(f"Validating multilang field {property_name}")
             parent_schema = jsonschema["properties"][property_name]
             if not MetadataHandler._check_type(parent_schema["type"], "string"):
                 raise ValueError(f"Field {property_name} cannot be multilang")
@@ -107,5 +111,4 @@ class MultiLangHandler(MetadataHandler):
             instance[property_name] = def_lang_value
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-        # TODO
         pass
