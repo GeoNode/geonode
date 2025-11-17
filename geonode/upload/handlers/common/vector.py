@@ -1363,7 +1363,7 @@ class BaseVectorFileHandler(BaseHandler):
             feature_as_dict = feature.items()
             # evaluate if there is any date in the schema of the feature
             schema = feature.DumpReadableAsString().split("\n")
-            if any(date_fields := [f for f in schema if "(Date)" in f and "(null)" not in f]):
+            if any(date_fields := [f for f in schema if ("(Date)" in f or "(DateTime)" in f) and "(null)" not in f]):
                 # if any field schema as date is found, we can normalize the date
                 pattern = re.compile(r"^\s*(?P<label>.+?)\s*\(\s*(?P<type>.+?)\s*\)\s*=\s*(?P<date_value>.+)\s*$")
                 for fields in date_fields:
