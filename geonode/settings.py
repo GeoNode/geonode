@@ -833,7 +833,6 @@ OPTIONS = {
     },
 }
 
-
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -865,6 +864,17 @@ if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.cont
     SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested
 
 # Security stuff
+
+# Require users to authenticate before using Geonode
+LOCKDOWN_GEONODE = ast.literal_eval(os.getenv("LOCKDOWN_GEONODE", "False"))
+# Require users to authenticate before using Geonode
+if LOCKDOWN_GEONODE:
+    MIDDLEWARE += ("geonode.security.middleware.LoginRequiredMiddleware",)
+
+# LOCKDOWN API endpoints to prevent unauthenticated access.
+# If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
+API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "False"))
+
 SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get("SESSION_EXPIRED_CONTROL_ENABLED", "True"))
 
 if SESSION_EXPIRED_CONTROL_ENABLED:
@@ -887,6 +897,26 @@ SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get("SECURE_SSL_REDIRECT", "Fa
 SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "3600"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True"))
 SECURE_REFERRER_POLICY = os.environ.get("SECURE_REFERRER_POLICY", "strict-origin-when-cross-origin")
+
+# Settings for RECAPTCHA plugin
+RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get("RECAPTCHA_ENABLED", "False"))
+
+if RECAPTCHA_ENABLED:
+    if "django_recaptcha" not in INSTALLED_APPS:
+        INSTALLED_APPS += ("django_recaptcha",)
+    ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
+        "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.recaptcha.AllauthReCaptchaSignupForm"
+    )
+
+    # https://docs.allauth.org/en/dev/account/configuration.html
+    ACCOUNT_FORMS = dict(login="geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm")
+    """
+     In order to generate reCaptcha keys, please see:
+      - https://pypi.org/project/django-recaptcha/#installation
+      - https://pypi.org/project/django-recaptcha/#local-development-and-functional-testing
+    """
+    RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", "geonode_RECAPTCHA_PUBLIC_KEY")
+    RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "geonode_RECAPTCHA_PRIVATE_KEY")
 
 # Replacement of the default authentication backend in order to support
 # permissions per object.
@@ -1040,28 +1070,9 @@ PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
 # Avoid permissions prefiltering
 SKIP_PERMS_FILTER = ast.literal_eval(os.getenv("SKIP_PERMS_FILTER", "False"))
 
-# Require users to authenticate before using Geonode
-LOCKDOWN_GEONODE = ast.literal_eval(os.getenv("LOCKDOWN_GEONODE", "False"))
-# Require users to authenticate before using Geonode
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE += ("geonode.security.middleware.LoginRequiredMiddleware",)
-
-# LOCKDOWN API endpoints to prevent unauthenticated access.
-# If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
-API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "False"))
-
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = int(os.getenv("API_LIMIT_PER_PAGE", "200"))
 API_INCLUDE_REGIONS_COUNT = ast.literal_eval(os.getenv("API_INCLUDE_REGIONS_COUNT", "False"))
-
-#
-# Settings for default search size
-#
-DEFAULT_SEARCH_SIZE = int(os.getenv("DEFAULT_SEARCH_SIZE", "10"))
-
-#
-# Settings for third party apps
-#
 
 # Pinax Ratings
 PINAX_RATINGS_CATEGORY_CHOICES = {
@@ -1089,8 +1100,6 @@ ACCOUNT_LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL", SITEURL)
 # Backend
 DEFAULT_WORKSPACE = os.getenv("DEFAULT_WORKSPACE", "geonode")
 CASCADE_WORKSPACE = os.getenv("CASCADE_WORKSPACE", "geonode")
-
-OGP_URL = os.getenv("OGP_URL", "http://geodata.tufts.edu/solr/select")
 
 MISSING_THUMBNAIL = os.getenv("MISSING_THUMBNAIL", "geonode/img/missing_thumb.png")
 
@@ -1166,11 +1175,8 @@ USE_GEOSERVER = "geonode.geoserver" in INSTALLED_APPS and OGC_SERVER["default"][
 
 # Uploader Settings
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
-"""
-    DEFAULT_BACKEND_UPLOADER = {'geonode.importer'}
-"""
 UPLOADER = {
-    "BACKEND": os.getenv("DEFAULT_BACKEND_UPLOADER", "geonode.upload"),
+    "BACKEND": "geonode.upload",
 }
 
 EPSG_CODE_MATCHES = {
@@ -1279,37 +1285,6 @@ PYCSW = {
 _DATETIME_INPUT_FORMATS = ["%Y-%m-%d %H:%M:%S.%f %Z", "%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S%Z"]
 DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS + _DATETIME_INPUT_FORMATS
 
-DISPLAY_SOCIAL = ast.literal_eval(os.getenv("DISPLAY_SOCIAL", "True"))
-DISPLAY_RATINGS = ast.literal_eval(os.getenv("DISPLAY_RATINGS", "True"))
-DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv("DISPLAY_WMS_LINKS", "True"))
-
-SOCIAL_ORIGINS = [
-    {"label": "Email", "url": "mailto:?subject={name}&body={url}", "css_class": "email"},
-    {"label": "Facebook", "url": "http://www.facebook.com/sharer.php?u={url}", "css_class": "fb"},
-    {"label": "Twitter", "url": "https://twitter.com/share?url={url}&hashtags={hashtags}", "css_class": "tw"},
-]
-
-# CKAN Query String Parameters names pulled from
-# http://tinyurl.com/og2jofn
-CKAN_ORIGINS = [
-    {
-        "label": "Humanitarian Data Exchange (HDX)",
-        "url": "https://data.hdx.rwlabs.org/dataset/new?title={name}&"
-        "dataset_date={date}&notes={abstract}&caveats={caveats}",
-        "css_class": "hdx",
-    }
-]
-# SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
-
-# Setting TWITTER_CARD to True will enable Twitter Cards
-# https://dev.twitter.com/cards/getting-started
-# Be sure to replace @GeoNode with your organization or site's twitter handle.
-TWITTER_CARD = ast.literal_eval(os.getenv("TWITTER_CARD", "True"))
-TWITTER_SITE = "@GeoNode"
-TWITTER_HASHTAGS = ["geonode"]
-
-OPENGRAPH_ENABLED = ast.literal_eval(os.getenv("OPENGRAPH_ENABLED", "True"))
-
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the
 # Resourcebase model.
@@ -1385,26 +1360,6 @@ CREATE_LAYER = ast.literal_eval(os.getenv("CREATE_LAYER", "False"))
 if CREATE_LAYER:
     if "geonode.geoserver.createlayer" not in INSTALLED_APPS:
         INSTALLED_APPS += ("geonode.geoserver.createlayer",)
-
-# Settings for RECAPTCHA plugin
-RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get("RECAPTCHA_ENABLED", "False"))
-
-if RECAPTCHA_ENABLED:
-    if "django_recaptcha" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("django_recaptcha",)
-    ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
-        "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.recaptcha.AllauthReCaptchaSignupForm"
-    )
-
-    # https://docs.allauth.org/en/dev/account/configuration.html
-    ACCOUNT_FORMS = dict(login="geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm")
-    """
-     In order to generate reCaptcha keys, please see:
-      - https://pypi.org/project/django-recaptcha/#installation
-      - https://pypi.org/project/django-recaptcha/#local-development-and-functional-testing
-    """
-    RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", "geonode_RECAPTCHA_PUBLIC_KEY")
-    RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "geonode_RECAPTCHA_PRIVATE_KEY")
 
 GEONODE_CATALOGUE_METADATA_XSL = ast.literal_eval(os.getenv("GEONODE_CATALOGUE_METADATA_XSL", "True"))
 
@@ -1620,47 +1575,6 @@ SEARCH_FILTERS = {
     "GROUP_CATEGORIES_ENABLED": True,
 }
 
-# HTML WYSIWYG Editor (TINYMCE) Menu Bar Settings
-TINYMCE_DEFAULT_CONFIG = {
-    "theme": "silver",
-    "height": 200,
-    "plugins": "preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars",  # noqa
-    "imagetools_cors_hosts": ["picsum.photos"],
-    "menubar": False,
-    "statusbar": False,
-    "toolbar": "bold italic underline | formatselect removeformat | outdent indent |  numlist bullist | insertfile image media link codesample | preview",  # noqa
-    "toolbar_sticky": "true",
-    "autosave_ask_before_unload": "true",
-    "autosave_interval": "30s",
-    "autosave_prefix": "{path}{query}-{id}-",
-    "autosave_restore_when_empty": "false",
-    "autosave_retention": "2m",
-    "image_advtab": "true",
-    "content_css": "//www.tiny.cloud/css/codepen.min.css",
-    "importcss_append": "true",
-    "image_caption": "true",
-    "quickbars_selection_toolbar": "bold italic | quicklink h2 h3 blockquote quickimage quicktable",
-    "noneditable_noneditable_class": "mceNonEditable",
-    "toolbar_mode": "sliding",
-    "contextmenu": "link image imagetools table",
-    "templates": [
-        {
-            "title": "New Table",
-            "description": "creates a new table",
-            "content": '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>',  # noqa
-        },
-        {"title": "Starting my story", "description": "A cure for writers block", "content": "Once upon a time..."},
-        {
-            "title": "New list with dates",
-            "description": "New List with dates",
-            "content": '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>',  # noqa
-        },
-    ],
-    "template_cdate_format": "[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]",
-    "template_mdate_format": "[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]",
-    "setup": 'function(editor) {editor.on("input", onInputChange)}',
-}
-
 
 # ########################################################################### #
 # ASYNC SETTINGS
@@ -1762,6 +1676,61 @@ if USE_GEOSERVER:
         Queue("notifications.events", GEOSERVER_EXCHANGE, routing_key="notifications"),
         Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
     )
+
+CELERY_TASK_QUEUES += (
+    Queue("geonode.upload.import_orchestrator", GEONODE_EXCHANGE, routing_key="geonode.upload.import_orchestrator"),
+    Queue(
+        "geonode.upload.import_resource", GEONODE_EXCHANGE, routing_key="geonode.upload.import_resource", max_priority=8
+    ),
+    Queue(
+        "geonode.upload.publish_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.publish_resource",
+        max_priority=8,
+    ),
+    Queue(
+        "geonode.upload.create_geonode_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.create_geonode_resource",
+        max_priority=8,
+    ),
+    Queue(
+        "geonode.upload.import_with_ogr2ogr",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.import_with_ogr2ogr",
+        max_priority=10,
+    ),
+    Queue(
+        "geonode.upload.import_next_step",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.import_next_step",
+        max_priority=3,
+    ),
+    Queue(
+        "geonode.upload.create_dynamic_structure",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.create_dynamic_structure",
+        max_priority=10,
+    ),
+    Queue(
+        "geonode.upload.copy_geonode_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.copy_geonode_resource",
+        max_priority=0,
+    ),
+    Queue("geonode.upload.copy_dynamic_model", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_dynamic_model"),
+    Queue(
+        "geonode.upload.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_geonode_data_table"
+    ),
+    Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
+    Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
+    Queue("geonode.upload.upsert_data", GEONODE_EXCHANGE, routing_key="geonode.upload.upsert_data"),
+    Queue(
+        "geonode.upload.refresh_geonode_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.refresh_geonode_resource",
+    ),
+)
 
 # from celery.schedules import crontab
 # EXAMPLES
@@ -1898,6 +1867,12 @@ EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "True")
 )
 
+PERMISSIONS_HANDLERS = [
+    "geonode.security.handlers.GroupManagersPermissionsHandler",
+    "geonode.security.handlers.SpecialGroupsPermissionsHandler",
+    "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+]
+
 # ########################################################################### #
 # END SECURITY SETTINGS
 # ########################################################################### #
@@ -2028,6 +2003,18 @@ SOCIALACCOUNT_PROVIDERS = {
     SOCIALACCOUNT_OIDC_PROVIDER: SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
 
+DISPLAY_RATINGS = ast.literal_eval(os.getenv("DISPLAY_RATINGS", "True"))
+DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv("DISPLAY_WMS_LINKS", "True"))
+
+# Setting TWITTER_CARD to True will enable Twitter Cards
+# https://dev.twitter.com/cards/getting-started
+# Be sure to replace @GeoNode with your organization or site's twitter handle.
+TWITTER_CARD = ast.literal_eval(os.getenv("TWITTER_CARD", "True"))
+TWITTER_SITE = "@GeoNode"
+TWITTER_HASHTAGS = ["geonode"]
+
+OPENGRAPH_ENABLED = ast.literal_eval(os.getenv("OPENGRAPH_ENABLED", "True"))
+
 # Choose thumbnail generator -- this is the default generator
 THUMBNAIL_GENERATOR = os.environ.get("THUMBNAIL_GENERATOR", "geonode.thumbs.thumbnails.create_gs_thumbnail_geonode")
 
@@ -2072,21 +2059,6 @@ TOPICCATEGORY_MANDATORY = ast.literal_eval(os.environ.get("TOPICCATEGORY_MANDATO
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-UI_DEFAULT_MANDATORY_FIELDS = [
-    "id_resource-title",
-    "id_resource-abstract",
-    "id_resource-language",
-    "id_resource-license",
-    "id_resource-regions",
-    "id_resource-date_type",
-    "id_resource-date",
-    "category_form",
-    "id_resource-attribution",
-    "id_resource-constraints_other",
-    "id_resource-data_quality_statement",
-    "id_resource-restriction_code_type",
-]
-UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv("UI_REQUIRED_FIELDS ", "[]"))
 
 """
 Default schema used to store extra and dynamic metadata for the resource
@@ -2138,11 +2110,8 @@ DEFAULT_MAX_UPLOAD_SIZE = 104857600  # 100 MB
 DEFAULT_BUFFER_CHUNK_SIZE = int(os.getenv("DEFAULT_BUFFER_CHUNK_SIZE", 64 * 1024))
 DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER = int(os.getenv("DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5))
 
-
-GEOIP_PATH = os.getenv("GEOIP_PATH", os.path.join(PROJECT_ROOT, "GeoIPCities.dat"))
 # This controls if tastypie search on resourches is performed only with titles
 SEARCH_RESOURCES_EXTENDED = ast.literal_eval(os.getenv("SEARCH_RESOURCES_EXTENDED", "True"))
-
 
 """
 List of modules that implement the deletion rules for a user
@@ -2170,66 +2139,11 @@ INSTALLED_APPS += (
     "geonode.upload.handlers",
 )
 
-CELERY_TASK_QUEUES += (
-    Queue("geonode.upload.import_orchestrator", GEONODE_EXCHANGE, routing_key="geonode.upload.import_orchestrator"),
-    Queue(
-        "geonode.upload.import_resource", GEONODE_EXCHANGE, routing_key="geonode.upload.import_resource", max_priority=8
-    ),
-    Queue(
-        "geonode.upload.publish_resource",
-        GEONODE_EXCHANGE,
-        routing_key="geonode.upload.publish_resource",
-        max_priority=8,
-    ),
-    Queue(
-        "geonode.upload.create_geonode_resource",
-        GEONODE_EXCHANGE,
-        routing_key="geonode.upload.create_geonode_resource",
-        max_priority=8,
-    ),
-    Queue(
-        "geonode.upload.import_with_ogr2ogr",
-        GEONODE_EXCHANGE,
-        routing_key="geonode.upload.import_with_ogr2ogr",
-        max_priority=10,
-    ),
-    Queue(
-        "geonode.upload.import_next_step",
-        GEONODE_EXCHANGE,
-        routing_key="geonode.upload.import_next_step",
-        max_priority=3,
-    ),
-    Queue(
-        "geonode.upload.create_dynamic_structure",
-        GEONODE_EXCHANGE,
-        routing_key="geonode.upload.create_dynamic_structure",
-        max_priority=10,
-    ),
-    Queue(
-        "geonode.upload.copy_geonode_resource",
-        GEONODE_EXCHANGE,
-        routing_key="geonode.upload.copy_geonode_resource",
-        max_priority=0,
-    ),
-    Queue("geonode.upload.copy_dynamic_model", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_dynamic_model"),
-    Queue(
-        "geonode.upload.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_geonode_data_table"
-    ),
-    Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
-    Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
-    Queue("geonode.upload.upsert_data", GEONODE_EXCHANGE, routing_key="geonode.upload.upsert_data"),
-    Queue(
-        "geonode.upload.refresh_geonode_resource",
-        GEONODE_EXCHANGE,
-        routing_key="geonode.upload.refresh_geonode_resource",
-    ),
-)
-
 DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
 
 IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS", "[]"))
 
-IMPORTER_ENABLE_DYN_MODELS = ast.literal_eval(os.getenv("IMPORTER_ENABLE_DYN_MODELS", "True"))
+IMPORTER_ENABLE_DYN_MODELS = True
 
 INSTALLED_APPS += ("geonode.facets",)
 GEONODE_APPS += ("geonode.facets",)
@@ -2255,12 +2169,6 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
-
-PERMISSIONS_HANDLERS = [
-    "geonode.security.handlers.GroupManagersPermissionsHandler",
-    "geonode.security.handlers.SpecialGroupsPermissionsHandler",
-    "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
-]
 
 FEATURE_VALIDATORS = [
     "geonode.upload.feature_validators.GeoserverFeatureValidator",
