@@ -258,6 +258,8 @@ class BaseVectorFileHandler(BaseHandler):
         This is a default command that is needed to import a vector file
         """
         _datastore = settings.DATABASES["datastore"]
+        layers = ogr.Open(files.get("base_file"))
+        layer = layers.GetLayer(original_name)
 
         options = "--config PG_USE_COPY YES"
         copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
@@ -280,6 +282,9 @@ class BaseVectorFileHandler(BaseHandler):
         options += f'"{input_file}"' + f" -lco FID={DEFAULT_PK_COLUMN_NAME} "
 
         options += f'-nln {alternate} "{original_name}"'
+
+        if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
+            options += " -nlt PROMOTE_TO_MULTI"
 
         if ovverwrite_layer:
             options += " -overwrite"
