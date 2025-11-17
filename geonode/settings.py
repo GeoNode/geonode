@@ -579,7 +579,7 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set(
         "set_all_datasets_metadata",
         "set_layers_permissions",
     ]
-    + ast.literal_eval(os.getenv("MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ", "[]"))
+    + ast.literal_eval(os.getenv("MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP", "[]"))
 )
 
 DYNAMIC_REST = {
@@ -999,7 +999,7 @@ GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
 try:
     # try to parse python notation, default in dockerized env
     ALLOWED_HOSTS = ast.literal_eval(os.getenv("ALLOWED_HOSTS"))
-except ValueError:
+except (ValueError, SyntaxError):
     # fallback to regular list of values separated with misc chars
     ALLOWED_HOSTS = (
         [HOSTNAME, "localhost", "django", "geonode"]
@@ -1043,7 +1043,7 @@ if len(ADMIN_IP_WHITELIST) > 0:
 try:
     # try to parse python notation, default in dockerized env
     PROXY_ALLOWED_HOSTS = ast.literal_eval(os.getenv("PROXY_ALLOWED_HOSTS"))
-except ValueError:
+except (ValueError, SyntaxError):
     # fallback to regular list of values separated with misc chars
     PROXY_ALLOWED_HOSTS = (
         [
@@ -1897,7 +1897,7 @@ GROUP_LOGO_URL = os.getenv("GROUP_LOGO_URL", "/geonode/img/group_logo.png")
 try:
     # try to parse python notation, default in dockerized env
     AVATAR_PROVIDERS = ast.literal_eval(os.getenv("AVATAR_PROVIDERS"))
-except ValueError:
+except (ValueError, SyntaxError):
     # fallback to regular list of values separated with misc chars
     AVATAR_PROVIDERS = (
         (
