@@ -1201,9 +1201,7 @@ class BaseVectorFileHandler(BaseHandler):
         exec_obj = orchestrator.get_execution_object(execution_id)
 
         # getting the related model schema for the resource
-        original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
-        self.real_instance = original_resource.get_real_instance()
-        model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
+        original_resource, model = self.___get_dynamic_schema(exec_obj)
         if not model:
             raise UpsertException(
                 "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled"
@@ -1243,6 +1241,12 @@ class BaseVectorFileHandler(BaseHandler):
             },
             "layer_name": original_resource.title,
         }
+
+    def ___get_dynamic_schema(self, exec_obj):
+        original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
+        self.real_instance = original_resource.get_real_instance()
+        model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
+        return original_resource, model
 
     def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator):
         valid_create = 0
@@ -1465,6 +1469,15 @@ class BaseVectorFileHandler(BaseHandler):
 
         self.__fixup_primary_key(dataset)
         return dataset
+
+    def fixup_dynamic_model_fields(self, _exec, files):
+        """
+        Utility needed during the replace workflow,
+        it will sync all the FieldSchema along with the current resource uploaded.
+        This is mandatory in order to have a reliable field structure in the DB
+        """
+        fields_schema, needed_field_schema = self.__get_new_and_original_schema(files, str(_exec.exec_id))
+        fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
 
 
 @importer_app.task(
