@@ -51,6 +51,7 @@ STANDARD_TYPE_MAPPING = {
 
 GEOM_TYPE_MAPPING = {
     "Line String": "django.contrib.gis.db.models.fields.LineStringField",
+    "Linestring": "django.contrib.gis.db.models.fields.LineStringField",
     "LineString": "django.contrib.gis.db.models.fields.LineStringField",
     "3D Line String": "django.contrib.gis.db.models.fields.LineStringField",
     "Multi Line String": "django.contrib.gis.db.models.fields.MultiLineStringField",
