@@ -176,8 +176,8 @@ class ShapeFileHandler(BaseVectorFileHandler):
         encoding = ShapeFileHandler._get_encoding(files)
 
         additional_options = []
-        if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
-            additional_options.append("-nlt PROMOTE_TO_MULTI")
+        #if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
+        #    additional_options.append("-nlt PROMOTE_TO_MULTI")
         if encoding:
             additional_options.append(f"--config SHAPE_ENCODING {encoding}")
 
