@@ -750,7 +750,6 @@ class BaseVectorFileHandler(BaseHandler):
             return f"Multi {geometry_name.title()}"
         return geometry_name
 
-
     def promote_geom_to_multi(self, geom):
         """
         Convert the GetGeometryType object into Multi
