@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import copy
 import os
 import json
 from unittest.mock import patch, MagicMock
@@ -72,7 +73,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         # set Json schemas
-        self.model_schema = MODEL_SCHEMA
+        self.model_schema = copy.deepcopy(MODEL_SCHEMA)
         self.lang = None
         self.errors = {}
         self.context = MagicMock()

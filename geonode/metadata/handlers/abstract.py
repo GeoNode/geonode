@@ -37,6 +37,13 @@ class MetadataHandler(metaclass=ABCMeta):
     decoding subschemas of the main Resource
     """
 
+    def post_init(self):
+        """
+        It is called by the Metadata app init procedure
+        once all the handlers have been added to the MetadataManager
+        """
+        pass
+
     @abstractmethod
     def update_schema(self, jsonschema: dict, context: dict, lang=None):
         """
@@ -88,9 +95,21 @@ class MetadataHandler(metaclass=ABCMeta):
         """
         pass
 
+    def post_serialization(self, resource: ResourceBase, jsonschema: dict, instance: dict, context: dict):
+        """
+        Called after calls to get_jsonschema_instance in order to fixup instance values
+        """
+        pass
+
     def load_deserialization_context(self, resource: ResourceBase, jsonschema: dict, context: dict):
         """
         Called before calls to update_resource in order to initialize info needed by the handler
+        """
+        pass
+
+    def pre_deserialization(self, resource: ResourceBase, jsonschema: dict, instance: dict, context: dict):
+        """
+        Called before calls to update_resource in order to fixup instance values
         """
         pass
 
@@ -172,3 +191,7 @@ class MetadataHandler(metaclass=ABCMeta):
                 label = MetadataHandler._get_tkl_labels(context, lang, f"{property_name}{synt}")
                 if label:
                     subschema[annotation_name] = label
+
+    @staticmethod
+    def _check_type(declared, checked):
+        return declared == checked or (type(declared) is list and checked in declared)

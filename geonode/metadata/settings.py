@@ -21,4 +21,5 @@ METADATA_HANDLERS = {
     "linkedresource": "geonode.metadata.handlers.linkedresource.LinkedResourceHandler",
     "contact": "geonode.metadata.handlers.contact.ContactHandler",
     "sparse": "geonode.metadata.handlers.sparse.SparseHandler",
+    "multilang": "geonode.metadata.handlers.multilang.MultiLangHandler",
 }

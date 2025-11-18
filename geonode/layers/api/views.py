@@ -25,8 +25,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.mixins import AdvertisedListMixin
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
@@ -34,6 +33,7 @@ from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatase
 from geonode.layers.metadata import parse_metadata
 from geonode.layers.models import Dataset
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
+from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.utils import update_resource
 from geonode.resource.manager import resource_manager
 from rest_framework.exceptions import NotFound
@@ -61,7 +61,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
@@ -75,6 +75,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        AdvertisedFilter,
         ExtentFilter,
         DatasetPermissionsFilter,
     ]
