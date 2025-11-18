@@ -18,7 +18,7 @@
 #########################################################################
 import ast
 import csv
-
+import re
 from datetime import datetime
 from itertools import islice
 from pathlib import Path
@@ -258,6 +258,8 @@ class BaseVectorFileHandler(BaseHandler):
         This is a default command that is needed to import a vector file
         """
         _datastore = settings.DATABASES["datastore"]
+        layers = ogr.Open(files.get("base_file"))
+        layer = layers.GetLayer(original_name)
 
         options = "--config PG_USE_COPY YES"
         copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
@@ -280,6 +282,9 @@ class BaseVectorFileHandler(BaseHandler):
         options += f'"{input_file}"' + f" -lco FID={DEFAULT_PK_COLUMN_NAME} "
 
         options += f'-nln {alternate} "{original_name}"'
+
+        if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
+            options += " -nlt PROMOTE_TO_MULTI"
 
         if ovverwrite_layer:
             options += " -overwrite"
@@ -734,12 +739,15 @@ class BaseVectorFileHandler(BaseHandler):
 
         return layer_schema
 
-    def promote_to_multi(self, geometry_name: str):
+    def promote_to_multi(self, geometry_name):
         """
         If needed change the name of the geometry, by promoting it to Multi
         example if is Point -> MultiPoint
         Needed for the shapefiles
+        Later this is used to map the geometry coming from ogr2ogr with a django class
         """
+        if "Multi" not in geometry_name and "Point" not in geometry_name and "3D" not in geometry_name:
+            return f"Multi {geometry_name.title()}"
         return geometry_name
 
     def promote_geom_to_multi(self, geom):
@@ -748,7 +756,21 @@ class BaseVectorFileHandler(BaseHandler):
         example if is Point -> MultiPoint
         Needed for the shapefiles
         """
-        return geom
+        match geom.GetGeometryType():
+            case ogr.wkbMultiLineString | ogr.wkbMultiPolygon:
+                # if is already multi, we dont need to do anything
+                return geom
+            case ogr.wkbLineString:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiLineString)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case ogr.wkbPolygon:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiPolygon)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case _:
+                # we dont convert points
+                return geom
 
     def create_geonode_resource(
         self,
@@ -796,37 +818,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         saved_dataset.refresh_from_db()
 
-        # if dynamic model is enabled, we can save up with is the primary key of the table
-        if settings.IMPORTER_ENABLE_DYN_MODELS and self.have_table:
-            from django.db import connections
-
-            # then we can check for the PK
-            column = None
-            connection = connections["datastore"]
-            table_name = saved_dataset.alternate.split(":")[1]
-
-            schema = ModelSchema.objects.filter(name=table_name).first()
-            schema.managed = False
-            schema.save()
-
-            with connection.cursor() as cursor:
-                column = connection.introspection.get_primary_key_columns(cursor, table_name)
-            if column:
-                # getting the relative model schema
-                # better to always ensure that the schema is NOT managed
-                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
-                if field:
-                    field.kwargs.update({"primary_key": True})
-                    field.save()
-                else:
-                    # creating the field needed as primary key
-                    pk_field = FieldSchema(
-                        name=column[0],
-                        model_schema=schema,
-                        class_name="django.db.models.BigAutoField",
-                        kwargs={"null": False, "primary_key": True},
-                    )
-                    pk_field.save()
+        self.__fixup_primary_key(saved_dataset)
 
         return saved_dataset
 
@@ -1159,6 +1151,40 @@ class BaseVectorFileHandler(BaseHandler):
 
         return target_schema_fields, new_file_schema_fields
 
+    def __fixup_primary_key(self, saved_dataset):
+
+        # if dynamic model is enabled, we can save up with is the primary key of the table
+        if settings.IMPORTER_ENABLE_DYN_MODELS and self.have_table:
+            from django.db import connections
+
+            # then we can check for the PK
+            column = None
+            connection = connections["datastore"]
+            table_name = saved_dataset.alternate.split(":")[1]
+
+            schema = ModelSchema.objects.filter(name=table_name).first()
+            schema.managed = False
+            schema.save()
+
+            with connection.cursor() as cursor:
+                column = connection.introspection.get_primary_key_columns(cursor, table_name)
+            if column:
+                # getting the relative model schema
+                # better to always ensure that the schema is NOT managed
+                field = FieldSchema.objects.filter(name=column[0], model_schema__name=table_name).first()
+                if field:
+                    field.kwargs.update({"primary_key": True})
+                    field.save()
+                else:
+                    # creating the field needed as primary key
+                    pk_field = FieldSchema(
+                        name=column[0],
+                        model_schema=schema,
+                        class_name="django.db.models.BigAutoField",
+                        kwargs={"null": False, "primary_key": True},
+                    )
+                    pk_field.save()
+
     def upsert_data(self, files, execution_id, **kwargs):
         """
         Function used to upsert the data for a vector resource.
@@ -1175,9 +1201,7 @@ class BaseVectorFileHandler(BaseHandler):
         exec_obj = orchestrator.get_execution_object(execution_id)
 
         # getting the related model schema for the resource
-        original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
-        self.real_instance = original_resource.get_real_instance()
-        model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
+        original_resource, model = self.___get_dynamic_schema(exec_obj)
         if not model:
             raise UpsertException(
                 "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled"
@@ -1217,6 +1241,12 @@ class BaseVectorFileHandler(BaseHandler):
             },
             "layer_name": original_resource.title,
         }
+
+    def ___get_dynamic_schema(self, exec_obj):
+        original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
+        self.real_instance = original_resource.get_real_instance()
+        model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
+        return original_resource, model
 
     def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator):
         valid_create = 0
@@ -1310,7 +1340,11 @@ class BaseVectorFileHandler(BaseHandler):
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
-            feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
+            if geom:
+                wkt = self.promote_geom_to_multi(geom).ExportToWkt()
+                if code := geom.GetSpatialReference().GetAuthorityCode(None):
+                    wkt = f"SRID={code};{wkt}"
+                feature_as_dict.update({self.default_geometry_column_name: wkt})
 
             feature_as_dict, is_valid = self.validate_feature(feature_as_dict)
             if not is_valid:
@@ -1330,10 +1364,23 @@ class BaseVectorFileHandler(BaseHandler):
         feature_to_save = []
         for feature in data_chunk:
             feature_as_dict = feature.items()
+            # evaluate if there is any date in the schema of the feature
+            schema = feature.DumpReadableAsString().split("\n")
+            if any(date_fields := [f for f in schema if ("(Date)" in f or "(DateTime)" in f) and "(null)" not in f]):
+                # if any field schema as date is found, we can normalize the date
+                pattern = re.compile(r"^\s*(?P<label>.+?)\s*\(\s*(?P<type>.+?)\s*\)\s*=\s*(?P<date_value>.+)\s*$")
+                for fields in date_fields:
+                    match = pattern.search(fields)
+                    label = match.group("label")
+                    date_value = match.group("date_value")
+                    feature_as_dict[label] = date_value.replace("/", "-")
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
-            feature_as_dict.update({self.default_geometry_column_name: self.promote_geom_to_multi(geom).ExportToWkt()})
+            code = geom.GetSpatialReference().GetAuthorityCode(None)
+            feature_as_dict.update(
+                {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
+            )
             to_process.append(feature_as_dict)
 
         for feature_as_dict in to_process:
@@ -1420,7 +1467,17 @@ class BaseVectorFileHandler(BaseHandler):
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
 
+        self.__fixup_primary_key(dataset)
         return dataset
+
+    def fixup_dynamic_model_fields(self, _exec, files):
+        """
+        Utility needed during the replace workflow,
+        it will sync all the FieldSchema along with the current resource uploaded.
+        This is mandatory in order to have a reliable field structure in the DB
+        """
+        fields_schema, needed_field_schema = self.__get_new_and_original_schema(files, str(_exec.exec_id))
+        fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
 
 
 @importer_app.task(
