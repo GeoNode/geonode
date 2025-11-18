@@ -1,0 +1,37 @@
+{
+  "title": {
+    "type": "string",
+    "title": "Title",
+    "description": "name by which the cited resource is known",
+    "maxLength": 255,
+    "geonode:handler": "fake",
+    "geonode:required": true
+  },
+  "abstract": {
+    "type": "string",
+    "title": "Abstract",
+    "description": "brief narrative summary of the content of the resource(s)",
+    "maxLength": 2000,
+    "ui:options": {
+      "widget": "textarea",
+      "rows": 5
+    },
+    "geonode:handler": "fake",
+    "geonode:required": true
+  },
+  "license": {
+    "type": "object",
+    "title": "License",
+    "description": "license of the dataset",
+    "maxLength": 255,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      }
+    },
+    "geonode:handler": "fake"
+  }
+}

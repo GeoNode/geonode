@@ -202,7 +202,7 @@ class MetadataManager:
                 )
 
         try:
-            index_manager.update_index(resource.id, schema, json_instance)
+            index_manager.update_index(resource.id, json_instance)
         except Exception as e:
             logger.error("Error while indexing", exc_info=e)
             MetadataHandler._set_error(

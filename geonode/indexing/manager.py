@@ -14,7 +14,7 @@ class TSVectorIndexManager:
     def __init__(self):
         self.LANGUAGES = multi.get_2letters_languages()
 
-    def _gather_fields_values(self, jsonschema: dict, jsoninstance: dict):
+    def _gather_fields_values(self, jsoninstance: dict):
         ml_fields = {}
         non_ml_fields = {}
 
@@ -44,9 +44,9 @@ class TSVectorIndexManager:
 
         return non_ml_fields, ml_fields
 
-    def update_index(self, resource_id, jsonschema: dict, jsoninstance: dict):
+    def update_index(self, resource_id, jsoninstance: dict):
 
-        non_ml_fields, ml_fields = self._gather_fields_values(jsonschema, jsoninstance)
+        non_ml_fields, ml_fields = self._gather_fields_values(jsoninstance)
 
         # 3rd loop: create indexes
         for index_name, index_fields in settings.METADATA_INDEXES.items():
@@ -81,7 +81,7 @@ class TSVectorIndexManager:
 
                     ml_text = " ".join(filter(None, (ml_fields[f][lang] for f in index_fields if f in ml_fields)))
                     vector = Func(
-                        Value(f"{ml_text} {non_ml_text}"),
+                        Value(" ".join(filter(None, [ml_text, non_ml_text]))),
                         function="to_tsvector",
                         template=f"%(function)s('{multi.get_pg_language(lang)}', %(expressions)s)",
                     )
