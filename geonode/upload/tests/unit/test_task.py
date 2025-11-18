@@ -482,6 +482,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 input_params={
                     "files": {"base_file": existing_file},
                     "store_spatial_files": True,
+                    "title": "new title",
                     "handler_module_path": "geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler",
                     "original_dataset_alternate": original_alternate,
                 },
