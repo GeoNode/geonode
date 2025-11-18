@@ -170,14 +170,9 @@ class ShapeFileHandler(BaseVectorFileHandler):
         This is a default command that is needed to import a vector file
         """
         base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
-        layers = ogr.Open(files.get("base_file"))
-        layer = layers.GetLayer(original_name)
-
+        additional_options = []
         encoding = ShapeFileHandler._get_encoding(files)
 
-        additional_options = []
-        if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
-            additional_options.append("-nlt PROMOTE_TO_MULTI")
         if encoding:
             additional_options.append(f"--config SHAPE_ENCODING {encoding}")
 
