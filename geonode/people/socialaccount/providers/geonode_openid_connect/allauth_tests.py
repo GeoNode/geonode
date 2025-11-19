@@ -82,7 +82,7 @@ class mocked_response:
                 if self.responses:
                     resp = self.responses.pop(0)
                     if isinstance(resp, dict):
-                        resp = MockedResponse(HTTPStatus.OK, resp)
+                        resp = MockedResponse(200, resp)
                     return resp
                 return f(*args, **kwargs)
 
@@ -298,7 +298,7 @@ class OAuth2TestsMixin:
             resp_mocks = [resp_mock]
 
         with self.mocked_response(
-            MockedResponse(HTTPStatus.OK, response_json, {"content-type": "application/json"}),
+            MockedResponse(200, response_json, {"content-type": "application/json"}),
             *resp_mocks,
         ):
             resp = self.client.get(complete_url, self.get_complete_parameters(q))
