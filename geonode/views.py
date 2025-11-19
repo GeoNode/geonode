@@ -162,7 +162,7 @@ def moderator_contacted(request, inactive_user=None):
 
 
 def moderator_needed(request):
-    """Used when a user signs in with an invalid or empty email if ACCOUNT_EMAIL_REQUIRED is True."""
+    """Used when a user signs in with an invalid or empty email email is required in ACCOUNT_SIGNUP_FIELDS"""
     return TemplateResponse(request, template="account/admin_approval_needed.html")
 
 

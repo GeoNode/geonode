@@ -54,7 +54,7 @@ class UserSerializer(base_serializers.DynamicModelSerializer):
             raise serializers.ValidationError(detail="username cannot be updated")
         email = data.get("email")
         # Email is required on post
-        if request.method in ("POST") and settings.ACCOUNT_EMAIL_REQUIRED and not email:
+        if request.method in ("POST") and "email*" in settings.ACCOUNT_SIGNUP_FIELDS and not email:
             raise serializers.ValidationError(detail="email missing from payload")
         # email should be unique
         if get_user_model().objects.filter(email=email).exists():

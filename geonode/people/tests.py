@@ -610,10 +610,10 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         self.assertEqual(response.json()["user"]["first_name"], "Robert Baratheon")
 
-    @override_settings(ACCOUNT_EMAIL_REQUIRED=True)
+    @override_settings(ACCOUNT_SIGNUP_FIELDS=["email*", "username*", "password1*", "password2*"])
     def test_users_api_empty_email(self):
         """
-        If the environment variable ACCOUNT_EMAIL_REQUIRED is set to True,
+        If the environment variable ACCOUNT_SIGNUP_FIELDS has email mandatory,
         the email will be mandatory in the payload.
         """
         data = {
