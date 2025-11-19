@@ -569,6 +569,11 @@ class BaseRasterFileHandler(BaseHandler):
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(instance_name)
 
+    def fixup_dynamic_model_fields(self, _exec, files):
+        """
+        Raster dataset does not have the dynamic model, so this can be skept
+        """
+
 
 @importer_app.task(
     base=UpdateTaskClass,
