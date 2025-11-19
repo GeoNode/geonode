@@ -806,8 +806,9 @@ class BaseVectorFileHandler(BaseHandler):
             table_name = saved_dataset.alternate.split(":")[1]
 
             schema = ModelSchema.objects.filter(name=table_name).first()
-            schema.managed = False
-            schema.save()
+            if schema:
+                schema.managed = False
+                schema.save()
 
             with connection.cursor() as cursor:
                 column = connection.introspection.get_primary_key_columns(cursor, table_name)

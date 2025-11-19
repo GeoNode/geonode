@@ -903,7 +903,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(rules_count, 0)
 
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
-    @override_settings(ASYNC_SIGNALS=False)
+    @override_settings(ASYNC_SIGNALS=False, IMPORTER_ENABLE_DYN_MODELS=False)
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_permissions(self):
         # Test permissions on a layer
