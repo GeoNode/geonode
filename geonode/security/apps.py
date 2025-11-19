@@ -26,5 +26,7 @@ class GeoNodeSecurityAppConfig(AppConfig):
     def ready(self):
         super().ready()
         from geonode.security.registry import permissions_registry
+        from geonode.security.request_configuration_registry import request_configuration_rules_registry
 
         permissions_registry.init_registry()
+        request_configuration_rules_registry.init_registry()
