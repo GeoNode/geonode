@@ -75,9 +75,9 @@ from geonode.base.api.filters import (
     FacetVisibleResourceFilter,
     FavoriteFilter,
     TKeywordsFilter,
-    ResourceIndexFilter,
     AdvertisedFilter,
 )
+from geonode.indexing.api.filters import ResourceIndexFilter
 from geonode.groups.models import GroupProfile, Group
 from geonode.security.permissions import get_compact_perms_list, PermSpec
 from geonode.security.utils import (
@@ -113,12 +113,11 @@ from .serializers import (
 )
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
-from geonode.base.utils import validate_extra_metadata
+from geonode.base.utils import validate_extra_metadata, patch_perms
 from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
-from geonode.base.utils import patch_perms
 
 
 logger = logging.getLogger(__name__)
