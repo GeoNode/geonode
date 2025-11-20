@@ -309,7 +309,7 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
     profile_url = PROFILE_URL
     id_token_issuer = ID_TOKEN_ISSUER
 
-    def get_provider(self, request=None, provider=None):
+    def get_provider(self, request=None, provider=None, client_id=None):
         """Looks up a `provider`, supporting subproviders by looking up by
         `provider_id`.
         """

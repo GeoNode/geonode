@@ -1937,10 +1937,15 @@ ACCOUNT_OPEN_SIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SIGNUP", "Tr
 ACCOUNT_OPEN_SOCIALSIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SOCIALSIGNUP", "True"))
 ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(os.getenv("ACCOUNT_APPROVAL_REQUIRED", "False"))
 ACCOUNT_ADAPTER = "geonode.people.adapters.LocalAccountAdapter"
-ACCOUNT_AUTHENTICATION_METHOD = os.environ.get("ACCOUNT_AUTHENTICATION_METHOD", "username_email")
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get("ACCOUNT_CONFIRM_EMAIL_ON_GET", "True"))
-ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get("ACCOUNT_EMAIL_REQUIRED", "True"))
 ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "none")
+
+ACCOUNT_LOGIN_METHODS = ast.literal_eval(os.environ.get("ACCOUNT_LOGIN_METHODS", "{'email', 'username'}"))
+
+ACCOUNT_SIGNUP_FIELDS = ast.literal_eval(
+    os.environ.get("ACCOUNT_SIGNUP_FIELDS", "['email*', 'username*', 'password1*', 'password2*']")
+)
+
 
 # Since django-allauth 0.43.0.
 ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get("ACCOUNT_SIGNUP_REDIRECT_URL", os.getenv("SITEURL", _default_siteurl))
