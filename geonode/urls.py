@@ -143,12 +143,6 @@ urlpatterns += [
     ),
 ]
 
-# tinymce WYSIWYG HTML Editor
-if "tinymce" in settings.INSTALLED_APPS:
-    urlpatterns += [
-        re_path(r"^tinymce/", include("tinymce.urls")),
-    ]
-
 # django-select2 Widgets
 if "django_select2" in settings.INSTALLED_APPS:
     urlpatterns += [
