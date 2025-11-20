@@ -54,9 +54,7 @@ def resource_urls(request):
         SITEURL=settings.SITEURL,
         INSTALLED_APPS=settings.INSTALLED_APPS,
         THEME_ACCOUNT_CONTACT_EMAIL=settings.THEME_ACCOUNT_CONTACT_EMAIL,
-        TINYMCE_DEFAULT_CONFIG=settings.TINYMCE_DEFAULT_CONFIG,
         PROXY_URL=getattr(settings, "PROXY_URL", "/proxy/?url="),
-        DISPLAY_SOCIAL=getattr(settings, "DISPLAY_SOCIAL", False),
         DISPLAY_RATINGS=getattr(settings, "DISPLAY_RATINGS", False),
         DISPLAY_WMS_LINKS=getattr(settings, "DISPLAY_WMS_LINKS", True),
         CREATE_LAYER=getattr(settings, "CREATE_LAYER", True),
@@ -82,7 +80,6 @@ def resource_urls(request):
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, "DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", False),
         EXIF_ENABLED=getattr(settings, "EXIF_ENABLED", False),
         FAVORITE_ENABLED=getattr(settings, "FAVORITE_ENABLED", False),
-        SEARCH_FILTERS=getattr(settings, "SEARCH_FILTERS", False),
         THESAURI_FILTERS=(
             [
                 t["name"]
