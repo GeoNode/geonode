@@ -46,4 +46,9 @@ $CELERY_BIN -A $CELERY_APP worker -Q harvesting \
     --concurrency=$CELERY__HARVESTER_CONCURRENCY \
     -f $CELERY__LOG_FILE &
 
-wait
+# Wait for any process to exit
+wait -n
+
+# Exit with the status of the process that exited first
+# Docker will restart the container if this is non-zero (i.e., a failure)
+exit $?
