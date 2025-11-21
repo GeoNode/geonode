@@ -35,7 +35,7 @@ from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
 from rest_framework.exceptions import PermissionDenied
 from geonode.people.utils import check_user_deletion_rules
-from geonode.people.api.serializers import UserSerializer
+from geonode.people.api.serializers import UserSerializer, RequestConfigurationRulesSerializer
 from geonode.people.utils import get_available_users
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -122,6 +122,15 @@ class UserViewSet(DynamicModelViewSet):
         result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
         return paginator.get_paginated_response({"resources": serializer.data})
+
+    @action(detail=True, methods=["get"], url_path="rules", url_name="user_rules")
+    def rules(self, request, pk=None):
+        target_user = self.get_object()
+        if target_user.pk != request.user.pk:
+            return Response({"error": "You do not have permission to access this user's rules."}, status=403)
+        target_user = request.user
+        serializer = RequestConfigurationRulesSerializer(target_user)
+        return Response(serializer.data)
 
     @extend_schema(
         methods=["get"],
