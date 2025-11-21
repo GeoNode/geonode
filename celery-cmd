@@ -24,6 +24,22 @@ CELERY__HARVESTER_CONCURRENCY=${CELERY__HARVESTER_CONCURRENCY:-"10"}
 CELERY__HARVESTER_AUTOSCALE_VALUES=${CELERY__HARVESTER_AUTOSCALE_VALUES:-"15,10"}
 CELERY__HARVESTER_MAX_MEMORY_PER_CHILD=${CELERY__MAX_MEMORY_PER_CHILD:-"500000"}
 
+# --- FIX: Remove stale Beat pidfile before starting beat ---
+BEAT_PIDFILE="/tmp/celerybeat.pid"
+
+if [ -f "$BEAT_PIDFILE" ]; then
+    PID=$(cat "$BEAT_PIDFILE" 2>/dev/null)
+
+    # If PID exists and is running → warn but continue (avoid killing)
+    if kill -0 "$PID" 2>/dev/null; then
+        echo "WARNING: Celery Beat seems to be running already (PID $PID). Removing stale pidfile anyway."
+    else
+        echo "Removing stale Celery Beat pidfile: $BEAT_PIDFILE"
+    fi
+
+    rm -f "$BEAT_PIDFILE"
+fi
+# --- END FIX ---
 
 echo "Starting Celery Beat..."
 $CELERY_BIN -A $CELERY_APP beat --scheduler=$CELERY__BEAT_SCHEDULE \
