@@ -2,7 +2,7 @@
 Pillow==11.3.0
 lxml==5.2.1
 psycopg2==2.9.9
-Django==5.2.7
+Django==5.2.8
 
 # Other
 beautifulsoup4==4.12.3
