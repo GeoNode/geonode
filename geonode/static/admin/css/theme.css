@@ -1,0 +1,14 @@
+html[data-theme="light"],
+:root {
+    --accent: #fff;
+    --header-branding-color: #fff;
+    --header-color: #fff;
+}
+
+#logo {
+    max-height: 2rem; display: inline; margin-right: 10px
+}
+
+#header, .module h2, .module caption, .inline-group h2  {
+    background-color:  var(--ms-button-primary-bg);
+}

@@ -1,25 +1,14 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}{{ title }} | {{ site_title|default:_('GeoNode site admin') }}{% endblock %}
+{% block title %}GeoNode admin{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('GeoNode administration') }}</a></h1>
+<img id="logo" src="{% static 'mapstore/img/geonode-logo.svg' %}">
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ _('GeoNode administration') }}</a></h1>
 {% endblock %}
 
 {% block extrahead %}
-    {# <script src="{% static "lib/js/assets.min.js" %}"></script> #}
-
-    <style type="text/css">
-        #grp-content {
-            position: relative;
-            float: left;
-            clear: both;
-            padding: 120px 20px 120px;
-            width: 100%;
-            -moz-box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-        }
-    </style>
+{% include 'geonode-mapstore-client/snippets/custom_theme.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'admin/css/theme.css' %}"/>
 {% endblock %}
