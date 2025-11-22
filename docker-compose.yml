@@ -41,6 +41,7 @@ services:
   # Celery worker that executes celery tasks created by Django.
   celery:
     << : *default-common-django
+    restart: unless-stopped
     container_name: celery4${COMPOSE_PROJECT_NAME}
     depends_on:
       django:
