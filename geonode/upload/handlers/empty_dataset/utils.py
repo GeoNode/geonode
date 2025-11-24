@@ -43,6 +43,8 @@ base_xml = (
     "<nativeName>{name}</nativeName>"
     "<title>{name}</title>"
     "<srs>EPSG:4326</srs>"
+    f"<nativeBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[2]}</maxx><miny>{BBOX[1]}</miny><maxy>{BBOX[3]}</maxy>"
+    "<crs>EPSG:4326</crs></nativeBoundingBox>"
     f"<latLonBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[2]}</maxx><miny>{BBOX[1]}</miny><maxy>{BBOX[3]}</maxy>"
     "<crs>EPSG:4326</crs></latLonBoundingBox>"
     "<attributes></attributes>"
