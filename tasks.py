@@ -350,6 +350,21 @@ def fixtures(ctx):
         pty=True,
     )
 
+    # Loading additional project fixtures
+    from django.conf import settings
+    project_fixtures = getattr(settings, 'PROJECT_FIXTURES', [])
+
+    for fixture in project_fixtures:
+        if fixture:
+            print(f"Loading project fixture: {fixture}")
+            try:
+                ctx.run(
+                    f"python manage.py loaddata {fixture} --settings={_localsettings()}",
+                    pty=True
+                )
+            except Exception as e:
+                print(f"Warning: Failed to load fixture {fixture}: {str(e)}")
+
 
 @task
 def collectstatic(ctx):
