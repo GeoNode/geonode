@@ -364,7 +364,7 @@ def fixtures(ctx):
                     pty=True
                 )
             except Exception as e:
-                print(f"Warning: Failed to load fixture {fixture}: {str(e)}")
+                print(f"Warning: Failed to load fixture {fixture}: {e}")
 
 
 @task
