@@ -242,6 +242,6 @@ class TestEmptyDatasetHandler(TestCase):
         attributes should be valid
         """
         subset_attributes = {"field_str": {"type": "string"}, "field_int": {"type": "integer"}}
-        expected = b"<featureType><name>myname</name><nativeName>myname</nativeName><title>myname</title><srs>EPSG:4326</srs><latLonBoundingBox><minx>-180</minx><maxx>180</maxx><miny>-90</miny><maxy>90</maxy><crs>EPSG:4326</crs></latLonBoundingBox><attributes><attribute><name>field_str</name><binding>java.lang.String</binding><nillable>false</nillable></attribute><attribute><name>field_int</name><binding>java.lang.Integer</binding><nillable>false</nillable></attribute></attributes></featureType>"  # noqa
+        expected = b"<featureType><name>myname</name><nativeName>myname</nativeName><title>myname</title><srs>EPSG:4326</srs><nativeBoundingBox><minx>-180</minx><maxx>180</maxx><miny>-90</miny><maxy>90</maxy><crs>EPSG:4326</crs></nativeBoundingBox><latLonBoundingBox><minx>-180</minx><maxx>180</maxx><miny>-90</miny><maxy>90</maxy><crs>EPSG:4326</crs></latLonBoundingBox><attributes><attribute><name>field_str</name><binding>java.lang.String</binding><nillable>false</nillable></attribute><attribute><name>field_int</name><binding>java.lang.Integer</binding><nillable>false</nillable></attribute></attributes></featureType>"  # noqa
         actual_xml = add_attributes_to_xml(subset_attributes, base_xml.format(name="myname"))
         self.assertEqual(expected, actual_xml)
