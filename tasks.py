@@ -352,7 +352,8 @@ def fixtures(ctx):
 
     # Loading additional project fixtures
     from django.conf import settings
-    project_fixtures = getattr(settings, 'PROJECT_FIXTURES', [])
+
+    project_fixtures = getattr(settings, "PROJECT_FIXTURES", [])
 
     for fixture in project_fixtures:
         if fixture:
