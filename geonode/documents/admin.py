@@ -19,8 +19,6 @@
 
 from django.contrib import admin
 
-from modeltranslation.admin import TabbedTranslationAdmin
-
 from geonode.documents.models import Document
 from geonode.base.admin import ResourceBaseAdminForm, SparseInline
 
@@ -34,7 +32,7 @@ class DocumentAdminForm(ResourceBaseAdminForm):
         # )
 
 
-class DocumentAdmin(TabbedTranslationAdmin):
+class DocumentAdmin(admin.ModelAdmin):
     inlines = (SparseInline,)
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display = (

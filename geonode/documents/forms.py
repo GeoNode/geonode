@@ -21,8 +21,6 @@ import os
 import json
 import logging
 
-from modeltranslation.forms import TranslationModelForm
-
 from django import forms
 from django.conf import settings
 from django.forms import HiddenInput
@@ -76,7 +74,7 @@ class SizeRestrictedFileField(forms.FileField):
         return max_size_db_obj.max_size
 
 
-class DocumentCreateForm(TranslationModelForm):
+class DocumentCreateForm(forms.ModelForm):
     """
     The document upload form.
     """
