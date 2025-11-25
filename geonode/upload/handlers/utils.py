@@ -40,7 +40,7 @@ EMPTY_DATASET_SUPPORTED_TYPES = {
 
 
 STANDARD_TYPE_MAPPING = {
-    "Integer64": "django.db.models.IntegerField",
+    "Integer64": "django.db.models.FloatField",
     "Integer": "django.db.models.IntegerField",
     "DateTime": "django.db.models.DateTimeField",
     "Date": "django.db.models.DateField",
@@ -52,6 +52,7 @@ STANDARD_TYPE_MAPPING = {
 GEOM_TYPE_MAPPING = {
     "Line String": "django.contrib.gis.db.models.fields.LineStringField",
     "Linestring": "django.contrib.gis.db.models.fields.LineStringField",
+    "LineString": "django.contrib.gis.db.models.fields.LineStringField",
     "3D Line String": "django.contrib.gis.db.models.fields.LineStringField",
     "Multi Line String": "django.contrib.gis.db.models.fields.MultiLineStringField",
     "Multilinestring": "django.contrib.gis.db.models.fields.MultiLineStringField",
