@@ -1,14 +1,37 @@
 html[data-theme="light"],
 :root {
-    --accent: #fff;
-    --header-branding-color: #fff;
-    --header-color: #fff;
+    --accent: var(--ms-button-color);
+    --header-branding-color: var(--ms-button-color);
+    --header-color: var(--ms-button-color);
+    --header-link-color: var(--link-fg);
 }
 
 #logo {
     max-height: 2rem; display: inline; margin-right: 10px
 }
 
-#header, .module h2, .module caption, .inline-group h2  {
-    background-color:  var(--ms-button-primary-bg);
+#header   {
+    background-color: var(--ms-main-bg);
+    border-bottom: 1px solid var(--ms-main-border-color);
+}
+
+div.breadcrumbs {
+    background-color: #fff;
+}
+
+#nav-sidebar .current-app .section:visited {
+    background-color: var(--ms-primary);
+    color: #fff;
+}
+
+.module h2, .inline-group h2, .module caption {
+    background-color: var(--ms-primary);
+}
+
+a:link, a:visited {
+    color: var(--link-fg);
+}
+
+a.section:link, a.section:visited  {
+    color: #fff;
 }
