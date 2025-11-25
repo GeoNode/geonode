@@ -21,22 +21,24 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.mixins import AdvertisedListMixin
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
 from geonode.geoapps.models import GeoApp
+from geonode.metadata.multilang.views import MultiLangViewMixin
+
 
 from .serializers import GeoAppSerializer
 from .permissions import GeoAppPermissionsFilter
 
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
-class GeoAppViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class GeoAppViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows geoapps to be viewed or edited.
     """
@@ -50,6 +52,7 @@ class GeoAppViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMi
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        AdvertisedFilter,
         ExtentFilter,
         GeoAppPermissionsFilter,
     ]
