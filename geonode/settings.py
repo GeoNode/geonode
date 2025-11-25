@@ -2180,7 +2180,3 @@ UPSERT_LOG_LOCATION = os.getenv("UPSERT_LOG_LOCATION", "/tmp")
 
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
 FILE_UPLOAD_PERMISSIONS = 0o777
-
-PROJECT_FIXTURES = [
-    # List project-related fixture files here, in the order they should be loaded.
-]
