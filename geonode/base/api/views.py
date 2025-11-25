@@ -19,6 +19,7 @@
 import ast
 import functools
 import json
+import logging
 import re
 import os
 
@@ -53,19 +54,30 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticate
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
+from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN, remove_thumb
 from geonode.groups.conf import settings as groups_settings
-from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
+from geonode.base.models import (
+    HierarchicalKeyword,
+    Region,
+    ResourceBase,
+    TopicCategory,
+    ThesaurusKeyword,
+    Configuration,
+    ExtraMetadata,
+    LinkedResource,
+)
 from geonode.base.api.filters import (
     DynamicSearchFilter,
     ExtentFilter,
     FacetVisibleResourceFilter,
     FavoriteFilter,
     TKeywordsFilter,
+    AdvertisedFilter,
 )
+from geonode.indexing.api.filters import ResourceIndexFilter
 from geonode.groups.models import GroupProfile, Group
 from geonode.security.permissions import get_compact_perms_list, PermSpec
 from geonode.security.utils import (
@@ -74,13 +86,10 @@ from geonode.security.utils import (
     get_user_visible_groups,
 )
 from geonode.security.registry import permissions_registry
-
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.resource.manager import resource_manager
 
-
-from geonode.base.api.mixins import AdvertisedListMixin
 from .permissions import (
     IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
@@ -104,14 +113,12 @@ from .serializers import (
 )
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
-from geonode.base.utils import validate_extra_metadata
+from geonode.base.utils import validate_extra_metadata, patch_perms
 from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
-from geonode.base.utils import patch_perms
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -300,7 +307,7 @@ class ApiPresetsInitializer(APIView):
             request.GET._mutable = False
 
 
-class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
@@ -308,6 +315,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         TKeywordsFilter,
+        ResourceIndexFilter,
+        AdvertisedFilter,
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
