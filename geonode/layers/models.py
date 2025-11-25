@@ -19,9 +19,10 @@
 import itertools
 import re
 import logging
+import requests
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.functional import classproperty
@@ -305,6 +306,108 @@ class Dataset(ResourceBase):
             cfg["ftInfoTemplate"] = self.featureinfo_custom_template
 
         return cfg
+
+    def recalc_bbox_on_geoserver(self, force_bbox=None):
+        """
+        Update the dataset's bounding box (bbox) in GeoServer.
+
+        If `force_bbox` is provided, sets the bbox to that value.
+        Otherwise, asks GeoServer to recalculate it from the underlying data.
+
+        Returns True on success, False on failure.
+        """
+
+        from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
+
+        logger = logging.getLogger(__name__)
+        workspace = self.workspace
+        store = self.store
+        layer_name = self.name
+        _user, _password = ogc_server_settings.credentials
+        base_url = ogc_server_settings.LOCATION.rstrip("/")
+
+        headers = {"Content-Type": "application/json"}
+        auth = (_user, _password)
+
+        if self.is_raster:
+            # Raster dataset -> coverage
+            if force_bbox is None:
+                url = f"{base_url}/rest/workspaces/{workspace}/coveragestores/{store}/coverages/{layer_name}?calculate=nativebbox,latlonbbox"
+                body = {"coverage": {}}
+            else:
+                url = f"{base_url}/rest/workspaces/{workspace}/coveragestores/{store}/coverages/{layer_name}"
+                body = {
+                    "coverage": {
+                        "nativeBoundingBox": {
+                            "minx": force_bbox[0],
+                            "miny": force_bbox[1],
+                            "maxx": force_bbox[2],
+                            "maxy": force_bbox[3],
+                            "crs": self.srid or "EPSG:4326",
+                        },
+                        "latLonBoundingBox": {
+                            "minx": force_bbox[0],
+                            "miny": force_bbox[1],
+                            "maxx": force_bbox[2],
+                            "maxy": force_bbox[3],
+                            "crs": "EPSG:4326",
+                        },
+                    }
+                }
+        else:
+            # Vector dataset -> featureType
+            if force_bbox is None:
+                url = f"{base_url}/rest/workspaces/{workspace}/datastores/{store}/featuretypes/{layer_name}?recalculate=nativebbox,latlonbbox"
+                body = {"featureType": {}}
+            else:
+                url = f"{base_url}/rest/workspaces/{workspace}/datastores/{store}/featuretypes/{layer_name}"
+                body = {
+                    "featureType": {
+                        "nativeBoundingBox": {
+                            "minx": force_bbox[0],
+                            "miny": force_bbox[1],
+                            "maxx": force_bbox[2],
+                            "maxy": force_bbox[3],
+                            "crs": self.srid or "EPSG:4326",
+                        },
+                        "latLonBoundingBox": {
+                            "minx": force_bbox[0],
+                            "miny": force_bbox[1],
+                            "maxx": force_bbox[2],
+                            "maxy": force_bbox[3],
+                            "crs": "EPSG:4326",
+                        },
+                    }
+                }
+
+        resp = requests.put(url, json=body, headers=headers, auth=auth)
+        if resp.status_code not in [200, 201]:
+            logger.error(f"GeoServer bbox update failed: {resp.status_code} - {resp.text}")
+            return False
+
+        # Fetch updated layer
+        try:
+            gs_layer = gs_catalog.get_resource(name=layer_name, store=store, workspace=workspace)
+        except Exception as e:
+            logger.error(f"Failed to fetch updated GeoServer layer: {e}")
+            return False
+
+        bbox = gs_layer.native_bbox
+        ll_bbox = gs_layer.latlon_bbox
+        srid = gs_layer.projection
+
+        if not bbox or not ll_bbox:
+            logger.error("GeoServer did not return updated bbox")
+            return False
+
+        with transaction.atomic():
+            self.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+            self.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
+            self.srid = srid or self.srid
+            self.save(update_fields=["srid"])
+
+        logger.info(f"Successfully updated bbox for dataset {self.id} ({self.name})")
+        return True
 
     def __str__(self):
         return str(self.alternate)
