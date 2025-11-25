@@ -463,7 +463,6 @@ INSTALLED_APPS = (
     # 'django_admin_bootstrapped.bootstrap3',
     # 'django_admin_bootstrapped',
     # Apps bundled with Django
-    "modeltranslation",
     "dal",
     "dal_select2",
     "django.contrib.auth",

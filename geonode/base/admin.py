@@ -30,8 +30,6 @@ from django.contrib import messages
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
 
-from modeltranslation.admin import TabbedTranslationAdmin
-
 from geonode.base.management.commands.thesaurus_subcommands.load import ACTION_UPDATE
 from geonode.base.models import (
     TopicCategory,
@@ -79,13 +77,13 @@ def set_user_and_group_dataset_permission(modeladmin, request, queryset):
 set_user_and_group_dataset_permission.short_description = "Set layer permissions"
 
 
-class LicenseAdmin(TabbedTranslationAdmin):
+class LicenseAdmin(admin.ModelAdmin):
     model = License
     list_display = ("id", "name")
     list_display_links = ("name",)
 
 
-class TopicCategoryAdmin(TabbedTranslationAdmin):
+class TopicCategoryAdmin(admin.ModelAdmin):
     model = TopicCategory
     list_display_links = ("identifier",)
     list_display = ("identifier", "description", "gn_description", "fa_class", "is_choice")
@@ -110,7 +108,7 @@ class TopicCategoryAdmin(TabbedTranslationAdmin):
             return False
 
 
-class RegionAdmin(TabbedTranslationAdmin):
+class RegionAdmin(admin.ModelAdmin):
     model = Region
     list_display_links = ("name",)
     list_display = ("code", "name", "parent")
@@ -121,7 +119,7 @@ class RegionAdmin(TabbedTranslationAdmin):
     group_fieldsets = True
 
 
-class SpatialRepresentationTypeAdmin(TabbedTranslationAdmin):
+class SpatialRepresentationTypeAdmin(admin.ModelAdmin):
     model = SpatialRepresentationType
     list_display_links = ("identifier",)
     list_display = ("identifier", "description", "gn_description", "is_choice")
@@ -135,7 +133,7 @@ class SpatialRepresentationTypeAdmin(TabbedTranslationAdmin):
         return False
 
 
-class RestrictionCodeTypeAdmin(TabbedTranslationAdmin):
+class RestrictionCodeTypeAdmin(admin.ModelAdmin):
     model = RestrictionCodeType
     list_display_links = ("identifier",)
     list_display = ("identifier", "description", "gn_description", "is_choice")
