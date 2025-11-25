@@ -34,7 +34,6 @@ def setup_metadata_handlers():
         metadata_manager.add_handler(handler_id, handler)
         ids.append(handler_id)
 
-    for handler in metadata_manager.handlers.values():
-        handler.post_init()
+    metadata_manager.post_init()
 
     logger.info(f"Metadata handlers from config: {', '.join(METADATA_HANDLERS)}")
