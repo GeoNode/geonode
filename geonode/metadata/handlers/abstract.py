@@ -107,7 +107,9 @@ class MetadataHandler(metaclass=ABCMeta):
         """
         pass
 
-    def pre_deserialization(self, resource: ResourceBase, jsonschema: dict, instance: dict, context: dict):
+    def pre_deserialization(
+        self, resource: ResourceBase, jsonschema: dict, instance: dict, partial: dict, context: dict
+    ):
         """
         Called before calls to update_resource in order to fixup instance values
         """

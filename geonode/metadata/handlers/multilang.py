@@ -101,7 +101,7 @@ class MultiLangHandler(MetadataHandler):
                     )
                     instance[def_lang_pname] = main_value
 
-    def pre_deserialization(self, resource, jsonschema: dict, instance: dict, context: dict):
+    def pre_deserialization(self, resource, jsonschema: dict, instance: dict, partial: set, context: dict):
         # store default-lang value into original fields
         for property_name in settings.MULTILANG_FIELDS:
             logger.debug(f"Copying base multilang field '{property_name}'")
@@ -109,6 +109,8 @@ class MultiLangHandler(MetadataHandler):
             def_lang_pname = multi.get_multilang_field_name(property_name, multi.get_default_language())
             def_lang_value = instance.get(def_lang_pname, "")
             instance[property_name] = def_lang_value
+            if partial:
+                partial.add(property_name)
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         pass
