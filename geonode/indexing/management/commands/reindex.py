@@ -76,48 +76,40 @@ class Command(BaseCommand):
         logger.debug(f"DRY-RUN is {dry_run}")
         logger.debug(f"UUIDS is {requested_uuids}")
 
-        try:
+        qs_resources = ResourceBase.objects
+        tot = qs_resources.count()
+        logger.info(f"Total resources in GeoNode: {tot}")
+        i = 0
+        cnt_ok = 0
+        cnt_bad = 0
+        cnt_skip = 0
 
-            qs_resources = ResourceBase.objects
-            tot = qs_resources.count()
-            logger.info(f"Total resources in GeoNode: {tot}")
-            i = 0
-            cnt_ok = 0
-            cnt_bad = 0
-            cnt_skip = 0
+        resource: ResourceBase
+        for resource in qs_resources.all():
+            i += 1
+            logger.info(f"- {i}/{tot} Processing resource {resource.id} [{resource.uuid}] '{resource.title}'")
 
-            resource: ResourceBase
-            for resource in qs_resources.all():
-                i += 1
-                logger.info(f"- {i}/{tot} Processing resource {resource.id} [{resource.uuid}] '{resource.title}'")
+            if requested_uuids and resource.uuid not in requested_uuids:
+                logger.info("  - Resource filtered out by uuid")
+                cnt_skip += 1
+                continue
 
-                if requested_uuids and resource.uuid not in requested_uuids:
-                    logger.info("  - Resource filtered out by uuid")
-                    cnt_skip += 1
-                    continue
+            good = None
+            try:
+                jsoninstance = metadata_manager.build_schema_instance(resource)
+                if not dry_run:
+                    index_manager.update_index(resource.id, jsoninstance)
+                good = True
 
-                try:
-                    good = None
-                    try:
-                        jsoninstance = metadata_manager.build_schema_instance(resource)
-                        if not dry_run:
-                            index_manager.update_index(resource.id, jsoninstance)
-                        good = True
+            except Exception as e:
+                logger.error(f"Error processing '{resource.uuid}:{resource.title}': {e}", exc_info=e)
 
-                    except Exception as e:
-                        logger.error(f"Error processing '{resource.uuid}:{resource.title}': {e}", exc_info=e)
-
-                    if dry_run or good:
-                        logger.info(f"  - Done {resource.title}")
-                        cnt_ok += 1
-                    else:
-                        logger.warning(f"Index couldn't be regenerated for instance {resource.uuid}:{resource.title}")
-                        cnt_bad += 1
-
-                except Exception as e:
-                    raise e
-        except Exception as e:
-            raise e
+            if dry_run or good:
+                logger.info(f"  - Done {resource.title}")
+                cnt_ok += 1
+            else:
+                logger.warning(f"Index couldn't be regenerated for instance {resource.uuid}:{resource.title}")
+                cnt_bad += 1
 
         logger.info("Work completed" + (" [DRYRUN]" if dry_run else ""))
         logger.info(f"- Index regenerated : {cnt_ok}")
