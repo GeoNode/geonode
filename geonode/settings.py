@@ -2099,6 +2099,48 @@ METADATA_STORERS = [
     # 'geonode.resource.regions_storer.spatial_predicate_region_assignor',
 ]
 
+INSTALLED_APPS += ("geonode.indexing",)
+GEONODE_APPS += ("geonode.indexing",)
+
+METADATA_INDEXES = {
+    "title": ["title"],
+    "title_abstract": ["title", "abstract"],
+    "all": ["title", "abstract", "supplemental_information"],
+}
+
+# you can get the language names in psql using "\dF"
+MULTILANG_POSTGRES_LANGS = {
+    None: "simple",
+    "ar": "arabic",
+    "hy": "armenian",
+    "eu": "basque",
+    "ca": "catalan",
+    "da": "danish",
+    "nl": "dutch",
+    "en": "english",
+    "fi": "finnish",
+    "fr": "french",
+    "de": "german",
+    "el": "greek",
+    "hi": "hindi",
+    "hu": "hungarian",
+    "id": "indonesian",
+    "ga": "irish",
+    "it": "italian",
+    "lt": "lithuanian",
+    "ne": "nepali",
+    "no": "norwegian",
+    "pt": "portuguese",
+    "ro": "romanian",
+    "ru": "russian",
+    "sr": "serbian",
+    "es": "spanish",
+    "sv": "swedish",
+    "ta": "tamil",
+    "tr": "turkish",
+    "yi": "yiddish",
+}
+
 FILE_UPLOAD_HANDLERS = [
     "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
