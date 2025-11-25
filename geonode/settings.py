@@ -2099,6 +2099,11 @@ METADATA_STORERS = [
     # 'geonode.resource.regions_storer.spatial_predicate_region_assignor',
 ]
 
+MULTILANG_FIELDS = (
+    # "title",
+    # "abstract",
+)
+
 INSTALLED_APPS += ("geonode.indexing",)
 GEONODE_APPS += ("geonode.indexing",)
 

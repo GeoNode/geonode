@@ -108,6 +108,9 @@ class MetadataManager:
             except UnsetFieldException:
                 pass
 
+        for handler in self.handlers.values():
+            handler.post_serialization(resource, schema, instance, context)
+
         # TESTING ONLY
         if "error" in resource.title.lower():
             for fieldname in schema["properties"]:
@@ -134,6 +137,9 @@ class MetadataManager:
             handler.load_deserialization_context(resource, schema, context)
 
         errors = {}
+
+        for handler in self.handlers.values():
+            handler.pre_deserialization(resource, schema, json_instance, partial, context)
 
         for fieldname, subschema in schema["properties"].items():
             if partial:
@@ -213,7 +219,7 @@ class MetadataManager:
         old_instance = self.build_schema_instance(resource, lang)
         old_instance.update(json_instance)
         fake_req = SimpleNamespace(data=old_instance, user=user)
-        return self.update_schema_instance(resource, fake_req, lang, partial=json_instance.keys())
+        return self.update_schema_instance(resource, fake_req, lang, partial=set(json_instance.keys()))
 
 
 def _create_test_errors(schema, errors, path, msg_template, create_message=True):
