@@ -27,16 +27,15 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from geonode import settings
 
 from geonode.assets.utils import create_asset_and_link
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.mixins import AdvertisedListMixin
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
+from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import base_linked_resources, ApiPresetsInitializer
 from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
-
-from geonode.base.api.serializers import ResourceBaseSerializer
+from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.utils import resourcebase_post_save
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
@@ -50,7 +49,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows documents to be viewed or edited.
     """
@@ -64,6 +63,7 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        AdvertisedFilter,
         ExtentFilter,
         DocumentPermissionsFilter,
     ]
