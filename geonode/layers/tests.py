@@ -26,6 +26,10 @@ from uuid import uuid4
 from unittest.mock import MagicMock, patch, PropertyMock
 from collections import namedtuple
 
+from rest_framework.test import force_authenticate
+from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
+
 from django.urls import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -798,6 +802,109 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
         mock_dataset = Dataset(subtype="raster")
         self.assertFalse(mock_dataset.supports_time)
+
+    @patch("geonode.geoserver.helpers.gs_catalog.get_resource")
+    @patch("geonode.geoserver.helpers.gs_catalog.get_layer")
+    def test_dataset_recalc_bbox_on_geoserver_success(self, mock_get_layer, mock_get_resource):
+        """
+        Test recalc_bbox_on_geoserver() without touching real GeoServer.
+        """
+
+        # Mock the GeoServer Layer object
+        mock_layer = MagicMock()
+        mock_layer.resource.store = MagicMock(name="test_store", workspace=MagicMock(name="test_workspace"))
+        # Mock recalc_bbox() returning True
+        mock_layer.recalc_bbox.return_value = True
+        mock_get_layer.return_value = mock_layer
+
+        # Mock the resource returned by gs_catalog.get_resource
+        mock_resource = MagicMock()
+        mock_resource.native_bbox = [0, 10, 0, 10]
+        mock_resource.latlon_bbox = [0, 10, 0, 10]
+        mock_resource.projection = "EPSG:4326"
+        mock_resource.store = mock_layer.resource.store
+        mock_get_resource.return_value = mock_resource
+
+        # Call the method
+        result = self.dataset.recalc_bbox_on_geoserver(force_bbox=[0, 0, 10, 10])
+
+        # Assertions
+        self.assertTrue(result)
+        mock_layer.recalc_bbox.assert_called_once_with(force_bbox=[0, 0, 10, 10])
+        mock_get_resource.assert_called_once_with(
+            name=self.dataset.name, store=mock_layer.resource.store, workspace=mock_layer.resource.workspace
+        )
+
+        # Check if bbox and srid are updated correctly
+        self.assertEqual(self.dataset.srid, "EPSG:4326")
+        # Optionally, check polygons
+        self.assertIsNotNone(self.dataset.bbox_polygon)
+        self.assertIsNotNone(self.dataset.ll_bbox_polygon)
+
+    @patch("geonode.layers.models.Dataset.recalc_bbox_on_geoserver")
+    def test_recalc_bbox_view_success(self, mock_recalc_bbox):
+        """Test the recalc_bbox view returns 200 when successful."""
+        factory = RequestFactory()
+        django_request = factory.put(
+            f"/api/v2/datasets/{self.dataset.id}/recalc-bbox/",
+            data='{"bbox": [0, 0, 10, 10]}',
+            content_type="application/json",
+        )
+        force_authenticate(django_request, user=self.admin_user)  # authenticate the HttpRequest
+
+        mock_recalc_bbox.return_value = True
+
+        from geonode.layers.api.views import DatasetViewSet
+
+        view = DatasetViewSet.as_view({"put": "recalc_bbox"})
+        response = view(django_request, pk=self.dataset.id)  # pass HttpRequest directly
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {"success": True}
+        mock_recalc_bbox.assert_called_once_with(force_bbox=[0, 0, 10, 10])
+
+    @patch("geonode.layers.models.Dataset.recalc_bbox_on_geoserver")
+    def test_recalc_bbox_view_failure(self, mock_recalc_bbox):
+        """Test the recalc_bbox view returns 500 when GeoServer update fails."""
+        factory = RequestFactory()
+        django_request = factory.put(
+            f"/api/v2/datasets/{self.dataset.id}/recalc-bbox/",
+            data='{"bbox": [0, 0, 10, 10]}',
+            content_type="application/json",
+        )
+        force_authenticate(django_request, user=self.admin_user)
+
+        mock_recalc_bbox.return_value = False
+
+        from geonode.layers.api.views import DatasetViewSet
+
+        view = DatasetViewSet.as_view({"put": "recalc_bbox"})
+        response = view(django_request, pk=self.dataset.id)
+
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.data == {"success": False}
+        mock_recalc_bbox.assert_called_once_with(force_bbox=[0, 0, 10, 10])
+
+    @patch("geonode.layers.models.Dataset.recalc_bbox_on_geoserver")
+    def test_recalc_bbox_view_permission_denied(self, mock_recalc_bbox):
+        """Test the recalc_bbox view denies access if user lacks edit perms."""
+        factory = RequestFactory()
+        django_request = factory.put(
+            f"/api/v2/datasets/{self.dataset.id}/recalc-bbox/",
+            data='{"bbox": [0, 0, 10, 10]}',
+            content_type="application/json",
+        )
+        force_authenticate(django_request, user=self.anonymous_user)  # no edit perms
+
+        from geonode.layers.api.views import DatasetViewSet
+
+        view = DatasetViewSet.as_view({"put": "recalc_bbox"})
+
+        response = view(django_request, pk=self.dataset.id)
+
+        # DRF converts PermissionDenied to HTTP 403 response
+        assert response.status_code == 403
+        mock_recalc_bbox.assert_not_called()
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
