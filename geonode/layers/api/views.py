@@ -37,7 +37,7 @@ from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSeri
 from geonode.resource.utils import update_resource
 from geonode.resource.manager import resource_manager
 from geonode.security.registry import permissions_registry
-from geonode.security.permissions import EDIT_PERMISSIONS
+from geonode.security.permissions import _to_compact_perms
 
 from rest_framework.exceptions import NotFound, PermissionDenied
 from django.shortcuts import get_object_or_404
@@ -306,8 +306,8 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         dataset = self.get_object()
 
         # Permissions check
-        user_perms = permissions_registry.get_perms(instance=dataset, user=request.user)
-        if not any(p in user_perms for p in EDIT_PERMISSIONS):
+        access = _to_compact_perms(permissions_registry.get_perms(instance=dataset, user=request.user))
+        if access not in ("owner", "edit", "manage"):
             raise PermissionDenied("You do not have permission to edit this dataset")
 
         # Safely get bbox from request
