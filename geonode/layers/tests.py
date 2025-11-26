@@ -28,7 +28,6 @@ from collections import namedtuple
 
 from rest_framework.test import force_authenticate
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied
 
 from django.urls import reverse
 from django.test import TestCase
