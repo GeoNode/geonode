@@ -39,7 +39,7 @@ from geonode.resource.manager import resource_manager
 from geonode.security.registry import permissions_registry
 from geonode.security.permissions import EDIT_PERMISSIONS
 
-from rest_framework.exceptions import NotFound, PermissionDenied, ParseError
+from rest_framework.exceptions import NotFound, PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 
@@ -310,10 +310,9 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         if not any(p in user_perms for p in EDIT_PERMISSIONS):
             raise PermissionDenied("You do not have permission to edit this dataset")
 
-        try:
-            force_bbox = request.data.get("bbox", None)
-        except ParseError:
-            force_bbox = None
+        # Safely get bbox from request
+        force_bbox = getattr(request, "data", {}) or {}
+        force_bbox = force_bbox.get("bbox", None)
 
         success = dataset.recalc_bbox_on_geoserver(force_bbox=force_bbox)
 
