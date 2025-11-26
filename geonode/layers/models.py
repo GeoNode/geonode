@@ -21,7 +21,7 @@ import re
 import logging
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.functional import classproperty
@@ -305,6 +305,57 @@ class Dataset(ResourceBase):
             cfg["ftInfoTemplate"] = self.featureinfo_custom_template
 
         return cfg
+
+    def recalc_bbox_on_geoserver(self, force_bbox=None):
+        """
+        Delegate BBOX recalculation/update to the GeoServer layer object,
+        then refresh the Dataset's bbox fields from the updated resource.
+
+        This wraps the Layer.recalc_bbox() method (works for both raster + vector).
+        """
+
+        from geonode.geoserver.helpers import gs_catalog
+
+        # GeoServer layer object (has .resource)
+        gs_layer = gs_catalog.get_layer(self.name)
+        if gs_layer is None:
+            logger.error(f"GeoServer layer not found: {self.name}")
+            return False
+
+        # Call recalc_bbox method from the geoserver-restconfig library
+        ok = gs_layer.recalc_bbox(force_bbox=force_bbox)
+        if not ok:
+            logger.error(f"GeoServer refused bbox update for layer {self.name}")
+            return False
+
+        # Let's reset the connections first
+        gs_catalog._cache.clear()
+        gs_catalog.reset()
+        # Fetch the updated resource again from GeoServer
+        resource = gs_catalog.get_resource(
+            name=self.name, store=gs_layer.resource.store, workspace=gs_layer.resource.workspace
+        )
+
+        if not resource:
+            logger.error("No resource returned from GeoServer after bbox update")
+            return False
+
+        bbox = resource.native_bbox
+        ll = resource.latlon_bbox
+        srid = resource.projection
+
+        if not bbox or not ll:
+            logger.error("GeoServer did not return updated bbox values")
+            return False
+
+        # bbox order from GeoServer: [minx, maxx, miny, maxy]
+        with transaction.atomic():
+            self.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+            self.set_ll_bbox_polygon([ll[0], ll[2], ll[1], ll[3]])
+            self.srid = srid or self.srid
+            self.save(update_fields=["srid"])
+
+        return True
 
     def __str__(self):
         return str(self.alternate)

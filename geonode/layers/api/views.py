@@ -36,7 +36,10 @@ from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSeri
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.utils import update_resource
 from geonode.resource.manager import resource_manager
-from rest_framework.exceptions import NotFound
+from geonode.security.registry import permissions_registry
+from geonode.security.permissions import _to_compact_perms
+
+from rest_framework.exceptions import NotFound, PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 
@@ -292,3 +295,28 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
                 layer.save()
 
                 return JsonResponse({"message": "The time dimension information for this layer was disabled"})
+
+    @action(
+        detail=True,
+        methods=["put"],
+        url_path="recalc-bbox",
+        url_name="recalc_bbox",
+        permission_classes=[IsAuthenticated],
+    )
+    def recalc_bbox(self, request, pk=None, *args, **kwargs):
+        dataset = self.get_object()
+
+        # Permissions check
+        access = _to_compact_perms(permissions_registry.get_perms(instance=dataset, user=request.user))
+        if access not in ("owner", "edit", "manage"):
+            raise PermissionDenied("You do not have permission to edit this dataset")
+
+        # Safely get bbox from request
+        force_bbox = getattr(request, "data", {}) or {}
+        force_bbox = force_bbox.get("bbox", None)
+
+        success = dataset.recalc_bbox_on_geoserver(force_bbox=force_bbox)
+
+        if success:
+            return Response({"success": True})
+        return Response({"success": False}, status=500)
