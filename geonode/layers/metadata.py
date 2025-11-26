@@ -22,17 +22,18 @@
 # Standard Modules
 import logging
 import datetime
-from owslib.etree import etree as dlxml
-from django.conf import settings
-
-# Geonode functionality
-from geonode import GeoNodeException
 
 # OWSLib functionality
+from owslib import iso, util
 from owslib.csw import CswRecord
-from owslib.iso import MD_Metadata, MD_Keywords
+from owslib.etree import etree as dlxml
 from owslib.fgdc import Metadata
+
+from django.conf import settings
 from django.utils import timezone
+
+from geonode import GeoNodeException
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -76,7 +77,7 @@ def iso2dict(exml):
     regions = []
     keywords = []
 
-    mdata = MD_Metadata(exml)
+    mdata = iso.MD_Metadata(exml)
     identifier = mdata.identifier
     vals["language"] = mdata.language or mdata.languagecode or "eng"
     if mdata.identification[0].spatialrepresentationtype:
@@ -111,6 +112,15 @@ def iso2dict(exml):
             vals["constraints_other"] = mdata.identification[0].otherconstraints[0]
 
         vals["purpose"] = mdata.identification[0].purpose
+
+        freq_elem = exml.find(
+            util.nspath_eval(
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode",
+                iso.namespaces,
+            )
+        )
+        freq = freq_elem.attrib.get("codeListValue", None) if freq_elem is not None else None
+        vals["maintenance_frequency"] = freq or "unknown"
 
     if mdata.dataquality is not None:
         vals["data_quality_statement"] = mdata.dataquality.lineage
@@ -258,7 +268,7 @@ def convert_keyword(keywords, iso2dict=False, theme="theme"):
 def convert_iso_keywords(keywords):
     _keywords = []
     for kw in keywords:
-        if isinstance(kw, MD_Keywords):
+        if isinstance(kw, iso.MD_Keywords):
             _keywords.append([_kw.name for _kw in kw.keywords])
         else:
             _keywords.append(kw)
