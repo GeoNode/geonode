@@ -19,7 +19,6 @@
 import itertools
 import re
 import logging
-import requests
 
 from django.conf import settings
 from django.db import models, transaction
