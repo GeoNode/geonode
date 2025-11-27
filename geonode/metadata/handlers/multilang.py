@@ -18,6 +18,7 @@
 #########################################################################
 
 import logging
+from copy import deepcopy
 
 from django.conf import settings
 
@@ -54,12 +55,24 @@ class MultiLangHandler(MetadataHandler):
         parent_name = subschema["geonode:multilang-group"]
         parent_schema = jsonschema["properties"][parent_name]
         subschema_lang = subschema["geonode:multilang-lang"]
-        main = " !" if subschema_lang == multi.get_default_language() else ""
+
+        main_lang = subschema_lang == multi.get_default_language()
+
         subschema["title"] = (
-            f"{parent_schema.get('title', '')} [{subschema_lang.upper()}]{main}"  # parent title should already be localized
+            f"{parent_schema.get('title', '')} [{subschema_lang.upper()}]{' !' if main_lang else ''}"  # parent title should already be localized
         )
+
+        if main_lang:
+            # this is the multilang entry for the main language
+            for ann in (
+                "geonode:required",
+                "description",
+            ):
+                if ann in parent_schema:
+                    subschema[ann] = parent_schema[ann]
+
         if "ui:options" in parent_schema:
-            subschema["ui:options"] = parent_schema["ui:options"]
+            subschema["ui:options"] = deepcopy(parent_schema["ui:options"])
 
     def update_schema(self, jsonschema, context, lang=None):
         for property_name in settings.MULTILANG_FIELDS:
@@ -71,6 +84,11 @@ class MultiLangHandler(MetadataHandler):
 
             parent_schema["geonode:multilang"] = True  # mark the main field as lead multilang
             parent_schema["readOnly"] = True  # lock the main field (we'll update its content later)
+
+            if "ui:options" in parent_schema:
+                parent_schema["ui:options"]["widget"] = "hidden"
+            else:
+                parent_schema["ui:widget"] = "hidden"
 
         return jsonschema
 
@@ -108,7 +126,11 @@ class MultiLangHandler(MetadataHandler):
 
             def_lang_pname = multi.get_multilang_field_name(property_name, multi.get_default_language())
             def_lang_value = instance.get(def_lang_pname, "")
-            instance[property_name] = def_lang_value
+            if def_lang_value:
+                instance[property_name] = def_lang_value
+            else:
+                logger.info(f"Not copying empty value to base multilang field '{property_name}'")
+
             if partial:
                 partial.add(property_name)
 
