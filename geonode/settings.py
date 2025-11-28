@@ -1552,7 +1552,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
     MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = []
 
     # Extensions path to use in importing custom extensions into geonode
-    MAPSTORE_EXTENSIONS_FOLDER_PATH = "/mapstore/extensions/"
+    MAPSTORE_EXTENSIONS_FOLDER_PATH = "mapstore/extensions/"
 
     # Supported Dataset file types for uploading Datasets. This setting is being from from the client
 
