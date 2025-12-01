@@ -16,7 +16,7 @@ tqdm==4.66.4
 Deprecated==1.2.14
 jsonschema==4.22.0
 schema==0.7.7
-rdflib==6.3.2
+rdflib==7.5.0
 smart_open==7.0.4
 PyMuPDF==1.26.3
 defusedxml==0.7.1
