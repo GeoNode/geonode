@@ -138,6 +138,10 @@ class AdvertisedFilter(BaseFilterBackend):
         # advertised
         # if superuser, all resources will be visible, otherwise only the advertised one and
         # the resource which the user is owner will be returned
+
+        if getattr(view, "action", None) == "retrieve":
+            return queryset
+
         user = request.user
         try:
             _filter = request.query_params.get("advertised", "None")
