@@ -1211,7 +1211,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         logger.debug(" -- Resource Links[Prune old links]...done!")
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
+        from geonode.geoserver.ows import wcs_links, wfs_links
         from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
 
         # Compute parameters for the new links
@@ -1273,7 +1273,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Set download links for WMS, WCS or WFS and KML
         logger.debug(" -- Resource Links[Set download links for WMS, WCS or WFS and KML]...")
         instance_ows_url = f"{instance.ows_url}?" if instance.ows_url else f"{ogc_server_settings.public_url}ows?"
-        links = wms_links(instance_ows_url, instance.alternate, bbox, srid, height, width)
+        links = instance.prepare_wms_links(instance_ows_url, instance.alternate, bbox, srid, height, width)
 
         for ext, name, mime, wms_url in links:
             try:
@@ -1452,7 +1452,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         ),
                     )
 
-                if instance.subtype == "vector":
+                if instance.can_have_wfs_links:
                     ogc_wfs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, "ows")
                     ogc_wfs_name = f"OGC WFS: {instance.workspace} Service"
                     if (

@@ -62,6 +62,7 @@ from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 from geonode import GeoNodeException
 
 from geonode.base import enumerations
+from geonode.geoserver.ows import _wms_link
 from geonode.singleton import SingletonModel
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
@@ -952,6 +953,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def raw_abstract(self):
         return self._remove_html_tags(self.abstract)
 
+    @property
+    def can_be_downloaded(self):
+        return self.subtype in ["vector", "raster", "vector_time"]
+
+    def can_have_wfs_links(self):
+        return self.subtype == "vector"
+    
     @property
     def raw_purpose(self):
         return self._remove_html_tags(self.purpose)
@@ -1913,6 +1921,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if as_target
             else LinkedResource.get_linked_resources(source=self)
         )
+    
+    def prepare_wms_links(self, wms_url, identifier, bbox, srid, height, width):
+        types = [
+            ("jpg", _("JPEG"), "image/jpeg"),
+            ("pdf", _("PDF"), "application/pdf"),
+            ("png", _("PNG"), "image/png"),
+        ]
+        output = []
+        for ext, name, mime in types:
+            url = _wms_link(wms_url, identifier, mime, height, width, srid, bbox)
+            output.append((ext, name, mime, url))
+        return output
+
 
 
 class LinkManager(models.Manager):

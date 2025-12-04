@@ -1012,7 +1012,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'", exc_info=True
             )
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
+    elif layer.subtype in WPS_ACCEPTABLE_FORMATS.values():
         typename = layer.alternate if layer.alternate else layer.typename
         logger.info(f"Getting WFS info for {layer.subtype} '{typename}'")
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
