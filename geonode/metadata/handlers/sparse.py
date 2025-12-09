@@ -24,11 +24,11 @@ from rest_framework.reverse import reverse
 
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
-from geonode.metadata.i18n import get_localized_tkeywords
 from geonode.metadata.models import SparseField
 
-logger = logging.getLogger(__name__)
+from geonode.base.i18n import get_localized_tkeywords
 
+logger = logging.getLogger(__name__)
 
 CONTEXT_ID = "sparse"
 

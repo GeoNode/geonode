@@ -19,10 +19,6 @@ class MetadataConfig(AppConfig):
 def run_setup_hooks(*args, **kwargs):
     setup_metadata_handlers()
 
-    from geonode.metadata.signals import connect_signals
-
-    connect_signals()
-
 
 def setup_metadata_handlers():
     from geonode.metadata.manager import metadata_manager

@@ -26,7 +26,8 @@ from typing_extensions import deprecated
 from django.utils.translation import gettext as _
 
 from geonode.base.models import ResourceBase
-from geonode.metadata.i18n import OVR_SUFFIX
+from geonode.base.i18n import OVR_SUFFIX
+from geonode.metadata.manager import CONTEXT_KEY_LABELS
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class MetadataHandler(metaclass=ABCMeta):
         It adds the subschema handled by the handler, and returns the
         augmented instance of the JSON Schema.
         Context is populated by the manager with some common info:
-         - key "labels": contains the localized label loaded from the db as a dict, where key is the ThesaurusKeyword about
+         - key CONTEXT_KEY_LABELS: contains the localized label loaded from the db as a dict, where key is the ThesaurusKeyword about
            and value is the localized ThesaurusKeywordLabel, or the AltLabel if the localized label does not exist.
         """
         pass
@@ -72,7 +73,7 @@ class MetadataHandler(metaclass=ABCMeta):
     ):
         """
         Called when persisting data, updates the field `field_name` of the resource
-        with the content content, where json_instance is  the full JSON Schema instance,
+        with the content, where json_instance is the full JSON Schema instance,
         in case the handler needs some cross related data contained in the resource.
         """
         pass
@@ -172,12 +173,14 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def _localize_label(context, lang: str, text: str):
+        # TODO: deprecate and use LabelResolver.gettext(...fallback=true)
         label = MetadataHandler._get_tkl_labels(context, lang, text)
         return label or _(text)
 
     @staticmethod
     def _get_tkl_labels(context, lang: str | None, text: str):
-        return context.get("labels", {}).get(text, None)
+        # TODO: deprecate and use LabelResolver.gettext(...fallback=false)
+        return context.get(CONTEXT_KEY_LABELS, {}).get(text, None)
 
     @staticmethod
     def _localize_subschema_labels(context, subschema: dict, lang: str, property_name: str = None):

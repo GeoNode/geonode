@@ -23,7 +23,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.metadata.handlers.sparse import SparseHandler, SparseFieldRegistry
 from geonode.metadata.manager import MetadataManager
-from geonode.metadata.i18n import I18N_THESAURUS_IDENTIFIER
+from geonode.base.i18n import I18N_THESAURUS_IDENTIFIER
 
 from geonode.base.models import (
     ThesaurusKeyword,
