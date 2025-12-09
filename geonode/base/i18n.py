@@ -87,7 +87,7 @@ class I18nCache:
         date is needed for checking the entry freshness when setting info
         data may be None if not cached or expired
         """
-        cached_entry = self.lang_cache.get(lang, None)
+        cached_entry: I18nCacheEntry = self.lang_cache.get(lang, None)
 
         # TODO: thesaurus date check should be done only after a given time interval from last check
         thesaurus_date = (  # may be none if thesaurus does not exist
@@ -96,7 +96,7 @@ class I18nCache:
         if cached_entry:
             if thesaurus_date == cached_entry.date:
                 # only return cached data if thesaurus has not been modified
-                return thesaurus_date, cached_entry.get(data_key, None)
+                return thesaurus_date, cached_entry.caches.get(data_key, None)
             else:
                 logger.info(f"Schema for {lang}:{data_key} needs to be recreated")
 
