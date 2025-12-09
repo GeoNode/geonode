@@ -31,8 +31,7 @@ from django.utils.translation import gettext as _
 
 from rest_framework.test import APITestCase
 from geonode.metadata.settings import MODEL_SCHEMA
-from geonode.metadata.manager import metadata_manager, CONTEXT_KEY_LABELS, CACHE_KEY_SCHEMA
-from geonode.base.i18n import I18nCache
+from geonode.metadata.manager import metadata_manager, CACHE_KEY_SCHEMA
 from geonode.metadata.api.views import (
     ProfileAutocomplete,
     MetadataLinkedResourcesAutocomplete,
@@ -43,6 +42,7 @@ from geonode.metadata.api.views import (
 from geonode.metadata.settings import METADATA_HANDLERS
 from geonode.base.models import ResourceBase
 from geonode.settings import PROJECT_ROOT
+from geonode.base.i18n import I18nCache, i18nCache
 from geonode.base.models import (
     TopicCategory,
     License,
@@ -58,6 +58,8 @@ from geonode.groups.models import GroupProfile, GroupMember
 class MetadataApiTests(APITestCase):
 
     def setUp(self):
+        i18nCache.clear()
+
         # set Json schemas
         self.model_schema = copy.deepcopy(MODEL_SCHEMA)
         self.lang = None
@@ -916,7 +918,7 @@ class MetadataApiTests(APITestCase):
         mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
         mock_request.user = self.test_user_1
 
-        expected_context = {CONTEXT_KEY_LABELS: {}, "user": self.test_user_1}
+        expected_context = {"user": self.test_user_1}
 
         mock_get_schema.return_value = self.fake_schema
 

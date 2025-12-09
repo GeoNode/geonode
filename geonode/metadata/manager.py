@@ -27,13 +27,12 @@ from geonode.base.models import ResourceBase
 from geonode.indexing.manager import index_manager
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
-from geonode.base.i18n import I18nCache
+from geonode.base.i18n import i18nCache
 from geonode.metadata.settings import MODEL_SCHEMA
 
 logger = logging.getLogger(__name__)
 
 CACHE_KEY_SCHEMA = "schema"
-CONTEXT_KEY_LABELS = "labels"
 
 
 class MetadataManager:
@@ -48,7 +47,6 @@ class MetadataManager:
     def __init__(self):
         self.root_schema = MODEL_SCHEMA
         self.handlers = {}
-        self._i18n_cache = I18nCache()
 
     def add_handler(self, handler_id, handler):
         self.handlers[handler_id] = handler()
@@ -61,7 +59,7 @@ class MetadataManager:
             handler.post_init()
 
     def _init_schema_context(self, lang):
-        return {CONTEXT_KEY_LABELS: self._i18n_cache.get_labels(lang)}
+        return {}
 
     def build_schema(self, lang=None):
         logger.debug(f"build_schema {lang}")
@@ -86,12 +84,12 @@ class MetadataManager:
 
     def get_schema(self, lang=None):
         lang = str(lang)
-        thesaurus_date, schema = self._i18n_cache.get_entry(lang, CACHE_KEY_SCHEMA)
+        thesaurus_date, schema = i18nCache.get_entry(lang, CACHE_KEY_SCHEMA)
         if schema is None:
             logger.info(f"Building schema for {lang}")
             schema = self.build_schema(lang)
             logger.debug("Schema built")
-            self._i18n_cache.set(lang, CACHE_KEY_SCHEMA, schema, thesaurus_date)
+            i18nCache.set(lang, CACHE_KEY_SCHEMA, schema, thesaurus_date)
         return schema
 
     def build_schema_instance(self, resource, lang=None):

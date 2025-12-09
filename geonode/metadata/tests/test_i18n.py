@@ -23,8 +23,8 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.metadata.handlers.sparse import SparseHandler, SparseFieldRegistry
 from geonode.metadata.manager import MetadataManager
-from geonode.base.i18n import I18N_THESAURUS_IDENTIFIER
 
+from geonode.base.i18n import I18N_THESAURUS_IDENTIFIER, i18nCache
 from geonode.base.models import (
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
@@ -35,6 +35,8 @@ from geonode.base.models import (
 class MetadataI18NTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
+        i18nCache.clear()
+
         # set a single handler to speed up things
         self.sparse_registry = SparseFieldRegistry()
 

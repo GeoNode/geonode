@@ -119,7 +119,7 @@ class I18nCache:
                 f"Cache will not be updated for lang:{lang} key:{data_key} reqdate:{request_date} latest:{latest_date}"
             )
 
-    def clear_schema_cache(self):
+    def clear(self):
         logger.info("Clearing schema cache")
         self.lang_cache.clear()
 
@@ -128,7 +128,12 @@ class LabelResolver:
     CACHE_KEY_LABELS = "labels"
 
     def gettext(self, key, lang=None, fallback=True):
+        """
+        Return the translated text in the label Thesaurus, falling back to the PO/MO translation.
+        If fallback=False only search in the label Thesaurus, and may return None if not found
+        """
         lang = lang or get_language()
+        # TODO: implement the OVR search
         return self.get_labels(lang).get(key, None) or (_(key) if fallback else None)
 
     def get_labels(self, lang):
