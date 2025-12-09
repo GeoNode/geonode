@@ -614,7 +614,6 @@ def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module
     if not new_file_location["files"]:
         raise InvalidGeoTiffException("Could not determine the location of the copied file")
 
-
     sanitized_title = BaseHandler().fixup_name(original_dataset.title)
     new_dataset_alternate = create_alternate(sanitized_title, exec_id)
 
