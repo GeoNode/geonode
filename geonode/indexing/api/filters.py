@@ -49,13 +49,12 @@ class ResourceIndexFilter(BaseFilterBackend):
             # We have at least one field in the index that is multilang
 
             # first option: get a language as query param
-            search_lang = request.query_params.get("search_lang", None)
-            if search_lang:
-                search_lang = validate_lang(search_lang)
+            search_lang = validate_lang(request.query_params.get("search_lang"))
             if not search_lang:
                 # 2nd option: check standard config: http headers, cookies
-                search_lang = get_language_from_request(request)[:2]
-                search_lang = validate_lang(search_lang)
+                lang_from_request = get_language_from_request(request)
+                if lang_from_request:
+                    search_lang = validate_lang(lang_from_request[:2])
             if not search_lang:
                 # fallback: just take the default lang
                 logger.info("search language not found, forcing default")
