@@ -9,7 +9,7 @@ from rest_framework import serializers
 from rest_framework.filters import BaseFilterBackend
 
 from geonode.indexing.models import ResourceIndex
-from geonode.metadata.multilang.utils import get_2letters_languages, get_pg_language
+from geonode.metadata.multilang.utils import get_2letters_languages, get_pg_language, get_default_language
 
 
 logger = logging.getLogger(__name__)
@@ -45,18 +45,28 @@ class ResourceIndexFilter(BaseFilterBackend):
         if search_index not in settings.METADATA_INDEXES:
             raise serializers.ValidationError(f"Unknown index '{search_index}'")
 
-        search_lang = request.query_params.get("search_lang", None)
-        if search_lang:
-            search_lang = validate_lang(search_lang)
-        if not search_lang:
-            search_lang = get_language_from_request(request)[:2]
-            search_lang = validate_lang(search_lang)
+        if any(field in settings.METADATA_INDEXES[search_index] for field in settings.MULTILANG_FIELDS):
+            # We have at least one field in the index that is multilang
 
-        lang_filter = Q(lang__isnull=True)
-        if search_lang:
-            lang_filter = lang_filter | Q(lang=search_lang)
+            # first option: get a language as query param
+            search_lang = request.query_params.get("search_lang", None)
+            if search_lang:
+                search_lang = validate_lang(search_lang)
+            if not search_lang:
+                # 2nd option: check standard config: http headers, cookies
+                search_lang = get_language_from_request(request)[:2]
+                search_lang = validate_lang(search_lang)
+            if not search_lang:
+                # fallback: just take the default lang
+                logger.info("search language not found, forcing default")
+                search_lang = get_default_language()
 
-        pg_lang = get_pg_language(search_lang)
+            pg_lang = get_pg_language(search_lang)
+            lang_filter = Q(lang=search_lang)
+
+        else:  # the index has no multilang entry
+            pg_lang = get_pg_language(get_default_language())
+            lang_filter = Q(lang__isnull=True)
 
         queryset = queryset.filter(
             pk__in=Subquery(
