@@ -64,7 +64,7 @@ class ResourceIndexFilter(BaseFilterBackend):
             lang_filter = Q(lang=search_lang)
 
         else:  # the index has no multilang entry
-            pg_lang = get_pg_language(get_default_language())
+            pg_lang = get_pg_language(None)
             lang_filter = Q(lang__isnull=True)
 
         queryset = queryset.filter(
