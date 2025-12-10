@@ -31,8 +31,7 @@ from django.utils.translation import gettext as _
 
 from rest_framework.test import APITestCase
 from geonode.metadata.settings import MODEL_SCHEMA
-from geonode.metadata.manager import metadata_manager
-from geonode.metadata.i18n import I18nCache
+from geonode.metadata.manager import metadata_manager, CACHE_KEY_SCHEMA
 from geonode.metadata.api.views import (
     ProfileAutocomplete,
     MetadataLinkedResourcesAutocomplete,
@@ -43,6 +42,7 @@ from geonode.metadata.api.views import (
 from geonode.metadata.settings import METADATA_HANDLERS
 from geonode.base.models import ResourceBase
 from geonode.settings import PROJECT_ROOT
+from geonode.base.i18n import I18nCache, i18nCache
 from geonode.base.models import (
     TopicCategory,
     License,
@@ -58,6 +58,8 @@ from geonode.groups.models import GroupProfile, GroupMember
 class MetadataApiTests(APITestCase):
 
     def setUp(self):
+        i18nCache.clear()
+
         # set Json schemas
         self.model_schema = copy.deepcopy(MODEL_SCHEMA)
         self.lang = None
@@ -851,7 +853,7 @@ class MetadataApiTests(APITestCase):
         mock_get_entry.return_value = (thesaurus_date, expected_schema)
         result = metadata_manager.get_schema(lang)
 
-        mock_get_entry.assert_called_once_with(str(lang), I18nCache.DATA_KEY_SCHEMA)
+        mock_get_entry.assert_called_once_with(str(lang), CACHE_KEY_SCHEMA)
         mock_build_schema.assert_not_called()
         mock_set.assert_not_called()
         self.assertEqual(result, expected_schema)
@@ -867,9 +869,9 @@ class MetadataApiTests(APITestCase):
 
         result = metadata_manager.get_schema(lang)
 
-        mock_get_entry.assert_called_once_with(str(lang), I18nCache.DATA_KEY_SCHEMA)
+        mock_get_entry.assert_called_once_with(str(lang), CACHE_KEY_SCHEMA)
         mock_build_schema.assert_called_once_with(lang)
-        mock_set.assert_called_once_with(str(lang), I18nCache.DATA_KEY_SCHEMA, expected_schema, thesaurus_date)
+        mock_set.assert_called_once_with(str(lang), CACHE_KEY_SCHEMA, expected_schema, thesaurus_date)
         self.assertEqual(result, expected_schema)
 
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
@@ -916,7 +918,7 @@ class MetadataApiTests(APITestCase):
         mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
         mock_request.user = self.test_user_1
 
-        expected_context = {"labels": {}, "user": self.test_user_1}
+        expected_context = {"user": self.test_user_1}
 
         mock_get_schema.return_value = self.fake_schema
 

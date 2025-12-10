@@ -25,6 +25,7 @@ from unittest.mock import patch
 
 from django.test import override_settings
 
+from geonode.base.i18n import i18nCache
 from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.multilang import MultiLangHandler
 from geonode.metadata.handlers.sparse import SparseHandler, SparseFieldRegistry
@@ -41,7 +42,7 @@ logger = logging.getLogger(__name__)
 class MetadataMultilangTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        pass
+        i18nCache.clear()
 
     def tearDown(self):
         super().tearDown()

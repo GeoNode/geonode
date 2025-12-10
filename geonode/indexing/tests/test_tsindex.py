@@ -23,6 +23,7 @@ from unittest.mock import patch, ANY
 
 from django.test import override_settings
 
+from geonode.base.i18n import i18nCache
 from geonode.indexing.manager import TSVectorIndexManager
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 class IndexingTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        pass
+        i18nCache.clear()
 
     def tearDown(self):
         super().tearDown()

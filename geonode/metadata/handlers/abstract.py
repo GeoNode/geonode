@@ -23,10 +23,8 @@ from collections import defaultdict
 
 from typing_extensions import deprecated
 
-from django.utils.translation import gettext as _
-
 from geonode.base.models import ResourceBase
-from geonode.metadata.i18n import OVR_SUFFIX
+from geonode.base.i18n import OVR_SUFFIX, labelResolver
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +49,7 @@ class MetadataHandler(metaclass=ABCMeta):
         It adds the subschema handled by the handler, and returns the
         augmented instance of the JSON Schema.
         Context is populated by the manager with some common info:
-         - key "labels": contains the localized label loaded from the db as a dict, where key is the ThesaurusKeyword about
+         - key CONTEXT_KEY_LABELS: contains the localized label loaded from the db as a dict, where key is the ThesaurusKeyword about
            and value is the localized ThesaurusKeywordLabel, or the AltLabel if the localized label does not exist.
         """
         pass
@@ -72,7 +70,7 @@ class MetadataHandler(metaclass=ABCMeta):
     ):
         """
         Called when persisting data, updates the field `field_name` of the resource
-        with the content content, where json_instance is  the full JSON Schema instance,
+        with the content, where json_instance is the full JSON Schema instance,
         in case the handler needs some cross related data contained in the resource.
         """
         pass
@@ -162,7 +160,7 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def localize_message(context: dict, msg_code: str, msg_info: dict):
-        msg_loc: str = MetadataHandler._get_tkl_labels(context, None, msg_code)
+        msg_loc: str = labelResolver.gettext(msg_code)
         if msg_loc:
             tokens = defaultdict(lambda: "N/A", msg_info or {})
             return msg_loc.format_map(tokens)
@@ -171,26 +169,17 @@ class MetadataHandler(metaclass=ABCMeta):
             return f"{msg_code}:{msg_info}"
 
     @staticmethod
-    def _localize_label(context, lang: str, text: str):
-        label = MetadataHandler._get_tkl_labels(context, lang, text)
-        return label or _(text)
-
-    @staticmethod
-    def _get_tkl_labels(context, lang: str | None, text: str):
-        return context.get("labels", {}).get(text, None)
-
-    @staticmethod
     def _localize_subschema_labels(context, subschema: dict, lang: str, property_name: str = None):
         for annotation_name, synt in (
             ("title", ""),
             ("description", "__descr"),
         ):
-            if ovr := MetadataHandler._get_tkl_labels(context, lang, f"{property_name}{synt}{OVR_SUFFIX}"):
+            if ovr := labelResolver.gettext(f"{property_name}{synt}{OVR_SUFFIX}", lang, fallback=False):
                 subschema[annotation_name] = ovr
             elif annotation_name in subschema:
-                subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])
+                subschema[annotation_name] = labelResolver.gettext(subschema[annotation_name], lang)
             elif property_name:  # arrays may not have a name
-                label = MetadataHandler._get_tkl_labels(context, lang, f"{property_name}{synt}")
+                label = labelResolver.gettext(f"{property_name}{synt}", lang, fallback=False)
                 if label:
                     subschema[annotation_name] = label
 

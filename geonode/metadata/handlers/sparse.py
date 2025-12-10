@@ -24,11 +24,11 @@ from rest_framework.reverse import reverse
 
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
-from geonode.metadata.i18n import get_localized_tkeywords
 from geonode.metadata.models import SparseField
 
-logger = logging.getLogger(__name__)
+from geonode.base.i18n import get_localized_tkeywords, labelResolver
 
+logger = logging.getLogger(__name__)
 
 CONTEXT_ID = "sparse"
 
@@ -78,7 +78,7 @@ class SparseHandler(MetadataHandler):
                 self._recurse_localization(context, subschema, lang, prop_name)
         for item in schema.get("oneOf", []):
             if title := item.get("title", None):
-                item["title"] = MetadataHandler._localize_label(context, lang, title)
+                item["title"] = labelResolver.gettext(title, lang)
 
     def _recurse_thesauri_autocomplete(self, d, lang):
         if isinstance(d, dict):

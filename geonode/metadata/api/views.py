@@ -37,7 +37,7 @@ from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
 from geonode.groups.models import GroupProfile
 from geonode.metadata.handlers.abstract import MetadataHandler
-from geonode.metadata.i18n import get_localized_label
+from geonode.base.i18n import get_localized_label
 from geonode.metadata.manager import metadata_manager
 from geonode.metadata.multilang import utils as multi
 from geonode.people.utils import get_available_users

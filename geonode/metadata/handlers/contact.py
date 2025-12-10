@@ -24,6 +24,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 
+from geonode.base.i18n import labelResolver
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.people import Roles
 from geonode.resource.manager import resource_manager
@@ -66,7 +67,7 @@ class ContactHandler(MetadataHandler):
             if role.is_multivalue:
                 contact = {
                     "type": "array",
-                    "title": self._localize_label(context, lang, role.label) + card,
+                    "title": labelResolver.gettext(role.label, lang) + card,
                     "minItems": minitems,
                     "items": {
                         "type": "object",
@@ -86,7 +87,7 @@ class ContactHandler(MetadataHandler):
             else:
                 contact = {
                     "type": "object",
-                    "title": self._localize_label(context, lang, role.label) + card,
+                    "title": labelResolver.gettext(role.label, lang) + card,
                     "properties": {
                         "id": {
                             "type": "string",

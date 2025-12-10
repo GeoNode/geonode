@@ -27,9 +27,10 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from django.utils.translation import gettext as _
+
 from geonode.people import Roles
 
-from geonode.metadata.settings import MODEL_SCHEMA
+from geonode.base.i18n import i18nCache
 from geonode.base.models import (
     ResourceBase,
     TopicCategory,
@@ -43,7 +44,6 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
     ContactRole,
 )
-from geonode.settings import PROJECT_ROOT
 from geonode.metadata.handlers.base import (
     BaseHandler,
     CategorySubHandler,
@@ -60,18 +60,21 @@ from geonode.metadata.handlers.doi import DOIHandler
 from geonode.metadata.handlers.linkedresource import LinkedResourceHandler
 from geonode.metadata.handlers.hkeyword import HKeywordHandler
 from geonode.metadata.handlers.thesaurus import TKeywordsHandler
-from geonode.resource.utils import KeywordHandler
 from geonode.metadata.handlers.contact import ContactHandler, ROLE_NAMES_MAP
 from geonode.metadata.handlers.sparse import SparseHandler, sparse_field_registry
 from geonode.metadata.models import SparseField
+from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.exceptions import UnsetFieldException
 
+from geonode.resource.utils import KeywordHandler
+from geonode.settings import PROJECT_ROOT
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 
 class HandlersTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
+        i18nCache.clear()
         # set Json schemas
         self.model_schema = copy.deepcopy(MODEL_SCHEMA)
         self.lang = None
@@ -1374,7 +1377,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         mocked_endpoint.side_effect = lambda name, kwargs: f"/mocked/url/{kwargs['thesaurusid']}"
 
         # Call the method
-        updated_schema = self.tkeywords_handler.update_schema(schema, context={"labels": {}}, lang="en")
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
 
         # Assert tkeywords property is added
         tkeywords = updated_schema["properties"].get("tkeywords")
@@ -1426,7 +1429,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         mock_collect_thesauri.return_value = {}
 
         # Call the method
-        updated_schema = self.tkeywords_handler.update_schema(schema, context={"labels": {}}, lang="en")
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
 
         # Assert tkeywords property is hidden
         tkeywords = updated_schema["properties"].get("tkeywords")
@@ -1673,7 +1676,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
                     }
                 }
             },
-            "labels": {},
         }
 
         # Test string field
