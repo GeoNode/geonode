@@ -80,9 +80,14 @@ class Command(BaseCommand):
         logger.debug(f"LAYERS is {requested_layers}")
         logger.debug(f"IDS is {requested_ids}")
 
+        uuid_handler_class = None
+        if hasattr(settings, "LAYER_UUID_HANDLER") and settings.LAYER_UUID_HANDLER:
+            from geonode.layers.utils import get_uuid_handler
+            uuid_handler_class = get_uuid_handler()
+
         try:
-            layers = Dataset.objects.all().order_by("id")
-            tot = len(layers)
+            resources = Dataset.objects.all().order_by("id")
+            tot = resources.count()
             logger.info(f"Total layers in GeoNode: {tot}")
             i = 0
             cnt_ok = 0
@@ -90,21 +95,21 @@ class Command(BaseCommand):
             cnt_skip = 0
 
             instance: ResourceBase
-            for instance in layers:
+            for instance in resources:
                 i += 1
-                logger.info(f"- {i}/{tot} Processing layer {instance.id} [{instance.typename}] '{instance.title}'")
+                logger.info(f"- {i}/{tot} Processing resource {instance.id} [{instance.typename}] '{instance.title}'")
 
                 include_by_rl = requested_layers and instance.typename in requested_layers
                 include_by_id = requested_ids and instance.id in requested_ids
                 accepted = (not requested_layers and not requested_ids) or include_by_id or include_by_rl
 
                 if not accepted:
-                    logger.info("  - Layer filtered out by args")
+                    logger.info("  - Resource filtered out by args")
                     cnt_skip += 1
                     continue
 
                 if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
-                    logger.info("  - Layer filtered out since it uses custom XML")
+                    logger.info("  - Resource filtered out since it uses custom XML")
                     cnt_skip += 1
                     continue
 
@@ -112,9 +117,8 @@ class Command(BaseCommand):
                 if not dry_run:
                     try:
                         # regenerate UUID
-                        if hasattr(settings, "LAYER_UUID_HANDLER") and settings.LAYER_UUID_HANDLER:
-                            from geonode.layers.utils import get_uuid_handler
-                            _uuid = get_uuid_handler()(instance).create_uuid()
+                        if uuid_handler_class:
+                            _uuid = uuid_handler_class(instance).create_uuid()
                             if _uuid != instance.uuid:
                                 logger.info(f"Replacing UUID: {instance.uuid} --> {_uuid}")
                                 instance.uuid = _uuid
