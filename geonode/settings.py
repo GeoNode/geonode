@@ -862,6 +862,22 @@ SESSION_ENGINE = os.environ.get("SESSION_ENGINE", "django.contrib.sessions.backe
 if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.contrib.sessions.backends.cache"):
     SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested
 
+# Add additional paths (as regular expressions) that don't require
+# authentication.
+# - authorized exempt urls needed for oauth when GeoNode is set to lockdown
+AUTH_EXEMPT_URLS = (
+    f"{FORCE_SCRIPT_NAME}/o/*",
+    f"{FORCE_SCRIPT_NAME}/gs/*",
+    f"{FORCE_SCRIPT_NAME}/account/*",
+    f"{FORCE_SCRIPT_NAME}/static/*",
+    f"{FORCE_SCRIPT_NAME}/api/o/*",
+    f"{FORCE_SCRIPT_NAME}/api/roles",
+    f"{FORCE_SCRIPT_NAME}/api/adminRole",
+    f"{FORCE_SCRIPT_NAME}/api/users",
+    f"{FORCE_SCRIPT_NAME}/api/datasets",
+    r"^/i18n/setlang/?$",
+)
+
 # Security stuff
 SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get("SESSION_EXPIRED_CONTROL_ENABLED", "True"))
 
@@ -1010,22 +1026,6 @@ ADMIN_IP_WHITELIST = (
 if len(ADMIN_IP_WHITELIST) > 0:
     AUTHENTICATION_BACKENDS = ("geonode.security.backends.AdminRestrictedAccessBackend",) + AUTHENTICATION_BACKENDS
     MIDDLEWARE += ("geonode.security.middleware.AdminAllowedMiddleware",)
-
-# Add additional paths (as regular expressions) that don't require
-# authentication.
-# - authorized exempt urls needed for oauth when GeoNode is set to lockdown
-AUTH_EXEMPT_URLS = (
-    f"{FORCE_SCRIPT_NAME}/o/*",
-    f"{FORCE_SCRIPT_NAME}/gs/*",
-    f"{FORCE_SCRIPT_NAME}/account/*",
-    f"{FORCE_SCRIPT_NAME}/static/*",
-    f"{FORCE_SCRIPT_NAME}/api/o/*",
-    f"{FORCE_SCRIPT_NAME}/api/roles",
-    f"{FORCE_SCRIPT_NAME}/api/adminRole",
-    f"{FORCE_SCRIPT_NAME}/api/users",
-    f"{FORCE_SCRIPT_NAME}/api/datasets",
-    r"^/i18n/setlang/?$",
-)
 
 # LOCKDOWN API endpoints to prevent unauthenticated access.
 # If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
