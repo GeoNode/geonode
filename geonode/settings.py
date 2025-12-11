@@ -863,18 +863,23 @@ SESSION_ENGINE = os.environ.get("SESSION_ENGINE", "django.contrib.sessions.backe
 if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.contrib.sessions.backends.cache"):
     SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested
 
+# Add additional paths (as regular expressions) that don't require
+# authentication.
+# - authorized exempt urls needed for oauth when GeoNode is set to lockdown
+AUTH_EXEMPT_URLS = (
+    f"{FORCE_SCRIPT_NAME}/o/*",
+    f"{FORCE_SCRIPT_NAME}/gs/*",
+    f"{FORCE_SCRIPT_NAME}/account/*",
+    f"{FORCE_SCRIPT_NAME}/static/*",
+    f"{FORCE_SCRIPT_NAME}/api/o/*",
+    f"{FORCE_SCRIPT_NAME}/api/roles",
+    f"{FORCE_SCRIPT_NAME}/api/adminRole",
+    f"{FORCE_SCRIPT_NAME}/api/users",
+    f"{FORCE_SCRIPT_NAME}/api/datasets",
+    r"^/i18n/setlang/?$",
+)
+
 # Security stuff
-
-# Require users to authenticate before using Geonode
-LOCKDOWN_GEONODE = ast.literal_eval(os.getenv("LOCKDOWN_GEONODE", "False"))
-# Require users to authenticate before using Geonode
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE += ("geonode.security.middleware.LoginRequiredMiddleware",)
-
-# LOCKDOWN API endpoints to prevent unauthenticated access.
-# If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
-API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "False"))
-
 SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get("SESSION_EXPIRED_CONTROL_ENABLED", "True"))
 
 if SESSION_EXPIRED_CONTROL_ENABLED:
@@ -975,22 +980,6 @@ OAUTH2_API_KEY = os.environ.get("OAUTH2_API_KEY", None)
 # 1 day expiration time by default
 ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv("ACCESS_TOKEN_EXPIRE_SECONDS", "86400"))
 
-# Add additional paths (as regular expressions) that don't require
-# authentication.
-# - authorized exempt urls needed for oauth when GeoNode is set to lockdown
-AUTH_EXEMPT_URLS = (
-    f"{FORCE_SCRIPT_NAME}/o/*",
-    f"{FORCE_SCRIPT_NAME}/gs/*",
-    f"{FORCE_SCRIPT_NAME}/account/*",
-    f"{FORCE_SCRIPT_NAME}/static/*",
-    f"{FORCE_SCRIPT_NAME}/api/o/*",
-    f"{FORCE_SCRIPT_NAME}/api/roles",
-    f"{FORCE_SCRIPT_NAME}/api/adminRole",
-    f"{FORCE_SCRIPT_NAME}/api/users",
-    f"{FORCE_SCRIPT_NAME}/api/datasets",
-    r"^/i18n/setlang/?$",
-)
-
 ANONYMOUS_USER_ID = os.getenv("ANONYMOUS_USER_ID", "-1")
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
     "GUARDIAN_GET_INIT_ANONYMOUS_USER", "geonode.people.models.get_anonymous_user_instance"
@@ -1038,6 +1027,16 @@ ADMIN_IP_WHITELIST = (
 if len(ADMIN_IP_WHITELIST) > 0:
     AUTHENTICATION_BACKENDS = ("geonode.security.backends.AdminRestrictedAccessBackend",) + AUTHENTICATION_BACKENDS
     MIDDLEWARE += ("geonode.security.middleware.AdminAllowedMiddleware",)
+
+# LOCKDOWN API endpoints to prevent unauthenticated access.
+# If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
+API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "False"))
+
+# Require users to authenticate before using Geonode
+LOCKDOWN_GEONODE = ast.literal_eval(os.getenv("LOCKDOWN_GEONODE", "False"))
+# Require users to authenticate before using Geonode
+if LOCKDOWN_GEONODE:
+    MIDDLEWARE += ("geonode.security.middleware.LoginRequiredMiddleware",)
 
 # A tuple of hosts the proxy can send requests to.
 try:
