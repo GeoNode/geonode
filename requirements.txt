@@ -47,7 +47,7 @@ redis==6.2.0
 git+https://github.com/geopython/pycsw.git@3.0.0-beta1#egg=pycsw
 pyproj<3.8.0
 OWSLib==0.34.1
-SQLAlchemy==2.0.43 # required by PyCSW
+SQLAlchemy==2.0.45 # required by PyCSW
 Shapely==2.1.2
 mercantile==1.2.1
 numpy==1.26.*
