@@ -201,7 +201,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         locations, bbox = thumbnails._datasets_locations(dataset)
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], {}]])
 
     def test_datasets_locations_dataset_default_bbox(self):
         expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.0930337105, 4984363.884452854, "EPSG:3857"]
@@ -211,7 +211,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], {}]])
 
     def test_datasets_locations_dataset_bbox(self):
         dataset = Dataset.objects.get(title="theaters_nyc")
@@ -222,7 +222,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(
             bbox[-1].lower(), dataset.bbox[-1].lower(), "Expected calculated BBOX's CRS to match dataset's"
         )
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], {}]])
 
     def test_datasets_locations_simple_map(self):
         dataset = Dataset.objects.get(title="theaters_nyc")
@@ -243,6 +243,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
                     settings.OGC_SERVER["default"]["LOCATION"],
                     [dataset.alternate, "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1"],
                     ["theaters_nyc", "test_style"],
+                    {},
                 ]
             ],
         )
@@ -258,7 +259,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
         self.assertEqual(
-            locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"]]]
+            locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"], {}]]
         )
 
     def test_datasets_locations_composition_map_default_bbox(self):
@@ -271,6 +272,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
                     "rt_geologia.dbg_risorse_minerarie",
                 ],
                 [],
+                {},
             ]
         ]
 

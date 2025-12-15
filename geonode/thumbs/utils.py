@@ -204,7 +204,7 @@ def get_map(
             headers["Authorization"] = f"Bearer {additional_kwargs['access_token']}"
 
     # Check if auth_info is provided (for remote services with authentication)
-    if auth_info and auth_info.get('username') and auth_info.get('password'):
+    if auth_info and auth_info.get("username") and auth_info.get("password"):
         # Use provided authentication credentials for remote service
         encoded_credentials = base64.b64encode(
             f"{auth_info['username']}:{auth_info['password']}".encode("UTF-8")

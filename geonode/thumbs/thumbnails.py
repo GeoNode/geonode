@@ -275,8 +275,8 @@ def _datasets_locations(
         auth_info = {}
         if instance.remote_service and instance.remote_service.needs_authentication:
             auth_info = {
-                'username': instance.remote_service.username,
-                'password': instance.remote_service.get_password()
+                "username": instance.remote_service.username,
+                "password": instance.remote_service.get_password(),
             }
         locations.append([instance.ows_url or ogc_server_settings.LOCATION, [instance.alternate], [], auth_info])
         if compute_bbox:
@@ -320,8 +320,8 @@ def _datasets_locations(
                 auth_info = {}
                 if dataset.remote_service and dataset.remote_service.needs_authentication:
                     auth_info = {
-                        'username': dataset.remote_service.username,
-                        'password': dataset.remote_service.get_password()
+                        "username": dataset.remote_service.username,
+                        "password": dataset.remote_service.get_password(),
                     }
                 # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
