@@ -602,6 +602,13 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
 
         _exec = orchestrator.get_execution_object(exec_id)
 
+        # Update input_params with original resource's PK immediately so the API
+        # can find this execution request for original the dirty resource
+        orchestrator.update_execution_request_status(
+            execution_id=str(_exec.exec_id),
+            input_params={**_exec.input_params, **{"uuid": resource.uuid}},
+        )
+
         workspace = resource.alternate.split(":")[0]
 
         data_to_update = {
