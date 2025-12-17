@@ -1,4 +1,5 @@
 import logging
+import time
 
 from django.db import connection
 from django.utils.translation import get_language, gettext as _
@@ -67,8 +68,11 @@ def get_localized_label(lang, about):
 class I18nCacheEntry:
     def __init__(self):
         # the date field of the thesaurus when it was last loaded, it's used for the expiration check
-        self.date: str | None = None
+        self.date: str = "init"
         self.caches: dict = {}  # the caches for this language
+
+    def __str__(self):
+        return f"I18nCacheEntry {self.date} [{list(self.caches.keys())}]"
 
 
 class I18nCache:
@@ -77,9 +81,12 @@ class I18nCache:
     Synch is performed via date field in the "labels-i18n" thesaurus.
     """
 
+    CHECK_INTERVAL = 5  # seconds
+
     def __init__(self):
         # the cache has the lang as key, and I18nCacheEntry as a value:
         self.lang_cache = {}
+        self._last_check = 0
 
     def get_entry(self, lang, data_key):
         """
@@ -89,20 +96,31 @@ class I18nCache:
         """
         cached_entry: I18nCacheEntry = self.lang_cache.get(lang, None)
 
-        # TODO: thesaurus date check should be done only after a given time interval from last check
-        thesaurus_date = (  # may be none if thesaurus does not exist
-            Thesaurus.objects.filter(identifier=I18N_THESAURUS_IDENTIFIER).values_list("date", flat=True).first()
-        )
-        if cached_entry:
-            if thesaurus_date == cached_entry.date:
-                # only return cached data if thesaurus has not been modified
-                return thesaurus_date, cached_entry.caches.get(data_key, None)
-            else:
-                logger.info(f"Schema for {lang}:{data_key} needs to be recreated")
+        time_now = time.time()
+        needs_check = time_now - self._last_check > I18nCache.CHECK_INTERVAL
 
-        return thesaurus_date, None
+        # if not needs_check:
+        #     logger.debug(f"No cache check needed {lang}:{data_key} @ {cached_entry}")
+        # else:
+        #     logger.debug(f"Cache check needed {lang}:{data_key} @ {cached_entry}")
+
+        if needs_check or not cached_entry:
+            self._last_check = time_now
+            thesaurus_date = (  # may be none if thesaurus does not exist
+                Thesaurus.objects.filter(identifier=I18N_THESAURUS_IDENTIFIER).values_list("date", flat=True).first()
+            )
+            if cached_entry and cached_entry.date != thesaurus_date:
+                logger.info(f"Cache for {lang}:{data_key} needs to be recreated")
+                return thesaurus_date, None
+            if not cached_entry:
+                logger.info(f"Cache for {lang}:{data_key} needs to be created")
+                return thesaurus_date, None
+
+        # logger.debug(f"Returning cached entry for {lang}:{data_key} @ {cached_entry.date}")
+        return cached_entry.date, cached_entry.caches.get(data_key, None)
 
     def set(self, lang: str, data_key: str, data: dict, request_date: str):
+        # TODO: check if lang is allowed
         cached_entry: I18nCacheEntry = self.lang_cache.setdefault(lang, I18nCacheEntry())
 
         latest_date = (
@@ -120,7 +138,7 @@ class I18nCache:
             )
 
     def clear(self):
-        logger.info("Clearing schema cache")
+        logger.info("Clearing i18n cache")
         self.lang_cache.clear()
 
 
@@ -139,6 +157,7 @@ class LabelResolver:
     def get_labels(self, lang):
         date, labels = i18nCache.get_entry(lang, self.CACHE_KEY_LABELS)
         if labels is None:
+            logger.debug("LabelResolver: loading I18N labels")
             labels = self._create_labels_cache(lang)
             i18nCache.set(lang, self.CACHE_KEY_LABELS, labels, date)
         return labels

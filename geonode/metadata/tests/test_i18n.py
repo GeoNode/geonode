@@ -16,8 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import time
+import logging
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -30,6 +29,8 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
     Thesaurus,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class MetadataI18NTests(GeoNodeBaseTestSupport):
@@ -48,13 +49,14 @@ class MetadataI18NTests(GeoNodeBaseTestSupport):
         self.tid = Thesaurus.objects.create(title="Spatial scope thesaurus", identifier=I18N_THESAURUS_IDENTIFIER).id
 
     def _add_label(self, about, lang, label):
+        logger.debug(f"ADDING LABEL {lang}:{label}")
         tk, created = ThesaurusKeyword.objects.get_or_create(
             about=about, thesaurus_id=self.tid, defaults={"alt_label": f"alt_{about}"}
         )
         if lang and label:
             ThesaurusKeywordLabel.objects.create(keyword=tk, label=label, lang=lang)
-        # this is needed to invalidate i18ncache
-        Thesaurus.objects.filter(pk=self.tid).update(date=str(time.time_ns()))
+        # this is needed to bypass invalidation optimization
+        i18nCache._last_check = 0
 
     def tearDown(self):
         super().tearDown()
