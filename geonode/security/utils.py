@@ -56,7 +56,7 @@ def get_visible_resources(
     admin_approval_required=False,
     unpublished_not_visible=False,
     private_groups_not_visibile=False,
-    include_dirty=False,
+    include_dirty=True,
 ):
     """
     We should use the registry to get the visible resources.

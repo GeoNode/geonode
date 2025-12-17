@@ -49,9 +49,9 @@ class DatasetPermissionsFilter(BaseFilterBackend):
             polymorphic_ctype__model="dataset"
         )
         try:
-            include_dirty = strtobool(request.query_params.get("include_dirty", "False"))
+            include_dirty = strtobool(request.query_params.get("include_dirty", "True"))
         except Exception:
-            include_dirty = False
+            include_dirty = True
 
         obj_with_perms = get_visible_resources(
             resources,
