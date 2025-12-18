@@ -117,7 +117,7 @@ class DatasetDownloadHandler:
             logger.error("The format provided is not valid for the selected resource")
             return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
 
-        _format = resource.download_format()
+        _format = resource.download_format
         # getting default payload
         tpl = get_template("geoserver/dataset_download.xml")
         ctx = {"alternate": resource.alternate, "download_format": download_format or _format}
