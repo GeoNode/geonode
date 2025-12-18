@@ -170,15 +170,18 @@ def update_resource(
     if vals:
         for key, value in vals.items():
             if key == "spatial_representation_type":
-                defaults[key] = SpatialRepresentationType.objects.filter(identifier=value).first() if value else None
+                value = SpatialRepresentationType.objects.filter(identifier=value).first() if value else None
             elif key == "topic_category":
                 value, created = TopicCategory.objects.get_or_create(
                     identifier=value, defaults={"description": "", "gn_description": value}
                 )
                 key = "category"
-                defaults[key] = value
-            else:
-                defaults[key] = value
+            elif key == "maintenance_frequency":
+                if value not in dict(enumerations.UPDATE_FREQUENCIES).keys():
+                    logger.warning(f"Bad frequency parsed: {value}")
+                    value = "unknown"
+
+            defaults[key] = value
 
     contact_roles = {
         contact_role.name: defaults.pop(contact_role.name, getattr(instance, contact_role.name))

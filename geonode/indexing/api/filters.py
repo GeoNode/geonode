@@ -20,7 +20,7 @@ class AsteriskSearchQuery(SearchQuery):
         sql, params = super().as_sql(compiler, connection, function, template)
         value = params[1]
         # sanitize search string
-        value = re.sub(r"[^0-9A-Za-z/_\.-]+", "", value)
+        value = re.sub(r"[^\w\s./\-]+", "", value, flags=re.UNICODE)
         value = f"{value or '*'}:*"
         return sql, [params[0], value]
 

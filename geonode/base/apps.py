@@ -42,3 +42,11 @@ class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
             _("Resource is created"),
         ),
     )
+
+    def ready(self):
+        """Finalize setup"""
+        from geonode.base.signals import connect_signals
+
+        connect_signals()
+
+        super(BaseAppConfig, self).ready()

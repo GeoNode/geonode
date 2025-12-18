@@ -62,6 +62,7 @@ from geonode.upload.utils import (
     find_key_recursively,
     ImporterRequestAction as ira,
 )
+from geonode.upload.handlers.base import BaseHandler
 
 logger = logging.getLogger("importer")
 
@@ -811,7 +812,8 @@ def copy_dynamic_model(self, exec_id, actual_step, layer_name, alternate, handle
 
         resource = resource.first()
 
-        new_dataset_alternate = create_alternate(resource.title, exec_id).lower()
+        sanitized_title = BaseHandler().fixup_name(resource.title)
+        new_dataset_alternate = create_alternate(sanitized_title, exec_id)
 
         if settings.IMPORTER_ENABLE_DYN_MODELS:
             dynamic_schema = ModelSchema.objects.filter(name=alternate.split(":")[1])
