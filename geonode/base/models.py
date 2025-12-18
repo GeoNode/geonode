@@ -955,7 +955,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_be_downloaded(self):
-        return self.subtype in ["vector", "raster", "vector_time"]
+        return self.subtype in {"vector", "raster", "vector_time"}
 
     @property
     def can_have_wfs_links(self):
@@ -967,7 +967,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_style(self):
-        return self.subtype not in ["tileStore", "remote"]
+        return self.subtype not in {"tileStore", "remote"}
 
     @property
     def raw_purpose(self):
