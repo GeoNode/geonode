@@ -1293,7 +1293,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     resource=instance.resourcebase_ptr, name=gettext_lazy(name), link_type="image"
                 ).update(**_d)
 
-        if instance.subtype == "vector":
+        if instance.can_have_wfs_links:
             links = wfs_links(
                 instance_ows_url,
                 instance.alternate,
@@ -1372,7 +1372,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         try:
-            if instance.subtype not in ["tileStore", "remote"]:
+            if instance.can_have_style:
                 for style in set(
                     list(instance.styles.all())
                     + [

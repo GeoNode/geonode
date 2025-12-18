@@ -957,9 +957,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def can_be_downloaded(self):
         return self.subtype in ["vector", "raster", "vector_time"]
 
+    @property
     def can_have_wfs_links(self):
         return self.subtype == "vector"
-    
+
+    @property
+    def can_have_wps_links(self):
+        return self.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}
+
+    @property
+    def can_have_style(self):
+        return self.subtype not in ["tileStore", "remote"]
+
     @property
     def raw_purpose(self):
         return self._remove_html_tags(self.purpose)
@@ -1517,7 +1526,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def get_ows_url(self):
         """Return URL for OGC WMS server None if it does not exist."""
         try:
-            ows_link = self.link_set.get(name="OGC:WMS")
+            ows_link = self.link_set.get(name="OGC:WMS") or self.link_set.get(name="OGC:WFS")
         except Link.DoesNotExist:
             return None
         else:
@@ -1921,7 +1930,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if as_target
             else LinkedResource.get_linked_resources(source=self)
         )
-    
+
     def prepare_wms_links(self, wms_url, identifier, bbox, srid, height, width):
         types = [
             ("jpg", _("JPEG"), "image/jpeg"),
@@ -1933,7 +1942,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             url = _wms_link(wms_url, identifier, mime, height, width, srid, bbox)
             output.append((ext, name, mime, url))
         return output
-
 
 
 class LinkManager(models.Manager):
