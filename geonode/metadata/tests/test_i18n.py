@@ -56,7 +56,7 @@ class MetadataI18NTests(GeoNodeBaseTestSupport):
         if lang and label:
             ThesaurusKeywordLabel.objects.create(keyword=tk, label=label, lang=lang)
         # this is needed to bypass invalidation optimization
-        i18nCache._last_check = 0
+        i18nCache.force_check()
 
     def tearDown(self):
         super().tearDown()

@@ -45,7 +45,7 @@ def _update_thesaurus_date():
         try:
             new_parsed = datetime.fromisoformat(new)
             old_parsed = datetime.fromisoformat(old)
-        except Exception:
+        except (ValueError, TypeError):
             return new
 
         if old == new:

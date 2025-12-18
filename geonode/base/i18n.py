@@ -1,4 +1,5 @@
 import logging
+import threading
 import time
 
 from django.db import connection
@@ -87,6 +88,7 @@ class I18nCache:
         # the cache has the lang as key, and I18nCacheEntry as a value:
         self.lang_cache = {}
         self._last_check = 0
+        self._lock = threading.Lock()
 
     def get_entry(self, lang, data_key):
         """
@@ -94,32 +96,35 @@ class I18nCache:
         date is needed for checking the entry freshness when setting info
         data may be None if not cached or expired
         """
-        cached_entry: I18nCacheEntry = self.lang_cache.get(lang, None)
+        with self._lock:
+            cached_entry: I18nCacheEntry = self.lang_cache.get(lang, None)
 
-        time_now = time.time()
-        needs_check = time_now - self._last_check > I18nCache.CHECK_INTERVAL
+            time_now = time.time()
+            needs_check = time_now - self._last_check > I18nCache.CHECK_INTERVAL
 
-        # if not needs_check:
-        #     logger.debug(f"No cache check needed {lang}:{data_key} @ {cached_entry}")
-        # else:
-        #     logger.debug(f"Cache check needed {lang}:{data_key} @ {cached_entry}")
+            # if not needs_check:
+            #     logger.debug(f"No cache check needed {lang}:{data_key} @ {cached_entry}")
+            # else:
+            #     logger.debug(f"Cache check needed {lang}:{data_key} @ {cached_entry}")
 
-        if needs_check or not cached_entry:
-            self._last_check = time_now
-            thesaurus_date = (  # may be none if thesaurus does not exist
-                Thesaurus.objects.filter(identifier=I18N_THESAURUS_IDENTIFIER).values_list("date", flat=True).first()
-            )
-            if cached_entry and cached_entry.date != thesaurus_date:
-                logger.info(f"Cache for {lang}:{data_key} needs to be recreated")
-                return thesaurus_date, None
-            if not cached_entry:
-                logger.info(f"Cache for {lang}:{data_key} needs to be created")
-                return thesaurus_date, None
+            if needs_check or not cached_entry:
+                self._last_check = time_now
+                thesaurus_date = (  # may be none if thesaurus does not exist
+                    Thesaurus.objects.filter(identifier=I18N_THESAURUS_IDENTIFIER)
+                    .values_list("date", flat=True)
+                    .first()
+                )
+                if cached_entry and cached_entry.date != thesaurus_date:
+                    logger.info(f"Cache for {lang}:{data_key} needs to be recreated")
+                    return thesaurus_date, None
+                if not cached_entry:
+                    logger.info(f"Cache for {lang}:{data_key} needs to be created")
+                    return thesaurus_date, None
 
-        # logger.debug(f"Returning cached entry for {lang}:{data_key} @ {cached_entry.date}")
-        return cached_entry.date, cached_entry.caches.get(data_key, None)
+            # logger.debug(f"Returning cached entry for {lang}:{data_key} @ {cached_entry.date}")
+            return cached_entry.date, cached_entry.caches.get(data_key, None)
 
-    def set(self, lang: str, data_key: str, data: dict, request_date: str):
+    def set(self, lang: str, data_key: str, data, request_date: str):
         # TODO: check if lang is allowed
         cached_entry: I18nCacheEntry = self.lang_cache.setdefault(lang, I18nCacheEntry())
 
@@ -132,14 +137,20 @@ class I18nCache:
             logger.debug(f"Caching lang:{lang} key:{data_key} date:{request_date}")
             cached_entry.date = latest_date
             cached_entry.caches[data_key] = data
+            return True
         else:
             logger.warning(
                 f"Cache will not be updated for lang:{lang} key:{data_key} reqdate:{request_date} latest:{latest_date}"
             )
+            return False
 
     def clear(self):
         logger.info("Clearing i18n cache")
         self.lang_cache.clear()
+
+    def force_check(self):
+        """For testing: forces a check against the DB on the next get_entry call."""
+        self._last_check = 0
 
 
 class LabelResolver:
