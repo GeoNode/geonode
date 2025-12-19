@@ -261,7 +261,7 @@ class PermissionsHandlerRegistry:
         admin_approval_required=False,
         unpublished_not_visible=False,
         private_groups_not_visibile=False,
-        include_dirty=False,
+        include_dirty=True,
     ):
         # Get the list of objects the user has access to
         from geonode.groups.models import GroupProfile
