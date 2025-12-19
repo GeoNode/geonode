@@ -106,8 +106,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Make sure we won't have template rendering issues
         self.assertTrue("dwg" in ARCHIVETYPES)
         self.assertTrue("dxf" in ARCHIVETYPES)
-        self.assertTrue("tif" in ARCHIVETYPES)
-        self.assertTrue("tiff" in ARCHIVETYPES)
+        self.assertTrue("tif" in IMGTYPES)
+        self.assertTrue("tiff" in IMGTYPES)
         self.assertTrue("pbm" in ARCHIVETYPES)
 
     @patch("geonode.documents.tasks.create_document_thumbnail")
