@@ -249,6 +249,17 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp, Res
     return file_name
 
 
+def _get_auth_info(dataset: "Dataset") -> dict:
+    """Gets authentication info for a dataset if it's a remote service requiring auth."""
+    auth_info = {}
+    if dataset.remote_service and dataset.remote_service.needs_authentication:
+        auth_info = {
+            "username": dataset.remote_service.username,
+            "password": dataset.remote_service.get_password(),
+        }
+    return auth_info
+
+
 def _datasets_locations(
     instance: Union[Dataset, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
 ) -> Tuple[List[List], List]:
@@ -272,12 +283,7 @@ def _datasets_locations(
     bbox = []
     if isinstance(instance, Dataset):
         # Check if dataset has remote service with authentication
-        auth_info = {}
-        if instance.remote_service and instance.remote_service.needs_authentication:
-            auth_info = {
-                "username": instance.remote_service.username,
-                "password": instance.remote_service.get_password(),
-            }
+        auth_info = _get_auth_info(instance)
         locations.append([instance.ows_url or ogc_server_settings.LOCATION, [instance.alternate], [], auth_info])
         if compute_bbox:
             if instance.ll_bbox_polygon:
@@ -317,12 +323,7 @@ def _datasets_locations(
 
             if dataset.subtype in ["tileStore", "remote"]:
                 # Check if remote service requires authentication
-                auth_info = {}
-                if dataset.remote_service and dataset.remote_service.needs_authentication:
-                    auth_info = {
-                        "username": dataset.remote_service.username,
-                        "password": dataset.remote_service.get_password(),
-                    }
+                auth_info = _get_auth_info(dataset)
                 # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
                     # if previous dataset's location is the same as the current one - append current dataset there
