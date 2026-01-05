@@ -145,6 +145,7 @@ def get_map(
     max_retries: int = 3,
     retry_delay: int = 1,
     instance=None,
+    auth_info: dict = None,
 ):
     """
     Function fetching an image from OGC server.
@@ -164,6 +165,7 @@ def get_map(
     :param height: height of the returned image
     :param max_retries: maximum number of retries before skipping retrieval
     :param retry_delay: number of seconds waited between retries
+    :param auth_info: optional dict with 'username' and 'password' for remote service authentication
     :returns: retrieved image
     """
     from geonode.geoserver.helpers import ogc_server_settings
@@ -201,16 +203,13 @@ def get_map(
         else:
             headers["Authorization"] = f"Bearer {additional_kwargs['access_token']}"
 
-    if instance and instance.subtype == "remote" and instance.remote_typename:
-        from geonode.services.models import Service
-
-        service = Service.objects.filter(name=instance.remote_typename, username__isnull=False, password__isnull=False)
-        if service.exists():
-            service = service.first()
-            encoded_credentials = base64.b64encode(
-                f"{service.username}:{service.get_password()}".encode("UTF-8")
-            ).decode("ascii")
-            headers["Authorization"] = f"Basic {encoded_credentials}"
+    # Check if auth_info is provided (for remote services with authentication)
+    if auth_info and auth_info.get("username") and auth_info.get("password"):
+        # Use provided authentication credentials for remote service
+        encoded_credentials = base64.b64encode(
+            f"{auth_info['username']}:{auth_info['password']}".encode("UTF-8")
+        ).decode("ascii")
+        headers["Authorization"] = f"Basic {encoded_credentials}"
 
     image = None
     for retry in range(max_retries):
