@@ -33,7 +33,7 @@ django-mptt==0.16.0
 django-treebeard==4.7.1
 django-guardian<2.4.1
 django-downloadview==2.3.0
-django-polymorphic==3.1.0
+django-polymorphic==4.5.2
 django-tastypie<0.15.0
 django-tinymce==3.7.1
 django-uuid-upload-path==1.0.0
