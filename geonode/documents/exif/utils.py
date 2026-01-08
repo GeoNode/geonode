@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-import os
 import logging
 
 from slugify import slugify
@@ -70,13 +69,14 @@ def exif_extract_metadata_doc(doc):
         return None
 
     file_path = doc.files[0]
-    _, ext = os.path.splitext(os.path.basename(file_path))
 
-    if ext[1:] in {"jpg", "jpeg", "png"}:
+    if doc.is_image:
         from PIL import Image, ExifTags
 
         img = Image.open(file_path)
-        exif_data = {ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS}
+        exif = img.getexif()
+        # Main EXIF tags
+        exif_data = {ExifTags.TAGS[k]: v for k, v in exif.items() if k in ExifTags.TAGS}
 
         model = None
         date = None
@@ -85,6 +85,12 @@ def exif_extract_metadata_doc(doc):
         lat = None
         lon = None
         abstract = None
+
+        # Get Exif IFD for DateTimeOriginal etc.
+        exif_ifd = exif.get_ifd(ExifTags.IFD.Exif)
+        if exif_ifd:
+            exif_ifd_data = {ExifTags.TAGS.get(k, k): v for k, v in exif_ifd.items()}
+            exif_data.update(exif_ifd_data)
 
         if "DateTime" in exif_data:
             date = exif_data["DateTime"]
@@ -107,11 +113,13 @@ def exif_extract_metadata_doc(doc):
             model = exif_data.get("Model", None)
             keywords.append(slugify(model))
 
-        if "GPSInfo" in exif_data:
+        # Get GPS IFD for GPS data
+        gps_ifd = exif.get_ifd(ExifTags.IFD.GPSInfo)
+        if gps_ifd:
             gpsinfo = {}
-            for key in exif_data["GPSInfo"].keys():
+            for key in gps_ifd.keys():
                 decode = ExifTags.GPSTAGS.get(key, key)
-                gpsinfo[decode] = exif_data["GPSInfo"][key]
+                gpsinfo[decode] = gps_ifd[key]
             if "GPSLatitude" in gpsinfo and "GPSLongitude" in gpsinfo:
                 lat = convertExifLocationToDecimalDegrees(gpsinfo["GPSLatitude"], gpsinfo.get("GPSLatitudeRef", "N"))
                 lon = convertExifLocationToDecimalDegrees(gpsinfo["GPSLongitude"], gpsinfo.get("GPSLongitudeRef", "E"))
