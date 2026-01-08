@@ -746,7 +746,12 @@ class BaseVectorFileHandler(BaseHandler):
         Needed for the shapefiles
         Later this is used to map the geometry coming from ogr2ogr with a django class
         """
-        if "Multi" not in geometry_name and "Point" not in geometry_name and "3D" not in geometry_name:
+        if (
+            "Multi" not in geometry_name
+            and "Point" not in geometry_name
+            and "3D" not in geometry_name
+            and geometry_name != "Unknown (any)"
+        ):
             return f"Multi {geometry_name.title()}"
         return geometry_name
 
