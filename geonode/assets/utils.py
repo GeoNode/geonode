@@ -53,7 +53,7 @@ def get_default_asset(resource: ResourceBase, link_type=None) -> Asset or None:
     return asset.get_real_instance() if asset else None
 
 
-DEFAULT_TYPES = {"image": ["jpg", "jpeg", "gif", "png", "bmp", "svg"]}
+DEFAULT_TYPES = {"image": ["jpg", "jpeg", "gif", "png", "svg"]}
 
 
 def find_type(ext):

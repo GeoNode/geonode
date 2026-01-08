@@ -67,6 +67,7 @@ GEOM_TYPE_MAPPING = {
     "Multi Polygon": "django.contrib.gis.db.models.fields.MultiPolygonField",
     "Multipolygon": "django.contrib.gis.db.models.fields.MultiPolygonField",
     "3D Multi Polygon": "django.contrib.gis.db.models.fields.MultiPolygonField",
+    "Unknown (any)": "django.contrib.gis.db.models.fields.GeometryField",
 }
 
 
