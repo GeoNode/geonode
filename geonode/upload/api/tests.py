@@ -123,6 +123,29 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertTrue(201, response.status_code)
 
     @patch("geonode.upload.api.views.import_orchestrator")
+    def test_geojson_mixed_geometry_succed(self, patch_upload):
+        patch_upload.apply_async.side_effect = MagicMock()
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(
+                name="test.geojson",
+                content=b'{"type": "FeatureCollection", "features": '
+                b'[{"type": "Feature", "properties": {}, "geometry": '
+                b'{"type": "Point", "coordinates": [1, 2]}}, '
+                b'{"type": "Feature", "properties": {}, "geometry": '
+                b'{"type": "Polygon", "coordinates": '
+                b"[[[1, 2], [1, 3], [2, 3], [2, 2], [1, 2]]]}}]}",
+            ),
+            "store_spatial_files": True,
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(201, response.status_code)
+
+    @patch("geonode.upload.api.views.import_orchestrator")
     def test_zip_file_is_unzip_and_the_handler_is_found(self, patch_upload):
         patch_upload.apply_async.side_effect = MagicMock()
 

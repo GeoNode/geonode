@@ -138,7 +138,7 @@ class GPKGFileHandler(BaseVectorFileHandler):
 
         validator = validate(
             gpkg_path=files.get("base_file"),
-            validations="RQ2, RQ13, RQ14, RQ15, RC18",
+            validations="RQ2, RQ13, RC18",
         )
         if not validator[-1]:
             error_to_raise = []

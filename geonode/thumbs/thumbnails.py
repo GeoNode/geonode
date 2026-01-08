@@ -143,7 +143,7 @@ def create_thumbnail(
     # --- fetch WMS datasets ---
     partial_thumbs = []
 
-    for ogc_server, datasets, _styles in locations:
+    for ogc_server, datasets, _styles, auth_info in locations:
         if isinstance(instance, Map):
             styles = []
             if len(datasets) == len(_styles):
@@ -160,6 +160,7 @@ def create_thumbnail(
                     width=width,
                     height=height,
                     instance=instance,
+                    auth_info=auth_info,
                 )
             )
         except Exception as e:
@@ -248,6 +249,17 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp, Res
     return file_name
 
 
+def _get_auth_info(dataset: "Dataset") -> dict:
+    """Gets authentication info for a dataset if it's a remote service requiring auth."""
+    auth_info = {}
+    if dataset.remote_service and dataset.remote_service.needs_authentication:
+        auth_info = {
+            "username": dataset.remote_service.username,
+            "password": dataset.remote_service.get_password(),
+        }
+    return auth_info
+
+
 def _datasets_locations(
     instance: Union[Dataset, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
 ) -> Tuple[List[List], List]:
@@ -270,7 +282,9 @@ def _datasets_locations(
     locations = []
     bbox = []
     if isinstance(instance, Dataset):
-        locations.append([instance.ows_url or ogc_server_settings.LOCATION, [instance.alternate], []])
+        # Check if dataset has remote service with authentication
+        auth_info = _get_auth_info(instance)
+        locations.append([instance.ows_url or ogc_server_settings.LOCATION, [instance.alternate], [], auth_info])
         if compute_bbox:
             if instance.ll_bbox_polygon:
                 bbox = bbox_utils.clean_bbox(instance.ll_bbox, target_crs)
@@ -308,6 +322,8 @@ def _datasets_locations(
                 continue
 
             if dataset.subtype in ["tileStore", "remote"]:
+                # Check if remote service requires authentication
+                auth_info = _get_auth_info(dataset)
                 # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
                     # if previous dataset's location is the same as the current one - append current dataset there
@@ -321,6 +337,7 @@ def _datasets_locations(
                             dataset.remote_service.service_url,
                             [dataset.alternate],
                             [map_dataset_style] if map_dataset_style else [],
+                            auth_info,
                         ]
                     )
             else:
@@ -337,6 +354,7 @@ def _datasets_locations(
                             settings.OGC_SERVER["default"]["LOCATION"],
                             [dataset.alternate],
                             [map_dataset_style] if map_dataset_style else [],
+                            {},
                         ]
                     )
 

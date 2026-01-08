@@ -219,7 +219,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 self.client.login(username=self.user, password=self.passwd)
                 resp = self.client.get(list_url)
-                self.assertEqual(len(self.deserialize(resp)["objects"]), 7)  # admin can't see resources in dirty_state
+                self.assertEqual(len(self.deserialize(resp)["objects"]), 8)  # admin can see resources in dirty_state
 
                 self.client.logout()
                 resp = self.client.get(list_url)

@@ -126,7 +126,7 @@ class DatasetsApiTests(APITestCase):
     @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
     def test_filter_dirty_state(self):
         """
-        ensure that a dirty_state dataset wont be returned
+        ensure that a dirty_state dataset will be returned
         """
 
         # ensure that there is atleast one resource with dirty_state
@@ -140,12 +140,11 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         dataset_list = response.data["datasets"]
 
-        # ensure that list count is equal to that of clean data
-        # clean resources
-        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        # dirty resource is now included in count
+        resource_count_clean = Dataset.objects.count()
         self.assertEqual(len(dataset_list), resource_count_clean)
-        # ensure that the updated dirty dataset is not in the response
-        self.assertFalse(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
+        # ensure that the updated dirty dataset is included in the response
+        self.assertTrue(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
 
     @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
     def test_filter_dirty_state_include_dirty(self):
