@@ -177,6 +177,7 @@ class DatasetDownloadHandler:
                         return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text}"}, status=500)
             except Exception as e:
                 logger.error(f"Error parsing GeoServer XML response: {e}")
+                return JsonResponse({"error": "Error parsing GeoServer XML response"}, status=500)
 
         if not response or response.status_code != 200:
             logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
