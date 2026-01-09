@@ -46,7 +46,7 @@ pyjwt==2.8.0
 redis==6.2.0
 
 # geopython dependencies
-git+https://github.com/geopython/pycsw.git@3.0.0-beta1#egg=pycsw
+geonode-pycsw==3.0.0b1
 pyproj<3.8.0
 OWSLib==0.34.1
 SQLAlchemy==2.0.43 # required by PyCSW
