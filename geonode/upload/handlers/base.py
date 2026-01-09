@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import List
 import zipfile
 import re
+from datetime import datetime
 
 import slugify
 
@@ -312,9 +313,17 @@ class BaseHandler(ABC):
     def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
         if not files:
             return
-        asset_name = asset_name or (
-            Path(files.get("base_file")).stem if action in [ira.REPLACE.value, ira.UPSERT.value] else "Original"
-        )
+        if asset_name is None:
+            if action in [ira.REPLACE.value, ira.UPSERT.value]:
+                base_name = Path(files.get("base_file")).stem
+                if action == ira.UPSERT.value:
+                    # Add date/time to upsert file name to help users identify which file was uploaded last
+                    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                    asset_name = f"{base_name}_{timestamp}"
+                else:
+                    asset_name = base_name
+            else:
+                asset_name = "Original"
         asset, _ = create_asset_and_link(
             resource=resource,
             owner=resource.owner,

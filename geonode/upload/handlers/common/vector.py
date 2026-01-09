@@ -1104,7 +1104,7 @@ class BaseVectorFileHandler(BaseHandler):
                         "primary_key"
                     ):
                         # if the class changes, is marked as error
-                        message = f"The type of the following field is changed and is prohibited: field: {field['name']}| current: {target_field.class_name}| new: {field['class_name']}"
+                        message = f"Field '{field['name']}' cannot be changed from type '{target_field.class_name}' to '{field['class_name']}'. Field type changes are not allowed."
                         errors.append(message)
                         logger.error(message)
 
@@ -1227,7 +1227,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         self._validate_single_feature(exec_obj, OriginalResource, upsert_key, layers, iter(layers[0]))
 
-        valid_create, valid_update = self._commit_upsert(model, OriginalResource, upsert_key, iter(layers[0]))
+        valid_create, valid_update = self._commit_upsert(model, OriginalResource, upsert_key, iter(layers[0]), exec_obj, layers)
 
         self.create_resourcehandlerinfo(
             handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
@@ -1249,11 +1249,11 @@ class BaseVectorFileHandler(BaseHandler):
         model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
         return original_resource, model
 
-    def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator):
+    def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator, exec_obj=None, layers=None):
         valid_create = 0
         valid_update = 0
-        with transaction.atomic():
-            try:
+        try:
+            with transaction.atomic():
                 while True:
                     # Create an iterator for the next chunk
                     data_chunk = list(islice(layer_iterator, settings.UPSERT_CHUNK_SIZE))
@@ -1270,9 +1270,18 @@ class BaseVectorFileHandler(BaseHandler):
                         valid_update=valid_update,
                         valid_create=valid_create,
                     )
-            except Exception as e:
-                logger.error("Exception during upsert save: %s", e, exc_info=True)
-                raise UpsertException("An internal error occurred during upsert save. All features are rolled back.")
+        except UpsertException as e:
+            # Check if this exception contains error details from bulk save
+            if hasattr(e, 'error_message') and e.error_message and exec_obj and layers:
+                # Create simple error entry for bulk save failure
+                errors = [{"error": f"Bulk save failed: {e.error_message}"}]
+                self._create_error_log(exec_obj, layers, errors)
+            else:
+                raise
+        except Exception as e:
+            logger.error("Exception during upsert save: %s", e, exc_info=True)
+            raise UpsertException("An internal error occurred during upsert save. All features are rolled back.")
+        
         return valid_create, valid_update
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
@@ -1303,12 +1312,18 @@ class BaseVectorFileHandler(BaseHandler):
         return ["fid"] + constrained_attributes + ["error"]
 
     def _create_error_log(self, exec_obj, layers, errors):
+        """
+        Create error log CSV file.
+        
+        Args:
+            exec_obj: Execution request object
+            layers: Layer objects
+            errors: List of error dicts with feature data and error messages
+        """
         logger.error(
             "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
         )
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
-
-        fieldnames = self.__get_csv_headers()
 
         log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
 
@@ -1317,11 +1332,22 @@ class BaseVectorFileHandler(BaseHandler):
             subfolder_path = temp_dir / "upsert_logs"
             subfolder_path.mkdir(parents=True, exist_ok=True)
             csv_file_path = subfolder_path / log_name
+            
             with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
-                # Create a DictWriter object. It maps dictionaries to output rows.
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames, extrasaction="ignore")
-                writer.writeheader()
-                writer.writerows(errors_to_print)
+                # Check if errors have feature data (fid field) or just error messages
+                if errors_to_print and "fid" in errors_to_print[0]:
+                    # Feature errors with data - use full CSV format
+                    fieldnames = self.__get_csv_headers()
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames, extrasaction="ignore")
+                    writer.writeheader()
+                    writer.writerows(errors_to_print)
+                else:
+                    # Simple error messages (e.g., bulk save errors)
+                    writer = csv.writer(csvfile)
+                    writer.writerow(["Error"])
+                    for error_dict in errors_to_print:
+                        error_msg = error_dict.get("error", str(error_dict))
+                        writer.writerow([error_msg])
 
             self.create_asset_and_link(
                 exec_obj.geonode_resource,
@@ -1331,7 +1357,7 @@ class BaseVectorFileHandler(BaseHandler):
             )
 
         raise UpsertException(
-            "Some validations failed. Errors are reported inside a CSV file that can be found inside the assets panel."
+            "Error found during the upsert process. Errors are reported inside a CSV file that can be found inside the assets panel."
         )
 
     def _validate_feature(self, data_chunk, model_instance, upsert_key, errors):
@@ -1402,9 +1428,13 @@ class BaseVectorFileHandler(BaseHandler):
             model_instance.objects.bulk_create(
                 feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
             )
-        except Exception:
+        except Exception as e:
+            error_message = str(e)
             logger.exception("Error occurred during bulk upsert in upsert_data.")
-            raise UpsertException("An internal error occurred during upsert operation.")
+            # Store error message for handling outside transaction
+            exc = UpsertException(f"Bulk save failed: {error_message}")
+            exc.error_message = error_message
+            raise exc
 
         return valid_update, valid_create
 
