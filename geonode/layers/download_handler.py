@@ -30,6 +30,7 @@ from geonode.geoserver.helpers import wps_format_is_supported
 from geonode.layers.views import _resolve_dataset
 from geonode.proxy.views import fetch_response_headers
 from geonode.utils import HttpClient
+from urllib.parse import urlencode
 
 logger = logging.getLogger("geonode.layers.download_handler")
 
@@ -135,9 +136,47 @@ class DatasetDownloadHandler:
             # define access token for the user
             access_token = get_or_create_token(self.request.user)
             url += f"&access_token={access_token}"
-
         # request to geoserver
         response, content = client.request(url=url, data=payload, method="post", headers=headers)
+
+        # Handle empty vector dataset by falling back to WFS GetFeature if WPS fails with "empty collection" error
+        namespaces = {"ows": "http://www.opengis.net/ows/1.1", "wps": "http://www.opengis.net/wps/1.0.0"}
+        if response and response.headers.get("Content-Type") == "text/xml":
+            try:
+                root = ET.fromstring(response.text)
+                exc = root.find("*//ows:Exception", namespaces=namespaces) or root.find(
+                    "ows:Exception", namespaces=namespaces
+                )
+                if exc:
+                    exc_text_node = exc.find("ows:ExceptionText", namespaces=namespaces)
+                    exc_text = exc_text_node.text if exc_text_node is not None else ""
+
+                    if "empty feature collection" in exc_text.lower():
+                        logger.debug("WPS download failed due to empty collection, falling back to WFS")
+                        _wfs_format = download_format or _format
+                        _wfs_format_map = {
+                            "application/zip": "shape-zip",
+                            "text/csv": "csv",
+                        }
+                        _wfs_format = _wfs_format_map.get(_wfs_format, _wfs_format)
+
+                        _wfs_params = {
+                            "service": "WFS",
+                            "version": "1.0.0",
+                            "request": "GetFeature",
+                            "typename": resource.alternate,
+                            "outputFormat": _wfs_format,
+                        }
+                        if not self.request.user.is_anonymous:
+                            _wfs_params["access_token"] = get_or_create_token(self.request.user)
+
+                        _wfs_url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?{urlencode(_wfs_params)}"
+                        response, content = client.request(url=_wfs_url, method="get")
+                    else:
+                        logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text}")
+                        return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text}"}, status=500)
+            except Exception as e:
+                logger.error(f"Error parsing GeoServer XML response: {e}")
 
         if not response or response.status_code != 200:
             logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
@@ -145,20 +184,6 @@ class DatasetDownloadHandler:
                 {"error": "Download dataset exception: error during call with GeoServer"},
                 status=500,
             )
-
-        # error handling
-        namespaces = {"ows": "http://www.opengis.net/ows/1.1", "wps": "http://www.opengis.net/wps/1.0.0"}
-        response_type = response.headers.get("Content-Type")
-        if response_type == "text/xml":
-            # parsing XML for get exception
-            content = ET.fromstring(response.text)
-            exc = content.find("*//ows:Exception", namespaces=namespaces) or content.find(
-                "ows:Exception", namespaces=namespaces
-            )
-            if exc:
-                exc_text = exc.find("ows:ExceptionText", namespaces=namespaces)
-                logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
-                return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text.text}"}, status=500)
 
         return_response = fetch_response_headers(
             HttpResponse(content=response.content, status=response.status_code, content_type=download_format),
