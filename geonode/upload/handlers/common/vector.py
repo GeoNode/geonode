@@ -1075,40 +1075,54 @@ class BaseVectorFileHandler(BaseHandler):
         )
         if "manage" in perms or "edit" in perms:
             errors = []
-            # getting the saved schema and convert the newly uploaded file into the same object
-            target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
-            # let's check that the field in the uploaded file are coherent with the one preset
-            # loop on all the new field coming from the uploaded file
-            target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
-            new_file_schema_fields_as_list = [x["name"] for x in new_file_schema_fields]
-            differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
-            if any(differeces):
-                raise UpsertException(
-                    f"The columns in the source and target do not match they must be equal. The following are not expected or missing: {differeces}"
-                )
-            skip_geom_eval = False
-            for field in new_file_schema_fields:
-                # check if the field exists in the previous schema
-                target_field = target_schema_fields.filter(name=field["name"]).first()
-                if target_field:
-                    # if is the primary key, we can skip the check
-                    # If the field exists the class name should be the same
-                    if "authority" in field and not skip_geom_eval:
-                        if db_value := target_field.model_schema.as_model().objects.first():
-                            skip_geom_eval = True
-                            if not str(db_value.geom.srid) in field["authority"]:
-                                message = f"The file provided have a different authority ({field['authority']}) compared to the one in the DB: {db_value}"
-                                raise UpsertException(message)
+            try:
+                # getting the saved schema and convert the newly uploaded file into the same object
+                target_schema_fields, new_file_schema_fields = self.__get_new_and_original_schema(files, execution_id)
+                # let's check that the field in the uploaded file are coherent with the one preset
+                # loop on all the new field coming from the uploaded file
+                target_schema_as_list = [x for x in target_schema_fields.values_list("name", flat=True)]
+                new_file_schema_fields_as_list = [x["name"] for x in new_file_schema_fields]
+                differeces = list(set(target_schema_as_list) - set(new_file_schema_fields_as_list))
+                if any(differeces):
+                    errors.append(
+                        f"The columns in the source and target do not match they must be equal. The following are not expected or missing: {differeces}"
+                    )
+                else:
+                    skip_geom_eval = False
+                    for field in new_file_schema_fields:
+                        # check if the field exists in the previous schema
+                        target_field = target_schema_fields.filter(name=field["name"]).first()
+                        if target_field:
+                            # if is the primary key, we can skip the check
+                            # If the field exists the class name should be the same
+                            if "authority" in field and not skip_geom_eval:
+                                if db_value := target_field.model_schema.as_model().objects.first():
+                                    skip_geom_eval = True
+                                    if not str(db_value.geom.srid) in field["authority"]:
+                                        errors.append(
+                                            f"The file provided have a different authority ({field['authority']}) compared to the one in the DB: {db_value}"
+                                        )
 
-                    if not target_field.class_name == field["class_name"] and not target_field.kwargs.get(
-                        "primary_key"
-                    ):
-                        # if the class changes, is marked as error
-                        message = f"Field '{field['name']}' cannot be changed from type '{target_field.class_name}' to '{field['class_name']}'. Field type changes are not allowed."
-                        errors.append(message)
-                        logger.error(message)
+                            if not target_field.class_name == field["class_name"] and not target_field.kwargs.get(
+                                "primary_key"
+                            ):
+                                # if the class changes, is marked as error
+                                message = f"Field '{field['name']}' cannot be changed from type '{target_field.class_name}' to '{field['class_name']}'. Field type changes are not allowed."
+                                errors.append(message)
+                                logger.error(message)
 
-            return not errors, errors
+                if errors:
+                    raise UpsertException(errors)
+
+                return True, None
+            except Exception as e:
+                all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+                if layers := self._select_valid_layers(all_layers):
+                    _errors = e.args[0] if isinstance(e, UpsertException) else [str(e)]
+                    if isinstance(_errors, str):
+                        _errors = [_errors]
+                    self._create_error_log(exec_obj, layers, [{"error": err} for err in _errors])
+                raise e
         else:
             raise UpsertException(
                 "User does not have enough permissions to perform this action on the selected resource"
@@ -1254,6 +1268,7 @@ class BaseVectorFileHandler(BaseHandler):
     def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator, exec_obj=None, layers=None):
         valid_create = 0
         valid_update = 0
+        chunk_index = 1
         try:
             with transaction.atomic():
                 while True:
@@ -1272,17 +1287,12 @@ class BaseVectorFileHandler(BaseHandler):
                         valid_update=valid_update,
                         valid_create=valid_create,
                     )
-        except UpsertException as e:
-            # Check if this exception contains error details from bulk save
-            if hasattr(e, "error_message") and e.error_message and exec_obj and layers:
-                # Create simple error entry for bulk save failure
-                errors = [{"error": f"Bulk save failed: {e.error_message}"}]
-                self._create_error_log(exec_obj, layers, errors)
-            else:
-                raise
+                    chunk_index += 1
         except Exception as e:
-            logger.error("Exception during upsert save: %s", e, exc_info=True)
-            raise UpsertException("An internal error occurred during upsert save. All features are rolled back.")
+            msg = f"Error occurred during feature save in Batch {chunk_index} with error: {str(e)}"
+            if exec_obj and layers:
+                self._create_error_log(exec_obj, layers, [{"error": msg}])
+            raise UpsertException(msg)
 
         return valid_create, valid_update
 
@@ -1430,13 +1440,10 @@ class BaseVectorFileHandler(BaseHandler):
             model_instance.objects.bulk_create(
                 feature_to_save, update_conflicts=True, update_fields=schema_fields, unique_fields=[upsert_key]
             )
+
         except Exception as e:
-            error_message = str(e)
             logger.exception("Error occurred during bulk upsert in upsert_data.")
-            # Store error message for handling outside transaction
-            exc = UpsertException(f"Bulk save failed: {error_message}")
-            exc.error_message = error_message
-            raise exc
+            raise e
 
         return valid_update, valid_create
 
