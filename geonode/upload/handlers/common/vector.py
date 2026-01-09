@@ -1227,7 +1227,9 @@ class BaseVectorFileHandler(BaseHandler):
 
         self._validate_single_feature(exec_obj, OriginalResource, upsert_key, layers, iter(layers[0]))
 
-        valid_create, valid_update = self._commit_upsert(model, OriginalResource, upsert_key, iter(layers[0]), exec_obj, layers)
+        valid_create, valid_update = self._commit_upsert(
+            model, OriginalResource, upsert_key, iter(layers[0]), exec_obj, layers
+        )
 
         self.create_resourcehandlerinfo(
             handler_module_path=str(self), resource=original_resource, execution_id=exec_obj
@@ -1272,7 +1274,7 @@ class BaseVectorFileHandler(BaseHandler):
                     )
         except UpsertException as e:
             # Check if this exception contains error details from bulk save
-            if hasattr(e, 'error_message') and e.error_message and exec_obj and layers:
+            if hasattr(e, "error_message") and e.error_message and exec_obj and layers:
                 # Create simple error entry for bulk save failure
                 errors = [{"error": f"Bulk save failed: {e.error_message}"}]
                 self._create_error_log(exec_obj, layers, errors)
@@ -1281,7 +1283,7 @@ class BaseVectorFileHandler(BaseHandler):
         except Exception as e:
             logger.error("Exception during upsert save: %s", e, exc_info=True)
             raise UpsertException("An internal error occurred during upsert save. All features are rolled back.")
-        
+
         return valid_create, valid_update
 
     def _validate_single_feature(self, exec_obj, OriginalResource, upsert_key, layers, layer_iterator):
@@ -1314,7 +1316,7 @@ class BaseVectorFileHandler(BaseHandler):
     def _create_error_log(self, exec_obj, layers, errors):
         """
         Create error log CSV file.
-        
+
         Args:
             exec_obj: Execution request object
             layers: Layer objects
@@ -1332,7 +1334,7 @@ class BaseVectorFileHandler(BaseHandler):
             subfolder_path = temp_dir / "upsert_logs"
             subfolder_path.mkdir(parents=True, exist_ok=True)
             csv_file_path = subfolder_path / log_name
-            
+
             with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
                 # Check if errors have feature data (fid field) or just error messages
                 if errors_to_print and "fid" in errors_to_print[0]:
