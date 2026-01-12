@@ -1361,12 +1361,13 @@ class BaseVectorFileHandler(BaseHandler):
                         error_msg = error_dict.get("error", str(error_dict))
                         writer.writerow([error_msg])
 
-            self.create_asset_and_link(
-                exec_obj.geonode_resource,
-                files={"base_file": str(csv_file_path)},
-                action=exec_obj.action,
-                asset_name=log_name,
-            )
+            if exec_obj.geonode_resource:
+                self.create_asset_and_link(
+                    exec_obj.geonode_resource,
+                    files={"base_file": str(csv_file_path)},
+                    action=exec_obj.action,
+                    asset_name=log_name,
+                )
 
         raise UpsertException(
             "Error found during the upsert process. Errors are reported inside a CSV file that can be found inside the assets panel."
