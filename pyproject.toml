@@ -75,7 +75,7 @@ dependencies = [
     "SQLAlchemy==2.0.43",
     "Shapely==2.1.2",
     "mercantile==1.2.1",
-    "numpy==1.26.*",
+    "numpy==2.2.*",
     "Jinja2==3.1.6",
 
     # Apps with packages provided in GeoNode's PPA on Launchpad.
