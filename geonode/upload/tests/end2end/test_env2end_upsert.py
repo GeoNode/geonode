@@ -252,5 +252,5 @@ class ImporterShapefileImportTestUpsert(BaseImporterEndToEndTest):
         self.assertFalse(response.json().get("success", True))
         self.assertTrue("errors" in response.json())
         self.assertTrue(
-            "The columns in the source and target do not match they must be equal" in response.json()["errors"][0]
+            "Error found during the upsert process. Errors are reported inside a CSV file that can be found inside the assets panel."
         )
