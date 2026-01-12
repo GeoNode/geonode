@@ -478,8 +478,6 @@ def cascading_delete(dataset_name=None, catalog=None):
     finally:
         # Let's reset the connections first
         cat._cache.clear()
-        cat.reset()
-        cat.reload()
 
     if resource is None:
         # If there is no associated resource,
