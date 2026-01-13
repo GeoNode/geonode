@@ -136,7 +136,7 @@ class DatasetDownloadHandler:
             # define access token for the user
             access_token = get_or_create_token(self.request.user)
             url += f"&access_token={access_token}"
-            
+
         # request to geoserver
         response, content = client.request(url=url, data=payload, method="post", headers=headers)
 
