@@ -48,6 +48,9 @@ from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.layers.models import cov_exts, Dataset
 from geonode.security.registry import permissions_registry
+from geonode.utils import HttpClient
+from urllib.parse import urlencode
+from geonode.base.auth import get_or_create_token
 
 READ_PERMISSIONS = ["view_resourcebase"]
 WRITE_PERMISSIONS = ["change_dataset_data", "change_dataset_style", "change_resourcebase_metadata"]
@@ -360,3 +363,38 @@ def clear_dataset_download_handlers():
     global default_dataset_download_handler
     dataset_download_handler_list.clear()
     default_dataset_download_handler = None
+
+
+def download_from_wfs(resource, download_format, user):
+    """
+    Download resource using WFS GetFeature request.
+
+    Args:
+        resource: The resource object
+        download_format: Requested download format
+        user: The requesting user
+
+    Returns:
+        tuple: (response, content) from the WFS request
+    """
+    _wfs_format_map = {
+        "application/zip": "shape-zip",
+        "text/csv": "csv",
+    }
+    _wfs_format = _wfs_format_map.get(download_format, download_format)
+
+    _wfs_params = {
+        "service": "WFS",
+        "version": "1.0.0",
+        "request": "GetFeature",
+        "typename": resource.alternate,
+        "outputFormat": _wfs_format,
+    }
+
+    if not user.is_anonymous:
+        _wfs_params["access_token"] = get_or_create_token(user)
+
+    _wfs_url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?{urlencode(_wfs_params)}"
+
+    client = HttpClient()
+    return client.request(url=_wfs_url, method="get")
