@@ -144,6 +144,7 @@ class DatasetDownloadHandler:
             and response.headers.get("Content-Type") == "text/xml"
             and "empty feature collection" in response.text.lower()
         ):
+            logger.debug("Empty feature collection returned, falling back to WFS download")
             response, content = download_from_wfs(resource, download_format or _format, self.request.user)
 
         if not response or response.status_code != 200:
