@@ -1,6 +1,7 @@
 FROM geonode/geonode-base:latest-ubuntu-24.04
 LABEL GeoNode development team
 
+RUN mkdir -p /usr/src/geonode
 # copy local geonode src inside container
 COPY . /usr/src/geonode/
 WORKDIR /usr/src/geonode

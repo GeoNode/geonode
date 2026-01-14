@@ -1,7 +1,5 @@
 FROM ubuntu:24.04
 
-RUN mkdir -p /usr/src/geonode
-
 ## Enable postgresql-client-15
 RUN apt-get update -y && apt-get install curl wget unzip gnupg2 -y
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
