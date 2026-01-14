@@ -179,8 +179,12 @@ Repository = "https://github.com/GeoNode/geonode"
 Documentation = "https://docs.geonode.org/"
 
 [tool.setuptools]
-packages = ["geonode"]
 include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*"]
+include = ["geonode*"]
 
 [tool.setuptools.dynamic]
 version = {attr = "geonode.__version__"}
