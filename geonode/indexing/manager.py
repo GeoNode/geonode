@@ -53,7 +53,7 @@ class TSVectorIndexManager:
 
             if all(field in non_ml_fields for field in index_fields):
                 # this index is not localized
-                pg_lang = multi.get_pg_language(multi.get_default_language())
+                pg_lang = multi.get_pg_language(None)
                 logger.debug(
                     f"Creating non localized index - resource:{resource_id} index name:{index_name} default lang:{pg_lang}"
                 )
