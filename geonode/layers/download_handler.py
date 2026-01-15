@@ -30,6 +30,7 @@ from geonode.geoserver.helpers import wps_format_is_supported
 from geonode.layers.views import _resolve_dataset
 from geonode.proxy.views import fetch_response_headers
 from geonode.utils import HttpClient
+from geonode.layers.utils import download_from_wfs
 
 logger = logging.getLogger("geonode.layers.download_handler")
 
@@ -138,6 +139,14 @@ class DatasetDownloadHandler:
 
         # request to geoserver
         response, content = client.request(url=url, data=payload, method="post", headers=headers)
+
+        if (
+            response
+            and response.headers.get("Content-Type") == "text/xml"
+            and "empty feature collection" in response.text.lower()
+        ):
+            logger.debug("Empty feature collection returned, falling back to WFS download")
+            response, content = download_from_wfs(resource, download_format or _format, self.request.user)
 
         if not response or response.status_code != 200:
             logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
