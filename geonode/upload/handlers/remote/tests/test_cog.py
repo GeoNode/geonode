@@ -44,8 +44,8 @@ class TestRemoteCOGResourceHandler(TestCase):
 
     def test_can_handle_cog(self):
         self.assertTrue(self.handler.can_handle(self.valid_payload))
-        self.assertTrue(self.handler.can_handle({"url": "http://example.com/y.tiff"}))
-        self.assertFalse(self.handler.can_handle({"url": "http://example.com/y.jpg"}))
+        self.assertTrue(self.handler.can_handle({"url": "http://example.com/y.tiff", "type": "cog"}))
+        self.assertFalse(self.handler.can_handle({"url": "http://example.com/y.jpg", "type": "image"}))
 
     @patch("geonode.upload.handlers.remote.cog.requests.head")
     @patch("geonode.upload.handlers.remote.cog.requests.get")
