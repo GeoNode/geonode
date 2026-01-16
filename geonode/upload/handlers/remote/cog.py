@@ -41,7 +41,7 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        if "url" in _data and "cog" in _data.get("type").lower():
+        if "url" in _data and "cog" in _data.get("type", "").lower():
             return True
         return False
 
@@ -80,7 +80,7 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
             logger.exception(e)
             if isinstance(e, ImportException):
                 raise e
-            raise ImportException(f"Error checking COG URL: {str(e)}")
+            raise ImportException("Error checking COG URL")
 
         return True
 
@@ -168,7 +168,9 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
         except Exception as e:
             logger.debug(f"GDAL ERROR: {str(e)}")
             logger.exception(e)
-            raise ImportException(f"Failed to extract metadata from COG: {str(e)}")
+            if isinstance(e, ImportException):
+                raise e
+            raise ImportException(f"Failed to extract metadata from COG: {url}")
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
         resource.set_bbox_polygon(bbox, srid)
         return resource
