@@ -29,6 +29,7 @@ from geonode.base.models import ResourceBase
 from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
+from geonode.upload.orchestrator import orchestrator
 
 logger = logging.getLogger("importer")
 
@@ -52,7 +53,7 @@ class CSVFileHandler(BaseVectorFileHandler):
                 {
                     "label": "CSV",
                     "required_ext": ["csv"],
-                    "optional_ext": ["sld", "xml"],
+                    "optional_ext": ["sld", "xml", "json"],
                 }
             ],
             "actions": list(self.TASKS.keys()),
@@ -116,6 +117,11 @@ class CSVFileHandler(BaseVectorFileHandler):
             )
 
         if not geom_is_in_schema and not has_lat and not has_long:
+            if 'csv_file' in files and 'json_file' in files:
+                exec_obj = orchestrator.get_execution_object(kwargs.get("execution_id"))
+                exec_obj.input_params.update({"is_tabular": True})
+                exec_obj.save()
+                return True
             raise InvalidCSVException(f"Not enough geometry field are set. The possibilities are: {','.join(fields)}")
 
         return True
@@ -135,7 +141,7 @@ class CSVFileHandler(BaseVectorFileHandler):
             f"{base_command} -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
             + additional_option
         )
-
+    
     def create_dynamic_model_fields(
         self,
         layer: str,
@@ -147,10 +153,13 @@ class CSVFileHandler(BaseVectorFileHandler):
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
         layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+        exec_obj = orchestrator.get_execution_object(execution_id)
+
         if (
             layer.GetGeometryColumn()
             or self.default_geometry_column_name
             and ogr.GeometryTypeToName(layer.GetGeomType()) not in ["Geometry Collection", "Unknown (any)"]
+            and not exec_obj.input_params.get("is_tabular")
         ):
             # the geometry colum is not returned rom the layer.schema, so we need to extract it manually
             # checking if the geometry has been wrogly read as string
