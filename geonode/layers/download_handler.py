@@ -20,7 +20,7 @@
 import logging
 import xml.etree.ElementTree as ET
 
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import Http404, StreamingHttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -137,8 +137,16 @@ class DatasetDownloadHandler:
             access_token = get_or_create_token(self.request.user)
             url += f"&access_token={access_token}"
 
+        def gen(r):
+            try:
+                for chunk in r.iter_content(chunk_size=1024 * 1024):  # 1MB
+                    if chunk:  # skip keep-alives
+                        yield chunk
+            finally:
+                r.close()
+
         # request to geoserver
-        response, content = client.request(url=url, data=payload, method="post", headers=headers)
+        response, content = client.request(url=url, data=payload, method="post", headers=headers, stream=True)
 
         if (
             response
@@ -170,7 +178,7 @@ class DatasetDownloadHandler:
                 return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text.text}"}, status=500)
 
         return_response = fetch_response_headers(
-            HttpResponse(content=response.content, status=response.status_code, content_type=download_format),
+            StreamingHttpResponse(streaming_content=gen(response), status=response.status_code, content_type=download_format),
             response.headers,
         )
         return_response.headers["Content-Type"] = download_format or _format
