@@ -17,7 +17,10 @@
 #
 #########################################################################
 import logging
+import os
 
+from geonode.geoserver.createlayer.utils import BBOX
+from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.upload.utils import UploadLimitValidator
@@ -30,6 +33,7 @@ from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
 from geonode.upload.orchestrator import orchestrator
+from django.contrib.gis.geos import Polygon
 
 logger = logging.getLogger("importer")
 
@@ -117,12 +121,10 @@ class CSVFileHandler(BaseVectorFileHandler):
             )
 
         if not geom_is_in_schema and not has_lat and not has_long:
-            if 'csv_file' in files and 'json_file' in files:
-                exec_obj = orchestrator.get_execution_object(kwargs.get("execution_id"))
-                exec_obj.input_params.update({"is_tabular": True})
-                exec_obj.save()
-                return True
-            raise InvalidCSVException(f"Not enough geometry field are set. The possibilities are: {','.join(fields)}")
+            exec_obj = orchestrator.get_execution_object(kwargs.get("execution_id"))
+            exec_obj.input_params.update({"is_tabular": True})
+            exec_obj.save()
+            return True
 
         return True
 
@@ -139,9 +141,10 @@ class CSVFileHandler(BaseVectorFileHandler):
         additional_option = ' -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"'
         return (
             f"{base_command} -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
-            + additional_option + " -oo AUTODETECT_TYPE=YES"
+            + additional_option
+            + " -oo AUTODETECT_TYPE=YES"
         )
-    
+
     def create_dynamic_model_fields(
         self,
         layer: str,
@@ -227,3 +230,23 @@ class CSVFileHandler(BaseVectorFileHandler):
             return authority_code
         except Exception:
             return "EPSG:4326"
+
+    def create_geonode_resource(
+        self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, asset=None
+    ):
+        res = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
+        res.set_bbox_polygon(BBOX)
+        return res
+
+    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
+        return dict(
+            name=alternate,
+            workspace=workspace,
+            store=os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
+            subtype="tabular",
+            alternate=f"{workspace}:{alternate}",
+            dirty_state=True,
+            title=layer_name,
+            owner=_exec.user,
+            asset=asset,
+        )

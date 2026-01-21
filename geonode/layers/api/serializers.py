@@ -161,6 +161,8 @@ class DatasetSerializer(ResourceBaseSerializer):
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
     featureinfo_custom_template = FeatureInfoTemplateField()
 
+    is_tabular = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Dataset
         name = "dataset"
@@ -189,9 +191,16 @@ class DatasetSerializer(ResourceBaseSerializer):
                     "store",
                     "subtype",
                     "ptype",
+                    "is_tabular",
                 )
             )
         )
+
+    def get_is_tabular(self, instance):
+        """
+        Returns the permissions for the resource instance using Django cache.
+        """
+        return instance.is_tabular
 
 
 class DatasetListSerializer(DatasetSerializer):
