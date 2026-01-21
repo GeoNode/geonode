@@ -65,11 +65,7 @@ class DatasetDownloadHandler:
 
     @property
     def is_ajax_safe(self):
-        """
-        AJAX is safe to be used for WPS downloads. In case of a link set in a Link entry we cannot assume it,
-        since it could point to an external (non CORS enabled) URL
-        """
-        return settings.USE_GEOSERVER and not self.is_link_resource
+        return False
 
     @property
     def download_url(self):
