@@ -866,7 +866,7 @@ class ResourceManager(ResourceManagerInterface):
         thumbnail_algorithm=ThumbnailAlgorithms.fit,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
-        if _resource:
+        if _resource and _resource.can_have_thumbnail:
             try:
                 with transaction.atomic():
                     if thumbnail:
