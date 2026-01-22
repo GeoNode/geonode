@@ -85,6 +85,10 @@ def create_thumbnail(
 
     instance.refresh_from_db()
 
+    if isinstance(instance.get_real_instance(), Dataset) and "cog" in (instance.subtype or "").lower():
+        logger.debug(f"Thumbnail generation skipped for COG: {instance.name}")
+        return
+
     default_thumbnail_name = _generate_thumbnail_name(instance)
     mime_type = "image/png"
     width = settings.THUMBNAIL_SIZE["width"]
