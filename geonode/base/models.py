@@ -978,6 +978,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return self.subtype not in {"tileStore", "remote"}
 
     @property
+    def can_have_thumbnail(self):
+        return True
+
+    @property
     def raw_purpose(self):
         return self._remove_html_tags(self.purpose)
 
