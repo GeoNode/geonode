@@ -78,7 +78,6 @@ from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 from geonode.upload.registry import feature_validators_registry
 from django.core.exceptions import ValidationError
 
-
 logger = logging.getLogger("importer")
 
 
@@ -420,6 +419,8 @@ class BaseVectorFileHandler(BaseHandler):
         ]
 
     def identify_authority(self, layer):
+        if not isinstance(layer, ogr.Layer):
+            layer = layer.GetLayer()
         try:
             layer_wkt = layer.GetSpatialRef().ExportToWkt()
             _name = "EPSG"
@@ -446,14 +447,17 @@ class BaseVectorFileHandler(BaseHandler):
         """
         return None
 
+    def _gdal_open_options(self):
+        return {}
+
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
         """
         Main function to import the resource.
         Internally will call the steps required to import the
         data inside the geonode_data database
         """
-        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        layers = self._select_valid_layers(all_layers)
+        gdal_proxy = self.open_source_file(files)
+        layers = self._select_valid_layers(gdal_proxy)
         # for the moment we skip the dyanamic model creation
         layer_count = len(layers)
         logger.info(f"Total number of layers available: {layer_count}")
@@ -473,7 +477,8 @@ class BaseVectorFileHandler(BaseHandler):
 
             # start looping on the layers available
 
-            for index, layer in enumerate(layers, start=1):
+            for index, gdal_layer in enumerate(layers, start=1):
+                layer = gdal_layer.GetLayer()
                 layer_name = self.fixup_name(layer.GetName())
 
                 should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
@@ -553,6 +558,17 @@ class BaseVectorFileHandler(BaseHandler):
                 drop_dynamic_model_schema(dynamic_model)
             raise e
         return layer_names, alternates, execution_id
+
+    def open_source_file(self, files):
+        from osgeo import gdal
+
+        gdal_proxy = gdal.OpenEx(
+            files.get("base_file"),
+            nOpenFlags=gdal.OF_VECTOR,
+            allowed_drivers=[self.get_ogr2ogr_driver().name],
+            **self._gdal_open_options(),
+        )
+        return [gdal_proxy]
 
     def _select_valid_layers(self, all_layers):
         layers = []

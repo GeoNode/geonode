@@ -33,7 +33,6 @@ from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
 from geonode.upload.orchestrator import orchestrator
-from django.contrib.gis.geos import Polygon
 
 logger = logging.getLogger("importer")
 
@@ -109,7 +108,6 @@ class CSVFileHandler(BaseVectorFileHandler):
         has_lat = any(x in CSVFileHandler().possible_lat_column for x in schema_keys)
         has_long = any(x in CSVFileHandler().possible_long_column for x in schema_keys)
 
-        fields = CSVFileHandler().possible_geometry_column_name + CSVFileHandler().possible_latlong_column
         if has_lat and not has_long:
             raise InvalidCSVException(
                 f"Longitude is missing. Supported names: {', '.join(CSVFileHandler().possible_long_column)}"
@@ -130,6 +128,9 @@ class CSVFileHandler(BaseVectorFileHandler):
 
     def get_ogr2ogr_driver(self):
         return ogr.GetDriverByName("CSV")
+
+    def _gdal_open_options(self):
+        return {"open_options": ["AUTODETECT_TYPE=YES"]}
 
     @staticmethod
     def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
@@ -212,7 +213,7 @@ class CSVFileHandler(BaseVectorFileHandler):
                 }
             ]
 
-        layers = self.get_ogr2ogr_driver().Open(files.get("base_file"), 0)
+        layers = self.open_source_file(files)
         if not layers:
             return []
         return [
@@ -221,12 +222,16 @@ class CSVFileHandler(BaseVectorFileHandler):
                 "crs": (self.identify_authority(_l)),
             }
             for _l in layers
-            if self.fixup_name(_l.GetName()) == layer_name
+            if self.fixup_name(_l.GetLayer().GetName()) == layer_name
         ]
 
     def identify_authority(self, layer):
+        if not isinstance(layer, ogr.Layer):
+            layer = layer.GetLayer()
         try:
             authority_code = super().identify_authority(layer=layer)
+            if authority_code == ogr.wkbNone:
+                logger.warning("For tabular CSV, we set by default EPSG:4326")
             return authority_code
         except Exception:
             return "EPSG:4326"
@@ -235,7 +240,7 @@ class CSVFileHandler(BaseVectorFileHandler):
         self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, asset=None
     ):
         res = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
-        res.set_bbox_polygon(BBOX)
+        res.set_bbox_polygon(BBOX, res.srid)
         return res
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
