@@ -971,7 +971,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_thumbnail(self):
-        return self.subtype is not None
+        return True
 
     @property
     def raw_purpose(self):
