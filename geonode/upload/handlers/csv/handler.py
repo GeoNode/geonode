@@ -248,7 +248,7 @@ class CSVFileHandler(BaseVectorFileHandler):
             name=alternate,
             workspace=workspace,
             store=os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
-            subtype="tabular",
+            subtype="tabular" if _exec.input_params.get("is_tabular") else "vector",
             alternate=f"{workspace}:{alternate}",
             dirty_state=True,
             title=layer_name,

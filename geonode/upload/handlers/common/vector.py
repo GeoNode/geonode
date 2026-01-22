@@ -114,6 +114,8 @@ class BaseVectorFileHandler(BaseHandler):
         ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
 
+    SUBTYPE = "vector"
+
     @property
     def have_table(self):
         return True
@@ -584,14 +586,17 @@ class BaseVectorFileHandler(BaseHandler):
                 pass
         return layers
 
+    def can_overwrite(self, _exec_obj, dataset):
+        is_tabular = _exec_obj.input_params.get("is_tabular", None)
+        return dataset.is_vector() if not is_tabular else is_tabular
+    
     def find_alternate_by_dataset(self, _exec_obj, layer_name, should_be_overwritten):
         if _exec_obj.input_params.get("resource_pk"):
             dataset = Dataset.objects.filter(pk=_exec_obj.input_params.get("resource_pk")).first()
             if not dataset:
                 raise ImportException("The dataset selected for the ovewrite does not exists")
-            if should_be_overwritten:
-                if not dataset.is_vector():
-                    raise Exception("Cannot override a raster dataset with a vector one")
+            if should_be_overwritten and not self.can_overwrite(_exec_obj, dataset):
+                raise Exception("Cannot override a raster dataset with a vector one")
             alternate = dataset.alternate.split(":")
             return alternate[-1]
 
@@ -599,9 +604,8 @@ class BaseVectorFileHandler(BaseHandler):
         dataset_available = Dataset.objects.filter(alternate__iexact=f"{workspace.name}:{layer_name}")
 
         dataset_exists = dataset_available.exists()
-        if should_be_overwritten:
-            if not dataset_available.is_vector():
-                raise Exception("Cannot override a raster dataset with a vector one")
+        if should_be_overwritten and not self.can_overwrite(_exec_obj, dataset):
+            raise Exception("Cannot override a raster dataset with a vector one")
 
         if dataset_exists and should_be_overwritten:
             alternate = dataset_available.first().alternate.split(":")[-1]
@@ -1180,8 +1184,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # Will generate the same schema as the target_resource_schema
         new_file_schema_fields = self.create_dynamic_model_fields(
-            layer,
-            return_celery_group=False,
+            layer, return_celery_group=False, execution_id=execution_id
         )
 
         return target_schema_fields, new_file_schema_fields
@@ -1532,7 +1535,7 @@ class BaseVectorFileHandler(BaseHandler):
         self.__fixup_primary_key(dataset)
         return dataset
 
-    def fixup_dynamic_model_fields(self, _exec, files):
+    def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
         """
         Utility needed during the replace workflow,
         it will sync all the FieldSchema along with the current resource uploaded.

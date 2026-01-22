@@ -196,12 +196,6 @@ class DatasetSerializer(ResourceBaseSerializer):
             )
         )
 
-    def get_is_tabular(self, instance):
-        """
-        Returns the permissions for the resource instance using Django cache.
-        """
-        return instance.is_tabular
-
 
 class DatasetListSerializer(DatasetSerializer):
     class Meta(DatasetSerializer.Meta):
