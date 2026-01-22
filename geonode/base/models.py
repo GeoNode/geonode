@@ -962,10 +962,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return self.subtype == "vector"
 
     @property
-    def can_have_thumbnail(self):
-        return self.subtype != "tabular"
-
-    @property
     def can_have_wps_links(self):
         return self.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time", "tabular"}
 
@@ -979,7 +975,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_thumbnail(self):
-        return True
+        return self.subtype != "tabular"
 
     @property
     def raw_purpose(self):
