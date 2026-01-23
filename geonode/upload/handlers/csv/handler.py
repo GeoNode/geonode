@@ -56,7 +56,7 @@ class CSVFileHandler(BaseVectorFileHandler):
                 {
                     "label": "CSV",
                     "required_ext": ["csv"],
-                    "optional_ext": ["sld", "xml", "json"],
+                    "optional_ext": ["sld", "xml"],
                 }
             ],
             "actions": list(self.TASKS.keys()),

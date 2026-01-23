@@ -555,6 +555,12 @@ class BaseVectorFileHandler(BaseHandler):
         return layer_names, alternates, execution_id
 
     def open_source_file(self, files):
+        """
+        The importer switched from ogr to gdal library
+        This is required so we can rely on the options in GDAL,
+        while the ogr library does not allow that.
+        For example we can call the AUTODETECT_TYPE even in python
+        """
         from osgeo import gdal
 
         gdal_proxy = gdal.OpenEx(
