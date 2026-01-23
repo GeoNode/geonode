@@ -240,9 +240,7 @@ class BaseRasterFileHandler(BaseHandler):
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(
-                        Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
-                    )
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate"))
                     .first()
                     .srid,
                     "raster_path": raster_path,

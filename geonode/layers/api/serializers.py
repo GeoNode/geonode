@@ -161,8 +161,6 @@ class DatasetSerializer(ResourceBaseSerializer):
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
     featureinfo_custom_template = FeatureInfoTemplateField()
 
-    is_tabular = serializers.SerializerMethodField(read_only=True)
-
     class Meta:
         model = Dataset
         name = "dataset"

@@ -33,6 +33,7 @@ from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
 from geonode.upload.orchestrator import orchestrator
+from django.db.models import Q
 
 logger = logging.getLogger("importer")
 
@@ -205,11 +206,13 @@ class CSVFileHandler(BaseVectorFileHandler):
         return dynamic_model_schema, celery_group
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
-        if action == exa.COPY.value:
+        if action == exa.COPY.value:               
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(alternate__istartswith=layer_name).first().srid,
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate"))
+                    .first()
+                    .srid,
                 }
             ]
 
@@ -226,8 +229,7 @@ class CSVFileHandler(BaseVectorFileHandler):
         ]
 
     def identify_authority(self, layer):
-        if not isinstance(layer, ogr.Layer):
-            layer = layer.GetLayer()
+        layer = self._extract_layer(layer)
         try:
             authority_code = super().identify_authority(layer=layer)
             if authority_code == ogr.wkbNone:

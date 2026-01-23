@@ -114,8 +114,6 @@ class BaseVectorFileHandler(BaseHandler):
         ira.UPSERT.value: ("start_import", "geonode.upload.upsert_data", "geonode.upload.refresh_geonode_resource"),
     }
 
-    SUBTYPE = "vector"
-
     @property
     def have_table(self):
         return True
@@ -400,15 +398,13 @@ class BaseVectorFileHandler(BaseHandler):
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(
-                        Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
-                    )
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate"))
                     .first()
                     .srid,
                 }
             ]
 
-        layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        layers = self.open_source_file(files)
         if not layers:
             return []
         return [
@@ -421,8 +417,7 @@ class BaseVectorFileHandler(BaseHandler):
         ]
 
     def identify_authority(self, layer):
-        if not isinstance(layer, ogr.Layer):
-            layer = layer.GetLayer()
+        layer = self._extract_layer(layer)
         try:
             layer_wkt = layer.GetSpatialRef().ExportToWkt()
             _name = "EPSG"
@@ -480,7 +475,7 @@ class BaseVectorFileHandler(BaseHandler):
             # start looping on the layers available
 
             for index, gdal_layer in enumerate(layers, start=1):
-                layer = gdal_layer.GetLayer()
+                layer = self._extract_layer(gdal_layer)
                 layer_name = self.fixup_name(layer.GetName())
 
                 should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
@@ -576,6 +571,7 @@ class BaseVectorFileHandler(BaseHandler):
         layers = []
         for layer in all_layers:
             try:
+                layer = self._extract_layer(layer)
                 self.identify_authority(layer)
                 layers.append(layer)
             except Exception as e:
@@ -589,7 +585,7 @@ class BaseVectorFileHandler(BaseHandler):
     def can_overwrite(self, _exec_obj, dataset):
         is_tabular = _exec_obj.input_params.get("is_tabular", None)
         return dataset.is_vector() if not is_tabular else is_tabular
-    
+
     def find_alternate_by_dataset(self, _exec_obj, layer_name, should_be_overwritten):
         if _exec_obj.input_params.get("resource_pk"):
             dataset = Dataset.objects.filter(pk=_exec_obj.input_params.get("resource_pk")).first()
@@ -632,7 +628,7 @@ class BaseVectorFileHandler(BaseHandler):
             - celery_group -> the celery group of the field creation
         """
 
-        layer_name = self.fixup_name(layer.GetName() if isinstance(layer, ogr.Layer) else layer)
+        layer_name = self.fixup_name(self._extract_layer(layer).GetName())
         _exec_obj = orchestrator.get_execution_object(execution_id)
 
         is_dynamic_model_managed = _exec_obj.input_params.get("is_dynamic_model_managed", False)
@@ -1141,7 +1137,7 @@ class BaseVectorFileHandler(BaseHandler):
 
                 return True, None
             except Exception as e:
-                all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+                all_layers = self.open_source_file(files)
                 if layers := self._select_valid_layers(all_layers):
                     _errors = e.args[0] if isinstance(e, UpsertException) else [str(e)]
                     if isinstance(_errors, str):
@@ -1152,6 +1148,11 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException(
                 "User does not have enough permissions to perform this action on the selected resource"
             )
+
+    def _extract_layer(self, layer):
+        if not isinstance(layer, ogr.Layer):
+            layer = layer.GetLayer()
+        return layer
 
     def __get_new_and_original_schema(self, files, execution_id):
         # check if the execution_id is passed and if the geonode resource exists
@@ -1165,19 +1166,23 @@ class BaseVectorFileHandler(BaseHandler):
         target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
 
         # use ogr2ogr to read the uploaded files for the upsert
-        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        all_layers = self.open_source_file(files)
         layers = self._select_valid_layers(all_layers)
         if not layers:
             raise UpsertException("No valid layers found in the provided file for upsert.")
 
-        layer = layers[0]
+        layer = self._extract_layer(layers[0])
         # evaluate if some of the fid entry is null. if is null we stop the workflow
         # the user should provide the completed list with the fid set
-        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "{DEFAULT_PK_COLUMN_NAME}" IS NULL'
+        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "{DEFAULT_PK_COLUMN_NAME.lower()}" IS NULL'
 
-        # Execute the SQL query to the layer
-        result = all_layers.ExecuteSQL(sql_query)
-        if not result or (result and result.GetFeatureCount() > 0):
+        # Execute the SQL query to the layer via the gdal proxy object
+        result = all_layers[0].ExecuteSQL(sql_query)
+        if (
+            not (result and DEFAULT_PK_COLUMN_NAME in (x.name.lower() for x in result.schema))
+            or (result and result.GetFeatureCount() > 0)
+            or not result
+        ):
             raise UpsertException(
                 f"All the feature in the file must have the fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
             )
@@ -1255,7 +1260,7 @@ class BaseVectorFileHandler(BaseHandler):
             # if for any reason the key is not present, better to raise an error
             raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
         # use ogr2ogr to read the uploaded files values for the upsert
-        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        all_layers = self.open_source_file(files)
         valid_create = 0
         valid_update = 0
         layers = self._select_valid_layers(all_layers)
@@ -1360,8 +1365,8 @@ class BaseVectorFileHandler(BaseHandler):
             "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
         )
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
-
-        log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+        layer = self._extract_layer(layers[0])
+        log_name = f'error_{layer.GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
 
         with tempfile.TemporaryDirectory() as temp_dir_str:
             temp_dir = Path(temp_dir_str)
@@ -1441,11 +1446,12 @@ class BaseVectorFileHandler(BaseHandler):
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
-            code = geom.GetSpatialReference().GetAuthorityCode(None)
-            feature_as_dict.update(
-                {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
-            )
-            to_process.append(feature_as_dict)
+            if geom:
+                code = geom.GetSpatialReference().GetAuthorityCode(None)
+                feature_as_dict.update(
+                    {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
+                )
+                to_process.append(feature_as_dict)
 
         for feature_as_dict in to_process:
             if feature_as_dict.get(upsert_key) in value_in_db:
