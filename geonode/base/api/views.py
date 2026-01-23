@@ -56,7 +56,6 @@ from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.resource.manager import resource_manager
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN, remove_thumb
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import (
@@ -117,6 +116,7 @@ from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
+from geonode.resource.manager import resource_manager
 
 
 logger = logging.getLogger(__name__)
