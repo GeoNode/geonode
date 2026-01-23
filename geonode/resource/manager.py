@@ -25,6 +25,7 @@ import itertools
 
 from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
+from typing import Optional, Union
 
 from guardian.models import UserObjectPermission, GroupObjectPermission
 from guardian.shortcuts import assign_perm, get_anonymous_user
@@ -168,7 +169,17 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
     @abstractmethod
     def set_thumbnail(
-        self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True
+        self,
+        uuid: str,
+        /,
+        instance: ResourceBase = None,
+        overwrite: bool = True,
+        check_bbox: bool = True,
+        bbox: Optional[Union[list, tuple]] = None,
+        forced_crs: Optional[str] = None,
+        styles: Optional[list] = None,
+        background_zoom: Optional[int] = None,
+        map_thumb_from_bbox: bool = False,
     ) -> bool:
         """Allows to generate or re-generate the Thumbnail of a Resource."""
         pass
@@ -864,9 +875,14 @@ class ResourceManager(ResourceManagerInterface):
         check_bbox: bool = True,
         thumbnail=None,
         thumbnail_algorithm=ThumbnailAlgorithms.fit,
+        bbox: Optional[Union[list, tuple]] = None,
+        forced_crs: Optional[str] = None,
+        styles: Optional[list] = None,
+        background_zoom: Optional[int] = None,
+        map_thumb_from_bbox: bool = False,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
-        if _resource:
+        if _resource and _resource.can_have_thumbnail:
             try:
                 with transaction.atomic():
                     if thumbnail:
@@ -877,7 +893,15 @@ class ResourceManager(ResourceManagerInterface):
                             if overwrite or not instance.thumbnail_url:
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(
-                            uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox
+                            uuid,
+                            instance=_resource,
+                            overwrite=overwrite,
+                            check_bbox=check_bbox,
+                            bbox=bbox,
+                            forced_crs=forced_crs,
+                            styles=styles,
+                            background_zoom=background_zoom,
+                            map_thumb_from_bbox=map_thumb_from_bbox,
                         )
                 return True
             except Exception as e:

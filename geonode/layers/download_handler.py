@@ -30,6 +30,7 @@ from geonode.geoserver.helpers import wps_format_is_supported
 from geonode.layers.views import _resolve_dataset
 from geonode.proxy.views import fetch_response_headers
 from geonode.utils import HttpClient
+from geonode.layers.utils import download_from_wfs
 
 logger = logging.getLogger("geonode.layers.download_handler")
 
@@ -75,7 +76,7 @@ class DatasetDownloadHandler:
         resource = self.get_resource()
         if not resource:
             return None
-        if resource.subtype not in ["vector", "raster", "vector_time"]:
+        if not resource.can_be_downloaded:
             logger.info("Download URL is available only for datasets that have been harvested and copied locally")
             return None
 
@@ -117,7 +118,7 @@ class DatasetDownloadHandler:
             logger.error("The format provided is not valid for the selected resource")
             return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
 
-        _format = "application/zip" if resource.is_vector() else "image/tiff"
+        _format = resource.download_format
         # getting default payload
         tpl = get_template("geoserver/dataset_download.xml")
         ctx = {"alternate": resource.alternate, "download_format": download_format or _format}
@@ -138,6 +139,14 @@ class DatasetDownloadHandler:
 
         # request to geoserver
         response, content = client.request(url=url, data=payload, method="post", headers=headers)
+
+        if (
+            response
+            and response.headers.get("Content-Type") == "text/xml"
+            and "empty feature collection" in response.text.lower()
+        ):
+            logger.debug("Empty feature collection returned, falling back to WFS download")
+            response, content = download_from_wfs(resource, download_format or _format, self.request.user)
 
         if not response or response.status_code != 200:
             logger.error(f"Download dataset exception: error during call with GeoServer: {content}")

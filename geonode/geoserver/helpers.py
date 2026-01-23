@@ -1010,7 +1010,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'", exc_info=True
             )
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
+    elif layer.can_have_wps_links:
         typename = layer.alternate if layer.alternate else layer.typename
         logger.info(f"Getting WFS info for {layer.subtype} '{typename}'")
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
@@ -1890,9 +1890,27 @@ _esri_types = {
 
 # main entry point to create a thumbnail - will use implementation
 # defined in settings.THUMBNAIL_GENERATOR (see settings.py)
-def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
+def create_gs_thumbnail(
+    instance,
+    overwrite=False,
+    check_bbox=False,
+    bbox=None,
+    forced_crs=None,
+    styles=None,
+    background_zoom=None,
+    map_thumb_from_bbox=False,
+):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
-    return implementation(instance, overwrite, check_bbox)
+    return implementation(
+        instance,
+        overwrite,
+        check_bbox,
+        bbox=bbox,
+        forced_crs=forced_crs,
+        styles=styles,
+        background_zoom=background_zoom,
+        map_thumb_from_bbox=map_thumb_from_bbox,
+    )
 
 
 def sync_instance_with_geoserver(instance_id, *args, **kwargs):

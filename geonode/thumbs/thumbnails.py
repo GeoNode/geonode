@@ -41,7 +41,16 @@ logger = logging.getLogger(__name__)
 
 
 # this is the original implementation of create_gs_thumbnail()
-def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
+def create_gs_thumbnail_geonode(
+    instance,
+    overwrite=False,
+    check_bbox=False,
+    bbox: Optional[Union[List, Tuple]] = None,
+    forced_crs: Optional[str] = None,
+    styles: Optional[List] = None,
+    background_zoom: Optional[int] = None,
+    map_thumb_from_bbox: bool = False,
+):
     """
     Create a thumbnail with a GeoServer request.
     """
@@ -50,7 +59,12 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     create_thumbnail(
         instance,
         wms_version=wms_version,
+        bbox=bbox,
+        forced_crs=forced_crs,
+        styles=styles,
         overwrite=overwrite,
+        background_zoom=background_zoom,
+        map_thumb_from_bbox=map_thumb_from_bbox,
     )
 
 
