@@ -711,7 +711,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                 bbox = request_body["bbox"] + [request_body["srid"]]
                 zoom = request_body.get("zoom", None)
 
-            resource_manager.set_thumbnail(
+            success = resource_manager.set_thumbnail(
                 resource.uuid,
                 instance=resource,
                 bbox=bbox,
@@ -719,6 +719,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                 overwrite=True,
                 map_thumb_from_bbox=map_thumb_from_bbox,
             )
+            if not success:
+                raise ThumbnailError("Thumbnail generation failed.")
             resource.refresh_from_db()
             thumbnail_url = resource.thumbnail_url
             return Response(

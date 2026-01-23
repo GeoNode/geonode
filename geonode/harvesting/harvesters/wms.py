@@ -537,13 +537,15 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             target_crs = geonode_resource.srid
         else:
             target_crs = f"EPSG:{geonode_resource.srid}"
-        resource_manager.set_thumbnail(
+        success = resource_manager.set_thumbnail(
             geonode_resource.uuid,
             instance=geonode_resource,
             bbox=geonode_resource.bbox,
             forced_crs=target_crs,
             overwrite=True,
         )
+        if not success:
+            raise Exception("Thumbnail generation failed.")
         # ref GeoNode #13010
         # A describeLayer is perfomed to see if we can add the WDS link
         # to the resource
