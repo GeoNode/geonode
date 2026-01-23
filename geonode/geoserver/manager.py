@@ -17,9 +17,10 @@
 #
 #########################################################################
 
-import typing
 import logging
 import tempfile
+import typing
+from typing import Optional, Union
 
 
 from django.conf import settings
@@ -286,13 +287,32 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return True
 
     def set_thumbnail(
-        self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True
+        self,
+        uuid: str,
+        /,
+        instance: ResourceBase = None,
+        overwrite: bool = True,
+        check_bbox: bool = True,
+        bbox: Optional[Union[list, tuple]] = None,
+        forced_crs: Optional[str] = None,
+        styles: Optional[list] = None,
+        background_zoom: Optional[int] = None,
+        map_thumb_from_bbox: bool = False,
     ) -> bool:
         if instance and (
             isinstance(instance.get_real_instance(), Dataset) or isinstance(instance.get_real_instance(), Map)
         ):
             if overwrite or not instance.thumbnail_url:
-                create_gs_thumbnail(instance.get_real_instance(), overwrite=overwrite, check_bbox=check_bbox)
+                create_gs_thumbnail(
+                    instance.get_real_instance(),
+                    overwrite=overwrite,
+                    check_bbox=check_bbox,
+                    bbox=bbox,
+                    forced_crs=forced_crs,
+                    styles=styles,
+                    background_zoom=background_zoom,
+                    map_thumb_from_bbox=map_thumb_from_bbox,
+                )
             return True
         return False
 

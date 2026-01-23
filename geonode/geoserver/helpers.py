@@ -1890,9 +1890,27 @@ _esri_types = {
 
 # main entry point to create a thumbnail - will use implementation
 # defined in settings.THUMBNAIL_GENERATOR (see settings.py)
-def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
+def create_gs_thumbnail(
+    instance,
+    overwrite=False,
+    check_bbox=False,
+    bbox=None,
+    forced_crs=None,
+    styles=None,
+    background_zoom=None,
+    map_thumb_from_bbox=False,
+):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
-    return implementation(instance, overwrite, check_bbox)
+    return implementation(
+        instance,
+        overwrite,
+        check_bbox,
+        bbox=bbox,
+        forced_crs=forced_crs,
+        styles=styles,
+        background_zoom=background_zoom,
+        map_thumb_from_bbox=map_thumb_from_bbox,
+    )
 
 
 def sync_instance_with_geoserver(instance_id, *args, **kwargs):
