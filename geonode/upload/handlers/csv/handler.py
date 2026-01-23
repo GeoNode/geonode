@@ -222,7 +222,7 @@ class CSVFileHandler(BaseVectorFileHandler):
                 "crs": (self.identify_authority(_l)),
             }
             for _l in layers
-            if self.fixup_name(_l.GetLayer().GetName()) == layer_name
+            if self.fixup_name(self._extract_layer(_l).GetName()) == layer_name
         ]
 
     def identify_authority(self, layer):

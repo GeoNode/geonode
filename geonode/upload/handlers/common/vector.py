@@ -410,7 +410,7 @@ class BaseVectorFileHandler(BaseHandler):
                 "name": alternate or layer_name,
                 "crs": self.identify_authority(_l) if _l.GetSpatialRef() else None,
             }
-            for _l in layers
+            for _l in (self._extract_layer(_l) for _l in layers)
             if self.fixup_name(_l.GetName()) == layer_name
         ]
 
@@ -1173,18 +1173,19 @@ class BaseVectorFileHandler(BaseHandler):
         layer = self._extract_layer(layers[0])
         # evaluate if some of the fid entry is null. if is null we stop the workflow
         # the user should provide the completed list with the fid set
-        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "{DEFAULT_PK_COLUMN_NAME.lower()}" IS NULL'
+        if exec_id.action == ira.UPSERT.value:
+            sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "{DEFAULT_PK_COLUMN_NAME.lower()}" IS NULL'
 
-        # Execute the SQL query to the layer via the gdal proxy object
-        result = all_layers[0].ExecuteSQL(sql_query)
-        if (
-            not (result and DEFAULT_PK_COLUMN_NAME in (x.name.lower() for x in result.schema))
-            or (result and result.GetFeatureCount() > 0)
-            or not result
-        ):
-            raise UpsertException(
-                f"All the feature in the file must have the fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
-            )
+            # Execute the SQL query to the layer via the gdal proxy object
+            result = all_layers[0].ExecuteSQL(sql_query)
+            if (
+                not (result and DEFAULT_PK_COLUMN_NAME in (x.name.lower() for x in result.schema))
+                or (result and result.GetFeatureCount() > 0)
+                or not result
+            ):
+                raise UpsertException(
+                    f"All the feature in the file must have the fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
+                )
 
         # Will generate the same schema as the target_resource_schema
         new_file_schema_fields = self.create_dynamic_model_fields(
