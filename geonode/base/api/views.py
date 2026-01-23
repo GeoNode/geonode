@@ -119,7 +119,6 @@ from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
 
 
-
 logger = logging.getLogger(__name__)
 
 
