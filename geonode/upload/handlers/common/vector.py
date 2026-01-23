@@ -58,7 +58,7 @@ from geonode.upload.handlers.utils import (
 )
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
-from osgeo import ogr
+from osgeo import ogr, gdal
 from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.celery_app import importer_app
 from geonode.assets.utils import copy_assets_and_links, get_default_asset
@@ -561,8 +561,6 @@ class BaseVectorFileHandler(BaseHandler):
         while the ogr library does not allow that.
         For example we can call the AUTODETECT_TYPE even in python
         """
-        from osgeo import gdal
-
         gdal_proxy = gdal.OpenEx(
             files.get("base_file"),
             nOpenFlags=gdal.OF_VECTOR,
