@@ -398,9 +398,7 @@ class BaseVectorFileHandler(BaseHandler):
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate"))
-                    .first()
-                    .srid,
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid,
                 }
             ]
 
@@ -794,12 +792,7 @@ class BaseVectorFileHandler(BaseHandler):
                 return geom
 
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = Dataset,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
         """
         Base function to create the resource into geonode. Each handler can specify
@@ -826,7 +819,7 @@ class BaseVectorFileHandler(BaseHandler):
         saved_dataset = resource_manager.create(
             None,
             resource_type=resource_type,
-            defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace),
+            defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace, **kwargs),
         )
 
         saved_dataset.refresh_from_db()
@@ -843,12 +836,12 @@ class BaseVectorFileHandler(BaseHandler):
 
         return saved_dataset
 
-    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
+    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
         return dict(
             name=alternate,
             workspace=workspace,
             store=os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
-            subtype="vector",
+            subtype=kwargs.pop("subtype", None) or "vector",
             alternate=f"{workspace}:{alternate}",
             dirty_state=True,
             title=layer_name,
@@ -956,11 +949,17 @@ class BaseVectorFileHandler(BaseHandler):
         new_alternate: str,
         **kwargs,
     ):
-
+        subtype = None
+        previous_resource = ResourceBase.objects.filter(
+            alternate__contains=kwargs.get("kwargs", {}).get("original_dataset_alternate")
+        ).first()
+        if previous_resource:
+            subtype = previous_resource.subtype
         new_resource = self.create_geonode_resource(
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
+            subtype=subtype,
         )
 
         copy_assets_and_links(resource, target=new_resource)

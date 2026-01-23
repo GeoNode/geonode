@@ -33,7 +33,6 @@ from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
 from geonode.upload.orchestrator import orchestrator
-from django.db.models import Q
 
 logger = logging.getLogger("importer")
 
@@ -206,13 +205,11 @@ class CSVFileHandler(BaseVectorFileHandler):
         return dynamic_model_schema, celery_group
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
-        if action == exa.COPY.value:               
+        if action == exa.COPY.value:
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate"))
-                    .first()
-                    .srid,
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid,
                 }
             ]
 
@@ -239,18 +236,19 @@ class CSVFileHandler(BaseVectorFileHandler):
             return "EPSG:4326"
 
     def create_geonode_resource(
-        self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, asset=None
+        self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
-        res = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
+        res = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, **kwargs)
         res.set_bbox_polygon(BBOX, res.srid)
         return res
 
-    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
+    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
+        subtype = kwargs.pop("subtype", None)
         return dict(
             name=alternate,
             workspace=workspace,
             store=os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
-            subtype="tabular" if _exec.input_params.get("is_tabular") else "vector",
+            subtype=subtype or ("tabular" if _exec.input_params.get("is_tabular") else "vector"),
             alternate=f"{workspace}:{alternate}",
             dirty_state=True,
             title=layer_name,
