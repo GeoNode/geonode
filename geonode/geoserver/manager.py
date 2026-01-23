@@ -17,16 +17,16 @@
 #
 #########################################################################
 
+import typing
 import logging
 import tempfile
-import typing
-from typing import Optional, Union
 
 
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from typing import Optional, Union
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
