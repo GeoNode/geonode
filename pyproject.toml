@@ -119,7 +119,7 @@ dependencies = [
     "django-storages==1.14.3",
     "dropbox==11.36.2",
     "google-cloud-storage==2.16.0",
-    "boto3==1.39.3",
+    "boto3==1.42.34",
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
