@@ -971,7 +971,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_thumbnail(self):
-        return True
+        return self.subtype not in {"3dtiles", "flatgeobuf"}
 
     @property
     def raw_purpose(self):
