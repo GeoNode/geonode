@@ -114,26 +114,10 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
                 logger.debug(f"GDAL failed to open dataset: {vsifile}")
                 raise ImportException(f"Could not open remote COG: {url}")
 
-            logger.debug("GDAL opened dataset. Extracting metadata...")
-            # Get Projection/CRS
-            srs = ds.GetSpatialRef()
-            if srs:
-                authority = srs.GetAuthorityName(None)
-                code = srs.GetAuthorityCode(None) or srs.GetAuthorityCode("PROJCS") or srs.GetAuthorityCode("GEOGCS")
+            if not ds.GetSpatialRef():
+                raise ImportException(f"Could not extract spatial reference from COG: {url}")
 
-                if authority and code:
-                    srid = f"{authority}:{code}"
-                else:
-                    logger.error(f"Could not identify EPSG code for COG: {url}")
-                    raise ImportException(
-                        "COG does not have a valid EPSG code. "
-                        "Please ensure the file has proper spatial reference information."
-                    )
-            else:
-                logger.error(f"No spatial reference system found in COG: {url}")
-                raise ImportException(
-                    "COG is missing spatial reference system (CRS).Please add CRS information to the file."
-                )
+            srid = self.identify_authority(ds)
 
             # Get BBox
             gt = ds.GetGeoTransform()
