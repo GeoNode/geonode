@@ -98,7 +98,6 @@ def create_thumbnail(
     """
 
     instance.refresh_from_db()
-
     default_thumbnail_name = _generate_thumbnail_name(instance)
     mime_type = "image/png"
     width = settings.THUMBNAIL_SIZE["width"]
