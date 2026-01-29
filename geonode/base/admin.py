@@ -160,6 +160,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
 class LinkInline(admin.TabularInline):
     model = Link
     extra = 0
+
     readonly_fields = ("asset_admin_link",)
     fields = ("link_type", "name", "mime", "url", "asset", "asset_admin_link")
 
@@ -169,20 +170,19 @@ class LinkInline(admin.TabularInline):
             return "—"
 
         a = obj.asset
-        # If `a` is base Asset, find the concrete model class via polymorphic_ctype
-        model_class = getattr(a, "polymorphic_ctype", None) and a.polymorphic_ctype.model_class()
-        if model_class and model_class is not a.__class__:
-            # reload as concrete instance
-            a = model_class.objects.get(pk=a.pk)
 
+        # Upcast to the real subclass (DB hit)
+        a = a.get_real_instance()
+
+        # Build admin URL for the concrete model
         opts = a._meta
         try:
             url = reverse(f"admin:{opts.app_label}_{opts.model_name}_change", args=(a.pk,))
-        except NoReverseMatch:
-            # fallback if that model isn't registered either
-            return format_html("{}", str(a))
+        except Exception:
+            # if that concrete model isn't registered in admin
+            return str(a)
 
-        return format_html(f'<a href="{url}" target="_blank" rel="noopener">View</a>')
+        return format_html('<a href="{}" target="_blank" rel="noopener">{}</a>', url, a)
 
 
 class LinkAdmin(admin.ModelAdmin):
