@@ -20,7 +20,6 @@ import logging
 import requests
 from osgeo import gdal
 
-from django.conf import settings
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.api.exceptions import ImportException
@@ -108,10 +107,10 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
             gdal.SetConfigOption("GDAL_HTTP_TIMEOUT", "15")
             gdal.SetConfigOption("GDAL_HTTP_MAX_RETRY", "1")
 
-            vsifile = f"/vsicurl/{url}"
-            ds = gdal.Open(vsifile)
+            vsiurl = f"/vsicurl/{url}"
+            ds = gdal.OpenEx(vsiurl)
             if ds is None:
-                logger.debug(f"GDAL failed to open dataset: {vsifile}")
+                logger.debug(f"GDAL failed to open dataset: {vsiurl}")
                 raise ImportException(f"Could not open remote COG: {url}")
 
             if not ds.GetSpatialRef():
@@ -164,8 +163,6 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
         payload.update(
             {
                 "name": alternate,
-                "workspace": getattr(settings, "DEFAULT_WORKSPACE", "geonode"),
-                "alternate": alternate,
             }
         )
         return payload
