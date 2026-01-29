@@ -104,8 +104,8 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
         logger.debug(f"Attempting to open COG with GDAL: /vsicurl/{url}")
         try:
             # Set GDAL config options for faster failure
-            gdal.SetConfigOption("GDAL_HTTP_TIMEOUT", "15")
-            gdal.SetConfigOption("GDAL_HTTP_MAX_RETRY", "1")
+            gdal.SetThreadLocalConfigOption("GDAL_HTTP_TIMEOUT", "15")
+            gdal.SetThreadLocalConfigOption("GDAL_HTTP_MAX_RETRY", "1")
 
             vsiurl = f"/vsicurl/{url}"
             ds = gdal.OpenEx(vsiurl)

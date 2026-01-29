@@ -68,8 +68,8 @@ class TestRemoteCOGResourceHandler(TestCase):
         with self.assertRaises(ImportException):
             self.handler.is_valid_url(self.valid_url)
 
-    @patch("geonode.upload.handlers.remote.cog.gdal.Open")
-    def test_create_geonode_resource(self, mock_gdal_open):
+    @patch("geonode.upload.handlers.remote.cog.gdal.OpenEx")
+    def test_create_geonode_resource(self, mock_gdal_openex):
         # Mock GDAL dataset
         mock_ds = MagicMock()
         mock_srs = MagicMock()
@@ -79,7 +79,7 @@ class TestRemoteCOGResourceHandler(TestCase):
         mock_ds.GetGeoTransform.return_value = [0, 1, 0, 0, 0, -1]
         mock_ds.RasterXSize = 100
         mock_ds.RasterYSize = 100
-        mock_gdal_open.return_value = mock_ds
+        mock_gdal_openex.return_value = mock_ds
 
         exec_id = orchestrator.create_execution_request(
             user=self.owner,
