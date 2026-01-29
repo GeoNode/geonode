@@ -178,7 +178,7 @@ class LinkInline(admin.TabularInline):
         opts = a._meta
         try:
             url = reverse(f"admin:{opts.app_label}_{opts.model_name}_change", args=(a.pk,))
-        except Exception:
+        except NoReverseMatch:
             # if that concrete model isn't registered in admin
             return str(a)
 
