@@ -34,7 +34,7 @@ class Asset(PolymorphicModel):
         verbose_name_plural = "Assets"
 
     def __str__(self) -> str:
-        return f"{self.title}"
+        return self.title
 
 
 class LocalAsset(Asset):

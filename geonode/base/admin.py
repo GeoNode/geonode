@@ -21,7 +21,7 @@ from django import forms
 from django.contrib import admin
 from django.conf import settings
 from django.shortcuts import redirect, render
-from django.urls import path
+from django.urls import NoReverseMatch, path
 from dal import autocomplete
 from taggit.forms import TagField
 from django.core.management import call_command
@@ -178,7 +178,7 @@ class LinkInline(admin.TabularInline):
         opts = a._meta
         try:
             url = reverse(f"admin:{opts.app_label}_{opts.model_name}_change", args=(a.pk,))
-        except Exception:
+        except NoReverseMatch:
             # fallback if that model isn't registered either
             return format_html("{}", str(a))
 
