@@ -26,6 +26,8 @@ from dal import autocomplete
 from taggit.forms import TagField
 from django.core.management import call_command
 from django.contrib import messages
+from django.urls import reverse
+from django.utils.html import format_html
 
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
@@ -153,6 +155,34 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display = ("id", "contact", "resource", "role")
     list_editable = ("contact", "resource", "role")
     form = forms.modelform_factory(ContactRole, fields="__all__")
+
+
+class LinkInline(admin.TabularInline):
+    model = Link
+    extra = 0
+    readonly_fields = ("asset_admin_link",)
+    fields = ("link_type", "name", "mime", "url", "asset", "asset_admin_link")
+
+    @admin.display(description="Asset")
+    def asset_admin_link(self, obj):
+        if not obj.asset_id:
+            return "—"
+
+        a = obj.asset
+        # If `a` is base Asset, find the concrete model class via polymorphic_ctype
+        model_class = getattr(a, "polymorphic_ctype", None) and a.polymorphic_ctype.model_class()
+        if model_class and model_class is not a.__class__:
+            # reload as concrete instance
+            a = model_class.objects.get(pk=a.pk)
+
+        opts = a._meta
+        try:
+            url = reverse(f"admin:{opts.app_label}_{opts.model_name}_change", args=(a.pk,))
+        except Exception:
+            # fallback if that model isn't registered either
+            return format_html("{}", str(a))
+
+        return format_html(f'<a href="{url}" target="_blank" rel="noopener">View</a>')
 
 
 class LinkAdmin(admin.ModelAdmin):
