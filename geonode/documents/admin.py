@@ -20,7 +20,7 @@
 from django.contrib import admin
 
 from geonode.documents.models import Document
-from geonode.base.admin import ResourceBaseAdminForm, SparseInline
+from geonode.base.admin import ResourceBaseAdminForm, SparseInline, LinkInline
 
 
 class DocumentAdminForm(ResourceBaseAdminForm):
@@ -33,7 +33,10 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
 
 class DocumentAdmin(admin.ModelAdmin):
-    inlines = (SparseInline,)
+    inlines = (
+        LinkInline,
+        SparseInline,
+    )
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display = (
         "id",
