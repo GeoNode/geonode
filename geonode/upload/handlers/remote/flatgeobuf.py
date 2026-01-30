@@ -22,6 +22,7 @@ from osgeo import gdal
 
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
+from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.orchestrator import orchestrator
 from geonode.geoserver.helpers import set_attributes
@@ -34,6 +35,12 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
     @property
     def supported_file_extension_config(self):
         return {}
+
+    @staticmethod
+    def has_serializer(data) -> bool:
+        if "url" in data and "flatgeobuf" in data.get("type", "").lower():
+            return RemoteResourceSerializer
+        return False
 
     @staticmethod
     def can_handle(_data) -> bool:
