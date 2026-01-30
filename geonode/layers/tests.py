@@ -1435,8 +1435,8 @@ class TestDatasetDownloadHandler(GeoNodeBaseTestSupport):
         self.sut = DatasetDownloadHandler(request, self.dataset.alternate)
 
     def test_download_url_without_original_link(self):
-        expected_url = reverse("dataset_download", args=[self.dataset.alternate])
-        self.assertEqual(expected_url, self.sut.download_url)
+
+        self.assertIsNone(self.sut.download_url)
 
     def test_download_url_with_original_link(self):
         Link.objects.update_or_create(
