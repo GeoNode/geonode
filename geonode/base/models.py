@@ -971,7 +971,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_thumbnail(self):
-        return self.subtype not in {"3dtiles", "flatgeobuf"}
+        return self.subtype not in {"3dtiles", "cog", "flatgeobuf"}
 
     @property
     def raw_purpose(self):
@@ -2033,7 +2033,7 @@ class Link(models.Model):
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
     mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
     url = models.TextField(max_length=1000)
-    asset = models.ForeignKey("assets.Asset", null=True, on_delete=models.CASCADE)
+    asset = models.ForeignKey("assets.Asset", blank=True, null=True, on_delete=models.CASCADE)
 
     objects = LinkManager()
 

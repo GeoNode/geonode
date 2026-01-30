@@ -18,9 +18,8 @@
 #########################################################################
 import logging
 import requests
-from osgeo import ogr, gdal
+from osgeo import gdal
 
-from django.conf import settings
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.api.exceptions import ImportException
@@ -76,11 +75,11 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
                     )
             finally:
                 range_res.close()
+        except ImportException as e:
+            raise e
         except Exception as e:
             logger.debug(f"is_valid_url ERROR: {str(e)}")
             logger.exception(e)
-            if isinstance(e, ImportException):
-                raise e
             raise ImportException("Error checking FlatGeobuf URL")
 
         return True
@@ -95,58 +94,45 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
     ):
         """
         Base function to create the resource into geonode.
-        Extracts metadata from remote FlatGeobuf using OGR via HTTP range requests.
+        Extracts metadata from remote FlatGeobuf using GDAL via HTTP range requests.
         """
         logger.debug(f"Entering create_geonode_resource for {layer_name}")
         _exec = orchestrator.get_execution_object(execution_id)
         params = _exec.input_params.copy()
         url = params.get("url")
 
-        # Extract metadata via OGR VSICURL
-        ogr.UseExceptions()
-        logger.debug(f"Attempting to open FlatGeobuf with OGR: /vsicurl/{url}")
+        # Extract metadata via GDAL VSICURL
+        gdal.UseExceptions()
+        logger.debug(f"Attempting to open FlatGeobuf with GDAL: /vsicurl/{url}")
         try:
             # Set GDAL config options for faster failure
-            gdal.SetConfigOption("GDAL_HTTP_TIMEOUT", "15")
-            gdal.SetConfigOption("GDAL_HTTP_MAX_RETRY", "1")
+            gdal.SetThreadLocalConfigOption("GDAL_HTTP_TIMEOUT", "15")
+            gdal.SetThreadLocalConfigOption("GDAL_HTTP_MAX_RETRY", "1")
 
-            vsifile = f"/vsicurl/{url}"
-            ds = ogr.Open(vsifile)
+            vsiurl = f"/vsicurl/{url}"
+            ds = gdal.OpenEx(
+                vsiurl,
+                allowed_drivers=["FlatGeobuf"],
+            )
             if ds is None:
-                logger.debug(f"OGR failed to open dataset: {vsifile}")
+                logger.debug(f"GDAL failed to open dataset: {vsiurl}")
                 raise ImportException(f"Could not open remote FlatGeobuf: {url}")
 
-            logger.debug("OGR opened dataset. Extracting metadata...")
+            logger.debug("GDAL opened dataset. Extracting metadata...")
 
-            # Get the first layer (FlatGeobuf typically has one layer)
             layer = ds.GetLayer(0)
             if layer is None:
                 raise ImportException(f"No layers found in FlatGeobuf: {url}")
 
-            # Get Projection/CRS
-            srs = layer.GetSpatialRef()
-            if srs:
-                authority = srs.GetAuthorityName(None)
-                code = srs.GetAuthorityCode(None) or srs.GetAuthorityCode("PROJCS") or srs.GetAuthorityCode("GEOGCS")
+            if not layer.GetSpatialRef():
+                raise ImportException(f"Could not extract spatial reference from Flatgeobuf: {url}")
 
-                if authority and code:
-                    srid = f"{authority}:{code}"
-                else:
-                    logger.error(f"Could not identify EPSG code for FlatGeobuf: {url}")
-                    raise ImportException(
-                        "FlatGeobuf does not have a valid EPSG code. "
-                        "Please ensure the file has proper spatial reference information."
-                    )
-            else:
-                logger.error(f"No spatial reference system found in FlatGeobuf: {url}")
-                raise ImportException(
-                    "FlatGeobuf is missing spatial reference system (CRS). Please add CRS information to the file."
-                )
+            srid = self.identify_authority(layer)
 
             # Get BBox
             try:
                 extent = layer.GetExtent()
-                bbox = [extent[0], extent[2], extent[1], extent[3]]  # [minx, miny, maxx, maxy]
+                bbox = [extent[0], extent[2], extent[1], extent[3]]
                 logger.debug(f"Extracted bounding box: {bbox}")
             except Exception as e:
                 logger.error(f"Could not extract bounding box from FlatGeobuf: {url}. Error: {e}")
@@ -162,15 +148,15 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
                 attribute_map.append([field_defn.GetName(), field_defn.GetTypeName()])
 
             logger.debug(f"Extracted schema with {len(attribute_map)} fields")
-            logger.debug("OGR operations finished.")
+            logger.debug("GDAL operations finished.")
 
             ds = None  # close dataset
+        except ImportException as e:
+            raise e
         except Exception as e:
-            logger.debug(f"OGR ERROR: {str(e)}")
+            logger.debug(f"is_valid_url ERROR: {str(e)}")
             logger.exception(e)
-            if isinstance(e, ImportException):
-                raise e
-            raise ImportException(f"Failed to extract metadata from FlatGeobuf: {url}")
+            raise ImportException("Error checking FlatGeobuf URL")
 
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
         resource.set_bbox_polygon(bbox, srid)
@@ -183,8 +169,6 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
         payload.update(
             {
                 "name": alternate,
-                "workspace": getattr(settings, "DEFAULT_WORKSPACE", "geonode"),
-                "alternate": alternate,
             }
         )
         return payload
