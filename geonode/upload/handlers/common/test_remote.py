@@ -21,7 +21,6 @@ from mock import MagicMock, patch
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from django.contrib.auth import get_user_model
-from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
@@ -60,9 +59,9 @@ class TestBaseRemoteResourceHandler(TestCase):
         actual = self.handler.can_handle({"base_file": "random.file"})
         self.assertFalse(actual)
 
-    def test_should_get_the_specific_serializer(self):
-        actual = self.handler.has_serializer(self.valid_files)
-        self.assertEqual(type(actual), type(RemoteResourceSerializer))
+    def test_has_serializer_raises_not_implemented_error(self):
+        with self.assertRaises(NotImplementedError):
+            self.handler.has_serializer(self.valid_files)
 
     def test_create_error_log(self):
         """

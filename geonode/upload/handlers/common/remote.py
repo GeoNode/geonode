@@ -25,7 +25,6 @@ from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.celery_tasks import import_orchestrator
@@ -65,9 +64,11 @@ class BaseRemoteResourceHandler(BaseHandler):
 
     @staticmethod
     def has_serializer(data) -> bool:
-        if "url" in data:
-            return RemoteResourceSerializer
-        return False
+        """
+        This method should be implemented by subclasses to determine if a serializer is available
+        for the given data.
+        """
+        raise NotImplementedError("Subclasses must implement the 'has_serializer' method.")
 
     @property
     def have_table(self):
