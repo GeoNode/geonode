@@ -83,7 +83,7 @@ class DatasetDownloadHandler:
         if self.is_link_resource:
             return resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").first().url
 
-        return reverse("dataset_download", args=[resource.alternate])
+        return None
 
     def get_resource(self):
         """
