@@ -70,8 +70,8 @@ class TestRemoteFlatGeobufResourceHandler(TestCase):
             self.handler.is_valid_url(self.valid_url)
 
     @patch("geonode.upload.handlers.remote.flatgeobuf.gdal.OpenEx")
-    def test_create_geonode_resource(self, mock_ogr_openex):
-        # Mock OGR dataset and layer
+    def test_create_geonode_resource(self, mock_gdal_openex):
+        # Mock GDAL dataset and layer
         mock_ds = MagicMock()
         mock_layer = MagicMock()
         mock_srs = MagicMock()
@@ -91,7 +91,7 @@ class TestRemoteFlatGeobufResourceHandler(TestCase):
         mock_layer.GetLayerDefn.return_value = mock_layer_defn
 
         mock_ds.GetLayer.return_value = mock_layer
-        mock_ogr_openex.return_value = mock_ds
+        mock_gdal_openex.return_value = mock_ds
 
         exec_id = orchestrator.create_execution_request(
             user=self.owner,
