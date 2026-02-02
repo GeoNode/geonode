@@ -680,7 +680,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
-        with patch("geonode.layers.download_handler.HttpClient.request") as mocked_catalog:
+        with patch("geonode.utils.HttpClient.request") as mocked_catalog:
             mocked_catalog.return_value = _response, content
             url = reverse("dataset_download", args=[dataset.alternate])
             response = self.client.get(url)
@@ -692,7 +692,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
         layer = create_dataset(dataset.title, dataset.title, dataset.owner, "Point")
-        with patch("geonode.layers.download_handler.HttpClient.request") as mocked_catalog:
+        with patch("geonode.utils.HttpClient.request") as mocked_catalog:
             mocked_catalog.return_value = _response, ""
             url = reverse("dataset_download", args=[layer.alternate])
             response = self.client.get(url)
@@ -710,34 +710,34 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         _response = MagicMock(status_code=200, text="", headers={"Content-Type": ""})  # noqa
         dataset = Dataset.objects.first()
         layer = create_dataset(dataset.title, dataset.title, dataset.owner, "Point")
-        with patch("geonode.layers.download_handler.HttpClient.request") as mocked_catalog:
+        with patch("geonode.utils.HttpClient.request") as mocked_catalog:
             mocked_catalog.return_value = _response, ""
             url = reverse("dataset_download", args=[layer.alternate])
             response = self.client.get(url)
             self.assertTrue(response.status_code == 404)
 
     @override_settings(USE_GEOSERVER=True)
-    @patch("geonode.layers.download_handler.get_template")
+    @patch("django.template.loader.get_template")
     def test_dataset_download_call_the_catalog_for_raster(self, pathed_template):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         _response = MagicMock(status_code=200, text="", headers={"Content-Type": ""})  # noqa
         dataset = Dataset.objects.filter(subtype="raster").first()
         layer = create_dataset(dataset.title, dataset.title, dataset.owner, "Point")
         Dataset.objects.filter(alternate=layer.alternate).update(subtype="raster")
-        with patch("geonode.layers.download_handler.HttpClient.request") as mocked_catalog:
+        with patch("geonode.utils.HttpClient.request") as mocked_catalog:
             mocked_catalog.return_value = _response, ""
             url = reverse("dataset_download", args=[layer.alternate])
             response = self.client.get(url)
             self.assertTrue(response.status_code == 404)
 
     @override_settings(USE_GEOSERVER=True)
-    @patch("geonode.layers.download_handler.get_template")
+    @patch("django.template.loader.get_template")
     def test_dataset_download_call_the_catalog_not_work_for_vector(self, pathed_template):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         _response = MagicMock(status_code=200, text="", headers={"Content-Type": ""})  # noqa
         dataset = Dataset.objects.filter(subtype="vector").first()
         layer = create_dataset(dataset.title, dataset.title, dataset.owner, "Point")
-        with patch("geonode.layers.download_handler.HttpClient.request") as mocked_catalog:
+        with patch("geonode.utils.HttpClient.request") as mocked_catalog:
             mocked_catalog.return_value = _response, ""
             url = reverse("dataset_download", args=[layer.alternate])
             response = self.client.get(url)
