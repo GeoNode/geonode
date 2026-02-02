@@ -23,18 +23,15 @@ from python_calamine import CalamineWorkbook
 
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.csv.handler import CSVFileHandler
-from geonode.upload.utils import UploadLimitValidator
-from geonode.upload.api.exceptions import (
-            UploadParallelismLimitException, 
-            InvalidInputFileException 
-        )
-from osgeo import ogr
 
 logger = logging.getLogger("importer")
 
 
 class XLSXFileHandler(CSVFileHandler):
 
+    lat_names = CSVFileHandler.possible_lat_column
+    lon_names = CSVFileHandler.possible_long_column
+    
     @property
     def supported_file_extension_config(self):
         return {
@@ -68,6 +65,10 @@ class XLSXFileHandler(CSVFileHandler):
     
     @staticmethod
     def is_valid(files, user, **kwargs):
+        from osgeo import ogr
+        from geonode.upload.utils import UploadLimitValidator
+        from geonode.upload.api.exceptions import UploadParallelismLimitException, InvalidInputFileException
+        
         BaseVectorFileHandler.is_valid(files, user)
         
         upload_validator = UploadLimitValidator(user)
@@ -79,40 +80,40 @@ class XLSXFileHandler(CSVFileHandler):
         if not datasource:
             raise InvalidInputFileException("The converted XLSX data is invalid; no layers found.")
 
-        layers = [datasource.GetLayer(i) for i in range(datasource.GetLayerCount())]
-        layers_count = len(layers)
+        # In XLSX handler, we always expect 1 layer (the first sheet)
+        layer = datasource.GetLayer(0)
+        if not layer:
+             raise InvalidInputFileException("No data found in the converted CSV.")
 
-        if layers_count >= max_upload:
+        if 1 + actual_upload > max_upload:
             raise UploadParallelismLimitException(
-                detail=f"The number of layers ({layers_count}) exceeds the limit of {max_upload}."
+                detail=f"Upload limit exceeded. Max allowed parallel uploads: {max_upload}"
             )
 
-        schema_keys = [x.name.lower() for layer in layers for x in layer.schema]
+        schema_keys = [x.name.lower() for x in layer.schema]
         
-        has_lat = any(x in CSVFileHandler.possible_lat_column for x in schema_keys)
-        has_long = any(x in CSVFileHandler.possible_long_column for x in schema_keys)
+        # Accessing class-level constants explicitly
+        has_lat = any(x in XLSXFileHandler.lat_names for x in schema_keys)
+        has_long = any(x in XLSXFileHandler.lon_names for x in schema_keys)
 
         if has_lat and not has_long:
-            raise InvalidInputFileException(
-                f"Longitude is missing. Supported names: {', '.join(CSVFileHandler.possible_long_column)}"
-            )
+            raise InvalidInputFileException(f"Longitude is missing. Supported names: {', '.join(XLSXFileHandler.lon_names)}")
 
         if not has_lat and has_long:
-            raise InvalidInputFileException(
-                f"Latitude is missing. Supported names: {', '.join(CSVFileHandler.possible_lat_column)}"
-            )
+            raise InvalidInputFileException(f"Latitude is missing. Supported names: {', '.join(XLSXFileHandler.lat_names)}")
 
         if not (has_lat and has_long):
             raise InvalidInputFileException(
-                "XLSX uploads require both a Latitude and a Longitude column. "
-                f"Accepted Lat: {', '.join(CSVFileHandler.possible_lat_column)}. "
-                f"Accepted Lon: {', '.join(CSVFileHandler.possible_long_column)}."
+                "XLSX uploads require both a Latitude and a Longitude column in the first row. "
+                f"Accepted Lat: {', '.join(XLSXFileHandler.lat_names)}. "
+                f"Accepted Lon: {', '.join(XLSXFileHandler.lon_names)}."
             )
 
         return True
     
     def pre_processing(self, files, execution_id, **kwargs):
         from geonode.upload.orchestrator import orchestrator
+        from geonode.upload.api.exceptions import InvalidInputFileException
         
         # calling the super function (CSVFileHandler logic)
         _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
@@ -172,28 +173,36 @@ class XLSXFileHandler(CSVFileHandler):
     
     def _validate_headers(self, headers):
         """
-        Ensures the candidate row is a valid header row:
-        -- Not empty.
-        -- All column names are unique (required for DB import).
-        -- No empty column names (required for schema creation).
+        Strictly validates Row 1 for headers:
+        - Must not be empty.
+        - Must contain geometry 'fingerprints' (Lat/Lon).
+        - Must have unique and non-empty column names.
         """
-        # Basic Content Check
-        if self._detect_empty_rows(headers):
-            raise Exception("The first row found is empty. Column headers are required.")
+        # Existence Check
+        if not headers or self._detect_empty_rows(headers):
+            raise Exception("No data or headers found in the selected sheet.")
 
-        # Normalization and Empty Name Check
-        # We strip whitespace and convert to string to check for valid names
+        # Normalization
         clean_headers = [str(h).strip().lower() if h is not None else "" for h in headers]
         
-        if any(h == "" for h in clean_headers):
+        # Geometry Fingerprint Check
+        has_lat = any(h in self.lat_names for h in clean_headers)
+        has_lon = any(h in self.lon_names for h in clean_headers)
+
+        if not (has_lat and has_lon):
             raise Exception(
-                "One or more columns are missing a header name. Every column must have a title."
+                "The headers does not contain valid geometry headers. "
+                "GeoNode requires Latitude and Longitude labels in the first row."
             )
+
+        # Integrity Check (No Empty Names)
+        if any(h == "" for h in clean_headers):
+            raise Exception("One or more columns in the first row are missing a header name.")
 
         # Uniqueness Check
         if len(clean_headers) != len(set(clean_headers)):
             duplicates = set([h for h in clean_headers if clean_headers.count(h) > 1])
-            raise Exception(f"Duplicate column headers found: {', '.join(duplicates)}")
+            raise Exception(f"Duplicate headers found in Row 1: {', '.join(duplicates)}")
 
         return True
         
