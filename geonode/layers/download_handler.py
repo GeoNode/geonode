@@ -44,7 +44,7 @@ class DatasetDownloadHandler:
         Basic method. Should return the Response object
         that allow the resource download
         """
-        raise Http404("Resource requested is not available")
+        raise Http404("Direct download for the requested resource is not supported")
 
     @property
     def is_link_resource(self):
