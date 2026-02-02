@@ -157,7 +157,7 @@ dependencies = [
     "selenium-requests==2.0.4",
     "webdriver_manager==4.0.1",
     # Security and audit
-    "cryptography==46.0.3",
+    "cryptography==46.0.4",
     "jwcrypto>=1.5.6",
 ]
 
