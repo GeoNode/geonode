@@ -18,19 +18,11 @@
 #########################################################################
 
 import logging
-import xml.etree.ElementTree as ET
 
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.template.loader import get_template
-from django.urls import reverse
+from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from geonode.base.auth import get_or_create_token
-from geonode.geoserver.helpers import wps_format_is_supported
 from geonode.layers.views import _resolve_dataset
-from geonode.proxy.views import fetch_response_headers
-from geonode.utils import HttpClient
-from geonode.layers.utils import download_from_wfs
 
 logger = logging.getLogger("geonode.layers.download_handler")
 
@@ -52,11 +44,7 @@ class DatasetDownloadHandler:
         Basic method. Should return the Response object
         that allow the resource download
         """
-        resource = self.get_resource()
-        if not resource:
-            raise Http404("Resource requested is not available")
-        response = self.process_dowload(resource)
-        return response
+        raise Http404("Resource requested is not available")
 
     @property
     def is_link_resource(self):
@@ -102,76 +90,3 @@ class DatasetDownloadHandler:
 
         return self._resource
 
-    def process_dowload(self, resource=None):
-        """
-        Generate the response object
-        """
-        if not resource:
-            resource = self.get_resource()
-        if not settings.USE_GEOSERVER:
-            # if GeoServer is not used, we redirect to the proxy download
-            return HttpResponseRedirect(reverse("download", args=[resource.id]))
-
-        download_format = self.request.GET.get("export_format")
-
-        if download_format and not wps_format_is_supported(download_format, resource.subtype):
-            logger.error("The format provided is not valid for the selected resource")
-            return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
-
-        _format = resource.download_format
-        # getting default payload
-        tpl = get_template("geoserver/dataset_download.xml")
-        ctx = {"alternate": resource.alternate, "download_format": download_format or _format}
-        # applying context for the payload
-        payload = tpl.render(ctx)
-
-        # init of Client
-        client = HttpClient()
-
-        headers = {"Content-type": "application/xml", "Accept": "application/xml"}
-
-        # defining the URL needed fr the download
-        url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?service=WPS&version=1.0.0&REQUEST=Execute"
-        if not self.request.user.is_anonymous:
-            # define access token for the user
-            access_token = get_or_create_token(self.request.user)
-            url += f"&access_token={access_token}"
-
-        # request to geoserver
-        response, content = client.request(url=url, data=payload, method="post", headers=headers)
-
-        if (
-            response
-            and response.headers.get("Content-Type") == "text/xml"
-            and "empty feature collection" in response.text.lower()
-        ):
-            logger.debug("Empty feature collection returned, falling back to WFS download")
-            response, content = download_from_wfs(resource, download_format or _format, self.request.user)
-
-        if not response or response.status_code != 200:
-            logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
-            return JsonResponse(
-                {"error": "Download dataset exception: error during call with GeoServer"},
-                status=500,
-            )
-
-        # error handling
-        namespaces = {"ows": "http://www.opengis.net/ows/1.1", "wps": "http://www.opengis.net/wps/1.0.0"}
-        response_type = response.headers.get("Content-Type")
-        if response_type == "text/xml":
-            # parsing XML for get exception
-            content = ET.fromstring(response.text)
-            exc = content.find("*//ows:Exception", namespaces=namespaces) or content.find(
-                "ows:Exception", namespaces=namespaces
-            )
-            if exc:
-                exc_text = exc.find("ows:ExceptionText", namespaces=namespaces)
-                logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
-                return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text.text}"}, status=500)
-
-        return_response = fetch_response_headers(
-            HttpResponse(content=response.content, status=response.status_code, content_type=download_format),
-            response.headers,
-        )
-        return_response.headers["Content-Type"] = download_format or _format
-        return return_response

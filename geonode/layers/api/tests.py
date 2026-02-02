@@ -681,11 +681,8 @@ class DatasetsApiTests(APITestCase):
         response = self.client.get(url)
         self.assertTrue(response.status_code == 200)
         data = response.json()["dataset"]
-        download_url_data = data["download_urls"][0]
-        download_url = reverse("dataset_download", args=[dataset.alternate])
-        self.assertEqual(download_url_data["default"], True)
-        self.assertEqual(download_url_data["ajax_safe"], True)
-        self.assertEqual(download_url_data["url"], download_url)
+        self.assertEqual(data["download_urls"], [])
+
 
         link = Link(link_type="original", url="https://myoriginal.org", resource=dataset)
         link.save()
@@ -693,7 +690,6 @@ class DatasetsApiTests(APITestCase):
         response = self.client.get(url)
         data = response.json()["dataset"]
         download_url_data = data["download_urls"][0]
-        download_url = reverse("dataset_download", args=[dataset.alternate])
         self.assertEqual(download_url_data["default"], True)
         self.assertEqual(download_url_data["ajax_safe"], False)
         self.assertEqual(download_url_data["url"], "https://myoriginal.org")
