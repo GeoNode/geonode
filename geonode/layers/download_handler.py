@@ -18,18 +18,16 @@
 #########################################################################
 
 import logging
-import xml.etree.ElementTree as ET
 
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.template.loader import get_template
-from django.urls import reverse
+from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from geonode.base.auth import get_or_create_token
-from geonode.geoserver.helpers import wps_format_is_supported
 from geonode.layers.views import _resolve_dataset
+<<<<<<< HEAD
 from geonode.proxy.views import fetch_response_headers
 from geonode.utils import HttpClient
+=======
+>>>>>>> d4c42a93c2 ([Fixes 13913] remove process_download function from default handler)
 
 logger = logging.getLogger("geonode.layers.download_handler")
 
@@ -51,11 +49,7 @@ class DatasetDownloadHandler:
         Basic method. Should return the Response object
         that allow the resource download
         """
-        resource = self.get_resource()
-        if not resource:
-            raise Http404("Resource requested is not available")
-        response = self.process_dowload(resource)
-        return response
+        raise Http404("Resource requested is not available")
 
     @property
     def is_link_resource(self):
@@ -101,6 +95,7 @@ class DatasetDownloadHandler:
 
         return self._resource
 
+<<<<<<< HEAD
     def process_dowload(self, resource=None):
         """
         Generate the response object
@@ -166,3 +161,5 @@ class DatasetDownloadHandler:
         )
         return_response.headers["Content-Type"] = download_format or _format
         return return_response
+=======
+>>>>>>> d4c42a93c2 ([Fixes 13913] remove process_download function from default handler)
