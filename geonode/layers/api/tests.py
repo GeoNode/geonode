@@ -683,7 +683,6 @@ class DatasetsApiTests(APITestCase):
         data = response.json()["dataset"]
         self.assertEqual(data["download_urls"], [])
 
-
         link = Link(link_type="original", url="https://myoriginal.org", resource=dataset)
         link.save()
 
