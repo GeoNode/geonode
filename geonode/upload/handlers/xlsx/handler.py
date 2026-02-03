@@ -19,6 +19,8 @@
 import logging
 from pathlib import Path
 import csv
+from datetime import datetime
+import math
 from celery import group
 from python_calamine import CalamineWorkbook
 from osgeo import ogr
@@ -29,6 +31,10 @@ from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.csv.handler import CSVFileHandler
 from geonode.upload.celery_tasks import create_dynamic_structure
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
+from geonode.upload.api.exceptions import (
+    UploadParallelismLimitException, 
+    InvalidInputFileException,
+)
 
 logger = logging.getLogger("importer")
 
@@ -72,7 +78,6 @@ class XLSXFileHandler(CSVFileHandler):
     @staticmethod
     def is_valid(files, user, **kwargs):
         from geonode.upload.utils import UploadLimitValidator
-        from geonode.upload.api.exceptions import UploadParallelismLimitException, InvalidInputFileException
         
         BaseVectorFileHandler.is_valid(files, user)
         
@@ -180,9 +185,9 @@ class XLSXFileHandler(CSVFileHandler):
 
         return dynamic_model_schema, celery_group
     
+    
     def pre_processing(self, files, execution_id, **kwargs):
         from geonode.upload.orchestrator import orchestrator
-        from geonode.upload.api.exceptions import InvalidInputFileException
         
         # calling the super function (CSVFileHandler logic)
         _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
@@ -274,23 +279,63 @@ class XLSXFileHandler(CSVFileHandler):
             raise Exception(f"Duplicate headers found in Row 1: {', '.join(duplicates)}")
 
         return True
+    
+    def _data_sense_check(self, x, y):
+        """
+        High-speed coordinate validation for large datasets
+        """
+        try:
+            # Catch Excel Date objects immediately (Calamine returns these as datetime)
+            if isinstance(x, datetime) or isinstance(y, datetime):
+                return False
+                
+            f_x = float(x)
+            f_y = float(y)
+
+            # Finiteness check (Catches NaN, Inf, and None)
+            # This is extremely fast in Python
+            if not (math.isfinite(f_x) and math.isfinite(f_y)):
+                return False
+
+            # Magnitude check 
+            # Limits to +/- 40 million (covers all CRS including Web Mercator)
+            # but blocks 'serial date numbers' or corrupted scientific notation
+            if not (-40000000 < f_x < 40000000 and -40000000 < f_y < 40000000):
+                return False
+
+            return True
+        except (ValueError, TypeError):
+            return False
         
     def _detect_empty_rows(self, row):
         return not row or all(cell is None or str(cell).strip() == "" for cell in row)
     
     def _convert_to_csv(self, headers, rows_gen, output_path):
         """Streams valid data to CSV, skipping empty rows."""
+
+        # Define clean_headers once here to find the indices
+        clean_headers = [str(h).strip().lower() for h in headers]
+        
+        # Get the indices for the Lat and Lon columns
+        lat_idx = next(i for i, h in enumerate(clean_headers) if h in self.lat_names)
+        lon_idx = next(i for i, h in enumerate(clean_headers) if h in self.lon_names)
+        
+        # Local binding of the check function for loop speed
+        check_func = self._data_sense_check
+        
         with open(output_path, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(headers)
-            for row in rows_gen:
+            
+            for row_num, row in enumerate(rows_gen, start=2):
                 # Skip row if it contains no data
                 if self._detect_empty_rows(row):
                     continue
                 
-                # Cleanup: handle Excel's float-based integers (1.0 -> 1)
-                cleaned_row = [
-                    int(cell) if isinstance(cell, float) and cell.is_integer() else cell 
-                    for cell in row
-                ]
-                writer.writerow(cleaned_row)
+                if not check_func(row[lon_idx], row[lat_idx]):
+                    raise InvalidInputFileException(
+                        detail=f"Coordinate error at row {row_num}. "
+                               "Check for dates or non-numeric values in Lat/Lon."
+                    )
+
+                writer.writerow(row)
