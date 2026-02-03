@@ -25,7 +25,7 @@ class AsteriskSearchQuery(SearchQuery):
 
         tokens = value.split()
         if not tokens:
-            value = "*"
+            value = ""
         else:
             # enforce order and prefix matching
             value = " <-> ".join(f"{t}:*" for t in tokens)
@@ -44,7 +44,7 @@ class ResourceIndexFilter(BaseFilterBackend):
         search_index = request.query_params.get("search_index", None)
         search = request.query_params.get("search", None)
 
-        if not search_index or not search:
+        if not search_index or not search or not search.strip():
             return queryset
 
         if request.query_params.getlist("search_fields", None):
