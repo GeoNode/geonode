@@ -19,10 +19,16 @@
 import logging
 from pathlib import Path
 import csv
+from celery import group
 from python_calamine import CalamineWorkbook
+from osgeo import ogr
+
+from dynamic_models.models import ModelSchema
 
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.csv.handler import CSVFileHandler
+from geonode.upload.celery_tasks import create_dynamic_structure
+from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
 
 logger = logging.getLogger("importer")
 
@@ -65,7 +71,6 @@ class XLSXFileHandler(CSVFileHandler):
     
     @staticmethod
     def is_valid(files, user, **kwargs):
-        from osgeo import ogr
         from geonode.upload.utils import UploadLimitValidator
         from geonode.upload.api.exceptions import UploadParallelismLimitException, InvalidInputFileException
         
@@ -110,6 +115,70 @@ class XLSXFileHandler(CSVFileHandler):
             )
 
         return True
+    
+    @staticmethod
+    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
+        """
+        Customized for XLSX: Only looks for X/Y (Point) data.
+        Ignores WKT/Geom columns as per requirements.
+        """
+        
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
+            files, original_name, ovverwrite_layer, alternate
+        )
+        
+        # We only define X and Y possible names instead of WKT columns
+        lat_mapping = ",".join(XLSXFileHandler.lat_names)
+        lon_mapping = ",".join(XLSXFileHandler.lon_names)
+        
+        additional_option = (
+            f' -oo "X_POSSIBLE_NAMES={lon_mapping}" '
+            f' -oo "Y_POSSIBLE_NAMES={lat_mapping}"'
+        )
+        
+        return (
+            f"{base_command} -oo KEEP_GEOM_COLUMNS=NO "
+            f"-lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
+            + additional_option
+        )
+    
+    def create_dynamic_model_fields(
+        self,
+        layer: str,
+        dynamic_model_schema: ModelSchema = None,
+        overwrite: bool = None,
+        execution_id: str = None,
+        layer_name: str = None,
+        return_celery_group: bool = True,
+    ):
+        # retrieving the field schema from ogr2ogr and converting the type to Django Types
+        layer_schema = [
+            {"name": x.name.lower(), "class_name": self._get_type(x), "null": True} 
+            for x in layer.schema
+        ]
+        
+        class_name = GEOM_TYPE_MAPPING.get(self.promote_to_multi("Point"))
+        # Get the geometry type name from OGR (e.g., 'Point' or 'Point 25D')
+        geom_type_name = ogr.GeometryTypeToName(layer.GetGeomType())
+
+        layer_schema += [
+            {
+                "name": layer.GetGeometryColumn() or self.default_geometry_column_name,
+                "class_name": class_name,
+                "dim": (3 if geom_type_name.lower().startswith("3d") or "z" in geom_type_name.lower() else 2),
+            }
+        ]
+
+        if not return_celery_group:
+            return layer_schema
+
+        list_chunked = [layer_schema[i : i + 30] for i in range(0, len(layer_schema), 30)]
+        celery_group = group(
+            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
+            for schema in list_chunked
+        )
+
+        return dynamic_model_schema, celery_group
     
     def pre_processing(self, files, execution_id, **kwargs):
         from geonode.upload.orchestrator import orchestrator
