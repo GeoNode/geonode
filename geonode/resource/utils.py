@@ -285,6 +285,24 @@ def update_resource(
     return instance
 
 
+def infer_default_metadata(instance):
+    title = getattr(instance, "title", None) or ""
+    if not title:
+        if hasattr(instance, "name") and getattr(instance, "name", None):
+            title = instance.name
+        else:
+            asset = get_default_asset(instance)
+            files = asset.location if asset else []
+            if isinstance(instance, Document) and files:
+                title = os.path.basename(files[0])
+
+    abstract = getattr(instance, "abstract", None) or ""
+    if not abstract:
+        abstract = str(_("No abstract provided"))
+
+    return {"title": str(title or ""), "abstract": str(abstract or "")}
+
+
 def call_storers(instance, custom={}):
     if not globals().get("storer_modules"):
         storer_module_path = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
