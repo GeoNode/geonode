@@ -94,6 +94,7 @@ class DatasetDownloadHandler:
                 logger.debug(e)
 
         return self._resource
+<<<<<<< HEAD
 
 <<<<<<< HEAD
     def process_dowload(self, resource=None):
@@ -163,3 +164,5 @@ class DatasetDownloadHandler:
         return return_response
 =======
 >>>>>>> d4c42a93c2 ([Fixes 13913] remove process_download function from default handler)
+=======
+>>>>>>> 41046a1077 (fix: code formatting)
