@@ -89,4 +89,3 @@ class DatasetDownloadHandler:
                 logger.debug(e)
 
         return self._resource
-
