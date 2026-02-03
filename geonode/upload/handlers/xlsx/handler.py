@@ -17,6 +17,8 @@
 #
 #########################################################################
 import logging
+import os
+from distutils.util import strtobool
 from pathlib import Path
 import csv
 from datetime import datetime
@@ -41,11 +43,18 @@ logger = logging.getLogger("importer")
 
 class XLSXFileHandler(CSVFileHandler):
 
+    XLSX_UPLOAD_ENABLED = strtobool(os.getenv("XLSX_UPLOAD_ENABLED", "False"))
+
     lat_names = CSVFileHandler.possible_lat_column
     lon_names = CSVFileHandler.possible_long_column
     
     @property
     def supported_file_extension_config(self):
+        
+        # If disabled, return an empty list or None so the UI doesn't show XLSX options
+        if not XLSXFileHandler.XLSX_UPLOAD_ENABLED:
+            return None
+        
         return {
             "id": "xlsx",
             "formats": [
@@ -65,6 +74,10 @@ class XLSXFileHandler(CSVFileHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
+        # Availability Check for the back-end
+        if not XLSXFileHandler.XLSX_UPLOAD_ENABLED:
+            return False
+        
         base = _data.get("base_file")
         if not base:
             return False
