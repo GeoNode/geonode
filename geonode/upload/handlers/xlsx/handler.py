@@ -59,8 +59,8 @@ class XLSXFileHandler(CSVFileHandler):
             "id": "xlsx",
             "formats": [
                 {
-                    "label": "XLSX",
-                    "required_ext": ["xlsx"],
+                    "label": "Excel (XLSX/XLS)",
+                    "required_ext": ["xlsx", "xls"],
                     "optional_ext": ["sld", "xml"],
                 }
             ],
@@ -81,11 +81,17 @@ class XLSXFileHandler(CSVFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.lower().endswith(".xlsx") or base.lower().endswith(".xls")
+        
+        # Support both XLSX and XLS
+        valid_extensions = (".xlsx", ".xls")
+
+        is_excel = (
+            base.lower().endswith(valid_extensions)
             if isinstance(base, str)
-            else base.name.lower().endswith(".xlsx") or base.name.lower().endswith(".xlsx")
-        ) and BaseVectorFileHandler.can_handle(_data)
+            else base.name.lower().endswith(valid_extensions)
+        )
+        
+        return is_excel and BaseVectorFileHandler.can_handle(_data)
 
     
     @staticmethod
