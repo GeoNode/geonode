@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import pyproj
 from geonode.assets.local import LocalAssetHandler
 from geonode.upload.publisher import DataPublisher
 import json
@@ -259,27 +258,6 @@ class BaseRasterFileHandler(BaseHandler):
                 "raster_path": files.get("base_file"),
             }
         ]
-
-    def identify_authority(self, layer):
-        try:
-            layer_wkt = layer.GetSpatialRef().ExportToWkt()
-            _name = "EPSG"
-            _code = pyproj.CRS(layer_wkt).to_epsg(min_confidence=20)
-            if _code is None:
-                layer_proj4 = layer.GetSpatialRef().ExportToProj4()
-                _code = pyproj.CRS(layer_proj4).to_epsg(min_confidence=20)
-                if _code is None:
-                    raise Exception("CRS authority code not found, fallback to default behaviour")
-        except Exception:
-            spatial_ref = layer.GetSpatialRef()
-            spatial_ref.AutoIdentifyEPSG()
-            _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
-            _code = (
-                spatial_ref.GetAuthorityCode("PROJCS")
-                or spatial_ref.GetAuthorityCode("GEOGCS")
-                or spatial_ref.GetAttrValue("AUTHORITY", 1)
-            )
-        return f"{_name}:{_code}"
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
         """
