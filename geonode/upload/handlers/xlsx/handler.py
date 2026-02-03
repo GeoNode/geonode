@@ -56,11 +56,16 @@ class XLSXFileHandler(CSVFileHandler):
             return None
         
         return {
-            "id": "xlsx",
+            "id": "excel",  # Use a generic ID that doesn't imply a specific extension
             "formats": [
                 {
-                    "label": "Excel (XLSX/XLS)",
-                    "required_ext": ["xlsx", "xls"],
+                    "label": "Excel (OpenXML)",
+                    "required_ext": ["xlsx"],
+                    "optional_ext": ["sld", "xml"],
+                },
+                {
+                    "label": "Excel (Binary/Legacy)",
+                    "required_ext": ["xls"],
                     "optional_ext": ["sld", "xml"],
                 }
             ],
