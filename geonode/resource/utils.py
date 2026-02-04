@@ -488,15 +488,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     if instance:
         instance = call_storers(instance.get_real_instance(), kwargs.get("custom", {}))
-        if hasattr(instance, "abstract") and not getattr(instance, "abstract", None):
-            instance.abstract = _("No abstract provided")
-        if hasattr(instance, "title") and not getattr(instance, "title", None) or getattr(instance, "title", "") == "":
-            asset = get_default_asset(instance)
-            files = asset.location if asset else []
-            if isinstance(instance, Document) and files:
-                instance.title = os.path.basename(files[0])
-            if hasattr(instance, "name") and getattr(instance, "name", None):
-                instance.title = instance.name
         if (
             hasattr(instance, "alternate")
             and not getattr(instance, "alternate", None)
