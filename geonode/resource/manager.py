@@ -306,6 +306,11 @@ class ResourceManager(ResourceManagerInterface):
                         uuid, resource_type=resource_type, defaults=resource_dict
                     )
                 _resource.save()
+                metadata_manager.update_schema_instance_partial(
+                    _resource,
+                    infer_default_metadata(_resource.get_real_instance()),
+                    user=None,
+                )
                 resourcebase_post_save(_resource.get_real_instance())
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
