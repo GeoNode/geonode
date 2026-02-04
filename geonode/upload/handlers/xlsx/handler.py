@@ -251,6 +251,10 @@ class XLSXFileHandler(CSVFileHandler):
         
         # update the file path in the payload
         _data['files']['base_file'] = output_file
+
+        if 'temporary_files' not in _data or not isinstance(_data['temporary_files'], dict):
+            _data['temporary_files'] = {}
+
         _data['temporary_files']['base_file'] = output_file
         
         # updating the execution id params
