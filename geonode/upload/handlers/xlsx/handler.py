@@ -34,10 +34,7 @@ from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.csv.handler import CSVFileHandler
 from geonode.upload.celery_tasks import create_dynamic_structure
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
-from geonode.upload.api.exceptions import (
-    UploadParallelismLimitException,
-    InvalidInputFileException,
-)
+from geonode.upload.api.exceptions import InvalidInputFileException
 
 logger = logging.getLogger("importer")
 
