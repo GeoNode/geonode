@@ -560,7 +560,7 @@ class ProfileResource(TypeFilteredResource):
         resource_name = "profiles"
         allowed_methods = ["get"]
         ordering = ["username", "date_joined"]
-        excludes = ["is_staff", "password", "is_superuser", "is_active", "last_login"]
+        excludes = ["is_staff", "password", "is_superuser", "is_active", "last_login", "extra_data"]
 
         filtering = {
             "username": ALL,
