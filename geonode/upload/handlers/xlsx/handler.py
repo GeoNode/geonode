@@ -260,7 +260,7 @@ class XLSXFileHandler(CSVFileHandler):
         """Returns the first sheet name and logs warnings if others exist."""
         sheets = workbook.sheet_names
         if not sheets:
-            raise Exception("No sheets found in workbook.")
+            raise InvalidInputFileException("No sheets found in workbook.")
         if len(sheets) > 1:
             logger.warning(f"Multiple sheets found. Ignoring: {sheets[1:]}")
         return sheets[0]
@@ -274,7 +274,7 @@ class XLSXFileHandler(CSVFileHandler):
         """
         # Existence Check
         if not headers or self._detect_empty_rows(headers):
-            raise Exception("No data or headers found in the selected sheet.")
+            raise InvalidInputFileException("No data or headers found in the selected sheet.")
 
         # Normalization
         clean_headers = [str(h).strip().lower() if h is not None else "" for h in headers]
@@ -284,19 +284,19 @@ class XLSXFileHandler(CSVFileHandler):
         has_lon = any(h in self.lon_names for h in clean_headers)
 
         if not (has_lat and has_lon):
-            raise Exception(
+            raise InvalidInputFileException(
                 "The headers does not contain valid geometry headers. "
                 "GeoNode requires Latitude and Longitude labels in the first row."
             )
 
         # Integrity Check (No Empty Names)
         if any(h == "" for h in clean_headers):
-            raise Exception("One or more columns in the first row are missing a header name.")
+            raise InvalidInputFileException("One or more columns in the first row are missing a header name.")
 
         # Uniqueness Check
         if len(clean_headers) != len(set(clean_headers)):
             duplicates = set([h for h in clean_headers if clean_headers.count(h) > 1])
-            raise Exception(f"Duplicate headers found in Row 1: {', '.join(duplicates)}")
+            raise InvalidInputFileException(f"Duplicate headers found in Row 1: {', '.join(duplicates)}")
 
         return True
 
