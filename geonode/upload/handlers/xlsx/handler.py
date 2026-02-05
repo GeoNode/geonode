@@ -111,12 +111,12 @@ class XLSXFileHandler(CSVFileHandler):
 
         datasource = ogr.GetDriverByName("CSV").Open(files.get("base_file"))
         if not datasource:
-            raise InvalidInputFileException("The converted XLSX data is invalid; no layers found.")
+            raise InvalidInputFileException(detail="The converted XLSX data is invalid; no layers found.")
 
         # In XLSX handler, we always expect 1 layer (the first sheet)
         layer = datasource.GetLayer(0)
         if not layer:
-            raise InvalidInputFileException("No data found in the converted CSV.")
+            raise InvalidInputFileException(detail="No data found in the converted CSV.")
 
         if 1 + actual_upload > max_upload:
             raise UploadParallelismLimitException(
@@ -131,17 +131,17 @@ class XLSXFileHandler(CSVFileHandler):
 
         if has_lat and not has_long:
             raise InvalidInputFileException(
-                f"Longitude is missing. Supported names: {', '.join(XLSXFileHandler.lon_names)}"
+                detail=f"Longitude is missing. Supported names: {', '.join(XLSXFileHandler.lon_names)}"
             )
 
         if not has_lat and has_long:
             raise InvalidInputFileException(
-                f"Latitude is missing. Supported names: {', '.join(XLSXFileHandler.lat_names)}"
+                detail=f"Latitude is missing. Supported names: {', '.join(XLSXFileHandler.lat_names)}"
             )
 
         if not (has_lat and has_long):
             raise InvalidInputFileException(
-                "XLSX uploads require both a Latitude and a Longitude column in the first row. "
+                detail="XLSX uploads require both a Latitude and a Longitude column in the first row. "
                 f"Accepted Lat: {', '.join(XLSXFileHandler.lat_names)}. "
                 f"Accepted Lon: {', '.join(XLSXFileHandler.lon_names)}."
             )
@@ -212,7 +212,7 @@ class XLSXFileHandler(CSVFileHandler):
         # convert the XLSX file into a CSV
         xlsx_file = _data.get("files", {}).get("base_file", "")
         if not xlsx_file:
-            raise Exception("File not found")
+            raise InvalidInputFileException(detail="The base file was not found in the upload payload.")
 
         output_file = str(Path(xlsx_file).with_suffix(".csv"))
 
@@ -240,7 +240,9 @@ class XLSXFileHandler(CSVFileHandler):
 
         except Exception as e:
             logger.exception("XLSX Pre-processing failed")
-            raise InvalidInputFileException(detail=f"Failed to securely parse Excel: {str(e)}")
+            raise InvalidInputFileException(
+                detail="Failed to securely parse Excel file."
+            )
 
         # update the file path in the payload
         _data["files"]["base_file"] = output_file
@@ -260,7 +262,7 @@ class XLSXFileHandler(CSVFileHandler):
         """Returns the first sheet name and logs warnings if others exist."""
         sheets = workbook.sheet_names
         if not sheets:
-            raise InvalidInputFileException("No sheets found in workbook.")
+            raise InvalidInputFileException(detail="No sheets found in workbook.")
         if len(sheets) > 1:
             logger.warning(f"Multiple sheets found. Ignoring: {sheets[1:]}")
         return sheets[0]
@@ -274,7 +276,7 @@ class XLSXFileHandler(CSVFileHandler):
         """
         # Existence Check
         if not headers or self._detect_empty_rows(headers):
-            raise InvalidInputFileException("No data or headers found in the selected sheet.")
+            raise InvalidInputFileException(detail="No data or headers found in the selected sheet.")
 
         # Normalization
         clean_headers = [str(h).strip().lower() if h is not None else "" for h in headers]
@@ -285,18 +287,18 @@ class XLSXFileHandler(CSVFileHandler):
 
         if not (has_lat and has_lon):
             raise InvalidInputFileException(
-                "The headers does not contain valid geometry headers. "
+                detail="The headers does not contain valid geometry headers. "
                 "GeoNode requires Latitude and Longitude labels in the first row."
             )
 
         # Integrity Check (No Empty Names)
         if any(h == "" for h in clean_headers):
-            raise InvalidInputFileException("One or more columns in the first row are missing a header name.")
+            raise InvalidInputFileException(detail="One or more columns in the first row are missing a header name.")
 
         # Uniqueness Check
         if len(clean_headers) != len(set(clean_headers)):
             duplicates = set([h for h in clean_headers if clean_headers.count(h) > 1])
-            raise InvalidInputFileException(f"Duplicate headers found in Row 1: {', '.join(duplicates)}")
+            raise InvalidInputFileException(detail=f"Duplicate headers found in Row 1: {', '.join(duplicates)}")
 
         return True
 
