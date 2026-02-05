@@ -18,6 +18,7 @@
 #########################################################################
 import logging
 import os
+import shlex
 from distutils.util import strtobool
 from pathlib import Path
 import csv
@@ -116,20 +117,28 @@ class XLSXFileHandler(CSVFileHandler):
     def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Customized for XLSX: Only looks for X/Y (Point) data.
-        Ignores WKT/Geom columns as per requirements.
+        Sanitized with shlex.quote to prevent Command Injection.
         """
+        # Sanitize user-controlled strings immediately
+        safe_original_name = shlex.quote(original_name)
+        safe_alternate = shlex.quote(alternate)
 
-        base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
+        # Pass the safe versions to the base handler
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
+            files, safe_original_name, ovverwrite_layer, safe_alternate
+        )
 
-        # We only define X and Y possible names instead of WKT columns
+        # Define mapping (these are safe as they are class-level constants)
         lat_mapping = ",".join(XLSXFileHandler.lat_names)
         lon_mapping = ",".join(XLSXFileHandler.lon_names)
 
-        additional_option = f' -oo "X_POSSIBLE_NAMES={lon_mapping}" ' f' -oo "Y_POSSIBLE_NAMES={lat_mapping}"'
+        additional_option = f' -oo "X_POSSIBLE_NAMES={lon_mapping}" ' f'-oo "Y_POSSIBLE_NAMES={lat_mapping}"'
 
+        # Return the combined, safe command string
         return (
             f"{base_command} -oo KEEP_GEOM_COLUMNS=NO "
-            f"-lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} " + additional_option
+            f"-lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
+            f"{additional_option}"
         )
 
     def create_dynamic_model_fields(
