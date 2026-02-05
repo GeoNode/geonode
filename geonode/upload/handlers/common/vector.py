@@ -413,28 +413,6 @@ class BaseVectorFileHandler(BaseHandler):
             if self.fixup_name(_l.GetName()) == layer_name
         ]
 
-    def identify_authority(self, layer):
-        layer = self._extract_layer(layer)
-        try:
-            layer_wkt = layer.GetSpatialRef().ExportToWkt()
-            _name = "EPSG"
-            _code = pyproj.CRS(layer_wkt).to_epsg(min_confidence=20)
-            if _code is None:
-                layer_proj4 = layer.GetSpatialRef().ExportToProj4()
-                _code = pyproj.CRS(layer_proj4).to_epsg(min_confidence=20)
-                if _code is None:
-                    raise Exception("CRS authority code not found, fallback to default behaviour")
-        except Exception:
-            spatial_ref = layer.GetSpatialRef()
-            spatial_ref.AutoIdentifyEPSG()
-            _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
-            _code = (
-                spatial_ref.GetAuthorityCode("PROJCS")
-                or spatial_ref.GetAuthorityCode("GEOGCS")
-                or spatial_ref.GetAttrValue("AUTHORITY", 1)
-            )
-        return f"{_name}:{_code}"
-
     def get_ogr2ogr_driver(self):
         """
         Should return the Driver object that is used to open the layers via OGR2OGR
