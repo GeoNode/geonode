@@ -64,7 +64,6 @@ from geonode.assets.handlers import asset_handler_registry
 from geonode.base import enumerations
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.groups.models import GroupMember, GroupProfile
-from geonode.thumbs.exceptions import ThumbnailError
 from geonode.layers.utils import get_files
 from geonode.base.models import (
     HierarchicalKeyword,
@@ -2108,12 +2107,12 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(expected, response.json())
 
-    @patch("geonode.base.api.views.create_thumbnail")
-    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_create_thumbnail):
+    @patch("geonode.base.api.views.resource_manager.set_thumbnail")
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_set_thumbnail):
         """
-        Given a logged User and an existing dataset, should create the expected thumbnail url.
+        Given a logged User and an existing dataset, should successfully trigger thumbnail generation.
         """
-        mock_create_thumbnail.return_value = "http://localhost:8000/mocked_url.jpg"
+        mock_set_thumbnail.return_value = True
         # Admin
         self.client.login(username="admin", password="admin")
         dataset_id = Dataset.objects.first().resourcebase_ptr_id
@@ -2127,10 +2126,12 @@ class BaseApiTests(APITestCase):
         expected = {
             "message": "Thumbnail correctly created.",
             "success": True,
-            "thumbnail_url": "http://localhost:8000/mocked_url.jpg",
         }
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(expected, response.json())
+        data = response.json()
+        self.assertEqual(expected["message"], data["message"])
+        self.assertEqual(expected["success"], data["success"])
+        self.assertIn("thumbnail_url", data)
 
     def test_set_thumbnail_from_bbox_from_logged_user_for_not_existing_dataset(self):
         """
@@ -2165,10 +2166,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 405)
         self.assertEqual(expected, response.json())
 
-    @patch(
-        "geonode.base.api.views.create_thumbnail", side_effect=ThumbnailError("Some exception during thumb creation")
-    )
-    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_exp):
+    @patch("geonode.base.api.views.resource_manager.set_thumbnail", return_value=False)
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_set_thumbnail):
         """
         Given a logged User and an existing dataset, should raise a ThumbnailException.
         """
@@ -2179,7 +2178,7 @@ class BaseApiTests(APITestCase):
         payload = {"bbox": [], "srid": "EPSG:3857"}
         response = self.client.post(url, data=payload, format="json")
 
-        expected = {"message": "Some exception during thumb creation", "success": False}
+        expected = {"message": "Thumbnail generation failed.", "success": False}
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected, response.json())
 

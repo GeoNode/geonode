@@ -68,7 +68,6 @@ from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
 
-import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
