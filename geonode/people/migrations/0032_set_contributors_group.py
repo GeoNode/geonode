@@ -22,7 +22,8 @@ def forwards_func(apps, schema_editor):
     if perm:
         cont_group.permissions.add(perm)
     # Exclude admins and anonymous user
-    users_to_update = get_user_model().objects.filter(pk__gt=0)
+    Profile = apps.get_model("people", "Profile")
+    users_to_update = Profile.objects.filter(pk__gt=0)
     for user in users_to_update:
         registeredmembers_group.user_set.add(user)
     for user in users_to_update.exclude(is_staff=True, is_superuser=True):
@@ -32,7 +33,8 @@ def reverse_func(apps, schema_editor):
     # remove contributors group from users
     try:
         cont_group = Group.objects.get(name='contributors')
-        users_to_update = get_user_model().objects.filter(
+        Profile = apps.get_model("people", "Profile")
+        users_to_update = Profile.objects.filter(
             pk__gt=0, is_staff=False, is_superuser=False
             )
         for user in users_to_update:
