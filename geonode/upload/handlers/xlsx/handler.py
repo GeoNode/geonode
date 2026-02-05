@@ -34,7 +34,7 @@ from geonode.upload.handlers.csv.handler import CSVFileHandler
 from geonode.upload.celery_tasks import create_dynamic_structure
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
 from geonode.upload.api.exceptions import (
-    UploadParallelismLimitException, 
+    UploadParallelismLimitException,
     InvalidInputFileException,
 )
 
@@ -47,14 +47,14 @@ class XLSXFileHandler(CSVFileHandler):
 
     lat_names = CSVFileHandler.possible_lat_column
     lon_names = CSVFileHandler.possible_long_column
-    
+
     @property
     def supported_file_extension_config(self):
-        
+
         # If disabled, return an empty list or None so the UI doesn't show XLSX options
         if not XLSXFileHandler.XLSX_UPLOAD_ENABLED:
             return None
-        
+
         return {
             "id": "excel",  # Use a generic ID that doesn't imply a specific extension
             "formats": [
@@ -67,7 +67,7 @@ class XLSXFileHandler(CSVFileHandler):
                     "label": "Excel (Binary/Legacy)",
                     "required_ext": ["xls"],
                     "optional_ext": ["sld", "xml"],
-                }
+                },
             ],
             "actions": list(self.TASKS.keys()),
             "type": "vector",
@@ -82,11 +82,11 @@ class XLSXFileHandler(CSVFileHandler):
         # Availability Check for the back-end
         if not XLSXFileHandler.XLSX_UPLOAD_ENABLED:
             return False
-        
+
         base = _data.get("base_file")
         if not base:
             return False
-        
+
         # Support both XLSX and XLS
         valid_extensions = (".xlsx", ".xls")
 
@@ -95,16 +95,15 @@ class XLSXFileHandler(CSVFileHandler):
             if isinstance(base, str)
             else base.name.lower().endswith(valid_extensions)
         )
-        
+
         return is_excel and BaseVectorFileHandler.can_handle(_data)
 
-    
     @staticmethod
     def is_valid(files, user, **kwargs):
         from geonode.upload.utils import UploadLimitValidator
-        
+
         BaseVectorFileHandler.is_valid(files, user)
-        
+
         upload_validator = UploadLimitValidator(user)
         upload_validator.validate_parallelism_limit_per_user()
         actual_upload = upload_validator._get_parallel_uploads_count()
@@ -117,7 +116,7 @@ class XLSXFileHandler(CSVFileHandler):
         # In XLSX handler, we always expect 1 layer (the first sheet)
         layer = datasource.GetLayer(0)
         if not layer:
-             raise InvalidInputFileException("No data found in the converted CSV.")
+            raise InvalidInputFileException("No data found in the converted CSV.")
 
         if 1 + actual_upload > max_upload:
             raise UploadParallelismLimitException(
@@ -125,16 +124,20 @@ class XLSXFileHandler(CSVFileHandler):
             )
 
         schema_keys = [x.name.lower() for x in layer.schema]
-        
+
         # Accessing class-level constants explicitly
         has_lat = any(x in XLSXFileHandler.lat_names for x in schema_keys)
         has_long = any(x in XLSXFileHandler.lon_names for x in schema_keys)
 
         if has_lat and not has_long:
-            raise InvalidInputFileException(f"Longitude is missing. Supported names: {', '.join(XLSXFileHandler.lon_names)}")
+            raise InvalidInputFileException(
+                f"Longitude is missing. Supported names: {', '.join(XLSXFileHandler.lon_names)}"
+            )
 
         if not has_lat and has_long:
-            raise InvalidInputFileException(f"Latitude is missing. Supported names: {', '.join(XLSXFileHandler.lat_names)}")
+            raise InvalidInputFileException(
+                f"Latitude is missing. Supported names: {', '.join(XLSXFileHandler.lat_names)}"
+            )
 
         if not (has_lat and has_long):
             raise InvalidInputFileException(
@@ -144,33 +147,27 @@ class XLSXFileHandler(CSVFileHandler):
             )
 
         return True
-    
+
     @staticmethod
     def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Customized for XLSX: Only looks for X/Y (Point) data.
         Ignores WKT/Geom columns as per requirements.
         """
-        
-        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
-            files, original_name, ovverwrite_layer, alternate
-        )
-        
+
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
+
         # We only define X and Y possible names instead of WKT columns
         lat_mapping = ",".join(XLSXFileHandler.lat_names)
         lon_mapping = ",".join(XLSXFileHandler.lon_names)
-        
-        additional_option = (
-            f' -oo "X_POSSIBLE_NAMES={lon_mapping}" '
-            f' -oo "Y_POSSIBLE_NAMES={lat_mapping}"'
-        )
-        
+
+        additional_option = f' -oo "X_POSSIBLE_NAMES={lon_mapping}" ' f' -oo "Y_POSSIBLE_NAMES={lat_mapping}"'
+
         return (
             f"{base_command} -oo KEEP_GEOM_COLUMNS=NO "
-            f"-lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
-            + additional_option
+            f"-lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} " + additional_option
         )
-    
+
     def create_dynamic_model_fields(
         self,
         layer: str,
@@ -181,11 +178,8 @@ class XLSXFileHandler(CSVFileHandler):
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
-        layer_schema = [
-            {"name": x.name.lower(), "class_name": self._get_type(x), "null": True} 
-            for x in layer.schema
-        ]
-        
+        layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+
         class_name = GEOM_TYPE_MAPPING.get(self.promote_to_multi("Point"))
         # Get the geometry type name from OGR (e.g., 'Point' or 'Point 25D')
         geom_type_name = ogr.GeometryTypeToName(layer.GetGeomType())
@@ -208,28 +202,27 @@ class XLSXFileHandler(CSVFileHandler):
         )
 
         return dynamic_model_schema, celery_group
-    
-    
+
     def pre_processing(self, files, execution_id, **kwargs):
         from geonode.upload.orchestrator import orchestrator
-        
+
         # calling the super function (CSVFileHandler logic)
         _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
-        
+
         # convert the XLSX file into a CSV
         xlsx_file = _data.get("files", {}).get("base_file", "")
         if not xlsx_file:
             raise Exception("File not found")
-            
-        output_file = str(Path(xlsx_file).with_suffix('.csv'))
-        
+
+        output_file = str(Path(xlsx_file).with_suffix(".csv"))
+
         try:
             workbook = CalamineWorkbook.from_path(xlsx_file)
 
             # Sheet Validation (Uses the validated sheet name)
             sheet_name = self._validate_sheets(workbook)
             sheet = workbook.get_sheet_by_name(sheet_name)
-            
+
             # We iterate until we find the first non-empty row
             rows_gen = iter(sheet.to_python())
             try:
@@ -240,30 +233,29 @@ class XLSXFileHandler(CSVFileHandler):
 
             # Restrictive File Structure Validation
             self._validate_headers(headers)
-            
+
             # Conversion with row cleanup
             # Note: rows_gen continues from the row after the headers
             self._convert_to_csv(headers, rows_gen, output_file)
 
         except Exception as e:
             logger.exception("XLSX Pre-processing failed")
-            raise InvalidInputFileException(detail=f"Failed to securely parse XLSX: {str(e)}")
-        
+            raise InvalidInputFileException(detail=f"Failed to securely parse Excel: {str(e)}")
+
         # update the file path in the payload
-        _data['files']['base_file'] = output_file
+        _data["files"]["base_file"] = output_file
 
-        if 'temporary_files' not in _data or not isinstance(_data['temporary_files'], dict):
-            _data['temporary_files'] = {}
+        if "temporary_files" not in _data or not isinstance(_data["temporary_files"], dict):
+            _data["temporary_files"] = {}
 
-        _data['temporary_files']['base_file'] = output_file
-        
+        _data["temporary_files"]["base_file"] = output_file
+
         # updating the execution id params
         orchestrator.update_execution_request_obj(
-            orchestrator.get_execution_object(execution_id), 
-            {"input_params": _data}
+            orchestrator.get_execution_object(execution_id), {"input_params": _data}
         )
         return _data, execution_id
-        
+
     def _validate_sheets(self, workbook):
         """Returns the first sheet name and logs warnings if others exist."""
         sheets = workbook.sheet_names
@@ -272,7 +264,7 @@ class XLSXFileHandler(CSVFileHandler):
         if len(sheets) > 1:
             logger.warning(f"Multiple sheets found. Ignoring: {sheets[1:]}")
         return sheets[0]
-    
+
     def _validate_headers(self, headers):
         """
         Strictly validates Row 1 for headers:
@@ -286,7 +278,7 @@ class XLSXFileHandler(CSVFileHandler):
 
         # Normalization
         clean_headers = [str(h).strip().lower() if h is not None else "" for h in headers]
-        
+
         # Geometry Fingerprint Check
         has_lat = any(h in self.lat_names for h in clean_headers)
         has_lon = any(h in self.lon_names for h in clean_headers)
@@ -307,7 +299,7 @@ class XLSXFileHandler(CSVFileHandler):
             raise Exception(f"Duplicate headers found in Row 1: {', '.join(duplicates)}")
 
         return True
-    
+
     def _data_sense_check(self, x, y):
         """
         High-speed coordinate validation for large datasets
@@ -316,7 +308,7 @@ class XLSXFileHandler(CSVFileHandler):
             # Catch Excel Date objects immediately (Calamine returns these as datetime)
             if isinstance(x, datetime) or isinstance(y, datetime):
                 return False
-                
+
             f_x = float(x)
             f_y = float(y)
 
@@ -325,7 +317,7 @@ class XLSXFileHandler(CSVFileHandler):
             if not (math.isfinite(f_x) and math.isfinite(f_y)):
                 return False
 
-            # Magnitude check 
+            # Magnitude check
             # Limits to +/- 40 million (covers all CRS including Web Mercator)
             # but blocks 'serial date numbers' or corrupted scientific notation
             if not (-40000000 < f_x < 40000000 and -40000000 < f_y < 40000000):
@@ -334,36 +326,36 @@ class XLSXFileHandler(CSVFileHandler):
             return True
         except (ValueError, TypeError):
             return False
-        
+
     def _detect_empty_rows(self, row):
         return not row or all(cell is None or str(cell).strip() == "" for cell in row)
-    
+
     def _convert_to_csv(self, headers, rows_gen, output_path):
         """Streams valid data to CSV, skipping empty rows."""
 
         # Define clean_headers once here to find the indices
         clean_headers = [str(h).strip().lower() for h in headers]
-        
+
         # Get the indices for the Lat and Lon columns
         lat_idx = next(i for i, h in enumerate(clean_headers) if h in self.lat_names)
         lon_idx = next(i for i, h in enumerate(clean_headers) if h in self.lon_names)
-        
+
         # Local binding of the check function for loop speed
         check_func = self._data_sense_check
-        
-        with open(output_path, 'w', newline='', encoding='utf-8') as f:
+
+        with open(output_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(headers)
-            
+
             for row_num, row in enumerate(rows_gen, start=2):
                 # Skip row if it contains no data
                 if self._detect_empty_rows(row):
                     continue
-                
+
                 if not check_func(row[lon_idx], row[lat_idx]):
                     raise InvalidInputFileException(
                         detail=f"Coordinate error at row {row_num}. "
-                               "Check for dates or non-numeric values in Lat/Lon."
+                        "Check for dates or non-numeric values in Lat/Lon."
                     )
 
                 writer.writerow(row)
