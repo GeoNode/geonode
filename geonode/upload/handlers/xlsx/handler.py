@@ -102,50 +102,14 @@ class XLSXFileHandler(CSVFileHandler):
     def is_valid(files, user, **kwargs):
         from geonode.upload.utils import UploadLimitValidator
 
+        # Basic GeoNode validation
         BaseVectorFileHandler.is_valid(files, user)
 
+        # Parallelism check (This is fast and doesn't need to open the file)
         upload_validator = UploadLimitValidator(user)
         upload_validator.validate_parallelism_limit_per_user()
-        actual_upload = upload_validator._get_parallel_uploads_count()
-        max_upload = upload_validator._get_max_parallel_uploads()
 
-        datasource = ogr.GetDriverByName("CSV").Open(files.get("base_file"))
-        if not datasource:
-            raise InvalidInputFileException(detail="The converted XLSX data is invalid; no layers found.")
-
-        # In XLSX handler, we always expect 1 layer (the first sheet)
-        layer = datasource.GetLayer(0)
-        if not layer:
-            raise InvalidInputFileException(detail="No data found in the converted CSV.")
-
-        if 1 + actual_upload > max_upload:
-            raise UploadParallelismLimitException(
-                detail=f"Upload limit exceeded. Max allowed parallel uploads: {max_upload}"
-            )
-
-        schema_keys = [x.name.lower() for x in layer.schema]
-
-        # Accessing class-level constants explicitly
-        has_lat = any(x in XLSXFileHandler.lat_names for x in schema_keys)
-        has_long = any(x in XLSXFileHandler.lon_names for x in schema_keys)
-
-        if has_lat and not has_long:
-            raise InvalidInputFileException(
-                detail=f"Longitude is missing. Supported names: {', '.join(XLSXFileHandler.lon_names)}"
-            )
-
-        if not has_lat and has_long:
-            raise InvalidInputFileException(
-                detail=f"Latitude is missing. Supported names: {', '.join(XLSXFileHandler.lat_names)}"
-            )
-
-        if not (has_lat and has_long):
-            raise InvalidInputFileException(
-                detail="XLSX uploads require both a Latitude and a Longitude column in the first row. "
-                f"Accepted Lat: {', '.join(XLSXFileHandler.lat_names)}. "
-                f"Accepted Lon: {', '.join(XLSXFileHandler.lon_names)}."
-            )
-
+        # We handle the deep inspection (lat/lon) later.
         return True
 
     @staticmethod
@@ -240,9 +204,7 @@ class XLSXFileHandler(CSVFileHandler):
 
         except Exception as e:
             logger.exception("XLSX Pre-processing failed")
-            raise InvalidInputFileException(
-                detail="Failed to securely parse Excel file."
-            )
+            raise InvalidInputFileException(detail=f"Failed to securely parse Excel: {str(e)}")
 
         # update the file path in the payload
         _data["files"]["base_file"] = output_file
