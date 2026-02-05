@@ -136,9 +136,11 @@ class TestXLSXHandler(TestCase):
             with zipfile.ZipFile(tf, "w") as zf:
                 zf.writestr("xl/workbook.xml", xml_payload)
                 zf.writestr(
-                    "[Content_Types].xml",
-                    '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>',
-                )
+                "[Content_Types].xml",
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+                '<Default Extension="xml" ContentType="application/xml"/></Types>'
+            )
             malicious_path = tf.name
 
         exec_id = str(uuid.uuid4())
