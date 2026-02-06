@@ -100,7 +100,7 @@ dependencies = [
 
     # GeoNode org maintained apps.
     "django_geonode_mapstore_client @ git+https://github.com/GeoNode/geonode-mapstore-client.git@master",
-    "django-avatar==8.0.1",
+    "django-avatar==9.0.0",
     "geonode-oauth-toolkit==2.2.2.2",
     "geonode-announcements==2.0.2.2",
     "django-activity-stream==2.0.0",
