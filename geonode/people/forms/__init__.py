@@ -63,4 +63,5 @@ class ProfileForm(forms.ModelForm):
             "is_active",
             "date_joined",
             "language",
+            "extra_data",
         )
