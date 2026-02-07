@@ -240,16 +240,11 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return _data, execution_id
 
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = ...,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = ..., asset=None, **kwargs
     ):
         exec_obj = orchestrator.get_execution_object(execution_id)
 
-        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
+        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset, **kwargs)
         asset = self.create_asset_and_link(
             resource,
             files=exec_obj.input_params["files"],
