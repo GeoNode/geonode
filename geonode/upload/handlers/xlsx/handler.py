@@ -46,11 +46,21 @@ class XLSXFileHandler(CSVFileHandler):
     lat_names = CSVFileHandler.possible_lat_column
     lon_names = CSVFileHandler.possible_long_column
 
+    @classmethod
+    def is_xlsx_enabled(cls):
+        """
+        Unified check for the feature toggle.
+        Returns True if enabled, None if disabled.
+        """
+        if not cls.XLSX_UPLOAD_ENABLED:
+            return None
+        return True
+
     @property
     def supported_file_extension_config(self):
 
         # If disabled, return an empty list or None so the UI doesn't show XLSX options
-        if not XLSXFileHandler.XLSX_UPLOAD_ENABLED:
+        if not self.is_xlsx_enabled():
             return None
 
         return {
@@ -78,7 +88,7 @@ class XLSXFileHandler(CSVFileHandler):
         the handler is able to handle the file or not
         """
         # Availability Check for the back-end
-        if not XLSXFileHandler.XLSX_UPLOAD_ENABLED:
+        if not XLSXFileHandler.is_xlsx_enabled():
             return False
 
         base = _data.get("base_file")
@@ -255,7 +265,7 @@ class XLSXFileHandler(CSVFileHandler):
 
         if not (has_lat and has_lon):
             raise InvalidInputFileException(
-                detail="The headers does not contain valid geometry headers. "
+                detail="The headers do not contain valid geometry headers. "
                 "GeoNode requires Latitude and Longitude labels in the first row."
             )
 
