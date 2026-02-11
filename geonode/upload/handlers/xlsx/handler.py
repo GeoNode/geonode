@@ -29,6 +29,7 @@ from python_calamine import CalamineWorkbook
 from osgeo import ogr
 
 from dynamic_models.models import ModelSchema
+from django.conf import settings
 
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.csv.handler import CSVFileHandler
@@ -41,7 +42,7 @@ logger = logging.getLogger("importer")
 
 class XLSXFileHandler(CSVFileHandler):
 
-    XLSX_UPLOAD_ENABLED = strtobool(os.getenv("XLSX_UPLOAD_ENABLED", "False"))
+    XLSX_UPLOAD_ENABLED = getattr(settings, "XLSX_UPLOAD_ENABLED", False)
 
     lat_names = CSVFileHandler.possible_lat_column
     lon_names = CSVFileHandler.possible_long_column
@@ -67,12 +68,12 @@ class XLSXFileHandler(CSVFileHandler):
             "id": "excel",  # Use a generic ID that doesn't imply a specific extension
             "formats": [
                 {
-                    "label": "Excel (OpenXML)",
+                    "label": "Excel (xlsx)",
                     "required_ext": ["xlsx"],
                     "optional_ext": ["sld", "xml"],
                 },
                 {
-                    "label": "Excel (Binary/Legacy)",
+                    "label": "Excel (xls)",
                     "required_ext": ["xls"],
                     "optional_ext": ["sld", "xml"],
                 },
