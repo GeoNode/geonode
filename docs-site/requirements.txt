@@ -1,0 +1,4 @@
+bs4==0.0.2
+mkdocs==1.6.1
+mkdocs-material==9.7.0
+mkdocs-with-pdf==0.9.3

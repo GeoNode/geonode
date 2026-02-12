@@ -1,0 +1,78 @@
+site_name: GeoNode documentation
+repo_name: 'GeoNode/geonode'
+repo_url: https://github.com/GeoNode/geonode/
+use_directory_urls: true
+
+nav:
+  - Home: index.md
+  - Setup:
+    - Docker installation:
+          - Prerequisites: setup/docker/prerequisites.md
+          - Vanilla Docker installation: setup/docker/vanilla-docker-installation.md
+          - GeoNode project Docker installation: setup/docker/project-docker-installation.md
+    - Bare installation:
+          - Prerequisites: setup/bare/prerequisites.md
+          - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
+          - GeoNode project bare installation: setup/bare/project-bare-installation.md
+  - User Guide:
+    - User account: "user-guide/user_account.md"
+    - Catalog Resources: "user-guide/catalog.md"
+    - Managing Datasets: "user-guide/datasets_management.md"
+    - Sharing: "user-guide/sharing.md"
+    - Metadata: "user-guide/metadata.md"
+  - Developer Guide: 
+    - API Usage: "development/api.md"
+  - Administration:
+    - Accessing the panel: "admin/panel.md"
+    - Users: "admin/user.md"
+    - Groups: "admin/group.md"
+    - Social Logins: "admin/social.md"
+    - OAuth2: "admin/oauth.md"
+  - Miscellaneous:
+    - Thesauri: "miscellaneous/thesauri.md"
+    - Backup And Restore: "miscellaneous/br.md"
+    - Settings: "miscellaneous/settings.md"
+
+extra_css:
+  - theme/css/extra.css
+
+theme:
+  name: material
+  logo: theme/img/geonode-logo-white.svg
+  favicon: theme/img/favicon.ico
+  custom_dir: 'docs/theme'
+  language: 'en'
+  features:
+    - header.autohide
+    - navigation.instant
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.path
+    - navigation.indexes
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+    
+plugins:
+  - with-pdf: # https://pypi.org/project/mkdocs-with-pdf/
+      author: GeoSolutions Group
+      copyright: 'OsGeo ©'
+      #
+      #cover: false
+      #back_cover: true
+      cover_logo: 'theme/geonode.png'
+      cover_title: GeoNode Documentation
+      cover_subtitle: User Guide and Developer Guide
+      toc_level: 3
+      output_path: pdf/geonode_documentation.pdf
+      enabled_if_env: ENABLE_PDF_EXPORT
+      debug_html: false # set to true to log the html content of the pdf on the console on build
+      show_anchors: true
+      verbose: false    # set to true to log the pdf generation steps in detail
+      custom_template_path: 'docs/print_template' # includes custom styles.scss for pdf
+  - search

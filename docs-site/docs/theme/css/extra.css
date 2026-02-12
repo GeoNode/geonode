@@ -1,0 +1,15 @@
+:root  > * {
+  --md-primary-fg-color:        #397aab;
+  --md-primary-fg-color--light: #5c90b8;
+  --md-primary-fg-color--dark:  #1e6194;
+}
+
+.pdf-icon {
+    background-image: url(../img/download-pdf-icon.png);
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
