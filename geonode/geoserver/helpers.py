@@ -110,8 +110,8 @@ def _sync_geoserver_keywords_to_instance(instance, keywords):
         return
     try:
         KeywordHandler(instance=instance, keywords=list(keywords)).set_keywords()
-    except Exception as e:
-        logger.warning(f"Error while importing keywords from GeoServer for dataset {instance.name}: {e}")
+    except Exception:
+        logger.exception(f"Error while importing keywords from GeoServer for dataset {instance.name}")
 
 
 if not hasattr(settings, "OGC_SERVER"):
