@@ -17,9 +17,7 @@
 #
 #########################################################################
 import logging
-import os
 import shlex
-from distutils.util import strtobool
 from pathlib import Path
 import csv
 from datetime import datetime
