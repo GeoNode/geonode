@@ -66,6 +66,7 @@ from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.resource.utils import KeywordHandler
 from geonode.resource.utils import is_remote_resource
 
 from geonode.utils import (
@@ -102,6 +103,15 @@ WPS_ACCEPTABLE_FORMATS = [
 ]
 
 DEFAULT_STYLE_NAME = ["generic", "line", "point", "polygon", "raster"]
+
+
+def _sync_geoserver_keywords_to_instance(instance, keywords):
+    if not keywords:
+        return
+    try:
+        KeywordHandler(instance=instance, keywords=list(keywords)).set_keywords()
+    except Exception as e:
+        logger.warning(f"Error while importing keywords from GeoServer for dataset {instance.name}: {e}")
 
 
 if not hasattr(settings, "OGC_SERVER"):
@@ -1969,6 +1979,8 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     setattr(instance, key, get_dataset_storetype(values[key]))
 
                 if updatemetadata:
+                    _sync_geoserver_keywords_to_instance(instance, gs_resource.keywords)
+
                     # Get metadata links
                     metadata_links = []
                     for link in instance.link_set.metadata():
