@@ -361,7 +361,7 @@ class Dataset(ResourceBase):
 
         ll_bbox_gn = [ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]]
         # Try to use native bbox if available
-        if bbox and not len(bbox) < 4 and srid:
+        if bbox and len(bbox) >= 4 and srid:
             try:
                 native_bbox_gn = [bbox[0], bbox[2], bbox[1], bbox[3]]
                 self.set_bbox_polygon(native_bbox_gn, srid)
