@@ -30,6 +30,7 @@ from django.utils.translation import gettext_lazy as _
 from tinymce.models import HTMLField
 
 from geonode.client.hooks import hookset
+from geonode import GeoNodeException
 from geonode.utils import build_absolute_uri, check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.groups.conf import settings as groups_settings
@@ -348,14 +349,32 @@ class Dataset(ResourceBase):
             logger.error("GeoServer did not return updated bbox values")
             return False
 
-        # bbox order from GeoServer: [minx, maxx, miny, maxy]
         with transaction.atomic():
-            self.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-            self.set_ll_bbox_polygon([ll[0], ll[2], ll[1], ll[3]])
-            self.srid = srid or self.srid
+            self.set_bbox_and_srid_from_geoserver(bbox=bbox, ll_bbox=ll, srid=srid)
             self.save(update_fields=["srid"])
 
         return True
+
+    def set_bbox_and_srid_from_geoserver(self, bbox, ll_bbox, srid):
+        if not ll_bbox or len(ll_bbox) < 4:
+            raise GeoNodeException("GeoServer did not return latlon bbox")
+
+        ll_bbox_gn = [ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]]
+        # Try to use native bbox if available
+        if bbox and not len(bbox) < 4 and srid:
+            try:
+                native_bbox_gn = [bbox[0], bbox[2], bbox[1], bbox[3]]
+                self.set_bbox_polygon(native_bbox_gn, srid)
+                self.set_ll_bbox_polygon(ll_bbox_gn)
+                self.srid = srid
+                return
+            except GeoNodeException as e:
+                logger.warning(f"Failed to set native bbox with SRID {srid}, falling back to EPSG:4326: {e}")
+
+        # Fallback to lat/lon bbox
+        self.set_bbox_polygon(ll_bbox_gn, "EPSG:4326")
+        self.set_ll_bbox_polygon(ll_bbox_gn)
+        self.srid = "EPSG:4326"
 
     def __str__(self):
         return str(self.alternate)

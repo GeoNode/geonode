@@ -2028,16 +2028,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     srid = gs_resource.projection
                     bbox = gs_resource.native_bbox
                     ll_bbox = gs_resource.latlon_bbox
-                    try:
-                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-                    except GeoNodeException as e:
-                        if not ll_bbox:
-                            raise
-                        else:
-                            logger.exception(e)
-                            instance.srid = "EPSG:4326"
-                            Dataset.objects.filter(id=instance.id).update(srid=instance.srid)
-                    instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
+                    instance.set_bbox_and_srid_from_geoserver(bbox=bbox, ll_bbox=ll_bbox, srid=srid)
 
                     if instance.srid:
                         instance.srid_url = (

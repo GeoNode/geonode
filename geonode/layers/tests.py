@@ -817,6 +817,31 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(self.dataset.bbox_polygon)
         self.assertIsNotNone(self.dataset.ll_bbox_polygon)
 
+    @patch("geonode.base.models.bbox_to_projection", side_effect=Exception("Unsupported CRS"))
+    def test_set_bbox_and_srid_from_geoserver_fallback_to_ll_bbox(self, _mock_bbox_to_projection):
+        """
+        If native bbox reprojection fails, fallback to EPSG:4326 and ll_bbox for both polygons.
+        """
+        native_bbox = [1535760, 1786050, 4652670, 5126620]
+        ll_bbox = [8.7, 9.2, 45.1, 45.5]
+
+        self.dataset.set_bbox_and_srid_from_geoserver(bbox=native_bbox, ll_bbox=ll_bbox, srid="EPSG:3003")
+
+        self.assertEqual(self.dataset.srid, "EPSG:4326")
+        self.assertIsNotNone(self.dataset.bbox_polygon)
+        self.assertIsNotNone(self.dataset.ll_bbox_polygon)
+        self.assertEqual(self.dataset.bbox_polygon.wkt, self.dataset.ll_bbox_polygon.wkt)
+
+    def test_set_bbox_and_srid_from_geoserver_uses_native_bbox_when_supported(self):
+        native_bbox = [0, 10, 0, 10]
+        ll_bbox = [0, 10, 0, 10]
+
+        self.dataset.set_bbox_and_srid_from_geoserver(bbox=native_bbox, ll_bbox=ll_bbox, srid="EPSG:4326")
+
+        self.assertEqual(self.dataset.srid, "EPSG:4326")
+        self.assertIsNotNone(self.dataset.bbox_polygon)
+        self.assertIsNotNone(self.dataset.ll_bbox_polygon)
+
     @patch("geonode.layers.models.Dataset.recalc_bbox_on_geoserver")
     def test_recalc_bbox_view_success(self, mock_recalc_bbox):
         """Test the recalc_bbox view returns 200 when successful."""
