@@ -337,7 +337,10 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "remote_resource_type",
         "last_harvesting_succeeded",
     )
-    search_fields = ("title", "unique_identifier",)
+    search_fields = (
+        "title",
+        "unique_identifier",
+    )
     list_editable = ("should_be_harvested",)
 
     actions = ["initiate_harvest_selected_resources", "mark_all_should_be_harvested", "unmark_all_should_be_harvested"]
