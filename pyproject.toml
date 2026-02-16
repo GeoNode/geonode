@@ -123,7 +123,7 @@ dependencies = [
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
-    "xmltodict<0.13.1",
+    "xmltodict<1.0.4",
     "inflection>=0.4.0",
     "mock<6.0.0",
     "python-dateutil==2.9.0.post0",
