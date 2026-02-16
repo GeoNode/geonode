@@ -757,16 +757,15 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
                     # RACE CONDITION: Another worker created this between our SELECT and INSERT.
                     # We catch the error and simply fetch the one they created.
                     resource = models.HarvestableResource.objects.get(
-                        harvester=harvester,
-                        unique_identifier=remote_resource.unique_identifier
+                        harvester=harvester, unique_identifier=remote_resource.unique_identifier
                     )
                     created = False
-                # If the resource wasn't just created, check if the title changed 
+                # If the resource wasn't just created, check if the title changed
                 # (e.g. from 'copy title' to '28409') and update it.
                 if not created:
                     resource.title = remote_resource.title
                     resource.remote_resource_type = remote_resource.resource_type
-                
+
                 processed += 1
                 # NOTE: make sure to save the resource because we need to have its
                 # `last_updated` property be refreshed - this is done in order to be able
