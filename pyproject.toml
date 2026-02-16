@@ -133,7 +133,7 @@ dependencies = [
     "pylibmc==1.6.3",
     "sherlock==0.4.1",
     "GDAL==3.8.4",
-    "psutil==5.9.8",
+    "psutil==7.2.2",
     "django-cors-headers==4.9.0",
     "django-user-agents==0.4.0",
     # production
