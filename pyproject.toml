@@ -144,7 +144,7 @@ dependencies = [
     "coverage==7.5.1",
     "requests-toolbelt==1.0.0",
     "flake8==7.3.0",
-    "black==24.4.2",
+    "black==26.1.0",
     "pytest==8.4.2",
     "pytest-bdd==7.1.2",
     "splinter==0.21.0",
@@ -165,7 +165,7 @@ dependencies = [
 dev = [
     "pytest==8.4.2",
     "flake8==7.3.0",
-    "black==24.4.2",
+    "black==26.1.0",
     "coverage==7.5.1",
 ]
 docs = [
