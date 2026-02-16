@@ -31,7 +31,7 @@ from django.db.models import (
 from django.db.models.functions import Concat
 from django.utils import timezone
 from django.conf import settings
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.enumerator import ExecutionRequestAction
@@ -741,16 +741,32 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
         else:
             processed = 0
             for remote_resource in found_resources:
-                resource, created = models.HarvestableResource.objects.get_or_create(
-                    harvester=harvester,
-                    unique_identifier=remote_resource.unique_identifier,
-                    title=remote_resource.title,
-                    defaults={
-                        "should_be_harvested": harvester.harvest_new_resources_by_default,
-                        "remote_resource_type": remote_resource.resource_type,
-                        "last_refreshed": timezone.now(),
-                    },
-                )
+                try:
+                    with transaction.atomic():
+                        resource, created = models.HarvestableResource.objects.get_or_create(
+                            harvester=harvester,
+                            unique_identifier=remote_resource.unique_identifier,
+                            defaults={
+                                "title": remote_resource.title,
+                                "should_be_harvested": harvester.harvest_new_resources_by_default,
+                                "remote_resource_type": remote_resource.resource_type,
+                                "last_refreshed": timezone.now(),
+                            },
+                        )
+                except IntegrityError:
+                    # RACE CONDITION: Another worker created this between our SELECT and INSERT.
+                    # We catch the error and simply fetch the one they created.
+                    resource = models.HarvestableResource.objects.get(
+                        harvester=harvester,
+                        unique_identifier=remote_resource.unique_identifier
+                    )
+                    created = False
+                # If the resource wasn't just created, check if the title changed 
+                # (e.g. from 'copy title' to '28409') and update it.
+                if not created:
+                    resource.title = remote_resource.title
+                    resource.remote_resource_type = remote_resource.resource_type
+                
                 processed += 1
                 # NOTE: make sure to save the resource because we need to have its
                 # `last_updated` property be refreshed - this is done in order to be able
