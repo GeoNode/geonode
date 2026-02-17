@@ -2028,7 +2028,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     srid = gs_resource.projection
                     bbox = gs_resource.native_bbox
                     ll_bbox = gs_resource.latlon_bbox
-                    instance.set_bbox_and_srid_from_geoserver(bbox=bbox, ll_bbox=ll_bbox, srid=srid)
+                    instance.set_bbox_and_srid(bbox=bbox, ll_bbox=ll_bbox, srid=srid)
 
                     if instance.srid:
                         instance.srid_url = (

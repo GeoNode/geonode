@@ -350,14 +350,14 @@ class Dataset(ResourceBase):
             return False
 
         with transaction.atomic():
-            self.set_bbox_and_srid_from_geoserver(bbox=bbox, ll_bbox=ll, srid=srid)
+            self.set_bbox_and_srid(bbox=bbox, ll_bbox=ll, srid=srid)
             self.save(update_fields=["srid"])
 
         return True
 
-    def set_bbox_and_srid_from_geoserver(self, bbox, ll_bbox, srid):
+    def set_bbox_and_srid(self, bbox, ll_bbox, srid):
         if not ll_bbox or len(ll_bbox) < 4:
-            raise GeoNodeException("GeoServer did not return latlon bbox")
+            raise GeoNodeException("Lat/Lon BBox was not provided")
 
         ll_bbox_gn = [ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]]
         # Try to use native bbox if available
@@ -369,7 +369,7 @@ class Dataset(ResourceBase):
                 self.srid = srid
                 return
             except GeoNodeException as e:
-                logger.warning(f"Failed to set native bbox with SRID {srid}, falling back to EPSG:4326: {e}")
+                logger.warning(f"Failed to set bbox with SRID {srid}, falling back to EPSG:4326: {e}")
 
         # Fallback to lat/lon bbox
         self.set_bbox_polygon(ll_bbox_gn, "EPSG:4326")
