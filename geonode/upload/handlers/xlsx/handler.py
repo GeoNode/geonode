@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-import shlex
 from pathlib import Path
 import csv
 from datetime import datetime
@@ -125,20 +124,17 @@ class XLSXFileHandler(CSVFileHandler):
         Customized for XLSX: Only looks for X/Y (Point) data.
         Sanitized with shlex.quote to prevent Command Injection.
         """
-        # Sanitize user-controlled strings immediately
-        safe_original_name = shlex.quote(original_name)
-        safe_alternate = shlex.quote(alternate)
 
         # Pass the safe versions to the base handler
-        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
-            files, safe_original_name, ovverwrite_layer, safe_alternate
-        )
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
 
         # Define mapping (these are safe as they are class-level constants)
         lat_mapping = ",".join(XLSXFileHandler.lat_names)
         lon_mapping = ",".join(XLSXFileHandler.lon_names)
 
-        additional_option = f' -oo "X_POSSIBLE_NAMES={lon_mapping}" ' f'-oo "Y_POSSIBLE_NAMES={lat_mapping}"'
+        additional_option = (
+            f' -oo "X_POSSIBLE_NAMES={lon_mapping}" ' f'-oo "Y_POSSIBLE_NAMES={lat_mapping}" ' f'-nln "{alternate}"'
+        )
 
         # Return the combined, safe command string
         return (
