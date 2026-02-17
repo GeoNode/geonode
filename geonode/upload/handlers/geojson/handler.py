@@ -73,7 +73,7 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
             try:
                 _file = base
                 if isinstance(base, str):
-                    with open(base, "r") as f:
+                    with open(base, "r", encoding="utf-8") as f:
                         _file = json.loads(f.read())
                 elif "zip_file" in _data:
                     # if we have a zipfile we need to read the file content before proceed
@@ -81,7 +81,10 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
                         with z.open(_file.name) as inner_file:
                             _file = json.loads(inner_file.read().decode("utf-8"))
                 else:
-                    _file = json.loads(base.read())
+                    content = base.read()
+                    if isinstance(content, bytes):
+                        content = content.decode("utf-8")
+                    _file = json.loads(content)
 
                 return _file.get("type", None) in ["FeatureCollection", "Feature"]
 
@@ -112,7 +115,7 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
             raise InvalidGeoJsonException("Please remove the additional dots in the filename")
 
         try:
-            with open(_file, "r") as _readed_file:
+            with open(_file, "r", encoding="utf-8") as _readed_file:
                 json.loads(_readed_file.read())
         except Exception:
             raise InvalidGeoJsonException("The provided GeoJson is not valid")

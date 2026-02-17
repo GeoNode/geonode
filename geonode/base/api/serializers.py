@@ -368,7 +368,7 @@ class DownloadArrayLinkField(DynamicComputedField):
                     download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
 
             if asset:
-                download_urls.append({"url": asset_url, "ajax_safe": True, "default": False if download_urls else True})
+                download_urls.append({"url": asset_url, "ajax_safe": True, "default": False})
 
             return download_urls
         else:

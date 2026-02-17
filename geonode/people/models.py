@@ -133,6 +133,12 @@ class Profile(AbstractUser):
         choices=TIMEZONES,
         blank=True,
     )
+    extra_data = models.JSONField(
+        _("Extra Data"),
+        blank=True,
+        default=dict,
+        help_text=_("additional profile-related attributes"),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

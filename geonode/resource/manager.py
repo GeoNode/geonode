@@ -55,7 +55,7 @@ from geonode.security.utils import (
 from geonode.security.registry import permissions_registry
 
 from . import settings as rm_settings
-from .utils import update_resource, resourcebase_post_save, is_remote_resource
+from .utils import update_resource, resourcebase_post_save, is_remote_resource, infer_default_metadata
 
 from ..base import enumerations
 from ..security.utils import AdvancedSecurityWorkflowManager
@@ -306,6 +306,11 @@ class ResourceManager(ResourceManagerInterface):
                         uuid, resource_type=resource_type, defaults=resource_dict
                     )
                 _resource.save()
+                metadata_manager.update_schema_instance_partial(
+                    _resource,
+                    infer_default_metadata(_resource.get_real_instance()),
+                    user=None,
+                )
                 resourcebase_post_save(_resource.get_real_instance())
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
@@ -372,8 +377,10 @@ class ResourceManager(ResourceManagerInterface):
                         extra_metadata=extra_metadata,
                     )
 
-                    if ji := custom.get("jsoninstance", None):
-                        metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
+                    ji = custom.get("jsoninstance", None)
+                    if not ji:
+                        ji = infer_default_metadata(_resource.get_real_instance())
+                    metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
 
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
 

@@ -57,7 +57,7 @@ class TSVectorIndexManager:
                 logger.debug(
                     f"Creating non localized index - resource:{resource_id} index name:{index_name} default lang:{pg_lang}"
                 )
-                index_text = " ".join(filter(None, (non_ml_fields[f] for f in index_fields)))
+                index_text = " ".join(filter(None, (str(non_ml_fields[f]) for f in index_fields)))
                 vector = Func(
                     Value(index_text), function="to_tsvector", template=f"%(function)s('{pg_lang}', %(expressions)s)"
                 )
