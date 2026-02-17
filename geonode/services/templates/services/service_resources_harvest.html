@@ -177,8 +177,8 @@
             resources.push({
                 id: '{{ resource_meta.id }}',
                 name: '{{ resource_meta.unique_identifier }}',
-                title: '{{ resource_meta.title }}',
-                abstract: '{{ resource_meta.abstract|safe|truncatechars:20|striptags }}',
+                title: '{{ resource_meta.title|escapejs }}',
+                abstract: '{{ resource_meta.abstract|truncatechars:20|striptags|escapejs }}',
                 type: '{{ resource_meta.remote_resource_type }}'
             });
         {% endfor %}
