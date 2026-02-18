@@ -165,6 +165,10 @@ class Dataset(ResourceBase):
         return self.subtype == "raster"
 
     @property
+    def is_tabular(self):
+        return self.subtype == "tabular"
+
+    @property
     def supports_time(self):
         valid_attributes = self.get_choices
         # check if the layer object if a vector and

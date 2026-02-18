@@ -955,7 +955,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_be_downloaded(self):
-        return self.subtype in {"vector", "raster", "vector_time"}
+        return self.subtype in {"vector", "raster", "vector_time", "tabular"}
 
     @property
     def can_have_wfs_links(self):
@@ -963,7 +963,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_wps_links(self):
-        return self.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}
+        return self.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time", "tabular"}
+
+    @property
+    def should_create_style(self):
+        return self.subtype != "tabular"
 
     @property
     def can_have_style(self):
@@ -971,7 +975,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_thumbnail(self):
-        return self.subtype not in {"3dtiles", "cog", "flatgeobuf"}
+        return self.subtype not in {"tabular", "3dtiles", "cog", "flatgeobuf"}
 
     @property
     def raw_purpose(self):
@@ -992,6 +996,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def detail_url(self):
         return self.get_absolute_url()
+
+    def fixup_store_type(self, keys, values):
+        from geonode.geoserver.helpers import get_dataset_storetype
+
+        if self.subtype == "tabular":
+            return self
+        for key in keys:
+            setattr(self, key, get_dataset_storetype(values[key]))
+        return self
 
     def clean(self):
         if self.title:

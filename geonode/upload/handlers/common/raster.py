@@ -25,7 +25,6 @@ from subprocess import PIPE, Popen
 from typing import List
 
 from django.conf import settings
-from django.db.models import Q
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
@@ -239,11 +238,7 @@ class BaseRasterFileHandler(BaseHandler):
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(
-                        Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
-                    )
-                    .first()
-                    .srid,
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid,
                     "raster_path": raster_path,
                 }
             ]
@@ -329,12 +324,7 @@ class BaseRasterFileHandler(BaseHandler):
         return
 
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = Dataset,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
         """
         Base function to create the resource into geonode. Each handler can specify
@@ -547,7 +537,7 @@ class BaseRasterFileHandler(BaseHandler):
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(instance_name)
 
-    def fixup_dynamic_model_fields(self, _exec, files):
+    def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
         """
         Raster dataset does not have the dynamic model, so this can be skept
         """

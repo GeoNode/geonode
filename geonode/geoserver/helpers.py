@@ -100,6 +100,7 @@ WPS_ACCEPTABLE_FORMATS = [
     ("application/wfs-collection-1.1", "vector"),
     ("application/zip", "vector"),
     ("text/csv", "vector"),
+    ("text/csv", "tabular"),
 ]
 
 DEFAULT_STYLE_NAME = ["generic", "line", "point", "polygon", "raster"]
@@ -1973,10 +1974,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                 instance.gs_resource = gs_resource
 
                 # Iterate over values from geoserver.
-                for key in ["alternate", "store", "subtype"]:
-                    # attr_name = key if 'typename' not in key else 'alternate'
-                    # print attr_name
-                    setattr(instance, key, get_dataset_storetype(values[key]))
+                instance = instance.fixup_store_type(["alternate", "store", "subtype"], values)
 
                 if updatemetadata:
                     _sync_geoserver_keywords_to_instance(instance, gs_resource.keywords)
@@ -2085,7 +2083,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     # Refresh from DB
                     instance.refresh_from_db()
 
-                if updatemetadata:
+                if updatemetadata and instance.should_create_style:
                     # Save dataset styles
                     logger.debug(f"... Refresh Legend links for Dataset {instance.title}")
                     try:

@@ -205,6 +205,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         execution_id: str,
         resource_type: ResourceBase = ResourceBase,
         asset=None,
+        **kwargs,
     ):
         """
         Creating geonode base resource
