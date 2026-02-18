@@ -742,17 +742,16 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
             processed = 0
             for remote_resource in found_resources:
                 try:
-                    with transaction.atomic():
-                        resource, created = models.HarvestableResource.objects.get_or_create(
-                            harvester=harvester,
-                            unique_identifier=remote_resource.unique_identifier,
-                            defaults={
-                                "title": remote_resource.title,
-                                "should_be_harvested": harvester.harvest_new_resources_by_default,
-                                "remote_resource_type": remote_resource.resource_type,
-                                "last_refreshed": timezone.now(),
-                            },
-                        )
+                    resource, created = models.HarvestableResource.objects.get_or_create(
+                        harvester=harvester,
+                        unique_identifier=remote_resource.unique_identifier,
+                        defaults={
+                            "title": remote_resource.title,
+                            "should_be_harvested": harvester.harvest_new_resources_by_default,
+                            "remote_resource_type": remote_resource.resource_type,
+                            "last_refreshed": timezone.now(),
+                        },
+                    )
                 except IntegrityError:
                     # RACE CONDITION: Another worker created this between our SELECT and INSERT.
                     # We catch the error and simply fetch the one they created.
