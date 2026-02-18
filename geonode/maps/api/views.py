@@ -19,6 +19,7 @@
 import logging
 from uuid import uuid4
 
+from django.conf import settings
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -42,6 +43,7 @@ from geonode.maps.models import Map
 from geonode.maps.signals import map_changed_signal
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.manager import resource_manager
+from geonode.resource.utils import resolve_resource_owner
 from geonode.utils import resolve_object
 
 logger = logging.getLogger(__name__)
@@ -115,12 +117,22 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
     def perform_create(self, serializer):
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
+        resolved_owner = resolve_resource_owner(self.request.user)
 
         instance = serializer.save(
-            owner=self.request.user,
+            owner=resolved_owner,
             resource_type="map",
             uuid=str(uuid4()),
         )
+        if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            resource_manager.set_permissions(
+                instance.uuid,
+                instance=instance,
+                owner=resolved_owner,
+                permissions=None,
+                created=True,
+                initial_user=self.request.user,
+            )
 
         # events and resouce routines
         self._post_change_routines(
