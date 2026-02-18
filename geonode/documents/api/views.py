@@ -36,7 +36,8 @@ from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.utils import resourcebase_post_save
+from geonode.metadata.manager import metadata_manager
+from geonode.resource.utils import resourcebase_post_save, infer_default_metadata
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
 
@@ -133,6 +134,11 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 manager.delete_retrieved_paths(force=True)
 
             resource.set_missing_info()
+            metadata_manager.update_schema_instance_partial(
+                resource,
+                infer_default_metadata(resource.get_real_instance()),
+                user=self.request.user,
+            )
             resourcebase_post_save(resource.get_real_instance())
             resource.set_default_permissions(owner=self.request.user, created=True)
             resource.handle_moderated_uploads()

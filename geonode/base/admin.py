@@ -21,11 +21,13 @@ from django import forms
 from django.contrib import admin
 from django.conf import settings
 from django.shortcuts import redirect, render
-from django.urls import path
+from django.urls import NoReverseMatch, path
 from dal import autocomplete
 from taggit.forms import TagField
 from django.core.management import call_command
 from django.contrib import messages
+from django.urls import reverse
+from django.utils.html import format_html
 
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
@@ -153,6 +155,34 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display = ("id", "contact", "resource", "role")
     list_editable = ("contact", "resource", "role")
     form = forms.modelform_factory(ContactRole, fields="__all__")
+
+
+class LinkInline(admin.TabularInline):
+    model = Link
+    extra = 0
+
+    readonly_fields = ("asset_admin_link",)
+    fields = ("link_type", "name", "mime", "url", "asset", "asset_admin_link")
+
+    @admin.display(description="Asset")
+    def asset_admin_link(self, obj):
+        if not obj.asset_id:
+            return "—"
+
+        a = obj.asset
+
+        # Upcast to the real subclass (DB hit)
+        a = a.get_real_instance()
+
+        # Build admin URL for the concrete model
+        opts = a._meta
+        try:
+            url = reverse(f"admin:{opts.app_label}_{opts.model_name}_change", args=(a.pk,))
+        except NoReverseMatch:
+            # if that concrete model isn't registered in admin
+            return str(a)
+
+        return format_html('<a href="{}" target="_blank" rel="noopener">{}</a>', url, a)
 
 
 class LinkAdmin(admin.ModelAdmin):

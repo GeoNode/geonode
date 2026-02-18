@@ -19,7 +19,7 @@
 
 from django.contrib import admin
 
-from geonode.base.admin import ResourceBaseAdminForm, SparseInline
+from geonode.base.admin import ResourceBaseAdminForm, SparseInline, LinkInline
 from geonode.layers.models import Dataset, Attribute, Style
 
 
@@ -69,6 +69,7 @@ class DatasetAdmin(admin.ModelAdmin):
     readonly_fields = ("uuid", "alternate", "workspace", "geographic_bounding_box")
     inlines = (
         AttributeInline,
+        LinkInline,
         SparseInline,
     )
     form = DatasetAdminForm

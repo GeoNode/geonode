@@ -82,6 +82,7 @@ from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
+from geonode.indexing.models import ResourceIndex
 from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import (
@@ -2884,9 +2885,7 @@ class BaseApiTests(APITestCase):
         Ensure we can access the Resource Base list.
         """
         _dataset = Dataset.objects.first()
-        expected_payload = [
-            {"url": reverse("dataset_download", args=[_dataset.alternate]), "ajax_safe": True, "default": True}
-        ]
+        expected_payload = []
 
         # From resource base API
         json = self._get_for_object(_dataset, "base-resources-detail")
@@ -3806,6 +3805,15 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         record = csw.get_record(resource.uuid)
         self.assertIsNotNone(record)
         self.assertEqual(record.identification[0].title, resource.title)
+
+    def test_resource_index_created(self):
+        resource = resource_manager.create(
+            str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
+        )
+
+        resource = resource_manager.update(resource.uuid, instance=resource, vals={})
+
+        self.assertTrue(ResourceIndex.objects.filter(resource=resource).exists())
 
     def test_csw_should_not_return_resourcebase_by_default(self):
         resource = resource_manager.create(
