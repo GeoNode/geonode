@@ -423,12 +423,11 @@ def bbox_swap(bbox):
 
 
 def check_bbox_validity(value):
-    if (
-        not value
-        or not isinstance(value, list)
-        or len(value) < 4
-        or not all(isinstance(x, (int, float)) for x in value)
-    ):
+    if not value or not isinstance(value, (list, tuple)) or len(value) < 4:
+        return False
+    try:
+        all(float(x) for x in value[:4])
+    except (ValueError, TypeError):
         return False
     return True
 
