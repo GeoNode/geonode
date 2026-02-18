@@ -422,6 +422,17 @@ def bbox_swap(bbox):
     return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
 
+def check_bbox_validity(value):
+    if (
+        not value
+        or not isinstance(value, list)
+        or len(value) < 4
+        or not all(isinstance(x, (int, float)) for x in value)
+    ):
+        return False
+    return True
+
+
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith("EPSG:"):
         srid = srid[5:]
