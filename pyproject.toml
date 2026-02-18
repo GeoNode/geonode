@@ -159,6 +159,8 @@ dependencies = [
     # Security and audit
     "cryptography==46.0.3",
     "jwcrypto>=1.5.6",
+    # dependency for XLSX handler
+    "python-calamine==0.6.1",
 ]
 
 [project.optional-dependencies]
