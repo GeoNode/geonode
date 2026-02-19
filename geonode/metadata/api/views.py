@@ -149,7 +149,7 @@ class MetadataViewSet(ViewSet):
 
     @action(
         detail=False,
-        methods=["get", "put"],
+        methods=["get", "put", "delete"],
         url_path=r"sparse/(?P<pk>\d+)/(?P<sparsekey>[^/]+)",
         url_name="sparse_field",
         permission_classes=[],
@@ -191,6 +191,16 @@ class MetadataViewSet(ViewSet):
                 defaults={"value": value},
             )
             return Response({"message": f"Sparse field '{sparsekey}' updated successfully"})
+
+        elif request.method == "DELETE":
+            # Check write permission
+            if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase_metadata"):
+                return Response({"message": "You don't have permission to edit this resource"}, status=403)
+
+            deleted, _ = SparseField.objects.filter(resource=resource, name=sparsekey).delete()
+            if not deleted:
+                return Response({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
+            return Response({"message": f"Sparse field '{sparsekey}' deleted successfully"})
 
 
 def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):

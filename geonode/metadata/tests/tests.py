@@ -1093,3 +1093,43 @@ class SparseFieldApiTests(APITestCase):
                 url = self._url(self.resource.pk, "custom_key")
                 response = self.client.put(url, data={"value": "val"}, format="json")
                 self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    # --- DELETE tests ---
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_delete_existing_sparse_field(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        url = self._url(self.resource.pk, "del_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(SparseField.objects.filter(resource=self.resource, name="del_key").exists())
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_delete_missing_sparse_field_returns_404(self, mock_perm):
+        url = self._url(self.resource.pk, "nonexistent_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=False)
+    def test_delete_no_read_permission_returns_404(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        url = self._url(self.resource.pk, "del_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_nonexistent_resource_returns_404(self):
+        url = self._url(99999, "some_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_no_write_permission_returns_403(self):
+        def has_view_only_perm(user, resource, perm):
+            return perm == "view_resourcebase"
+
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        with patch(
+            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", side_effect=has_view_only_perm
+        ):
+            url = self._url(self.resource.pk, "del_key")
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
