@@ -208,6 +208,13 @@ class MetadataViewSet(ViewSet):
             if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase_metadata"):
                 return Response({"message": "You don't have permission to edit this resource"}, status=403)
 
+            # Check if the key conflicts with a declared schema field
+            schema = metadata_manager.get_schema()
+            if sparsekey in schema.get("properties", {}):
+                return Response(
+                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
+                )
+
             deleted, _ = SparseField.objects.filter(resource=resource, name=sparsekey).delete()
             if not deleted:
                 return Response({"message": f"Sparse field '{sparsekey}' not found"}, status=404)

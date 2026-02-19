@@ -1146,3 +1146,13 @@ class SparseFieldApiTests(APITestCase):
             url = self._url(self.resource.pk, "del_key")
             response = self.client.delete(url)
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_delete_schema_conflict_returns_409(self, mock_get_schema):
+        mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
+        with patch(
+            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True
+        ):
+            url = self._url(self.resource.pk, "title")
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
