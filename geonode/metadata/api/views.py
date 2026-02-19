@@ -150,7 +150,7 @@ class MetadataViewSet(ViewSet):
     @action(
         detail=False,
         methods=["get", "put", "delete"],
-        url_path=r"sparse/(?P<pk>\d+)/(?P<sparsekey>[^/]+)",
+        url_path=r"sparse/(?P<pk>\d+)/(?P<sparsekey>[A-Za-z0-9_\-]+)",
         url_name="sparse_field",
         permission_classes=[],
     )
@@ -185,6 +185,17 @@ class MetadataViewSet(ViewSet):
 
             # Upsert the sparse field
             value = request.data.get("value", None)
+            # Validate value type and length to match SparseField.value (CharField(max_length=1024))
+            if value is not None and not isinstance(value, str):
+                return Response(
+                    {"message": "The 'value' field must be a string or null."},
+                    status=400,
+                )
+            if isinstance(value, str) and len(value) > 1024:
+                return Response(
+                    {"message": "The 'value' field must not exceed 1024 characters."},
+                    status=400,
+                )
             SparseField.objects.update_or_create(
                 resource=resource,
                 name=sparsekey,

@@ -1094,6 +1094,19 @@ class SparseFieldApiTests(APITestCase):
                 response = self.client.put(url, data={"value": "val"}, format="json")
                 self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_put_sparse_key_too_long_returns_400(self, mock_perm):
+        long_key = "k" * 65
+        url = self._url(self.resource.pk, long_key)
+        response = self.client.put(url, data={"value": "val"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_put_value_too_long_returns_400(self, mock_perm):
+        long_value = "v" * 1025
+        url = self._url(self.resource.pk, "custom_key")
+        response = self.client.put(url, data={"value": long_value}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     # --- DELETE tests ---
 
     @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
