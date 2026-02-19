@@ -74,6 +74,7 @@ from geonode.utils import (
     get_legend_url,
     is_monochromatic_image,
     set_resource_default_links,
+    normalize_bbox_to_float_list,
 )
 
 from .geofence import GeoFenceClient, GeoFenceUtils
@@ -2026,8 +2027,8 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     # are bypassed by custom create/updates we need to ensure the
                     # bbox is calculated properly.
                     srid = gs_resource.projection
-                    bbox = gs_resource.native_bbox
-                    ll_bbox = gs_resource.latlon_bbox
+                    bbox = normalize_bbox_to_float_list(gs_resource.native_bbox)
+                    ll_bbox = normalize_bbox_to_float_list(gs_resource.latlon_bbox)
                     instance.set_bbox_and_srid(bbox=bbox, ll_bbox=ll_bbox, srid=srid)
 
                     if instance.srid:

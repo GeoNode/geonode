@@ -46,6 +46,7 @@ from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, tan
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from geonode.upload.api.exceptions import GeneralUploadException
+from typing import List, Optional, Union
 
 from django.conf import settings
 from django.db.models import signals
@@ -422,14 +423,35 @@ def bbox_swap(bbox):
     return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
 
-def check_bbox_validity(value):
-    if not value or not isinstance(value, (list, tuple)) or len(value) < 4:
-        return False
-    try:
-        all(float(x) for x in value[:4])
-    except (ValueError, TypeError):
+def check_bbox_validity(value: List[Union[int, float]]) -> bool:
+    """
+    Validate that a bounding box value is a non-empty list of at least 4 numeric values.
+
+    Args:
+        value: Bounding box to validate, expected as [minx, maxx, miny, maxy].
+               Accepts int or float values. None is treated as invalid.
+
+    Returns:
+        True if `value` is a list with at least 4 numeric (int or float) elements, False otherwise.
+    """
+    if (
+        not value
+        or not isinstance(value, list)
+        or len(value) < 4
+        or not all(isinstance(x, (int, float)) for x in value)
+    ):
         return False
     return True
+
+
+def normalize_bbox_to_float_list(value) -> Optional[List[float]]:
+    """Normalize bbox input to a 4-item float list or return None when invalid."""
+    if not value or len(value) < 4:
+        return None
+    try:
+        return [float(x) for x in value[:4]]
+    except (TypeError, ValueError):
+        return None
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):

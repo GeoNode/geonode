@@ -19,6 +19,7 @@
 import itertools
 import re
 import logging
+from typing import List, Union
 
 from django.conf import settings
 from django.db import models, transaction
@@ -31,7 +32,7 @@ from tinymce.models import HTMLField
 
 from geonode.client.hooks import hookset
 from geonode import GeoNodeException
-from geonode.utils import build_absolute_uri, check_shp_columnnames, check_bbox_validity
+from geonode.utils import build_absolute_uri, check_shp_columnnames, check_bbox_validity, normalize_bbox_to_float_list
 from geonode.security.models import PermissionLevelMixin
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import (
@@ -341,8 +342,8 @@ class Dataset(ResourceBase):
             logger.error("No resource returned from GeoServer after bbox update")
             return False
 
-        bbox = resource.native_bbox
-        ll = resource.latlon_bbox
+        bbox = normalize_bbox_to_float_list(resource.native_bbox)
+        ll = normalize_bbox_to_float_list(resource.latlon_bbox)
         srid = resource.projection
 
         if not bbox or not ll:
@@ -355,7 +356,23 @@ class Dataset(ResourceBase):
 
         return True
 
-    def set_bbox_and_srid(self, bbox, ll_bbox, srid):
+    def set_bbox_and_srid(
+        self,
+        bbox: List[Union[int, float]],
+        ll_bbox: List[Union[int, float]],
+        srid: str,
+    ) -> None:
+        """
+        Set dataset bbox, ll_bbox and spatial reference identifier.
+        Args:
+            bbox: Bounding box as [minx, maxx, miny, maxy], each element is int or float.
+                  If invalid or unavailable, the method falls back to ll_bbox with EPSG:4326.
+            ll_bbox: Lat/Lon bounding box as [minx, maxx, miny, maxy], each element is int or float.
+                     Must be valid, otherwise a GeoNodeException is raised.
+            srid: Spatial Reference Identifier (string).
+        Returns:
+            None
+        """
         if not check_bbox_validity(ll_bbox):
             raise GeoNodeException("Lat/Lon BBox was not provided or is invalid")
 
