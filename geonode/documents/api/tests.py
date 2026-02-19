@@ -189,7 +189,11 @@ class DocumentsApiTests(APITestCase):
     def test_creation_assigns_admin_owner_and_grants_manage_to_uploader(self):
         self.assertTrue(self.client.login(username="norman", password="norman"))
         payload = {
-            "document": {"title": "Document owner auto assign", "metadata_only": True, "file_path": self.valid_file_path}
+            "document": {
+                "title": "Document owner auto assign",
+                "metadata_only": True,
+                "file_path": self.valid_file_path,
+            }
         }
         response = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(response.status_code, 201)
