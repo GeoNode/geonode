@@ -124,15 +124,6 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
             resource_type="map",
             uuid=str(uuid4()),
         )
-        if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
-            resource_manager.set_permissions(
-                instance.uuid,
-                instance=instance,
-                owner=resolved_owner,
-                permissions=None,
-                created=True,
-                initial_user=self.request.user,
-            )
 
         # events and resouce routines
         self._post_change_routines(
@@ -140,6 +131,8 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
             create_action_perfomed=True,
             additional_data=post_creation_data,
         )
+        if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
 
         # Handle thumbnail generation
         resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)

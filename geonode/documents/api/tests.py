@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.urls import reverse
+from django.test import override_settings
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
@@ -30,6 +31,7 @@ from geonode import settings
 from geonode.base.populate_test_data import create_models
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -179,6 +181,30 @@ class DocumentsApiTests(APITestCase):
         extension = actual.json().get("document", {}).get("extension", "")
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_creation_assigns_admin_owner_and_grants_manage_to_uploader(self):
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        payload = {
+            "document": {"title": "Document owner auto assign", "metadata_only": True, "file_path": self.valid_file_path}
+        }
+        response = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["document"]["owner"]["username"], "admin")
+
+        document = Document.objects.get(pk=response.json()["document"]["pk"])
+        norman = get_user_model().objects.get(username="norman")
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                norman,
+                document.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
 
     def test_uploading_doc_without_title(self):
         """

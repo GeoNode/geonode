@@ -19,6 +19,7 @@
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
+from django.conf import settings
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
@@ -27,6 +28,7 @@ from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
 from geonode.geoapps.models import GeoApp
 from geonode.metadata.multilang.views import MultiLangViewMixin
+from geonode.resource.utils import resolve_resource_owner
 
 
 from .serializers import GeoAppSerializer
@@ -66,4 +68,8 @@ class GeoAppViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewS
         so we force the request.user to be the owner
         in creation
         """
-        return serializer.save(owner=self.request.user)
+        resolved_owner = resolve_resource_owner(self.request.user)
+        instance = serializer.save(owner=resolved_owner)
+        if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
+        return instance

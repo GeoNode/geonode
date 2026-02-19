@@ -140,7 +140,9 @@ class AutoAssignResourceOwnershipHandler(BasePermissionsHandler):
         _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
         manage_perms = _to_extended_perms(MANAGE_RIGHTS, _resource_type, _resource_subtype)
 
-        payload = perms_payload or {"users": {}}
+        payload = perms_payload or {}
+        if "users" not in payload:
+            payload["users"] = {}
         payload["users"][initial_username] = sorted(manage_perms)
         return payload
 
