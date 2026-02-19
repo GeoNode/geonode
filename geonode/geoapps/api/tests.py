@@ -23,12 +23,14 @@ from urllib.parse import urljoin
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.test import override_settings
 from rest_framework.test import APITestCase
 
 from geonode.base.populate_test_data import create_models
 from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException
 from geonode.geoapps.api.serializers import GeoAppSerializer
 from geonode.geoapps.models import GeoApp
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -286,3 +288,32 @@ class GeoAppsApiTests(APITestCase):
 
         # cleanup
         sut.delete()
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_geoapp_creation_assigns_admin_owner_and_grants_manage_to_uploader(self):
+        url = f"{reverse('geoapps-list')}?include[]=data"
+        data = {
+            "name": "GeoApp owner auto assign",
+            "title": "GeoApp owner auto assign",
+            "resource_type": "geostory",
+            "extent": {"coords": [1123692.0, 5338214.0, 1339852.0, 5482615.0], "srid": "EPSG:3857"},
+        }
+
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        response = self.client.post(url, data=data, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["geoapp"]["owner"]["username"], "admin")
+
+        geoapp = GeoApp.objects.get(pk=response.json()["geoapp"]["pk"])
+        norman = get_user_model().objects.get(username="norman")
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                norman,
+                geoapp.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )

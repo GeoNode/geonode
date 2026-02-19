@@ -55,7 +55,13 @@ from geonode.security.utils import (
 from geonode.security.registry import permissions_registry
 
 from . import settings as rm_settings
-from .utils import update_resource, resourcebase_post_save, is_remote_resource, infer_default_metadata
+from .utils import (
+    update_resource,
+    resourcebase_post_save,
+    is_remote_resource,
+    infer_default_metadata,
+    resolve_resource_owner,
+)
 
 from ..base import enumerations
 from ..security.utils import AdvancedSecurityWorkflowManager
@@ -159,6 +165,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         created: bool = False,
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
+        **kwargs,
     ) -> bool:
         """Sets the permissions of a resource.
 
@@ -282,11 +289,15 @@ class ResourceManager(ResourceManagerInterface):
         if resource_type.objects.filter(uuid=uuid).exists():
             return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid4())
+        initial_user = defaults.get("owner", None)
+        resolved_owner = resolve_resource_owner(initial_user)
         resource_dict = {  # TODO: cleanup params and dicts
             k: v
             for k, v in defaults.items()
             if k not in ("data_title", "data_type", "description", "files", "link_type", "extension", "asset")
         }
+        if resolved_owner:
+            resource_dict["owner"] = resolved_owner
         _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -312,6 +323,8 @@ class ResourceManager(ResourceManagerInterface):
                     user=None,
                 )
                 resourcebase_post_save(_resource.get_real_instance())
+                if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+                    _resource.set_default_permissions(owner=resolved_owner, created=True, initial_user=initial_user)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
@@ -595,6 +608,7 @@ class ResourceManager(ResourceManagerInterface):
         created: bool = False,
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
+        **kwargs,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
@@ -642,6 +656,7 @@ class ResourceManager(ResourceManagerInterface):
                         approval_status_changed=approval_status_changed,
                         group_status_changed=group_status_changed,
                         include_virtual=False,
+                        **kwargs,
                     )
 
                     """
