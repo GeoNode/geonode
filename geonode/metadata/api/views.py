@@ -179,9 +179,7 @@ class MetadataViewSet(ViewSet):
             # Check if the key conflicts with a declared schema field
             schema = metadata_manager.get_schema()
             if sparsekey in schema.get("properties", {}):
-                return Response(
-                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
-                )
+                return Response({"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409)
 
             # Upsert the sparse field
             value = request.data.get("value", None)
@@ -211,9 +209,7 @@ class MetadataViewSet(ViewSet):
             # Check if the key conflicts with a declared schema field
             schema = metadata_manager.get_schema()
             if sparsekey in schema.get("properties", {}):
-                return Response(
-                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
-                )
+                return Response({"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409)
 
             deleted, _ = SparseField.objects.filter(resource=resource, name=sparsekey).delete()
             if not deleted:

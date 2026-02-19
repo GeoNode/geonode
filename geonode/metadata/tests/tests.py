@@ -994,9 +994,7 @@ class SparseFieldApiTests(APITestCase):
         self.other_user = get_user_model().objects.create_user(
             "sparse_other", "sparse_other@fakemail.com", "sparse_other_password", is_active=True
         )
-        self.resource = ResourceBase.objects.create(
-            title="Sparse Test Resource", uuid=str(uuid4()), owner=self.owner
-        )
+        self.resource = ResourceBase.objects.create(title="Sparse Test Resource", uuid=str(uuid4()), owner=self.owner)
 
     def tearDown(self):
         SparseField.objects.filter(resource=self.resource).delete()
@@ -1072,9 +1070,7 @@ class SparseFieldApiTests(APITestCase):
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
     def test_put_schema_conflict_returns_409(self, mock_get_schema):
         mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
-        with patch(
-            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True
-        ):
+        with patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True):
             url = self._url(self.resource.pk, "title")
             response = self.client.put(url, data={"value": "some_title"}, format="json")
             self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
@@ -1107,6 +1103,7 @@ class SparseFieldApiTests(APITestCase):
         url = self._url(self.resource.pk, "custom_key")
         response = self.client.put(url, data={"value": long_value}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     # --- DELETE tests ---
 
     @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
@@ -1150,9 +1147,7 @@ class SparseFieldApiTests(APITestCase):
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
     def test_delete_schema_conflict_returns_409(self, mock_get_schema):
         mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
-        with patch(
-            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True
-        ):
+        with patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True):
             url = self._url(self.resource.pk, "title")
             response = self.client.delete(url)
             self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
