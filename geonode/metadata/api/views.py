@@ -39,8 +39,10 @@ from geonode.groups.models import GroupProfile
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.base.i18n import get_localized_label
 from geonode.metadata.manager import metadata_manager
+from geonode.metadata.models import SparseField
 from geonode.metadata.multilang import utils as multi
 from geonode.people.utils import get_available_users
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +146,51 @@ class MetadataViewSet(ViewSet):
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
             return Response(result, status=404)
+
+    @action(
+        detail=False,
+        methods=["get", "put"],
+        url_path=r"sparse/(?P<pk>\d+)/(?P<sparsekey>[^/]+)",
+        url_name="sparse_field",
+        permission_classes=[],
+    )
+    def sparse_field(self, request, pk=None, sparsekey=None):
+        try:
+            resource = ResourceBase.objects.get(pk=pk)
+        except ResourceBase.DoesNotExist:
+            return Response({"message": "The resource was not found"}, status=404)
+
+        # Check read permission; return 404 to avoid revealing whether the resource exists
+        if not permissions_registry.user_has_perm(request.user, resource, "view_resourcebase"):
+            return Response({"message": "The resource was not found"}, status=404)
+
+        if request.method == "GET":
+            try:
+                field = SparseField.objects.get(resource=resource, name=sparsekey)
+                return Response({"value": field.value})
+            except SparseField.DoesNotExist:
+                return Response({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
+
+        elif request.method == "PUT":
+            # Check write permission
+            if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase_metadata"):
+                return Response({"message": "You don't have permission to edit this resource"}, status=403)
+
+            # Check if the key conflicts with a declared schema field
+            schema = metadata_manager.get_schema()
+            if sparsekey in schema.get("properties", {}):
+                return Response(
+                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
+                )
+
+            # Upsert the sparse field
+            value = request.data.get("value", None)
+            SparseField.objects.update_or_create(
+                resource=resource,
+                name=sparsekey,
+                defaults={"value": value},
+            )
+            return Response({"message": f"Sparse field '{sparsekey}' updated successfully"})
 
 
 def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
