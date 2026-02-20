@@ -155,6 +155,10 @@ class MetadataViewSet(ViewSet):
         permission_classes=[],
     )
     def sparse_field(self, request, pk=None, sparsekey=None):
+        # Validate sparsekey length against SparseField.name max_length=64
+        if len(sparsekey) > 64:
+            return Response({"message": "The sparse key must not exceed 64 characters."}, status=400)
+
         try:
             resource = ResourceBase.objects.get(pk=pk)
         except ResourceBase.DoesNotExist:
