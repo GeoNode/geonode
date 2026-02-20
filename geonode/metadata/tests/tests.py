@@ -53,6 +53,7 @@ from geonode.base.models import (
     Thesaurus,
 )
 from geonode.groups.models import GroupProfile, GroupMember
+from geonode.metadata.models import SparseField
 
 
 class MetadataApiTests(APITestCase):
@@ -979,3 +980,174 @@ class MetadataApiTests(APITestCase):
             self.handler1.update_resource.assert_called()
             self.handler2.update_resource.assert_called()
             self.handler3.update_resource.assert_called()
+
+
+class SparseFieldApiTests(APITestCase):
+    """Tests for the sparse field GET/PUT endpoints"""
+
+    def setUp(self):
+        i18nCache.clear()
+
+        self.owner = get_user_model().objects.create_user(
+            "sparse_owner", "sparse_owner@fakemail.com", "sparse_owner_password", is_active=True
+        )
+        self.other_user = get_user_model().objects.create_user(
+            "sparse_other", "sparse_other@fakemail.com", "sparse_other_password", is_active=True
+        )
+        self.resource = ResourceBase.objects.create(title="Sparse Test Resource", uuid=str(uuid4()), owner=self.owner)
+
+    def tearDown(self):
+        SparseField.objects.filter(resource=self.resource).delete()
+        self.resource.delete()
+        self.owner.delete()
+        self.other_user.delete()
+
+    def _url(self, pk, sparsekey):
+        return reverse("metadata-sparse_field", kwargs={"pk": pk, "sparsekey": sparsekey})
+
+    # --- GET tests ---
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_get_existing_sparse_field(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="my_key", value="my_value")
+        url = self._url(self.resource.pk, "my_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["value"], "my_value")
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_get_missing_sparse_field_returns_404(self, mock_perm):
+        url = self._url(self.resource.pk, "nonexistent_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=False)
+    def test_get_no_read_permission_returns_404(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="my_key", value="my_value")
+        url = self._url(self.resource.pk, "my_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_nonexistent_resource_returns_404(self):
+        url = self._url(99999, "some_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # --- PUT tests ---
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_put_creates_new_sparse_field(self, mock_get_schema, mock_perm):
+        mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
+        url = self._url(self.resource.pk, "custom_key")
+        response = self.client.put(url, data={"value": "custom_value"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        field = SparseField.objects.get(resource=self.resource, name="custom_key")
+        self.assertEqual(field.value, "custom_value")
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_put_updates_existing_sparse_field(self, mock_get_schema, mock_perm):
+        mock_get_schema.return_value = {"properties": {"title": {}}}
+        SparseField.objects.create(resource=self.resource, name="existing_key", value="old_value")
+        url = self._url(self.resource.pk, "existing_key")
+        response = self.client.put(url, data={"value": "new_value"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        field = SparseField.objects.get(resource=self.resource, name="existing_key")
+        self.assertEqual(field.value, "new_value")
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=False)
+    def test_put_no_read_permission_returns_404(self, mock_perm):
+        url = self._url(self.resource.pk, "custom_key")
+        response = self.client.put(url, data={"value": "val"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_put_nonexistent_resource_returns_404(self):
+        url = self._url(99999, "some_key")
+        response = self.client.put(url, data={"value": "val"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_put_schema_conflict_returns_409(self, mock_get_schema):
+        mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
+        with patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True):
+            url = self._url(self.resource.pk, "title")
+            response = self.client.put(url, data={"value": "some_title"}, format="json")
+            self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+    def test_put_no_write_permission_returns_403(self):
+        def has_view_only_perm(user, resource, perm):
+            return perm == "view_resourcebase"
+
+        with patch(
+            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", side_effect=has_view_only_perm
+        ):
+            with patch(
+                "geonode.metadata.manager.metadata_manager.get_schema",
+                return_value={"properties": {"title": {}}},
+            ):
+                url = self._url(self.resource.pk, "custom_key")
+                response = self.client.put(url, data={"value": "val"}, format="json")
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_put_sparse_key_too_long_returns_400(self, mock_perm):
+        long_key = "k" * 65
+        url = self._url(self.resource.pk, long_key)
+        response = self.client.put(url, data={"value": "val"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_put_value_too_long_returns_400(self, mock_perm):
+        long_value = "v" * 1025
+        url = self._url(self.resource.pk, "custom_key")
+        response = self.client.put(url, data={"value": long_value}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # --- DELETE tests ---
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_delete_existing_sparse_field(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        url = self._url(self.resource.pk, "del_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(SparseField.objects.filter(resource=self.resource, name="del_key").exists())
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_delete_missing_sparse_field_returns_404(self, mock_perm):
+        url = self._url(self.resource.pk, "nonexistent_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=False)
+    def test_delete_no_read_permission_returns_404(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        url = self._url(self.resource.pk, "del_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_nonexistent_resource_returns_404(self):
+        url = self._url(99999, "some_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_no_write_permission_returns_403(self):
+        def has_view_only_perm(user, resource, perm):
+            return perm == "view_resourcebase"
+
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        with patch(
+            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", side_effect=has_view_only_perm
+        ):
+            url = self._url(self.resource.pk, "del_key")
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_delete_schema_conflict_returns_409(self, mock_get_schema):
+        mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
+        with patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True):
+            url = self._url(self.resource.pk, "title")
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
