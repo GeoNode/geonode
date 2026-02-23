@@ -48,3 +48,14 @@ def get_language(request):
         language = language.split("-")[0]  # normalize
 
     return language
+
+
+def get_all_multilang_fields():
+    all_fields = []
+    langs = get_2letters_languages()
+
+    for field in settings.MULTILANG_FIELDS:
+        for lang in langs:
+            all_fields.append(get_multilang_field_name(field, lang))
+
+    return all_fields
