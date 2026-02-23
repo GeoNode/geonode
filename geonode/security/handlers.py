@@ -114,6 +114,47 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
         )
 
 
+class ResourceCreatorGroupsPermissionsHandler(BasePermissionsHandler):
+    """
+    Auto-assign configured permissions to all groups of the resource creator on creation.
+    """
+
+    @staticmethod
+    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        from geonode.security.permissions import _to_extended_perms
+        from geonode.security.utils import get_user_groups
+
+        if not kwargs.get("created", False):
+            return perms_payload
+
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", False):
+            return perms_payload
+
+        owner = getattr(instance, "owner", None)
+        if not owner:
+            return perms_payload
+
+        payload = perms_payload or {}
+        payload.setdefault("users", {})
+        payload.setdefault("groups", {})
+
+        _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
+        _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
+
+        compact_permissions = getattr(settings, "RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST", ["view"])
+        extended_permissions = set()
+        for compact_perm in compact_permissions:
+            extended_permissions.update(_to_extended_perms(compact_perm, _resource_type, _resource_subtype) or [])
+
+        if not extended_permissions:
+            extended_permissions = set(_to_extended_perms("view", _resource_type, _resource_subtype) or [])
+
+        for user_group in get_user_groups(owner):
+            payload["groups"][user_group] = sorted(extended_permissions)
+
+        return payload
+
+
 class GroupManagersPermissionsHandler(BasePermissionsHandler):
     """
     Grants 'edit' permissions to group managers if the resource is in a group

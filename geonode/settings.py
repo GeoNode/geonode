@@ -22,6 +22,7 @@ import os
 import re
 import ast
 import sys
+import logging
 import subprocess
 import dj_database_url
 from schema import Optional
@@ -36,6 +37,8 @@ from kombu import Queue, Exchange
 from kombu.serialization import register
 
 from . import serializer
+
+logger = logging.getLogger(__name__)
 
 SILENCED_SYSTEM_CHECKS = [
     "1_8.W001",
@@ -1849,6 +1852,33 @@ AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
 
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "True")
+)
+_resource_creator_groups_permissions = "view,download"
+if AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS and not _resource_creator_groups_permissions:
+    logger.warning(
+        "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS is enabled but RESOURCE_CREATOR_GROUPS_PERMISSIONS is not "
+        "set. Defaulting to 'view'."
+    )
+
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = (_resource_creator_groups_permissions or "view").strip() or "view"
+_resource_creator_groups_permissions_list = [
+    _p.strip().lower() for _p in re.split(r" *[,|:;] *", RESOURCE_CREATOR_GROUPS_PERMISSIONS) if _p.strip()
+]
+_valid_resource_creator_groups_compact_permissions = {"view", "download", "edit", "manage"}
+_invalid_resource_creator_groups_permissions = [
+    _p for _p in _resource_creator_groups_permissions_list if _p not in _valid_resource_creator_groups_compact_permissions
+]
+if _invalid_resource_creator_groups_permissions:
+    logger.warning(
+        "RESOURCE_CREATOR_GROUPS_PERMISSIONS contains unsupported values (%s). Defaulting to 'view'.",
+        ", ".join(_invalid_resource_creator_groups_permissions),
+    )
+RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST = (
+    ["view"] if _invalid_resource_creator_groups_permissions else (_resource_creator_groups_permissions_list or ["view"])
+)
+
 # Whether the uplaoded resources should be public and downloadable by default
 # or not
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "True"))
@@ -1865,6 +1895,7 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+    "geonode.security.handlers.ResourceCreatorGroupsPermissionsHandler",
 ]
 
 # ########################################################################### #
