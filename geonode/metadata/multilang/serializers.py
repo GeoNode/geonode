@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 from rest_framework import serializers
+
 from geonode.metadata.multilang import utils as multi
 
 
@@ -13,8 +14,9 @@ class MultiLangOutputMixin(serializers.BaseSerializer):
     def to_representation(self, instance):
 
         representation = super().to_representation(instance)
-        request = self.context.get('request')
-        include_i18n = request.query_params.get('include_i18n', 'false').lower() == 'true' if request else False
+        request = self.context.get("request")
+        params = getattr(request, "query_params", None) or getattr(request, "GET", {})
+        include_i18n = params.get("include_i18n", "false").lower() == "true" if request else False
 
         if settings.MULTILANG_FIELDS and hasattr(instance, "_multilang_sparse_prefetch"):
             for sparse in instance._multilang_sparse_prefetch:

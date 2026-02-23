@@ -19,7 +19,8 @@ class MultiLangViewMixin:
         """Adds a Prefetch to include localized fields in one query."""
 
         request = getattr(self, "request", None)
-        include_i18n = request.query_params.get('include_i18n', 'false').lower() == 'true' if request else False
+        params = getattr(request, "query_params", None) or getattr(request, "GET", {})
+        include_i18n = params.get("include_i18n", "false").lower() == "true" if request else False
 
         if include_i18n:
             field_names = multi.get_all_multilang_fields()
