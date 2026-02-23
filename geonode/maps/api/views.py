@@ -19,7 +19,6 @@
 import logging
 from uuid import uuid4
 
-from django.conf import settings
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter

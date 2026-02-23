@@ -19,7 +19,6 @@
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
-from django.conf import settings
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
