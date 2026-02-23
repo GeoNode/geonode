@@ -131,8 +131,7 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
             create_action_perfomed=True,
             additional_data=post_creation_data,
         )
-        if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
-            instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
+        instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
 
         # Handle thumbnail generation
         resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)

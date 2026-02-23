@@ -323,8 +323,7 @@ class ResourceManager(ResourceManagerInterface):
                     user=None,
                 )
                 resourcebase_post_save(_resource.get_real_instance())
-                if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
-                    _resource.set_default_permissions(owner=resolved_owner, created=True, initial_user=initial_user)
+                _resource.set_default_permissions(owner=resolved_owner, created=True, initial_user=initial_user)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)

@@ -70,6 +70,5 @@ class GeoAppViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewS
         """
         resolved_owner = resolve_resource_owner(self.request.user)
         instance = serializer.save(owner=resolved_owner)
-        if getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
-            instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
+        instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
         return instance
