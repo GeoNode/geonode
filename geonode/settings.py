@@ -1852,31 +1852,39 @@ AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
 
-AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
-    os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "True")
-)
-_resource_creator_groups_permissions = "view,download"
-if AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS and not _resource_creator_groups_permissions:
-    logger.warning(
-        "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS is enabled but RESOURCE_CREATOR_GROUPS_PERMISSIONS is not "
-        "set. Defaulting to 'view'."
-    )
 
-RESOURCE_CREATOR_GROUPS_PERMISSIONS = (_resource_creator_groups_permissions or "view").strip() or "view"
-_resource_creator_groups_permissions_list = [
-    _p.strip().lower() for _p in re.split(r" *[,|:;] *", RESOURCE_CREATOR_GROUPS_PERMISSIONS) if _p.strip()
-]
-_valid_resource_creator_groups_compact_permissions = {"view", "download", "edit", "manage"}
-_invalid_resource_creator_groups_permissions = [
-    _p for _p in _resource_creator_groups_permissions_list if _p not in _valid_resource_creator_groups_compact_permissions
-]
-if _invalid_resource_creator_groups_permissions:
-    logger.warning(
-        "RESOURCE_CREATOR_GROUPS_PERMISSIONS contains unsupported values (%s). Defaulting to 'view'.",
-        ", ".join(_invalid_resource_creator_groups_permissions),
+def _parse_resource_creator_groups_permissions(raw_value, enabled):
+    default_value = "view"
+    valid_compact_permissions = {"view", "download", "edit", "manage"}
+
+    if enabled and not raw_value:
+        logger.warning(
+            "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS is enabled but RESOURCE_CREATOR_GROUPS_PERMISSIONS is "
+            "not set. Defaulting to 'view'."
+        )
+
+    normalized_value = (raw_value or default_value).strip() or default_value
+    parsed_values = [p.strip().lower() for p in normalized_value.split(",") if p.strip()]
+    invalid_values = [p for p in parsed_values if p not in valid_compact_permissions]
+
+    if invalid_values:
+        logger.warning(
+            "RESOURCE_CREATOR_GROUPS_PERMISSIONS contains unsupported values (%s). Defaulting to 'view'.",
+            ", ".join(invalid_values),
+        )
+        return normalized_value, [default_value]
+
+    return normalized_value, (parsed_values or [default_value])
+
+
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "False")
+)
+_resource_creator_groups_permissions = os.getenv("RESOURCE_CREATOR_GROUPS_PERMISSIONS", None)
+RESOURCE_CREATOR_GROUPS_PERMISSIONS, RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST = (
+    _parse_resource_creator_groups_permissions(
+        _resource_creator_groups_permissions, AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS
     )
-RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST = (
-    ["view"] if _invalid_resource_creator_groups_permissions else (_resource_creator_groups_permissions_list or ["view"])
 )
 
 # Whether the uplaoded resources should be public and downloadable by default
