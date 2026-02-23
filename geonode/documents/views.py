@@ -36,7 +36,6 @@ from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
-from geonode.resource.utils import resolve_resource_owner
 from geonode.base import enumerations
 
 from pathlib import Path
@@ -132,7 +131,7 @@ class DocumentUploadView(CreateView):
         If the form is valid, save the associated model.
         """
         doc_form = form.cleaned_data
-        resolved_owner = resolve_resource_owner(self.request.user)
+        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
 
         file = doc_form.pop("doc_file", None)
         if file:
@@ -177,7 +176,9 @@ class DocumentUploadView(CreateView):
             )
 
         self.object.handle_moderated_uploads()
-        self.object.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
+        resource_manager.finalize_creation_permissions(
+            self.object, owner=resolved_owner, initial_user=self.request.user
+        )
 
         abstract = None
         date = None

@@ -37,7 +37,7 @@ from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.metadata.manager import metadata_manager
-from geonode.resource.utils import resourcebase_post_save, infer_default_metadata, resolve_resource_owner
+from geonode.resource.utils import resourcebase_post_save, infer_default_metadata
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
 
@@ -114,7 +114,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
             raise DocumentException("The file provided is not in the supported extensions list")
 
         try:
-            resolved_owner = resolve_resource_owner(self.request.user)
+            resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
             payload = {
                 "owner": resolved_owner,
                 "extension": extension,
@@ -141,7 +141,9 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 user=self.request.user,
             )
             resourcebase_post_save(resource.get_real_instance())
-            resource.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
+            resource_manager.finalize_creation_permissions(
+                resource, owner=resolved_owner, initial_user=self.request.user
+            )
             resource.handle_moderated_uploads()
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
             return resource

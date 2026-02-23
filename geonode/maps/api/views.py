@@ -42,7 +42,6 @@ from geonode.maps.models import Map
 from geonode.maps.signals import map_changed_signal
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.manager import resource_manager
-from geonode.resource.utils import resolve_resource_owner
 from geonode.utils import resolve_object
 
 logger = logging.getLogger(__name__)
@@ -116,7 +115,7 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
     def perform_create(self, serializer):
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
-        resolved_owner = resolve_resource_owner(self.request.user)
+        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
 
         instance = serializer.save(
             owner=resolved_owner,
@@ -130,7 +129,7 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
             create_action_perfomed=True,
             additional_data=post_creation_data,
         )
-        instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
+        resource_manager.finalize_creation_permissions(instance, owner=resolved_owner, initial_user=self.request.user)
 
         # Handle thumbnail generation
         resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)

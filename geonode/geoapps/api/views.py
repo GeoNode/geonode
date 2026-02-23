@@ -27,7 +27,7 @@ from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
 from geonode.geoapps.models import GeoApp
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.utils import resolve_resource_owner
+from geonode.resource.manager import resource_manager
 
 
 from .serializers import GeoAppSerializer
@@ -67,7 +67,7 @@ class GeoAppViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewS
         so we force the request.user to be the owner
         in creation
         """
-        resolved_owner = resolve_resource_owner(self.request.user)
+        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
         instance = serializer.save(owner=resolved_owner)
-        instance.set_default_permissions(owner=resolved_owner, created=True, initial_user=self.request.user)
+        resource_manager.finalize_creation_permissions(instance, owner=resolved_owner, initial_user=self.request.user)
         return instance
