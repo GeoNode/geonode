@@ -3082,6 +3082,13 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         self.assertListEqual(updated_perms["users"][self.group_member], ["view_resourcebase"])
         self.assertListEqual(updated_perms["users"][self.simple_user], [])
 
+        # Test for empty perms list. This should not trigger extra perms
+        perms_payload["users"][self.group_manager] = []
+        updated_perms_empty = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Still empty, since user had no base perms
+        self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
+
     @override_settings(
         AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST=["download"]
     )
