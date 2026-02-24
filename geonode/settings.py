@@ -1886,6 +1886,16 @@ RESOURCE_CREATOR_GROUPS_PERMISSIONS, RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST = 
         _resource_creator_groups_permissions, AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS
     )
 )
+AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", "False")
+)
+_resource_ownership_admin_username = os.getenv("RESOURCE_OWNERSHIP_ADMIN_USERNAME")
+if AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN and not _resource_ownership_admin_username:
+    logger.warning(
+        "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN is enabled but RESOURCE_OWNERSHIP_ADMIN_USERNAME is not set. "
+        "Defaulting to 'admin'."
+    )
+RESOURCE_OWNERSHIP_ADMIN_USERNAME = (_resource_ownership_admin_username or "admin").strip() or "admin"
 
 # Whether the uplaoded resources should be public and downloadable by default
 # or not
@@ -1904,6 +1914,7 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
     "geonode.security.handlers.ResourceCreatorGroupsPermissionsHandler",
+    "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
 ]
 
 # ########################################################################### #
