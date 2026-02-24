@@ -21,11 +21,12 @@ class MultiLangViewMixin:
         request = getattr(self, "request", None)
         params = getattr(request, "query_params", None) or getattr(request, "GET", {})
         include_i18n = params.get("include_i18n", "false").lower() == "true" if request else False
+        lang = multi.get_language(request)
 
         if include_i18n:
-            field_names = multi.get_all_multilang_fields()
+            field_map = multi.get_all_multilang_fields()
+            field_names = list(field_map.values())
         else:
-            lang = multi.get_language(request)
             field_names = multi.get_multilang_fields_for_lang(lang)
 
         qs = super().get_queryset()

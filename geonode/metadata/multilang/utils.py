@@ -51,11 +51,8 @@ def get_language(request):
 
 
 def get_all_multilang_fields():
-    all_fields = []
-    langs = get_2letters_languages()
-
-    for field in settings.MULTILANG_FIELDS:
-        for lang in langs:
-            all_fields.append(get_multilang_field_name(field, lang))
-
-    return all_fields
+    return {
+        (field, lang): get_multilang_field_name(field, lang)
+        for field in settings.MULTILANG_FIELDS
+        for lang in get_2letters_languages()
+    }
