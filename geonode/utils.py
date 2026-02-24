@@ -1305,16 +1305,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     name = "Zipped Shapefile"
                 if (
                     Link.objects.filter(
-                        resource=instance.resourcebase_ptr, url=wfs_url, name=name, link_type="data"
+                        resource=instance.resourcebase_ptr, name=name, link_type="data"
                     ).count()
                     < 2
                 ):
                     Link.objects.update_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=wfs_url,
                         name=name,
                         link_type="data",
                         defaults=dict(
+                            url=wfs_url,
                             extension=ext,
                             mime=mime,
                         ),
@@ -1333,16 +1333,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             for ext, name, mime, wcs_url in links:
                 if (
                     Link.objects.filter(
-                        resource=instance.resourcebase_ptr, url=wcs_url, name=name, link_type="data"
+                        resource=instance.resourcebase_ptr, name=name, link_type="data"
                     ).count()
                     < 2
                 ):
                     Link.objects.update_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=wcs_url,
                         name=name,
                         link_type="data",
                         defaults=dict(
+                            url=wcs_url,
                             extension=ext,
                             mime=mime,
                         ),
@@ -1353,16 +1353,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         if (
             Link.objects.filter(
-                resource=instance.resourcebase_ptr, url=html_link_url, name=instance.alternate, link_type="html"
+                resource=instance.resourcebase_ptr, name=instance.alternate, link_type="html"
             ).count()
             < 2
         ):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
-                url=html_link_url,
                 name=instance.alternate or instance.name,
                 link_type="html",
                 defaults=dict(
+                    url=html_link_url,
                     extension="html",
                     mime="text/html",
                 ),
@@ -1382,11 +1382,10 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     if style:
                         style_name = os.path.basename(urlparse(style.sld_url).path).split(".")[0]
                         legend_url = get_legend_url(instance, style_name)
-                        if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
+                        if Link.objects.filter(resource=instance.resourcebase_ptr).count() < 2:
                             Link.objects.update_or_create(
                                 resource=instance.resourcebase_ptr,
                                 name="Legend",
-                                url=legend_url,
                                 defaults=dict(
                                     extension="png",
                                     url=legend_url,
@@ -1412,15 +1411,15 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             logger.debug(" -- Resource Links[Thumbnail link]...")
             if (
                 Link.objects.filter(
-                    resource=instance.resourcebase_ptr, url=instance.get_thumbnail_url(), name="Thumbnail"
+                    resource=instance.resourcebase_ptr, name="Thumbnail"
                 ).count()
                 < 2
             ):
                 Link.objects.update_or_create(
                     resource=instance.resourcebase_ptr,
-                    url=instance.get_thumbnail_url(),
                     name="Thumbnail",
                     defaults=dict(
+                        url=instance.get_thumbnail_url(),
                         extension="png",
                         mime="image/png",
                         link_type="image",
@@ -1437,12 +1436,11 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 ogc_wms_url = instance.ows_url or urljoin(ogc_server_settings.public_url, "ows")
                 ogc_wms_name = f"OGC WMS: {instance.workspace} Service"
                 if (
-                    Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count()
+                    Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name).count()
                     < 2
                 ):
                     Link.objects.get_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=ogc_wms_url,
                         name=ogc_wms_name,
                         defaults=dict(
                             extension="html",
@@ -1457,13 +1455,12 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     ogc_wfs_name = f"OGC WFS: {instance.workspace} Service"
                     if (
                         Link.objects.filter(
-                            resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url
+                            resource=instance.resourcebase_ptr, name=ogc_wfs_name,
                         ).count()
                         < 2
                     ):
                         Link.objects.get_or_create(
                             resource=instance.resourcebase_ptr,
-                            url=ogc_wfs_url,
                             name=ogc_wfs_name,
                             defaults=dict(
                                 extension="html",
@@ -1478,13 +1475,12 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     ogc_wcs_name = f"OGC WCS: {instance.workspace} Service"
                     if (
                         Link.objects.filter(
-                            resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url
+                            resource=instance.resourcebase_ptr, name=ogc_wcs_name
                         ).count()
                         < 2
                     ):
                         Link.objects.get_or_create(
                             resource=instance.resourcebase_ptr,
-                            url=ogc_wcs_url,
                             name=ogc_wcs_name,
                             defaults=dict(
                                 extension="html",
@@ -1500,13 +1496,12 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 ptype_link_url = instance.ows_url
                 if (
                     Link.objects.filter(
-                        resource=instance.resourcebase_ptr, name=ptype_link_name, url=ptype_link_url
+                        resource=instance.resourcebase_ptr, name=ptype_link_name
                     ).count()
                     < 2
                 ):
                     Link.objects.get_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=ptype_link_url,
                         name=ptype_link_name,
                         defaults=dict(
                             extension="html",
