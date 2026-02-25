@@ -98,7 +98,7 @@ def _get_service_handler(request, service):
     feature many layers.
     """
     service_handler = get_service_handler(
-        service.service_url, service.type, service.id, username=service.username, password=service.get_password()
+        service.service_url, service.type, service.id, username=service.username if service.needs_authentication else None, password=service.get_password() if service.needs_authentication else None
     )
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
