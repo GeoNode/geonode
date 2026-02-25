@@ -131,6 +131,7 @@ class DocumentUploadView(CreateView):
         If the form is valid, save the associated model.
         """
         doc_form = form.cleaned_data
+        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
 
         file = doc_form.pop("doc_file", None)
         if file:
@@ -143,7 +144,7 @@ class DocumentUploadView(CreateView):
                 None,
                 resource_type=Document,
                 defaults=dict(
-                    owner=self.request.user,
+                    owner=resolved_owner,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", file.name),
                     description=doc_form.pop("abstract", None),
@@ -166,7 +167,7 @@ class DocumentUploadView(CreateView):
                 None,
                 resource_type=Document,
                 defaults=dict(
-                    owner=self.request.user,
+                    owner=resolved_owner,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", None),
                     extension=doc_form.pop("extension", None),
@@ -175,7 +176,9 @@ class DocumentUploadView(CreateView):
             )
 
         self.object.handle_moderated_uploads()
-        self.object.set_default_permissions(owner=self.request.user, created=True)
+        resource_manager.finalize_creation_permissions(
+            self.object, owner=resolved_owner, initial_user=self.request.user
+        )
 
         abstract = None
         date = None

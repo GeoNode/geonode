@@ -174,7 +174,7 @@ class PermissionLevelMixin:
 
         return list(set(obj_groups)), list(set(obj_group_managers))
 
-    def set_default_permissions(self, owner=None, created=False):
+    def set_default_permissions(self, owner=None, created=False, **kwargs):
         """
         Removes all the permissions except for the owner and assign the
         view permission to the anonymous group.
@@ -226,7 +226,7 @@ class PermissionLevelMixin:
 
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
         return resource_manager.set_permissions(
-            self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created
+            self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created, **kwargs
         )
 
     def set_permissions(self, perm_spec=None, created=False, approval_status_changed=False, group_status_changed=False):
