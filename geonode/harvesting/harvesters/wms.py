@@ -37,6 +37,7 @@ from geonode.layers.models import Dataset
 from geonode.base.models import Link, ResourceBase
 from geonode.layers.enumerations import GXP_PTYPES
 from geonode.resource.manager import resource_manager
+from geonode.services.serviceprocessors import get_service_handler
 from geonode.thumbs.exceptions import ThumbnailError
 
 from .. import models
@@ -151,7 +152,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
     def get_wms_operations(cls, url, version=None) -> typing.Optional[typing.Dict]:
         operations = {}
         try:
-            _url, _parsed_service = WebMapService(url, version=version)
+            _parsed_service = get_service_handler(url, service_type="WMS")
             for _op in _parsed_service.operations:
                 _methods = []
                 for _op_method in getattr(_op, "methods", []) if hasattr(_op, "methods") else _op.get("methods", []):

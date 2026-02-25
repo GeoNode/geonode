@@ -46,7 +46,7 @@ from ..enumerations import CASCADED
 from ..enumerations import INDEXED
 from .. import models
 from .. import utils
-from . import base
+from . import base, get_service_handler
 
 logger = logging.getLogger(__name__)
 
@@ -288,7 +288,9 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     @property
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
-        _url, _parsed_service = WebMapService(cleaned_url.geturl(), version=version)
+        _parsed_service = get_service_handler(
+            cleaned_url.geturl(), service.type, service.id, username=service.username, password=service.get_password()
+        )
         return _parsed_service
 
     def probe(self):

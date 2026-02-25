@@ -97,7 +97,9 @@ def _get_service_handler(request, service):
     multiple Capabilities requests (this is a time saver on servers that
     feature many layers.
     """
-    service_handler = get_service_handler(service.service_url, service.type, service.id)
+    service_handler = get_service_handler(
+        service.service_url, service.type, service.id, username=service.username, password=service.get_password()
+    )
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
     # commented out due to jsonserializer error, will be replaced with cache
@@ -320,6 +322,9 @@ def remove_service(request, service_id):
     elif request.method == "POST":
         service.dataset_set.all().delete()
         # by deleting the harvester we delete also the service
+        is_cached = service_cache.get(service.base_url)
+        if is_cached:
+            service_cache.delete(service.base_url)
         service.harvester.delete()
         messages.add_message(request, messages.INFO, _(f"Service {service.title} has been deleted"))
         return HttpResponseRedirect(reverse("services"))
