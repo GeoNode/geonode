@@ -289,7 +289,11 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
         _parsed_service = get_service_handler(
-            cleaned_url.geturl(), service.type, service.id, username=service.username if service.needs_authentication else None, password=service.get_password() if service.needs_authentication else None
+            cleaned_url.geturl(),
+            service.type,
+            service.id,
+            username=service.username if service.needs_authentication else None,
+            password=service.get_password() if service.needs_authentication else None,
         )
         return _parsed_service
 
