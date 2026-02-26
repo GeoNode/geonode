@@ -21,6 +21,7 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.urls import reverse
+from django.test import override_settings
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from mock import patch
@@ -29,6 +30,8 @@ from rest_framework.test import APITestCase
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
+from geonode.security.registry import permissions_registry
+from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -279,6 +282,49 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
         self.assertIsNotNone(response.data["map"]["thumbnail_url"])
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=False,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_map_keeps_uploader_owner_when_auto_assign_disabled(self):
+        url = reverse("maps-list")
+        data = {
+            "title": "Map owner parity feature off",
+            "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
+        }
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["map"]["owner"]["username"], "norman")
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_map_assigns_admin_owner_and_grants_manage_to_uploader(self):
+        url = reverse("maps-list")
+        data = {
+            "title": "Map owner auto assign",
+            "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
+        }
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["map"]["owner"]["username"], "admin")
+
+        map_obj = Map.objects.get(pk=response.json()["map"]["pk"])
+        norman = get_user_model().objects.get(username="norman")
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                norman,
+                map_obj.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
 
     def test_create_map_featured_status_admin(self):
         """

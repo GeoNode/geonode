@@ -115,9 +115,10 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
     def perform_create(self, serializer):
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
+        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
 
         instance = serializer.save(
-            owner=self.request.user,
+            owner=resolved_owner,
             resource_type="map",
             uuid=str(uuid4()),
         )
@@ -128,6 +129,7 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
             create_action_perfomed=True,
             additional_data=post_creation_data,
         )
+        resource_manager.finalize_creation_permissions(instance, owner=resolved_owner, initial_user=self.request.user)
 
         # Handle thumbnail generation
         resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
