@@ -113,7 +113,8 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
             approval_status_changed=kwargs.get("approval_status_changed"),
             group_status_changed=kwargs.get("group_status_changed"),
         )
-    
+
+
 class AutoAssignResourceOwnershipHandler(BasePermissionsHandler):
     """
     When auto-assignment is enabled, ensure uploader keeps "manage" permissions on creation.
@@ -144,6 +145,7 @@ class AutoAssignResourceOwnershipHandler(BasePermissionsHandler):
             payload["users"] = {}
         payload["users"][initial_username] = sorted(manage_perms)
         return payload
+
 
 class ResourceCreatorGroupsPermissionsHandler(BasePermissionsHandler):
     """
