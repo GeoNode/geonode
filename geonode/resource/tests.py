@@ -23,6 +23,7 @@ from uuid import uuid4
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
@@ -122,6 +123,100 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         new_uuid = str(uuid4())
         res = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
         self.assertEqual(res, Dataset.objects.get(uuid=new_uuid))
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=False,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_keeps_uploader_as_owner_when_auto_assign_disabled(self):
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_parity_feature_off"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, self.user)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_assigns_admin_owner_and_grants_uploader_manage(self):
+        admin = get_user_model().objects.get(username="admin")
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_auto_assign_admin"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, admin)
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "delete_resourcebase",
+                include_virtual=True,
+            )
+        )
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="resource_owner_not_admin",
+    )
+    def test_create_fallbacks_to_first_superuser_when_configured_owner_not_superuser(self):
+        non_admin = get_user_model().objects.create_user(
+            username="resource_owner_not_admin",
+            email="resource_owner_not_admin@test.com",
+        )
+        new_uuid = str(uuid4())
+        map_defaults = {"owner": self.user, "title": "create_owner_fallback_not_admin"}
+        resource = self.rm.create(new_uuid, resource_type=Map, defaults=map_defaults)
+        self.assertNotEqual(resource.owner, non_admin)
+        self.assertTrue(resource.owner.is_superuser)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="   ",
+    )
+    def test_create_fallbacks_to_admin_when_username_setting_blank(self):
+        admin = get_user_model().objects.get(username="admin")
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_blank_username"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, admin)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_handler_applies_only_on_creation_flag(self):
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_creation_only_handler"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner.username, "admin")
+        self.assertNotEqual(resource.owner, self.user)
+
+        # On non-creation updates, uploader perms should follow the explicit payload and not be auto-forced to manage.
+        perm_spec = {"users": {self.user.username: ["view_resourcebase"]}, "groups": {}}
+        self.assertTrue(self.rm.set_permissions(resource.uuid, instance=resource, permissions=perm_spec, created=False))
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "delete_resourcebase",
+                include_virtual=True,
+            )
+        )
 
     def test_update(self):
         dt = create_single_dataset("test_update_dataset")

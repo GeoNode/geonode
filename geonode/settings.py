@@ -22,6 +22,7 @@ import os
 import re
 import ast
 import sys
+import logging
 import subprocess
 import dj_database_url
 from schema import Optional
@@ -36,6 +37,8 @@ from kombu import Queue, Exchange
 from kombu.serialization import register
 
 from . import serializer
+
+logger = logging.getLogger(__name__)
 
 SILENCED_SYSTEM_CHECKS = [
     "1_8.W001",
@@ -1849,6 +1852,17 @@ AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
 
+AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", "False")
+)
+_resource_ownership_admin_username = os.getenv("RESOURCE_OWNERSHIP_ADMIN_USERNAME")
+if AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN and not _resource_ownership_admin_username:
+    logger.warning(
+        "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN is enabled but RESOURCE_OWNERSHIP_ADMIN_USERNAME is not set. "
+        "Defaulting to 'admin'."
+    )
+RESOURCE_OWNERSHIP_ADMIN_USERNAME = (_resource_ownership_admin_username or "admin").strip() or "admin"
+
 # Whether the uplaoded resources should be public and downloadable by default
 # or not
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "True"))
@@ -1865,6 +1879,7 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+    "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
 ]
 
 # ########################################################################### #

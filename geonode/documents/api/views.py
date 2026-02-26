@@ -114,8 +114,9 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
             raise DocumentException("The file provided is not in the supported extensions list")
 
         try:
+            resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
             payload = {
-                "owner": self.request.user,
+                "owner": resolved_owner,
                 "extension": extension,
                 "resource_type": "document",
             }
@@ -140,7 +141,9 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 user=self.request.user,
             )
             resourcebase_post_save(resource.get_real_instance())
-            resource.set_default_permissions(owner=self.request.user, created=True)
+            resource_manager.finalize_creation_permissions(
+                resource, owner=resolved_owner, initial_user=self.request.user
+            )
             resource.handle_moderated_uploads()
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
             return resource

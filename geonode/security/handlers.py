@@ -18,6 +18,7 @@
 #########################################################################
 from abc import ABC
 from django.conf import settings
+from geonode.security.permissions import _to_extended_perms, MANAGE_RIGHTS
 
 
 class BasePermissionsHandler(ABC):
@@ -112,6 +113,38 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
             approval_status_changed=kwargs.get("approval_status_changed"),
             group_status_changed=kwargs.get("group_status_changed"),
         )
+
+
+class AutoAssignResourceOwnershipHandler(BasePermissionsHandler):
+    """
+    When auto-assignment is enabled, ensure uploader keeps "manage" permissions on creation.
+    """
+
+    @staticmethod
+    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            return perms_payload
+
+        if not kwargs.get("created", False):
+            return perms_payload
+
+        initial_user = kwargs.get("initial_user", None)
+        if not initial_user:
+            return perms_payload
+
+        initial_username = initial_user if isinstance(initial_user, str) else getattr(initial_user, "username", None)
+        if not initial_username or initial_username == getattr(instance.owner, "username", None):
+            return perms_payload
+
+        _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
+        _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
+        manage_perms = _to_extended_perms(MANAGE_RIGHTS, _resource_type, _resource_subtype)
+
+        payload = perms_payload or {}
+        if "users" not in payload:
+            payload["users"] = {}
+        payload["users"][initial_username] = sorted(manage_perms)
+        return payload
 
 
 class GroupManagersPermissionsHandler(BasePermissionsHandler):
