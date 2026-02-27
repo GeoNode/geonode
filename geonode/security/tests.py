@@ -3736,3 +3736,39 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         temp_user.delete()
         temp_group_profile.delete()
         temp_group.delete()
+
+    def test_clear_permissions_cache(self):
+        """Test that clear_permissions_cache removes permission cache keys only."""
+        test_resource = self.resources[0]
+        anonymous_user = Profile.objects.get(username="AnonymousUser")
+
+        admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        self.assertIsNotNone(cache.get(admin_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        cache.set("non_permission_key", "keep_me", 600)
+        self.assertEqual(cache.get("non_permission_key"), "keep_me")
+
+        permissions_registry.clear_permissions_cache()
+
+        self.assertIsNone(cache.get(admin_key))
+        self.assertIsNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(group_key))
+        self.assertIsNone(cache.get(all_key))
+
+        self.assertEqual(cache.get("non_permission_key"), "keep_me")

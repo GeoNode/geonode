@@ -2118,6 +2118,15 @@ class Configuration(SingletonModel):
     read_only = models.BooleanField(default=False)
     maintenance = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        previous_read_only = Configuration.objects.filter(pk=self.pk).values_list("read_only", flat=True).first()
+        super().save(*args, **kwargs)
+
+        if previous_read_only != self.read_only:
+            from geonode.security.registry import permissions_registry
+
+            permissions_registry.clear_permissions_cache()
+
     class Meta:
         verbose_name_plural = "Configuration"
 
