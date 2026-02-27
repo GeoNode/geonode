@@ -107,7 +107,7 @@ def create_vrt_file(layer, source_filepath):
         if wkt_field:
             # Avoid importing the same source column both as attribute and geometry in wkt case.
             fields = [field for field in fields if field["src"] != wkt_field]
-        if not wkt_field:
+        else:
             x_field = next((source_fields[x] for x in ("longitude", "long", "x") if x in source_fields), None)
             y_field = next((source_fields[y] for y in ("latitude", "lat", "y") if y in source_fields), None)
             if x_field and y_field:
