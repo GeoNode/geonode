@@ -3778,14 +3778,20 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         user = self.admin_user
 
         config = Configuration.load()
-        config.read_only = False
-        config.save()
+        original_read_only = config.read_only
 
-        permissions_registry.get_perms(instance=test_resource, user=user, use_cache=True)
-        cache_key = permissions_registry._get_cache_key([test_resource.pk], users=[user])
-        self.assertIsNotNone(cache.get(cache_key))
+        try:
+            config.read_only = False
+            config.save()
 
-        config.read_only = True
-        config.save()
+            permissions_registry.get_perms(instance=test_resource, user=user, use_cache=True)
+            cache_key = permissions_registry._get_cache_key([test_resource.pk], users=[user])
+            self.assertIsNotNone(cache.get(cache_key))
 
-        self.assertIsNone(cache.get(cache_key))
+            config.read_only = True
+            config.save()
+
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            config.read_only = original_read_only
+            config.save()
