@@ -18,6 +18,7 @@
 #########################################################################
 import uuid
 import os
+import shutil
 from django.conf import settings
 from django.test import TestCase
 from mock import MagicMock, patch
@@ -134,19 +135,24 @@ class TestGeoJsonFileHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
+        
+        # Build the expected list based on your new secure implementation
+        expected_cmd_list = [
+            shutil.which("ogr2ogr") or "ogr2ogr",
+            "--config", "PG_USE_COPY", "YES",
+            "-f", "PostgreSQL",
+            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
+            self.valid_files.get("base_file"),
+            "-lco", "FID=fid",
+            "-nln", "alternate",
+            "dataset",
+            "-lco", "GEOMETRY_NAME=geom"
+        ]
+
         _open.assert_called_once()
         _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_files.get("base_file")
-            + '" -lco FID=fid'
-            + ' -nln alternate "dataset" -lco GEOMETRY_NAME=geom',
+            expected_cmd_list,
             stdout=-1,
             stderr=-1,
-            shell=True,  # noqa
+            shell=False
         )
