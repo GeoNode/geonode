@@ -1013,7 +1013,7 @@ class SparseFieldApiTests(APITestCase):
         url = self._url(self.resource.pk, "my_key")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["value"], "my_value")
+        self.assertEqual(response.json()["value"], "my_value")
 
     @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
     def test_get_missing_sparse_field_returns_404(self, mock_perm):

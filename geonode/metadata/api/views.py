@@ -157,44 +157,46 @@ class MetadataViewSet(ViewSet):
     def sparse_field(self, request, pk=None, sparsekey=None):
         # Validate sparsekey length against SparseField.name max_length=64
         if len(sparsekey) > 64:
-            return Response({"message": "The sparse key must not exceed 64 characters."}, status=400)
+            return JsonResponse({"message": "The sparse key must not exceed 64 characters."}, status=400)
 
         try:
             resource = ResourceBase.objects.get(pk=pk)
         except ResourceBase.DoesNotExist:
-            return Response({"message": "The resource was not found"}, status=404)
+            return JsonResponse({"message": "The resource was not found"}, status=404)
 
         # Check read permission; return 404 to avoid revealing whether the resource exists
         if not permissions_registry.user_has_perm(request.user, resource, "view_resourcebase"):
-            return Response({"message": "The resource was not found"}, status=404)
+            return JsonResponse({"message": "The resource was not found"}, status=404)
 
         if request.method == "GET":
             try:
                 field = SparseField.objects.get(resource=resource, name=sparsekey)
-                return Response({"value": field.value})
+                return JsonResponse({"value": field.value})
             except SparseField.DoesNotExist:
-                return Response({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
+                return JsonResponse({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
 
         elif request.method == "PUT":
             # Check write permission
             if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase_metadata"):
-                return Response({"message": "You don't have permission to edit this resource"}, status=403)
+                return JsonResponse({"message": "You don't have permission to edit this resource"}, status=403)
 
             # Check if the key conflicts with a declared schema field
             schema = metadata_manager.get_schema()
             if sparsekey in schema.get("properties", {}):
-                return Response({"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409)
+                return JsonResponse(
+                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
+                )
 
             # Upsert the sparse field
             value = request.data.get("value", None)
             # Validate value type and length to match SparseField.value (CharField(max_length=1024))
             if value is not None and not isinstance(value, str):
-                return Response(
+                return JsonResponse(
                     {"message": "The 'value' field must be a string or null."},
                     status=400,
                 )
             if isinstance(value, str) and len(value) > 1024:
-                return Response(
+                return JsonResponse(
                     {"message": "The 'value' field must not exceed 1024 characters."},
                     status=400,
                 )
@@ -203,22 +205,24 @@ class MetadataViewSet(ViewSet):
                 name=sparsekey,
                 defaults={"value": value},
             )
-            return Response({"message": f"Sparse field '{sparsekey}' updated successfully"})
+            return JsonResponse({"message": f"Sparse field '{sparsekey}' updated successfully"})
 
         elif request.method == "DELETE":
             # Check write permission
             if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase_metadata"):
-                return Response({"message": "You don't have permission to edit this resource"}, status=403)
+                return JsonResponse({"message": "You don't have permission to edit this resource"}, status=403)
 
             # Check if the key conflicts with a declared schema field
             schema = metadata_manager.get_schema()
             if sparsekey in schema.get("properties", {}):
-                return Response({"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409)
+                return JsonResponse(
+                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
+                )
 
             deleted, _ = SparseField.objects.filter(resource=resource, name=sparsekey).delete()
             if not deleted:
-                return Response({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
-            return Response({"message": f"Sparse field '{sparsekey}' deleted successfully"})
+                return JsonResponse({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
+            return JsonResponse({"message": f"Sparse field '{sparsekey}' deleted successfully"})
 
 
 def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
