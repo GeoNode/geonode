@@ -83,17 +83,6 @@ class DocumentsApiTests(APITestCase):
         # import json
         # logger.error(f"{json.dumps(layers_data)}")
 
-    def test_extra_metadata_included_with_param(self):
-        resource = Document.objects.first()
-        url = urljoin(f"{reverse('documents-list')}/", f"{resource.pk}")
-        data = {"include[]": "metadata"}
-
-        response = self.client.get(url, format="json", data=data)
-        self.assertIsNotNone(response.data["document"].get("metadata"))
-
-        response = self.client.get(url, format="json")
-        self.assertNotIn("metadata", response.data["document"])
-
     def test_creation_return_error_if_file_is_not_passed(self):
         """
         If file_path is not available, should raise error

@@ -25,7 +25,6 @@ import sys
 import logging
 import subprocess
 import dj_database_url
-from schema import Optional
 from urllib.parse import urlparse, urljoin
 
 #
@@ -2068,39 +2067,6 @@ TOPICCATEGORY_MANDATORY = ast.literal_eval(os.environ.get("TOPICCATEGORY_MANDATO
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
-"""
-Default schema used to store extra and dynamic metadata for the resource
-"""
-
-DEFAULT_EXTRA_METADATA_SCHEMA = {
-    Optional("id"): int,
-    "filter_header": object,
-    "field_name": object,
-    "field_label": object,
-    "field_value": object,
-}
-
-"""
-If present, will extend the available metadata schema used for store
-new value for each resource. By default overrided the existing one.
-The expected schema is the same as the default
-"""
-CUSTOM_METADATA_SCHEMA = os.getenv("CUSTOM_METADATA_SCHEMA ", {})
-
-"""
-Variable used to actually get the expected metadata schema for each resource_type.
-In this way, each resource type can have a different metadata schema
-"""
-EXTRA_METADATA_SCHEMA = {
-    **{
-        "map": os.getenv("MAP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "dataset": os.getenv("DATASET_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "document": os.getenv("DOCUMENT_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "geoapp": os.getenv("GEOAPP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-    },
-    **CUSTOM_METADATA_SCHEMA,
-}
 
 """
 List of modules that implement custom metadata storers that will be called when the metadata of a resource is saved

@@ -114,17 +114,6 @@ class GeoAppsApiTests(APITestCase):
 
         GeoApp.objects.update(advertised=True)
 
-    def test_extra_metadata_included_with_param(self):
-        _app = GeoApp.objects.first()
-        url = urljoin(f"{reverse('geoapps-list')}/", f"{_app.pk}")
-        data = {"include[]": "metadata"}
-
-        response = self.client.get(url, format="json", data=data)
-        self.assertIsNotNone(response.data["geoapp"].get("metadata"))
-
-        response = self.client.get(url, format="json")
-        self.assertNotIn("metadata", response.data["geoapp"])
-
     def test_geoapps_crud(self):
         """
         Ensure we can create/update GeoApps.
