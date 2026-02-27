@@ -352,7 +352,10 @@ class Command(BaseCommand):
                             db_host = settings.DATABASES["default"]["HOST"]
                             db_passwd = settings.DATABASES["default"]["PASSWORD"]
 
-                            utils.truncate_tables(db_name, db_user, db_port, db_host, db_passwd)
+                            utils.truncate_tables(
+                                db_name, db_user, db_port, db_host, db_passwd,
+                                utils.get_db_schema(settings.DATABASES["default"]),
+                            )
                         except Exception:
                             logger.info("Error while truncating tables, trying external task")
 
@@ -730,7 +733,10 @@ class Command(BaseCommand):
                 ogc_db_port = datastore["PORT"]
 
                 if not soft_reset:
-                    utils.remove_existing_tables(ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host, ogc_db_passwd)
+                    utils.remove_existing_tables(
+                        ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host, ogc_db_passwd,
+                        utils.get_db_schema(datastore),
+                    )
 
                 utils.restore_db(
                     config,

@@ -16,10 +16,38 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
+
 from django.apps import AppConfig
 from django.utils.translation import gettext_noop as _
 
 from geonode.notifications_helper import NotificationsAppConfigBase
+
+logger = logging.getLogger(__name__)
+
+
+def create_geonode_db_schema(sender, using, **kwargs):
+    """Create the configured PostgreSQL schema before migrations run."""
+    import re
+    from django.conf import settings
+    from django.db import connections
+    from geonode.utils import get_db_schema
+
+    db_config = settings.DATABASES.get(using, {})
+    schema = get_db_schema(db_config)
+
+    if not schema or schema == "public":
+        return
+
+    if not re.match(r"^[A-Za-z_][A-Za-z0-9_$]*$", schema):
+        logger.warning(f"Skipping schema creation for '{schema}' on database '{using}': invalid schema name")
+        return
+
+    try:
+        with connections[using].cursor() as cursor:
+            cursor.execute(f'CREATE SCHEMA IF NOT EXISTS "{schema}"')
+    except Exception as e:
+        logger.warning(f"Could not create schema '{schema}' on database '{using}': {e}")
 
 
 class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
@@ -45,8 +73,10 @@ class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
 
     def ready(self):
         """Finalize setup"""
+        from django.db.models import signals
         from geonode.base.signals import connect_signals
 
         connect_signals()
+        signals.pre_migrate.connect(create_geonode_db_schema)
 
         super(BaseAppConfig, self).ready()
