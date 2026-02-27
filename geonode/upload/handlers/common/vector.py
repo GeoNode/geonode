@@ -34,6 +34,7 @@ import logging
 import os
 from subprocess import PIPE, Popen
 from typing import List, Optional, Tuple
+import shlex
 from celery import chord, group
 from django.db import transaction
 
@@ -279,9 +280,10 @@ class BaseVectorFileHandler(BaseHandler):
         # vrt file is aready created in import_resource and vrt will be auto detected by ogr2ogr
         # and also the base_file will work so can be used as alternative for fallback which will also be autodeteced by ogr2ogr.
         input_file = files.get("temp_vrt_file") or files.get("base_file")
-        options += f'"{input_file}"' + f" -lco FID={DEFAULT_PK_COLUMN_NAME} "
 
-        options += f'-nln {alternate} "{original_name}"'
+        options += f" {shlex.quote(input_file)} -lco FID={DEFAULT_PK_COLUMN_NAME} "
+
+        options += f" -nln {shlex.quote(alternate)} {shlex.quote(original_name)}"
 
         if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
             options += " -nlt PROMOTE_TO_MULTI"
@@ -1556,21 +1558,36 @@ def import_with_ogr2ogr(
     If the layer should be overwritten, the option is appended dynamically
     """
     try:
-        ogr_exe = shutil.which("ogr2ogr")
 
-        options = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
+        ogr_exe = shutil.which("ogr2ogr") or "ogr2ogr"  # Fallback to string if not found
+
+        options_str = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
             files, original_name, ovverwrite_layer, alternate, execution_id=execution_id
         )
-        _datastore = settings.DATABASES["datastore"]
+
+        # shlex.split understands that 'quoted strings' are single arguments
+        cmd_list = [ogr_exe] + shlex.split(options_str)
 
         copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
 
         if copy_with_dump:
-            options += f" | PGPASSWORD={_datastore['PASSWORD']} psql -d {_datastore['NAME']} -h {_datastore['HOST']} -p {_datastore.get('PORT', 5432)} -U {_datastore['USER']} -f -"
+            # If using a pipe (ogr2ogr | psql), we must handle it via Python
+            # because shell=False doesn't understand the "|" symbol.
+            _datastore = settings.DATABASES["datastore"]
+            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", _datastore["HOST"], "-U", _datastore["USER"], "-f", "-"]
 
-        commands = [ogr_exe] + options.split(" ")
-        process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
-        stdout, stderr = process.communicate()
+            env = os.environ.copy()
+            env["PGPASSWORD"] = _datastore["PASSWORD"]
+
+            p1 = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
+            p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
+
+            p1.stdout.close()
+            stdout, stderr = p2.communicate()
+        else:
+            # Standard execution with shell=False
+            process = Popen(cmd_list, stdout=PIPE, stderr=PIPE, shell=False)
+            stdout, stderr = process.communicate()
 
         if files.get("temp_vrt_file") and os.path.exists(files["temp_vrt_file"]):
             os.remove(files["temp_vrt_file"])
