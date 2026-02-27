@@ -67,6 +67,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         cls.valid_tif = f"{project_dir}/tests/fixture/test_raster.tif"
         cls.valid_csv = f"{project_dir}/tests/fixture/valid.csv"
 
+        cls.missing_geom_csv = f"{project_dir}/tests/fixture/missing_geom.csv"
         cls.url = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
@@ -297,7 +298,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
 class ImporterGCSVImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
-    def test_import_geojson(self):
+    def test_import_csv(self):
         self._cleanup_layers(name="valid")
 
         payload = {"base_file": open(self.valid_csv, "rb"), "action": "upload"}
@@ -319,6 +320,48 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="valid")
+
+
+class ImporterGCSVTabularImportTest(BaseImporterEndToEndTest):
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    def test_import_tabular_csv(self):
+        self._cleanup_layers(name="missing_geom")
+
+        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "upload"}
+        initial_name = "missing_geom"
+        self._assertimport(
+            payload,
+            initial_name,
+            assert_payload={
+                "subtype": "tabular",
+                "resource_type": "dataset",
+            },
+        )
+        self._cleanup_layers(name="missing_geom")
+
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    def test_import_tabular_csv_overwrite(self):
+        self._cleanup_layers(name="missing_geom")
+        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "upload"}
+        initial_name = "missing_geom"
+        prev_dataset = self._assertimport(
+            payload,
+            initial_name,
+            keep_resource=True,
+            assert_payload={
+                "subtype": "tabular",
+                "resource_type": "dataset",
+            },
+        )
+
+        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "upload"}
+        initial_name = "missing_geom"
+        payload["overwrite_existing_layer"] = True
+        payload["resource_pk"] = prev_dataset.pk
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
+        self._cleanup_layers(name="missing_geom")
 
 
 class ImporterKMLImportTest(BaseImporterEndToEndTest):

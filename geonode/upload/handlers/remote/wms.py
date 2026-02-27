@@ -120,18 +120,13 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         return layer_name, payload_alternate
 
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = ...,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = ..., asset=None, **kwargs
     ):
         """
         Use the default RemoteResourceHandler to create the geonode resource
         after that, we assign the bbox and re-generate the thumbnail
         """
-        resource = super().create_geonode_resource(layer_name, alternate, execution_id, Dataset, asset)
+        resource = super().create_geonode_resource(layer_name, alternate, execution_id, Dataset, asset, **kwargs)
         _exec = orchestrator.get_execution_object(execution_id)
         remote_bbox = _exec.input_params.get("bbox")
         if remote_bbox:

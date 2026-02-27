@@ -31,6 +31,8 @@ from geonode.upload.handlers.csv.exceptions import InvalidCSVException
 from geonode.upload.handlers.csv.handler import CSVFileHandler
 from osgeo import ogr
 
+from geonode.upload.utils import ExecutionRequest
+
 
 class TestCSVHandler(TestCase):
     databases = ("default", "datastore")
@@ -78,12 +80,25 @@ class TestCSVHandler(TestCase):
         self.assertIsNotNone(_exc)
         self.assertTrue("The CSV provided is invalid, no layers found" in str(_exc.exception.detail))
 
-    def test_is_valid_should_raise_exception_if_the_csv_missing_geom(self):
-        with self.assertRaises(InvalidCSVException) as _exc:
-            self.handler.is_valid(files={"base_file": self.missing_geom}, user=self.user)
+    def test_is_valid_should_set_as_tabular_if_the_csv_miss_geom(self):
+        exec_obj = ExecutionRequest.objects.create(
+            user=self.user,
+            func_name="test",
+            geonode_resource=self.layer,
+            input_params={
+                "uuid": self.layer.uuid,
+                "owner": self.layer.owner.username,
+                "resource_type": self.layer.resource_type,
+                "defaults": f'{{"owner":"{self.layer.owner.username}"}}',
+            },
+        )
+        self.handler.is_valid(
+            files={"base_file": self.missing_geom}, user=self.user, execution_id=str(exec_obj.exec_id)
+        )
 
-        self.assertIsNotNone(_exc)
-        self.assertTrue("Not enough geometry field are set" in str(_exc.exception.detail))
+        exec_obj.refresh_from_db()
+
+        self.assertTrue(exec_obj.input_params.get("is_tabular", False))
 
     def test_is_valid_should_raise_exception_if_the_csv_missing_lat(self):
         with self.assertRaises(InvalidCSVException) as _exc:
@@ -176,7 +191,7 @@ class TestCSVHandler(TestCase):
             + '\' " "'
             + self.valid_csv
             + '" -lco FID=fid'
-            + ' -nln alternate "dataset" -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME=geom  -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"',  # noqa
+            + ' -nln alternate "dataset" -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME=geom  -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*" -oo AUTODETECT_TYPE=YES',  # noqa
             stdout=-1,
             stderr=-1,
             shell=True,  # noqa
