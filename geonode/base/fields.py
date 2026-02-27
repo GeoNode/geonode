@@ -25,4 +25,5 @@ class MultiThesauriField(forms.ModelMultipleChoiceField):
         # Note: Not using .get() because filter()[0] is used in original
         # code. The hard-coded language is currently used throughout
         # geonode.
-        return obj.keyword.first().label
+        first_keyword = obj.keyword.first()
+        return first_keyword.label if first_keyword else ""

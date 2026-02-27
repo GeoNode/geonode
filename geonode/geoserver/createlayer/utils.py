@@ -172,12 +172,6 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
     # get (or create the datastore)
     datastore = get_or_create_datastore(cat, workspace)
 
-    # check if datastore is of PostGIS type
-    if datastore.type != "PostGIS":
-        msg = "To use the createlayer application you must use PostGIS"
-        logger.error(msg)
-        raise GeoNodeException(msg)
-
     # check if layer is existing
     resources = datastore.get_resources()
     for resource in resources:
