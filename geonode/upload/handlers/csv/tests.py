@@ -17,6 +17,7 @@
 #
 #########################################################################
 import uuid
+import shutil
 from unittest.mock import MagicMock, patch
 import os
 from django.conf import settings
@@ -151,6 +152,9 @@ class TestCSVHandler(TestCase):
         comm.communicate.return_value = b"", b""
         _open.return_value = comm
 
+        # We pass the valid_csv path here to match your expected call
+        self.valid_files["base_file"] = self.valid_csv
+
         _task, alternate, execution_id = import_with_ogr2ogr(
             execution_id=str(_uuid),
             files=self.valid_files,
@@ -165,19 +169,33 @@ class TestCSVHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
+
+        # This list reflects how shlex.split() breaks down your command string
+        expected_cmd_list = [
+            shutil.which("ogr2ogr") or "ogr2ogr",
+            "--config",
+            "PG_USE_COPY",
+            "YES",
+            "-f",
+            "PostgreSQL",
+            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
+            self.valid_csv,
+            "-lco",
+            "FID=fid",
+            "-nln",
+            "alternate",
+            "dataset",
+            "-oo",
+            "KEEP_GEOM_COLUMNS=NO",
+            "-lco",
+            "GEOMETRY_NAME=geom",
+            "-oo",
+            "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom",
+            "-oo",
+            "X_POSSIBLE_NAMES=x,long*",
+            "-oo",
+            "Y_POSSIBLE_NAMES=y,lat*",
+        ]
+
         _open.assert_called_once()
-        _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_csv
-            + '" -lco FID=fid'
-            + ' -nln alternate "dataset" -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME=geom  -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"',  # noqa
-            stdout=-1,
-            stderr=-1,
-            shell=True,  # noqa
-        )
+        _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)
