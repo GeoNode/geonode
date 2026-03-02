@@ -27,7 +27,6 @@ from django.urls import reverse
 from django.conf import settings
 
 from geonode.base.api.views import ResourceBaseViewSet
-from geonode.base.models import ResourceBase
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, facet_registry
 from geonode.security.utils import get_visible_resources
 
@@ -92,7 +91,9 @@ class BaseFacetingView(APIView):
             return get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
         else:
             # return ResourceBase.objects
-            return get_visible_resources(ResourceBase.objects, request.user)
+            viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs={})
+            viewset.initial(request)
+            return get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
 
     @classmethod
     def _resolve_language(cls, request) -> (str, bool):
