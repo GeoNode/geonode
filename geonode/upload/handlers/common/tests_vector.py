@@ -416,8 +416,6 @@ class TestBaseVectorFileHandler(TestCase):
                 alternate="alternate",
             )
 
-        _datastore = settings.DATABASES["datastore"]
-
         # Verification of the NEW secure call
         _open.assert_called_once()
 
