@@ -85,15 +85,15 @@ class BaseFacetingView(APIView):
         filters = {k: vlist for k, vlist in request.query_params.lists() if k.startswith("filter{")}
         logger.warning(f"FILTERING BY  {filters}")
 
-        if filters:
-            viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs=filters)
-            viewset.initial(request)
-            return get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
-        else:
-            # return ResourceBase.objects
-            viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs={})
-            viewset.initial(request)
-            return get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
+        viewset = ResourceBaseViewSet(
+            request=request,
+            format_kwarg={},
+            kwargs=filters if filters else {},
+        )
+        viewset.initial(request)
+
+        queryset = viewset.filter_queryset(viewset.get_queryset())
+        return get_visible_resources(queryset=queryset, user=request.user)
 
     @classmethod
     def _resolve_language(cls, request) -> (str, bool):
