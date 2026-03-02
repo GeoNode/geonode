@@ -162,25 +162,27 @@ class TestShapeFileFileHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
-        
+
         # Build the expected list to match your list-based secure implementation
         expected_cmd_list = [
             shutil.which("ogr2ogr") or "ogr2ogr",
-            "--config", "PG_USE_COPY", "YES",
-            "-f", "PostgreSQL",
+            "--config",
+            "PG_USE_COPY",
+            "YES",
+            "-f",
+            "PostgreSQL",
             f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
             self.valid_shp.get("base_file"),
-            "-lco", "FID=fid",
-            "-nln", "alternate",
+            "-lco",
+            "FID=fid",
+            "-nln",
+            "alternate",
             "dataset",
-            "-lco", "precision=no",
-            "-lco", "GEOMETRY_NAME=geom"
+            "-lco",
+            "precision=no",
+            "-lco",
+            "GEOMETRY_NAME=geom",
         ]
 
         _open.assert_called_once()
-        _open.assert_called_with(
-            expected_cmd_list,
-            stdout=-1,
-            stderr=-1,
-            shell=False
-        )
+        _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)

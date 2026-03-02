@@ -376,26 +376,26 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
-        
+
         # Build the expected list to match the "Actual" output in your trace
         expected_cmd_list = [
-            '/usr/bin/ogr2ogr', 
-            '--config', 'PG_USE_COPY', 'YES', 
-            '-f', 'PostgreSQL', 
-            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ", 
-            self.valid_files.get("base_file"), 
-            '-lco', 'FID=fid', 
-            '-nln', 'alternate', 
-            'dataset'
+            "/usr/bin/ogr2ogr",
+            "--config",
+            "PG_USE_COPY",
+            "YES",
+            "-f",
+            "PostgreSQL",
+            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
+            self.valid_files.get("base_file"),
+            "-lco",
+            "FID=fid",
+            "-nln",
+            "alternate",
+            "dataset",
         ]
 
         _open.assert_called_once()
-        _open.assert_called_with(
-            expected_cmd_list,
-            stdout=-1,
-            stderr=-1,
-            shell=False  # Changed from True to False
-        )
+        _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)  # Changed from True to False
 
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_with_errors_should_raise_exception(self, _open):
@@ -420,20 +420,20 @@ class TestBaseVectorFileHandler(TestCase):
 
         # Verification of the NEW secure call
         _open.assert_called_once()
-        
+
         # Get the actual call arguments to inspect them
         args, kwargs = _open.call_args
         cmd_list = args[0]
 
         # Check that it's a list (not a string)
         self.assertIsInstance(cmd_list, list)
-        
+
         # Check for specific safe flags in the list
         self.assertIn("--config", cmd_list)
         self.assertIn("PG_USE_COPY", cmd_list)
         self.assertIn("alternate", cmd_list)
         self.assertIn("dataset", cmd_list)
-        
+
         # Verify shell=False is now the standard (either explicitly False or not present)
         self.assertFalse(kwargs.get("shell", False))
 
@@ -474,10 +474,10 @@ class TestBaseVectorFileHandler(TestCase):
         # 3. Check the second call (psql)
         psql_args = _open.mock_calls[1][1][0]
         psql_kwargs = _open.mock_calls[1][2]
-        
+
         self.assertIn("psql", psql_args)
         self.assertIn("-d", psql_args)
-        
+
         # 4. Verify the password is passed securely in 'env', not in the command list
         self.assertIn("PGPASSWORD", psql_kwargs["env"])
         # Ensure the password is NOT in the actual command list (the security fix!)
