@@ -135,7 +135,7 @@ pytest-bdd==7.1.2
 splinter==0.21.0
 pytest-splinter==3.3.2
 pytest-django==4.8.0
-setuptools>=59
+setuptools>=59,<=63
 pixelmatch==0.3.0
 factory-boy==3.3.0
 flaky==3.8.1
