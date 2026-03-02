@@ -3772,26 +3772,3 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         self.assertIsNone(cache.get(all_key))
 
         self.assertEqual(cache.get("non_permission_key"), "keep_me")
-
-    def test_configuration_read_only_change_clears_permissions_cache(self):
-        test_resource = self.resources[0]
-        user = self.admin_user
-
-        config = Configuration.load()
-        original_read_only = config.read_only
-
-        try:
-            config.read_only = False
-            config.save()
-
-            permissions_registry.get_perms(instance=test_resource, user=user, use_cache=True)
-            cache_key = permissions_registry._get_cache_key([test_resource.pk], users=[user])
-            self.assertIsNotNone(cache.get(cache_key))
-
-            config.read_only = True
-            config.save()
-
-            self.assertIsNone(cache.get(cache_key))
-        finally:
-            config.read_only = original_read_only
-            config.save()

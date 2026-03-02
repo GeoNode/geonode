@@ -32,6 +32,7 @@ from guardian.shortcuts import assign_perm
 from django.db.utils import IntegrityError, OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.gis.geos import Polygon, GEOSGeometry
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
@@ -67,6 +68,7 @@ from geonode.base.models import (
     generate_thesaurus_reference,
     Link,
 )
+from geonode.security.registry import permissions_registry
 from geonode.assets.tests import ONE_JSON
 from geonode.assets.utils import create_asset
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
@@ -679,6 +681,33 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         # will take the value from the db
         config = Configuration.load()
         self.assertFalse(config.read_only)
+
+    def test_configuration_read_only_change_clears_permissions_cache(self):
+        """Permissions cache is cleared when read_only flag changes."""
+        user = get_user_model().objects.get(username="admin")
+        test_resource = create_single_dataset("config_cache_test", owner=user)
+
+        config = Configuration.load()
+        original_read_only = config.read_only
+
+        try:
+            cache.clear()
+
+            config.read_only = False
+            config.save()
+
+            permissions_registry.get_perms(instance=test_resource, user=user, use_cache=True)
+            cache_key = permissions_registry._get_cache_key([test_resource.pk], users=[user])
+            self.assertIsNotNone(cache.get(cache_key))
+
+            config.read_only = True
+            config.save()
+
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            config.read_only = original_read_only
+            config.save()
+            test_resource.delete()
 
 
 class TestOwnerRightsRequestUtils(TestCase):
