@@ -19,6 +19,7 @@
 import itertools
 import re
 import logging
+from typing import List, Union
 
 from django.conf import settings
 from django.db import models, transaction
@@ -30,7 +31,8 @@ from django.utils.translation import gettext_lazy as _
 from tinymce.models import HTMLField
 
 from geonode.client.hooks import hookset
-from geonode.utils import build_absolute_uri, check_shp_columnnames
+from geonode import GeoNodeException
+from geonode.utils import build_absolute_uri, check_shp_columnnames, check_bbox_validity, normalize_bbox_to_float_list
 from geonode.security.models import PermissionLevelMixin
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import (
@@ -340,22 +342,56 @@ class Dataset(ResourceBase):
             logger.error("No resource returned from GeoServer after bbox update")
             return False
 
-        bbox = resource.native_bbox
-        ll = resource.latlon_bbox
+        bbox = normalize_bbox_to_float_list(resource.native_bbox)
+        ll = normalize_bbox_to_float_list(resource.latlon_bbox)
         srid = resource.projection
 
         if not bbox or not ll:
             logger.error("GeoServer did not return updated bbox values")
             return False
 
-        # bbox order from GeoServer: [minx, maxx, miny, maxy]
         with transaction.atomic():
-            self.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-            self.set_ll_bbox_polygon([ll[0], ll[2], ll[1], ll[3]])
-            self.srid = srid or self.srid
+            self.set_bbox_and_srid(bbox=bbox, ll_bbox=ll, srid=srid)
             self.save(update_fields=["srid"])
 
         return True
+
+    def set_bbox_and_srid(
+        self,
+        bbox: List[Union[int, float]],
+        ll_bbox: List[Union[int, float]],
+        srid: str,
+    ) -> None:
+        """
+        Set dataset bbox, ll_bbox and spatial reference identifier.
+        Args:
+            bbox: Bounding box as [minx, maxx, miny, maxy], each element is int or float.
+                  If invalid or unavailable, the method falls back to ll_bbox with EPSG:4326.
+            ll_bbox: Lat/Lon bounding box as [minx, maxx, miny, maxy], each element is int or float.
+                     Must be valid, otherwise a GeoNodeException is raised.
+            srid: Spatial Reference Identifier (string).
+        Returns:
+            None
+        """
+        if not check_bbox_validity(ll_bbox):
+            raise GeoNodeException("Lat/Lon BBox was not provided or is invalid")
+
+        ll_bbox_gn = [ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]]
+        # Try to use native bbox if available
+        if check_bbox_validity(bbox) and srid:
+            try:
+                native_bbox_gn = [bbox[0], bbox[2], bbox[1], bbox[3]]
+                self.set_bbox_polygon(native_bbox_gn, srid)
+                self.set_ll_bbox_polygon(ll_bbox_gn)
+                self.srid = srid
+                return
+            except GeoNodeException as e:
+                logger.warning(f"Failed to set bbox with SRID {srid}, falling back to EPSG:4326: {e}")
+
+        # Fallback to lat/lon bbox
+        self.set_bbox_polygon(ll_bbox_gn, "EPSG:4326")
+        self.set_ll_bbox_polygon(ll_bbox_gn)
+        self.srid = "EPSG:4326"
 
     def __str__(self):
         return str(self.alternate)

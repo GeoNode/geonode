@@ -31,6 +31,7 @@ from geonode import settings
 from geonode.base.populate_test_data import create_models
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
+from geonode.metadata.models import SparseField
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -622,3 +623,32 @@ class DocumentsApiTests(APITestCase):
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
+
+    def test_documents_api_include_i18n(self):
+        """
+        Ensure that the ?include_i18n parameter returns all localized fields in the Documents API response.
+        """
+
+        _document = Document.objects.first()
+        # Manually create sparse fields for the document to test prefetching/serialization
+        SparseField.objects.create(resource=_document, name="title_multilang_en", value="English Doc Title")
+        SparseField.objects.create(resource=_document, name="title_multilang_it", value="Titolo Documento Italiano")
+
+        url = reverse("documents-detail", kwargs={"pk": _document.pk})
+
+        with override_settings(
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title"],
+        ):
+            query_params = "include_i18n=true&lang=it"
+            response = self.client.get(f"{url}?{query_params}", format="json")
+
+            self.assertEqual(response.status_code, 200)
+            data = response.data["document"]
+
+            self.assertEqual(data["title"], "Titolo Documento Italiano")
+
+            self.assertIn("title_en", data)
+            self.assertEqual(data["title_en"], "English Doc Title")
+            self.assertIn("title_it", data)
+            self.assertEqual(data["title_it"], "Titolo Documento Italiano")
