@@ -3738,7 +3738,7 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         temp_group.delete()
 
     def test_clear_permissions_cache(self):
-        """Test that clear_permissions_cache removes permission cache keys only."""
+        """Test that clear_permissions_cache removes all cache entries."""
         test_resource = self.resources[0]
         anonymous_user = Profile.objects.get(username="AnonymousUser")
 
@@ -3760,9 +3760,6 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         self.assertIsNotNone(cache.get(group_key))
         self.assertIsNotNone(cache.get(all_key))
 
-        cache.set("non_permission_key", "keep_me", 600)
-        self.assertEqual(cache.get("non_permission_key"), "keep_me")
-
         permissions_registry.clear_permissions_cache()
 
         self.assertIsNone(cache.get(admin_key))
@@ -3770,8 +3767,6 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         self.assertIsNone(cache.get(anonymous_key))
         self.assertIsNone(cache.get(group_key))
         self.assertIsNone(cache.get(all_key))
-
-        self.assertEqual(cache.get("non_permission_key"), "keep_me")
 
     def test_configuration_read_only_change_clears_permissions_cache(self):
         """Permissions cache is cleared when read_only flag changes."""

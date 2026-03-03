@@ -464,29 +464,10 @@ class PermissionsHandlerRegistry:
 
     def clear_permissions_cache(self):
         """
-        Clear all known permission cache entries.
+        Clear all permission cache entries.
         """
-        from geonode.base.models import ResourceBase
-        from geonode.people.models import Profile
-
-        resource_pks = list(ResourceBase.objects.values_list("pk", flat=True))
-        if not resource_pks:
-            return
-
-        users = list(Profile.objects.all())
-        groups = list(Group.objects.all())
-
-        cache_keys = self._get_cache_key(
-            resource_pks=resource_pks,
-            users=users,
-            groups=groups,
-            remove_all_cache=True,
-        )
-
-        if isinstance(cache_keys, str):
-            cache_keys = [cache_keys]
-
-        self._clear_cache_keys(cache_keys or [])
+        # This wipes everything in the default cache
+        cache.clear()
 
     def __check_item(self, item):
         """
