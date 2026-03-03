@@ -29,6 +29,7 @@ from geonode.base.models import ResourceBase
 from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
+from django.db.models import Q
 
 logger = logging.getLogger("importer")
 
@@ -193,12 +194,18 @@ class CSVFileHandler(BaseVectorFileHandler):
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
-            return [
-                {
-                    "name": alternate,
-                    "crs": ResourceBase.objects.filter(alternate__istartswith=layer_name).first().srid,
-                }
-            ]
+            params = kwargs.get("kwargs", kwargs) if kwargs else {}
+            original_dataset_alternate = params.get("original_dataset_alternate")
+            original_resource = None
+            if original_dataset_alternate:
+                original_resource = ResourceBase.objects.filter(alternate=original_dataset_alternate).first()
+            if not original_resource:
+                original_resource = ResourceBase.objects.filter(
+                    Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
+                ).first()
+            if not original_resource:
+                raise ValueError("Unable to resolve resource for copy action.")
+            return [{"name": alternate, "crs": original_resource.srid}]
 
         layers = self.get_ogr2ogr_driver().Open(files.get("base_file"), 0)
         if not layers:
