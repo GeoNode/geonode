@@ -136,6 +136,23 @@ class MetadataMultilangTests(GeoNodeBaseTestSupport):
             self.assertEqual("title_fake", instance["title_multilang_it"])
             self.assertIsNone(instance["title_multilang_en"])
 
+    def test_get_all_multilang_fields_structure(self):
+        """
+        Verify the new dictionary structure and ensure it identifies
+        all configured field/language combinations.
+        """
+        with override_settings(
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title", "abstract"],
+        ):
+            field_map = multi.get_all_multilang_fields()
+
+            self.assertIsInstance(field_map, dict)
+            self.assertEqual(len(field_map), 4)
+
+            self.assertEqual(field_map[("title", "en")], "title_multilang_en")
+            self.assertEqual(field_map[("abstract", "it")], "abstract_multilang_it")
+
     @patch("geonode.base.models.ResourceBase.get_real_instance_class")
     @patch("geonode.indexing.manager.TSVectorIndexManager.update_index")
     @patch("geonode.metadata.handlers.sparse.SparseHandler.update_resource")
