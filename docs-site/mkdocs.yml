@@ -35,7 +35,6 @@ nav:
   - Miscellaneous:
     - Thesauri: "miscellaneous/thesauri.md"
     - Backup And Restore: "miscellaneous/br.md"
-    - Settings: "miscellaneous/settings.md"
 
 extra_css:
   - theme/css/extra.css
