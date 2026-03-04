@@ -498,15 +498,15 @@ Additional download handlers that provides a link to download the resource
 One of the main features of debug mode is the display of detailed error pages. If your app raises an exception when DEBUG is True, Django will display a detailed traceback, including a lot of metadata about your environment, such as all the currently defined Django settings (from settings.py).
 This is a [Django Setting](https://docs.djangoproject.com/en/3.2/ref/settings/#debug)
 
+[](){ #default-anonymous-download-permission }
 **DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION**
-
 
 :   Default:  ``True``
 
 Whether the uploaded resources should downloadable by default.
 
+[](){ #default-anonymous-view-permission }
 **DEFAULT_ANONYMOUS_VIEW_PERMISSION**
-
 
 :   Default:  ``True``
 
