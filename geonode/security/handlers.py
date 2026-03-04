@@ -17,8 +17,11 @@
 #
 #########################################################################
 from abc import ABC
+import logging
 from django.conf import settings
-from geonode.security.permissions import _to_extended_perms, MANAGE_RIGHTS
+from geonode.security.permissions import _to_extended_perms, VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS
+
+logger = logging.getLogger(__name__)
 
 
 class BasePermissionsHandler(ABC):
@@ -152,9 +155,24 @@ class ResourceCreatorGroupsPermissionsHandler(BasePermissionsHandler):
     Auto-assign configured permissions to all groups of the resource creator on creation.
     """
 
+    VALID_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS}
+
+    @staticmethod
+    def _get_valid_resource_creator_groups_permission(raw_value):
+        default_value = VIEW_RIGHTS
+        normalized_value = str(raw_value or default_value).strip().lower() or default_value
+
+        if normalized_value not in ResourceCreatorGroupsPermissionsHandler.VALID_COMPACT_PERMISSIONS:
+            logger.warning(
+                "RESOURCE_CREATOR_GROUPS_PERMISSIONS contains unsupported value '%s'. Defaulting to 'view'.",
+                normalized_value,
+            )
+            return default_value
+
+        return normalized_value
+
     @staticmethod
     def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
-        from geonode.security.permissions import _to_extended_perms
         from geonode.security.utils import get_user_groups
 
         if not kwargs.get("created", False):
@@ -163,8 +181,13 @@ class ResourceCreatorGroupsPermissionsHandler(BasePermissionsHandler):
         if not getattr(settings, "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", False):
             return perms_payload
 
-        owner = getattr(instance, "owner", None)
-        if not owner:
+        initial_user = kwargs.get("initial_user", None)
+        if not initial_user:
+            return perms_payload
+
+        # Skip when uploader is a superuser to avoid granting permissions to all admin groups.
+        # Superusers can belong to every groups by default, which could assign this resource to every group.
+        if initial_user.is_superuser:
             return perms_payload
 
         payload = perms_payload or {}
@@ -174,15 +197,15 @@ class ResourceCreatorGroupsPermissionsHandler(BasePermissionsHandler):
         _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
         _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
 
-        compact_permissions = getattr(settings, "RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST", ["view"])
-        extended_permissions = set()
-        for compact_perm in compact_permissions:
-            extended_permissions.update(_to_extended_perms(compact_perm, _resource_type, _resource_subtype) or [])
+        compact_permission = ResourceCreatorGroupsPermissionsHandler._get_valid_resource_creator_groups_permission(
+            getattr(settings, "RESOURCE_CREATOR_GROUPS_PERMISSIONS", VIEW_RIGHTS)
+        )
+        extended_permissions = set(_to_extended_perms(compact_permission, _resource_type, _resource_subtype) or [])
 
         if not extended_permissions:
             extended_permissions = set(_to_extended_perms("view", _resource_type, _resource_subtype) or [])
 
-        for user_group in get_user_groups(owner):
+        for user_group in get_user_groups(initial_user):
             payload["groups"][user_group] = sorted(extended_permissions)
         return payload
 

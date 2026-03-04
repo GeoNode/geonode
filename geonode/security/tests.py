@@ -3090,7 +3090,7 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
 
     @override_settings(
-        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST=["download"]
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
     )
     def test_resource_creator_groups_permissions_handler_on_create(self):
         from geonode.security.permissions import _to_extended_perms
@@ -3109,7 +3109,7 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
 
         payload = {"users": {}, "groups": {}}
         handler = ResourceCreatorGroupsPermissionsHandler()
-        updated_perms = handler.fixup_perms(resource, payload, created=True, include_virtual=False)
+        updated_perms = handler.fixup_perms(resource, payload, created=True, include_virtual=False, initial_user=owner)
 
         resource_type = getattr(resource, "resource_type", None) or resource.polymorphic_ctype.name
         resource_subtype = (getattr(resource, "subtype", None) or "").lower()
@@ -3121,7 +3121,7 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         self.assertListEqual(sorted(updated_perms["groups"][group_profile_2.group]), expected_perms)
 
     @override_settings(
-        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST=["download"]
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
     )
     def test_resource_creator_groups_permissions_handler_skips_when_not_created(self):
         owner = get_user_model().objects.create_user(
@@ -3139,7 +3139,7 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
 
         payload = {"users": {}, "groups": {}}
         handler = ResourceCreatorGroupsPermissionsHandler()
-        updated_perms = handler.fixup_perms(resource, payload, created=False, include_virtual=False)
+        updated_perms = handler.fixup_perms(resource, payload, created=False, include_virtual=False, initial_user=owner)
 
         self.assertDictEqual({"users": {}, "groups": {}}, updated_perms)
 

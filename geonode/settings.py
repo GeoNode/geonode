@@ -1851,41 +1851,10 @@ GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get("GROUP_MANDATORY_RES
 AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
-
-
-def _parse_resource_creator_groups_permissions(raw_value, enabled):
-    default_value = "view"
-    valid_compact_permissions = {"view", "download", "edit", "manage"}
-
-    if enabled and not raw_value:
-        logger.warning(
-            "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS is enabled but RESOURCE_CREATOR_GROUPS_PERMISSIONS is "
-            "not set. Defaulting to 'view'."
-        )
-
-    normalized_value = (raw_value or default_value).strip() or default_value
-    parsed_values = [p.strip().lower() for p in normalized_value.split(",") if p.strip()]
-    invalid_values = [p for p in parsed_values if p not in valid_compact_permissions]
-
-    if invalid_values:
-        logger.warning(
-            "RESOURCE_CREATOR_GROUPS_PERMISSIONS contains unsupported values (%s). Defaulting to 'view'.",
-            ", ".join(invalid_values),
-        )
-        return normalized_value, [default_value]
-
-    return normalized_value, (parsed_values or [default_value])
-
-
 AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "False")
 )
-_resource_creator_groups_permissions = os.getenv("RESOURCE_CREATOR_GROUPS_PERMISSIONS", None)
-RESOURCE_CREATOR_GROUPS_PERMISSIONS, RESOURCE_CREATOR_GROUPS_PERMISSIONS_LIST = (
-    _parse_resource_creator_groups_permissions(
-        _resource_creator_groups_permissions, AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS
-    )
-)
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = os.getenv("RESOURCE_CREATOR_GROUPS_PERMISSIONS", "view")
 AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", "False")
 )
