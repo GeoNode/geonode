@@ -6,14 +6,18 @@ use_directory_urls: true
 nav:
   - Home: index.md
   - Setup:
-    - Docker installation:
-          - Prerequisites: setup/docker/prerequisites.md
-          - Vanilla Docker installation: setup/docker/vanilla-docker-installation.md
-          - GeoNode project Docker installation: setup/docker/project-docker-installation.md
-    - Bare installation:
-          - Prerequisites: setup/bare/prerequisites.md
-          - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
-          - GeoNode project bare installation: setup/bare/project-bare-installation.md
+    - Install:
+      - Docker installation:
+            - Prerequisites: setup/docker/prerequisites.md
+            - Vanilla Docker installation: setup/docker/vanilla-docker-installation.md
+            - GeoNode project Docker installation: setup/docker/project-docker-installation.md
+      - Bare installation:
+            - Prerequisites: setup/bare/prerequisites.md
+            - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
+            - GeoNode project bare installation: setup/bare/project-bare-installation.md
+    - Configuration:
+      - Settings: setup/configuration/settings.md
+      - Environmental Variables: setup/configuration/environmental_variables.md
   - User Guide:
     - User account: "user-guide/user_account.md"
     - Catalog Resources: "user-guide/catalog.md"
@@ -36,6 +40,9 @@ nav:
 extra_css:
   - theme/css/extra.css
 
+extra_javascript:
+  - theme/js/dl-anchors.js
+
 theme:
   name: material
   logo: theme/img/geonode-logo-white.svg
@@ -57,6 +64,9 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.superfences
   - attr_list
+  - def_list
+  - toc:
+      permalink: true
     
 plugins:
   - with-pdf: # https://pypi.org/project/mkdocs-with-pdf/
@@ -76,3 +86,4 @@ plugins:
       verbose: false    # set to true to log the pdf generation steps in detail
       custom_template_path: 'docs/print_template' # includes custom styles.scss for pdf
   - search
+  - autorefs

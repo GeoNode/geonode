@@ -13,3 +13,17 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+
+dl > dt {
+  position: relative;
+}
+
+dl > dt .dl-permalink {
+  margin-left: .4em;
+  text-decoration: none;
+  opacity: .6;
+}
+
+dl > dt:hover .dl-permalink {
+  opacity: 1;
+}
