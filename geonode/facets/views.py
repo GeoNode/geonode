@@ -85,10 +85,11 @@ class BaseFacetingView(APIView):
         filters = {k: vlist for k, vlist in request.query_params.lists() if k.startswith("filter{")}
         logger.warning(f"FILTERING BY  {filters}")
 
+        # kwargs will be {} if no filter applied
         viewset = ResourceBaseViewSet(
             request=request,
             format_kwarg={},
-            kwargs=filters if filters else {},
+            kwargs=filters,
         )
         viewset.initial(request)
 
