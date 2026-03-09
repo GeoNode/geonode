@@ -127,7 +127,7 @@ dependencies = [
     "inflection>=0.4.0",
     "mock<6.0.0",
     "python-dateutil==2.9.0.post0",
-    "pytz==2024.1",
+    "pytz==2026.1.post1",
     "requests==2.32.5",
     "timeout-decorator==0.5.0",
     "pylibmc==1.6.3",
