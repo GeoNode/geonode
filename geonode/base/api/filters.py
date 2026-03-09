@@ -131,3 +131,33 @@ class FacetVisibleResourceFilter(BaseFilterBackend):
             _filter["id__in"] = [_facet.id for _facet in queryset if not _facet.resourcebase_set.exists()]
 
         return queryset.filter(**_filter)
+
+
+class AdvertisedFilter(BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        # advertised
+        # if superuser, all resources will be visible, otherwise only the advertised one and
+        # the resource which the user is owner will be returned
+
+        if getattr(view, "action", None) == "retrieve":
+            return queryset
+
+        user = request.user
+        try:
+            _filter = request.query_params.get("advertised", "None")
+            advertised = strtobool(_filter) if _filter.lower() != "all" else "all"
+        except Exception:
+            advertised = None
+
+        if advertised == "all":
+            pass
+        elif advertised is not None:
+            queryset = queryset.filter(advertised=advertised)
+        else:
+            is_admin = user.is_superuser if user and user.is_authenticated else False
+            if not is_admin and user and not user.is_anonymous:
+                queryset = (queryset.filter(advertised=True) | queryset.filter(owner=user)).distinct()
+            elif not user or user.is_anonymous:
+                queryset = queryset.filter(advertised=True)
+
+        return queryset
