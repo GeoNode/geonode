@@ -150,7 +150,7 @@ dependencies = [
     "splinter==0.21.0",
     "pytest-splinter==3.3.2",
     "pytest-django==4.8.0",
-    "pixelmatch==0.3.0",
+    "pixelmatch==0.4.0",
     "factory-boy==3.3.0",
     "flaky==3.8.1",
     "selenium>=4.15.1,<5.0.0",
