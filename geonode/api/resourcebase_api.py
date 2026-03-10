@@ -142,10 +142,6 @@ class CommonModelApi(ModelResource):
         if "app_type__in" in filters:
             orm_filters.update({"resource_type": filters["app_type__in"].lower()})
 
-        _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith("metadata__")}
-        if _metadata:
-            orm_filters.update({"metadata_filters": _metadata})
-
         if "extent" in filters:
             orm_filters.update({"extent": filters["extent"]})
         orm_filters["f_method"] = filters["f_method"] if "f_method" in filters else "and"
@@ -165,7 +161,6 @@ class CommonModelApi(ModelResource):
         keywords = applicable_filters.pop("keywords__slug__in", None)
         metadata_only = applicable_filters.pop("metadata_only", False)
         filtering_method = applicable_filters.pop("f_method", "and")
-        metadata_filters = applicable_filters.pop("metadata_filters", None)
         if filtering_method == "or":
             filters = Q()
             for f in applicable_filters.items():
@@ -206,9 +201,6 @@ class CommonModelApi(ModelResource):
 
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
-
-        if metadata_filters:
-            filtered = filtered.filter(**metadata_filters)
 
         # return filtered
         return get_visible_resources(

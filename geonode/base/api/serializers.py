@@ -57,7 +57,6 @@ from geonode.base.models import (
     SpatialRepresentationType,
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
-    ExtraMetadata,
     LinkedResource,
 )
 from geonode.documents.models import Document
@@ -280,23 +279,6 @@ class DetailUrlField(DynamicComputedField):
 
     def get_attribute(self, instance):
         return build_absolute_uri(instance.detail_url)
-
-
-class ExtraMetadataSerializer(DynamicModelSerializer):
-    class Meta:
-        model = ExtraMetadata
-        name = "ExtraMetadata"
-        fields = ("pk", "metadata")
-
-    def to_representation(self, obj):
-        if isinstance(obj, QuerySet):
-            out = []
-            for el in obj:
-                out.append({**{"id": el.id}, **el.metadata})
-            return out
-        elif isinstance(obj, list):
-            return obj
-        return {**{"id": obj.id}, **obj.metadata}
 
 
 class ThumbnailUrlField(DynamicComputedField):
@@ -672,7 +654,6 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
     links = DynamicRelationField(LinksSerializer, source="id", read_only=True)
 
     # Deferred fields
-    metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, many=True, deferred=True)
     data = DataBlobField(DataBlobSerializer, source="id", deferred=True, required=False)
     executions = DynamicRelationField(
         ResourceExecutionRequestSerializer, source="id", deferred=True, required=False, read_only=True
@@ -754,7 +735,6 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
             "sourcetype",
             "is_copyable",
             "blob",
-            "metadata",
             "executions",
             "linked_resources",
             "download_url",
