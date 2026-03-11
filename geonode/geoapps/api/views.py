@@ -67,7 +67,4 @@ class GeoAppViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewS
         so we force the request.user to be the owner
         in creation
         """
-        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
-        instance = serializer.save(owner=resolved_owner)
-        resource_manager.finalize_creation_permissions(instance, owner=resolved_owner, initial_user=self.request.user)
-        return instance
+        return serializer.save(owner=self.request.user)

@@ -19,7 +19,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException, GeneralGeoAppException
+from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException
 
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
@@ -78,26 +78,12 @@ class GeoAppSerializer(ResourceBaseSerializer):
         return validated_data
 
     def _create_and_update(self, validated_data, instance=None):
-        # Extract JSON blob
-        _data = {}
-        if "blob" in validated_data:
-            _data = validated_data.pop("blob")
-
-        # Create a new instance
-        if not instance:
-            _instance = resource_manager.create(None, resource_type=self.Meta.model, defaults=validated_data)
-        else:
-            _instance = instance
-
-        try:
-            self.Meta.model.objects.filter(pk=_instance.id).update(**validated_data)
-            _instance.refresh_from_db()
-        except Exception as e:
-            raise GeneralGeoAppException(e)
-
-        # Let's finalize the instance and notify the users
-        validated_data["blob"] = _data
-        return resource_manager.update(_instance.uuid, instance=_instance, vals=validated_data, notify=True)
+        manager = (
+            resource_manager.get_for_instance(instance) if instance else resource_manager.get_for_model(self.Meta.model)
+        )
+        if instance:
+            return manager.update(instance.uuid, instance=instance, validated_data=validated_data)
+        return manager.create(None, resource_type=self.Meta.model, validated_data=validated_data)
 
     def create(self, validated_data):
         # Sanity checks

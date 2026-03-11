@@ -19,6 +19,7 @@
 
 from drf_spectacular.utils import extend_schema
 from pathlib import Path
+from uuid import uuid4
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -26,7 +27,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from geonode import settings
 
-from geonode.assets.utils import create_asset_and_link
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
@@ -36,9 +36,6 @@ from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.metadata.manager import metadata_manager
-from geonode.resource.utils import resourcebase_post_save, infer_default_metadata
-from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
 
 from .serializers import DocumentSerializer
@@ -94,7 +91,6 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
         --form 'doc_file=@"/C:/Users/user/Pictures/BcMc-a6T9IM.jpg"' \
         --form 'metadata_only="False"'
         """
-        manager = None
         serializer.is_valid(raise_exception=True)
         file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
         doc_url = serializer.validated_data.pop("doc_url", None)
@@ -106,7 +102,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
         if file and doc_url:
             raise DocumentException(detail="Either a file or a URL must be specified, not both")
 
-        if not extension:
+        if not extension and file:
             filename = file if isinstance(file, str) else file.name
             extension = Path(filename).suffix.replace(".", "")
 
@@ -114,9 +110,9 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
             raise DocumentException("The file provided is not in the supported extensions list")
 
         try:
-            resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
             payload = {
-                "owner": resolved_owner,
+                **serializer.validated_data,
+                "owner": self.request.user,
                 "extension": extension,
                 "resource_type": "document",
             }
@@ -124,33 +120,14 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 payload["doc_url"] = doc_url
                 payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
-            resource = serializer.save(**payload)
-
-            if file:
-                manager = StorageManager(remote_files={"base_file": file})
-                manager.clone_remote_files()
-                create_asset_and_link(
-                    resource, self.request.user, [manager.get_retrieved_paths().get("base_file")], clone_files=True
-                )
-                manager.delete_retrieved_paths(force=True)
-
-            resource.set_missing_info()
-            metadata_manager.update_schema_instance_partial(
-                resource,
-                infer_default_metadata(resource.get_real_instance()),
-                user=self.request.user,
+            return resource_manager.get_for_model(Document).create(
+                str(uuid4()),
+                resource_type=Document,
+                defaults=payload,
+                file=file,
             )
-            resourcebase_post_save(resource.get_real_instance())
-            resource_manager.finalize_creation_permissions(
-                resource, owner=resolved_owner, initial_user=self.request.user
-            )
-            resource.handle_moderated_uploads()
-            resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
-            return resource
         except Exception as e:
             logger.error(f"Error creating document {serializer.validated_data}", exc_info=e)
-            if manager:
-                manager.delete_retrieved_paths()
             raise e
 
     @extend_schema(
