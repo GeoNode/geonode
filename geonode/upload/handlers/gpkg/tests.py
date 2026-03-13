@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os.path
+import os
 import shutil
 
 from django.test import TestCase, override_settings
