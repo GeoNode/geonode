@@ -29,7 +29,7 @@ from django.db.models import Q
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_tasks import UpdateTaskClass, import_orchestrator
@@ -358,7 +358,7 @@ class BaseRasterFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager.create(
+        saved_dataset = resource_manager_registry.get_for_instance(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=dict(
@@ -378,7 +378,7 @@ class BaseRasterFileHandler(BaseHandler):
         self.handle_xml_file(saved_dataset, _exec)
         self.handle_sld_file(saved_dataset, _exec)
 
-        resource_manager.set_thumbnail(None, instance=saved_dataset)
+        resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
@@ -405,12 +405,13 @@ class BaseRasterFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            dataset = resource_manager.update(dataset.uuid, instance=dataset)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
+            dataset = resolved_resource_manager.update(dataset.uuid, instance=dataset)
 
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)
 
-            resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+            resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
             dataset.refresh_from_db()
             return dataset
         elif not dataset.exists() and _overwrite:
@@ -424,7 +425,7 @@ class BaseRasterFileHandler(BaseHandler):
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("xml_file", "")
-        resource_manager.update(
+        resource_manager_registry.get_for_instance(saved_dataset).update(
             None,
             instance=saved_dataset,
             xml_file=_path,
@@ -434,7 +435,7 @@ class BaseRasterFileHandler(BaseHandler):
 
     def handle_sld_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("sld_file", "")
-        resource_manager.exec(
+        resource_manager_registry.get_for_instance(saved_dataset).exec(
             "set_style",
             None,
             instance=saved_dataset,

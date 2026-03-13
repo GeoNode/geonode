@@ -40,7 +40,7 @@ from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.utils import resolve_object
 
 logger = logging.getLogger(__name__)
@@ -112,13 +112,16 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
-        serializer.validated_data.pop("thumbnail_url", "")
-        instance = serializer.save(owner=self.request.user, resource_type="map", uuid=str(uuid4()))
-        instance = resource_manager.get_for_instance(instance).create(
-            instance.uuid,
-            instance=instance,
-            initial_user=self.request.user,
+        payload = serializer.validated_data.copy()
+        payload["owner"] = self.request.user
+        payload["resource_type"] = "map"
+        payload["uuid"] = str(uuid4())
+        instance = resource_manager_registry.get_for_instance(Map).create(
+            payload["uuid"],
+            resource_type=Map,
+            defaults=payload,
         )
+        serializer.instance = instance
         register_event(self.request, EventType.EVENT_CREATE, instance)
 
     def perform_update(self, serializer):
@@ -131,13 +134,13 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         if instance != map_obj:
             raise GeneralMapsException(detail="serializer instance and object are different")
 
-        serializer.validated_data.pop("thumbnail_url", "")
+        payload = serializer.validated_data.copy()
         dataset_names_before_changes = [lyr.alternate for lyr in instance.datasets]
-        instance = serializer.save()
-        instance = resource_manager.get_for_instance(instance).update(
+        instance = resource_manager_registry.get_for_instance(instance).update(
             instance.uuid,
             instance=instance,
+            vals=payload,
             dataset_names_before_changes=dataset_names_before_changes,
-            notify=True,
         )
+        serializer.instance = instance
         register_event(self.request, EventType.EVENT_CHANGE, instance)

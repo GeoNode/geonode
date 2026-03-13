@@ -27,7 +27,6 @@ from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
 from geonode.geoapps.models import GeoApp
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.manager import resource_manager
 
 
 from .serializers import GeoAppSerializer

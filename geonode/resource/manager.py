@@ -985,10 +985,12 @@ class BaseResourceManager(ResourceManagerInterface):
 
 
 class DatasetResourceManager(BaseResourceManager):
-    pass
+    handled_model = Dataset
 
 
 class DocumentResourceManager(BaseResourceManager):
+    handled_model = Document
+
     def create(
         self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs
     ) -> ResourceBase:
@@ -1016,43 +1018,78 @@ class DocumentResourceManager(BaseResourceManager):
 
 
 class MapResourceManager(BaseResourceManager):
-    def create(
-        self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs
-    ) -> ResourceBase:
-        instance = kwargs.pop("instance", None)
-        initial_user = kwargs.pop("initial_user", None)
-        if instance is None:
-            return super().create(uuid, resource_type=resource_type or Map, defaults=defaults, **kwargs)
+    handled_model = Map
 
-        resolved_owner = self.resolve_creation_owner(initial_user or instance.owner)
-        if resolved_owner and instance.owner != resolved_owner:
-            instance.owner = resolved_owner
-            instance.save(update_fields=["owner"])
-        instance = super().update(instance.uuid, instance=instance, notify=True)
-        self.finalize_creation_permissions(instance, owner=resolved_owner, initial_user=initial_user)
-        self.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
-        return instance
+    def _post_change_routines(
+        self, instance: Map, create_action_perfomed: bool, additional_data: dict = None, notify: bool = True
+    ):
+        additional_data = additional_data or {}
 
-    def update(self, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        dataset_names_before_changes = kwargs.pop("dataset_names_before_changes", None)
-        notify = kwargs.pop("notify", True)
-        instance = super().update(uuid, instance=instance, notify=notify, **kwargs)
-
-        if dataset_names_before_changes is not None:
+        if not create_action_perfomed:
             from geonode.maps.signals import map_changed_signal
 
+            dataset_names_before_changes = additional_data.pop("dataset_names_before_changes", [])
             dataset_names_after_changes = [lyr.alternate for lyr in instance.datasets]
             if dataset_names_before_changes != dataset_names_after_changes:
                 map_changed_signal.send_robust(sender=instance, what_changed="datasets")
 
+        return super().update(instance.uuid, instance=instance, notify=notify)
+
+    def create(
+        self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs
+    ) -> ResourceBase:
+        notify = kwargs.pop("notify", True)
+        payload = copy.deepcopy(defaults or {})
+        post_creation_data = {"thumbnail": payload.pop("thumbnail_url", "")}
+        maplayers = payload.pop("maplayers", None)
+        instance = super().create(uuid, resource_type=resource_type or Map, defaults=payload)
+
+        if maplayers is not None:
+            instance.maplayers.set(maplayers)
+            instance.refresh_from_db()
+
+        instance = self._post_change_routines(
+            instance=instance,
+            create_action_perfomed=True,
+            additional_data=post_creation_data,
+            notify=notify,
+        )
+        self.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
+        return instance
+
+    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, **kwargs) -> ResourceBase:
+        dataset_names_before_changes = kwargs.pop("dataset_names_before_changes", None)
+        notify = kwargs.pop("notify", True)
+
+        payload = copy.deepcopy(vals or {})
+        post_change_data = {
+            "thumbnail": payload.pop("thumbnail_url", ""),
+            "dataset_names_before_changes": dataset_names_before_changes or [],
+        }
+        maplayers = payload.pop("maplayers", None)
+
+        instance = super().update(uuid, instance=instance, vals=payload, notify=False, **kwargs)
+
+        if maplayers is not None:
+            instance.maplayers.set(maplayers)
+            instance.refresh_from_db()
+
+        instance = self._post_change_routines(
+            instance=instance,
+            create_action_perfomed=False,
+            additional_data=post_change_data,
+            notify=notify,
+        )
         return instance
 
 
 class GeoAppResourceManager(BaseResourceManager):
-    def _create_and_update(self, validated_data, instance=None):
+    handled_model = GeoApp
+
+    def _create_and_update(self, payload, instance=None, notify: bool = True):
         from geonode.geoapps.api.exceptions import GeneralGeoAppException
 
-        payload = copy.deepcopy(validated_data)
+        payload = copy.deepcopy(payload)
         blob = payload.pop("blob", {})
 
         if not instance:
@@ -1065,191 +1102,18 @@ class GeoAppResourceManager(BaseResourceManager):
             raise GeneralGeoAppException(e)
 
         payload["blob"] = blob
-        return super().update(instance.uuid, instance=instance, vals=payload, notify=True)
+        return super().update(instance.uuid, instance=instance, vals=payload, notify=notify)
 
     def create(
         self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs
     ) -> ResourceBase:
-        validated_data = kwargs.pop("validated_data", None) or defaults
-        return self._create_and_update(validated_data)
+        notify = kwargs.pop("notify", True)
+        payload = copy.deepcopy(defaults or {})
+        return self._create_and_update(payload, notify=notify)
 
-    def update(self, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        validated_data = kwargs.pop("validated_data", None)
-        if validated_data is not None:
-            return self._create_and_update(validated_data, instance=instance)
-        return super().update(uuid, instance=instance, **kwargs)
-
-
-class ResourceManager(ResourceManagerInterface):
-    def __init__(self, concrete_manager=None):
-        self._dataset_manager = DatasetResourceManager(concrete_manager=concrete_manager)
-        self._document_manager = DocumentResourceManager(concrete_manager=concrete_manager)
-        self._map_manager = MapResourceManager(concrete_manager=concrete_manager)
-        self._geoapp_manager = GeoAppResourceManager(concrete_manager=concrete_manager)
-        self._concrete_resource_manager = self._dataset_manager._concrete_resource_manager
-
-    @classmethod
-    def _get_instance(cls, uuid: str) -> ResourceBase:
-        return BaseResourceManager._get_instance(uuid)
-
-    def get_for_instance(self, instance):
-        if instance is not None:
-            real = instance.get_real_instance() if hasattr(instance, "get_real_instance") else instance
-            if isinstance(real, Document):
-                return self._document_manager
-            if isinstance(real, Map):
-                return self._map_manager
-            if isinstance(real, GeoApp):
-                return self._geoapp_manager
-            if isinstance(real, Dataset):
-                return self._dataset_manager
-        return self._dataset_manager
-
-    def get_for_model(self, model_cls):
-        if model_cls is Document:
-            return self._document_manager
-        if model_cls is Map:
-            return self._map_manager
-        if model_cls is GeoApp:
-            return self._geoapp_manager
-        if model_cls is Dataset:
-            return self._dataset_manager
-        return self._dataset_manager
-
-    def _manager_for(self, instance=None, resource_type=None, uuid=None):
-        if instance is not None:
-            return self.get_for_instance(instance)
-        if resource_type is not None:
-            return self.get_for_model(resource_type)
-        if uuid:
-            instance = self._get_instance(uuid)
-            if instance:
-                return self.get_for_instance(instance)
-        return self._dataset_manager
-
-    def resolve_creation_owner(self, initial_user: settings.AUTH_USER_MODEL = None):
-        return self._dataset_manager.resolve_creation_owner(initial_user)
-
-    def finalize_creation_permissions(
-        self,
-        instance: ResourceBase,
-        owner: settings.AUTH_USER_MODEL = None,
-        initial_user: settings.AUTH_USER_MODEL = None,
-    ) -> bool:
-        return self._manager_for(instance=instance).finalize_creation_permissions(
-            instance, owner=owner, initial_user=initial_user
-        )
-
-    def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
-        return self._manager_for(resource_type=resource_type).search(filter, resource_type)
-
-    def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        return self._manager_for(instance=instance, uuid=uuid).exists(uuid, instance=instance)
-
-    def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
-        return self._manager_for(instance=instance, uuid=uuid).delete(uuid, instance=instance)
-
-    def create(
-        self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs
-    ) -> ResourceBase:
-        return self._manager_for(resource_type=resource_type).create(
-            uuid, resource_type=resource_type, defaults=defaults, **kwargs
-        )
-
-    def update(
-        self,
-        uuid: str,
-        /,
-        instance: ResourceBase = None,
-        xml_file: str = None,
-        metadata_uploaded: bool = False,
-        vals: dict = {},
-        regions: list = [],
-        keywords: list = [],
-        custom: dict = {},
-        notify: bool = True,
-        extra_metadata: list = [],
-        **kwargs,
-    ) -> ResourceBase:
-        return self._manager_for(instance=instance, uuid=uuid).update(
-            uuid,
-            instance=instance,
-            xml_file=xml_file,
-            metadata_uploaded=metadata_uploaded,
-            vals=vals,
-            regions=regions,
-            keywords=keywords,
-            custom=custom,
-            notify=notify,
-            extra_metadata=extra_metadata,
-            **kwargs,
-        )
-
-    def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        return self._manager_for(instance=instance, uuid=uuid).exec(method, uuid, instance=instance, **kwargs)
-
-    def transfer_ownership(self, instance, new_owner, previous_owner):
-        return self._manager_for(instance=instance).transfer_ownership(instance, new_owner, previous_owner)
-
-    def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        return self._manager_for(instance=instance, uuid=uuid).remove_permissions(uuid, instance=instance)
-
-    def set_permissions(
-        self,
-        uuid: str,
-        /,
-        instance: ResourceBase = None,
-        owner: settings.AUTH_USER_MODEL = None,
-        permissions: dict = {},
-        created: bool = False,
-        approval_status_changed: bool = False,
-        group_status_changed: bool = False,
-        **kwargs,
-    ) -> bool:
-        return self._manager_for(instance=instance, uuid=uuid).set_permissions(
-            uuid,
-            instance=instance,
-            owner=owner,
-            permissions=permissions,
-            created=created,
-            approval_status_changed=approval_status_changed,
-            group_status_changed=group_status_changed,
-            **kwargs,
-        )
-
-    def set_thumbnail(
-        self,
-        uuid: str,
-        /,
-        instance: ResourceBase = None,
-        overwrite: bool = True,
-        check_bbox: bool = True,
-        thumbnail=None,
-        thumbnail_algorithm=ThumbnailAlgorithms.fit,
-        bbox: Optional[Union[list, tuple]] = None,
-        forced_crs: Optional[str] = None,
-        styles: Optional[list] = None,
-        background_zoom: Optional[int] = None,
-        map_thumb_from_bbox: bool = False,
-    ) -> bool:
-        return self._manager_for(instance=instance, uuid=uuid).set_thumbnail(
-            uuid,
-            instance=instance,
-            overwrite=overwrite,
-            check_bbox=check_bbox,
-            thumbnail=thumbnail,
-            thumbnail_algorithm=thumbnail_algorithm,
-            bbox=bbox,
-            forced_crs=forced_crs,
-            styles=styles,
-            background_zoom=background_zoom,
-            map_thumb_from_bbox=map_thumb_from_bbox,
-        )
-
-    def copy(
-        self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
-    ) -> ResourceBase:
-        return self._manager_for(instance=instance).copy(instance, uuid=uuid, owner=owner, defaults=defaults)
-
-
-resource_manager = ResourceManager()
+    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, **kwargs) -> ResourceBase:
+        notify = kwargs.pop("notify", True)
+        payload = vals or {}
+        if payload:
+            return self._create_and_update(payload, instance=instance, notify=notify)
+        return super().update(uuid, instance=instance, vals=vals, notify=notify, **kwargs)

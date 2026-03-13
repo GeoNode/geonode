@@ -33,7 +33,7 @@ from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.base.models import ResourceBase, Link
 from urllib.parse import urlparse
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 
 logger = logging.getLogger("importer")
@@ -215,12 +215,12 @@ class BaseRemoteResourceHandler(BaseHandler):
         _exec = orchestrator.get_execution_object(execution_id)
         params = _exec.input_params.copy()
 
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_instance(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, None, **params),
         )
-        resource_manager.set_thumbnail(None, instance=resource)
+        resource_manager_registry.get_for_instance(resource).set_thumbnail(None, instance=resource)
 
         resource = self.create_link(resource, params, alternate)
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
@@ -284,8 +284,9 @@ class BaseRemoteResourceHandler(BaseHandler):
         if resource.exists() and _overwrite:
             resource = resource.first()
 
-            resource = resource_manager.update(resource.uuid, instance=resource)
-            resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=True)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(resource)
+            resource = resolved_resource_manager.update(resource.uuid, instance=resource)
+            resolved_resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=True)
             resource.refresh_from_db()
             return resource
         elif not resource.exists() and _overwrite:

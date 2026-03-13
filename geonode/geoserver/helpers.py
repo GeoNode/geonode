@@ -612,7 +612,7 @@ def gs_slurp(
     It returns a list of dictionaries with the name of the layer,
     the result of the operation and the errors and traceback if it failed.
     """
-    from geonode.resource.manager import resource_manager
+    from geonode.resource.registry import resource_manager_registry
 
     if console is None:
         console = open(os.devnull, "w")
@@ -725,7 +725,7 @@ def gs_slurp(
             created = False
             layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = resource_manager.create(
+                layer = resource_manager_registry.get_for_instance(Dataset).create(
                     str(uuid.uuid4()),
                     resource_type=Dataset,
                     defaults=dict(
@@ -756,17 +756,18 @@ def gs_slurp(
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
-            resource_manager.set_permissions(layer.uuid, permissions=perm_spec)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+            resolved_resource_manager.set_permissions(layer.uuid, instance=layer, permissions=perm_spec)
 
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
 
             # in some cases we need to explicitily save the resource to execute the signals
             # (for sure when running updatelayers)
-            resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
+            resolved_resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
 
             # Creating the Thumbnail
-            resource_manager.set_thumbnail(layer.uuid, overwrite=True, check_bbox=False)
+            resolved_resource_manager.set_thumbnail(layer.uuid, instance=layer, overwrite=True, check_bbox=False)
 
         except Exception as e:
             # Hide the resource until finished

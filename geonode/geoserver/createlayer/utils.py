@@ -29,7 +29,7 @@ from django.template.defaultfilters import slugify
 from geonode import GeoNodeException
 from geonode.layers.models import Dataset
 from geonode.layers.utils import get_valid_name
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.geoserver.helpers import gs_catalog, ogc_server_settings, create_geoserver_db_featurestore
 
 
@@ -62,7 +62,7 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
     """
     owner = get_user_model().objects.get(username=owner_name)
 
-    layer = resource_manager.create(
+    layer = resource_manager_registry.get_for_instance(Dataset).create(
         str(uuid.uuid4()),
         resource_type=Dataset,
         defaults=dict(
@@ -86,8 +86,9 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
     if settings.RESOURCE_PUBLISHING:
         to_update["is_published"] = to_update["was_published"] = False
 
-    resource_manager.update(layer.uuid, instance=layer, vals=to_update)
-    resource_manager.set_thumbnail(None, instance=layer)
+    resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+    resolved_resource_manager.update(layer.uuid, instance=layer, vals=to_update)
+    resolved_resource_manager.set_thumbnail(None, instance=layer)
     return layer
 
 

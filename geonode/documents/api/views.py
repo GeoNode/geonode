@@ -36,7 +36,7 @@ from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
 from .serializers import DocumentSerializer
 from .permissions import DocumentPermissionsFilter
@@ -120,12 +120,13 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 payload["doc_url"] = doc_url
                 payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
-            return resource_manager.get_for_model(Document).create(
+            instance = resource_manager_registry.get_for_instance(Document).create(
                 str(uuid4()),
                 resource_type=Document,
                 defaults=payload,
                 file=file,
             )
+            serializer.instance = instance
         except Exception as e:
             logger.error(f"Error creating document {serializer.validated_data}", exc_info=e)
             raise e

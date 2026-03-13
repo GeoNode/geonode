@@ -73,9 +73,9 @@ class GeoAppAdmin(admin.ModelAdmin):
         through the admin batch action
         """
         for obj in queryset:
-            from geonode.resource.manager import resource_manager
+            from geonode.resource.registry import resource_manager_registry
 
-            resource_manager.delete(obj.uuid, instance=obj)
+            resource_manager_registry.get_for_instance(obj).delete(obj.uuid, instance=obj)
 
 
 admin.site.register(GeoApp, GeoAppAdmin)

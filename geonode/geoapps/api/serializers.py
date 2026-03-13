@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException
 
 from geonode.geoapps.models import GeoApp
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 logger = logging.getLogger(__name__)
@@ -79,11 +79,13 @@ class GeoAppSerializer(ResourceBaseSerializer):
 
     def _create_and_update(self, validated_data, instance=None):
         manager = (
-            resource_manager.get_for_instance(instance) if instance else resource_manager.get_for_model(self.Meta.model)
+            resource_manager_registry.get_for_instance(instance)
+            if instance
+            else resource_manager_registry.get_for_instance(self.Meta.model)
         )
         if instance:
-            return manager.update(instance.uuid, instance=instance, validated_data=validated_data)
-        return manager.create(None, resource_type=self.Meta.model, validated_data=validated_data)
+            return manager.update(instance.uuid, instance=instance, vals=validated_data)
+        return manager.create(None, resource_type=self.Meta.model, defaults=validated_data)
 
     def create(self, validated_data):
         # Sanity checks
