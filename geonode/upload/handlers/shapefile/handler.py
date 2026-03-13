@@ -85,7 +85,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         if data.get("action") == ira.UPSERT.value:
             return False
         if _base.endswith("shp") if isinstance(_base, str) else _base.name.endswith("shp"):
-            is_overwrite_flow = data.get("overwrite_existing_layer", False)
+            is_overwrite_flow = data.get("action") == ira.REPLACE.value
             if isinstance(is_overwrite_flow, str):
                 is_overwrite_flow = ast.literal_eval(is_overwrite_flow.title())
             return OverwriteShapeFileSerializer if is_overwrite_flow else ShapeFileSerializer
@@ -103,7 +103,6 @@ class ShapeFileHandler(BaseVectorFileHandler):
 
         additional_params = {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),

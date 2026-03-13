@@ -178,7 +178,6 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
             "original_zip_name": _data.pop("original_zip_name", None),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
@@ -192,7 +191,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         filename = _exec.input_params.get("original_zip_name") or Path(files.get("base_file")).stem
         # start looping on the layers available
         layer_name = self.fixup_name(filename)
-        should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+        should_be_overwritten = _exec.action == ira.REPLACE.value
         # should_be_imported check if the user+layername already exists or not
         if should_be_imported(
             layer_name,
