@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os.path
 import shutil
 
 from django.test import TestCase, override_settings
@@ -40,6 +41,7 @@ class TestGPKGHandler(TestCase):
         super().setUpClass()
         cls.handler = GPKGFileHandler()
         cls.valid_gpkg = f"{project_dir}/tests/fixture/valid.gpkg"
+        cls.multiple_layer = f"{project_dir}/tests/fixture/multiple_layer.gpkg"
         cls.invalid_gpkg = f"{project_dir}/tests/fixture/invalid.gpkg"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_gpkg}
@@ -164,3 +166,36 @@ class TestGPKGHandler(TestCase):
         # Assert the error was recorded
         errors = exec_request_obj.output_params.get("errors", [])
         assert any("exception raised" in str(e) for e in errors)
+
+    def test_select_valid_layers(self):
+        """
+        The function should return only the datasets with a geometry
+        The other one are discarded
+        """
+        # Copy the file to the temporary folder
+        shutil.copy(self.multiple_layer, "/tmp")
+
+        exec_id = orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="funct1",
+            step="step",
+            action="replace",
+            input_params={
+                "files": {"base_file": "/tmp/multiple_layer.gpkg"},
+                "skip_existing_layer": True,
+                "store_spatial_file": False,
+                "handler_module_path": str(self.handler),
+            },
+        )
+
+        all_layers = GPKGFileHandler().get_ogr2ogr_driver().Open("/tmp/multiple_layer.gpkg")
+
+        with self.assertRaises(Exception) as exp:
+            GPKGFileHandler()._select_valid_layers(all_layers, execution_id=str(exec_id))
+
+        self.assertIn(
+            "For Upsert and Replace, only one layer is allowed in the GPKG",
+            exp.exception.args[0],
+        )
+
+        os.remove("/tmp/multiple_layer.gpkg")
