@@ -433,7 +433,7 @@ class BaseVectorFileHandler(BaseHandler):
         data inside the geonode_data database
         """
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         # for the moment we skip the dyanamic model creation
         layer_count = len(layers)
         logger.info(f"Total number of layers available: {layer_count}")
@@ -534,7 +534,7 @@ class BaseVectorFileHandler(BaseHandler):
             raise e
         return layer_names, alternates, execution_id
 
-    def _select_valid_layers(self, all_layers):
+    def _select_valid_layers(self, all_layers, **kwargs):
         layers = []
         for layer in all_layers:
             try:
@@ -1102,7 +1102,7 @@ class BaseVectorFileHandler(BaseHandler):
                 return True, None
             except Exception as e:
                 all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-                if layers := self._select_valid_layers(all_layers):
+                if layers := self._select_valid_layers(all_layers, execution_id=execution_id):
                     _errors = e.args[0] if isinstance(e, UpsertException) else [str(e)]
                     if isinstance(_errors, str):
                         _errors = [_errors]
@@ -1126,7 +1126,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # use ogr2ogr to read the uploaded files for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         if not layers:
             raise UpsertException("No valid layers found in the provided file for upsert.")
 
@@ -1219,7 +1219,7 @@ class BaseVectorFileHandler(BaseHandler):
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
         valid_create = 0
         valid_update = 0
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         if not layers:
             raise UpsertException("No valid layers were found in the file provided")
         # we can upsert just 1 layer at time
