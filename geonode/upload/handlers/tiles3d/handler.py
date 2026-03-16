@@ -79,6 +79,14 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         }
 
     @staticmethod
+    def can_do(action) -> bool:
+        """
+        This endpoint will return True or False if with the info provided
+        the handler is able to handle the file or not
+        """
+        return action in Tiles3DFileHandler.TASKS
+
+    @staticmethod
     def can_handle(_data) -> bool:
         """
         This endpoint will return True or False if with the info provided
@@ -228,6 +236,9 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return layer_name, alternate, execution_id
 
     def pre_processing(self, files, execution_id, **kwargs):
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        if _exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
+            raise Invalid3DTilesException("Upsert and replace are not available for 3dtiles")
         _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
         # removing the content file from the files location
         if "content_file" in _data["files"]:

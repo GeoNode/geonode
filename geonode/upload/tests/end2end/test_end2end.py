@@ -109,12 +109,20 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         skip_geoserver=False,
         assert_payload=None,
         keep_resource=False,
+        assert_failure=False,
     ):
         try:
             self.client.force_login(self.admin)
 
             response = self.client.post(self.url, data=payload)
-            self.assertEqual(201, response.status_code, response.json())
+            if assert_failure:
+                self.assertEqual(500, response.status_code, response.json())
+                self.assertListEqual(
+                    ["No handlers found for this dataset type/action"], response.json()["errors"], response.json()
+                )
+                return
+            else:
+                self.assertEqual(201, response.status_code, response.json())
 
             # if is async, we must wait. It will wait for 1 min before raise exception
             if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
@@ -454,6 +462,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             overwrite=True,
             assert_payload=assert_payload,
             last_update=prev_timestamp,
+            assert_failure=True,
         )
 
 

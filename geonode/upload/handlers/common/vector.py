@@ -228,6 +228,17 @@ class BaseVectorFileHandler(BaseHandler):
         Maybe a file rename, assign the resource to the execution_id
         """
 
+    def evaluate_exec_prev_status(self, action, resource_pk):
+        if not resource_pk:
+            return True, None
+        res = ResourceBase.objects.filter(pk=resource_pk).first()
+        if not res:
+            return True, None
+        if res.subtype in ["3dtiles"] and action in (ira.REPLACE.value, ira.UPSERT.value):
+            reason = "Replace or Upsert are not possible on an existing 3Dtile"
+            return False, reason
+        return True, reason
+
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
         We dont need to do anything for now.
