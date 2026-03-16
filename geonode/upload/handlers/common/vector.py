@@ -237,7 +237,7 @@ class BaseVectorFileHandler(BaseHandler):
         if res.subtype in ["3dtiles"] and action in (ira.REPLACE.value, ira.UPSERT.value):
             reason = "Replace or Upsert are not possible on an existing 3Dtile"
             return False, reason
-        return True, reason
+        return True, None
 
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
