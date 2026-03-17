@@ -22,8 +22,8 @@ RESOURCE_MANAGER_CONCRETE_CLASS = os.environ.get(
     "RESOURCE_MANAGER_CONCRETE_CLASS", "geonode.geoserver.manager.GeoServerResourceManager"
 )
 RESOURCE_MANAGERS = (
-    "geonode.resource.manager.DatasetResourceManager",
-    "geonode.resource.manager.DocumentResourceManager",
-    "geonode.resource.manager.MapResourceManager",
-    "geonode.resource.manager.GeoAppResourceManager",
+    "geonode.layers.manager.DatasetResourceManager",
+    "geonode.documents.manager.DocumentResourceManager",
+    "geonode.maps.manager.MapResourceManager",
+    "geonode.geoapps.manager.GeoAppResourceManager",
 )

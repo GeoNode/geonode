@@ -28,7 +28,7 @@ from django.test import override_settings
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import ResourceManager
+from geonode.resource.manager import BaseResourceManager
 from geonode.base.models import LinkedResource, ResourceBase
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
@@ -68,13 +68,13 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             email="test@test.com",
         )
 
-        self.rm = ResourceManager()
+        self.rm = BaseResourceManager()
 
     def test_get_concrete_manager(self):
         original_r_m_c_c = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS
         # mock class
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = "geonode.resource.tests.ResourceManagerClassTest"
-        rm = ResourceManager()
+        rm = BaseResourceManager()
         self.assertEqual(rm._concrete_resource_manager.__class__.__name__, "ResourceManagerClassTest")
         # re assign class to original
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = original_r_m_c_c

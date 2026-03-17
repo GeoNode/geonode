@@ -101,7 +101,11 @@ def resouce_service_dispatcher(self, execution_id: str):
                     if _request.status == ExecutionRequest.STATUS_READY:
                         _exec_request.update(status=ExecutionRequest.STATUS_RUNNING)
                         _request.refresh_from_db()
-                        _manager = resource_manager_registry.get_for_instance(_request.geonode_resource)
+                        if _request.geonode_resource:
+                            _manager = resource_manager_registry.get_for_instance(_request.geonode_resource)
+                        else:
+                            resource_type = _request.input_params.get("resource_type")
+                            _manager = resource_manager_registry.get_for_type(resource_type)
                         if hasattr(_manager, _request.func_name):
                             try:
                                 _signature = signature(getattr(_manager, _request.func_name))

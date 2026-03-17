@@ -38,7 +38,6 @@ from geonode import geoserver
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
-from geonode.resource.manager import ResourceManager
 from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
@@ -50,6 +49,7 @@ from geonode.thumbs.background import (
     GenericWMSBackground,
 )
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
+from geonode.resource.registry import resource_manager_registry
 
 logger = logging.getLogger(__name__)
 
@@ -474,7 +474,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.rm = ResourceManager()
+        cls.rm = resource_manager_registry
         cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -698,7 +698,9 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         try:
             dt_files = [os.path.join(os.path.abspath(os.path.dirname(__file__)), "data", "WY_USNG.zip")]
             # raises an exception if resource_type is not provided
-            res = self.rm.create(None, resource_type=Dataset, defaults={"owner": self.user_admin, "files": dt_files})
+            res = self.rm.get_for_instance(Dataset).create(
+                None, resource_type=Dataset, defaults={"owner": self.user_admin, "files": dt_files}
+            )
             # ingest with datasets
             if (
                 res
@@ -711,4 +713,4 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 self._fetch_thumb_and_compare(res.thumbnail_url, expected_thumb)
         finally:
             if res:
-                self.rm.delete(res.uuid)
+                self.rm.get_for_instance(Dataset).delete(res.uuid)

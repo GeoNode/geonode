@@ -56,7 +56,7 @@ from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from guardian.shortcuts import get_anonymous_user
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -945,7 +945,9 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test only users with view permissions to a map can view them in layer detail view
         """
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+        resource_manager_registry.get_for_instance(self.map.get_self_resource()).remove_permissions(
+            self.map.uuid, instance=self.map.get_self_resource()
+        )
         self.client.login(username="admin", password="admin")
         response = self.client.get(reverse("dataset_embed", args=(self.layer.alternate,)))
         self.assertEqual(response.context["resource"].alternate, self.map_dataset.name)
@@ -956,7 +958,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         self.test_dataset = None
         try:
-            self.test_dataset = resource_manager.create(
+            self.test_dataset = resource_manager_registry.get_for_instance(Dataset).create(
                 None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
             )
             from geonode.metadata.manager import metadata_manager
@@ -1017,7 +1019,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
 
-            _l = resource_manager.create(
+            _l = resource_manager_registry.get_for_instance(Dataset).create(
                 None,
                 resource_type=Dataset,
                 defaults=dict(
@@ -1070,7 +1072,9 @@ class TestCustomUUidHandler(TestCase):
 
     @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
     def test_dataset_will_override_the_uuid_if_handler_is_defined(self):
-        resource_manager.update(None, instance=self.sut, keywords=["updating", "values"])
+        resource_manager_registry.get_for_instance(self.sut).update(
+            None, instance=self.sut, keywords=["updating", "values"]
+        )
         expected = "abc:abc-1234-abc"
         actual = Dataset.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)

@@ -33,7 +33,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.maps.tests_populate_maplayers import create_maplayers
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models
 
@@ -240,7 +240,9 @@ community."
             ows_url="http://localhost:8080/geoserver/wms",
         )
         # map_created.set_default_permissions()
-        resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
+        resource_manager_registry.get_for_instance(map_created).set_permissions(
+            None, instance=map_created, permissions=None, created=True
+        )
         map_id = map_created.id
 
         url = reverse("map_embed", args=(map_id,))
@@ -284,15 +286,23 @@ community."
         """
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
             # first create a map
-            map_created = resource_manager.create(None, resource_type=Map, defaults=dict(owner=self.u))
-            resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
+            map_created = resource_manager_registry.get_for_instance(Map).create(
+                None, resource_type=Map, defaults=dict(owner=self.u)
+            )
+            resource_manager_registry.get_for_instance(map_created).set_permissions(
+                None, instance=map_created, permissions=None, created=True
+            )
             self.assertTrue(map_created.is_approved)
             self.assertTrue(map_created.is_published)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             # first create a map
-            map_created = resource_manager.create(None, resource_type=Map, defaults=dict(owner=self.u))
-            resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
+            map_created = resource_manager_registry.get_for_instance(Map).create(
+                None, resource_type=Map, defaults=dict(owner=self.u)
+            )
+            resource_manager_registry.get_for_instance(map_created).set_permissions(
+                None, instance=map_created, permissions=None, created=True
+            )
             self.assertFalse(map_created.is_approved)
             self.assertFalse(map_created.is_published)
 

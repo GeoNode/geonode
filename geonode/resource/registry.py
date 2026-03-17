@@ -20,6 +20,9 @@
 from django.utils.module_loading import import_string
 
 from geonode.base.models import ResourceBase
+from geonode.resource.manager import BaseResourceManager
+from geonode.resource.api.utils import resolve_type_serializer
+
 
 from . import settings as rm_settings
 
@@ -57,21 +60,44 @@ class ResourceManagerRegistry:
         """
         if instance is None:
             raise ValueError("Cannot resolve manager for a null instance")
+
         if isinstance(instance, type):
             manager = self.REGISTRY.get(instance)
-            if manager is None:
-                raise ValueError(f"No resource manager registered for model: {instance}")
-            return manager
+            if manager is not None:
+                return manager
+            if issubclass(instance, ResourceBase):
+                return BaseResourceManager()
+            raise ValueError("No resource manager registered for provided class")
 
         real = instance.get_real_instance() if hasattr(instance, "get_real_instance") else instance
         for model_cls, manager in self.REGISTRY.items():
             if isinstance(real, model_cls):
                 return manager
         if isinstance(real, ResourceBase):
-            manager = self.REGISTRY.get(real.__class__)
-            if manager is not None:
-                return manager
-        raise ValueError(f"No resource manager registered for instance: {real.__class__}")
+            return BaseResourceManager()
+        raise ValueError("No resource manager registered for instance")
+
+    def get_for_type(self, resource_type):
+        """
+        Accepts:
+        - resource type string (e.g. 'dataset', 'map')
+        - model class (Dataset, Map, ...)
+        """
+        if isinstance(resource_type, str):
+            resource_type = resolve_type_serializer(resource_type)[0]
+        return self.get_for_instance(resource_type)
+
+    def get_for_uuid(self, uuid):
+        """
+        Accepts:
+        - uuid of a resource
+        """
+        if not uuid:
+            raise ValueError("Cannot resolve manager for empty uuid")
+        rb = ResourceBase.objects.filter(uuid=uuid).first()
+        if rb is None:
+            raise ValueError(f"No ResourceBase found for uuid: {uuid}")
+        return self.get_for_instance(rb)
 
     def _register(self):
         for module_path in rm_settings.RESOURCE_MANAGERS:
