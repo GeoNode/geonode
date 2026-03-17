@@ -217,7 +217,7 @@ class DocumentUploadView(CreateView):
             ),
             notify=True,
         )
-        
+
         # Only trigger thumbnailing if it's NOT a remote URL
         if not self.object.doc_url:
             resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
