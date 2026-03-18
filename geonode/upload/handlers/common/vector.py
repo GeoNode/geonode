@@ -1393,12 +1393,10 @@ class BaseVectorFileHandler(BaseHandler):
         filters = []
         for feature in data_chunk:
             if feature.GetFID():
-                filters.append(feature.GetFID())            
+                filters.append(feature.GetFID())
             else:
                 filters.append(getattr(feature, upsert_key))
-        value_in_db = model_instance.objects.filter(
-            **{f"{upsert_key}__in": filters}
-        ).in_bulk(field_name=upsert_key)
+        value_in_db = model_instance.objects.filter(**{f"{upsert_key}__in": filters}).in_bulk(field_name=upsert_key)
         # looping over the chunk data
         to_process = []
         feature_to_save = []
