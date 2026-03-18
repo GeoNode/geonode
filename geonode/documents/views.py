@@ -217,7 +217,12 @@ class DocumentUploadView(CreateView):
             ),
             notify=True,
         )
-        resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
+
+        # Only trigger thumbnailing for local documents, not for remote URLs
+        if self.object.is_local:
+            resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
+        else:
+            logger.info(f"Skipping thumbnail generation for remote document: {self.object.doc_url}")
 
         register_event(self.request, enumerations.EventType.EVENT_UPLOAD, self.object)
 
