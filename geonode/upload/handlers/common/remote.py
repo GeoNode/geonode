@@ -219,6 +219,9 @@ class BaseRemoteResourceHandler(BaseHandler):
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, None, **params),
         )
+
+        # The thumbnail is not created for the following data types: "3dtiles", "cog", "flatgeobuf"
+        # because of the can_have_thumbnail property
         resource_manager.set_thumbnail(None, instance=resource)
 
         resource = self.create_link(resource, params, alternate)
