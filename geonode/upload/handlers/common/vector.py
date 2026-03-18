@@ -1388,7 +1388,7 @@ class BaseVectorFileHandler(BaseHandler):
         to_process = []
         feature_to_save = []
         for feature in data_chunk:
-            feature_as_dict = feature.items()
+            feature_as_dict = {self.fixup_name(key): value for key, value in feature.items().items()}
             # evaluate if there is any date in the schema of the feature
             schema = feature.DumpReadableAsString().split("\n")
             if any(date_fields := [f for f in schema if ("(Date)" in f or "(DateTime)" in f) and "(null)" not in f]):
