@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from drf_spectacular.utils import extend_schema
 
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -101,12 +100,6 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
 
         return result
 
-    @extend_schema(
-        request=DatasetMetadataSerializer,
-        methods=["put"],
-        responses={200},
-        description="API endpoint to upload metadata file.",
-    )
     @action(
         detail=False,
         url_path=r"(?P<pk>\d+)/metadata",
@@ -177,22 +170,12 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
             if storage_manager:
                 storage_manager.delete_retrieved_paths()
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: SimpleMapLayerSerializer(many=True)},
-        description="API endpoint allowing to retrieve the MapLayers list.",
-    )
     @action(detail=True, methods=["get"])
     def maplayers(self, request, pk=None, *args, **kwargs):
         dataset = self.get_object()
         resources = dataset.maplayers
         return Response(SimpleMapLayerSerializer(many=True).to_representation(resources))
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: SimpleMapSerializer(many=True)},
-        description="API endpoint allowing to retrieve maps using the dataset.",
-    )
     @action(detail=True, methods=["get"])
     def maps(self, request, pk=None, *args, **kwargs):
         dataset = self.get_object()

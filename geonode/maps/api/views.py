@@ -20,7 +20,6 @@ import logging
 from uuid import uuid4
 
 from django.db import transaction
-from drf_spectacular.utils import extend_schema
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from dynamic_rest.viewsets import DynamicModelViewSet
 from rest_framework.decorators import action
@@ -90,22 +89,12 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         """
         return super(MapViewSet, self).create(request, *args, **kwargs)
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: MapLayerSerializer(many=True)},
-        description="API endpoint allowing to retrieve the MapLayers list.",
-    )
     @action(detail=True, methods=["get"])
     def maplayers(self, request, pk=None, *args, **kwargs):
         map = self.get_object()
         resources = map.maplayers
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: DatasetSerializer(many=True)},
-        description="API endpoint allowing to retrieve the local MapLayers.",
-    )
     @action(detail=True, methods=["get"])
     def datasets(self, request, pk=None, *args, **kwargs):
         map = self.get_object()
