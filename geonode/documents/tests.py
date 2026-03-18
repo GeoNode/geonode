@@ -297,13 +297,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 self.client.post(reverse("document_upload"), data=data)
                 d = Document.objects.get(title="Remote img File Doc")
                 self.assertIsNone(d.thumbnail_url, "Thumbnails are not allowed for remote documents.")
-                thumb_file = os.path.join(
-                    settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
-                )
-                file = Image.open(thumb_file)
-                self.assertEqual(file.size, (400, 200))
-                # check thumbnail qualty and extention
-                self.assertEqual(file.format, "JPEG")
+
             # test pdf doc
             with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
                 data = {
