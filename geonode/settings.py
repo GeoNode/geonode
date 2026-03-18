@@ -131,6 +131,8 @@ if DATABASE_URL.startswith("spatialite"):
 GEONODE_DB_CONN_MAX_AGE = int(os.getenv("GEONODE_DB_CONN_MAX_AGE", 0))
 GEONODE_DB_CONN_TOUT = int(os.getenv("GEONODE_DB_CONN_TOUT", 5))
 
+GEONODE_DATABASE_SCHEMA = os.getenv("GEONODE_DATABASE_SCHEMA", "public")
+
 _db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=GEONODE_DB_CONN_MAX_AGE)
 
 if "CONN_TOUT" in _db_conf:
@@ -143,6 +145,8 @@ if "postgresql" in DATABASE_URL or "postgis" in DATABASE_URL:
             "connect_timeout": GEONODE_DB_CONN_TOUT,
         }
     )
+    if GEONODE_DATABASE_SCHEMA != "public":
+        _db_conf["OPTIONS"]["options"] = f"-c search_path={GEONODE_DATABASE_SCHEMA},public"
 
 DATABASES = {"default": _db_conf}
 
@@ -152,6 +156,7 @@ if os.getenv("DEFAULT_BACKEND_DATASTORE"):
         "postgis://\
 geonode_data:geonode_data@localhost:5432/geonode_data",
     )
+    GEONODE_GEODATABASE_SCHEMA = os.getenv("GEONODE_GEODATABASE_SCHEMA", "public")
     DATABASES[os.getenv("DEFAULT_BACKEND_DATASTORE")] = dj_database_url.parse(
         GEODATABASE_URL, conn_max_age=GEONODE_DB_CONN_MAX_AGE
     )
@@ -159,12 +164,15 @@ geonode_data:geonode_data@localhost:5432/geonode_data",
     if "CONN_TOUT" in DATABASES["default"]:
         _geo_db["CONN_TOUT"] = DATABASES["default"]["CONN_TOUT"]
     if "postgresql" in GEODATABASE_URL or "postgis" in GEODATABASE_URL:
-        _geo_db["OPTIONS"] = DATABASES["default"]["OPTIONS"] if "OPTIONS" in DATABASES["default"] else {}
+        _geo_db["OPTIONS"] = dict(DATABASES["default"]["OPTIONS"]) if "OPTIONS" in DATABASES["default"] else {}
+        _geo_db["OPTIONS"].pop("options", None)
         _geo_db["OPTIONS"].update(
             {
                 "connect_timeout": GEONODE_DB_CONN_TOUT,
             }
         )
+        if GEONODE_GEODATABASE_SCHEMA != "public":
+            _geo_db["OPTIONS"]["options"] = f"-c search_path={GEONODE_GEODATABASE_SCHEMA},public"
 
     DATABASES[os.getenv("DEFAULT_BACKEND_DATASTORE")] = _geo_db
 
