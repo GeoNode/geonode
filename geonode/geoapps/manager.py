@@ -45,9 +45,7 @@ class GeoAppResourceManager(BaseResourceManager):
             GeoApp.objects.filter(pk=instance.id).update(**payload)
             instance.refresh_from_db()
         except Exception as e:
-            logger.exception(
-                f"Error while creating or updating GeoApp instance with exception {e}"
-            )
+            logger.exception(f"Error while creating or updating GeoApp instance with exception {e}")
             raise GeneralGeoAppException("An error occurred while saving the GeoApp.")
 
         payload["blob"] = blob
