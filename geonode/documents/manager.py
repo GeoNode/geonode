@@ -34,9 +34,11 @@ class DocumentResourceManager(BaseResourceManager):
         from geonode.storage.manager import StorageManager
 
         file = kwargs.pop("file", None)
+        request_user = kwargs.get("user")
         storage = None
         resource_type = resource_type or Document
         defaults = copy.deepcopy(defaults or {})
+        extent = defaults.pop("extent", None)
         try:
             if file:
                 if isinstance(file, str):
@@ -46,6 +48,10 @@ class DocumentResourceManager(BaseResourceManager):
                     storage.clone_remote_files()
                     defaults["files"] = [storage.get_retrieved_paths().get("base_file")]
             resource = super().create(uuid, resource_type=resource_type, defaults=defaults)
+            if extent or request_user:
+                # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
+                # but it’s kept here to centralize manager behavior.
+                self._apply_extent_and_role_defaults(resource, extent=extent, user=request_user)
             resource.handle_moderated_uploads()
             self.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
             return resource

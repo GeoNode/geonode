@@ -47,7 +47,9 @@ class MapResourceManager(BaseResourceManager):
         self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs
     ) -> ResourceBase:
         notify = kwargs.pop("notify", True)
+        request_user = kwargs.get("user")
         payload = copy.deepcopy(defaults or {})
+        extent = payload.pop("extent", None)
         post_creation_data = {"thumbnail": payload.pop("thumbnail_url", "")}
         maplayers = payload.pop("maplayers", None)
         instance = super().create(uuid, resource_type=resource_type or Map, defaults=payload)
@@ -55,6 +57,9 @@ class MapResourceManager(BaseResourceManager):
         if maplayers is not None:
             instance.maplayers.set(maplayers)
             instance.refresh_from_db()
+
+        if extent is not None or request_user:
+            self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
 
         instance = self._post_change_routines(
             instance=instance,
@@ -70,6 +75,8 @@ class MapResourceManager(BaseResourceManager):
         notify = kwargs.pop("notify", True)
 
         payload = copy.deepcopy(vals or {})
+        extent = payload.pop("extent", None)
+        request_user = kwargs.get("user")
         post_change_data = {
             "thumbnail": payload.pop("thumbnail_url", ""),
             "dataset_names_before_changes": dataset_names_before_changes or [],
@@ -81,6 +88,11 @@ class MapResourceManager(BaseResourceManager):
         if maplayers is not None:
             instance.maplayers.set(maplayers)
             instance.refresh_from_db()
+
+        if extent or request_user:
+            # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
+            # but it’s kept here to centralize manager behavior.
+            self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
 
         instance = self._post_change_routines(
             instance=instance,

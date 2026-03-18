@@ -445,7 +445,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
     @patch("geonode.upload.handlers.common.raster.create_alternate")
     @patch("geonode.upload.publisher.Catalog")
     @patch("geonode.geoserver.manager.geoserver_create_style")
-    @patch("geonode.resource.manager.ResourceManager.set_thumbnail")
+    @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail")
     def test_raster_copy_workflow(self, mock_set_thumbnail, mock_create_style, MockCatalog, mock_create_alternate):
         try:
             user = get_user_model().objects.first()

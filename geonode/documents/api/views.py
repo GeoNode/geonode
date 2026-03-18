@@ -110,9 +110,10 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
             raise DocumentException("The file provided is not in the supported extensions list")
 
         try:
+            request_user = self.request.user
             payload = {
                 **serializer.validated_data,
-                "owner": self.request.user,
+                "owner": request_user,
                 "extension": extension,
                 "resource_type": "document",
             }
@@ -125,6 +126,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 resource_type=Document,
                 defaults=payload,
                 file=file,
+                user=request_user,
             )
             serializer.instance = instance
         except Exception as e:

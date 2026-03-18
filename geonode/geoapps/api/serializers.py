@@ -78,14 +78,16 @@ class GeoAppSerializer(ResourceBaseSerializer):
         return validated_data
 
     def _create_and_update(self, validated_data, instance=None):
+        request = self.context.get("request")
+        request_user = request.user if request else None
         manager = (
             resource_manager_registry.get_for_instance(instance)
             if instance
             else resource_manager_registry.get_for_instance(self.Meta.model)
         )
         if instance:
-            return manager.update(instance.uuid, instance=instance, vals=validated_data)
-        return manager.create(None, resource_type=self.Meta.model, defaults=validated_data)
+            return manager.update(instance.uuid, instance=instance, vals=validated_data, user=request_user)
+        return manager.create(None, resource_type=self.Meta.model, defaults=validated_data, user=request_user)
 
     def create(self, validated_data):
         # Sanity checks

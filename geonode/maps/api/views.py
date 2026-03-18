@@ -113,13 +113,15 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
 
     def perform_create(self, serializer):
         payload = serializer.validated_data.copy()
-        payload["owner"] = self.request.user
+        request_user = self.request.user
+        payload["owner"] = request_user
         payload["resource_type"] = "map"
         payload["uuid"] = str(uuid4())
         instance = resource_manager_registry.get_for_instance(Map).create(
             payload["uuid"],
             resource_type=Map,
             defaults=payload,
+            user=request_user,
         )
         serializer.instance = instance
         register_event(self.request, EventType.EVENT_CREATE, instance)
@@ -134,13 +136,14 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         if instance != map_obj:
             raise GeneralMapsException(detail="serializer instance and object are different")
 
-        payload = serializer.validated_data.copy()
         dataset_names_before_changes = [lyr.alternate for lyr in instance.datasets]
+        # Preserve serializer-side validation and group/role logic before manager hooks.
+        instance = serializer.save()
         instance = resource_manager_registry.get_for_instance(instance).update(
             instance.uuid,
             instance=instance,
-            vals=payload,
             dataset_names_before_changes=dataset_names_before_changes,
+            notify=True,
         )
         serializer.instance = instance
         register_event(self.request, EventType.EVENT_CHANGE, instance)
