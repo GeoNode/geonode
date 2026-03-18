@@ -1506,6 +1506,7 @@ class BaseVectorFileHandler(BaseHandler):
         if dataset := kwargs.get("resource", None):
             self.__fixup_primary_key(dataset)
 
+
 @importer_app.task(
     base=ErrorBaseTaskClass,
     name="geonode.upload.import_next_step",
