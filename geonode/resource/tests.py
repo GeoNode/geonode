@@ -34,11 +34,18 @@ from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.maps.models import Map, MapLayer
+from geonode.geoapps.models import GeoApp
 from geonode.resource import settings as rm_settings
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import create_single_doc, create_single_map, create_single_dataset
 from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.security.registry import permissions_registry
+from geonode.resource.registry import resource_manager_registry
+from geonode.layers.manager import DatasetResourceManager
+from geonode.geoapps.manager import GeoAppResourceManager
+from geonode.maps.manager import MapResourceManager
+from geonode.documents.manager import DocumentResourceManager
+from geonode.resource.registry import ResourceManagerRegistry
 
 from gisdata import GOOD_DATA
 
@@ -458,3 +465,64 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             ),
             "Error in using SCALE image algo",
         )
+
+
+class DummyDocumentManager(BaseResourceManager):
+    handled_model = Document
+
+
+class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(b"dataset")
+        create_models(b"map")
+        create_models(b"document")
+
+    def setUp(self):
+        super().setUp()
+        self.registry = ResourceManagerRegistry()
+        self.registry.reset()
+        resource_manager_registry.init_registry()
+
+    def tearDown(self):
+        self.registry.reset()
+        super().tearDown()
+
+    def test_get_for_instance_real_managers(self):
+        self.assertIsInstance(resource_manager_registry.get_for_instance(Document), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(Map), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(Dataset), DatasetResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(GeoApp), GeoAppResourceManager)
+
+    def test_get_for_instance_from_objects(self):
+        doc = Document.objects.first()
+        map_obj = Map.objects.first()
+        ds = Dataset.objects.first()
+        self.assertIsInstance(resource_manager_registry.get_for_instance(doc), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(map_obj), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(ds), DatasetResourceManager)
+
+    def test_add_and_get_for_instance(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_instance(Document), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_instance(doc), mgr)
+
+    def test_remove_returns_base_manager(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.registry.remove(Document)
+        self.assertIsInstance(self.registry.get_for_instance(Document), BaseResourceManager)
+
+    def test_get_for_type_and_uuid(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_type("document"), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_uuid(doc.uuid), mgr)
+
+    def test_get_for_instance_none_raises(self):
+        with self.assertRaises(ValueError):
+            self.registry.get_for_instance(None)

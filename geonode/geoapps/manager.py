@@ -38,8 +38,13 @@ class GeoAppResourceManager(BaseResourceManager):
         extent = payload.pop("extent", None)
         blob = payload.pop("blob", {})
 
+        created = False
         if not instance:
             instance = super().create(None, resource_type=GeoApp, defaults=payload)
+            created = True
+
+        if created and "owner" in payload:
+            payload["owner"] = instance.owner
 
         try:
             GeoApp.objects.filter(pk=instance.id).update(**payload)
