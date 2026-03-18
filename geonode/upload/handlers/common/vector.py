@@ -1483,6 +1483,7 @@ class BaseVectorFileHandler(BaseHandler):
         fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
 
 
+
 @importer_app.task(
     base=ErrorBaseTaskClass,
     name="geonode.upload.import_next_step",
