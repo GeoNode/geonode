@@ -717,6 +717,15 @@ class BaseVectorFileHandler(BaseHandler):
                 }
             ]
 
+        if layer.GetFIDColumn():
+            layer_schema += [
+                {
+                    "name": layer.GetFIDColumn(),
+                    "class_name": "django.db.models.BigAutoField",
+                    "null": False,
+                    "primary_key": True,
+                }
+            ]
         return layer_schema
 
     def promote_to_multi(self, geometry_name):
@@ -1381,14 +1390,20 @@ class BaseVectorFileHandler(BaseHandler):
     def _save_feature(self, data_chunk, model_obj, model_instance, upsert_key, valid_update, valid_create):
         # getting all the upsert_key value from the data chunk
         # retrieving the data from the DB
+        filters = []
+        for feature in data_chunk:
+            if feature.GetFID():
+                filters.append(feature.GetFID())            
+            else:
+                filters.append(getattr(feature, upsert_key))
         value_in_db = model_instance.objects.filter(
-            **{f"{upsert_key}__in": (getattr(feature, upsert_key) for feature in data_chunk)}
+            **{f"{upsert_key}__in": filters}
         ).in_bulk(field_name=upsert_key)
         # looping over the chunk data
         to_process = []
         feature_to_save = []
         for feature in data_chunk:
-            feature_as_dict = feature.items()
+            feature_as_dict = {self.fixup_name(key): value for key, value in feature.items().items()}
             # evaluate if there is any date in the schema of the feature
             schema = feature.DumpReadableAsString().split("\n")
             if any(date_fields := [f for f in schema if ("(Date)" in f or "(DateTime)" in f) and "(null)" not in f]):
@@ -1493,10 +1508,9 @@ class BaseVectorFileHandler(BaseHandler):
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
 
-        self.__fixup_primary_key(dataset)
         return dataset
 
-    def fixup_dynamic_model_fields(self, _exec, files):
+    def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
         """
         Utility needed during the replace workflow,
         it will sync all the FieldSchema along with the current resource uploaded.
@@ -1504,6 +1518,8 @@ class BaseVectorFileHandler(BaseHandler):
         """
         fields_schema, needed_field_schema = self.__get_new_and_original_schema(files, str(_exec.exec_id))
         fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
+        if dataset := kwargs.get("resource", None):
+            self.__fixup_primary_key(dataset)
 
 
 @importer_app.task(
