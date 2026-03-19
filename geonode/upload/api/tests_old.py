@@ -17,37 +17,13 @@
 #
 #########################################################################
 
-from geonode.base.models import ResourceBase
-from geonode.geoserver.helpers import gs_catalog
 import os
-import shutil
 import logging
-import tempfile
-from io import IOBase
-from urllib.request import urljoin
-
-from django.conf import settings
 
 from django.urls import reverse
-from django.contrib.auth import authenticate, get_user_model
-from django.test.utils import override_settings
-
-from requests_toolbelt.multipart.encoder import MultipartEncoder
+from django.contrib.auth import get_user_model
 
 from rest_framework.test import APITestCase
-
-from seleniumrequests import Firefox
-
-# from selenium.common import exceptions
-# from selenium.webdriver.common.by import By
-from selenium.webdriver import FirefoxOptions
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-
-from webdriver_manager.firefox import GeckoDriverManager
-
-from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 
