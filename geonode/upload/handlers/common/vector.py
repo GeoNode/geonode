@@ -1473,7 +1473,7 @@ class BaseVectorFileHandler(BaseHandler):
         self.__fixup_primary_key(dataset)
         return dataset
 
-    def fixup_dynamic_model_fields(self, _exec, files):
+    def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
         """
         Utility needed during the replace workflow,
         it will sync all the FieldSchema along with the current resource uploaded.
@@ -1481,6 +1481,8 @@ class BaseVectorFileHandler(BaseHandler):
         """
         fields_schema, needed_field_schema = self.__get_new_and_original_schema(files, str(_exec.exec_id))
         fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
+        if dataset := kwargs.get("resource", None):
+            self.__fixup_primary_key(dataset)
 
 
 
