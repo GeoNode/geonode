@@ -718,7 +718,8 @@ class BaseVectorFileHandler(BaseHandler):
             ]
 
         # if the layer comes from a DB, the fid column is not included in the schema, but we need to add it as primary key for the dynamic model
-        if layer.GetFIDColumn():
+        fid_in_schema = any(x["name"] == DEFAULT_PK_COLUMN_NAME for x in layer_schema)
+        if not fid_in_schema and layer.GetFIDColumn():
             layer_schema += [
                 {
                     "name": layer.GetFIDColumn(),
@@ -1394,7 +1395,7 @@ class BaseVectorFileHandler(BaseHandler):
         filters = []
         for feature in data_chunk:
             # DB drivers with FID columns hide the FID field from the schema, so we need to check if the FID is present and use it as upsert key if the upsert key is the default one
-            if feature.GetFID():
+            if not getattr(feature, upsert_key, None) and feature.GetFID() != -1:
                 filters.append(feature.GetFID())
             else:
                 filters.append(getattr(feature, upsert_key))
