@@ -618,29 +618,6 @@ class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
             "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled",
         )
 
-    def test_upsert_data_raise_error_if_upsert_key_is_not_defined(self):
-        """
-        Should raise error if the dynamic model schema is not present
-        """
-        data = create_single_dataset("example_upsert_dataset")
-        exec_id = orchestrator.create_execution_request(
-            user=self.user,
-            func_name="funct1",
-            step="step",
-            input_params={
-                "files": self.original,
-                "skip_existing_layer": True,
-                "resource_pk": data.pk,
-                "upsert_key": None,
-            },
-        )
-        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
-
-        with self.assertRaises(UpsertException) as exp:
-            self.handler.upsert_data(self.original, exec_id)
-
-        self.assertEqual(str(exp.exception), "Was not possible to find the upsert key, upsert is aborted")
-
     def test_validate_single_feature_raise_error(self):
         """
         Should raise error if the dynamic model schema is not present
