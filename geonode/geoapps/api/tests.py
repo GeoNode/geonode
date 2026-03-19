@@ -19,8 +19,6 @@
 import json
 import logging
 from unittest.mock import MagicMock
-from urllib.parse import urljoin
-
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import override_settings

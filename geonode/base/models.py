@@ -2128,6 +2128,3 @@ class GroupGeoLimit(models.Model):
     group = models.ForeignKey(GroupProfile, null=False, blank=False, on_delete=models.CASCADE)
     resource = models.ForeignKey(ResourceBase, null=False, blank=False, on_delete=models.CASCADE)
     wkt = models.TextField(db_column="wkt", blank=True)
-
-
-

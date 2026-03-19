@@ -27,7 +27,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
-from django.db.models.query import QuerySet
+
 from geonode.assets.utils import get_default_asset, is_asset_deletable
 from geonode.metadata.multilang.serializers import MultiLangOutputMixin
 from geonode.people import Roles

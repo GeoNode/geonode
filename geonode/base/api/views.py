@@ -89,7 +89,6 @@ from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.resource.manager import resource_manager
 
 from .permissions import (
-    IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
     UserHasPerms,
