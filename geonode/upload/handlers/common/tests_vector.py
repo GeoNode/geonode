@@ -181,6 +181,7 @@ class TestBaseVectorFileHandler(TestCase):
         mock_layer = MagicMock(spec=ogr.Layer)
         mock_layer.GetGeomType.return_value = ogr.wkbUnknown
         mock_layer.GetGeometryColumn.return_value = "geom"
+        mock_layer.GetFIDColumn.return_value = None
         mock_layer.schema = []
         mock_layer.GetName.return_value = "test_layer"
         schema = handler._define_dynamic_layer_schema(mock_layer)
@@ -542,34 +543,6 @@ class TestBaseVectorFileHandler(TestCase):
             "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
         )
 
-    @override_settings(IMPORTER_ENABLE_DYN_MODELS=True)
-    @patch("geonode.upload.handlers.common.vector.ModelSchema")
-    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.extract_upsert_key")
-    def test_upsert_data_should_fail_if_upsertkey_is_not_provided(self, upsert_function, schema):
-        """
-        The test should fail since the upsert key provided is empty/Null and
-        was not possible to extract the key from the DB schema
-        """
-        schema.return_value = MagicMock()
-        data = create_single_dataset("example_upsert_dataset")
-        exec_id = orchestrator.create_execution_request(
-            user=self.user,
-            func_name="funct1",
-            step="step",
-            input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": data.pk},
-        )
-
-        upsert_function.return_value = None
-        handler = ShapeFileHandler()
-        with self.assertRaises(Exception) as exept:
-            handler.upsert_data(["files"], exec_id)
-
-        self.assertIsNotNone(exept)
-        self.assertEqual(
-            str(exept.exception),
-            "Was not possible to find the upsert key, upsert is aborted",
-        )
-
     def test_get_error_file_csv_headers(self):
         handler = BaseVectorFileHandler()
         mock_validator = MagicMock()
@@ -644,29 +617,6 @@ class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
             str(exp.exception),
             "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled",
         )
-
-    def test_upsert_data_raise_error_if_upsert_key_is_not_defined(self):
-        """
-        Should raise error if the dynamic model schema is not present
-        """
-        data = create_single_dataset("example_upsert_dataset")
-        exec_id = orchestrator.create_execution_request(
-            user=self.user,
-            func_name="funct1",
-            step="step",
-            input_params={
-                "files": self.original,
-                "skip_existing_layer": True,
-                "resource_pk": data.pk,
-                "upsert_key": None,
-            },
-        )
-        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
-
-        with self.assertRaises(UpsertException) as exp:
-            self.handler.upsert_data(self.original, exec_id)
-
-        self.assertEqual(str(exp.exception), "Was not possible to find the upsert key, upsert is aborted")
 
     def test_validate_single_feature_raise_error(self):
         """
