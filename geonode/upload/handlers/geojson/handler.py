@@ -88,7 +88,8 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
 
                 return _file.get("type", None) in ["FeatureCollection", "Feature"]
 
-            except Exception:
+            except Exception as e:
+                logger.exception(e)
                 return False
         return False
 
