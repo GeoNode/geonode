@@ -110,6 +110,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         assert_payload=None,
         keep_resource=False,
         assert_failure=False,
+        message="No handlers found for this dataset type/action",
     ):
         try:
             self.client.force_login(self.admin)
@@ -117,9 +118,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
             response = self.client.post(self.url, data=payload)
             if assert_failure:
                 self.assertEqual(500, response.status_code, response.json())
-                self.assertListEqual(
-                    ["No handlers found for this dataset type/action"], response.json()["errors"], response.json()
-                )
+                self.assertListEqual([message], response.json()["errors"], response.json())
                 return
             else:
                 self.assertEqual(201, response.status_code, response.json())
@@ -347,7 +346,14 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
 
         payload = {"base_file": open(self.valid_kml, "rb"), "action": "replace"}
         payload["resource_pk"] = prev_dataset.pk
-        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
+        self._assertimport(
+            payload,
+            initial_name,
+            overwrite=True,
+            last_update=prev_dataset.last_updated,
+            assert_failure=True,
+            message="The requested action is not implemented yet",
+        )
         self._cleanup_layers(name="sample_point_dataset")
 
 
