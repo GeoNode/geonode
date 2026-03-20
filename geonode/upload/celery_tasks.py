@@ -535,7 +535,7 @@ def create_geonode_resource(
             handler.create_resourcehandlerinfo(handler_module_path, resource, _exec, **kwargs)
 
         if _overwrite and handler.have_table:
-            handler.fixup_dynamic_model_fields(_exec, _files)
+            handler.fixup_dynamic_model_fields(_exec, _files, resource=resource)
 
         # at the end recall the import_orchestrator for the next step
         import_orchestrator.apply_async(

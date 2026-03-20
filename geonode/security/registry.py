@@ -462,6 +462,13 @@ class PermissionsHandlerRegistry:
         else:
             pass
 
+    def clear_permissions_cache(self):
+        """
+        Clear all permission cache entries.
+        """
+        # This wipes everything in the default cache
+        cache.clear()
+
     def __check_item(self, item):
         """
         Ensure that the handler is a subclass of BasePermissionsHandler

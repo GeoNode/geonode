@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.urls import reverse
+from django.test import override_settings
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
@@ -30,6 +31,8 @@ from geonode import settings
 from geonode.base.populate_test_data import create_models
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
+from geonode.metadata.models import SparseField
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -179,6 +182,34 @@ class DocumentsApiTests(APITestCase):
         extension = actual.json().get("document", {}).get("extension", "")
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_creation_assigns_admin_owner_and_grants_manage_to_uploader(self):
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        payload = {
+            "document": {
+                "title": "Document owner auto assign",
+                "metadata_only": True,
+                "file_path": self.valid_file_path,
+            }
+        }
+        response = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["document"]["owner"]["username"], "admin")
+
+        document = Document.objects.get(pk=response.json()["document"]["pk"])
+        norman = get_user_model().objects.get(username="norman")
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                norman,
+                document.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
 
     def test_uploading_doc_without_title(self):
         """
@@ -592,3 +623,32 @@ class DocumentsApiTests(APITestCase):
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
+
+    def test_documents_api_include_i18n(self):
+        """
+        Ensure that the ?include_i18n parameter returns all localized fields in the Documents API response.
+        """
+
+        _document = Document.objects.first()
+        # Manually create sparse fields for the document to test prefetching/serialization
+        SparseField.objects.create(resource=_document, name="title_multilang_en", value="English Doc Title")
+        SparseField.objects.create(resource=_document, name="title_multilang_it", value="Titolo Documento Italiano")
+
+        url = reverse("documents-detail", kwargs={"pk": _document.pk})
+
+        with override_settings(
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title"],
+        ):
+            query_params = "include_i18n=true&lang=it"
+            response = self.client.get(f"{url}?{query_params}", format="json")
+
+            self.assertEqual(response.status_code, 200)
+            data = response.data["document"]
+
+            self.assertEqual(data["title"], "Titolo Documento Italiano")
+
+            self.assertIn("title_en", data)
+            self.assertEqual(data["title_en"], "English Doc Title")
+            self.assertIn("title_it", data)
+            self.assertEqual(data["title_it"], "Titolo Documento Italiano")
