@@ -41,6 +41,7 @@ class TestGPKGHandler(TestCase):
         cls.handler = GPKGFileHandler()
         cls.valid_gpkg = f"{project_dir}/tests/fixture/valid.gpkg"
         cls.invalid_gpkg = f"{project_dir}/tests/fixture/invalid.gpkg"
+        cls.multiple_layer = f"{project_dir}/tests/fixture/multiple_layer.gpkg"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_gpkg}
         cls.valid_files = {"base_file": cls.valid_gpkg, "action": "upload"}
