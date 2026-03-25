@@ -19,10 +19,14 @@
 
 import copy
 import typing
+import logging
 
 from geonode.base.models import ResourceBase
 from geonode.resource.manager import BaseResourceManager
 from geonode.documents.models import Document
+
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentResourceManager(BaseResourceManager):
@@ -53,7 +57,11 @@ class DocumentResourceManager(BaseResourceManager):
                 # but it’s kept here to centralize manager behavior.
                 self._apply_extent_and_role_defaults(resource, extent=extent, user=request_user)
             resource.handle_moderated_uploads()
-            self.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
+            # Only trigger thumbnailing for local documents, not for remote URLs
+            if resource.is_local:
+                self.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
+            else:
+                logger.info(f"Skipping thumbnail generation for remote document: {resource.doc_url}")
             return resource
         finally:
             if storage:
