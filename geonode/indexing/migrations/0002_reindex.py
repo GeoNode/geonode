@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2025 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,26 +18,29 @@
 #
 #########################################################################
 
-import os
+import logging
 
-__version__ = (5, 1, 0, "dev", 0)
+from django.db import migrations
+from django.core.management import call_command
 
-
-def get_version():
-    import geonode.version
-
-    return geonode.version.get_version(__version__)
+logger = logging.getLogger(__name__)
 
 
-def main(_, **settings):
-    from django.core.wsgi import get_wsgi_application
+def run_reindex(apps, schema_editor):
+    try:
+        logger.info("Running reindex migration to populate search indexes...")
+        call_command("reindex")
+        logger.info("Reindex migration completed successfully.")
+    except Exception as e:
+        logger.error(f"Reindex migration failed: {e}", exc_info=True)
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings.get("django_settings"))
-    app = get_wsgi_application()
-    return app
 
+class Migration(migrations.Migration):
 
-class GeoNodeException(Exception):
-    """Base class for exceptions in this module."""
+    dependencies = [
+        ("indexing", "0001_initial"),
+    ]
 
-    pass
+    operations = [
+        migrations.RunPython(run_reindex, migrations.RunPython.noop),
+    ]
