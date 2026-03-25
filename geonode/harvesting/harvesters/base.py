@@ -250,7 +250,7 @@ class BaseHarvesterWorker(abc.ABC):
         resource_defaults = defaults.copy()
 
         logger.debug("calling resource_manager.create...")
-        geonode_resource = resource_manager_registry.get_for_instance(geonode_resource_type).create(
+        geonode_resource = resource_manager_registry.get_for_model(geonode_resource_type).create(
             resource_defaults["uuid"], geonode_resource_type, defaults
         )
         return geonode_resource
