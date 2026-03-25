@@ -698,7 +698,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         try:
             dt_files = [os.path.join(os.path.abspath(os.path.dirname(__file__)), "data", "WY_USNG.zip")]
             # raises an exception if resource_type is not provided
-            res = self.rm.get_for_instance(Dataset).create(
+            res = self.rm.get_for_model(Dataset).create(
                 None, resource_type=Dataset, defaults={"owner": self.user_admin, "files": dt_files}
             )
             # ingest with datasets
@@ -713,4 +713,4 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 self._fetch_thumb_and_compare(res.thumbnail_url, expected_thumb)
         finally:
             if res:
-                self.rm.get_for_instance(Dataset).delete(res.uuid)
+                self.rm.get_for_model(Dataset).delete(res.uuid)

@@ -83,7 +83,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         manager = (
             resource_manager_registry.get_for_instance(instance)
             if instance
-            else resource_manager_registry.get_for_instance(self.Meta.model)
+            else resource_manager_registry.get_for_model(self.Meta.model)
         )
         if instance:
             return manager.update(instance.uuid, instance=instance, vals=validated_data, user=request_user)

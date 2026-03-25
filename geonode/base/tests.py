@@ -1205,7 +1205,7 @@ class TestRegions(GeoNodeBaseTestSupport):
 
     @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
     def test_regions_are_assigned_if_handler_is_used(self):
-        dataset = resource_manager_registry.get_for_instance(Dataset).create(
+        dataset = resource_manager_registry.get_for_model(Dataset).create(
             None,
             resource_type=Dataset,
             defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),

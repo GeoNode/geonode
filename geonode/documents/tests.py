@@ -160,7 +160,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Tests creating an external document instead of a file."""
 
         superuser = get_user_model().objects.get(pk=2)
-        c = resource_manager_registry.get_for_instance(Document).create(
+        c = resource_manager_registry.get_for_model(Document).create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -403,7 +403,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         create_thumb.return_value = True
         # Setup some document names to work with
         superuser = get_user_model().objects.get(pk=2)
-        document = resource_manager_registry.get_for_instance(Document).create(
+        document = resource_manager_registry.get_for_model(Document).create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True),
@@ -590,7 +590,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         cls.not_admin.set_password("very-secret")
         cls.not_admin.save()  # Two database writes (create + save password) run only once!
 
-        cls.test_doc = resource_manager_registry.get_for_instance(Document).create(
+        cls.test_doc = resource_manager_registry.get_for_model(Document).create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=cls.not_admin, title="test", is_approved=True),
@@ -622,7 +622,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 200)
         # test document link with external url
-        doc = resource_manager_registry.get_for_instance(Document).create(
+        doc = resource_manager_registry.get_for_model(Document).create(
             None,
             resource_type=Document,
             defaults=dict(

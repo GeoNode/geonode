@@ -286,7 +286,7 @@ community."
         """
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
             # first create a map
-            map_created = resource_manager_registry.get_for_instance(Map).create(
+            map_created = resource_manager_registry.get_for_model(Map).create(
                 None, resource_type=Map, defaults=dict(owner=self.u)
             )
             resource_manager_registry.get_for_instance(map_created).set_permissions(
@@ -297,7 +297,7 @@ community."
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             # first create a map
-            map_created = resource_manager_registry.get_for_instance(Map).create(
+            map_created = resource_manager_registry.get_for_model(Map).create(
                 None, resource_type=Map, defaults=dict(owner=self.u)
             )
             resource_manager_registry.get_for_instance(map_created).set_permissions(

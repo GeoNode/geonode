@@ -121,7 +121,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 payload["doc_url"] = doc_url
                 payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
-            instance = resource_manager_registry.get_for_instance(Document).create(
+            instance = resource_manager_registry.get_for_model(Document).create(
                 str(uuid4()),
                 resource_type=Document,
                 defaults=payload,

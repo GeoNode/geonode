@@ -139,7 +139,7 @@ class DocumentUploadView(CreateView):
             name = Path(file.name)
             filepath = storage_manager.save(f"{dirname}/{name.stem}{name.suffix.lower()}", file)
             storage_path = storage_manager.path(filepath)
-            self.object = resource_manager_registry.get_for_instance(Document).create(
+            self.object = resource_manager_registry.get_for_model(Document).create(
                 None,
                 resource_type=Document,
                 defaults=dict(
@@ -162,7 +162,7 @@ class DocumentUploadView(CreateView):
             shutil.rmtree(tempdir, ignore_errors=True)
 
         else:
-            self.object = resource_manager_registry.get_for_instance(Document).create(
+            self.object = resource_manager_registry.get_for_model(Document).create(
                 None,
                 resource_type=Document,
                 defaults=dict(

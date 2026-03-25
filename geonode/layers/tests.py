@@ -958,7 +958,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         self.test_dataset = None
         try:
-            self.test_dataset = resource_manager_registry.get_for_instance(Dataset).create(
+            self.test_dataset = resource_manager_registry.get_for_model(Dataset).create(
                 None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
             )
             from geonode.metadata.manager import metadata_manager
@@ -1019,7 +1019,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
 
-            _l = resource_manager_registry.get_for_instance(Dataset).create(
+            _l = resource_manager_registry.get_for_model(Dataset).create(
                 None,
                 resource_type=Dataset,
                 defaults=dict(

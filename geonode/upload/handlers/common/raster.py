@@ -358,7 +358,7 @@ class BaseRasterFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager_registry.get_for_instance(resource_type).create(
+        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=dict(

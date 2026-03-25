@@ -131,7 +131,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_resourcebase(self):
-        base_resource = resource_manager_registry.get_for_instance(ResourceBase).create(
+        base_resource = resource_manager_registry.get_for_model(ResourceBase).create(
             None, ResourceBase, defaults={"owner": get_user_model().objects.get(username="admin")}
         )
         thumbnail_name = thumbnails._generate_thumbnail_name(base_resource)
@@ -166,7 +166,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_document(self):
-        doc = resource_manager_registry.get_for_instance(Document).create(
+        doc = resource_manager_registry.get_for_model(Document).create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -181,7 +181,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_geoapp(self):
-        geo_app = resource_manager_registry.get_for_instance(GeoApp).create(
+        geo_app = resource_manager_registry.get_for_model(GeoApp).create(
             None,
             resource_type=GeoApp,
             defaults=dict(

@@ -47,7 +47,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.bobby = get_user_model().objects.get(username="bobby")
-        self.geo_app = resource_manager_registry.get_for_instance(GeoApp).create(
+        self.geo_app = resource_manager_registry.get_for_model(GeoApp).create(
             None,
             resource_type=GeoApp,
             defaults=dict(

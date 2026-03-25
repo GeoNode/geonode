@@ -215,7 +215,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         _exec = orchestrator.get_execution_object(execution_id)
         params = _exec.input_params.copy()
 
-        resource = resource_manager_registry.get_for_instance(resource_type).create(
+        resource = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, None, **params),

@@ -2602,7 +2602,7 @@ class BaseApiTests(APITestCase):
     def test_resource_service_copy(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
-        resource = resource_manager_registry.get_for_instance(Dataset).create(
+        resource = resource_manager_registry.get_for_model(Dataset).create(
             str(uuid4()),
             Dataset,
             defaults={
@@ -2701,7 +2701,7 @@ class BaseApiTests(APITestCase):
         with self.settings(ASYNC_SIGNALS=False):
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
-            resource = resource_manager_registry.get_for_instance(Dataset).create(
+            resource = resource_manager_registry.get_for_model(Dataset).create(
                 None,
                 resource_type=Dataset,
                 defaults={
@@ -3755,7 +3755,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
     def test_simple_resourcebase_can_be_created_by_resourcemanager(self):
         self.maxDiff = None
-        resource = resource_manager_registry.get_for_instance(ResourceBase).create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
 
@@ -3809,7 +3809,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         self.assertEqual(record.identification[0].title, resource.title)
 
     def test_resource_index_created(self):
-        resource = resource_manager_registry.get_for_instance(ResourceBase).create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
 
@@ -3820,10 +3820,10 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         self.assertTrue(ResourceIndex.objects.filter(resource=resource).exists())
 
     def test_csw_should_not_return_resourcebase_by_default(self):
-        resource = resource_manager_registry.get_for_instance(ResourceBase).create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager_registry.get_for_instance(Dataset).create(
+        dt = resource_manager_registry.get_for_model(Dataset).create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 
@@ -3840,10 +3840,10 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
     @override_settings(PYCSW=pycsw_settings_all)
     def test_csw_should_return_resourcebase_if_defined_in_settings(self):
-        resource = resource_manager_registry.get_for_instance(ResourceBase).create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager_registry.get_for_instance(Dataset).create(
+        dt = resource_manager_registry.get_for_model(Dataset).create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 

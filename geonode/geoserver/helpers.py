@@ -725,7 +725,7 @@ def gs_slurp(
             created = False
             layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = resource_manager_registry.get_for_instance(Dataset).create(
+                layer = resource_manager_registry.get_for_model(Dataset).create(
                     str(uuid.uuid4()),
                     resource_type=Dataset,
                     defaults=dict(

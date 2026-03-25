@@ -117,7 +117,7 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         payload["owner"] = request_user
         payload["resource_type"] = "map"
         payload["uuid"] = str(uuid4())
-        instance = resource_manager_registry.get_for_instance(Map).create(
+        instance = resource_manager_registry.get_for_model(Map).create(
             payload["uuid"],
             resource_type=Map,
             defaults=payload,

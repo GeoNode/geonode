@@ -490,10 +490,10 @@ class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
         super().tearDown()
 
     def test_get_for_instance_real_managers(self):
-        self.assertIsInstance(resource_manager_registry.get_for_instance(Document), DocumentResourceManager)
-        self.assertIsInstance(resource_manager_registry.get_for_instance(Map), MapResourceManager)
-        self.assertIsInstance(resource_manager_registry.get_for_instance(Dataset), DatasetResourceManager)
-        self.assertIsInstance(resource_manager_registry.get_for_instance(GeoApp), GeoAppResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Document), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Map), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Dataset), DatasetResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(GeoApp), GeoAppResourceManager)
 
     def test_get_for_instance_from_objects(self):
         doc = Document.objects.first()
@@ -506,7 +506,7 @@ class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
     def test_add_and_get_for_instance(self):
         mgr = DummyDocumentManager()
         self.registry.add(mgr)
-        self.assertIs(self.registry.get_for_instance(Document), mgr)
+        self.assertIs(self.registry.get_for_model(Document), mgr)
         doc = Document.objects.first()
         self.assertIs(self.registry.get_for_instance(doc), mgr)
 
@@ -514,7 +514,7 @@ class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
         mgr = DummyDocumentManager()
         self.registry.add(mgr)
         self.registry.remove(Document)
-        self.assertIsInstance(self.registry.get_for_instance(Document), BaseResourceManager)
+        self.assertIsInstance(self.registry.get_for_model(Document), BaseResourceManager)
 
     def test_get_for_type_and_uuid(self):
         mgr = DummyDocumentManager()

@@ -62,7 +62,7 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
     """
     owner = get_user_model().objects.get(username=owner_name)
 
-    layer = resource_manager_registry.get_for_instance(Dataset).create(
+    layer = resource_manager_registry.get_for_model(Dataset).create(
         str(uuid.uuid4()),
         resource_type=Dataset,
         defaults=dict(

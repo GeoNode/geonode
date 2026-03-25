@@ -393,7 +393,7 @@ class AssetsDownloadTests(APITestCase):
             resource = None
             try:
                 # creating resoruce
-                resource = resource_manager_registry.get_for_instance(Dataset).create(
+                resource = resource_manager_registry.get_for_model(Dataset).create(
                     None, resource_type=Dataset, defaults={"owner": bobby, "asset": asset}
                 )
                 # getting perms

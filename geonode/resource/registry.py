@@ -17,6 +17,8 @@
 #
 #########################################################################
 
+from typing import Type
+
 from django.utils.module_loading import import_string
 
 from geonode.base.models import ResourceBase
@@ -52,22 +54,10 @@ class ResourceManagerRegistry:
     def get_registry(cls):
         return ResourceManagerRegistry.REGISTRY
 
-    def get_for_instance(self, instance):
-        """
-        Accepts either:
-        - a model instance
-        - a model class (Dataset, Document, ...)
-        """
+    def get_for_instance(self, instance: ResourceBase) -> BaseResourceManager:
+        """Resolve a manager from a concrete model instance."""
         if instance is None:
             raise ValueError("Cannot resolve manager for a null instance")
-
-        if isinstance(instance, type):
-            manager = self.REGISTRY.get(instance)
-            if manager is not None:
-                return manager
-            if issubclass(instance, ResourceBase):
-                return BaseResourceManager()
-            raise ValueError("No resource manager registered for provided class")
 
         real = instance.get_real_instance() if hasattr(instance, "get_real_instance") else instance
         for model_cls, manager in self.REGISTRY.items():
@@ -77,17 +67,25 @@ class ResourceManagerRegistry:
             return BaseResourceManager()
         raise ValueError("No resource manager registered for instance")
 
-    def get_for_type(self, resource_type):
-        """
-        Accepts:
-        - resource type string (e.g. 'dataset', 'map')
-        - model class (Dataset, Map, ...)
-        """
-        if isinstance(resource_type, str):
-            resource_type = resolve_type_serializer(resource_type)[0]
-        return self.get_for_instance(resource_type)
+    def get_for_model(self, model_cls: Type[ResourceBase]) -> BaseResourceManager:
+        """Resolve a manager from a concrete model class."""
+        if model_cls is None:
+            raise ValueError("Cannot resolve manager for a null model")
+        manager = self.REGISTRY.get(model_cls)
+        if manager is not None:
+            return manager
+        if issubclass(model_cls, ResourceBase):
+            return BaseResourceManager()
+        raise ValueError("No resource manager registered for model")
 
-    def get_for_uuid(self, uuid):
+    def get_for_type(self, resource_type: str) -> BaseResourceManager:
+        """Resolve a manager from a resource type string (e.g. 'dataset', 'map')."""
+        if not resource_type:
+            raise ValueError("Cannot resolve manager for empty resource type")
+        model_cls = resolve_type_serializer(resource_type)[0]
+        return self.get_for_model(model_cls)
+
+    def get_for_uuid(self, uuid: str) -> BaseResourceManager:
         """
         Accepts:
         - uuid of a resource

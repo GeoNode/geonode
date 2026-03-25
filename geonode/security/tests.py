@@ -2592,7 +2592,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager_registry.get_for_instance(Dataset).create(
+        resource = resource_manager_registry.get_for_model(Dataset).create(
             str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
         )
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
@@ -2603,7 +2603,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager_registry.get_for_instance(Dataset).create(
+        resource = resource_manager_registry.get_for_model(Dataset).create(
             str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
         )
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
@@ -2616,7 +2616,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager_registry.get_for_instance(Dataset).create(
+        resource = resource_manager_registry.get_for_model(Dataset).create(
             str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
         )
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
@@ -2633,7 +2633,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager_registry.get_for_instance(Dataset).create(
+        resource = resource_manager_registry.get_for_model(Dataset).create(
             str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
         )
 
