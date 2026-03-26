@@ -16,9 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from distutils.util import strtobool
 from django.conf import settings
 from rest_framework.filters import BaseFilterBackend
+from geonode.utils import strtobool
 
 
 class DatasetPermissionsFilter(BaseFilterBackend):
