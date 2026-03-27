@@ -1176,7 +1176,12 @@ class BaseVectorFileHandler(BaseHandler):
             if schema:
                 schema.managed = False
                 schema.save()
-
+            else:
+                logger.warning(
+                    "No ModelSchema for %s.",
+                    table_name,
+                )
+                return
             with connection.cursor() as cursor:
                 column = connection.introspection.get_primary_key_columns(cursor, table_name)
             if column:
