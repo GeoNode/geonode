@@ -19,9 +19,17 @@ class AsteriskSearchQuery(SearchQuery):
     def as_sql(self, compiler, connection, function=None, template=None):
         sql, params = super().as_sql(compiler, connection, function, template)
         value = params[1]
-        # sanitize search string
-        value = re.sub(r"[^\w\s./\-]+", "", value, flags=re.UNICODE)
-        value = f"{value or '*'}:*"
+
+        # sanitize input
+        value = re.sub(r"[^\w\s./\-]+", "", value, flags=re.UNICODE).strip()
+
+        tokens = value.split()
+        if not tokens:
+            value = ""
+        else:
+            # enforce order and prefix matching
+            value = " <-> ".join(f"{t}:*" for t in tokens)
+
         return sql, [params[0], value]
 
 
@@ -36,7 +44,7 @@ class ResourceIndexFilter(BaseFilterBackend):
         search_index = request.query_params.get("search_index", None)
         search = request.query_params.get("search", None)
 
-        if not search_index or not search:
+        if not search_index or not search or not search.strip():
             return queryset
 
         if request.query_params.getlist("search_fields", None):

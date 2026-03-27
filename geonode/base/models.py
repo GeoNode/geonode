@@ -975,7 +975,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_thumbnail(self):
-        return self.subtype != "tabular"
+        return self.subtype not in {"tabular", "3dtiles", "cog", "flatgeobuf"}
 
     @property
     def raw_purpose(self):
@@ -2046,7 +2046,7 @@ class Link(models.Model):
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
     mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
     url = models.TextField(max_length=1000)
-    asset = models.ForeignKey("assets.Asset", null=True, on_delete=models.CASCADE)
+    asset = models.ForeignKey("assets.Asset", blank=True, null=True, on_delete=models.CASCADE)
 
     objects = LinkManager()
 
@@ -2130,6 +2130,15 @@ class Configuration(SingletonModel):
 
     read_only = models.BooleanField(default=False)
     maintenance = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        previous_read_only = Configuration.objects.filter(pk=self.pk).values_list("read_only", flat=True).first()
+        super().save(*args, **kwargs)
+
+        if previous_read_only != self.read_only:
+            from geonode.security.registry import permissions_registry
+
+            permissions_registry.clear_permissions_cache()
 
     class Meta:
         verbose_name_plural = "Configuration"

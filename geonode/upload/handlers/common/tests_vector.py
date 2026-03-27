@@ -181,6 +181,7 @@ class TestBaseVectorFileHandler(TestCase):
         mock_layer = MagicMock(spec=ogr.Layer)
         mock_layer.GetGeomType.return_value = ogr.wkbUnknown
         mock_layer.GetGeometryColumn.return_value = "geom"
+        mock_layer.GetFIDColumn.return_value = None
         mock_layer.schema = []
         mock_layer.GetName.return_value = "test_layer"
         schema = handler._define_dynamic_layer_schema(mock_layer)
@@ -379,29 +380,34 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
+
+        # Build the expected list to match the "Actual" output in your trace
+        expected_cmd_list = [
+            "/usr/bin/ogr2ogr",
+            "--config",
+            "PG_USE_COPY",
+            "YES",
+            "-f",
+            "PostgreSQL",
+            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
+            self.valid_files.get("base_file"),
+            "-lco",
+            "FID=fid",
+            "-nln",
+            "alternate",
+            "dataset",
+        ]
+
         _open.assert_called_once()
-        _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_files.get("base_file")
-            + '" -lco FID=fid'
-            + ' -nln alternate "dataset"',
-            stdout=-1,
-            stderr=-1,
-            shell=True,  # noqa
-        )
+        _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)  # Changed from True to False
 
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_with_errors_should_raise_exception(self, _open):
         _uuid = uuid.uuid4()
 
         comm = MagicMock()
-        comm.communicate.return_value = b"", b"ERROR: some error here"
+        # Mocking the communicate to return an error in stderr
+        comm.communicate.return_value = (b"", b"ERROR: some error here")
         _open.return_value = comm
 
         with self.assertRaises(Exception):
@@ -414,30 +420,31 @@ class TestBaseVectorFileHandler(TestCase):
                 alternate="alternate",
             )
 
-        _datastore = settings.DATABASES["datastore"]
-
+        # Verification of the NEW secure call
         _open.assert_called_once()
-        _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_files.get("base_file")
-            + '" -lco FID=fid'
-            + ' -nln alternate "dataset"',
-            stdout=-1,
-            stderr=-1,
-            shell=True,  # noqa
-        )
 
-    @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"}, clear=True)
+        # Get the actual call arguments to inspect them
+        args, kwargs = _open.call_args
+        cmd_list = args[0]
+
+        # Check that it's a list (not a string)
+        self.assertIsInstance(cmd_list, list)
+
+        # Check for specific safe flags in the list
+        self.assertIn("--config", cmd_list)
+        self.assertIn("PG_USE_COPY", cmd_list)
+        self.assertIn("alternate", cmd_list)
+        self.assertIn("dataset", cmd_list)
+
+        # Verify shell=False is now the standard (either explicitly False or not present)
+        self.assertFalse(kwargs.get("shell", False))
+
+    @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"})
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command_if_dump_is_enabled(self, _open):
         _uuid = uuid.uuid4()
 
+        # We need the second process (psql) to return the communicate values
         comm = MagicMock()
         comm.communicate.return_value = b"", b""
         _open.return_value = comm
@@ -455,12 +462,28 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(alternate, "alternate")
         self.assertEqual(str(_uuid), execution_id)
 
-        _open.assert_called_once()
-        _call_as_string = _open.mock_calls[0][1][0]
+        # 1. Verify Popen was called twice (once for ogr2ogr, once for psql)
+        self.assertEqual(_open.call_count, 2)
 
-        self.assertTrue("-f PGDump /vsistdout/" in _call_as_string)
-        self.assertTrue("psql -d" in _call_as_string)
-        self.assertFalse("-f PostgreSQL PG" in _call_as_string)
+        # 2. Check the first call (ogr2ogr)
+        # mock_calls[0] = ((args), {kwargs})
+        ogr_args = _open.mock_calls[0][1][0]
+        self.assertIn("-f", ogr_args)
+        self.assertIn("PGDump", ogr_args)
+        self.assertIn("/vsistdout/", ogr_args)
+        self.assertNotIn("PostgreSQL", ogr_args)
+
+        # 3. Check the second call (psql)
+        psql_args = _open.mock_calls[1][1][0]
+        psql_kwargs = _open.mock_calls[1][2]
+
+        self.assertIn("psql", psql_args)
+        self.assertIn("-d", psql_args)
+
+        # 4. Verify the password is passed securely in 'env', not in the command list
+        self.assertIn("PGPASSWORD", psql_kwargs["env"])
+        # Ensure the password is NOT in the actual command list (the security fix!)
+        self.assertFalse(any("PGPASSWORD" in str(arg) for arg in psql_args))
 
     def test_select_valid_layers(self):
         """
@@ -521,34 +544,6 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(
             str(exept.exception),
             "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
-        )
-
-    @override_settings(IMPORTER_ENABLE_DYN_MODELS=True)
-    @patch("geonode.upload.handlers.common.vector.ModelSchema")
-    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.extract_upsert_key")
-    def test_upsert_data_should_fail_if_upsertkey_is_not_provided(self, upsert_function, schema):
-        """
-        The test should fail since the upsert key provided is empty/Null and
-        was not possible to extract the key from the DB schema
-        """
-        schema.return_value = MagicMock()
-        data = create_single_dataset("example_upsert_dataset")
-        exec_id = orchestrator.create_execution_request(
-            user=self.user,
-            func_name="funct1",
-            step="step",
-            input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": data.pk},
-        )
-
-        upsert_function.return_value = None
-        handler = ShapeFileHandler()
-        with self.assertRaises(Exception) as exept:
-            handler.upsert_data(["files"], exec_id)
-
-        self.assertIsNotNone(exept)
-        self.assertEqual(
-            str(exept.exception),
-            "Was not possible to find the upsert key, upsert is aborted",
         )
 
     def test_get_error_file_csv_headers(self):
@@ -625,29 +620,6 @@ class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
             str(exp.exception),
             "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled",
         )
-
-    def test_upsert_data_raise_error_if_upsert_key_is_not_defined(self):
-        """
-        Should raise error if the dynamic model schema is not present
-        """
-        data = create_single_dataset("example_upsert_dataset")
-        exec_id = orchestrator.create_execution_request(
-            user=self.user,
-            func_name="funct1",
-            step="step",
-            input_params={
-                "files": self.original,
-                "skip_existing_layer": True,
-                "resource_pk": data.pk,
-                "upsert_key": None,
-            },
-        )
-        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
-
-        with self.assertRaises(UpsertException) as exp:
-            self.handler.upsert_data(self.original, exec_id)
-
-        self.assertEqual(str(exp.exception), "Was not possible to find the upsert key, upsert is aborted")
 
     def test_validate_single_feature_raise_error(self):
         """

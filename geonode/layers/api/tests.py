@@ -33,6 +33,7 @@ from geonode.base.models import Link
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.layers.models import Attribute, Dataset
 from geonode.maps.models import Map, MapLayer
+from geonode.metadata.models import SparseField
 
 logger = logging.getLogger(__name__)
 
@@ -681,11 +682,7 @@ class DatasetsApiTests(APITestCase):
         response = self.client.get(url)
         self.assertTrue(response.status_code == 200)
         data = response.json()["dataset"]
-        download_url_data = data["download_urls"][0]
-        download_url = reverse("dataset_download", args=[dataset.alternate])
-        self.assertEqual(download_url_data["default"], True)
-        self.assertEqual(download_url_data["ajax_safe"], True)
-        self.assertEqual(download_url_data["url"], download_url)
+        self.assertEqual(data["download_urls"], [])
 
         link = Link(link_type="original", url="https://myoriginal.org", resource=dataset)
         link.save()
@@ -693,7 +690,36 @@ class DatasetsApiTests(APITestCase):
         response = self.client.get(url)
         data = response.json()["dataset"]
         download_url_data = data["download_urls"][0]
-        download_url = reverse("dataset_download", args=[dataset.alternate])
         self.assertEqual(download_url_data["default"], True)
         self.assertEqual(download_url_data["ajax_safe"], False)
         self.assertEqual(download_url_data["url"], "https://myoriginal.org")
+
+    def test_datasets_api_include_i18n(self):
+        """
+        Ensure that the ?include_i18n parameter returns all localized fields in the API response.
+        """
+
+        _dataset = Dataset.objects.first()
+
+        # Manually create the sparse fields required for the test
+        SparseField.objects.create(resource=_dataset, name="title_multilang_en", value="English Title")
+        SparseField.objects.create(resource=_dataset, name="title_multilang_it", value="Titolo Italiano")
+
+        url = reverse("datasets-detail", kwargs={"pk": _dataset.pk})
+
+        with override_settings(
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title"],
+        ):
+            query_params = "include_i18n=true&lang=it"
+            response = self.client.get(f"{url}?{query_params}", format="json")
+
+            self.assertEqual(response.status_code, 200)
+            data = response.data["dataset"]
+
+            self.assertEqual(data["title"], "Titolo Italiano")
+
+            self.assertIn("title_en", data)
+            self.assertEqual(data["title_en"], "English Title")
+            self.assertIn("title_it", data)
+            self.assertEqual(data["title_it"], "Titolo Italiano")

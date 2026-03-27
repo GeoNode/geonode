@@ -33,6 +33,9 @@ from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
 from geonode.upload.orchestrator import orchestrator
+from django.db.models import Q
+from geonode.resource.models import ExecutionRequest
+from geonode.security.utils import get_visible_resources
 
 logger = logging.getLogger("importer")
 
@@ -206,12 +209,26 @@ class CSVFileHandler(BaseVectorFileHandler):
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
-            return [
-                {
-                    "name": alternate,
-                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid,
-                }
-            ]
+            params = kwargs.get("kwargs", kwargs) if kwargs else {}
+            original_dataset_alternate = params.get("original_dataset_alternate")
+            exec_id = params.get("exec_id") or params.get("execution_id")
+            execution = ExecutionRequest.objects.filter(exec_id=exec_id).first() if exec_id else None
+            user = execution.user if execution else None
+            visible_resources = (
+                get_visible_resources(queryset=ResourceBase.objects.all(), user=user)
+                if user
+                else ResourceBase.objects.none()
+            )
+            original_resource = None
+            if original_dataset_alternate:
+                original_resource = visible_resources.filter(alternate=original_dataset_alternate).first()
+            if not original_resource:
+                original_resource = visible_resources.filter(
+                    Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
+                ).first()
+            if not original_resource:
+                raise ValueError("Unable to resolve resource for copy action.")
+            return [{"name": alternate, "crs": original_resource.srid}]
 
         layers = self.open_source_file(files)
         if not layers:

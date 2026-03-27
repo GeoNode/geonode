@@ -56,7 +56,6 @@ from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN, remove_thumb
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import (
@@ -712,13 +711,18 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                 bbox = request_body["bbox"] + [request_body["srid"]]
                 zoom = request_body.get("zoom", None)
 
-            thumbnail_url = create_thumbnail(
-                resource.get_real_instance(),
+            success = resource_manager.set_thumbnail(
+                resource.uuid,
+                instance=resource,
                 bbox=bbox,
                 background_zoom=zoom,
                 overwrite=True,
                 map_thumb_from_bbox=map_thumb_from_bbox,
             )
+            if not success:
+                raise ThumbnailError("Thumbnail generation failed.")
+            resource.refresh_from_db()
+            thumbnail_url = resource.thumbnail_url
             return Response(
                 {"message": "Thumbnail correctly created.", "success": True, "thumbnail_url": thumbnail_url}, status=200
             )

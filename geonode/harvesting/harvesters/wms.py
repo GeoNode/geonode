@@ -36,7 +36,8 @@ from requests.auth import HTTPBasicAuth
 from geonode.layers.models import Dataset
 from geonode.base.models import Link, ResourceBase
 from geonode.layers.enumerations import GXP_PTYPES
-from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.resource.manager import resource_manager
+from geonode.thumbs.exceptions import ThumbnailError
 
 from .. import models
 from geonode.utils import (
@@ -537,13 +538,15 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             target_crs = geonode_resource.srid
         else:
             target_crs = f"EPSG:{geonode_resource.srid}"
-        create_thumbnail(
+        success = resource_manager.set_thumbnail(
+            geonode_resource.uuid,
             instance=geonode_resource,
-            # wms_version=harvested_info.resource_descriptor,
             bbox=geonode_resource.bbox,
             forced_crs=target_crs,
             overwrite=True,
         )
+        if not success:
+            raise ThumbnailError("Thumbnail generation failed.")
         # ref GeoNode #13010
         # A describeLayer is perfomed to see if we can add the WDS link
         # to the resource

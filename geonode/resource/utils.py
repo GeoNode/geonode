@@ -30,6 +30,7 @@ from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from django.utils.module_loading import import_string
+from django.contrib.auth import get_user_model
 
 from geonode.assets.utils import get_default_asset
 from geonode.utils import OGC_Servers_Handler
@@ -285,6 +286,21 @@ def update_resource(
     return instance
 
 
+def infer_default_metadata(instance):
+    title = getattr(instance, "title", None)
+    if not title:
+        title = getattr(instance, "name", None)
+
+    if not title and isinstance(instance, Document):
+        asset = get_default_asset(instance)
+        if asset and asset.location:
+            title = os.path.basename(asset.location[0])
+
+    abstract = getattr(instance, "abstract", None) or str(_("No abstract provided"))
+
+    return {"title": str(title or ""), "abstract": str(abstract or "")}
+
+
 def call_storers(instance, custom={}):
     if not globals().get("storer_modules"):
         storer_module_path = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
@@ -473,15 +489,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     if instance:
         instance = call_storers(instance.get_real_instance(), kwargs.get("custom", {}))
-        if hasattr(instance, "abstract") and not getattr(instance, "abstract", None):
-            instance.abstract = _("No abstract provided")
-        if hasattr(instance, "title") and not getattr(instance, "title", None) or getattr(instance, "title", "") == "":
-            asset = get_default_asset(instance)
-            files = asset.location if asset else []
-            if isinstance(instance, Document) and files:
-                instance.title = os.path.basename(files[0])
-            if hasattr(instance, "name") and getattr(instance, "name", None):
-                instance.title = instance.name
         if (
             hasattr(instance, "alternate")
             and not getattr(instance, "alternate", None)
@@ -495,6 +502,41 @@ def resourcebase_post_save(instance, *args, **kwargs):
             dataset_post_save(instance, *args, **kwargs)
 
         metadata_post_save(instance, *args, **kwargs)
+
+
+def resolve_resource_owner(initial_user):
+    """
+    Resolve the owner to assign during resource creation.
+    """
+    if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+        return initial_user
+
+    UserModel = get_user_model()
+    configured_username = getattr(settings, "RESOURCE_OWNERSHIP_ADMIN_USERNAME", "admin")
+    configured_owner = UserModel.objects.filter(username=configured_username).first()
+    if configured_owner and configured_owner.is_superuser:
+        return configured_owner
+
+    if configured_owner and not configured_owner.is_superuser:
+        logger.error(
+            f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' is not a superuser. "
+            "Falling back to the first available superuser for resource ownership assignment."
+        )
+    else:
+        logger.error(
+            f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' does not exist. "
+            "Falling back to the first available superuser for resource ownership assignment."
+        )
+
+    fallback_owner = UserModel.objects.filter(is_superuser=True).order_by("id").first()
+    if fallback_owner:
+        return fallback_owner
+
+    logger.error(
+        "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN is enabled but no superuser is available. "
+        "Falling back to the original uploader as owner."
+    )
+    return initial_user
 
 
 def is_remote_resource(resource):

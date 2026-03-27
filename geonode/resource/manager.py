@@ -25,6 +25,7 @@ import itertools
 
 from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
+from typing import Optional, Union
 
 from guardian.models import UserObjectPermission, GroupObjectPermission
 from guardian.shortcuts import assign_perm, get_anonymous_user
@@ -54,7 +55,12 @@ from geonode.security.utils import (
 from geonode.security.registry import permissions_registry
 
 from . import settings as rm_settings
-from .utils import update_resource, resourcebase_post_save, is_remote_resource
+from .utils import (
+    update_resource,
+    resourcebase_post_save,
+    is_remote_resource,
+    infer_default_metadata,
+)
 
 from ..base import enumerations
 from ..security.utils import AdvancedSecurityWorkflowManager
@@ -158,6 +164,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         created: bool = False,
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
+        **kwargs,
     ) -> bool:
         """Sets the permissions of a resource.
 
@@ -168,7 +175,17 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
     @abstractmethod
     def set_thumbnail(
-        self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True
+        self,
+        uuid: str,
+        /,
+        instance: ResourceBase = None,
+        overwrite: bool = True,
+        check_bbox: bool = True,
+        bbox: Optional[Union[list, tuple]] = None,
+        forced_crs: Optional[str] = None,
+        styles: Optional[list] = None,
+        background_zoom: Optional[int] = None,
+        map_thumb_from_bbox: bool = False,
     ) -> bool:
         """Allows to generate or re-generate the Thumbnail of a Resource."""
         pass
@@ -184,6 +201,60 @@ class ResourceManager(ResourceManagerInterface):
     @classmethod
     def _get_instance(cls, uuid: str) -> ResourceBase:
         return ResourceBase.objects.filter(uuid=uuid).first()
+
+    def resolve_creation_owner(self, initial_user: settings.AUTH_USER_MODEL = None):
+        """
+        Resolve the owner for resource creation.
+
+        Returns the configured admin when auto-assignment is enabled and valid;
+        otherwise falls back to the first superuser or the uploader.
+        """
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            return initial_user
+
+        UserModel = get_user_model()
+        configured_username = getattr(settings, "RESOURCE_OWNERSHIP_ADMIN_USERNAME", "admin")
+        configured_owner = UserModel.objects.filter(username=configured_username).first()
+        if configured_owner and configured_owner.is_superuser:
+            return configured_owner
+
+        if configured_owner and not configured_owner.is_superuser:
+            logger.error(
+                f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' is not a superuser. "
+                "Falling back to the first available superuser for resource ownership assignment."
+            )
+        else:
+            logger.error(
+                f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' does not exist. "
+                "Falling back to the first available superuser for resource ownership assignment."
+            )
+
+        fallback_owner = UserModel.objects.filter(is_superuser=True).order_by("id").first()
+        if fallback_owner:
+            return fallback_owner
+
+        logger.error(
+            "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN is enabled but no superuser is available. "
+            "Falling back to the original uploader as owner."
+        )
+        return initial_user
+
+    def finalize_creation_permissions(
+        self,
+        instance: ResourceBase,
+        owner: settings.AUTH_USER_MODEL = None,
+        initial_user: settings.AUTH_USER_MODEL = None,
+    ) -> bool:
+        """
+        Finalize default permissions for newly created resources,
+        including optional creation-time ownership handling.
+        """
+        if not instance:
+            return False
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            return False
+        instance.set_default_permissions(owner=owner or instance.owner, created=True, initial_user=initial_user)
+        return True
 
     def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
         _class = resource_type or ResourceBase
@@ -271,11 +342,15 @@ class ResourceManager(ResourceManagerInterface):
         if resource_type.objects.filter(uuid=uuid).exists():
             return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid4())
+        initial_user = defaults.get("owner", None)
+        resolved_owner = self.resolve_creation_owner(initial_user)
         resource_dict = {  # TODO: cleanup params and dicts
             k: v
             for k, v in defaults.items()
             if k not in ("data_title", "data_type", "description", "files", "link_type", "extension", "asset")
         }
+        if resolved_owner:
+            resource_dict["owner"] = resolved_owner
         _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -295,7 +370,13 @@ class ResourceManager(ResourceManagerInterface):
                         uuid, resource_type=resource_type, defaults=resource_dict
                     )
                 _resource.save()
+                metadata_manager.update_schema_instance_partial(
+                    _resource,
+                    infer_default_metadata(_resource.get_real_instance()),
+                    user=None,
+                )
                 resourcebase_post_save(_resource.get_real_instance())
+                self.finalize_creation_permissions(_resource, owner=resolved_owner, initial_user=initial_user)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
@@ -361,8 +442,10 @@ class ResourceManager(ResourceManagerInterface):
                         extra_metadata=extra_metadata,
                     )
 
-                    if ji := custom.get("jsoninstance", None):
-                        metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
+                    ji = custom.get("jsoninstance", None)
+                    if not ji:
+                        ji = infer_default_metadata(_resource.get_real_instance())
+                    metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
 
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
 
@@ -577,6 +660,7 @@ class ResourceManager(ResourceManagerInterface):
         created: bool = False,
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
+        **kwargs,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
@@ -624,6 +708,7 @@ class ResourceManager(ResourceManagerInterface):
                         approval_status_changed=approval_status_changed,
                         group_status_changed=group_status_changed,
                         include_virtual=False,
+                        **kwargs,
                     )
 
                     """
@@ -864,6 +949,11 @@ class ResourceManager(ResourceManagerInterface):
         check_bbox: bool = True,
         thumbnail=None,
         thumbnail_algorithm=ThumbnailAlgorithms.fit,
+        bbox: Optional[Union[list, tuple]] = None,
+        forced_crs: Optional[str] = None,
+        styles: Optional[list] = None,
+        background_zoom: Optional[int] = None,
+        map_thumb_from_bbox: bool = False,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource and _resource.can_have_thumbnail:
@@ -877,7 +967,15 @@ class ResourceManager(ResourceManagerInterface):
                             if overwrite or not instance.thumbnail_url:
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(
-                            uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox
+                            uuid,
+                            instance=_resource,
+                            overwrite=overwrite,
+                            check_bbox=check_bbox,
+                            bbox=bbox,
+                            forced_crs=forced_crs,
+                            styles=styles,
+                            background_zoom=background_zoom,
+                            map_thumb_from_bbox=map_thumb_from_bbox,
                         )
                 return True
             except Exception as e:

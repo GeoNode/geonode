@@ -34,6 +34,7 @@ import logging
 import os
 from subprocess import PIPE, Popen
 from typing import List, Optional, Tuple
+import shlex
 from celery import chord, group
 from django.db import transaction
 
@@ -68,7 +69,6 @@ from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
 
-import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
@@ -278,9 +278,10 @@ class BaseVectorFileHandler(BaseHandler):
         # vrt file is aready created in import_resource and vrt will be auto detected by ogr2ogr
         # and also the base_file will work so can be used as alternative for fallback which will also be autodeteced by ogr2ogr.
         input_file = files.get("temp_vrt_file") or files.get("base_file")
-        options += f'"{input_file}"' + f" -lco FID={DEFAULT_PK_COLUMN_NAME} "
 
-        options += f'-nln {alternate} "{original_name}"'
+        options += f" {shlex.quote(input_file)} -lco FID={DEFAULT_PK_COLUMN_NAME} "
+
+        options += f" -nln {shlex.quote(alternate)} {shlex.quote(original_name)}"
 
         if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
             options += " -nlt PROMOTE_TO_MULTI"
@@ -414,28 +415,6 @@ class BaseVectorFileHandler(BaseHandler):
             if self.fixup_name(_l.GetName()) == layer_name
         ]
 
-    def identify_authority(self, layer):
-        layer = self._extract_layer(layer)
-        try:
-            layer_wkt = layer.GetSpatialRef().ExportToWkt()
-            _name = "EPSG"
-            _code = pyproj.CRS(layer_wkt).to_epsg(min_confidence=20)
-            if _code is None:
-                layer_proj4 = layer.GetSpatialRef().ExportToProj4()
-                _code = pyproj.CRS(layer_proj4).to_epsg(min_confidence=20)
-                if _code is None:
-                    raise Exception("CRS authority code not found, fallback to default behaviour")
-        except Exception:
-            spatial_ref = layer.GetSpatialRef()
-            spatial_ref.AutoIdentifyEPSG()
-            _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
-            _code = (
-                spatial_ref.GetAuthorityCode("PROJCS")
-                or spatial_ref.GetAuthorityCode("GEOGCS")
-                or spatial_ref.GetAttrValue("AUTHORITY", 1)
-            )
-        return f"{_name}:{_code}"
-
     def get_ogr2ogr_driver(self):
         """
         Should return the Driver object that is used to open the layers via OGR2OGR
@@ -452,7 +431,7 @@ class BaseVectorFileHandler(BaseHandler):
         data inside the geonode_data database
         """
         gdal_proxy = self.open_source_file(files)
-        layers = self._select_valid_layers(gdal_proxy)
+        layers = self._select_valid_layers(gdal_proxy, execution_id=execution_id)
         # for the moment we skip the dyanamic model creation
         layer_count = len(layers)
         logger.info(f"Total number of layers available: {layer_count}")
@@ -569,7 +548,7 @@ class BaseVectorFileHandler(BaseHandler):
         )
         return [gdal_proxy]
 
-    def _select_valid_layers(self, all_layers):
+    def _select_valid_layers(self, all_layers, **kwargs):
         layers = []
         for layer in all_layers:
             try:
@@ -755,6 +734,17 @@ class BaseVectorFileHandler(BaseHandler):
                 }
             ]
 
+        # if the layer comes from a DB, the fid column is not included in the schema, but we need to add it as primary key for the dynamic model
+        fid_in_schema = any(x["name"] == DEFAULT_PK_COLUMN_NAME for x in layer_schema)
+        if not fid_in_schema and layer.GetFIDColumn():
+            layer_schema += [
+                {
+                    "name": layer.GetFIDColumn(),
+                    "class_name": "django.db.models.BigAutoField",
+                    "null": False,
+                    "primary_key": True,
+                }
+            ]
         return layer_schema
 
     def promote_to_multi(self, geometry_name):
@@ -1141,7 +1131,7 @@ class BaseVectorFileHandler(BaseHandler):
                 return True, None
             except Exception as e:
                 all_layers = self.open_source_file(files)
-                if layers := self._select_valid_layers(all_layers):
+                if layers := self._select_valid_layers(all_layers, execution_id=execution_id):
                     _errors = e.args[0] if isinstance(e, UpsertException) else [str(e)]
                     if isinstance(_errors, str):
                         _errors = [_errors]
@@ -1170,7 +1160,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # use ogr2ogr to read the uploaded files for the upsert
         all_layers = self.open_source_file(files)
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         if not layers:
             raise UpsertException("No valid layers found in the provided file for upsert.")
 
@@ -1258,19 +1248,18 @@ class BaseVectorFileHandler(BaseHandler):
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
 
-        # retrieve the upsert key.
-        upsert_key = self.extract_upsert_key(exec_obj, dynamic_model_instance=model)
-        if not upsert_key:
-            # if for any reason the key is not present, better to raise an error
-            raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
         # use ogr2ogr to read the uploaded files values for the upsert
         all_layers = self.open_source_file(files)
         valid_create = 0
         valid_update = 0
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         if not layers:
             raise UpsertException("No valid layers were found in the file provided")
-        # we can upsert just 1 layer at time
+
+        upsert_key = self.extract_upsert_key(layers[0])
+        if not upsert_key:
+            # if for any reason the key is not present, better to raise an error
+            raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
 
         self._validate_single_feature(exec_obj, OriginalResource, upsert_key, layers, iter(layers[0]))
 
@@ -1429,14 +1418,21 @@ class BaseVectorFileHandler(BaseHandler):
     def _save_feature(self, data_chunk, model_obj, model_instance, upsert_key, valid_update, valid_create):
         # getting all the upsert_key value from the data chunk
         # retrieving the data from the DB
-        value_in_db = model_instance.objects.filter(
-            **{f"{upsert_key}__in": (getattr(feature, upsert_key) for feature in data_chunk)}
-        ).in_bulk(field_name=upsert_key)
+        use_get_fid = False  # flag to understand if we need to use the GetFID as upsert key, this is needed for DB drivers with FID columns that hide the FID field from the schema
+        filters = []
+        for feature in data_chunk:
+            # DB drivers with FID columns hide the FID field from the schema, so we need to check if the FID is present and use it as upsert key if the upsert key is the default one
+            if not getattr(feature, upsert_key, None) and feature.GetFID() != ogr.NullFID:
+                filters.append(feature.GetFID())
+                use_get_fid = True
+            else:
+                filters.append(getattr(feature, upsert_key))
+        value_in_db = model_instance.objects.filter(**{f"{upsert_key}__in": filters}).in_bulk(field_name=upsert_key)
         # looping over the chunk data
         to_process = []
         feature_to_save = []
         for feature in data_chunk:
-            feature_as_dict = feature.items()
+            feature_as_dict = {self.fixup_name(key): value for key, value in feature.items().items()}
             # evaluate if there is any date in the schema of the feature
             schema = feature.DumpReadableAsString().split("\n")
             if any(date_fields := [f for f in schema if ("(Date)" in f or "(DateTime)" in f) and "(null)" not in f]):
@@ -1455,7 +1451,9 @@ class BaseVectorFileHandler(BaseHandler):
                 feature_as_dict.update(
                     {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
                 )
-                to_process.append(feature_as_dict)
+            if use_get_fid:
+                feature_as_dict[upsert_key] = feature.GetFID()
+            to_process.append(feature_as_dict)
 
         for feature_as_dict in to_process:
             if feature_as_dict.get(upsert_key) in value_in_db:
@@ -1491,18 +1489,13 @@ class BaseVectorFileHandler(BaseHandler):
             feature["error"] = " | ".join(errors)
             return feature, False
 
-    def extract_upsert_key(self, exec_obj, dynamic_model_instance):
-        # first we check if the upsert key is passed by the call
-        key = exec_obj.input_params.get("upsert_key", DEFAULT_PK_COLUMN_NAME)
-        if not key:
-            # if the upsert key is not passed, we use the primary key as upsert key
-            # the primary key is defined in the Fields of the dynamic model
-            # dynamic models raise error if we filter the json with ORM
-            key = [x.name for x in dynamic_model_instance.fields.all() if x.kwargs.get("primary_key")]
-            if key:
-                return key[0]
+    def extract_upsert_key(self, layer):
 
-        return key
+        fid_in_schema = any(x.name == DEFAULT_PK_COLUMN_NAME for x in layer.schema)
+        if not fid_in_schema and layer.GetFIDColumn():
+            return layer.GetFIDColumn()
+
+        return DEFAULT_PK_COLUMN_NAME
 
     def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, create_asset=True, **kwargs):
         # getting execution_id information
@@ -1542,7 +1535,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
 
-        self.__fixup_primary_key(dataset)
         return dataset
 
     def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
@@ -1553,6 +1545,8 @@ class BaseVectorFileHandler(BaseHandler):
         """
         fields_schema, needed_field_schema = self.__get_new_and_original_schema(files, str(_exec.exec_id))
         fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
+        if dataset := kwargs.get("resource", None):
+            self.__fixup_primary_key(dataset)
 
 
 @importer_app.task(
@@ -1630,21 +1624,36 @@ def import_with_ogr2ogr(
     If the layer should be overwritten, the option is appended dynamically
     """
     try:
-        ogr_exe = shutil.which("ogr2ogr")
 
-        options = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
+        ogr_exe = shutil.which("ogr2ogr") or "ogr2ogr"  # Fallback to string if not found
+
+        options_str = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
             files, original_name, ovverwrite_layer, alternate, execution_id=execution_id
         )
-        _datastore = settings.DATABASES["datastore"]
+
+        # shlex.split understands that 'quoted strings' are single arguments
+        cmd_list = [ogr_exe] + shlex.split(options_str)
 
         copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
 
         if copy_with_dump:
-            options += f" | PGPASSWORD={_datastore['PASSWORD']} psql -d {_datastore['NAME']} -h {_datastore['HOST']} -p {_datastore.get('PORT', 5432)} -U {_datastore['USER']} -f -"
+            # If using a pipe (ogr2ogr | psql), we must handle it via Python
+            # because shell=False doesn't understand the "|" symbol.
+            _datastore = settings.DATABASES["datastore"]
+            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", _datastore["HOST"], "-U", _datastore["USER"], "-f", "-"]
 
-        commands = [ogr_exe] + options.split(" ")
-        process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
-        stdout, stderr = process.communicate()
+            env = os.environ.copy()
+            env["PGPASSWORD"] = _datastore["PASSWORD"]
+
+            p1 = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
+            p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
+
+            p1.stdout.close()
+            stdout, stderr = p2.communicate()
+        else:
+            # Standard execution with shell=False
+            process = Popen(cmd_list, stdout=PIPE, stderr=PIPE, shell=False)
+            stdout, stderr = process.communicate()
 
         if files.get("temp_vrt_file") and os.path.exists(files["temp_vrt_file"]):
             os.remove(files["temp_vrt_file"])

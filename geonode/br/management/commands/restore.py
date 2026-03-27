@@ -33,7 +33,6 @@ from datetime import datetime
 
 from .utils import utils
 
-from distutils import dir_util
 from requests.auth import HTTPBasicAuth
 from urllib.parse import urlparse, urljoin
 
@@ -748,4 +747,4 @@ class Command(BaseCommand):
         logger.info("*** Restoring GeoServer external resources...")
         external_folder = os.path.join(target_folder, utils.EXTERNAL_ROOT)
         if os.path.exists(external_folder):
-            dir_util.copy_tree(external_folder, "/")
+            shutil.copytree(external_folder, "/", dirs_exist_ok=True)

@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build all services (Docker Compose v2)
         run: docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
@@ -27,7 +27,7 @@ jobs:
           docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-24.04
 
       - name: Upload Docker images as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: docker-images
           path: docker_images

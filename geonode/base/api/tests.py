@@ -64,7 +64,6 @@ from geonode.assets.handlers import asset_handler_registry
 from geonode.base import enumerations
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.groups.models import GroupMember, GroupProfile
-from geonode.thumbs.exceptions import ThumbnailError
 from geonode.layers.utils import get_files
 from geonode.base.models import (
     HierarchicalKeyword,
@@ -83,6 +82,7 @@ from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
+from geonode.indexing.models import ResourceIndex
 from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import (
@@ -2108,12 +2108,12 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(expected, response.json())
 
-    @patch("geonode.base.api.views.create_thumbnail")
-    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_create_thumbnail):
+    @patch("geonode.base.api.views.resource_manager.set_thumbnail")
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_set_thumbnail):
         """
-        Given a logged User and an existing dataset, should create the expected thumbnail url.
+        Given a logged User and an existing dataset, should successfully trigger thumbnail generation.
         """
-        mock_create_thumbnail.return_value = "http://localhost:8000/mocked_url.jpg"
+        mock_set_thumbnail.return_value = True
         # Admin
         self.client.login(username="admin", password="admin")
         dataset_id = Dataset.objects.first().resourcebase_ptr_id
@@ -2127,10 +2127,12 @@ class BaseApiTests(APITestCase):
         expected = {
             "message": "Thumbnail correctly created.",
             "success": True,
-            "thumbnail_url": "http://localhost:8000/mocked_url.jpg",
         }
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(expected, response.json())
+        data = response.json()
+        self.assertEqual(expected["message"], data["message"])
+        self.assertEqual(expected["success"], data["success"])
+        self.assertIn("thumbnail_url", data)
 
     def test_set_thumbnail_from_bbox_from_logged_user_for_not_existing_dataset(self):
         """
@@ -2165,10 +2167,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 405)
         self.assertEqual(expected, response.json())
 
-    @patch(
-        "geonode.base.api.views.create_thumbnail", side_effect=ThumbnailError("Some exception during thumb creation")
-    )
-    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_exp):
+    @patch("geonode.base.api.views.resource_manager.set_thumbnail", return_value=False)
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_set_thumbnail):
         """
         Given a logged User and an existing dataset, should raise a ThumbnailException.
         """
@@ -2179,7 +2179,7 @@ class BaseApiTests(APITestCase):
         payload = {"bbox": [], "srid": "EPSG:3857"}
         response = self.client.post(url, data=payload, format="json")
 
-        expected = {"message": "Some exception during thumb creation", "success": False}
+        expected = {"message": "Thumbnail generation failed.", "success": False}
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected, response.json())
 
@@ -2885,9 +2885,7 @@ class BaseApiTests(APITestCase):
         Ensure we can access the Resource Base list.
         """
         _dataset = Dataset.objects.first()
-        expected_payload = [
-            {"url": reverse("dataset_download", args=[_dataset.alternate]), "ajax_safe": True, "default": True}
-        ]
+        expected_payload = []
 
         # From resource base API
         json = self._get_for_object(_dataset, "base-resources-detail")
@@ -3807,6 +3805,15 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         record = csw.get_record(resource.uuid)
         self.assertIsNotNone(record)
         self.assertEqual(record.identification[0].title, resource.title)
+
+    def test_resource_index_created(self):
+        resource = resource_manager.create(
+            str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
+        )
+
+        resource = resource_manager.update(resource.uuid, instance=resource, vals={})
+
+        self.assertTrue(ResourceIndex.objects.filter(resource=resource).exists())
 
     def test_csw_should_not_return_resourcebase_by_default(self):
         resource = resource_manager.create(
