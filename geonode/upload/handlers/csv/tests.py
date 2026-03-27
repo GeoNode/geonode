@@ -210,6 +210,8 @@ class TestCSVHandler(TestCase):
             "X_POSSIBLE_NAMES=x,long*",
             "-oo",
             "Y_POSSIBLE_NAMES=y,lat*",
+            "-oo",
+            "AUTODETECT_TYPE=YES",
         ]
         _open.assert_called_once()
         _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)
