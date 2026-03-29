@@ -33,9 +33,11 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
 from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
+from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
+from geonode.resource.registry import resource_manager_registry
 
 
 logger = logging.getLogger("importer")
@@ -184,6 +186,13 @@ class BaseHandler(ABC):
 
         return _exec
 
+    def pre_validation(self, files, user, **kwargs):
+        """
+        Optional pre-validation step to be performed before the actual validation.
+        By default this does nothing.
+        """
+        return
+
     def pre_processing(self, files, execution_id, **kwargs):
         from geonode.upload.orchestrator import orchestrator
 
@@ -292,8 +301,23 @@ class BaseHandler(ABC):
         """
         return NotImplementedError
 
-    def create_resourcehandlerinfo(self, handler_module_path, resource, **kwargs):
-        return NotImplementedError
+    def create_resourcehandlerinfo(
+        self,
+        handler_module_path: str,
+        resource: Dataset,
+        execution_id: ExecutionRequest,
+        **kwargs,
+    ):
+        """
+        Create relation between the GeonodeResource and the handler used
+        to create/copy it
+        """
+        ResourceHandlerInfo.objects.create(
+            handler_module_path=handler_module_path,
+            resource=resource,
+            execution_request=execution_id,
+            kwargs=kwargs.get("kwargs", {}) or kwargs,
+        )
 
     def get_ogr2ogr_task_group(self, execution_id, files, layer, should_be_overwritten, alternate):
         """
@@ -424,3 +448,13 @@ class BaseHandler(ABC):
                 or spatial_ref.GetAttrValue("AUTHORITY", 1)
             )
         return f"{_name}:{_code}"
+
+    def handle_xml_file(self, resource, _exec: ExecutionRequest):
+        _path = _exec.input_params.get("files", {}).get("xml_file", "")
+        resource_manager_registry.get_for_instance(resource).update(
+            None,
+            instance=resource,
+            xml_file=_path,
+            metadata_uploaded=True if _path else False,
+            vals={"dirty_state": True},
+        )

@@ -884,24 +884,6 @@ class BaseVectorFileHandler(BaseHandler):
     def handle_thumbnail(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
-    def create_resourcehandlerinfo(
-        self,
-        handler_module_path: str,
-        resource: Dataset,
-        execution_id: ExecutionRequest,
-        **kwargs,
-    ):
-        """
-        Create relation between the GeonodeResource and the handler used
-        to create/copy it
-        """
-        ResourceHandlerInfo.objects.create(
-            handler_module_path=handler_module_path,
-            resource=resource,
-            execution_request=execution_id,
-            kwargs=kwargs.get("kwargs", {}) or kwargs,
-        )
-
     def overwrite_resourcehandlerinfo(
         self,
         handler_module_path: str,
