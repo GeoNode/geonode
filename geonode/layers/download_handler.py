@@ -23,8 +23,6 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from geonode.layers.views import _resolve_dataset
-from geonode.proxy.views import fetch_response_headers
-from geonode.utils import HttpClient
 
 logger = logging.getLogger("geonode.layers.download_handler")
 
