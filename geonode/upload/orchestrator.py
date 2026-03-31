@@ -38,6 +38,11 @@ from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import create_layer_key
 from geonode.upload.utils import error_handler
 from geonode.upload.utils import ImporterRequestAction as ira
+from django.core.cache import caches
+from dynamic_models.models import ModelSchema
+
+exr_cache = caches["execution_requests"]
+cache_msk = caches["model_schema"]
 
 logger = logging.getLogger("importer")
 
@@ -110,10 +115,36 @@ class ImportOrchestrator:
         Returns the ExecutionRequest object with the detail about the
         current execution
         """
+        if val := exr_cache.get(exec_id):
+            return val
         req = ExecutionRequest.objects.filter(exec_id=exec_id)
         if not req.exists():
             raise ImportException("The selected UUID does not exists")
         return req.first()
+
+    def set_modelschema_cache(self, cache_key, value):
+        # cleanup and re-set of dynamic-schema cache
+        cache_msk.delete(cache_key)
+        cache_msk.set(cache_key, value)
+
+    def get_modelschema(self, cache_key, attribute_filter=None):
+        """ """
+        if modelschema := cache_msk.get(cache_key):
+            return modelschema
+
+        if attribute_filter:
+            _filter = {attribute_filter: cache_key}
+        elif isinstance(cache_key, int):
+            _filter = {"pk": cache_key}
+        else:
+            _filter = {"name": cache_key}
+
+        val = ModelSchema.objects.filter(**_filter).first()
+        if not val:
+            return val
+
+        cache_msk.set(cache_key, val)
+        return val
 
     def perform_next_step(
         self,
@@ -324,6 +355,8 @@ class ImportOrchestrator:
             action=action,
             name=name,
         )
+        exr_cache.delete(execution.exec_id)
+        exr_cache.set(execution.exec_id, execution)
         return execution.exec_id
 
     def update_execution_request_status(
@@ -345,6 +378,8 @@ class ImportOrchestrator:
     def update_execution_request_obj(self, _exec_obj, payload):
         ExecutionRequest.objects.filter(pk=_exec_obj.pk).update(**payload)
         _exec_obj.refresh_from_db()
+        exr_cache.delete(_exec_obj.exec_id)
+        exr_cache.set(_exec_obj.exec_id, _exec_obj)
         return _exec_obj
 
     def _last_step(self, execution_id, handler_module_path):

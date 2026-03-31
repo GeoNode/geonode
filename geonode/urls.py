@@ -199,5 +199,8 @@ urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROO
 urlpatterns += [
     re_path(r"^metadata_update_redirect$", views.metadata_update_redirect, name="metadata_update_redirect"),
 ]
-
+urlpatterns += [
+    path("silk/", include("silk.urls", namespace="silk")),
+]
 handler500 = "geonode.views.err500"
+

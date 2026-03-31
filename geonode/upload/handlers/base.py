@@ -309,7 +309,8 @@ class BaseHandler(ABC):
         return
 
     def _get_execution_request_object(self, execution_id: str):
-        return ExecutionRequest.objects.filter(exec_id=execution_id).first()
+        from geonode.upload.orchestrator import orchestrator
+        return orchestrator.get_execution_object(execution_id)
 
     def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
         if not files:

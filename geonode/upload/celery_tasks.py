@@ -27,7 +27,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy
 from django.conf import settings
 from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
-from dynamic_models.models import FieldSchema, ModelSchema
+from dynamic_models.models import FieldSchema
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.api.exceptions import (
@@ -63,6 +63,9 @@ from geonode.upload.utils import (
     ImporterRequestAction as ira,
 )
 from geonode.upload.handlers.base import BaseHandler
+from django.core.cache import caches
+
+cache_msk = caches["model_schema"]
 
 logger = logging.getLogger("importer")
 
@@ -719,11 +722,10 @@ def create_dynamic_structure(
     """
     Create the single dynamic model field for each layer. Is made by a batch of 30 field
     """
-    dynamic_model_schema = ModelSchema.objects.filter(id=dynamic_model_schema_id)
-    if not dynamic_model_schema.exists():
-        raise DynamicModelError(f"The model with id {dynamic_model_schema_id} does not exists.")
+    dynamic_model_schema = orchestrator.get_modelschema(dynamic_model_schema_id, attribute_filter="id")
 
-    dynamic_model_schema = dynamic_model_schema.first()
+    if not dynamic_model_schema:
+        raise DynamicModelError(f"The model with id {dynamic_model_schema_id} does not exists.")
 
     # clearing existing fields for this chunk
     FieldSchema.objects.filter(model_schema=dynamic_model_schema, name__in=(x["name"] for x in fields)).delete()
@@ -823,8 +825,8 @@ def copy_dynamic_model(self, exec_id, actual_step, layer_name, alternate, handle
         new_dataset_alternate = create_alternate(sanitized_title, exec_id)
 
         if settings.IMPORTER_ENABLE_DYN_MODELS:
-            dynamic_schema = ModelSchema.objects.filter(name=alternate.split(":")[1])
-            alternative_dynamic_schema = ModelSchema.objects.filter(name=new_dataset_alternate)
+            dynamic_schema = orchestrator.get_modelschema(alternate.split(":")[1], attribute_filter="name")
+            alternative_dynamic_schema = orchestrator.get_modelschema(new_dataset_alternate, attribute_filter="name")
 
             if dynamic_schema.exists() and not alternative_dynamic_schema.exists():
                 # Creating the dynamic schema object
@@ -906,7 +908,7 @@ def copy_geonode_data_table(self, exec_id, actual_step, layer_name, alternate, h
 
         db_name = os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
         if settings.IMPORTER_ENABLE_DYN_MODELS:
-            schema_exists = ModelSchema.objects.filter(name=new_dataset_alternate).first()
+            schema_exists = orchestrator.get_modelschema(new_dataset_alternate, attribute_filter="name")
             if schema_exists:
                 db_name = schema_exists.db_name
 
@@ -989,7 +991,7 @@ def rollback(self, *args, **kwargs):
 def dynamic_model_error_callback(*args, **kwargs):
     # revert eventually the import in ogr2ogr or the creation of the model in case of failing
     alternate = args[0].args[-1]
-    schema_model = ModelSchema.objects.filter(name=alternate).first()
+    schema_model = orchestrator.get_modelschema(alternate, attribute_filter="name")
     if schema_model:
         drop_dynamic_model_schema(schema_model)
 

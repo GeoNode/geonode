@@ -384,6 +384,16 @@ CACHES = {
         "TIMEOUT": 600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
     },
+    "execution_requests": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
+    "model_schema": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
 }
 
 PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
@@ -397,6 +407,8 @@ if MEMCACHED_ENABLED:
         "LOCATION": MEMCACHED_LOCATION,
     }
     CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
+    CACHES["execution_requests"] = CACHES["default"].copy()
+    CACHES["model_schema"] = CACHES["default"].copy()
 
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
 WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv("WHITENOISE_MANIFEST_STRICT", "False"))
@@ -2236,3 +2248,10 @@ UPSERT_LOG_LOCATION = os.getenv("UPSERT_LOG_LOCATION", "/tmp")
 
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
 FILE_UPLOAD_PERMISSIONS = 0o777
+
+
+INSTALLED_APPS += ("silk",)
+MIDDLEWARE = ("silk.middleware.SilkyMiddleware",) + MIDDLEWARE  # Put this near the top
+
+SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True

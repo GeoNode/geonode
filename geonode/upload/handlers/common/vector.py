@@ -45,9 +45,9 @@ from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
 from geonode.upload.celery_tasks import (
+    create_dynamic_structure,
     ErrorBaseTaskClass,
     FieldSchema,
-    create_dynamic_structure,
     UpdateDynamicTaskClass,
 )
 from geonode.upload.handlers.base import BaseHandler
@@ -77,6 +77,9 @@ from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 from geonode.upload.registry import feature_validators_registry
 from django.core.exceptions import ValidationError
+from django.core.cache import caches
+
+cache_msk = caches["model_schema"]
 
 
 logger = logging.getLogger("importer")
@@ -347,7 +350,7 @@ class BaseVectorFileHandler(BaseHandler):
             name = instance.alternate.split(":")[1]
             schema = None
             if settings.IMPORTER_ENABLE_DYN_MODELS:
-                schema = ModelSchema.objects.filter(name=name).first()
+                schema = orchestrator.get_modelschema(name)
             if schema:
                 """
                 We use the schema editor directly, because the model itself is not managed
@@ -601,14 +604,14 @@ class BaseVectorFileHandler(BaseHandler):
             user_datasets = Dataset.objects.filter(owner=username, pk=resource_pk)
             user_dataset = user_datasets.first()
             if user_dataset:
-                dynamic_schema = ModelSchema.objects.filter(name__iexact=user_dataset.name)
+                dynamic_schema = orchestrator.get_modelschema(user_dataset.name, attribute_filter="name__iexact")
             else:
                 dynamic_schema = ModelSchema.objects.none()
         else:
             user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
-            dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
+            dynamic_schema = orchestrator.get_modelschema(layer_name, attribute_filter="name__iexact")
 
-        dynamic_schema_exists = dynamic_schema.exists()
+        dynamic_schema_exists = bool(dynamic_schema)
         dataset_exists = user_datasets.exists()
 
         if dataset_exists and dynamic_schema_exists and should_be_overwritten:
@@ -648,6 +651,9 @@ class BaseVectorFileHandler(BaseHandler):
             )
         else:
             raise ImportException("Error during the upload of the gpkg file. The dataset does not exists")
+
+        # set modelschema cache
+        orchestrator.set_modelschema_cache(layer_name, dynamic_schema)
 
         # define standard field mapping from ogr to django
         dynamic_model, celery_group = self.create_dynamic_model_fields(
@@ -997,7 +1003,9 @@ class BaseVectorFileHandler(BaseHandler):
         )
 
     def _get_execution_request_object(self, execution_id: str):
-        return ExecutionRequest.objects.filter(exec_id=execution_id).first()
+        from geonode.upload.orchestrator import orchestrator
+        return orchestrator.get_execution_object(execution_id)
+        #return ExecutionRequest.objects.filter(exec_id=execution_id).first()
 
     def _get_type(self, _type: str):
         """
@@ -1015,7 +1023,7 @@ class BaseVectorFileHandler(BaseHandler):
         )
         schema = None
         if settings.IMPORTER_ENABLE_DYN_MODELS:
-            schema = ModelSchema.objects.filter(name=instance_name).first()
+            schema = orchestrator.get_modelschema(instance_name)
         if schema is not None:
             _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
             _model_editor.drop_table(schema.as_model())
@@ -1171,8 +1179,7 @@ class BaseVectorFileHandler(BaseHandler):
             column = None
             connection = connections["datastore"]
             table_name = saved_dataset.alternate.split(":")[1]
-
-            schema = ModelSchema.objects.filter(name=table_name).first()
+            schema = orchestrator.get_modelschema(table_name)
             if not schema:
                 logger.warning(
                     "No ModelSchema for %s.",
@@ -1261,7 +1268,7 @@ class BaseVectorFileHandler(BaseHandler):
     def ___get_dynamic_schema(self, exec_obj):
         original_resource = ResourceBase.objects.filter(pk=exec_obj.input_params.get("resource_pk")).first()
         self.real_instance = original_resource.get_real_instance()
-        model = ModelSchema.objects.filter(name=original_resource.alternate.split(":")[-1]).first()
+        model = orchestrator.get_modelschema(original_resource.alternate.split(":")[-1])
         return original_resource, model
 
     def _commit_upsert(self, model_obj, OriginalResource, upsert_key, layer_iterator, exec_obj=None, layers=None):
