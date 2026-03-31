@@ -20,6 +20,7 @@ from django.apps import AppConfig
 from django.urls import include, re_path
 
 
+
 class GeoNodeResourceConfig(AppConfig):
     name = "geonode.resource"
     verbose_name = "GeoNode Resource Service and Manager"

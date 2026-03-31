@@ -22,11 +22,17 @@ from typing import Type
 from django.utils.module_loading import import_string
 
 from geonode.base.models import ResourceBase
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
+from geonode.layers.models import Dataset
+from geonode.maps.models import Map
 from geonode.resource.manager import BaseResourceManager
 from geonode.resource.api.utils import resolve_type_serializer
 
-
+import logging
 from . import settings as rm_settings
+
+logger = logging.getLogger(__file__)
 
 
 class ResourceManagerRegistry:
@@ -103,4 +109,27 @@ class ResourceManagerRegistry:
             self.add(manager_class())
 
 
+class ResourceRegistryLazyLoader:
+    def __init__(self, class_istance):
+        self._instance = None
+        self.class_istance = class_istance
+
+    def get_instance(self):
+        if self._instance is None:
+            try:
+                self._instance = resource_manager_registry.get_for_model(self.class_istance)
+            except Exception:
+                logger.warnings("resource registry not found, re-initialization")
+                registry = ResourceManagerRegistry().init_registry()
+                self._instance = registry.get_for_model(self.class_istance)
+
+        return self._instance
+
+    def __getattr__(self, name):
+        return getattr(self.get_instance(), name)
+
 resource_manager_registry = ResourceManagerRegistry()
+document_manager = ResourceRegistryLazyLoader(class_istance=Document)
+dataset_manager = ResourceRegistryLazyLoader(class_istance=Dataset)
+maps_manager = ResourceRegistryLazyLoader(class_istance=Map)
+geoapp_manager = ResourceRegistryLazyLoader(class_istance=GeoApp)
