@@ -33,7 +33,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.maps.tests_populate_maplayers import create_maplayers
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, map_manager
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models
 
@@ -286,9 +286,7 @@ community."
         """
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
             # first create a map
-            map_created = resource_manager_registry.get_for_model(Map).create(
-                None, resource_type=Map, defaults=dict(owner=self.u)
-            )
+            map_created = map_manager.create(None, resource_type=Map, defaults=dict(owner=self.u))
             resource_manager_registry.get_for_instance(map_created).set_permissions(
                 None, instance=map_created, permissions=None, created=True
             )
@@ -297,9 +295,7 @@ community."
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             # first create a map
-            map_created = resource_manager_registry.get_for_model(Map).create(
-                None, resource_type=Map, defaults=dict(owner=self.u)
-            )
+            map_created = map_manager.create(None, resource_type=Map, defaults=dict(owner=self.u))
             resource_manager_registry.get_for_instance(map_created).set_permissions(
                 None, instance=map_created, permissions=None, created=True
             )

@@ -56,7 +56,7 @@ from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from guardian.shortcuts import get_anonymous_user
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -958,7 +958,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         self.test_dataset = None
         try:
-            self.test_dataset = resource_manager_registry.get_for_model(Dataset).create(
+            self.test_dataset = dataset_manager.create(
                 None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
             )
             from geonode.metadata.manager import metadata_manager
@@ -1019,7 +1019,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
 
-            _l = resource_manager_registry.get_for_model(Dataset).create(
+            _l = dataset_manager.create(
                 None,
                 resource_type=Dataset,
                 defaults=dict(

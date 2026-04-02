@@ -27,7 +27,7 @@ from django.contrib.gis.geos import Polygon
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, document_manager, geoapp_manager
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
@@ -166,7 +166,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_document(self):
-        doc = resource_manager_registry.get_for_model(Document).create(
+        doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -181,7 +181,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_geoapp(self):
-        geo_app = resource_manager_registry.get_for_model(GeoApp).create(
+        geo_app = geoapp_manager.create(
             None,
             resource_type=GeoApp,
             defaults=dict(

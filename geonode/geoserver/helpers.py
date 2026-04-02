@@ -612,7 +612,7 @@ def gs_slurp(
     It returns a list of dictionaries with the name of the layer,
     the result of the operation and the errors and traceback if it failed.
     """
-    from geonode.resource.registry import resource_manager_registry
+    from geonode.resource.registry import resource_manager_registry, dataset_manager
 
     if console is None:
         console = open(os.devnull, "w")
@@ -725,7 +725,7 @@ def gs_slurp(
             created = False
             layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = resource_manager_registry.get_for_model(Dataset).create(
+                layer = dataset_manager.create(
                     str(uuid.uuid4()),
                     resource_type=Dataset,
                     defaults=dict(

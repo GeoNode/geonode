@@ -162,7 +162,7 @@ class DocumentUploadView(CreateView):
             shutil.rmtree(tempdir, ignore_errors=True)
 
         else:
-            self.object = resource_manager_registry.get_for_model(Document).create(
+            self.object = document_manager.create(
                 None,
                 resource_type=Document,
                 defaults=dict(

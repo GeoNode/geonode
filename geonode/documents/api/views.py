@@ -36,7 +36,7 @@ from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import document_manager
 
 from .serializers import DocumentSerializer
 from .permissions import DocumentPermissionsFilter
@@ -121,7 +121,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 payload["doc_url"] = doc_url
                 payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
-            instance = resource_manager_registry.get_for_model(Document).create(
+            instance = document_manager.create(
                 str(uuid4()),
                 resource_type=Document,
                 defaults=payload,

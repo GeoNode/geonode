@@ -40,7 +40,7 @@ from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, map_manager
 from geonode.utils import resolve_object
 
 logger = logging.getLogger(__name__)
@@ -117,7 +117,7 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         payload["owner"] = request_user
         payload["resource_type"] = "map"
         payload["uuid"] = str(uuid4())
-        instance = resource_manager_registry.get_for_model(Map).create(
+        instance = map_manager.create(
             payload["uuid"],
             resource_type=Map,
             defaults=payload,

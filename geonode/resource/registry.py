@@ -69,7 +69,7 @@ class ResourceManagerRegistry:
         for model_cls, manager in self.REGISTRY.items():
             if isinstance(real, model_cls):
                 return manager
-        if isinstance(real, ResourceBase):
+        if type(real) is ResourceBase:
             return BaseResourceManager()
         raise ValueError("No resource manager registered for instance")
 
@@ -80,7 +80,7 @@ class ResourceManagerRegistry:
         manager = self.REGISTRY.get(model_cls)
         if manager is not None:
             return manager
-        if issubclass(model_cls, ResourceBase):
+        if model_cls is ResourceBase:
             return BaseResourceManager()
         raise ValueError("No resource manager registered for model")
 
@@ -110,26 +110,27 @@ class ResourceManagerRegistry:
 
 
 class ResourceRegistryLazyLoader:
-    def __init__(self, class_istance):
+    def __init__(self, class_instance):
         self._instance = None
-        self.class_istance = class_istance
+        self.class_instance = class_instance
 
     def get_instance(self):
         if self._instance is None:
             try:
-                self._instance = resource_manager_registry.get_for_model(self.class_istance)
+                self._instance = resource_manager_registry.get_for_model(self.class_instance)
             except Exception:
-                logger.warnings("resource registry not found, re-initialization")
-                registry = ResourceManagerRegistry().init_registry()
-                self._instance = registry.get_for_model(self.class_istance)
+                logger.warning("resource registry not found, re-initialization")
+                resource_manager_registry.init_registry()
+                self._instance = resource_manager_registry.get_for_model(self.class_instance)
 
         return self._instance
 
     def __getattr__(self, name):
         return getattr(self.get_instance(), name)
 
+
 resource_manager_registry = ResourceManagerRegistry()
-document_manager = ResourceRegistryLazyLoader(class_istance=Document)
-dataset_manager = ResourceRegistryLazyLoader(class_istance=Dataset)
-maps_manager = ResourceRegistryLazyLoader(class_istance=Map)
-geoapp_manager = ResourceRegistryLazyLoader(class_istance=GeoApp)
+document_manager = ResourceRegistryLazyLoader(class_instance=Document)
+dataset_manager = ResourceRegistryLazyLoader(class_instance=Dataset)
+map_manager = ResourceRegistryLazyLoader(class_instance=Map)
+geoapp_manager = ResourceRegistryLazyLoader(class_instance=GeoApp)
