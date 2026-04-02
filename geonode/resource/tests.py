@@ -522,11 +522,12 @@ class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
         doc = Document.objects.first()
         self.assertIs(self.registry.get_for_instance(doc), mgr)
 
-    def test_remove_returns_base_manager(self):
+    def test_remove_missing_manager_raises(self):
         mgr = DummyDocumentManager()
         self.registry.add(mgr)
         self.registry.remove(Document)
-        self.assertIsInstance(self.registry.get_for_model(Document), BaseResourceManager)
+        with self.assertRaises(ValueError):
+            self.registry.get_for_model(Document)
 
     def test_get_for_type_and_uuid(self):
         mgr = DummyDocumentManager()
