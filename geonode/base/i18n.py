@@ -127,31 +127,35 @@ class I18nCache:
 
     def set(self, lang: str, data_key: str, data, request_date: str):
         # TODO: check if lang is allowed
-        cached_entry: I18nCacheEntry = self.lang_cache.setdefault(lang, I18nCacheEntry())
-
+        # Perform DB query outside the lock to avoid holding it during I/O
         latest_date = (
             Thesaurus.objects.filter(identifier=I18N_THESAURUS_IDENTIFIER).values_list("date", flat=True).first()
         )
 
-        if request_date == latest_date:
-            # no changes after processing, set the info right away
-            logger.debug(f"Caching lang:{lang} key:{data_key} date:{request_date}")
-            cached_entry.date = latest_date
-            cached_entry.caches[data_key] = data
-            return True
-        else:
-            logger.warning(
-                f"Cache will not be updated for lang:{lang} key:{data_key} reqdate:{request_date} latest:{latest_date}"
-            )
-            return False
+        with self._lock:
+            cached_entry: I18nCacheEntry = self.lang_cache.setdefault(lang, I18nCacheEntry())
+
+            if request_date == latest_date:
+                # no changes after processing, set the info right away
+                logger.debug(f"Caching lang:{lang} key:{data_key} date:{request_date}")
+                cached_entry.date = latest_date
+                cached_entry.caches[data_key] = data
+                return True
+            else:
+                logger.warning(
+                    f"Cache will not be updated for lang:{lang} key:{data_key} reqdate:{request_date} latest:{latest_date}"
+                )
+                return False
 
     def clear(self):
         logger.info("Clearing i18n cache")
-        self.lang_cache.clear()
+        with self._lock:
+            self.lang_cache.clear()
 
     def force_check(self):
         """For testing: forces a check against the DB on the next get_entry call."""
-        self._last_check = 0
+        with self._lock:
+            self._last_check = 0
 
 
 class LabelResolver:
