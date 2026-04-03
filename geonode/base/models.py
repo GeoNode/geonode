@@ -235,6 +235,11 @@ class License(models.Model):
     def __str__(self):
         return str(self.name)
 
+    def save(self, *args, **kwargs):
+        if not self.identifier:
+            self.identifier = uuid.uuid4().hex
+        super().save(*args, **kwargs)
+
     @property
     def name_long(self):
         if self.abbreviation is None or len(self.abbreviation) == 0:
