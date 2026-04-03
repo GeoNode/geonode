@@ -360,9 +360,8 @@ class ImporterGCSVTabularImportTest(BaseImporterEndToEndTest):
             },
         )
 
-        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "upload"}
+        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "replace"}
         initial_name = "missing_geom"
-        payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="missing_geom")
