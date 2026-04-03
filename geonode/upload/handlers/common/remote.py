@@ -115,7 +115,6 @@ class BaseRemoteResourceHandler(BaseHandler):
             "title": _data.pop("title", None),
             "url": _data.pop("url", None),
             "type": _data.pop("type", None),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data
 
     def pre_validation(self, files, execution_id, **kwargs):
@@ -144,7 +143,7 @@ class BaseRemoteResourceHandler(BaseHandler):
             # start looping on the layers available
             layer_name = self.fixup_name(title)
 
-            should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+            should_be_overwritten = _exec.action == ira.REPLACE.value
 
             payload_alternate = params.get("remote_resource_id", None)
 
@@ -282,7 +281,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         _exec = self._get_execution_request_object(execution_id)
         resource = resource_type.objects.filter(alternate__icontains=alternate, owner=_exec.user)
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if resource.exists() and _overwrite:

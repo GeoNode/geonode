@@ -37,7 +37,7 @@ from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
-from geonode.upload.utils import find_key_recursively
+from geonode.upload.utils import find_key_recursively, ImporterRequestAction as ira
 from osgeo import gdal
 from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
@@ -122,7 +122,6 @@ class BaseRasterFileHandler(BaseHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -271,7 +270,7 @@ class BaseRasterFileHandler(BaseHandler):
             # start looping on the layers available
             layer_name = self.fixup_name(filename)
 
-            should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+            should_be_overwritten = _exec.action == ira.REPLACE.value
             # should_be_imported check if the user+layername already exists or not
             if should_be_imported(
                 layer_name,
@@ -313,7 +312,7 @@ class BaseRasterFileHandler(BaseHandler):
                         "geonode.upload.import_resource",
                         layer_name,
                         alternate,
-                        exa.UPLOAD.value,
+                        _input.get("action", exa.UPLOAD.value),
                     )
                 )
                 return layer_name, alternate, execution_id
@@ -340,7 +339,7 @@ class BaseRasterFileHandler(BaseHandler):
             getattr(settings, "CASCADE_WORKSPACE", "geonode"),
         )
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if not saved_dataset.exists() and _overwrite:
@@ -388,7 +387,7 @@ class BaseRasterFileHandler(BaseHandler):
 
         dataset = resource_type.objects.filter(alternate__icontains=alternate, owner=_exec.user)
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
 

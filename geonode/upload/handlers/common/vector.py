@@ -192,7 +192,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -227,6 +226,17 @@ class BaseVectorFileHandler(BaseHandler):
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
+
+    def evaluate_exec_prev_status(self, action, resource_pk):
+        if not resource_pk:
+            return True, None
+        res = ResourceBase.objects.filter(pk=resource_pk).first()
+        if not res:
+            return True, None
+        if res.subtype in ["3dtiles"] and action in (ira.REPLACE.value, ira.UPSERT.value):
+            reason = "Replace or Upsert are not possible on an existing 3Dtile"
+            return False, reason
+        return True, None
 
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
@@ -455,7 +465,7 @@ class BaseVectorFileHandler(BaseHandler):
                 layer = self._extract_layer(gdal_layer)
                 layer_name = self.fixup_name(layer.GetName())
 
-                should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+                should_be_overwritten = _exec.action == ira.REPLACE.value
                 # should_be_imported check if the user+layername already exists or not
                 if (
                     should_be_imported(
@@ -802,7 +812,7 @@ class BaseVectorFileHandler(BaseHandler):
             getattr(settings, "CASCADE_WORKSPACE", "geonode"),
         )
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if not saved_dataset.exists() and _overwrite:
@@ -855,7 +865,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk"), owner=_exec.user)
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if dataset.exists() and _overwrite:
@@ -1200,10 +1210,14 @@ class BaseVectorFileHandler(BaseHandler):
             table_name = saved_dataset.alternate.split(":")[1]
 
             schema = ModelSchema.objects.filter(name=table_name).first()
-            if schema:
-                schema.managed = False
-                schema.save()
-
+            if not schema:
+                logger.warning(
+                    "No ModelSchema for %s.",
+                    table_name,
+                )
+                return
+            schema.managed = False
+            schema.save()
             with connection.cursor() as cursor:
                 column = connection.introspection.get_primary_key_columns(cursor, table_name)
             if column:

@@ -27,7 +27,7 @@ class RemoteResourceSerializer(DynamicModelSerializer):
         ref_name = "RemoteResourceSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ("url", "title", "type", "action", "overwrite_existing_layer")
+        fields = ("url", "title", "type", "action")
 
     url = serializers.URLField(required=True, help_text="URL of the remote service / resource")
     title = serializers.CharField(required=True, help_text="Title of the resource. Can be None or Empty")
@@ -36,5 +36,3 @@ class RemoteResourceSerializer(DynamicModelSerializer):
         help_text="Remote resource type, for example wms or 3dtiles. Is used by the handler to understand if can handle the resource",
     )
     action = serializers.CharField(required=False, default=exa.UPLOAD.value)
-
-    overwrite_existing_layer = serializers.BooleanField(required=False, default=False)

@@ -110,12 +110,19 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         skip_geoserver=False,
         assert_payload=None,
         keep_resource=False,
+        assert_failure=False,
+        message="No handlers found for this dataset type/action",
     ):
         try:
             self.client.force_login(self.admin)
 
             response = self.client.post(self.url, data=payload)
-            self.assertEqual(201, response.status_code, response.json())
+            if assert_failure:
+                self.assertEqual(500, response.status_code, response.json())
+                self.assertListEqual([message], response.json()["errors"], response.json())
+                return
+            else:
+                self.assertEqual(201, response.status_code, response.json())
 
             # if is async, we must wait. It will wait for 1 min before raise exception
             if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
@@ -193,8 +200,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
-        payload["overwrite_existing_layer"] = True
+        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "replace"}
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="stazioni_metropolitana")
@@ -287,8 +293,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_geojson, "rb"), "action": "upload"}
         initial_name = "valid"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
-        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "upload"}
-        payload["overwrite_existing_layer"] = True
+        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "replace"}
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
 
@@ -314,9 +319,8 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
         initial_name = "valid"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_csv, "rb"), "action": "upload"}
+        payload = {"base_file": open(self.valid_csv, "rb"), "action": "replace"}
         initial_name = "valid"
-        payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="valid")
@@ -383,10 +387,16 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_kml, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_kml, "rb"), "action": "upload"}
-        payload["overwrite_existing_layer"] = True
+        payload = {"base_file": open(self.valid_kml, "rb"), "action": "replace"}
         payload["resource_pk"] = prev_dataset.pk
-        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
+        self._assertimport(
+            payload,
+            initial_name,
+            overwrite=True,
+            last_update=prev_dataset.last_updated,
+            assert_failure=True,
+            message="The requested action is not implemented yet",
+        )
         self._cleanup_layers(name="sample_point_dataset")
 
 
@@ -411,9 +421,8 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
         initial_name = "air_Runways"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
-        payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
-        payload["action"] = "upload"
+        payload["action"] = "replace"
         self._assertimport(
             payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True
         )
@@ -440,9 +449,8 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
+        payload = {"base_file": open(self.valid_tif, "rb"), "action": "replace"}
         initial_name = "test_raster"
-        payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="test_raster")
@@ -495,7 +503,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             "subtype": "3dtiles",
             "resource_type": "dataset",
         }
-        payload["overwrite_existing_layer"] = True
+        payload["action"] = "replace"
         self._assertimport(
             payload,
             initial_name,
@@ -503,6 +511,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             overwrite=True,
             assert_payload=assert_payload,
             last_update=prev_timestamp,
+            assert_failure=True,
         )
 
 
