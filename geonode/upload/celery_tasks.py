@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import geopackage_validator.validate
 import logging
 import os
 from typing import Optional
@@ -1045,6 +1046,9 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
 
         _datastore.pre_processing(**kwargs)
+
+        if not _datastore.input_is_valid():
+            raise Exception("dataset is invalid")
 
         is_valid, errors = _datastore.upsert_validation(execution_id, **kwargs)
         if not is_valid:

@@ -871,7 +871,7 @@ class BaseVectorFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset, create_asset=False)
+            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset, create_asset=False, layer_name=layer_name)
             return dataset
         elif not dataset.exists() and _overwrite:
             logger.warning(
@@ -1539,7 +1539,18 @@ class BaseVectorFileHandler(BaseHandler):
         set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
         logging.debug(f"set_geowebcache_invalidate_cache DONE {datetime.now() - start}")
 
-        dataset = resource_manager.update(dataset.uuid, instance=dataset)
+        payload = self.generate_resource_payload(
+                kwargs.get("layer_name", dataset.alternate),
+                dataset.alternate.split(":")[-1],
+                asset, exec_obj, dataset.workspace
+            )
+        payload.pop("asset")
+
+        dataset = resource_manager.update(
+            dataset.uuid,
+            instance=dataset,
+            vals=payload,
+        )
 
         self.handle_xml_file(dataset, exec_obj)
         self.handle_sld_file(dataset, exec_obj)

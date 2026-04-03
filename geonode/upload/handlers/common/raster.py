@@ -381,6 +381,7 @@ class BaseRasterFileHandler(BaseHandler):
         execution_id: str,
         resource_type: Dataset = Dataset,
         asset=None,
+        **kwargs
     ):
 
         _exec = self._get_execution_request_object(execution_id)
@@ -394,7 +395,20 @@ class BaseRasterFileHandler(BaseHandler):
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            dataset = resource_manager.update(dataset.uuid, instance=dataset)
+            dataset = resource_manager.update(
+                dataset.uuid,
+                instance=dataset,
+                vals=dict(
+                    name=alternate,
+                    workspace=dataset.workspace,
+                    subtype="raster",
+                    alternate=f"{dataset.workspace}:{alternate}",
+                    dirty_state=True,
+                    title=layer_name,
+                    owner=_exec.user,
+                    asset=asset,
+                ),
+            )
 
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)

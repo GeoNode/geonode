@@ -971,7 +971,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_style(self):
-        return self.subtype not in {"tabular", "tileStore", "remote"}
+        return self.subtype not in {"tabular", "tileStore", "remote", "tabular"}
 
     @property
     def can_have_thumbnail(self):
