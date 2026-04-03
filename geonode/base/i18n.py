@@ -115,7 +115,8 @@ class I18nCache:
                     .first()
                 )
                 if cached_entry and cached_entry.date != thesaurus_date:
-                    logger.info(f"Cache for {lang}:{data_key} needs to be recreated")
+                    logger.info(f"Cache for {lang}:{data_key} dirty, clearing all caches")
+                    self.lang_cache.clear()
                     return thesaurus_date, None
                 if not cached_entry:
                     logger.info(f"Cache for {lang}:{data_key} needs to be created")
