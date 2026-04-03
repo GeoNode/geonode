@@ -237,7 +237,7 @@ class License(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.identifier:
-            self.identifier = uuid.uuid4().hex
+            self.identifier = str(uuid.uuid4())
         super().save(*args, **kwargs)
 
     @property
