@@ -375,13 +375,7 @@ class BaseRasterFileHandler(BaseHandler):
         return saved_dataset
 
     def overwrite_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = Dataset,
-        asset=None,
-        **kwargs
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
 
         _exec = self._get_execution_request_object(execution_id)

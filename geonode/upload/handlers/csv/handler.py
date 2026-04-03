@@ -159,7 +159,10 @@ class CSVFileHandler(BaseVectorFileHandler):
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
-        layer_schema = [{"name": self.fixup_name(x.name.lower()), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+        layer_schema = [
+            {"name": self.fixup_name(x.name.lower()), "class_name": self._get_type(x), "null": True}
+            for x in layer.schema
+        ]
         exec_obj = orchestrator.get_execution_object(execution_id)
 
         if (

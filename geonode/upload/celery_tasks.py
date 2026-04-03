@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import geopackage_validator.validate
 import logging
 import os
 from typing import Optional
