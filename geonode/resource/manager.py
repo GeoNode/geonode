@@ -956,7 +956,7 @@ class ResourceManager(ResourceManagerInterface):
         map_thumb_from_bbox: bool = False,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
-        if _resource and (_resource.can_have_thumbnail or thumbnail is not None):
+        if _resource and (thumbnail or _resource.can_have_thumbnail):
             try:
                 with transaction.atomic():
                     if thumbnail:
