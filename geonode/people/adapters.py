@@ -280,6 +280,13 @@ ID_TOKEN_ISSUER = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_
 
 
 def _update_user_groups_from_social(sociallogin, user):
+
+    # Retrieve the strategy from settings, defaulting FULL_SYNC
+    sync_strategy = getattr(settings, "SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")
+
+    if sync_strategy == "NO_SYNC":
+        return user
+
     extractor = get_data_extractor(sociallogin.account.provider)
     group_role_mapper = get_group_role_mapper(sociallogin.account.provider)
     try:
@@ -287,16 +294,22 @@ def _update_user_groups_from_social(sociallogin, user):
             sociallogin.account.extra_data
         )
 
-        # check here if user is member already of other groups and remove it form the ones that are not declared here...
+        # If Azure returns no group data, skip synchronization entirely
+        if sync_strategy == "SAFE_SYNC" and (groups is None or groups == ""):
+            return user
+
+        # Perform the "Wipe" for FULL_SYNC or SAFE_SYNC (if we have data)
         for groupprofile in user.group_list_all():
             groupprofile.leave(user)
-        for group_role_name in groups:
-            group_name, role_name = group_role_mapper.parse_group_and_role(group_role_name)
-            groupprofile = GroupProfile.objects.filter(slug=group_name).first()
-            if groupprofile:
-                groupprofile.join(user)
-                if group_role_mapper.is_manager(role_name):
-                    groupprofile.promote(user)
+
+        if groups and not isinstance(groups, str):
+            for group_role_name in groups:
+                group_name, role_name = group_role_mapper.parse_group_and_role(group_role_name)
+                groupprofile = GroupProfile.objects.filter(slug=group_name).first()
+                if groupprofile:
+                    groupprofile.join(user)
+                    if group_role_mapper.is_manager(role_name):
+                        groupprofile.promote(user)
     except (AttributeError, NotImplementedError):
         pass  # extractor doesn't define a method for extracting field
     return user
