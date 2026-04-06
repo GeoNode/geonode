@@ -56,6 +56,7 @@
         Client ID
         Client Secret
 
+
 ### Advanced Configuration
 
  In the case you need to change the default behavior of GeoNode or add a new/custom OIDC provider, you will need to update the `settings` manually as follows.
@@ -88,3 +89,20 @@
  In the case you will need to customzie how the `Adapter` works and manages the `Groups` registration, you can inject a new class throguh the settings:
 
     SOCIALACCOUNT_ADAPTER="geonode.people.adapters.GenericOpenIDConnectAdapter"  # This is the default value
+
+#### Social Account Group Synchronization Strategies
+
+GeoNode provides a configurable way to synchronize user group memberships from Social Providers (like Azure or Google) during the login process. This is controlled by the setting `SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN` which can be defined directly on the settings or in the `ENV` file:
+
+```
+SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN=SAFE_SYNC
+```
+
+Three kinds of strategies are supported:
+
+* `FULL_SYNC` (Default): In other words Strict mirroring. On every login, GeoNode wipes all local groups for that user and joins only the groups sent by the provider. This strategy is for environments where the Identity Provider (IdP) is the only source of truth.
+* `SAFE_SYNC`: If the provider's response is missing the "groups" or "roles" keys entirely, GeoNode skips the sync to protect existing memberships. If the keys are present (even if empty), a full sync occurs.
+* `NO_SYNC`: Total Decoupling. GeoNode ignores group data from the provider. This strategy is for environments where users authenticate via SSO but admins manage permissions manually inside GeoNode.
+
+!!! note Note
+    For `FULL_SYNC` and `SAFE_SYNC`, ensure the slug of the GeoNode `GroupProfile` matches the Group ID or role name sent by the provider.
