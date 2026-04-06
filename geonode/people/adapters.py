@@ -290,12 +290,16 @@ def _update_user_groups_from_social(sociallogin, user):
     extractor = get_data_extractor(sociallogin.account.provider)
     group_role_mapper = get_group_role_mapper(sociallogin.account.provider)
     try:
-        groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(
-            sociallogin.account.extra_data
-        )
+        # Try groups first
+        groups = extractor.extract_groups(sociallogin.account.extra_data)
 
-        # If Azure returns no group data, skip synchronization entirely
-        if sync_strategy == "SAFE_SYNC" and (groups is None or groups == ""):
+        # If groups are missing, try roles
+        if groups == "":
+            groups = extractor.extract_roles(sociallogin.account.extra_data)
+
+        # If groups is STILL "", it means BOTH were missing.
+        # If groups is [], this check will be FALSE, and the wipe will happen.
+        if sync_strategy == "SAFE_SYNC" and groups == "":
             return user
 
         # Perform the "Wipe" for FULL_SYNC or SAFE_SYNC (if we have data)
