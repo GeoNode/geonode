@@ -53,6 +53,9 @@ from geonode.security.utils import (
     skip_registered_members_common_group,
 )
 from geonode.security.registry import permissions_registry
+from django.contrib.gis.geos import Polygon
+from geonode.base.api.exceptions import InvalidResourceException
+from geonode.base.api.serializers import api_bbox_settable_resource_models
 
 from . import settings as rm_settings
 from .utils import (
@@ -191,7 +194,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
 
-class ResourceManager(ResourceManagerInterface):
+class BaseResourceManager(ResourceManagerInterface):
     def __init__(self, concrete_manager=None):
         self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
@@ -265,13 +268,13 @@ class ResourceManager(ResourceManagerInterface):
         return _resources_queryset
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
             return self._concrete_resource_manager.exists(uuid, instance=_resource)
         return False
 
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         uuid = uuid or _resource.uuid
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
@@ -401,7 +404,7 @@ class ResourceManager(ResourceManagerInterface):
         *args,
         **kwargs,
     ) -> ResourceBase:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             _resource.set_missing_info()
@@ -572,7 +575,7 @@ class ResourceManager(ResourceManagerInterface):
 
     @transaction.atomic
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
             if hasattr(self._concrete_resource_manager, method):
                 _method = getattr(self._concrete_resource_manager, method)
@@ -600,7 +603,7 @@ class ResourceManager(ResourceManagerInterface):
         resourcebase permissions.
         """
 
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
             permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -662,7 +665,7 @@ class ResourceManager(ResourceManagerInterface):
         group_status_changed: bool = False,
         **kwargs,
     ) -> bool:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
             permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource = _resource.get_real_instance()
@@ -955,7 +958,7 @@ class ResourceManager(ResourceManagerInterface):
         background_zoom: Optional[int] = None,
         map_thumb_from_bbox: bool = False,
     ) -> bool:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource and (thumbnail or _resource.can_have_thumbnail):
             try:
                 with transaction.atomic():
@@ -982,5 +985,24 @@ class ResourceManager(ResourceManagerInterface):
                 logger.exception(e)
         return False
 
+    def _apply_extent_and_role_defaults(
+        self, instance: ResourceBase, extent: dict = None, user: settings.AUTH_USER_MODEL = None
+    ) -> None:
+        if extent and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models:
+            srid = extent.get("srid", "EPSG:4326")
+            coords = extent.get("coords")
+            if not coords:
+                logger.warning("BBOX was sent, but no coords were supplied. Skipping")
+            else:
+                try:
+                    Polygon.from_bbox(coords)
+                except Exception as e:
+                    logger.exception(e)
+                    raise InvalidResourceException("The standard bbox provided is invalid")
+                instance.set_bbox_polygon(coords, srid)
 
-resource_manager = ResourceManager()
+        if user:
+            for field in instance.ROLE_BASED_MANAGED_FIELDS:
+                if not user.can_change_resource_field(instance, field):
+                    logger.debug("User can perform the action, the default value is set")
+                    setattr(user, field, getattr(ResourceBase, field).field.default)
