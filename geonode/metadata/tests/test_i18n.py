@@ -164,12 +164,12 @@ class MetadataI18NTests(GeoNodeBaseTestSupport):
         self.assertEqual("key1_it_v1", labels_it.get("key1"))
 
         # Update label values in the DB to simulate a thesaurus edit
-        ThesaurusKeywordLabel.objects.filter(
-            keyword__thesaurus_id=self.tid, keyword__about="key1", lang="en"
-        ).update(label="key1_en_v2")
-        ThesaurusKeywordLabel.objects.filter(
-            keyword__thesaurus_id=self.tid, keyword__about="key1", lang="it"
-        ).update(label="key1_it_v2")
+        ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=self.tid, keyword__about="key1", lang="en").update(
+            label="key1_en_v2"
+        )
+        ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=self.tid, keyword__about="key1", lang="it").update(
+            label="key1_it_v2"
+        )
 
         # Simulate a thesaurus date bump (what happens when the thesaurus is updated)
         Thesaurus.objects.filter(id=self.tid).update(date="2024-01-01")
