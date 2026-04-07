@@ -28,17 +28,30 @@ from django.test import override_settings
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import ResourceManager
+from geonode.resource.manager import BaseResourceManager
 from geonode.base.models import LinkedResource, ResourceBase
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.maps.models import Map, MapLayer
+from geonode.geoapps.models import GeoApp
 from geonode.resource import settings as rm_settings
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import create_single_doc, create_single_map, create_single_dataset
 from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.security.registry import permissions_registry
+from geonode.resource.registry import (
+    resource_manager_registry,
+    document_manager,
+    dataset_manager,
+    map_manager,
+    geoapp_manager,
+)
+from geonode.layers.manager import DatasetResourceManager
+from geonode.geoapps.manager import GeoAppResourceManager
+from geonode.maps.manager import MapResourceManager
+from geonode.documents.manager import DocumentResourceManager
+from geonode.resource.registry import ResourceManagerRegistry
 
 from gisdata import GOOD_DATA
 
@@ -68,13 +81,13 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             email="test@test.com",
         )
 
-        self.rm = ResourceManager()
+        self.rm = BaseResourceManager()
 
     def test_get_concrete_manager(self):
         original_r_m_c_c = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS
         # mock class
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = "geonode.resource.tests.ResourceManagerClassTest"
-        rm = ResourceManager()
+        rm = BaseResourceManager()
         self.assertEqual(rm._concrete_resource_manager.__class__.__name__, "ResourceManagerClassTest")
         # re assign class to original
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = original_r_m_c_c
@@ -458,3 +471,71 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             ),
             "Error in using SCALE image algo",
         )
+
+
+class DummyDocumentManager(BaseResourceManager):
+    handled_model = Document
+
+
+class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(b"dataset")
+        create_models(b"map")
+        create_models(b"document")
+
+    def setUp(self):
+        super().setUp()
+        self.registry = ResourceManagerRegistry()
+        self.registry.reset()
+        resource_manager_registry.init_registry()
+
+    def tearDown(self):
+        self.registry.reset()
+        super().tearDown()
+
+    def test_get_for_model_real_managers(self):
+        self.assertIsInstance(resource_manager_registry.get_for_model(Document), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Map), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Dataset), DatasetResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(GeoApp), GeoAppResourceManager)
+
+    def test_lazy_loader_real_managers(self):
+        self.assertIsInstance(document_manager.get_instance(), DocumentResourceManager)
+        self.assertIsInstance(map_manager.get_instance(), MapResourceManager)
+        self.assertIsInstance(dataset_manager.get_instance(), DatasetResourceManager)
+        self.assertIsInstance(geoapp_manager.get_instance(), GeoAppResourceManager)
+
+    def test_get_for_instance_from_objects(self):
+        doc = Document.objects.first()
+        map_obj = Map.objects.first()
+        ds = Dataset.objects.first()
+        self.assertIsInstance(resource_manager_registry.get_for_instance(doc), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(map_obj), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(ds), DatasetResourceManager)
+
+    def test_add_and_get_for_instance(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_model(Document), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_instance(doc), mgr)
+
+    def test_remove_missing_manager_raises(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.registry.remove(Document)
+        with self.assertRaises(ValueError):
+            self.registry.get_for_model(Document)
+
+    def test_get_for_type_and_uuid(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_type("document"), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_uuid(doc.uuid), mgr)
+
+    def test_get_for_instance_none_raises(self):
+        with self.assertRaises(ValueError):
+            self.registry.get_for_instance(None)

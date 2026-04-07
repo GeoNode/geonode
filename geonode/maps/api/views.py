@@ -39,9 +39,8 @@ from geonode.maps.api.permissions import MapPermissionsFilter
 from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
-from geonode.maps.signals import map_changed_signal
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, map_manager
 from geonode.utils import resolve_object
 
 logger = logging.getLogger(__name__)
@@ -113,29 +112,21 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
-        # Thumbnail will be handled later
-        post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
-        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
-
-        instance = serializer.save(
-            owner=resolved_owner,
-            resource_type="map",
-            uuid=str(uuid4()),
+        payload = serializer.validated_data.copy()
+        request_user = self.request.user
+        payload["owner"] = request_user
+        payload["resource_type"] = "map"
+        payload["uuid"] = str(uuid4())
+        instance = map_manager.create(
+            payload["uuid"],
+            resource_type=Map,
+            defaults=payload,
+            user=request_user,
         )
-
-        # events and resouce routines
-        self._post_change_routines(
-            instance=instance,
-            create_action_perfomed=True,
-            additional_data=post_creation_data,
-        )
-        resource_manager.finalize_creation_permissions(instance, owner=resolved_owner, initial_user=self.request.user)
-
-        # Handle thumbnail generation
-        resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
+        serializer.instance = instance
+        register_event(self.request, EventType.EVENT_CREATE, instance)
 
     def perform_update(self, serializer):
-        # Check instance permissions with resolve_object
         mapid = serializer.instance.id
         key = "urlsuffix" if Map.objects.filter(urlsuffix=mapid).exists() else "pk"
         map_obj = resolve_object(
@@ -144,30 +135,15 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         instance = serializer.instance
         if instance != map_obj:
             raise GeneralMapsException(detail="serializer instance and object are different")
-        # Thumbnail will be handled later
-        post_change_data = {
-            "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
-            "dataset_names_before_changes": [lyr.alternate for lyr in instance.datasets],
-        }
 
+        dataset_names_before_changes = [lyr.alternate for lyr in instance.datasets]
+        # Preserve serializer-side validation and group/role logic before manager hooks.
         instance = serializer.save()
-
-        # thumbnail, events and resouce routines
-        self._post_change_routines(
+        instance = resource_manager_registry.get_for_instance(instance).update(
+            instance.uuid,
             instance=instance,
-            create_action_perfomed=False,
-            additional_data=post_change_data,
+            dataset_names_before_changes=dataset_names_before_changes,
+            notify=True,
         )
-
-    def _post_change_routines(self, instance: Map, create_action_perfomed: bool, additional_data: dict):
-        # Step 1: Handle Maplayers signals if this is and update action
-        if not create_action_perfomed:
-            dataset_names_before_changes = additional_data.pop("dataset_names_before_changes", [])
-            dataset_names_after_changes = [lyr.alternate for lyr in instance.datasets]
-            if dataset_names_before_changes != dataset_names_after_changes:
-                map_changed_signal.send_robust(sender=instance, what_changed="datasets")
-        # Step 2: Register Event
-        event_type = EventType.EVENT_CREATE if create_action_perfomed else EventType.EVENT_CHANGE
-        register_event(self.request, event_type, instance)
-        # Step 3: Resource Manager
-        resource_manager.update(instance.uuid, instance=instance, notify=True)
+        serializer.instance = instance
+        register_event(self.request, EventType.EVENT_CHANGE, instance)

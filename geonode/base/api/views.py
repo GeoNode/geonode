@@ -87,7 +87,7 @@ from geonode.security.utils import (
 from geonode.security.registry import permissions_registry
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
 from .permissions import (
     IsOwnerOrAdmin,
@@ -711,7 +711,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                 bbox = request_body["bbox"] + [request_body["srid"]]
                 zoom = request_body.get("zoom", None)
 
-            success = resource_manager.set_thumbnail(
+            success = resource_manager_registry.get_for_instance(resource).set_thumbnail(
                 resource.uuid,
                 instance=resource,
                 bbox=bbox,
@@ -1278,7 +1278,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
             except Exception:
                 raise ValidationError(detail="Invalid data provided")
         if thumbnail:
-            resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
+            resource_manager_registry.get_for_instance(resource).set_thumbnail(
+                resource.uuid, instance=resource, thumbnail=thumbnail
+            )
             return Response({"thumbnail_url": resource.thumbnail_url})
         return Response("Unable to set thumbnail", status=status.HTTP_400_BAD_REQUEST)
 
