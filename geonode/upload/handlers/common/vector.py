@@ -57,7 +57,7 @@ from geonode.upload.handlers.utils import (
     drop_dynamic_model_schema,
     create_layer_key,
 )
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
 from geonode.upload.api.exceptions import ImportException, UpsertException
@@ -193,7 +193,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -228,6 +227,17 @@ class BaseVectorFileHandler(BaseHandler):
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
+
+    def evaluate_exec_prev_status(self, action, resource_pk):
+        if not resource_pk:
+            return True, None
+        res = ResourceBase.objects.filter(pk=resource_pk).first()
+        if not res:
+            return True, None
+        if res.subtype in ["3dtiles"] and action in (ira.REPLACE.value, ira.UPSERT.value):
+            reason = "Replace or Upsert are not possible on an existing 3Dtile"
+            return False, reason
+        return True, None
 
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
@@ -433,7 +443,7 @@ class BaseVectorFileHandler(BaseHandler):
         data inside the geonode_data database
         """
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         # for the moment we skip the dyanamic model creation
         layer_count = len(layers)
         logger.info(f"Total number of layers available: {layer_count}")
@@ -456,7 +466,7 @@ class BaseVectorFileHandler(BaseHandler):
             for index, layer in enumerate(layers, start=1):
                 layer_name = self.fixup_name(layer.GetName())
 
-                should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+                should_be_overwritten = _exec.action == ira.REPLACE.value
                 # should_be_imported check if the user+layername already exists or not
                 if (
                     should_be_imported(
@@ -534,7 +544,7 @@ class BaseVectorFileHandler(BaseHandler):
             raise e
         return layer_names, alternates, execution_id
 
-    def _select_valid_layers(self, all_layers):
+    def _select_valid_layers(self, all_layers, **kwargs):
         layers = []
         for layer in all_layers:
             try:
@@ -717,6 +727,17 @@ class BaseVectorFileHandler(BaseHandler):
                 }
             ]
 
+        # if the layer comes from a DB, the fid column is not included in the schema, but we need to add it as primary key for the dynamic model
+        fid_in_schema = any(x["name"] == DEFAULT_PK_COLUMN_NAME for x in layer_schema)
+        if not fid_in_schema and layer.GetFIDColumn():
+            layer_schema += [
+                {
+                    "name": layer.GetFIDColumn(),
+                    "class_name": "django.db.models.BigAutoField",
+                    "null": False,
+                    "primary_key": True,
+                }
+            ]
         return layer_schema
 
     def promote_to_multi(self, geometry_name):
@@ -779,7 +800,7 @@ class BaseVectorFileHandler(BaseHandler):
             getattr(settings, "CASCADE_WORKSPACE", "geonode"),
         )
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if not saved_dataset.exists() and _overwrite:
@@ -787,7 +808,7 @@ class BaseVectorFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager.create(
+        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace),
@@ -832,7 +853,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk"), owner=_exec.user)
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if dataset.exists() and _overwrite:
@@ -851,7 +872,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("xml_file", "")
-        resource_manager.update(
+        resource_manager_registry.get_for_instance(saved_dataset).update(
             None,
             instance=saved_dataset,
             xml_file=_path,
@@ -861,7 +882,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_sld_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("sld_file", "")
-        resource_manager.exec(
+        resource_manager_registry.get_for_instance(saved_dataset).exec(
             "set_style",
             None,
             instance=saved_dataset,
@@ -871,7 +892,7 @@ class BaseVectorFileHandler(BaseHandler):
         )
 
     def handle_thumbnail(self, saved_dataset: Dataset, _exec: ExecutionRequest):
-        resource_manager.set_thumbnail(None, instance=saved_dataset)
+        resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
     def create_resourcehandlerinfo(
         self,
@@ -951,7 +972,7 @@ class BaseVectorFileHandler(BaseHandler):
                 else None
             )
 
-            resource_manager.exec(
+            resource_manager_registry.get_for_instance(new_resource).exec(
                 "set_time_info",
                 None,
                 instance=new_resource,
@@ -1102,7 +1123,7 @@ class BaseVectorFileHandler(BaseHandler):
                 return True, None
             except Exception as e:
                 all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-                if layers := self._select_valid_layers(all_layers):
+                if layers := self._select_valid_layers(all_layers, execution_id=execution_id):
                     _errors = e.args[0] if isinstance(e, UpsertException) else [str(e)]
                     if isinstance(_errors, str):
                         _errors = [_errors]
@@ -1126,7 +1147,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         # use ogr2ogr to read the uploaded files for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         if not layers:
             raise UpsertException("No valid layers found in the provided file for upsert.")
 
@@ -1162,10 +1183,14 @@ class BaseVectorFileHandler(BaseHandler):
             table_name = saved_dataset.alternate.split(":")[1]
 
             schema = ModelSchema.objects.filter(name=table_name).first()
-            if schema:
-                schema.managed = False
-                schema.save()
-
+            if not schema:
+                logger.warning(
+                    "No ModelSchema for %s.",
+                    table_name,
+                )
+                return
+            schema.managed = False
+            schema.save()
             with connection.cursor() as cursor:
                 column = connection.introspection.get_primary_key_columns(cursor, table_name)
             if column:
@@ -1210,19 +1235,18 @@ class BaseVectorFileHandler(BaseHandler):
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
 
-        # retrieve the upsert key.
-        upsert_key = self.extract_upsert_key(exec_obj, dynamic_model_instance=model)
-        if not upsert_key:
-            # if for any reason the key is not present, better to raise an error
-            raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
         # use ogr2ogr to read the uploaded files values for the upsert
         all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
         valid_create = 0
         valid_update = 0
-        layers = self._select_valid_layers(all_layers)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         if not layers:
             raise UpsertException("No valid layers were found in the file provided")
-        # we can upsert just 1 layer at time
+
+        upsert_key = self.extract_upsert_key(layers[0])
+        if not upsert_key:
+            # if for any reason the key is not present, better to raise an error
+            raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
 
         self._validate_single_feature(exec_obj, OriginalResource, upsert_key, layers, iter(layers[0]))
 
@@ -1381,14 +1405,21 @@ class BaseVectorFileHandler(BaseHandler):
     def _save_feature(self, data_chunk, model_obj, model_instance, upsert_key, valid_update, valid_create):
         # getting all the upsert_key value from the data chunk
         # retrieving the data from the DB
-        value_in_db = model_instance.objects.filter(
-            **{f"{upsert_key}__in": (getattr(feature, upsert_key) for feature in data_chunk)}
-        ).in_bulk(field_name=upsert_key)
+        use_get_fid = False  # flag to understand if we need to use the GetFID as upsert key, this is needed for DB drivers with FID columns that hide the FID field from the schema
+        filters = []
+        for feature in data_chunk:
+            # DB drivers with FID columns hide the FID field from the schema, so we need to check if the FID is present and use it as upsert key if the upsert key is the default one
+            if not getattr(feature, upsert_key, None) and feature.GetFID() != ogr.NullFID:
+                filters.append(feature.GetFID())
+                use_get_fid = True
+            else:
+                filters.append(getattr(feature, upsert_key))
+        value_in_db = model_instance.objects.filter(**{f"{upsert_key}__in": filters}).in_bulk(field_name=upsert_key)
         # looping over the chunk data
         to_process = []
         feature_to_save = []
         for feature in data_chunk:
-            feature_as_dict = feature.items()
+            feature_as_dict = {self.fixup_name(key): value for key, value in feature.items().items()}
             # evaluate if there is any date in the schema of the feature
             schema = feature.DumpReadableAsString().split("\n")
             if any(date_fields := [f for f in schema if ("(Date)" in f or "(DateTime)" in f) and "(null)" not in f]):
@@ -1406,6 +1437,8 @@ class BaseVectorFileHandler(BaseHandler):
             feature_as_dict.update(
                 {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
             )
+            if use_get_fid:
+                feature_as_dict[upsert_key] = feature.GetFID()
             to_process.append(feature_as_dict)
 
         for feature_as_dict in to_process:
@@ -1442,18 +1475,13 @@ class BaseVectorFileHandler(BaseHandler):
             feature["error"] = " | ".join(errors)
             return feature, False
 
-    def extract_upsert_key(self, exec_obj, dynamic_model_instance):
-        # first we check if the upsert key is passed by the call
-        key = exec_obj.input_params.get("upsert_key", DEFAULT_PK_COLUMN_NAME)
-        if not key:
-            # if the upsert key is not passed, we use the primary key as upsert key
-            # the primary key is defined in the Fields of the dynamic model
-            # dynamic models raise error if we filter the json with ORM
-            key = [x.name for x in dynamic_model_instance.fields.all() if x.kwargs.get("primary_key")]
-            if key:
-                return key[0]
+    def extract_upsert_key(self, layer):
 
-        return key
+        fid_in_schema = any(x.name == DEFAULT_PK_COLUMN_NAME for x in layer.schema)
+        if not fid_in_schema and layer.GetFIDColumn():
+            return layer.GetFIDColumn()
+
+        return DEFAULT_PK_COLUMN_NAME
 
     def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, create_asset=True, **kwargs):
         # getting execution_id information
@@ -1483,20 +1511,20 @@ class BaseVectorFileHandler(BaseHandler):
         set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
         logging.debug(f"set_geowebcache_invalidate_cache DONE {datetime.now() - start}")
 
-        dataset = resource_manager.update(dataset.uuid, instance=dataset)
+        resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
+        dataset = resolved_resource_manager.update(dataset.uuid, instance=dataset)
 
         self.handle_xml_file(dataset, exec_obj)
         self.handle_sld_file(dataset, exec_obj)
 
-        resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+        resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
         dataset.refresh_from_db()
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
 
-        self.__fixup_primary_key(dataset)
         return dataset
 
-    def fixup_dynamic_model_fields(self, _exec, files):
+    def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
         """
         Utility needed during the replace workflow,
         it will sync all the FieldSchema along with the current resource uploaded.
@@ -1504,6 +1532,8 @@ class BaseVectorFileHandler(BaseHandler):
         """
         fields_schema, needed_field_schema = self.__get_new_and_original_schema(files, str(_exec.exec_id))
         fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
+        if dataset := kwargs.get("resource", None):
+            self.__fixup_primary_key(dataset)
 
 
 @importer_app.task(

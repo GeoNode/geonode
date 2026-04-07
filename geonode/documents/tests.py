@@ -46,7 +46,7 @@ from geonode.maps.models import Map
 from geonode.compat import ensure_string
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.apps import DocumentsAppConfig
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import document_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
@@ -160,7 +160,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Tests creating an external document instead of a file."""
 
         superuser = get_user_model().objects.get(pk=2)
-        c = resource_manager.create(
+        c = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -296,14 +296,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             with self.settings(THUMBNAIL_SIZE={"width": 400, "height": 200}):
                 self.client.post(reverse("document_upload"), data=data)
                 d = Document.objects.get(title="Remote img File Doc")
-                self.assertIsNotNone(d.thumbnail_url)
-                thumb_file = os.path.join(
-                    settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
-                )
-                file = Image.open(thumb_file)
-                self.assertEqual(file.size, (400, 200))
-                # check thumbnail qualty and extention
-                self.assertEqual(file.format, "JPEG")
+                self.assertIsNone(d.thumbnail_url, "Thumbnails are not allowed for remote documents.")
+
             # test pdf doc
             with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
                 data = {
@@ -409,7 +403,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         create_thumb.return_value = True
         # Setup some document names to work with
         superuser = get_user_model().objects.get(pk=2)
-        document = resource_manager.create(
+        document = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True),
@@ -596,7 +590,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         cls.not_admin.set_password("very-secret")
         cls.not_admin.save()  # Two database writes (create + save password) run only once!
 
-        cls.test_doc = resource_manager.create(
+        cls.test_doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=cls.not_admin, title="test", is_approved=True),
@@ -628,7 +622,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 200)
         # test document link with external url
-        doc = resource_manager.create(
+        doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(

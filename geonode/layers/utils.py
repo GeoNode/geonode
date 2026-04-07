@@ -241,7 +241,7 @@ def set_datasets_permissions(
     permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False
 ):
     # here to avoid circular import
-    from geonode.resource.manager import resource_manager
+    from geonode.resource.registry import resource_manager_registry
 
     # Processing information
     resources_as_pk = []
@@ -324,7 +324,9 @@ def set_datasets_permissions(
                     final_perms_payload["groups"].pop("anonymous")
 
             # calling the resource manager to set the permissions
-            resource_manager.set_permissions(resource.uuid, instance=resource, permissions=final_perms_payload)
+            resource_manager_registry.get_for_instance(resource).set_permissions(
+                resource.uuid, instance=resource, permissions=final_perms_payload
+            )
 
 
 def get_uuid_handler():

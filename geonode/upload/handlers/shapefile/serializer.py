@@ -35,7 +35,6 @@ class ShapeFileSerializer(DynamicModelSerializer):
             "xml_file",
             "sld_file",
             "store_spatial_files",
-            "overwrite_existing_layer",
             "skip_existing_layers",
             "action",
         )
@@ -47,7 +46,6 @@ class ShapeFileSerializer(DynamicModelSerializer):
     xml_file = serializers.FileField(required=False)
     sld_file = serializers.FileField(required=False)
     store_spatial_files = serializers.BooleanField(required=False, default=True)
-    overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     action = serializers.CharField(required=False, default=exa.UPLOAD.value)
 
@@ -57,10 +55,6 @@ class OverwriteShapeFileSerializer(ShapeFileSerializer):
         ref_name = "ShapeFileSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ShapeFileSerializer.Meta.fields + (
-            "overwrite_existing_layer",
-            "resource_pk",
-        )
+        fields = ShapeFileSerializer.Meta.fields + ("resource_pk",)
 
-    overwrite_existing_layer = serializers.BooleanField(required=True)
     resource_pk = serializers.IntegerField(required=True)

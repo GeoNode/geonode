@@ -28,7 +28,7 @@ from geonode.upload.handlers.remote.serializers.wms import RemoteWMSSerializer
 from geonode.upload.orchestrator import orchestrator
 from geonode.harvesting.harvesters.wms import WebMapService
 from geonode.services.serviceprocessors.wms import WmsServiceHandler
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
 logger = logging.getLogger("importer")
 
@@ -136,7 +136,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         remote_bbox = _exec.input_params.get("bbox")
         if remote_bbox:
             resource.set_bbox_polygon(remote_bbox, "EPSG:4326")
-            resource_manager.set_thumbnail(None, instance=resource)
+            resource_manager_registry.get_for_instance(resource).set_thumbnail(None, instance=resource)
 
         harvester_url = _exec.input_params.get("ows_url", None)
         if harvester_url:
