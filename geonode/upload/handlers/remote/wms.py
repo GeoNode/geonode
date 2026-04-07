@@ -79,7 +79,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
 
         # This is the "Base URL" (e.g., https://domain/wms)
         # We use this for BOTH to ensure the Harvester lookup succeeds.
-        base_url = f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}"     
+        base_url = f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}"
 
         to_update = {
             "ows_url": base_url,
