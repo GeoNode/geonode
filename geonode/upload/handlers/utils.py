@@ -55,6 +55,7 @@ GEOM_TYPE_MAPPING = {
     "LineString": "django.contrib.gis.db.models.fields.LineStringField",
     "3D Line String": "django.contrib.gis.db.models.fields.LineStringField",
     "Multi Line String": "django.contrib.gis.db.models.fields.MultiLineStringField",
+    "Multi Linestring": "django.contrib.gis.db.models.fields.MultiLineStringField",
     "Multilinestring": "django.contrib.gis.db.models.fields.MultiLineStringField",
     "3D Multi Line String": "django.contrib.gis.db.models.fields.MultiLineStringField",
     "Point": "django.contrib.gis.db.models.fields.PointField",
