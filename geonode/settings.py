@@ -2255,3 +2255,5 @@ MIDDLEWARE = ("silk.middleware.SilkyMiddleware",) + MIDDLEWARE  # Put this near 
 
 SILKY_PYTHON_PROFILER = True
 SILKY_PYTHON_PROFILER_BINARY = True
+# Enable or not the XLSX / XLS upload
+XLSX_UPLOAD_ENABLED = ast.literal_eval(os.getenv("XLSX_UPLOAD_ENABLED", "False"))

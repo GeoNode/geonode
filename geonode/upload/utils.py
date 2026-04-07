@@ -20,7 +20,7 @@ import enum
 import sys
 import tempfile
 import os
-from geonode.resource.manager import ResourceManager
+from geonode.resource.manager import BaseResourceManager
 from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.base.models import ResourceBase
 from django.utils.translation import gettext_lazy as _
@@ -157,7 +157,7 @@ class ImporterConcreteManager(GeoServerResourceManager):
         return ResourceBase.objects.get(uuid=uuid)
 
 
-custom_resource_manager = ResourceManager(concrete_manager=ImporterConcreteManager())
+custom_resource_manager = BaseResourceManager(concrete_manager=ImporterConcreteManager())
 
 
 def call_rollback_function(

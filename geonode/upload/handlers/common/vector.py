@@ -57,7 +57,7 @@ from geonode.upload.handlers.utils import (
     drop_dynamic_model_schema,
     create_layer_key,
 )
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
 from geonode.upload.api.exceptions import ImportException, UpsertException
@@ -196,7 +196,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -231,6 +230,17 @@ class BaseVectorFileHandler(BaseHandler):
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
+
+    def evaluate_exec_prev_status(self, action, resource_pk):
+        if not resource_pk:
+            return True, None
+        res = ResourceBase.objects.filter(pk=resource_pk).first()
+        if not res:
+            return True, None
+        if res.subtype in ["3dtiles"] and action in (ira.REPLACE.value, ira.UPSERT.value):
+            reason = "Replace or Upsert are not possible on an existing 3Dtile"
+            return False, reason
+        return True, None
 
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
@@ -459,7 +469,7 @@ class BaseVectorFileHandler(BaseHandler):
             for index, layer in enumerate(layers, start=1):
                 layer_name = self.fixup_name(layer.GetName())
 
-                should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+                should_be_overwritten = _exec.action == ira.REPLACE.value
                 # should_be_imported check if the user+layername already exists or not
                 if (
                     should_be_imported(
@@ -796,7 +806,7 @@ class BaseVectorFileHandler(BaseHandler):
             getattr(settings, "CASCADE_WORKSPACE", "geonode"),
         )
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if not saved_dataset.exists() and _overwrite:
@@ -804,7 +814,7 @@ class BaseVectorFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager.create(
+        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace),
@@ -849,7 +859,7 @@ class BaseVectorFileHandler(BaseHandler):
 
         dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk"), owner=_exec.user)
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if dataset.exists() and _overwrite:
@@ -868,7 +878,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("xml_file", "")
-        resource_manager.update(
+        resource_manager_registry.get_for_instance(saved_dataset).update(
             None,
             instance=saved_dataset,
             xml_file=_path,
@@ -878,7 +888,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_sld_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("sld_file", "")
-        resource_manager.exec(
+        resource_manager_registry.get_for_instance(saved_dataset).exec(
             "set_style",
             None,
             instance=saved_dataset,
@@ -888,7 +898,7 @@ class BaseVectorFileHandler(BaseHandler):
         )
 
     def handle_thumbnail(self, saved_dataset: Dataset, _exec: ExecutionRequest):
-        resource_manager.set_thumbnail(None, instance=saved_dataset)
+        resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
     def create_resourcehandlerinfo(
         self,
@@ -968,7 +978,7 @@ class BaseVectorFileHandler(BaseHandler):
                 else None
             )
 
-            resource_manager.exec(
+            resource_manager_registry.get_for_instance(new_resource).exec(
                 "set_time_info",
                 None,
                 instance=new_resource,
@@ -1508,12 +1518,13 @@ class BaseVectorFileHandler(BaseHandler):
         set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
         logging.debug(f"set_geowebcache_invalidate_cache DONE {datetime.now() - start}")
 
-        dataset = resource_manager.update(dataset.uuid, instance=dataset)
+        resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
+        dataset = resolved_resource_manager.update(dataset.uuid, instance=dataset)
 
         self.handle_xml_file(dataset, exec_obj)
         self.handle_sld_file(dataset, exec_obj)
 
-        resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+        resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
         dataset.refresh_from_db()
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
