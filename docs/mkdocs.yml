@@ -2,7 +2,7 @@ site_name: GeoNode documentation
 repo_name: 'GeoNode/geonode'
 repo_url: https://github.com/GeoNode/geonode/
 use_directory_urls: true
-
+docs_dir: 'src'
 nav:
   - Home: index.md
   - User Guide:
@@ -51,7 +51,7 @@ theme:
   name: material
   logo: theme/img/geonode-logo-white.svg
   favicon: theme/img/favicon.ico
-  custom_dir: 'docs/theme'
+  custom_dir: 'src/theme'
   language: 'en'
   features:
     - header.autohide
@@ -94,6 +94,6 @@ plugins:
       debug_html: false # set to true to log the html content of the pdf on the console on build
       show_anchors: true
       verbose: false    # set to true to log the pdf generation steps in detail
-      custom_template_path: 'docs/print_template' # includes custom styles.scss for pdf
+      custom_template_path: 'src/print_template' # includes custom styles.scss for pdf
   - search
   - autorefs

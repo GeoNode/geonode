@@ -1,0 +1,3859 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../bare/project-bare-installation/">
+      
+      
+        <link rel="next" href="../environmental_variables/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Settings - GeoNode documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../theme/css/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#settings" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="GeoNode documentation" class="md-header__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoNode documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Settings
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+
+<!-- Navigation tabs -->
+<nav
+  class="md-tabs"
+  aria-label="Tabs"
+  data-md-component="tabs"
+>
+  <div class="md-grid">
+    <div style="display: flex; justify-content: space-between">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../user-guide/user_account/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../admin/panel/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../development/api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../docker/prerequisites/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Setup
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../miscellaneous/thesauri/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Miscellaneous
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+    <ul class="md-tabs__list">
+      <li class="md-tabs__item pull-right export-pdf-li" style="display:flex;" title="Export PDF"></li>
+    </ul>
+    </div>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="GeoNode documentation" class="md-nav__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    GeoNode documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/user_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User account
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Catalog Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Datasets
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upload a dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/preview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preview and Styling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/update_replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update and Replace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/remote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote datasets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/empty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Create empty dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/sharing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sharing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Administration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/panel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessing the panel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/user/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/group/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/social/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Social Logins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/oauth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Install
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_1" id="__nav_5_1_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Docker installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/vanilla-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/project-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bare installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bare installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bare/prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bare/vanilla-bare-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bare/project-bare-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#p" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        X
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environmental_variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Miscellaneous
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Miscellaneous
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../miscellaneous/thesauri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thesauri
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../miscellaneous/br/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup And Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#p" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        X
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../docker/prerequisites/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Setup
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h1>
+<p>Here’s a list of settings available in GeoNode and their default values.  This includes settings for some external applications that
+GeoNode depends on.</p>
+<p>For most of them, default values are good. Those should be changed only for advanced configurations in production or heavily hardened systems.</p>
+<p>The most common ones can be set through <code>environment</code> variables to avoid touching the <code>settings.py</code> file at all.
+This is a good practice and also the preferred one to configure GeoNode (and Django apps in general).
+Whenever you need to change them, set the environment variable accordingly (where it is available) instead of overriding it through the <code>local_settings</code>.</p>
+<h2 id="a">A<a class="headerlink" href="#a" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>ACCESS_TOKEN_EXPIRE_SECONDS</strong></dt>
+<dd>
+<ul>
+<li>:   Default:  <code>86400</code></li>
+<li>Env: <code>ACCESS_TOKEN_EXPIRE_SECONDS</code></li>
+</ul>
+</dd>
+</dl>
+<p>When a user logs into GeoNode, if no <code>ACCESS_TOKEN</code> exists, a new one will be created with a default expiration time of <code>ACCESS_TOKEN_EXPIRE_SECONDS</code> seconds (1 day by default).</p>
+<dl>
+<dt><strong>ACCOUNT_ADAPTER</strong></dt>
+<dd>
+<ul>
+<li>:   Default:  <code>geonode.people.adapters.LocalAccountAdapter</code></li>
+</ul>
+</dd>
+</dl>
+<p>Custom GeoNode People (Users) Account Adapter.</p>
+<dl>
+<dt><strong>ACCOUNT_APPROVAL_REQUIRED</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>ACCOUNT_APPROVAL_REQUIRED</code></li>
+</ul>
+</dd>
+</dl>
+<p>If <code>ACCOUNT_APPROVAL_REQUIRED</code> equals <code>True</code>, newly registered users must be activated by a superuser through the Admin gui, before they can access GeoNode.</p>
+<dl>
+<dt><strong>ACCOUNT_CONFIRM_EMAIL_ON_GET</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration">django-allauth setting</a>
+It allows specifying the HTTP method used when confirming e-mail addresses.</p>
+<dl>
+<dt><strong>ACCOUNT_EMAIL_REQUIRED</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration">django-allauth setting</a>
+which controls whether the user is required to provide an e-mail address upon registration.</p>
+<dl>
+<dt><strong>ACCOUNT_EMAIL_VERIFICATION</strong></dt>
+<dd>
+<ul>
+<li>Default <code>optional</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration">django-allauth setting</a></p>
+<dl>
+<dt><strong>ACCOUNT_LOGIN_REDIRECT_URL</strong></dt>
+<dd>
+<ul>
+<li>Default <code>SITEURL</code></li>
+<li>Env: <code>LOGIN_REDIRECT_URL</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="https://django-user-accounts.readthedocs.io/en/latest/settings.html">django-user-accounts setting</a>
+It allows specifying the default redirect URL after a successful login.</p>
+<dl>
+<dt><strong>ACCOUNT_LOGOUT_REDIRECT_URL</strong></dt>
+<dd>
+<ul>
+<li>Default <code>SITEURL</code></li>
+<li>Env: <code>LOGOUT_REDIRECT_URL</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="https://django-user-accounts.readthedocs.io/en/latest/settings.html">django-user-accounts setting</a>
+It allows specifying the default redirect URL after a successful logout.</p>
+<dl>
+<dt><strong>ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="https://django-user-accounts.readthedocs.io/en/latest/settings.html">django-user-accounts setting</a></p>
+<dl>
+<dt><strong>ACCOUNT_OPEN_SIGNUP</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>ACCOUNT_OPEN_SIGNUP</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="https://django-user-accounts.readthedocs.io/en/latest/settings.html">django-user-accounts setting</a>
+Whether or not people are allowed to self-register to GeoNode or not.</p>
+<dl>
+<dt><strong>ACCOUNT_SIGNUP_FORM_CLASS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>geonode.people.forms.AllauthReCaptchaSignupForm</code></li>
+<li>Env: <code>ACCOUNT_SIGNUP_FORM_CLASS</code></li>
+</ul>
+</dd>
+</dl>
+<p>Enabled only when the :ref:<code>recaptcha_enabled</code> option is <code>True</code>.</p>
+<p>Ref. to :ref:<code>recaptcha_enabled</code></p>
+<dl>
+<dt><strong>ACTSTREAM_SETTINGS</strong></dt>
+<dd>
+<ul>
+<li>Default</li>
+</ul>
+</dd>
+</dl>
+<p>{
+'FETCH_RELATIONS': True,
+'USE_PREFETCH': False,
+'USE_JSONFIELD': True,
+'GFK_FETCH_DEPTH': 1,
+}</p>
+<p>Actstream Settings.</p>
+<p><strong>ADDITIONAL_DATASET_FILE_TYPES</strong></p>
+<p>External application can define additional supported file type other than the default one declared in the <code>SUPPORTED_DATASET_FILE_TYPES</code> .</p>
+<p>The variable should be declared in this way in <code>settings.py</code> (or via application hook):</p>
+<div class="highlight"><pre><span></span><code><span class="n">ADDITIONAL_DATASET_FILE_TYPES</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy_type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Dummy Type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dummy&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>Please rely on geonode.tests.test_utils.TestSupportedTypes for an example</p>
+<dl>
+<dt><strong>ADMIN_IP_WHITELIST</strong></dt>
+<dd>
+<ul>
+<li>Default <code>[]</code></li>
+</ul>
+</dd>
+</dl>
+<p>When this list is popuplated with a list of IPs or IP ranges (e.g. 192.168.1.0/24) requests from and admin user will be allowe only from IPs matching with the list.</p>
+<dl>
+<dt><strong>ADMIN_MODERATE_UPLOADS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+</ul>
+</dd>
+</dl>
+<p>When this variable is set to <code>True</code>, every uploaded resource must be approved before becoming visible to the public users.</p>
+<p>Until a resource is in <code>PENDING APPROVAL</code> state, only the superusers, owner and group members can access it, unless specific edit permissions have been set for other users or groups.</p>
+<p>A <code>Group Manager</code> <em>can</em> approve the resource, but he cannot publish it whenever the setting <code>RESOURCE_PUBLISHING</code> is set to <code>True</code>.
+Otherwise, if <code>RESOURCE_PUBLISHING</code> is set to <code>False</code>, the resource becomes accessible as soon as it is approved.</p>
+<dl>
+<dt><strong>ADMINS_ONLY_NOTICE_TYPES</strong></dt>
+<dd>
+<ul>
+<li>Default <code>['monitoring_alert',]</code></li>
+</ul>
+</dd>
+</dl>
+<p>A list of notification labels that standard users should not either see or set.</p>
+<p>Such notifications will be hidden from the notify settings page and automatically set to false for non-superusers.</p>
+<dl>
+<dt><strong>ADVANCED_EDIT_EXCLUDE_FIELD</strong></dt>
+<dd>
+<ul>
+<li>Default <code>[]</code></li>
+</ul>
+</dd>
+</dl>
+<p>A list of element (item name) to exclude from the Advanced Edit page.</p>
+<p>Example:</p>
+<p><code>ADVANCED_EDIT_EXCLUDE_FIELD=['title', 'keywords', 'tkeywords']</code></p>
+<dl>
+<dt><strong>AGON_RATINGS_CATEGORY_CHOICES</strong></dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="s2">&quot;maps.Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="s2">&quot;How good is this map?&quot;</span>
+<span class="p">},</span>
+    <span class="s2">&quot;layers.Layer&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;layer&quot;</span><span class="p">:</span> <span class="s2">&quot;How good is this layer?&quot;</span>
+<span class="p">},</span>
+    <span class="s2">&quot;documents.Document&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="s2">&quot;How good is this document?&quot;</span>
+<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></li>
+</ul>
+</dd>
+<dt><strong>ALLOWED_DOCUMENT_TYPES</strong></dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="s1">&#39;doc&#39;</span><span class="p">,</span> <span class="s1">&#39;docx&#39;</span><span class="p">,</span> <span class="s1">&#39;gif&#39;</span><span class="p">,</span> <span class="s1">&#39;jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ods&#39;</span><span class="p">,</span> <span class="s1">&#39;odt&#39;</span><span class="p">,</span> <span class="s1">&#39;odp&#39;</span><span class="p">,</span> <span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;png&#39;</span><span class="p">,</span>
+<span class="s1">&#39;ppt&#39;</span><span class="p">,</span> <span class="s1">&#39;pptx&#39;</span><span class="p">,</span> <span class="s1">&#39;rar&#39;</span><span class="p">,</span> <span class="s1">&#39;sld&#39;</span><span class="p">,</span> <span class="s1">&#39;tif&#39;</span><span class="p">,</span> <span class="s1">&#39;tiff&#39;</span><span class="p">,</span> <span class="s1">&#39;txt&#39;</span><span class="p">,</span> <span class="s1">&#39;xls&#39;</span><span class="p">,</span> <span class="s1">&#39;xlsx&#39;</span><span class="p">,</span> <span class="s1">&#39;xml&#39;</span><span class="p">,</span>
+<span class="s1">&#39;zip&#39;</span><span class="p">,</span> <span class="s1">&#39;gz&#39;</span><span class="p">,</span> <span class="s1">&#39;qml&#39;</span><span class="p">]</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p>A list of acceptable file extensions that can be uploaded to the Documents app.</p>
+<dl>
+<dt><strong>ANONYMOUS_USER_ID</strong></dt>
+<dd>
+<ul>
+<li>Default <code>-1</code></li>
+<li>Env: <code>ANONYMOUS_USER_ID</code></li>
+</ul>
+</dd>
+</dl>
+<p>The id of an anonymous user. This is an django-guardian setting.</p>
+<dl>
+<dt><strong>API_INCLUDE_REGIONS_COUNT</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>API_INCLUDE_REGIONS_COUNT</code></li>
+</ul>
+</dd>
+</dl>
+<p>If set to <code>True</code>, a counter with the total number of available regions will be added to the API JSON Serializer.</p>
+<dl>
+<dt><strong>API_LIMIT_PER_PAGE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>200</code></li>
+<li>Env: <code>API_LIMIT_PER_PAGE</code></li>
+</ul>
+</dd>
+</dl>
+<p>The Number of items returned by the APIs 0 equals no limit. Different from <code>CLIENT_RESULTS_LIMIT</code>, affecting the number of items per page in the resource list.</p>
+<dl>
+<dt><strong>API_LOCKDOWN</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>API_LOCKDOWN</code></li>
+</ul>
+</dd>
+</dl>
+<p>If this is set to <code>True</code> users must be authenticated to get search results when search for for users, groups, categories, regions, tags etc.
+Filtering search results of Resourcebase-objects like Layers, Maps or Documents by one of the above types does not work.
+Attention: If API_LOCKDOWN is set to <code>False</code> all details can be accessed by anonymous users.</p>
+<dl>
+<dt><strong>ASYNC_SIGNALS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE</code></li>
+</ul>
+</dd>
+<dt><strong>AUTH_EXEMPT_URLS</strong></dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^/?$&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/gs/*&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/static/*&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/o/*&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/api/o/*&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/api/roles&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/api/adminRole&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/api/users&#39;</span><span class="p">,</span>
+<span class="s1">&#39;/api/layers&#39;</span><span class="p">,)</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p>A tuple of URL patterns that the user can visit without being authenticated.
+This setting has no effect if <code>LOCKDOWN_GEONODE</code> is not True.  For example,
+<code>AUTH_EXEMPT_URLS = ('/maps',)</code> will allow unauthenticated users to
+browse maps.</p>
+<dl>
+<dt><strong>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS</code></li>
+</ul>
+</dd>
+</dl>
+<p>Assign <strong>new</strong> registered users to the contributors group. If set to <code>False</code> new registered members will not obtain automatic permissions to create and edit resources.</p>
+<dl>
+<dt><strong>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME</code></li>
+</ul>
+</dd>
+</dl>
+<p>Auto assign users to a default <code>REGISTERED_MEMBERS_GROUP_NAME</code> private group after <code>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT</code>.</p>
+<dl>
+<dt><strong>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT</strong></dt>
+<dd>
+<ul>
+<li>Default <code>activation</code></li>
+<li>Env: <code>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT</code></li>
+</ul>
+</dd>
+</dl>
+<p>| Options: <code>"registration" | "activation" | "login"</code></p>
+<p>Auto assign users to a default <code>REGISTERED_MEMBERS_GROUP_NAME</code> private group after {"registration" | "activation" | "login"}.</p>
+<p>Notice that whenever <code>ACCOUNT_EMAIL_VERIFICATION == True</code> and <code>ACCOUNT_APPROVAL_REQUIRED == False</code>, users will be able to register and they became <code>active</code> already, even if they won't be able to login until the email has been verified.</p>
+<dl>
+<dt><strong>AUTO_GENERATE_AVATAR_SIZES</strong></dt>
+<dd>
+<ul>
+<li>Default <code>20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240</code></li>
+</ul>
+</dd>
+</dl>
+<p>An iterable of integers representing the sizes of avatars to generate on upload. This can save rendering time later on if you pre-generate the resized versions.</p>
+<p><strong>AVATAR_GRAVATAR_SSL</strong></p>
+<p>| :   Default:  <code>False</code>
+      - Env: <code>AVATAR_GRAVATAR_SSL</code>
+  | Options: <code>True | False</code></p>
+<p>Force SSL when loading fallback image from gravatar.com.</p>
+<p><strong>AVATAR_DEFAULT_URL</strong></p>
+<p>| :   Default:  <code>/geonode/img/avatar.png</code>
+      - Env: <code>AVATAR_GRAVATAR_SSL</code>
+  | Options: <code>"filepath to image"</code></p>
+<p>Allows to set a custom fallback image in case a User has not uploaded a profile image.
+  Needs <code>AVATAR_PROVIDERS</code> to be set correctly.</p>
+<p><strong>AVATAR_PROVIDERS</strong></p>
+<p>| Default:
+<div class="highlight"><pre><span></span><code>&#39;avatar.providers.PrimaryAvatarProvider&#39;,&#39;avatar.providers.GravatarAvatarProvider&#39;,&#39;avatar.providers.DefaultAvatarProvider&#39;
+</code></pre></div></p>
+<pre><code>  - Env: ``AVATAR_PROVIDERS``
+</code></pre>
+<p>| Options: <code>Avatar provider object</code></p>
+<p>This setting configures in which order gravatar images are loaded. A common use case is the use of a local image over a fallback image loaded from gravatar.com.
+  To do so you would change the order like:</p>
+<p><div class="highlight"><pre><span></span><code>&#39;avatar.providers.PrimaryAvatarProvider&#39;,&#39;avatar.providers.DefaultAvatarProvider&#39;,&#39;avatar.providers.GravatarAvatarProvider&#39;
+</code></pre></div>
+  (DefaultAvatarProvider before GravatarAvatarProvider)</p>
+<h2 id="b">B<a class="headerlink" href="#b" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>BING_API_KEY</strong></dt>
+<dd>
+<ul>
+<li>Default <code>None</code></li>
+<li>Env: <code>BING_API_KEY</code></li>
+</ul>
+</dd>
+</dl>
+<p>This property allows to enable a Bing Aerial background.</p>
+<p>If using <code>mapstore</code> client library, make sure the <code>MAPSTORE_BASELAYERS</code> include the following:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">BING_API_KEY</span><span class="p">:</span>
+    <span class="n">BASEMAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Bing Aerial&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AerialWithLabels&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;bing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;apiKey&quot;</span><span class="p">:</span> <span class="s2">&quot;{{apiKey}}&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span>
+<span class="p">}</span>
+<span class="n">DEFAULT_MS2_BACKGROUNDS</span> <span class="o">=</span> <span class="p">[</span><span class="n">BASEMAP</span><span class="p">,]</span> <span class="o">+</span> <span class="n">DEFAULT_MS2_BACKGROUNDS</span>
+</code></pre></div>
+<h2 id="c">C<a class="headerlink" href="#c" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>CACHES</strong></dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;BACKEND&#39;</span><span class="p">:</span> <span class="s1">&#39;django.core.cache.backends.dummy.DummyCache&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;BACKEND&#39;</span><span class="p">:</span> <span class="s1">&#39;django.core.cache.backends.locmem.LocMemCache&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;TIMEOUT&#39;</span><span class="p">:</span> <span class="mi">600</span><span class="p">,</span>
+        <span class="s1">&#39;OPTIONS&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;MAX_ENTRIES&#39;</span><span class="p">:</span> <span class="mi">10000</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p>A dictionary containing the settings for all caches to be used with Django.
+This is a <a href="https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-CACHES">Django setting</a></p>
+<p>The <code>'default'</code> cache is disabled because we don't have a mechanism to discriminate between client sessions right now, and we don't want all users fetch the same api results.</p>
+<p>The <code>'resources'</code> is not currently used. It might be helpful for <a href="https://docs.djangoproject.com/en/3.2/topics/cache/#template-fragment-caching">caching Django template fragments</a> and/or <a href="https://django-tastypie.readthedocs.io/en/latest/caching.html">Tastypie API Caching</a>.</p>
+<dl>
+<dt><strong>CACHE_BUSTING_STATIC_ENABLED</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>CACHE_BUSTING_STATIC_ENABLED</code></li>
+</ul>
+</dd>
+</dl>
+<p>This is a <a href="http://whitenoise.evans.io/en/stable/django.html#add-compression-and-caching-support">Django Compressed Manifet storage provided by WhiteNoise</a>
+A boolean allowing you to enable the <code>WhiteNoise CompressedManifestStaticFilesStorage storage</code>. This works only on a production system.</p>
+<p>.. warning:: This works only if <code>DEBUG = False</code></p>
+<dl>
+<dt><strong>CASCADE_WORKSPACE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>geonode</code></li>
+<li>Env: <code>CASCADE_WORKSPACE</code></li>
+</ul>
+</dd>
+</dl>
+<p><strong>CATALOGUE</strong></p>
+<p>A dict with the following keys:</p>
+<p>ENGINE: The CSW backend (default is <code>geonode.catalogue.backends.pycsw_local</code>)
+ URL: The FULLY QUALIFIED base URL to the CSW instance for this GeoNode
+ USERNAME: login credentials (if required)
+ PASSWORD: login credentials (if required)</p>
+<p>pycsw is the default CSW enabled in GeoNode. pycsw configuration directives
+are managed in the PYCSW entry.</p>
+<p><strong>CATALOGUE_METADATA_TEMPLATE</strong></p>
+<p>Default : <code>catalogue/full_metadata.xml</code></p>
+<p>A string with the catalogue xml file needed for the metadata.</p>
+<p><strong>CATALOGUE_METADATA_XSL</strong></p>
+<p>Default : <code>'/static/metadataxsl/metadata.xsl</code></p>
+<p>A string pointing to the XSL used to transform the metadata XML into human readable HTML.</p>
+<dl>
+<dt><strong>CLIENT_RESULTS_LIMIT</strong></dt>
+<dd>
+<ul>
+<li>Default <code>5</code></li>
+<li>Env: <code>CLIENT_RESULTS_LIMIT</code></li>
+</ul>
+</dd>
+</dl>
+<p>The Number of results per page listed in the GeoNode search pages. Different from <code>API_LIMIT_PER_PAGE</code>, affecting the number of items returned by the APIs.</p>
+<dl>
+<dt><strong>CORS_ALLOW_ALL_ORIGINS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>CORS_ALLOW_ALL_ORIGINS</code></li>
+</ul>
+</dd>
+</dl>
+<p>If set to true <code>Access-Control-Allow-Origin: *</code> header is set for any response. A safer option (not managed through env vars at the moment) is <code>CORS_ALLOWED_ORIGINS</code>, where a list of hosts can be configured, o <code>CORS_ALLOWED_ORIGIN_REGEXES</code>, where the list can contain regexes.
+Notice that the Nginx in front of GeoNode always includes <code>Access-Control-Allow-Credentials true</code>. This must also taken into account when CORS is enabled. </p>
+<dl>
+<dt><strong>CREATE_LAYER</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>CREATE_LAYER</code></li>
+</ul>
+</dd>
+</dl>
+<p>Enable the creaation of a new empty layer.</p>
+<dl>
+<dt><strong>CUSTOM_METADATA_SCHEMA</strong></dt>
+<dd>
+<ul>
+<li>Default <code>{}</code></li>
+</ul>
+</dd>
+</dl>
+<p>If present, will extend the available metadata schema used for store
+new value for each resource. By default override the existing one.
+The expected schema is the same as the default</p>
+<h2 id="d">D<a class="headerlink" href="#d" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>DATA_UPLOAD_MAX_NUMBER_FIELDS</strong></dt>
+<dd>
+<p>Default:  <code>100000</code></p>
+</dd>
+</dl>
+<p>Maximum value of parsed attributes.</p>
+<dl>
+<dt><strong>DATASET_DOWNLOAD_HANDLERS</strong></dt>
+<dd>
+<p>Default:  <code>[]</code></p>
+</dd>
+</dl>
+<p>Additional download handlers that provides a link to download the resource</p>
+<dl>
+<dt><strong>DEBUG</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>DEBUG</code></li>
+</ul>
+</dd>
+</dl>
+<p>One of the main features of debug mode is the display of detailed error pages. If your app raises an exception when DEBUG is True, Django will display a detailed traceback, including a lot of metadata about your environment, such as all the currently defined Django settings (from settings.py).
+This is a <a href="https://docs.djangoproject.com/en/3.2/ref/settings/#debug">Django Setting</a></p>
+<dl>
+<dt><a href="" id="default-anonymous-download-permission"></a></dt>
+<dt><strong>DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION</strong></dt>
+<dd>
+<p>Default:  <code>True</code></p>
+</dd>
+</dl>
+<p>Whether the uploaded resources should downloadable by default.</p>
+<dl>
+<dt><a href="" id="default-anonymous-view-permission"></a></dt>
+<dt><strong>DEFAULT_ANONYMOUS_VIEW_PERMISSION</strong></dt>
+<dd>
+<p>Default:  <code>True</code></p>
+</dd>
+</dl>
+<p>Whether the uploaded resources should be public by default.</p>
+<dl>
+<dt><strong>DEFAULT_DATASET_DOWNLOAD_HANDLER</strong></dt>
+<dd>
+<p>Default:  <code>geonode.layers.download_handler.DatasetDownloadHandler</code></p>
+</dd>
+</dl>
+<p>from GeoNode 4.2.x has bee introduced with this issue #11296 and later improved with this issue #11421 
+the concept of Download Handler and ofc GeoNode provides a default implementation of it
+which process the download via WPS</p>
+<dl>
+<dt><strong>DEFAULT_EXTRA_METADATA_SCHEMA</strong></dt>
+<dd>
+<p>Default:
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="err">Op</span><span class="kc">t</span><span class="err">io</span><span class="kc">nal</span><span class="err">(</span><span class="s2">&quot;id&quot;</span><span class="err">)</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nt</span><span class="p">,</span>
+<span class="nt">&quot;filter_header&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">objec</span><span class="kc">t</span><span class="p">,</span>
+<span class="nt">&quot;field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">objec</span><span class="kc">t</span><span class="p">,</span>
+<span class="nt">&quot;field_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">objec</span><span class="kc">t</span><span class="p">,</span>
+<span class="nt">&quot;field_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">objec</span><span class="kc">t</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></p>
+</dd>
+</dl>
+<p>Define the default metadata schema used for add to the resource extra metadata without modify the actual model.
+This schema is used as validation for the input metadata provided by the user</p>
+<ul>
+<li><code>id</code>: (optional int): the identifier of the metadata. Optional for creation, required in Upgrade phase</li>
+<li><code>filter_header</code>: (required object): Can be any type, is used to generate the facet filter header. Is also an identifier.</li>
+<li><code>field_name</code>: (required object): name of the metadata field</li>
+<li><code>field_label</code>: (required object): verbose string of the name. Is used as a label in the facet filters.</li>
+<li><code>field_value</code>: (required object): metadata values</li>
+</ul>
+<p>An example of metadata that can be ingested is the follow:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;filter_header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bike Brand&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;field_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bike Name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;field_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KTM&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;filter_header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bike Brand&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;field_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bike Name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;field_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bianchi&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<dl>
+<dt><strong>DEFAULT_LAYER_FORMAT</strong></dt>
+<dd>
+<ul>
+<li>Default <code>image/png</code></li>
+<li>Env: <code>DEFAULT_LAYER_FORMAT</code></li>
+</ul>
+</dd>
+</dl>
+<p>The default format for requested tile images.</p>
+<dl>
+<dt><strong>DEFAULT_MAP_CENTER</strong></dt>
+<dd>
+<ul>
+<li>Default <code>(0, 0)</code></li>
+<li>Env: <code>DEFAULT_MAP_CENTER_X</code> <code>DEFAULT_MAP_CENTER_Y</code></li>
+</ul>
+</dd>
+</dl>
+<p>A 2-tuple with the latitude/longitude coordinates of the center-point to use
+in newly created maps.</p>
+<dl>
+<dt><strong>DEFAULT_MAP_CRS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>EPSG:3857</code></li>
+<li>Env: <code>DEFAULT_MAP_CRS</code></li>
+</ul>
+</dd>
+</dl>
+<p>The default map projection. :   Default:  EPSG:3857</p>
+<dl>
+<dt><strong>DEFAULT_MAP_ZOOM</strong></dt>
+<dd>
+<ul>
+<li>Default <code>0</code></li>
+<li>Env: <code>DEFAULT_MAP_ZOOM</code></li>
+</ul>
+</dd>
+</dl>
+<p>The zoom-level to use in newly created maps.  This works like the OpenLayers
+zoom level setting; 0 is at the world extent and each additional level cuts
+the viewport in half in each direction.</p>
+<dl>
+<dt><strong>DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER</strong></dt>
+<dd>
+<p>Default:  <code>5</code></p>
+</dd>
+</dl>
+<p>When <a href="../../usage/managing_datasets/uploading_datasets.html#datasets-uploading">uploading datasets</a>, 
+this value limits the number os parallel uploads.</p>
+<p>The parallelism limit is set during installation using the value of this variable.
+After installation, only an user with administrative rights can change it.
+These limits can be changed in the <a href="../../admin/upload-parallelism-limit/index.html#upload-parallelism-limit">admin panel</a>
+or <a href="../../devel/api/V2/index.html#getapi-v2-upload-parallelism-limits-">accessing by api</a>.</p>
+<dl>
+<dt><strong>DEFAULT_MAX_UPLOAD_SIZE</strong></dt>
+<dd>
+<p>Default:  <code>104857600</code> (100 MB in bytes)</p>
+</dd>
+</dl>
+<p>When <a href="../../usage/managing_datasets/uploading_datasets.html#datasets-uploading">uploading datasets</a>
+or <a href="../../usage/managing_documents/uploading_documents.html#uploading-documents">uploading documents</a>,
+the total size of the uploaded files is verified.</p>
+<p>The size limits are set during installation using the value of this variable.
+After installation, only an user with administrative rights can change it.
+These limits can be changed in the <a href="../../admin/upload-size-limits/index.html#upload-size-limits">admin panel</a>
+or <a href="../../devel/api/V2/index.html#getapi-v2-upload-size-limits-">accessing by api</a>.</p>
+<dl>
+<dt><strong>DEFAULT_SEARCH_SIZE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>10</code></li>
+<li>Env: <code>DEFAULT_SEARCH_SIZE</code></li>
+</ul>
+</dd>
+</dl>
+<p>An integer that specifies the default search size when using <code>geonode.search</code> for querying data.</p>
+<dl>
+<dt><strong>DEFAULT_WORKSPACE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>geonode</code></li>
+<li>Env: <code>DEFAULT_WORKSPACE</code></li>
+</ul>
+</dd>
+</dl>
+<p>The standard GeoServer workspace.</p>
+<dl>
+<dt><strong>DISPLAY_WMS_LINKS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>DISPLAY_WMS_LINKS</code></li>
+</ul>
+</dd>
+</dl>
+<p>If set to False direct WMS link to GeoServer is hidden.</p>
+<dl>
+<dt><strong>DISPLAY_ORIGINAL_DATASET_LINK</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>DISPLAY_ORIGINAL_DATASET_LINK</code></li>
+</ul>
+</dd>
+</dl>
+<p>If set to False original dataset download is hidden.</p>
+<p><strong>DOWNLOAD_FORMATS_METADATA</strong></p>
+<dl>
+<dt>Specifies which metadata formats are available for users to download.</dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="n">DOWNLOAD_FORMATS_METADATA</span> <span class="o">=</span> <span class="p">[</span>
+<span class="s1">&#39;Atom&#39;</span><span class="p">,</span> <span class="s1">&#39;DIF&#39;</span><span class="p">,</span> <span class="s1">&#39;Dublin Core&#39;</span><span class="p">,</span> <span class="s1">&#39;ebRIM&#39;</span><span class="p">,</span> <span class="s1">&#39;FGDC&#39;</span><span class="p">,</span> <span class="s1">&#39;ISO&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p><strong>DOWNLOAD_FORMATS_VECTOR</strong></p>
+<dl>
+<dt>Specifies which formats for vector data are available for users to download.</dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="n">DOWNLOAD_FORMATS_VECTOR</span> <span class="o">=</span> <span class="p">[</span>
+<span class="s1">&#39;JPEG&#39;</span><span class="p">,</span> <span class="s1">&#39;PDF&#39;</span><span class="p">,</span> <span class="s1">&#39;PNG&#39;</span><span class="p">,</span> <span class="s1">&#39;Zipped Shapefile&#39;</span><span class="p">,</span> <span class="s1">&#39;GML 2.0&#39;</span><span class="p">,</span> <span class="s1">&#39;GML 3.1.1&#39;</span><span class="p">,</span> <span class="s1">&#39;CSV&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Excel&#39;</span><span class="p">,</span> <span class="s1">&#39;GeoJSON&#39;</span><span class="p">,</span> <span class="s1">&#39;KML&#39;</span><span class="p">,</span> <span class="s1">&#39;View in Google Earth&#39;</span><span class="p">,</span> <span class="s1">&#39;Tiles&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p><strong>DOWNLOAD_FORMATS_RASTER</strong></p>
+<dl>
+<dt>Specifies which formats for raster data are available for users to download.</dt>
+<dd>
+<ul>
+<li>Default
+<div class="highlight"><pre><span></span><code><span class="n">DOWNLOAD_FORMATS_RASTER</span> <span class="o">=</span> <span class="p">[</span>
+<span class="s1">&#39;JPEG&#39;</span><span class="p">,</span> <span class="s1">&#39;PDF&#39;</span><span class="p">,</span> <span class="s1">&#39;PNG&#39;</span> <span class="s1">&#39;Tiles&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<h2 id="e">E<a class="headerlink" href="#e" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>EMAIL_ENABLE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+</ul>
+</dd>
+</dl>
+<p>Options:</p>
+<ul>
+<li>EMAIL_BACKEND - Default:  <code>django.core.mail.backends.smtp.EmailBackend</code></li>
+<li>EMAIL_HOST - Default:  <code>localhost</code></li>
+<li>EMAIL_PORT - Default:  <code>25</code></li>
+<li>EMAIL_HOST_USER -  Default:  <code>''</code></li>
+<li>EMAIL_HOST_PASSWORD - Default:  <code>''</code></li>
+<li>EMAIL_USE_TLS - Default:  <code>False</code></li>
+<li>EMAIL_USE_SSL - Default:  <code>False</code></li>
+<li>DEFAULT_FROM_EMAIL - Default:  <code>GeoNode &lt;no-reply@geonode.org&gt;</code></li>
+</ul>
+<dl>
+<dt><strong>EPSG_CODE_MATCHES</strong></dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="s1">&#39;EPSG:4326&#39;</span><span class="p">:</span> <span class="s1">&#39;(4326) WGS 84&#39;</span><span class="p">,</span>
+<span class="s1">&#39;EPSG:900913&#39;</span><span class="p">:</span> <span class="s1">&#39;(900913) Google Maps Global Mercator&#39;</span><span class="p">,</span>
+<span class="s1">&#39;EPSG:3857&#39;</span><span class="p">:</span> <span class="s1">&#39;(3857) WGS 84 / Pseudo-Mercator&#39;</span><span class="p">,</span>
+<span class="s1">&#39;EPSG:3785&#39;</span><span class="p">:</span> <span class="s1">&#39;(3785 DEPRECATED) Popular Visualization CRS / Mercator&#39;</span><span class="p">,</span>
+<span class="s1">&#39;EPSG:32647&#39;</span><span class="p">:</span> <span class="s1">&#39;(32647) WGS 84 / UTM zone 47N&#39;</span><span class="p">,</span>
+<span class="s1">&#39;EPSG:32736&#39;</span><span class="p">:</span> <span class="s1">&#39;(32736) WGS 84 / UTM zone 36S&#39;</span>
+<span class="p">}</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p>Supported projections human readable descriptions associated to their EPSG Codes.
+This list will be presented to the user during the upload process whenever GeoNode won't be able to recognize a suitable projection.
+Those codes should be aligned to the <code>UPLOADER</code> ones and available in GeoServer also.</p>
+<dl>
+<dt><strong>EXTRA_METADATA_SCHEMA</strong></dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="n">EXTRA_METADATA_SCHEMA</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="p">{</span>
+<span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;MAP_EXTRA_METADATA_SCHEMA&#39;</span><span class="p">,</span> <span class="n">DEFAULT_EXTRA_METADATA_SCHEMA</span><span class="p">),</span>
+<span class="s2">&quot;layer&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DATASET_EXTRA_METADATA_SCHEMA&#39;</span><span class="p">,</span> <span class="n">DEFAULT_EXTRA_METADATA_SCHEMA</span><span class="p">),</span>
+<span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DOCUMENT_EXTRA_METADATA_SCHEMA&#39;</span><span class="p">,</span> <span class="n">DEFAULT_EXTRA_METADATA_SCHEMA</span><span class="p">),</span>
+<span class="s2">&quot;geoapp&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;GEOAPP_EXTRA_METADATA_SCHEMA&#39;</span><span class="p">,</span> <span class="n">DEFAULT_EXTRA_METADATA_SCHEMA</span><span class="p">)</span>
+<span class="p">},</span> <span class="o">**</span><span class="n">CUSTOM_METADATA_SCHEMA</span><span class="p">}</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p>Variable used to actually get the expected metadata schema for each resource_type.
+In this way, each resource type can have a different metadata schema</p>
+<h2 id="f">F<a class="headerlink" href="#f" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>FREETEXT_KEYWORDS_READONLY</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>FREETEXT_KEYWORDS_READONLY</code></li>
+</ul>
+</dd>
+</dl>
+<p>Make Free-Text Keywords writable from users. Or read-only when set to False.</p>
+<dl>
+<dt><strong>FACET_PROVIDERS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>pre filled list of providers</code></li>
+<li>Env: <code>FACET_PROVIDERS</code></li>
+</ul>
+</dd>
+</dl>
+<p>Contains the list of the providers available to perform an serve the facets. 
+In case the user wants remove a facets, is enough to remove the path 
+of the proider from the list</p>
+<h2 id="g">G<a class="headerlink" href="#g" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>GEOSERVER_ADMIN_USER</strong></dt>
+<dd>
+<ul>
+<li>Default <code>admin</code></li>
+<li>Env: <code>GEOSERVER_ADMIN_PASSWORD</code></li>
+</ul>
+</dd>
+</dl>
+<p>The geoserver admin username.</p>
+<dl>
+<dt><strong>GEOSERVER_ADMIN_PASSWORD</strong></dt>
+<dd>
+<ul>
+<li>Default <code>geoserver</code></li>
+<li>Env: <code>GEOSERVER_ADMIN_USER</code></li>
+</ul>
+</dd>
+</dl>
+<p>The GeoServer admin password.</p>
+<dl>
+<dt><strong>GEOSERVER_LOCATION</strong></dt>
+<dd>
+<ul>
+<li>Default <code>http://localhost:8080/geoserver/</code></li>
+<li>Env: <code>GEOSERVER_LOCATION</code></li>
+</ul>
+</dd>
+</dl>
+<p>Url under which GeoServer is available.</p>
+<dl>
+<dt><strong>GEOSERVER_PUBLIC_HOST</strong></dt>
+<dd>
+<ul>
+<li>Default <code>SITE_HOST_NAME</code> (Variable)</li>
+<li>Env: <code>GEOSERVER_PUBLIC_HOST</code></li>
+</ul>
+</dd>
+</dl>
+<p>Public hostname under which GeoServer is available.</p>
+<dl>
+<dt><strong>GEOSERVER_PUBLIC_LOCATION</strong></dt>
+<dd>
+<ul>
+<li>Default <code>SITE_HOST_NAME</code> (Variable)</li>
+<li>Env: <code>GEOSERVER_PUBLIC_LOCATION</code></li>
+</ul>
+</dd>
+</dl>
+<p>Public location under which GeoServer is available.</p>
+<dl>
+<dt><strong>GEOSERVER_PUBLIC_PORT</strong></dt>
+<dd>
+<ul>
+<li>Default <code>8080 (Variable)</code></li>
+<li>Env: <code>GEOSERVER_PUBLIC_PORT</code></li>
+</ul>
+</dd>
+</dl>
+<p>Public Port under which GeoServer is available.</p>
+<dl>
+<dt><strong>GEOSERVER_WEB_UI_LOCATION</strong></dt>
+<dd>
+<ul>
+<li>Default <code>GEOSERVER_PUBLIC_LOCATION (Variable)</code></li>
+<li>Env: <code>GEOSERVER_WEB_UI_LOCATION</code></li>
+</ul>
+</dd>
+</dl>
+<p>Public location under which GeoServer is available.</p>
+<dl>
+<dt><strong>GROUP_PRIVATE_RESOURCES</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>GROUP_PRIVATE_RESOURCES</code></li>
+</ul>
+</dd>
+</dl>
+<p>If this option is enabled, Resources belonging to a Group won't be visible by others</p>
+<h2 id="i">I<a class="headerlink" href="#i" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>IMPORTER HANDLERS</strong></dt>
+<dd>
+<ul>
+<li>Default <code>pre filled list of handlers</code></li>
+<li>Env: <code>IMPORTER_HANDLERS</code></li>
+</ul>
+</dd>
+</dl>
+<p>Contains the list of the handlers available to perform an import of a resource. 
+In case the user wants to drop the support during the import phase, is enough to
+remove the path of the Handler from the list</p>
+<h2 id="l">L<a class="headerlink" href="#l" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>LOCKDOWN_GEONODE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>LOCKDOWN_GEONODE</code></li>
+</ul>
+</dd>
+</dl>
+<p>By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to <code>True</code>
+users must be authenticated before accessing URL routes not included in <code>AUTH_EXEMPT_URLS</code>.</p>
+<dl>
+<dt><strong>LOGIN_URL</strong></dt>
+<dd>
+<ul>
+<li>Default <code>{}account/login/'.format(SITEURL)</code></li>
+<li>Env: <code>LOGIN_URL</code></li>
+</ul>
+</dd>
+</dl>
+<p>The URL where requests are redirected for login.</p>
+<dl>
+<dt><strong>LOGOUT_URL</strong></dt>
+<dd>
+<ul>
+<li>Default <code>{}account/login/'.format(SITEURL)</code></li>
+<li>Env: <code>LOGOUT_URL</code></li>
+</ul>
+</dd>
+</dl>
+<p>The URL where requests are redirected for logout.</p>
+<h2 id="m">M<a class="headerlink" href="#m" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>MAPSTORE_BASELAYERS</strong></dt>
+<dd>
+<ul>
+<li>Default</li>
+</ul>
+</dd>
+</dl>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;osm&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Open Street Map&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;mapnik&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;osm&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;tileprovider&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;wms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Sentinel-2 cloudless - https://s2maps.eu&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;s2cloudless&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;s2cloudless:s2cloudless&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://maps.geo-solutions.it/geoserver/wms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thumbURL&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">static/mapstorestyle/img/s2cloudless-s2cloudless.png&quot;</span> <span class="o">%</span> <span class="n">SITEURL</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;ol&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;empty&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Empty Background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;empty&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Empty Background&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>Allows to specify which backgrounds MapStore should use. The parameter <code>visibility</code> for a layer, specifies which one is the default one.</p>
+<p>A sample configuration using the Bing background without OpenStreetMap, could be the following one:</p>
+<p><div class="highlight"><pre><span></span><code><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bing&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Bing Aerial&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AerialWithLabels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;bing&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;apiKey&quot;</span><span class="p">:</span> <span class="s2">&quot;{{apiKey}}&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;tileprovider&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenTopoMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;wms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Sentinel-2 cloudless - https://s2maps.eu&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;s2cloudless&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;s2cloudless:s2cloudless&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://maps.geo-solutions.it/geoserver/wms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thumbURL&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">static/mapstorestyle/img/s2cloudless-s2cloudless.png&quot;</span> <span class="o">%</span> <span class="n">SITEURL</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;ol&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;empty&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Empty Background&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;empty&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Empty Background&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;visibility&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+.. warning:: To use a Bing background, you need to correctly set and provide a valid <code>BING_API_KEY</code></p>
+<dl>
+<dt><strong>MAX_DOCUMENT_SIZE</strong></dt>
+<dd>
+<ul>
+<li>Default<code>2</code></li>
+<li>Env: <code>MAX_DOCUMENT_SIZE</code></li>
+</ul>
+</dd>
+</dl>
+<p>Allowed size for documents in MB.</p>
+<dl>
+<dt><strong>METADATA_PARSERS</strong></dt>
+<dd>
+<p>It's possible to define multiple XML parsers for ingest XML during the layer upload.</p>
+</dd>
+</dl>
+<p>The variable should be declared in this way inside the <code>settings.py</code>:</p>
+<p><code>METADATA_PARSERS = ['list', 'of', 'parsing', 'functions']</code></p>
+<p>If you want to always use the default metadata parser and after use your own, the variable must be set with first value as <code>__DEFAULT__</code>
+Example:</p>
+<p><code>METADATA_PARSERS = ['__DEFAULT__', 'custom_parsing_function]</code></p>
+<p>If not set, the system will use the <code>__DEFAULT__</code> parser.</p>
+<p>The custom parsing function must be accept in input 6 parameter that are:</p>
+<ul>
+<li><code>exml</code> (xmlfile)</li>
+<li><code>uuid</code> (str)</li>
+<li><code>vals</code> (dict)</li>
+<li><code>regions</code> (list)</li>
+<li><code>keywords</code> (list)</li>
+<li><code>custom</code> (dict)</li>
+</ul>
+<p>If you want to use your parser after the default one, here is how the variable are populated:</p>
+<ul>
+<li><code>exml</code>: the XML file to parse</li>
+<li><code>uuid</code>: the UUID of the layer</li>
+<li><code>vals</code>: Dictionary of information that belong to ResourceBase</li>
+<li><code>regions</code>: List of regions extracted from the XML</li>
+<li><code>keywords</code>: List of dict of keywords already divided between free-text and thesarus</li>
+<li><code>custom</code>: Custom varible</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the keywords must be in a specific format, since later this dict, will be ingested by the <code>KeywordHandler</code> which will assign the keywords/thesaurus to the layer.</p>
+</div>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="s2">&quot;keywords&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">list_of_keyword_extracted</span><span class="p">],</span>
+<span class="s2">&quot;thesaurus&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;datetype&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="c1"># thesaurus informations</span>
+<span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">theme</span><span class="p">,</span>  <span class="c1">#extracted theme if present</span>
+<span class="p">}</span>
+</code></pre></div>
+Here is an example of expected parser function</p>
+<p><div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_parsing_function</span><span class="p">(</span><span class="n">exml</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">regions</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">custom</span><span class="p">):</span>
+<span class="c1"># Place here your code</span>
+<span class="k">return</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">regions</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">custom</span>
+</code></pre></div>
+For more information, please rely to <code>TestCustomMetadataParser</code> which contain a smoke test to explain the functionality</p>
+<dl>
+<dt><strong>METADATA_STORERS</strong></dt>
+<dd>
+<p>Is possible to define multiple Layer storer during the layer upload.</p>
+</dd>
+</dl>
+<p>The variable should be declared in this way:</p>
+<p><code>METADATA_STORERS = ['custom_storer_function']</code></p>
+<p>NOTE: By default the Layer is always saved with the default behaviour.</p>
+<p>The custom storer function must be accept 2 input parameter that are:</p>
+<ul>
+<li><code>layer</code> (layer model instance)</li>
+<li><code>custom</code> (dict)</li>
+</ul>
+<p>Here is how the variable are populated by default:</p>
+<ul>
+<li><code>layer</code>: (layer model instance) that we wanto to change</li>
+<li><code>custom</code>: custom dict populated by the parser</li>
+</ul>
+<p>Here is an example of expected storer function</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_storer_function</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">custom</span><span class="p">):</span>
+<span class="c1"># do something here</span>
+<span class="k">pass</span>
+</code></pre></div>
+<p>For more information, please rely to <code>TestMetadataStorers</code> which contain a smoke test to explain the functionality</p>
+<dl>
+<dt><strong>MISSING_THUMBNAIL</strong></dt>
+<dd>
+<p>Default:  <code>geonode/img/missing_thumb.png</code></p>
+</dd>
+</dl>
+<p>The path to an image used as thumbnail placeholder.</p>
+<dl>
+<dt><strong>MEMCACHED_BACKEND</strong></dt>
+<dd>
+<p>Default:  <code>django.core.cache.backends.memcached.PyMemcacheCache</code></p>
+</dd>
+</dl>
+<p>Define which backend of memcached will be used</p>
+<dl>
+<dt><strong>MEMCACHED_ENABLED</strong></dt>
+<dd>
+<p>Default:  <code>False</code></p>
+</dd>
+</dl>
+<p>If True, will use MEMCACHED_BACKEND as default backend in CACHES</p>
+<dl>
+<dt><strong>MODIFY_TOPICCATEGORY</strong></dt>
+<dd>
+<p>Default:  <code>False</code></p>
+</dd>
+</dl>
+<p>Metadata Topic Categories list should not be modified, as it is strictly defined
+by ISO (See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml
+and check the <CodeListDictionary gml:id="MD_MD_TopicCategoryCode"> element).</p>
+<p>Some customization is still possible changing the is_choice and the GeoNode
+description fields.</p>
+<p>In case it is necessary to add/delete/update categories, it is
+possible to set the MODIFY_TOPICCATEGORY setting to True.</p>
+<h2 id="n">N<a class="headerlink" href="#n" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>NOTIFICATION_ENABLED</strong></dt>
+<dd>
+<ul>
+<li>Default <code>True</code></li>
+<li>Env: <code>NOTIFICATION_ENABLED</code></li>
+</ul>
+</dd>
+</dl>
+<p>Enable or disable the notification system.</p>
+<h2 id="p">P<a class="headerlink" href="#p" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>PROXY_ALLOWED_HOSTS</strong></dt>
+<dd>
+<p>Default:  <code>()</code> (Empty tuple)</p>
+</dd>
+</dl>
+<p>A tuple of strings representing the host/domain names that GeoNode can proxy requests to. This is a security measure
+to prevent an attacker from using the GeoNode proxy to render malicious code or access internal sites.</p>
+<p>Values in this tuple can be fully qualified names (e.g. 'www.geonode.org'), in which case they will be matched against
+the request’s Host header exactly (case-insensitive, not including port). A value beginning with a period can be used
+as a subdomain wildcard: <code>.geonode.org</code> will match <code>geonode.org</code>, <code>www.geonode.org</code>, and any other subdomain of
+geonode.org. A value of '*' will match anything and is not recommended for production deployments.</p>
+<dl>
+<dt><strong>PROXY_URL</strong></dt>
+<dd>
+<p>Default: <code>/proxy/?url=</code></p>
+</dd>
+</dl>
+<p>The URL to a proxy that will be used when making client-side requests in GeoNode.  By default, the
+internal GeoNode proxy is used but administrators may favor using their own, less restrictive proxies.</p>
+<dl>
+<dt><strong>PYCSW</strong></dt>
+<dd>
+<p>A dict with pycsw's configuration with two possible keys CONFIGURATION and FILTER.</p>
+</dd>
+</dl>
+<p><code>CONFIGURATION</code>: Of note are the sections <code>metadata:main</code> to set CSW server metadata and <code>metadata:inspire</code>
+to set INSPIRE options.  Setting <code>metadata:inspire['enabled']</code> to <code>true</code>
+will enable INSPIRE support.   Server level configurations can be overridden
+in the <code>server</code> section.  See http://docs.pycsw.org/en/latest/configuration.html
+for full pycsw configuration details.</p>
+<p><code>FILTER</code>: Optional settings in order to add a filter to the CSW filtering.
+The filter follow the django orm structure and must be a <code>ResourceBase</code> field/related field.
+By default CSW will filter only for <code>layer</code> resource_type</p>
+<p>Example of PYCSW configuration.
+<div class="highlight"><pre><span></span><code><span class="n">PYCSW</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;CONFIGURATION&#39;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+    <span class="s1">&#39;FILTER&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;resource_type__in&#39;</span><span class="p">:[</span><span class="s1">&#39;layer&#39;</span><span class="p">]</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h2 id="r">R<a class="headerlink" href="#r" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>RECAPTCHA_ENABLED</strong></dt>
+<dd>
+<ul>
+<li>Default <code>False</code></li>
+<li>Env: <code>RECAPTCHA_ENABLED</code></li>
+</ul>
+</dd>
+</dl>
+<p>Allows enabling reCaptcha field on signup form.
+Valid Captcha Public and Private keys will be needed as specified here https://pypi.org/project/django-recaptcha/#installation</p>
+<p>You will need to generate a keys pair for <code>reCaptcha v2</code> for your domain from https://www.google.com/recaptcha/admin/create</p>
+<dl>
+<dt><strong>RECAPTCHA_PUBLIC_KEY</strong></dt>
+<dd>
+<ul>
+<li>Default <code>geonode_RECAPTCHA_PUBLIC_KEY</code></li>
+<li>Env: <code>RECAPTCHA_PUBLIC_KEY</code></li>
+</ul>
+</dd>
+</dl>
+<p>You will need to generate a keys pair for <code>reCaptcha v2</code> for your domain from https://www.google.com/recaptcha/admin/create</p>
+<dl>
+<dt><strong>RECAPTCHA_PRIVATE_KEY</strong></dt>
+<dd>
+<ul>
+<li>Default <code>geonode_RECAPTCHA_PRIVATE_KEY</code></li>
+<li>Env: <code>RECAPTCHA_PRIVATE_KEY</code></li>
+</ul>
+</dd>
+</dl>
+<p>You will need to generate a keys pair for <code>reCaptcha v2</code> for your domain from https://www.google.com/recaptcha/admin/create</p>
+<dl>
+<dt><strong>REGISTERED_MEMBERS_GROUP_NAME</strong></dt>
+<dd>
+<ul>
+<li>Default <code>registered-members</code></li>
+<li>Env: <code>REGISTERED_MEMBERS_GROUP_NAME</code></li>
+</ul>
+</dd>
+</dl>
+<p>Used by <code>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME</code> settings.</p>
+<dl>
+<dt><strong>REGISTERED_MEMBERS_GROUP_TITLE</strong></dt>
+<dd>
+<ul>
+<li>Default <code>Registered Members</code></li>
+<li>Env: <code>REGISTERED_MEMBERS_GROUP_TITLE</code></li>
+</ul>
+</dd>
+</dl>
+<p>Used by <code>AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME</code> settings.</p>
+<dl>
+<dt><strong>REGISTRATION_OPEN</strong></dt>
+<dd>
+<p>Default:  <code>False</code></p>
+</dd>
+</dl>
+<p>A boolean that specifies whether users can self-register for an account on your site.</p>
+<dl>
+<dt><strong>RESOURCE_PUBLISHING</strong></dt>
+<dd>
+<p>Default:  <code>False</code></p>
+</dd>
+</dl>
+<p>By default, the GeoNode application allows GeoNode staff members to
+publish/unpublish resources.
+By default, resources are published when created. When this setting is set to
+True the staff members will be able to unpublish a resource (and eventually
+publish it back).</p>
+<h2 id="s">S<a class="headerlink" href="#s" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>SEARCH_FILTERS</strong></dt>
+<dd>
+<ul>
+<li>Default;<ul>
+<li><code>TEXT_ENABLED</code>: <code>True</code>,</li>
+<li><code>TYPE_ENABLED</code>: <code>True</code>,</li>
+<li><code>CATEGORIES_ENABLED</code>: <code>True</code>,</li>
+<li><code>OWNERS_ENABLED</code>: <code>True</code>,</li>
+<li><code>KEYWORDS_ENABLED</code>: <code>True</code>,</li>
+<li><code>H_KEYWORDS_ENABLED</code>: <code>True</code>,</li>
+<li><code>T_KEYWORDS_ENABLED</code>: <code>True</code>,</li>
+<li><code>DATE_ENABLED</code>: <code>True</code>,</li>
+<li><code>REGION_ENABLED</code>: <code>True</code>,</li>
+<li><code>EXTENT_ENABLED</code>: <code>True</code>,</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+<p>Enabled Search Filters for filtering resources.</p>
+<dl>
+<dt><strong>SERVICES_TYPE_MODULES</strong></dt>
+<dd>
+<p>It's possible to define multiple Service Types Modules for custom service type with it's own Handler.</p>
+</dd>
+</dl>
+<p>The variable should be declared in this way in <code>settings.py</code>:</p>
+<p><code>SERVICES_TYPE_MODULES = [ 'path.to.module1','path.to.module2', ... ]</code></p>
+<p>Default service types are already included</p>
+<p>Inside each module in the list we need to define a variable:</p>
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;services_type&quot;</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;&lt;key_of_service_type&gt;&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;OWS&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="o">/</span><span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;handler&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;path.to.Handler&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;label to show in remote service page&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;management_view&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;path.to.view&gt;&quot;</span>
+<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>the <code>key_of_service_type</code> is just an identifier to assign at the service type.
+<code>OWS</code> is True if the service type is an OGC Service Compliant.
+The <code>handler</code> key must contain the path to the class who will provide all methods to manage the service type
+The <code>label</code> is what is shown in the service form when adding a new service.
+The <code>management_view</code>, if exists, must contain the path to the method where the management page is opened.</p>
+<dl>
+<dt><strong>SERVICE_UPDATE_INTERVAL</strong></dt>
+<dd>
+<ul>
+<li>Default <code>0</code></li>
+</ul>
+</dd>
+</dl>
+<p>The Interval services are updated.</p>
+<dl>
+<dt><strong>SHOW_PROFILE_EMAIL</strong></dt>
+<dd>
+<p>Default:  <code>False</code></p>
+</dd>
+</dl>
+<p>A boolean which specifies whether to display the email in the user’s profile.</p>
+<dl>
+<dt><strong>SITE_HOST_NAME</strong></dt>
+<dd>
+<ul>
+<li>Default <code>localhost</code></li>
+<li>Env: <code>SITE_HOST_NAME</code></li>
+</ul>
+</dd>
+</dl>
+<p>The hostname used for GeoNode.</p>
+<dl>
+<dt><strong>SITE_HOST_PORT</strong></dt>
+<dd>
+<ul>
+<li>Default <code>8000</code></li>
+<li>Env: <code>SITE_HOST_PORT</code></li>
+</ul>
+</dd>
+</dl>
+<p>The Site hostport.</p>
+<dl>
+<dt><strong>SITEURL</strong></dt>
+<dd>
+<p>Default:  <code>'http://localhost:8000/'</code></p>
+</dd>
+</dl>
+<p>A base URL for use in creating absolute links to Django views and generating links in metadata.</p>
+<dl>
+<dt><strong>SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES</strong></dt>
+<dd>
+<p>Default:  <code>'("data_upload", "uploads-upload", "document_upload",)'</code></p>
+</dd>
+</dl>
+<p>Rappresent the list of the urls basename that are under file_size restriction</p>
+<dl>
+<dt><strong>SOCIALACCOUNT_AUTO_SIGNUP</strong></dt>
+<dd>
+<p>Default:  <code>True</code></p>
+</dd>
+</dl>
+<p>Attempt to bypass the signup form by using fields (e.g. username, email) retrieved from the social account provider.
+This is a <a href="https://django-allauth.readthedocs.io/en/latest/configuration.html">Django-allauth setting</a></p>
+<dl>
+<dt><strong>SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP</strong></dt>
+<dd>
+<p>Default:  <code>True</code></p>
+</dd>
+</dl>
+<p>Variable which controls displaying local account registration form. By default form is visible</p>
+<dl>
+<dt><strong>SEARCH_RESOURCES_EXTENDED</strong></dt>
+<dd>
+<p>Default:  <code>True</code></p>
+</dd>
+</dl>
+<p>This will extend search with additinoal properties. By default its on and search engine will check resource title or purpose or abstract.
+When set to False just title lookup is performed.</p>
+<dl>
+<dt><strong>SUPPORTED_DATASET_FILE_TYPES</strong></dt>
+<dd>
+<ul>
+<li>Default:
+<div class="highlight"><pre><span></span><code><span class="n">SUPPORTED_DATASET_FILE_TYPES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;shp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;ESRI Shapefile&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;shp&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;requires&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;shp&quot;</span><span class="p">,</span> <span class="s2">&quot;prj&quot;</span><span class="p">,</span> <span class="s2">&quot;dbf&quot;</span><span class="p">,</span> <span class="s2">&quot;shx&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="s2">&quot;sld&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;GeoTIFF&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;raster&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;image/tiff&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="s2">&quot;sld&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Comma Separated Value (CSV)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text/csv&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="s2">&quot;sld&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Zip Archive&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;archive&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;zip&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;application/zip&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="s2">&quot;sld&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;xml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;XML Metadata File&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;xml&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;application/json&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;needsFiles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;shp&quot;</span><span class="p">,</span> <span class="s2">&quot;prj&quot;</span><span class="p">,</span> <span class="s2">&quot;dbf&quot;</span><span class="p">,</span> <span class="s2">&quot;shx&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span> <span class="s2">&quot;sld&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;sld&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Styled Layer Descriptor (SLD)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sld&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;application/json&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;needsFiles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;shp&quot;</span><span class="p">,</span> <span class="s2">&quot;prj&quot;</span><span class="p">,</span> <span class="s2">&quot;dbf&quot;</span><span class="p">,</span> <span class="s2">&quot;shx&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div></li>
+</ul>
+</dd>
+</dl>
+<p>Rappresent the list of the supported file type in geonode that can be ingested by the platform</p>
+<p>For example. the following configuration is needed to add the GeoJSON as supported file:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;geojson&quot;</span><span class="p">,</span>
+<span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;GeoJSON&quot;</span><span class="p">,</span>
+<span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
+<span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;geojson&quot;</span><span class="p">],</span>
+<span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;application/json&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+ <span class="err">```</span>
+
+<span class="c1">## T</span>
+
+<span class="o">**</span><span class="n">THEME_ACCOUNT_CONTACT_EMAIL</span><span class="o">**</span>
+
+
+<span class="p">:</span>   <span class="n">Default</span><span class="p">:</span>  <span class="err">``</span><span class="s1">&#39;admin@example.com&#39;</span><span class="err">``</span>
+
+<span class="n">This</span> <span class="n">email</span> <span class="n">address</span> <span class="ow">is</span> <span class="n">added</span> <span class="n">to</span> <span class="n">the</span> <span class="n">bottom</span> <span class="n">of</span> <span class="n">the</span> <span class="n">password</span> <span class="n">reset</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">case</span> <span class="n">users</span> <span class="n">have</span> <span class="n">trouble</span> <span class="n">unlocking</span> <span class="n">their</span> <span class="n">account</span><span class="o">.</span>
+
+<span class="o">**</span><span class="n">THESAURI</span><span class="o">**</span>
+
+
+<span class="n">Default</span> <span class="o">=</span> <span class="err">``</span><span class="p">[]</span><span class="err">``</span>
+
+<span class="n">A</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">Keywords</span> <span class="n">thesauri</span> <span class="n">settings</span><span class="p">:</span>
+<span class="n">For</span> <span class="n">example</span> <span class="err">`</span><span class="n">THESAURI</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;inspire_themes&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;filter&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;inspire_concepts&#39;</span><span class="p">,</span> <span class="s1">&#39;filter&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span> <span class="p">]</span><span class="err">`</span>
+
+
+<span class="c1">## U</span>
+
+<span class="o">**</span><span class="n">USER_DELETION_RULES</span><span class="o">**</span>
+
+<span class="p">:</span>   <span class="o">-</span> <span class="n">Default</span> <span class="err">``</span><span class="p">[</span><span class="s2">&quot;geonode.people.utils.user_has_resources&quot;</span><span class="p">]</span><span class="err">``</span>
+    <span class="o">-</span> <span class="n">Env</span><span class="p">:</span> <span class="err">``</span><span class="n">USER_DELETION_RULES</span><span class="err">``</span>
+
+<span class="n">List</span> <span class="n">of</span> <span class="n">callables</span> <span class="n">that</span> <span class="n">will</span> <span class="n">be</span> <span class="n">called</span> <span class="n">the</span> <span class="n">deletion</span> <span class="n">of</span> <span class="n">a</span> <span class="n">user</span> <span class="n">account</span> <span class="ow">is</span> <span class="n">requested</span><span class="o">.</span>
+<span class="n">The</span> <span class="n">deletion</span> <span class="n">will</span> <span class="n">fail</span> <span class="k">if</span> <span class="nb">any</span> <span class="n">of</span> <span class="n">the</span> <span class="n">callables</span> <span class="k">return</span> <span class="err">``</span><span class="kc">False</span><span class="err">``</span><span class="o">.</span> 
+<span class="n">New</span> <span class="n">rules</span> <span class="n">can</span> <span class="n">be</span> <span class="n">added</span><span class="p">,</span> <span class="k">as</span> <span class="n">a</span> <span class="n">string</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="nb">callable</span><span class="p">,</span> <span class="k">as</span> <span class="n">long</span> <span class="k">as</span> <span class="n">they</span> <span class="n">take</span> <span class="k">as</span> <span class="n">parameter</span>
+<span class="n">the</span> <span class="n">user</span> <span class="nb">object</span> <span class="ow">and</span> <span class="k">return</span> <span class="n">a</span> <span class="n">boolean</span><span class="o">.</span>
+
+
+<span class="o">**</span><span class="n">UUID</span> <span class="n">HANDLER</span><span class="o">**</span>
+
+<span class="n">Is</span> <span class="n">possible</span> <span class="n">to</span> <span class="n">define</span> <span class="n">an</span> <span class="n">own</span> <span class="n">uuidhandler</span> <span class="k">for</span> <span class="n">the</span> <span class="n">Layer</span><span class="o">.</span>
+
+<span class="n">To</span> <span class="n">start</span> <span class="n">using</span> <span class="n">your</span> <span class="n">own</span> <span class="n">handler</span><span class="p">,</span> <span class="ow">is</span> <span class="n">needed</span> <span class="n">to</span> <span class="n">add</span> <span class="n">the</span> <span class="n">following</span> <span class="n">configuration</span><span class="p">:</span>
+
+<span class="err">`</span><span class="n">LAYER_UUID_HANDLER</span> <span class="o">=</span> <span class="s2">&quot;mymodule.myfile.MyObject&quot;</span><span class="err">`</span>
+
+<span class="n">The</span> <span class="n">Object</span> <span class="n">must</span> <span class="n">accept</span> <span class="k">as</span> <span class="err">`</span><span class="n">init</span><span class="err">`</span> <span class="n">the</span> <span class="err">`</span><span class="n">instance</span><span class="err">`</span> <span class="n">of</span> <span class="n">the</span> <span class="n">layer</span> <span class="ow">and</span> <span class="n">have</span> <span class="n">a</span> <span class="n">method</span> <span class="n">named</span> <span class="err">`</span><span class="n">create_uuid</span><span class="p">()</span><span class="err">`</span>
+
+<span class="n">here</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">example</span><span class="p">:</span>
+
+<span class="err">```</span><span class="n">python</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyObject</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_uuid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># here your code</span>
+    <span class="k">pass</span>
+</code></pre></div>
+<h2 id="x">X<a class="headerlink" href="#x" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><strong>X_FRAME_OPTIONS</strong></dt>
+<dd>
+<p>Default:  <code>'ALLOW-FROM %s' % SITEURL</code></p>
+</dd>
+</dl>
+<p>This is a <a href="https://docs.djangoproject.com/en/3.2/ref/clickjacking/#setting-x-frame-options-for-all-responses">Django setting</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["header.autohide", "navigation.instant", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../theme/js/dl-anchors.js"></script>
+      
+    
+  </body>
+</html>

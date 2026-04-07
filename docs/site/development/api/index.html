@@ -1,0 +1,3543 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../admin/oauth/">
+      
+      
+        <link rel="next" href="../../setup/docker/prerequisites/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>API Usage - GeoNode documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#resource-listing-and-details" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GeoNode documentation" class="md-header__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoNode documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Usage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+
+<!-- Navigation tabs -->
+<nav
+  class="md-tabs"
+  aria-label="Tabs"
+  data-md-component="tabs"
+>
+  <div class="md-grid">
+    <div style="display: flex; justify-content: space-between">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../user-guide/user_account/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../admin/panel/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../setup/docker/prerequisites/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Setup
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../miscellaneous/thesauri/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Miscellaneous
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+    <ul class="md-tabs__list">
+      <li class="md-tabs__item pull-right export-pdf-li" style="display:flex;" title="Export PDF"></li>
+    </ul>
+    </div>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GeoNode documentation" class="md-nav__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    GeoNode documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/user_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User account
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Catalog Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Datasets
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upload a dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/preview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preview and Styling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/update_replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update and Replace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/remote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote datasets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/empty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Create empty dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/sharing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sharing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Administration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/panel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessing the panel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/user/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/group/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/social/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Social Logins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/oauth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Usage
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resource-listing-and-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Listing and Details
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Download
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Links
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Links">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ogc-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OGC services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embedding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Embedding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-searching-and-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Searching and Filtering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-specific-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataset specific resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Upload
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Upload">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datasets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tracking-dataset-upload-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tracking dataset upload progress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overwriting-a-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overwriting a dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skip-existing-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skip existing dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-of-a-metadata-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upload of a metadata file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Delete
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-download_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Download
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Download">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datasets_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datasets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documents_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documents
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-update-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataset Update Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#users-groups-and-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Users, Groups and Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Users, Groups and Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Users
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User detail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-new-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a new user
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edit-a-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edit a User
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-a-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete a User
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-user-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List user groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transfer-resources-owned-by-a-user-to-another" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transfer resources owned by a user to another
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remove-user-as-a-group-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remove user as a group manager
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#obtaining-permissions-on-a-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obtaining permissions on a resource
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-permissions-on-a-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing permissions on a resource
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linked-resources-listing-and-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linked Resources Listing and Details
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#assets-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asset-remove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Remove
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Install
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_1" id="__nav_5_1_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Docker installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/docker/prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/docker/vanilla-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/docker/project-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bare installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bare installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/bare/prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/bare/vanilla-bare-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/bare/project-bare-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/configuration/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/configuration/environmental_variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Miscellaneous
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Miscellaneous
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../miscellaneous/thesauri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thesauri
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../miscellaneous/br/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup And Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resource-listing-and-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Listing and Details
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Download
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Links
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Links">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ogc-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OGC services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embedding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Embedding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-searching-and-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Searching and Filtering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-specific-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataset specific resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Upload
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Upload">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datasets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tracking-dataset-upload-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tracking dataset upload progress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overwriting-a-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overwriting a dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skip-existing-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skip existing dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-of-a-metadata-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upload of a metadata file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Delete
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-download_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Download
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Download">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datasets_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datasets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documents_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documents
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-update-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataset Update Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#users-groups-and-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Users, Groups and Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Users, Groups and Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Users
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User detail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-new-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a new user
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edit-a-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edit a User
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-a-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete a User
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-user-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List user groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transfer-resources-owned-by-a-user-to-another" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transfer resources owned by a user to another
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remove-user-as-a-group-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remove user as a group manager
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#obtaining-permissions-on-a-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obtaining permissions on a resource
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-permissions-on-a-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing permissions on a resource
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linked-resources-listing-and-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linked Resources Listing and Details
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#assets-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asset-remove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Remove
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Developer Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>API Usage</h1>
+
+<p>In this section, we are going to demostrate how GeoNode API can be utilized/integrated with other applications using Python.</p>
+<h2 id="resource-listing-and-details">Resource Listing and Details<a class="headerlink" href="#resource-listing-and-details" title="Permanent link">&para;</a></h2>
+<p>As mentioned in previous chapters, GeoNode resources are categorized in different types e.g. datasets, maps, documents. Etc.
+All available resources can be listed with API <code>GET /api/v2/resources</code>.</p>
+<p>To obtain a single resource, a primary key is provided in the url. Eg <code>GET /api/v2/resources/{resource.pk}</code>.</p>
+<p>Example Requests:</p>
+<ol>
+<li>Listing:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources&quot;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</code></pre></div></li>
+<li>Detail:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/1797&quot;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</code></pre></div></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The above requests work for publicly visible resources. If a resource is private either the Basic Auth or the Bearer token must be included inside the headers.</p>
+</div>
+<ol>
+<li>Listing with basic auth:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></li>
+</ol>
+<p>A token can be used in place of Basic Auth by setting <code>'Authorization': 'Bearer &lt;token&gt;'</code>.</p>
+<h2 id="resource-download">Resource Download<a class="headerlink" href="#resource-download" title="Permanent link">&para;</a></h2>
+<p>The download URL for a resource can be obtained from <code>resource.download_url</code>. This URL executes the synchronous download of a resource in its default download format (ESRI Shapefile for vector, Geotiff for rasters and the original format for documents). 
+Additional export formats for datasets are available through the UI. At the moment the API doesn’t expose them.</p>
+<h2 id="resource-links">Resource Links<a class="headerlink" href="#resource-links" title="Permanent link">&para;</a></h2>
+<p>From the resource detail response, URls and links to services can be obtained from the <code>resource.links[]</code> array value.
+The purpose of each link is defined by its <code>link_type</code>. The “name” also can specify additional information about the linked resource. </p>
+<h3 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h3>
+<p>Links to each metadata format can be obtained from links with <code>link_type = "metadata"</code></p>
+<h3 id="ogc-services">OGC services<a class="headerlink" href="#ogc-services" title="Permanent link">&para;</a></h3>
+<p>OGC requests can be built by taking:
+the OGC base url from  links from <code>resource.links[]</code> with <code>"link_type"= ("OGC:WMS | OGC:WFS | OGC:WCS)</code>
+the OGC service layername obtained from the <code>resource.alternate</code> property </p>
+<h3 id="embedding">Embedding<a class="headerlink" href="#embedding" title="Permanent link">&para;</a></h3>
+<p>A resource can be embedded inside a third party website. The “embed view” of a resource is suitable to be placed inside an iframe.
+The URL for the embedded view can be obtained from the <code>resource.embed_url</code> property.</p>
+<h2 id="resource-searching-and-filtering">Resource Searching and Filtering<a class="headerlink" href="#resource-searching-and-filtering" title="Permanent link">&para;</a></h2>
+<p>GeoNode resources can be filtered with the following query parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>title and abstract <code>(paginated free text search)</code></td>
+<td>/api/v2/resources?page=1&amp;search=text-to-search&amp;search_fields=title&amp;search_fields=abstract</td>
+</tr>
+<tr>
+<td>resource_type <code>(dataset, map, document, service, geostory, dashboard)</code></td>
+<td>/api/v2/resources?filter{resource_type}=map</td>
+</tr>
+<tr>
+<td>subtype <code>(raster,vector, vector_time, remote)</code></td>
+<td>/api/v2/resources?filter{resource_type}=vector</td>
+</tr>
+<tr>
+<td>favorite <code>(Boolean True)</code></td>
+<td>/api/v2/resources?favorite=true</td>
+</tr>
+<tr>
+<td>featured <code>(Boolean True or False)</code></td>
+<td>/api/v2/resources?filter{resource_type}=vector</td>
+</tr>
+<tr>
+<td>published <code>(Boolean True or False)</code></td>
+<td>/api/v2/resources?filter{is_published}=true</td>
+</tr>
+<tr>
+<td>aprroved <code>(Boolean True or False)</code></td>
+<td>/api/v2/resources?filter{is_approved}=true</td>
+</tr>
+<tr>
+<td>category</td>
+<td>api/v2/resources?filter{category.identifier}=example</td>
+</tr>
+<tr>
+<td>keywords</td>
+<td>/api/v2/resources?filter{keywords.name}=example</td>
+</tr>
+<tr>
+<td>regions</td>
+<td>/api/v2/resources?filter{regions.name}=global</td>
+</tr>
+<tr>
+<td>owner</td>
+<td>/api/v2/resources?filter{owner.username}=test_user</td>
+</tr>
+<tr>
+<td>extent <code>(Four comer separated coordinates)</code></td>
+<td>/api/v2/resources?extent=-180,-90,180,90</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Filter with a single value
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/?filter</span><span class="si">{resource_type}</span><span class="s2">=map&quot;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span>
+</code></pre></div></li>
+<li>Filter with multiple values
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/?filter</span><span class="si">{resource_type.in}</span><span class="s2">=map&amp;filter</span><span class="si">{resource_type.in}</span><span class="s2">=dataset&quot;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With filter APIs of format <code>/api/v2/resources?filter{filter_key}=value</code>, additional methods(in and icontains) can be used on them to provide extensively filtered results.
+Eg
+<code>/api/v2/resources?filter{regions.name.icontains}=global</code>
+<code>/api/v2/resources?filter{regions.name.in}=global</code>.</p>
+<p>It's important to note that other methods are case sensitive except the icontains.</p>
+</div>
+<h2 id="dataset-specific-resources">Dataset specific resources<a class="headerlink" href="#dataset-specific-resources" title="Permanent link">&para;</a></h2>
+<p>Get the metadata of uploaded datasets with:</p>
+<ul>
+<li>API: <code>GET /api/v2/datasets/{id}</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is very similar to <code>GET /api/v2/resources</code> but provides additional metadata specifically for datasets like <code>featureinfo_custom_template</code> or <code>attribute_set</code></p>
+</div>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">DATASET_ID</span> <span class="o">=</span> <span class="s2">&quot;the dataset id&quot;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://master.demo.geonode.org/api/v2/datasets/</span><span class="si">{</span><span class="n">DATASET_ID</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="resource-upload">Resource Upload<a class="headerlink" href="#resource-upload" title="Permanent link">&para;</a></h2>
+<p>The API supports the upload of datasets and documents.</p>
+<h3 id="datasets">Datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h3>
+<p>The dataset upload form accepts file formats of ESRI Shapefile, GeoTIFF, Comma Separated Value (CSV), Zip Archive, XML Metadata File, and Styled Layer Descriptor (SLD).
+For a successful upload, the form requires base_file, dbf_file, shx_file, and prj_file. The xml_file, and Sld_file are optional.</p>
+<ul>
+<li>API: <code>POST /api/v2/uploads/upload</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/uploads/upload&quot;</span>
+<span class="n">files</span><span class="o">=</span> <span class="p">[</span>
+<span class="p">(</span><span class="s1">&#39;sld_file&#39;</span><span class="p">,(</span><span class="s1">&#39;BoulderCityLimits.sld&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/myuser/BoulderCityLimits.sld&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;application/octet-stream&#39;</span><span class="p">)),</span>   <span class="p">(</span><span class="s1">&#39;base_file&#39;</span><span class="p">,(</span><span class="s1">&#39;BoulderCityLimits.shp&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/BoulderCityLimits.shp&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;application/octet-stream&#39;</span><span class="p">)),</span>  <span class="p">(</span><span class="s1">&#39;dbf_file&#39;</span><span class="p">,(</span><span class="s1">&#39;BoulderCityLimits.dbf&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/BoulderCityLimits.dbf&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;application/octet-stream&#39;</span><span class="p">)),</span>  <span class="p">(</span><span class="s1">&#39;shx_file&#39;</span><span class="p">,(</span><span class="s1">&#39;BoulderCityLimits.shx&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/BoulderCityLimits.shx&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;application/octet-stream&#39;</span><span class="p">)),</span>
+<span class="p">(</span><span class="s1">&#39;prj_file&#39;</span><span class="p">,(</span><span class="s1">&#39;BoulderCityLimits.prj&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/myuser/BoulderCityLimits.prj&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;application/octet-stream))</span>
+<span class="p">]</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+<span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="documents">Documents<a class="headerlink" href="#documents" title="Permanent link">&para;</a></h3>
+<p>Documents can be uploaded as form data.</p>
+<ul>
+<li>API: <code>POST /api/v2/documents</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8000/api/v2/documents&quot;</span>
+<span class="n">payload</span><span class="o">=</span><span class="p">{</span>
+    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;An example image&#39;</span>
+<span class="p">}</span>
+<span class="n">files</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;doc_file&#39;</span><span class="p">,(</span><span class="s1">&#39;image.jpg&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/myuser/image.jpg&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;image/jpeg&#39;</span><span class="p">))</span>
+<span class="p">]</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+</code></pre></div></p>
+<p>Documents can also be created to reference remote resources. In this case the <code>doc_url</code> parameter must be used to set the URL of the remote document.</p>
+<ul>
+<li>API: <code>POST /api/v2/documents</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8000/api/v2/documents&quot;</span>
+<span class="n">payload</span><span class="o">=</span><span class="p">{</span>
+    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;An example image&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;doc_url&#39;</span> <span class="p">:</span> <span class="s1">&#39;http://examples.com/image.jpg&#39;</span>
+<span class="p">}</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+</code></pre></div></p>
+<p>Notice that if the URL doesn't end with a valid doc extension, the <code>extension</code> parameter must be used (e.g. <code>extension: 'jpeg'</code>).</p>
+<h3 id="tracking-dataset-upload-progress">Tracking dataset upload progress<a class="headerlink" href="#tracking-dataset-upload-progress" title="Permanent link">&para;</a></h3>
+<p>When an upload request is executed, GeoNode creates an "Execution request" and keeps updating its state and progress (it’s a property attribute, calculated on getting the response) attributes as the resource is being created and configured in Geoserver.
+An execution can be in one of the following status:
+    - <code>ready</code>
+    - <code>running</code>
+    - <code>failed</code>
+    - <code>finished</code></p>
+<p>When the dataset is successfully uploaded, the final state of the upload is set to <code>finished</code>.</p>
+<p>In order to view status of the execution, the API method <code>GET /api/v2/executionrequest/{execution_id}</code> where <code>{execution_id}</code> is the value returned by the initial call to the upload API. </p>
+<p>The returned object contains, beyond all the information related to the execution, the inputs that were passed to the execution request, and output params specific to the type of execution.
+In the case of a dataset upload, the output params contain the URL of the catalog page for the new datast.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;output_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;detail_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;/catalogue/#/dataset/9881&quot;</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>You can also filter executions by status.
+Eg <code>GET /api/v2/executionrequest?filter{action}=import&amp;filter{source}=upload&amp;filter{status}=finished</code></p>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://stable.demo.geonode.org/api/v2/executionrequest/5f640b6b-8c51-4514-a054-995133fee107&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="overwriting-a-dataset">Overwriting a dataset<a class="headerlink" href="#overwriting-a-dataset" title="Permanent link">&para;</a></h3>
+<p>Uploading a resource will create by default a new dataset. This behaviour can be changed by setting the <code>overwrite_existing_layer</code> parameter to <code>True</code>. 
+In this case the upload procedure will overwrite a resource whose name matches with the new one.</p>
+<h3 id="skip-existing-dataset">Skip existing dataset<a class="headerlink" href="#skip-existing-dataset" title="Permanent link">&para;</a></h3>
+<p>If the parameter <code>skip_existing_layers</code> is set to true <code>True</code> the uplad procedure will ignore files whose name matched with already existing resources.</p>
+<h3 id="upload-of-a-metadata-file">Upload of a metadata file<a class="headerlink" href="#upload-of-a-metadata-file" title="Permanent link">&para;</a></h3>
+<p>A complete metadata file conforming to ISO-19115 can be uploaded for a dataset.</p>
+<ul>
+<li>API: <code>PUT /api/v2/datasets/{dataset_id}/metadata</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8000/api/v2/datasets/1/metadata&quot;</span>
+<span class="n">files</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;metadata_file&#39;</span><span class="p">,(</span><span class="s1">&#39;metadata.xml&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/user/metadata.xml&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;text/xml&#39;</span><span class="p">))</span>
+    <span class="p">]</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{},</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="resource-delete">Resource Delete<a class="headerlink" href="#resource-delete" title="Permanent link">&para;</a></h2>
+<ul>
+<li>API: <code>DELETE /api/v2/resources/{pk}/delete</code></li>
+<li>Status Code: <code>204</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/1778&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="resource-download_1">Resource Download<a class="headerlink" href="#resource-download_1" title="Permanent link">&para;</a></h2>
+<p>GeoNode offers a download option to resources of resource_type dataset and document.
+For datasets, the download option is available for only datasets with uploaded files.</p>
+<h3 id="datasets_1">Datasets<a class="headerlink" href="#datasets_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>GET /datasets/{resource.alternate}/dataset_download</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/datasets/geonode:BoulderCityLimits3/dataset_download&quot;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="documents_1">Documents<a class="headerlink" href="#documents_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>GET /documents/{resource.pk}/download</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/documents/1781/download&quot;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="dataset-update-metadata">Dataset Update Metadata<a class="headerlink" href="#dataset-update-metadata" title="Permanent link">&para;</a></h2>
+<ul>
+<li>API: <code>PATCH /api/v2/datasets/{id}</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>The following example changes the title and the license of a dataset.
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">+</span> <span class="s2">&quot;api/v2/datasets/&quot;</span> <span class="o">+</span> <span class="n">DATASET_ID</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOGIN_NAME</span><span class="p">,</span> <span class="n">LOGIN_PASSWORD</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;a new title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;license&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> 
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>bbox_polygon</code> and <code>ll_bbox_polygon</code> are derived values which cannot be changed.</p>
+</div>
+<h2 id="users-groups-and-permissions">Users, Groups and Permissions<a class="headerlink" href="#users-groups-and-permissions" title="Permanent link">&para;</a></h2>
+<h3 id="users">Users<a class="headerlink" href="#users" title="Permanent link">&para;</a></h3>
+<p>Listing
+- API: <code>POST /api/v2/users</code>
+- Status Code: <code>200</code></p>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="user-detail">User detail<a class="headerlink" href="#user-detail" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>POST /api/v2/users/{pk}</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users/1000&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="create-a-new-user">Create a new user<a class="headerlink" href="#create-a-new-user" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>POST /api/v2/users</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;email@email.com&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;first_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;last_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;avatar&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240&quot;</span><span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="edit-a-user">Edit a User<a class="headerlink" href="#edit-a-user" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>PATCH /api/v2/users/{pk}</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users/1000&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span><span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="delete-a-user">Delete a User<a class="headerlink" href="#delete-a-user" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>DELETE /api/v2/users/{pk}</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users/1000&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span><span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div>
+In this case the list of validation rules configured in :ref:<code>user-deletion-rules</code> are checked before the deletion is executed.</p>
+<h3 id="list-user-groups">List user groups<a class="headerlink" href="#list-user-groups" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>POST /api/v2/users/{pk}/groups</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users/1000/groups&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="transfer-resources-owned-by-a-user-to-another">Transfer resources owned by a user to another<a class="headerlink" href="#transfer-resources-owned-by-a-user-to-another" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>POST /api/v2/users/{pk}/transfer_resources</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="mi">1001</span><span class="p">}</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users/1000/transfer_resources&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div></p>
+<p>In this case the resources will be transfered to the user with id 1001,
+instead using the payload={"owner": "DEFAULT"} the resources will be transfered to the principal user</p>
+<h3 id="remove-user-as-a-group-manager">Remove user as a group manager<a class="headerlink" href="#remove-user-as-a-group-manager" title="Permanent link">&para;</a></h3>
+<ul>
+<li>API: <code>POST /api/v2/users/{pk}/remove_from_group_manager</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;groups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]}</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/users/1000/remove_from_group_manager&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div></p>
+<p>In this case the user shall be removed as a group manager from the following group ids, 
+if the payload would be payload={"groups": "ALL"} the user will be removed as a group manager from all the groups its part of</p>
+<h3 id="groups">Groups<a class="headerlink" href="#groups" title="Permanent link">&para;</a></h3>
+<p>In GeoNode, On listing groups, the api returns groups which have group profiles. Therefore for django groups which are not related to a group profile are not included in the response. However these can be accessed in the Django Administration panel.</p>
+<ul>
+<li>API: <code>POST /api/v2/groups</code></li>
+<li>Status Code: <code>200</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/groups&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="permissions">Permissions<a class="headerlink" href="#permissions" title="Permanent link">&para;</a></h2>
+<p>Permissions in GeoNode are set per resource and per user or group. The following are general permissions that can be assigned:</p>
+<ul>
+<li><em>View:</em> allows to view the resource. <code>[view_resourcebase]</code></li>
+<li><em>Download:</em> allows to download the resource specifically datasets and documents. <code>[ view_resourcebase, download_resourcebase]</code></li>
+<li><em>Edit:</em> allows to change attributes, properties of the datasets features, styles and metadata for the specified resource. <code>[view_resourcebase, download_resourcebase, change_resourcebase, change_dataset_style, change_dataset_data, change_resourcebase_metadata]</code></li>
+<li><em>Manage:</em> allows to update, delete, change permissions, publish and unpublish the resource. <code>[view_resourcebase, download_resourcebase, change_resourcebase, change_dataset_style, change_dataset_data, publish_resourcebase, delete_resourcebase, change_resourcebase_metadata, change_resourcebase_permissions]</code></li>
+</ul>
+<h3 id="obtaining-permissions-on-a-resource">Obtaining permissions on a resource<a class="headerlink" href="#obtaining-permissions-on-a-resource" title="Permanent link">&para;</a></h3>
+<p>On listing the resources or on resource detail API, GeoNode includes perms attribute to each resource with a list of permissions a user making the request has on the respective resource.</p>
+<p>GeoNode also provides an API to get an overview of permissions set on a resource. The response contains users and groups with permissions set on them. However this API returns <code>200</code> if a requesting user has <code>manage</code> permissions on the resource otherwise it will return <code>403 (Forbidden)</code>.</p>
+<ul>
+<li>API: <code>GET /api/v2/resources/1791/permissions</code></li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/1791/permissions&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="changing-permissions-on-a-resource">Changing permissions on a resource<a class="headerlink" href="#changing-permissions-on-a-resource" title="Permanent link">&para;</a></h3>
+<p>Permissions are configured with a so called <code>perms spec</code>, which is a JSON structured where permissions for single users and groups can be specified.</p>
+<p>The example below shows a perm specification for following rules:</p>
+<ul>
+<li>user1 can <code>edit</code></li>
+<li>user2 can <code>manage</code></li>
+<li>group1 can <code>edit</code></li>
+<li>anonymous users (public) can <code>view</code></li>
+<li>registered members can <code>download</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The id of the “anonymous” and “registered members” groups can be obtained from the permissions of the resource. They are not listed inside the groups API, since these are spceial internal groups</p>
+</div>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">&quot;users&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;id_o</span><span class="kc">f</span><span class="err">_user</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;edit&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;id_o</span><span class="kc">f</span><span class="err">_user</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;manage&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;organizations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;id_o</span><span class="kc">f</span><span class="err">_group</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;edit&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;groups&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;id_o</span><span class="kc">f</span><span class="err">_a</span><span class="kc">n</span><span class="err">o</span><span class="kc">n</span><span class="err">ymous_group&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;view&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;id_o</span><span class="kc">f</span><span class="err">_regisd</span><span class="kc">tere</span><span class="err">d</span><span class="mi">-</span><span class="err">members_group&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;download&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+The perm spec is sent as JSON, with <code>application/json Content-Type</code>, inside a <code>PUT</code> request.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/1791/permissions&quot;</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+<span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1001</span><span class="p">,</span>
+    <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;edit&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1002</span><span class="p">,</span>
+    <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;manage&quot;</span>
+    <span class="p">}</span>
+<span class="p">],</span>
+<span class="s2">&quot;organizations&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;edit&quot;</span>
+    <span class="p">}</span>
+<span class="p">],</span>
+<span class="s2">&quot;groups&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;view&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;download&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+<span class="p">})</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+<span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div>
+<p>This is an asynchrnous operation which returns a response similar to the following:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ready&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;execution_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;7ed578c2-7db8-47fe-a3f5-6ed3ca545b67&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;status_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://master.demo.geonode.org/api/v2/resource-service/execution-status/7ed578c2-7db8-47fe-a3f5-6ed3ca545b67&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The <code>status_url</code> property returns the URL to track kthe progress of the request. Querying the URL a result similar to the following will be returned:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;running&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;func_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;set_permissions&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-07-08T11:16:32.240453Z&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;finished&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;last_updated&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-07-08T11:16:32.240485Z&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;input_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="err">…</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The operation will be completed once the <code>status</code> property is updated with the value <code>finished</code>.</p>
+<h2 id="linked-resources-listing-and-details">Linked Resources Listing and Details<a class="headerlink" href="#linked-resources-listing-and-details" title="Permanent link">&para;</a></h2>
+<p>All available linked_resources  can be listed with API <code>GET /api/v2/resources/{pk}/linked_resources</code>.
+where pk Resource base id</p>
+<p>Example Requests:
+^^^^^^^^^^^^^^^^^</p>
+<ol>
+<li>List all resource links:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/</span><span class="si">{pk}</span><span class="s2">/linked_resources&quot;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</code></pre></div></li>
+</ol>
+<h2 id="assets">Assets<a class="headerlink" href="#assets" title="Permanent link">&para;</a></h2>
+<h3 id="assets-upload">Assets Upload<a class="headerlink" href="#assets-upload" title="Permanent link">&para;</a></h3>
+<p>Assets can be attached to a resource as a file.</p>
+<p><strong>Endpoint</strong>:</p>
+<ul>
+<li><strong>API</strong>: <code>POST /api/v2/resources/{pk}/assets/</code></li>
+<li><strong>Status Code</strong>: <code>201</code></li>
+</ul>
+<p>where <code>{pk}</code> is the resource base id to which the asset is to be attached.</p>
+<p><strong>Parameters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>files</code></td>
+<td>Files</td>
+<td>The files to upload, can be multiple files</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>String</td>
+<td>Title for the asset which is optional</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>String</td>
+<td>Description of the asset which is optional</td>
+</tr>
+</tbody>
+</table>
+<p>Example Request:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/</span><span class="si">{pk}</span><span class="s2">/assets/&quot;</span>
+
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+<span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;My Asset Title&#39;</span><span class="p">,</span>
+<span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Description of my asset&#39;</span>
+<span class="p">}</span>
+
+<span class="n">files</span><span class="o">=</span><span class="p">[</span>
+<span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,(</span><span class="s1">&#39;assets.png&#39;</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/location/of/file&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">),</span><span class="s1">&#39;image/png&#39;</span><span class="p">))</span>
+<span class="p">]</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+<span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="asset-remove">Asset Remove<a class="headerlink" href="#asset-remove" title="Permanent link">&para;</a></h3>
+<p>Atatched assets can be removed from a resource.</p>
+<p><strong>Endpoint</strong>:</p>
+<ul>
+<li><strong>API</strong>: <code>DELETE /api/v2/resources/{resource_pk}/assets/{asset_pk}</code></li>
+<li><strong>Status Code</strong>: <code>204</code></li>
+</ul>
+<p>where <code>{resource_pk}</code> is the resource base id from which the asset is to be removed and <code>{asset_pk}</code> is the asset id to be removed.</p>
+<p>Example Request:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://master.demo.geonode.org/api/v2/resources/</span><span class="si">{resource_pk}</span><span class="s2">/assets/</span><span class="si">{asset_pk}</span><span class="s2">&quot;</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+<span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic dXNlcjpwYXNzd29yZA==&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["header.autohide", "navigation.instant", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "content.code.copy"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/dl-anchors.js"></script>
+      
+    
+  </body>
+</html>
