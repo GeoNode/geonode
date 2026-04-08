@@ -64,6 +64,7 @@ from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
 from geonode.security.registry import permissions_registry
+from geonode.metadata.manager import metadata_manager
 
 from geonode.base.models import Configuration, UserGeoLimit, GroupGeoLimit
 from geonode.base.populate_test_data import (
@@ -3107,9 +3108,15 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
         resource.owner = owner
         resource.save()
 
+        metadata_manager.update_schema_instance_partial(
+            resource,
+            {"contacts": {"originator": [{"id": str(owner.id), "label": owner.username}]}},
+            user=None,
+        )
+
         payload = {"users": {}, "groups": {}}
         handler = ResourceCreatorGroupsPermissionsHandler()
-        updated_perms = handler.fixup_perms(resource, payload, created=True, include_virtual=False, initial_user=owner)
+        updated_perms = handler.fixup_perms(resource, payload, created=True, include_virtual=False)
 
         resource_type = getattr(resource, "resource_type", None) or resource.polymorphic_ctype.name
         resource_subtype = (getattr(resource, "subtype", None) or "").lower()
@@ -3139,7 +3146,7 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
 
         payload = {"users": {}, "groups": {}}
         handler = ResourceCreatorGroupsPermissionsHandler()
-        updated_perms = handler.fixup_perms(resource, payload, created=False, include_virtual=False, initial_user=owner)
+        updated_perms = handler.fixup_perms(resource, payload, created=False, include_virtual=False)
 
         self.assertDictEqual({"users": {}, "groups": {}}, updated_perms)
 
