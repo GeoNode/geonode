@@ -77,13 +77,12 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         _exec = orchestrator.get_execution_object(exec_id=execution_id)
         cleaned_url, _, _, _ = WmsServiceHandler.get_cleaned_url_params(_exec.input_params.get("url"))
 
-        # This is the "Base URL" (e.g., https://domain/wms)
-        # We use this for BOTH to ensure the Harvester lookup succeeds.
-        base_url = f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}"
+        parsed_url = f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}"
+        ows_url = cleaned_url._replace(params="", fragment="").geturl()
 
         to_update = {
-            "ows_url": base_url,
-            "parsed_url": base_url,
+            "ows_url": ows_url,
+            "parsed_url": parsed_url,
             "remote_resource_id": _exec.input_params.get("identifier", None),
         }
         if _exec.input_params.get("parse_remote_metadata", False):
