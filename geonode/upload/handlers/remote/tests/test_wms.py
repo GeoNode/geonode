@@ -166,7 +166,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         if the parse_remote_metadata is True
         """
         # remote_wms = MagicMock(title="updated_title", bbox=[1,2,3,4])
-        fake_url = MagicMock(shema="http", netloc="fake", path="foo", query="bar")
+        fake_url = ParseResult(scheme="http", netloc="fake", path="/foo", params="", query="bar", fragment="")
         remote_wms.get_cleaned_url_params.return_value = fake_url, None, None, None
 
         obj = namedtuple("WmsObj", field_names=["title", "boundingBoxWGS84"])
