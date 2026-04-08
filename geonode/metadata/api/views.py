@@ -296,7 +296,7 @@ def licenses_autocomplete(request: WSGIRequest):
     for record in qs.all():
         ret.append(
             {
-                "id": record.identifier,
+                "id": record.id,
                 "label": _(record.name),
             }
         )

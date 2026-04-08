@@ -94,8 +94,8 @@ class MetadataApiTests(APITestCase):
         # Setup the database
         TopicCategory.objects.create(identifier="cat1", gn_description="fake category 1")
         TopicCategory.objects.create(identifier="cat2", gn_description="fake category 2")
-        License.objects.create(identifier="license1", name="fake license 1")
-        License.objects.create(identifier="license2", name="fake license 2")
+        self.license1 = License.objects.create(identifier="license1", name="fake license 1")
+        self.license2 = License.objects.create(identifier="license2", name="fake license 2")
         Region.objects.create(code="fake_code_1", name="fake name 1")
         Region.objects.create(code="fake_code_2", name="fake name 2")
         HierarchicalKeyword.objects.create(name="fake_keyword_1", slug="fake keyword 1")
@@ -355,8 +355,8 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license1.id, "label": _("fake license 1")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query(self):
         """
@@ -369,8 +369,8 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license1.id, "label": _("fake license 1")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query_one_match(self):
         """
@@ -383,7 +383,7 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query_no_match(self):
         """
