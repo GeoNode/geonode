@@ -90,6 +90,9 @@ from geonode.storage.manager import storage_manager
 logger = logging.getLogger(__name__)
 
 
+from django.core.cache import caches
+default_cache = caches["default"]
+
 class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
@@ -1724,7 +1727,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             Optional[List[settings.AUTH_USER_MODEL]]: returns the requested contact role from the database
         """
         try:
-            contact_role = ContactRole.objects.filter(role=role, resource=self)
+            contact_role = default_cache.get(f"{role}:{self.pk}")
+            if not contact_role:
+                contact_role = ContactRole.objects.filter(role=role, resource=self)
+                default_cache.set(f"{role}:{self.pk}", contact_role, 100)
             contacts = [cr.contact for cr in contact_role]
         except ContactRole.DoesNotExist:
             contacts = None

@@ -36,7 +36,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.template.loader import render_to_string
 from osgeo import ogr
+from django.core.cache import caches
 
+default_cache = caches['default']
 
 DEFAULT_PK_COLUMN_NAME = "fid"
 
@@ -244,9 +246,12 @@ class UploadLimitValidator:
 
     def _get_uploads_max_size(self):
         try:
+            if max_size := default_cache.get("dataset_upload_size"):
+                return max_size
             max_size_db_obj = UploadSizeLimit.objects.get(slug="dataset_upload_size")
         except UploadSizeLimit.DoesNotExist:
             max_size_db_obj = UploadSizeLimit.objects.create_default_limit()
+        default_cache.set("dataset_upload_size", max_size_db_obj.max_size)
         return max_size_db_obj.max_size
 
     def _get_uploaded_files(self):
@@ -268,9 +273,12 @@ class UploadLimitValidator:
 
     def _get_max_parallel_uploads(self):
         try:
+            if parallelism_limit := default_cache.get("default_max_parallel_uploads"):
+                return parallelism_limit
             parallelism_limit = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
         except UploadParallelismLimit.DoesNotExist:
             parallelism_limit = UploadParallelismLimit.objects.create_default_limit()
+        default_cache.set("default_max_parallel_uploads", parallelism_limit.max_number)
         return parallelism_limit.max_number
 
     def _get_parallel_uploads_count(self):

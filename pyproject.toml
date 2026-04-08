@@ -107,6 +107,7 @@ dependencies = [
     "gn-arcrest==10.5.6",
     "geoserver-restconfig==2.0.16",
     "gn-gsimporter==2.0.4",
+    "django-silk",
     "gisdata==0.5.4",
     # importer dependencies
     # blocked to <80 to avoid warning during the runtime for with py312 related to the polymorphic model

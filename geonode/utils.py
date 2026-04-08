@@ -1700,9 +1700,7 @@ def get_xpath_value(
 
 
 def get_geonode_app_types():
-    from geonode.geoapps.models import GeoApp
-
-    return list(set(GeoApp.objects.values_list("resource_type", flat=True)))
+    return ["GeoStories", "Dashboards"]
 
 
 def get_supported_datasets_file_types():
