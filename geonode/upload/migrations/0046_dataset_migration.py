@@ -52,7 +52,7 @@ def dataset_migration(apps, _):
                 handler_module_path=str(handler_to_use),
                 resource=old_resource,
                 execution_id=None,
-                kwargs={"is_legacy": True},
+                kwargs={"manual_fix": True},
             )
 
 
