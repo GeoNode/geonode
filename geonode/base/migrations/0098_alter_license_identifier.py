@@ -6,10 +6,15 @@ import uuid
 
 def populate_license_identifiers(apps, schema_editor):
     License = apps.get_model("base", "License")
-    for lic in License.objects.filter(Q(identifier="") | Q(identifier__isnull=True)):
-        lic.identifier = str(uuid.uuid4())
-        lic.save(update_fields=["identifier"])
-
+    seen = set()
+    for lic in License.objects.order_by("id"):
+        identifier = lic.identifier
+        if not identifier or identifier in seen:
+            lic.identifier = str(uuid.uuid4())
+            lic.save(update_fields=["identifier"])
+            seen.add(lic.identifier)
+        else:
+            seen.add(identifier)
 
 class Migration(migrations.Migration):
 
