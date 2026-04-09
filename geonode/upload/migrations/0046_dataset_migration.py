@@ -10,6 +10,7 @@ def dataset_migration(apps, _):
     for old_resource in Dataset.objects.exclude(
         pk__in=NewResources.objects.values_list("resource_id", flat=True)
     ).exclude(subtype__in=["remote", None]):
+        handler_to_use = None
         if hasattr(old_resource, 'files'):
             # generating orchestrator expected data file
             if not old_resource.files:
@@ -27,6 +28,26 @@ def dataset_migration(apps, _):
                 if handler is not None:
                     handler_to_use = handler
                     break
+        else:
+            match old_resource.subtype:
+                case 'vector':
+                    # taking a default handler for all the vector file
+                    handler_to_use = orchestrator.load_handler_by_id("shp")()
+                case 'raster':
+                    # taking a default handler for all the raster file
+                    handler_to_use = orchestrator.load_handler_by_id("tiff")()
+                case '3dtiles':
+                    handler_to_use = orchestrator.load_handler_by_id("3dtiles")()
+                case 'tabular':
+                    handler_to_use = orchestrator.load_handler_by_id("csv")()
+                case 'flatgeobuf':
+                    handler_to_use = orchestrator.load_handler("geonode.upload.handlers.remote.flatgeobuf.RemoteFlatGeobufResourceHandler")()
+                case 'cog':
+                    handler_to_use = orchestrator.load_handler("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler")()
+                case _:
+                    handler_to_use = None
+
+        if handler_to_use:
             handler_to_use.create_resourcehandlerinfo(
                 handler_module_path=str(handler_to_use),
                 resource=old_resource,
