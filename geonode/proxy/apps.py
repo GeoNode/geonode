@@ -19,6 +19,8 @@
 from django.apps import AppConfig
 from django.db.models import signals
 
+from .utils import link_post_delete, link_post_save
+
 
 class GeoNodeProxyAppConfig(AppConfig):
     name = "geonode.proxy"
@@ -27,8 +29,6 @@ class GeoNodeProxyAppConfig(AppConfig):
     def ready(self):
         super().ready()
         from geonode.base.models import Link
-
-        from .utils import link_post_delete, link_post_save
 
         signals.post_save.connect(link_post_save, sender=Link)
         signals.post_delete.connect(link_post_delete, sender=Link)
