@@ -97,4 +97,9 @@ scripts/spcgeonode/_volume_*
 !hooks/*
 
 .env
+.env_local
+.env_external
+.env_dev
+.env_test
+.devcontainer/.env
 

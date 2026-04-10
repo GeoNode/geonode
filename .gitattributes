@@ -1,0 +1,13 @@
+*.sh text eol=lf
+*.py text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.yml text eol=auto
+*.yaml text eol=auto
+*.md text eol=auto
+*.txt text eol=auto
+*.json text eol=auto
+celery-cmd text eol=lf
+entrypoint.sh text eol=lf
+wait-for-databases.sh text eol=lf
+Dockerfile text eol=lf

@@ -1,0 +1,207 @@
+# ============================================================
+# docker-compose-local.yml
+# Stack local GeoNode + GeoServer + DB interno + DB externo
+#
+# Fluxo: db_geo_prd (externo) -> GeoServer -> publica camada -> GeoNode
+#
+# Uso:
+#   docker compose -f docker-compose-local.yml up -d --build
+#   docker compose -f docker-compose-local.yml down
+# ============================================================
+
+x-common-django:
+  &default-common-django
+  image: geonode/geonode:local
+  restart: unless-stopped
+  env_file:
+    - .env
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  volumes:
+    - '.:/usr/src/geonode'
+    - statics:/mnt/volumes/statics
+    - geoserver-data-dir:/geoserver_data/data
+    - backup-restore:/backup_restore
+    - data:/data
+    - tmp:/tmp
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+
+  # -------------------------------------------------------
+  # Django / GeoNode application (build happens here only)
+  # -------------------------------------------------------
+  django:
+    <<: *default-common-django
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: django4${COMPOSE_PROJECT_NAME}
+    healthcheck:
+      test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
+      start_period: 60s
+      interval: 60s
+      timeout: 10s
+      retries: 2
+    environment:
+      - IS_CELERY=False
+    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
+    command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
+
+  # -------------------------------------------------------
+  # Celery worker
+  # -------------------------------------------------------
+  celery:
+    <<: *default-common-django
+    container_name: celery4${COMPOSE_PROJECT_NAME}
+    depends_on:
+      django:
+        condition: service_healthy
+    environment:
+      - IS_CELERY=True
+    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
+    command: "celery-cmd"
+
+  # -------------------------------------------------------
+  # Nginx (proxy reverso que serve o GeoNode na porta 80)
+  # -------------------------------------------------------
+  geonode:
+    image: geonode/nginx:1.28.0-v1
+    container_name: nginx4${COMPOSE_PROJECT_NAME}
+    env_file:
+      - .env
+    environment:
+      - RESOLVER=127.0.0.11
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - nginx-confd:/etc/nginx
+      - nginx-certificates:/geonode-certificates
+      - statics:/mnt/volumes/statics
+    restart: unless-stopped
+
+  # -------------------------------------------------------
+  # Let's Encrypt (desativado em dev, mas mantido)
+  # -------------------------------------------------------
+  letsencrypt:
+    image: geonode/letsencrypt:2.6.0-latest
+    container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
+    env_file:
+      - .env
+    volumes:
+      - nginx-certificates:/geonode-certificates
+    restart: unless-stopped
+
+  # -------------------------------------------------------
+  # GeoServer
+  # Porta 8080 exposta para acesso direto (admin console)
+  # -------------------------------------------------------
+  geoserver:
+    image: geonode/geoserver:2.27.5-latest
+    container_name: geoserver4${COMPOSE_PROJECT_NAME}
+    healthcheck:
+      test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
+      start_period: 60s
+      interval: 60s
+      timeout: 10s
+      retries: 2
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8080:8080"
+    volumes:
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+      - backup-restore:/backup_restore
+      - data:/data
+      - tmp:/tmp
+    restart: unless-stopped
+    depends_on:
+      data-dir-conf:
+        condition: service_healthy
+      django:
+        condition: service_healthy
+
+  # -------------------------------------------------------
+  # GeoServer data directory bootstrap
+  # -------------------------------------------------------
+  data-dir-conf:
+    image: geonode/geoserver_data:2.27.5-latest
+    container_name: gsconf4${COMPOSE_PROJECT_NAME}
+    entrypoint: sleep infinity
+    volumes:
+      - geoserver-data-dir:/geoserver_data/data
+    restart: unless-stopped
+    healthcheck:
+      test: "ls -A '/geoserver_data/data' | wc -l"
+
+  # -------------------------------------------------------
+  # PostGIS local (banco interno do GeoNode)
+  # Porta 5434 no host para nao conflitar com outros DBs
+  # -------------------------------------------------------
+  db:
+    image: geonode/postgis:15-3.5-latest
+    command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS:-200}"
+    container_name: db4${COMPOSE_PROJECT_NAME}
+    env_file:
+      - .env
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - dbbackups:/pg_backups
+    restart: unless-stopped
+    healthcheck:
+      test: "pg_isready -d postgres -U postgres"
+    ports:
+      - "5434:5432"
+
+  # -------------------------------------------------------
+  # Redis (broker do Celery)
+  # -------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: redis4${COMPOSE_PROJECT_NAME}
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+  # -------------------------------------------------------
+  # Memcached
+  # -------------------------------------------------------
+  memcached:
+    image: memcached:alpine
+    container_name: memcached4${COMPOSE_PROJECT_NAME}
+    command: memcached ${MEMCACHED_OPTIONS}
+    restart: unless-stopped
+    healthcheck:
+      test: nc -z 127.0.0.1 11211
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  statics:
+    name: ${COMPOSE_PROJECT_NAME}-statics
+  nginx-confd:
+    name: ${COMPOSE_PROJECT_NAME}-nginxconfd
+  nginx-certificates:
+    name: ${COMPOSE_PROJECT_NAME}-nginxcerts
+  geoserver-data-dir:
+    name: ${COMPOSE_PROJECT_NAME}-gsdatadir
+  dbdata:
+    name: ${COMPOSE_PROJECT_NAME}-dbdata
+  dbbackups:
+    name: ${COMPOSE_PROJECT_NAME}-dbbackups
+  backup-restore:
+    name: ${COMPOSE_PROJECT_NAME}-backup-restore
+  data:
+    name: ${COMPOSE_PROJECT_NAME}-data
+  tmp:
+    name: ${COMPOSE_PROJECT_NAME}-tmp
+  redisdata:
+    name: ${COMPOSE_PROJECT_NAME}-redisdata

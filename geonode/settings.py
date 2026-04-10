@@ -1751,7 +1751,19 @@ CELERY_TASK_QUEUES += (
 #     },
 
 CELERY_BEAT_SCHEDULER = os.environ.get("CELERY_BEAT_SCHEDULER", "celery.beat:PersistentScheduler")
-CELERY_BEAT_SCHEDULE = {}
+CELERY_BEAT_SCHEDULE = {
+    "sync-geoserver-layers": {
+        "task": "geonode.geoserver.tasks.geoserver_update_datasets",
+        "schedule": int(os.environ.get("GEOSERVER_SYNC_INTERVAL", "120")),
+        "kwargs": {
+            "workspace": "geonode",
+            "store": "db_geo_prd",
+            "owner": "admin",
+            "skip_geonode_registered": True,
+            "execute_signals": True,
+        },
+    },
+}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get("DELAYED_SECURITY_SIGNALS", "False"))
 CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get("CELERY_ENABLE_UTC", "True"))

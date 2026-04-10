@@ -1,0 +1,328 @@
+# GeoNode Local - Guia de Referencia para Deploy em Producao
+# ==========================================================
+#
+# Este documento descreve toda a configuracao do ambiente local GeoNode
+# funcionando com banco externo PostGIS, servindo como base de referencia
+# para replicar em um servidor de producao.
+#
+# Data de criacao: 2026-04-10
+# Branch: dev
+# Repositorio base: GeoNode 5.1.0.dev0
+
+
+# =====================================================
+# 1. ARQUITETURA
+# =====================================================
+#
+# Fluxo de dados:
+#
+#   db_geo_prd (PostGIS externo)
+#       |
+#       v
+#   GeoServer (publica camadas via REST/WMS/WFS)
+#       |
+#       v
+#   GeoNode (catalogo, visualizacao, permissoes)
+#       |
+#       v
+#   Nginx (proxy reverso, SSL, static files)
+#       |
+#       v
+#   Usuario final (browser)
+#
+#
+# Containers Docker (9 servicos):
+#
+#   +-----------------+-------+------------------------------------------+
+#   | Container       | Porta | Funcao                                   |
+#   +-----------------+-------+------------------------------------------+
+#   | django4geonode  | 8000  | App Django/GeoNode (uWSGI)               |
+#   | celery4geonode  | -     | Worker async + Beat scheduler            |
+#   | nginx4geonode   | 80    | Proxy reverso (serve GeoNode publico)    |
+#   | geoserver4geo.. | 8080  | GeoServer (OGC services + admin)         |
+#   | db4geonode      | 5434* | PostGIS interno (app + geodata GeoNode)  |
+#   | redis4geonode   | 6379  | Broker Celery (mensageria)               |
+#   | memcached4geo.. | 11211 | Cache de sessoes                         |
+#   | gsconf4geonode  | -     | Bootstrap de data-dir do GeoServer       |
+#   | letsencrypt4..  | -     | Certificados SSL (desativado em dev)     |
+#   +-----------------+-------+------------------------------------------+
+#
+#   * Porta 5434 no host para nao conflitar com outros PostgreSQL locais.
+#     Em producao, o DB pode ficar sem porta exposta ou em host dedicado.
+
+
+# =====================================================
+# 2. ARQUIVOS DE CONFIGURACAO
+# =====================================================
+#
+# Arquivo                       | Funcao
+# ------------------------------|------------------------------------------
+# docker-compose-local.yml      | Stack Docker completa (9 servicos)
+# .env                          | Variaveis de ambiente (gerado via create-envfile.py)
+# .env_local                    | Credenciais do banco externo (referencia)
+# setup_external_datastore.sh   | Registra o banco externo no GeoServer via REST API
+# start_local.sh                | Script de inicializacao completo
+# geonode/settings.py           | Settings Django (inclui Celery Beat schedule)
+# .gitattributes                | Forca LF em scripts shell (evita erro no Linux)
+# .gitignore                    | Protege .env e .env_local de commit
+
+
+# =====================================================
+# 3. PARAMETROS CRITICOS PARA PRODUCAO
+# =====================================================
+#
+# Os parametros abaixo DEVEM ser alterados ao migrar para producao.
+# Use o comando: python create-envfile.py --help para gerar um novo .env
+#
+# --- SEGURANCA (OBRIGATORIO TROCAR) ---
+#
+#   ADMIN_PASSWORD=admin             -> Senha forte
+#   GEOSERVER_ADMIN_PASSWORD=geoserver -> Senha forte
+#   POSTGRES_PASSWORD=postgres       -> Senha forte
+#   GEONODE_DATABASE_PASSWORD=geonode -> Senha forte
+#   GEONODE_GEODATABASE_PASSWORD=geonode_data -> Senha forte
+#   SECRET_KEY='ohh_7c5...'         -> Gerar nova (50+ chars aleatórios)
+#   OAUTH2_CLIENT_ID=addEB0z1..     -> Gerar novo
+#   OAUTH2_CLIENT_SECRET=BRyIy..    -> Gerar novo
+#
+# --- REDE / DOMINIO ---
+#
+#   SITEURL=http://localhost/        -> https://geonode.seudominio.com/
+#   ALLOWED_HOSTS="['django','localhost']" -> "['django','geonode.seudominio.com']"
+#   HTTP_HOST=localhost              -> geonode.seudominio.com
+#   HTTPS_HOST=                      -> geonode.seudominio.com
+#   GEOSERVER_WEB_UI_LOCATION       -> https://geonode.seudominio.com/geoserver/
+#   GEOSERVER_PUBLIC_LOCATION       -> https://geonode.seudominio.com/geoserver/
+#   NGINX_BASE_URL                  -> https://geonode.seudominio.com
+#
+# --- SSL ---
+#
+#   LETSENCRYPT_MODE=disabled        -> production
+#   ADMIN_EMAIL=admin@localhost      -> email real (necessario para Let's Encrypt)
+#
+# --- PERFORMANCE ---
+#
+#   DEBUG=True                       -> False
+#   POSTGRESQL_MAX_CONNECTIONS=200   -> Ajustar conforme RAM
+#   GEOSERVER_JAVA_OPTS -Xms4G -Xmx4G -> Ajustar conforme RAM do servidor
+#
+# --- BANCO EXTERNO (setup_external_datastore.sh) ---
+#
+#   DB_HOST="172.20.30.31"          -> IP do banco em producao
+#   DB_PORT="5432"                  -> Porta
+#   DB_NAME="db_geo_prd"            -> Nome do banco
+#   DB_SCHEMA="geonode"             -> Schema
+#   DB_USER="gabriel.leandro"       -> Usuario com permissao SELECT
+#   DB_PASS="..."                   -> Senha
+
+
+# =====================================================
+# 4. SINCRONIZACAO AUTOMATICA (Celery Beat)
+# =====================================================
+#
+# Configurada em: geonode/settings.py -> CELERY_BEAT_SCHEDULE
+#
+# A task "sync-geoserver-layers" roda a cada N segundos (padrao: 120s)
+# e importa automaticamente camadas novas publicadas no GeoServer
+# (workspace: geonode, store: db_geo_prd) para o catalogo do GeoNode.
+#
+# Parametros:
+#   GEOSERVER_SYNC_INTERVAL=120     (env var, em segundos)
+#   workspace=geonode               (workspace do GeoServer)
+#   store=db_geo_prd                (datastore do banco externo)
+#   owner=admin                     (usuario dono das camadas importadas)
+#   skip_geonode_registered=True    (nao reimporta camadas ja existentes)
+#
+# Para producao, considerar:
+#   - Aumentar intervalo para 300-600s se ha muitas camadas
+#   - Trocar owner para usuario especifico
+#   - Monitorar fila geoserver.catalog no Celery
+#
+# Sync manual (se necessario):
+#   docker exec django4geonode python manage.py updatelayers \
+#     --workspace geonode --store db_geo_prd \
+#     --skip-geonode-registered -u admin
+#
+# Sync via API REST (admin autenticado):
+#   GET http://localhost/gs/updatelayers/?workspace=geonode&store=db_geo_prd
+#
+# Sync via Admin Django:
+#   http://localhost/admin -> Management command jobs -> updatelayers
+
+
+# =====================================================
+# 5. COMO SUBIR O AMBIENTE
+# =====================================================
+#
+# Pre-requisitos:
+#   - Docker Desktop rodando
+#   - Acesso de rede ao banco externo (172.20.30.31:5432)
+#
+# Primeira vez (build + config):
+#   bash start_local.sh
+#
+# Ou manualmente:
+#   1. docker compose -f docker-compose-local.yml up -d --build
+#   2. Aguardar todos os containers ficarem healthy
+#   3. bash setup_external_datastore.sh
+#
+# Subidas subsequentes (sem rebuild):
+#   docker compose -f docker-compose-local.yml up -d
+#
+# Parar tudo:
+#   docker compose -f docker-compose-local.yml down
+#
+# Parar e REMOVER DADOS (reset completo):
+#   docker compose -f docker-compose-local.yml down -v
+
+
+# =====================================================
+# 6. ACESSOS
+# =====================================================
+#
+# +-------------+----------------------------------------------+-----------------+
+# | Servico     | URL                                          | Credenciais     |
+# +-------------+----------------------------------------------+-----------------+
+# | GeoNode     | http://localhost/                             | admin / admin   |
+# | GeoServer   | http://localhost/geoserver/web/               | via OAuth2*     |
+# | GeoServer   | http://localhost:8080/geoserver/ (interno)    | admin / geoser. |
+# | DB local    | localhost:5434                                | postgres / post.|
+# | DB externo  | 172.20.30.31:5432                             | gabriel.leandro |
+# | Django Admin| http://localhost/admin/                       | admin / admin   |
+# | API v2      | http://localhost/api/v2/                      | admin / admin   |
+# +-------------+----------------------------------------------+-----------------+
+#
+# * O GeoServer usa OAuth2 integrado com GeoNode. Login feito pela
+#   interface do GeoNode, que redireciona de volta para o GeoServer
+#   autenticado. Acesso direto na porta 8080 via REST API usa basic auth.
+
+
+# =====================================================
+# 7. FLUXO DE PUBLICACAO DE CAMADAS
+# =====================================================
+#
+# 1. Adicionar tabela/view no banco db_geo_prd (schema: geonode)
+#
+# 2. Publicar no GeoServer:
+#    - http://localhost/geoserver/web/ -> Layers -> Add a new layer
+#    - Selecionar store: geonode:db_geo_prd
+#    - Clicar Publish na tabela desejada
+#    - Definir SRS (EPSG:4326 / EPSG:4674 / etc)
+#    - Compute from data + Compute from native bounds
+#    - Save
+#
+# 3. Aguardar sincronizacao automatica (ate 2 min) ou forcar:
+#    docker exec django4geonode python manage.py updatelayers \
+#      --workspace geonode --store db_geo_prd \
+#      --skip-geonode-registered -u admin
+#
+# 4. Camada aparece no catalogo GeoNode (http://localhost/)
+
+
+# =====================================================
+# 8. CHECKLIST DE DEPLOY EM PRODUCAO
+# =====================================================
+#
+# [ ] Gerar novo .env com senhas fortes:
+#     python create-envfile.py -hn geonode.seudominio.com \
+#       --env_type prod --https --email admin@seudominio.com
+#
+# [ ] Alterar DEBUG=False no .env
+#
+# [ ] Configurar dominio e DNS apontando para o servidor
+#
+# [ ] Configurar LETSENCRYPT_MODE=production no .env
+#
+# [ ] Ajustar ALLOWED_HOSTS com o dominio
+#
+# [ ] Ajustar GEOSERVER_JAVA_OPTS conforme RAM disponivel
+#
+# [ ] Ajustar POSTGRESQL_MAX_CONNECTIONS conforme uso esperado
+#
+# [ ] Revisar setup_external_datastore.sh com IP/credenciais de producao
+#
+# [ ] Garantir acesso de rede do servidor ao banco externo
+#
+# [ ] Configurar GEOSERVER_SYNC_INTERVAL adequado (300-600s sugerido)
+#
+# [ ] Remover porta 8080 do docker-compose se GeoServer nao precisa acesso direto
+#
+# [ ] Remover porta 5434 do db se nao precisa acesso externo
+#
+# [ ] Configurar ACCOUNT_OPEN_SIGNUP=False se nao quer registro publico
+#
+# [ ] Configurar backup automatico dos volumes Docker
+#
+# [ ] Testar fluxo completo: publicar camada -> sync -> visualizar
+
+
+# =====================================================
+# 9. COMANDOS UTEIS DE MANUTENCAO
+# =====================================================
+#
+# Ver logs de um container:
+#   docker logs -f django4geonode
+#   docker logs -f celery4geonode
+#   docker logs -f geoserver4geonode
+#
+# Acessar shell dentro do container Django:
+#   docker exec -it django4geonode bash
+#
+# Rodar management commands:
+#   docker exec django4geonode python manage.py <comando>
+#
+# Sincronizar permissoes:
+#   docker exec django4geonode python manage.py sync_geonode_datasets \
+#     --updatepermissions --updateattributes
+#
+# Regenerar thumbnails:
+#   docker exec django4geonode python manage.py sync_geonode_datasets \
+#     --updatethumbnails
+#
+# Atualizar metadata:
+#   docker exec django4geonode python manage.py set_all_datasets_metadata
+#
+# Criar superusuario:
+#   docker exec -it django4geonode python manage.py createsuperuser
+#
+# Backup do banco:
+#   docker exec db4geonode pg_dump -U postgres geonode > backup_geonode.sql
+#   docker exec db4geonode pg_dump -U postgres geonode_data > backup_geodata.sql
+#
+# Listar camadas disponiveis no banco externo:
+#   docker exec geoserver4geonode curl -s -u "admin:geoserver" \
+#     "http://localhost:8080/geoserver/rest/workspaces/geonode/datastores/db_geo_prd/featuretypes.json?list=available"
+
+
+# =====================================================
+# 10. TROUBLESHOOTING
+# =====================================================
+#
+# Problema: Container django fica em restart loop
+#   Causa: Line endings CRLF nos scripts .sh (Windows)
+#   Solucao: Verificar .gitattributes forca LF; rodar:
+#     git add --renormalize . && git checkout -- .
+#
+# Problema: GeoServer nao aceita login na porta 8080
+#   Causa: OAuth2 integrado com GeoNode intercepta autenticacao web
+#   Solucao: Acessar via http://localhost/geoserver/web/ (Nginx proxy)
+#            REST API na 8080 funciona com basic auth via curl
+#
+# Problema: Camada publicada no GeoServer nao aparece no GeoNode
+#   Causa: Celery Beat pode nao ter rodado ainda (intervalo 120s)
+#   Solucao: Rodar sync manual:
+#     docker exec django4geonode python manage.py updatelayers \
+#       --workspace geonode --store db_geo_prd --skip-geonode-registered -u admin
+#
+# Problema: Build falha com "image already exists"
+#   Causa: django e celery tentaram buildar a mesma imagem em paralelo
+#   Solucao: Build apenas no servico django (celery reutiliza imagem)
+#     docker rmi geonode/geonode:local && docker compose -f docker-compose-local.yml up -d --build
+#
+# Problema: Porta ja em uso (5432, 5433, 8080)
+#   Causa: Outro servico usando a porta
+#   Solucao: Alterar porta no docker-compose-local.yml (ex: 5434:5432)
+#
+# Problema: docker compose falha com "pipe not found"
+#   Causa: Docker Desktop nao esta rodando
+#   Solucao: Iniciar Docker Desktop e aguardar ficar verde
