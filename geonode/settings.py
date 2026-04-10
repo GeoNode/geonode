@@ -1865,8 +1865,25 @@ RESOURCE_OWNERSHIP_ADMIN_USERNAME = (_resource_ownership_admin_username or "admi
 
 # Whether the uplaoded resources should be public and downloadable by default
 # or not
+# DEPRECATED: use DEFAULT_ANONYMOUS_PERMISSIONS (compact permissions)
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "True"))
+# DEPRECATED: use DEFAULT_ANONYMOUS_PERMISSIONS (compact permissions)
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "True"))
+
+# Compact permissions for default groups
+# Valid values:
+#  - DEFAULT_ANONYMOUS_PERMISSIONS: view | download | none
+#  - DEFAULT_REGISTERED_MEMBERS_PERMISSIONS: view | download | edit | manage | none
+DEFAULT_ANONYMOUS_PERMISSIONS = os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS", None)
+DEFAULT_REGISTERED_MEMBERS_PERMISSIONS = os.getenv("DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", None)
+
+if DEFAULT_ANONYMOUS_PERMISSIONS is None and (
+    DEFAULT_ANONYMOUS_VIEW_PERMISSION is not True or DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is not True
+):
+    logger.warning(
+        "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated. "
+        "Please use DEFAULT_ANONYMOUS_PERMISSIONS instead."
+    )
 
 EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "True")
@@ -1878,6 +1895,7 @@ EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
 PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
+    "geonode.security.handlers.DefaultSpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
     "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
 ]

@@ -250,11 +250,8 @@ class BaseResourceManager(ResourceManagerInterface):
     ) -> bool:
         """
         Finalize default permissions for newly created resources,
-        including optional creation-time ownership handling.
         """
         if not instance:
-            return False
-        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
             return False
         instance.set_default_permissions(owner=owner or instance.owner, created=True, initial_user=initial_user)
         return True

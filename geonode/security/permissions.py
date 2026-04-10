@@ -19,6 +19,7 @@
 
 import copy
 import json
+import logging
 import pprint
 import jsonschema
 import collections
@@ -31,6 +32,9 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from geonode.utils import build_absolute_uri
 from geonode.groups.conf import settings as groups_settings
+
+logger = logging.getLogger(__name__)
+
 
 """
 Permissions will be managed according to a "compact" set:
@@ -113,14 +117,6 @@ DATASET_ADMIN_PERMISSIONS = DATASET_EDIT_DATA_PERMISSIONS + DATASET_EDIT_STYLE_P
 
 SERVICE_PERMISSIONS = ["add_service", "delete_service", "change_resourcebase_metadata", "add_resourcebase_from_service"]
 
-DEFAULT_PERMISSIONS = []
-if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
-    DEFAULT_PERMISSIONS += VIEW_PERMISSIONS
-if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
-    DEFAULT_PERMISSIONS += DOWNLOAD_PERMISSIONS
-
-DEFAULT_PERMS_SPEC = json.dumps({"users": {"AnonymousUser": DEFAULT_PERMISSIONS}, "groups": {}})
-
 NONE_RIGHTS = "none"
 VIEW_RIGHTS = "view"
 DOWNLOAD_RIGHTS = "download"
@@ -136,6 +132,65 @@ COMPACT_RIGHT_MODES = (
     (OWNER_RIGHTS, "owner"),
 )
 
+VALID_ANONYMOUS_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, NONE_RIGHTS}
+VALID_REGISTERED_MEMBERS_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS, NONE_RIGHTS}
+
+
+def _normalize_compact_permission(raw_value, valid_values, setting_name):
+    if raw_value is None:
+        return None
+    normalized_value = str(raw_value).strip().lower()
+    if normalized_value in ("", NONE_RIGHTS):
+        return None
+    if normalized_value not in valid_values:
+        logger.warning(
+            "%s contains unsupported value '%s'. Defaulting to 'none'.",
+            setting_name,
+            normalized_value,
+        )
+        return None
+    return normalized_value
+
+
+def get_default_anonymous_compact_permission():
+    raw_value = getattr(settings, "DEFAULT_ANONYMOUS_PERMISSIONS", None)
+    if raw_value is not None:
+        return _normalize_compact_permission(
+            raw_value,
+            VALID_ANONYMOUS_COMPACT_PERMISSIONS,
+            "DEFAULT_ANONYMOUS_PERMISSIONS",
+        )
+    legacy_download = getattr(settings, "DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", True)
+    legacy_view = getattr(settings, "DEFAULT_ANONYMOUS_VIEW_PERMISSION", True)
+    if legacy_download:
+        return DOWNLOAD_RIGHTS
+    if legacy_view:
+        return VIEW_RIGHTS
+    return None
+
+
+def get_default_registered_members_compact_permission():
+    raw_value = getattr(settings, "DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", None)
+    if raw_value is None:
+        return None
+    return _normalize_compact_permission(
+        raw_value,
+        VALID_REGISTERED_MEMBERS_COMPACT_PERMISSIONS,
+        "DEFAULT_REGISTERED_MEMBERS_PERMISSIONS",
+    )
+
+
+def get_default_anonymous_permissions_list():
+    compact_perm = get_default_anonymous_compact_permission()
+    if compact_perm == VIEW_RIGHTS:
+        return VIEW_PERMISSIONS
+    if compact_perm == DOWNLOAD_RIGHTS:
+        return VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+    return []
+
+
+DEFAULT_PERMISSIONS = get_default_anonymous_permissions_list()
+DEFAULT_PERMS_SPEC = json.dumps({"users": {"AnonymousUser": DEFAULT_PERMISSIONS}, "groups": {}})
 
 PERM_SPEC_COMPACT_SCHEMA = {
     "$schema": "http://json-schema.org/draft-04/schema#",

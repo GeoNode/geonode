@@ -2358,6 +2358,44 @@ class BaseApiTests(APITestCase):
         )
 
     @override_settings(
+        DEFAULT_ANONYMOUS_PERMISSIONS="download",
+        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="edit",
+    )
+    def test_resource_service_permissions_default_groups_from_compact_settings(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        dataset = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_compact_default", "owner": admin}
+        )
+        url = reverse("base-resources-perms-spec", kwargs={"pk": dataset.pk})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        self.assertEqual(group_permissions.get("anonymous"), "download")
+        self.assertEqual(group_permissions.get("registered-members"), "edit")
+
+    @override_settings(
+        DEFAULT_ANONYMOUS_PERMISSIONS=None,
+        DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
+        DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,
+        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS=None,
+    )
+    def test_resource_service_permissions_default_groups_from_legacy_settings(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        dataset = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_legacy_default", "owner": admin}
+        )
+        url = reverse("base-resources-perms-spec", kwargs={"pk": dataset.pk})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        self.assertEqual(group_permissions.get("anonymous"), "view")
+        self.assertEqual(group_permissions.get("registered-members"), "none")
+
+    @override_settings(
         EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=False,
         EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
     )
