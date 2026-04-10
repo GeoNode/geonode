@@ -160,7 +160,7 @@ dependencies = [
     "cryptography==46.0.5",
     "jwcrypto>=1.5.6",
     # dependency for XLSX handler
-    "python-calamine==0.6.1",
+    "python-calamine==0.6.2",
 ]
 
 [project.optional-dependencies]
