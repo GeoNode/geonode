@@ -76,8 +76,10 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         """
         _exec = orchestrator.get_execution_object(exec_id=execution_id)
         cleaned_url, _, _, _ = WmsServiceHandler.get_cleaned_url_params(_exec.input_params.get("url"))
+
         parsed_url = f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}"
-        ows_url = f"{parsed_url}?{cleaned_url.query}"
+        ows_url = cleaned_url._replace(params="", fragment="").geturl()
+
         to_update = {
             "ows_url": ows_url,
             "parsed_url": parsed_url,
