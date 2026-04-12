@@ -193,11 +193,25 @@ class BaseHandler(ABC):
         """
         return
 
+    def evaluate_exec_prev_status(self, action, resource_pk=None):
+        """
+        Required to evaluate if the resource can be replaced/upsert
+        based on it's previous status. this is required for 3dtiles for example
+        but the handler can deny some operations on some resources
+        """
+        return True, None
+
     def pre_processing(self, files, execution_id, **kwargs):
         from geonode.upload.orchestrator import orchestrator
 
         _exec_obj = orchestrator.get_execution_object(execution_id)
         _data = _exec_obj.input_params.copy()
+
+        if _exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
+            if resource_pk := _data.get("resource_pk"):
+                can_proceed, reason = self.evaluate_exec_prev_status(_exec_obj.action, resource_pk)
+                if not can_proceed:
+                    raise ImportException(reason)
         # unzipping the file
         if "zip_file" in files or "kmz_file" in files:
             # if a zipfile is provided, we need to unzip it before searching for an handler

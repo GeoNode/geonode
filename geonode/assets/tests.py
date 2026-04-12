@@ -381,7 +381,7 @@ class AssetsDownloadTests(APITestCase):
         any user without download permissions
         cannot download the asset
         """
-        from geonode.resource.registry import resource_manager_registry
+        from geonode.resource.registry import resource_manager_registry, dataset_manager
         from geonode.layers.models import Dataset
         from guardian.shortcuts import get_anonymous_user
 
@@ -393,7 +393,7 @@ class AssetsDownloadTests(APITestCase):
             resource = None
             try:
                 # creating resoruce
-                resource = resource_manager_registry.get_for_model(Dataset).create(
+                resource = dataset_manager.create(
                     None, resource_type=Dataset, defaults={"owner": bobby, "asset": asset}
                 )
                 # getting perms

@@ -29,7 +29,7 @@ from django.template.defaultfilters import slugify
 from geonode import GeoNodeException
 from geonode.layers.models import Dataset
 from geonode.layers.utils import get_valid_name
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.geoserver.helpers import gs_catalog, ogc_server_settings, create_geoserver_db_featurestore
 
 
@@ -62,7 +62,7 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
     """
     owner = get_user_model().objects.get(username=owner_name)
 
-    layer = resource_manager_registry.get_for_model(Dataset).create(
+    layer = dataset_manager.create(
         str(uuid.uuid4()),
         resource_type=Dataset,
         defaults=dict(

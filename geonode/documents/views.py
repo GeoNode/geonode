@@ -35,7 +35,7 @@ from geonode.utils import mkdtemp
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.storage.manager import storage_manager
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import document_manager, resource_manager_registry
 from geonode.base import enumerations
 
 from pathlib import Path
@@ -139,7 +139,7 @@ class DocumentUploadView(CreateView):
             name = Path(file.name)
             filepath = storage_manager.save(f"{dirname}/{name.stem}{name.suffix.lower()}", file)
             storage_path = storage_manager.path(filepath)
-            self.object = resource_manager_registry.get_for_model(Document).create(
+            self.object = document_manager.create(
                 None,
                 resource_type=Document,
                 defaults=dict(
@@ -162,7 +162,7 @@ class DocumentUploadView(CreateView):
             shutil.rmtree(tempdir, ignore_errors=True)
 
         else:
-            self.object = resource_manager_registry.get_for_model(Document).create(
+            self.object = document_manager.create(
                 None,
                 resource_type=Document,
                 defaults=dict(

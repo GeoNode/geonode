@@ -1,0 +1,2924 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../thesauri/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Backup And Restore - GeoNode documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../theme/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#full-geonode-backup-restore" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GeoNode documentation" class="md-header__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoNode documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Backup And Restore
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+
+<!-- Navigation tabs -->
+<nav
+  class="md-tabs"
+  aria-label="Tabs"
+  data-md-component="tabs"
+>
+  <div class="md-grid">
+    <div style="display: flex; justify-content: space-between">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../user-guide/user_account/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../admin/panel/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../setup/docker/prerequisites/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Setup
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../thesauri/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Miscellaneous
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+    <ul class="md-tabs__list">
+      <li class="md-tabs__item pull-right export-pdf-li" style="display:flex;" title="Export PDF"></li>
+    </ul>
+    </div>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GeoNode documentation" class="md-nav__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    GeoNode documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/user_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User account
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Catalog Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Datasets
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upload a dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/preview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preview and Styling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/update_replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update and Replace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/remote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote datasets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/datasets/empty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Create empty dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/sharing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sharing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Administration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/panel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessing the panel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/user/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/group/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/social/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Social Logins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/oauth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Install
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_1" id="__nav_5_1_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Docker installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/docker/prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/docker/vanilla-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/docker/project-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bare installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bare installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/bare/prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/bare/vanilla-bare-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/bare/project-bare-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/configuration/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/configuration/environmental_variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Miscellaneous
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Miscellaneous
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thesauri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thesauri
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup And Restore
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup And Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisites-and-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisites and Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requisites and Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [database] Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geoserver-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [geoserver] Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixtures-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [fixtures] Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executing-from-the-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executing from the CLI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geonode-admin-gui-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoNode Admin GUI Inspection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#br-in-docker-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B/R in Docker environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B/R in Docker environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run-the-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run the backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run-the-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run the restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#br-jenkins-job-in-docker-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B/R Jenkins Job in Docker environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B/R Jenkins Job in Docker environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-jenkins-at-first-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure Jenkins at first startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-a-jenkins-job-to-run-a-full-backup-on-the-django-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure a Jenkins Job to run a full backup on the Django Container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#link-the-backup_restore-folder-to-a-local-folder-on-the-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Link the backup_restore folder to a local folder on the HOST
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisites-and-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisites and Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requisites and Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [database] Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geoserver-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [geoserver] Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixtures-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [fixtures] Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executing-from-the-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executing from the CLI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geonode-admin-gui-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoNode Admin GUI Inspection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#br-in-docker-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B/R in Docker environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B/R in Docker environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run-the-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run the backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run-the-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run the restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#br-jenkins-job-in-docker-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B/R Jenkins Job in Docker environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B/R Jenkins Job in Docker environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-jenkins-at-first-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure Jenkins at first startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-a-jenkins-job-to-run-a-full-backup-on-the-django-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure a Jenkins Job to run a full backup on the Django Container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#link-the-backup_restore-folder-to-a-local-folder-on-the-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Link the backup_restore folder to a local folder on the HOST
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../thesauri/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Miscellaneous
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="full-geonode-backup-restore">Full GeoNode Backup &amp; Restore<a class="headerlink" href="#full-geonode-backup-restore" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The admin command to backup and restore GeoNode, allows to extract consistently the GeoNode and GeoServer data models in a serializable
+meta-format which is being interpreted later by the restore procedure in order to exactly rebuild the whole structure.</p>
+<p>In particular the tool helps developers and administrators to correctly extract and serialize the following resources:</p>
+<ul>
+<li>
+<p><strong>GeoNode</strong> (Resource Base Model):</p>
+<ul>
+<li>
+<p>Layers (both raster and vectors)</p>
+</li>
+<li>
+<p>Maps</p>
+</li>
+<li>
+<p>Documents</p>
+</li>
+<li>
+<p>People with Credentials</p>
+</li>
+<li>
+<p>Permissions</p>
+</li>
+<li>
+<p>Associated Styles</p>
+</li>
+<li>
+<p>Static data and templates</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>GeoServer</strong> (Catalog):</p>
+<ul>
+<li>
+<p>OWS Services configuration and limits</p>
+</li>
+<li>
+<p>Security model along with auth filters configuration, users and credentials</p>
+</li>
+<li>
+<p>Workspaces</p>
+</li>
+<li>
+<p>Stores (both DataStores and CoverageStores)</p>
+</li>
+<li>
+<p>Layers</p>
+</li>
+<li>
+<p>Styles</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>The tool exposes two GeoNode Management Commands, 'backup' and 'restore'.</p>
+<p>The commands allow to:</p>
+<ul>
+<li>
+<p>Fully backup GeoNode data and fixtures on a zip archive</p>
+</li>
+<li>
+<p>Fully backup GeoServer configuration (physical datasets - tables, shapefiles, geotiffs)</p>
+</li>
+<li>
+<p>Fully restore GeoNode and GeoServer fixtures and catalog from the zip archive</p>
+</li>
+</ul>
+<p>The usage of those commands is quite easy and straightforward.</p>
+<p>The first step is to ensure that everything is correctly configured and the requisites respected in order to successfully
+perform a backup and restore of GeoNode.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is worth to notice that this functionality requires the latest <code>GeoServer Extension &lt;https://build.geo-solutions.it/geonode/geoserver/latest/&gt;</code>_ (2.9.x or greater) for GeoNode in order to correctly work.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Important notes</p>
+<p>GeoServer full documentation is also available here <code>GeoServer Docs &lt;https://docs.geoserver.org/stable/en/user/community/backuprestore/index.html&gt;</code>_</p>
+</div>
+<h2 id="requisites-and-setup">Requisites and Setup<a class="headerlink" href="#requisites-and-setup" title="Permanent link">&para;</a></h2>
+<p><strong>Before</strong> running a GeoNode backup / restore, it is necessary to ensure everything is correctly configured and setup.</p>
+<h3 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h3>
+<p>Accordingly to the admin needs, the file <code>settings.ini</code> must be ceated before running a backup or restore.</p>
+<p>The default files can be found at <code>geonode/br/management/commands/settings_sample.ini</code> and <code>geonode/br/management/commands/settings_docker_sample.ini</code>
+for the classic and Docker environments accordingly. The content is similar in both of them (an example from <code>settings_sample.ini</code>):</p>
+<pre><code>[database]
+pgdump = pg_dump
+pgrestore = pg_restore
+psql = psql
+
+[geoserver]
+datadir = /geoserver_data/data
+# datadir_exclude_file_path = {comma separated list of paths to exclude from geoserver catalog} e.g.: /data,/data/geonode,/geonode
+dumpvectordata = yes
+dumprasterdata = yes
+# data_dt_filter = {cmp_operator} {ISO8601} e.g. &gt; 20019-04-05T24:00
+# data_layername_filter = {comma separated list of layernames, optionally with glob syntax} e.g.: tuscany_*,italy
+# data_layername_exclude_filter = {comma separated list of layernames, optionally with glob syntax} e.g.: tuscany_*,italy
+
+[fixtures]
+apps  = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
+dumps = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
+</code></pre>
+<p>The <code>settings.ini</code> file can be created in any directory accessible by GeoNode, and it's path can be passed to the backup / restore
+procedures using <code>-c</code> (<code>--config</code>) argument.</p>
+<p>There are few different sections of the configuration file, that must be carefully checked before running a backup / restore command.</p>
+<h4 id="database-section">[database] Section<a class="headerlink" href="#database-section" title="Permanent link">&para;</a></h4>
+<pre><code>[database]
+pgdump = pg_dump
+pgrestore = pg_restore
+psql = psql
+</code></pre>
+<p>This section is quite simple. It contains only two properties:</p>
+<ul>
+<li>
+<p><em>pgdump</em>; the path of the <code>pg_dump</code> local command.</p>
+</li>
+<li>
+<p><em>pgrestore</em>; the path of the <code>pg_restore</code> local command.</p>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Those properties are ignored in case GeoNode is not configured to use a DataBase as backend (see <code>settings.py</code> and <code>local_settings.py</code> sections)</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Important Notes</p>
+<p>Database connection settings (both for GeoNode and GeoServer) will be taken from <code>settings.py</code> and <code>local_settings.py</code> configuration files. Make sure they are correctly configured (on the target GeoNode instance, too) and the DataBase server is accessible while executing a backup / restore command.</p>
+</div>
+<h4 id="geoserver-section">[geoserver] Section<a class="headerlink" href="#geoserver-section" title="Permanent link">&para;</a></h4>
+<pre><code>[geoserver]
+datadir = /geoserver_data/data
+# datadir_exclude_file_path = {comma separated list of paths to exclude from geoserver catalog} e.g.: /data,/data/geonode,/geonode
+dumpvectordata = yes
+dumprasterdata = yes
+# data_dt_filter = {cmp_operator} {ISO8601} e.g. &gt; 20019-04-05T24:00
+# data_layername_filter = {comma separated list of layernames, optionally with glob syntax} e.g.: tuscany_*,italy
+# data_layername_exclude_filter = {comma separated list of layernames, optionally with glob syntax} e.g.: tuscany_*,italy
+</code></pre>
+<p>This section allows to enable / disable a full data backup / restore of GeoServer.</p>
+<ul>
+<li>
+<p><em>datadir</em>: the full path of GeoServer Data Dir, by default <code>/opt/gs_data_dir</code>. The path <strong>must</strong> be accessible and <strong>fully writable</strong> by the <code>geonode</code> and / or <code>httpd server</code> users when executing a backup / restore command.</p>
+</li>
+<li>
+<p><em>datadir_exclude_file_path</em>: comma separated list of paths to exclude from <code>geoserver_catalog.zip</code>; This list will be sent and managed directly by the GeoServer Backup REST API.</p>
+</li>
+<li>
+<p><em>dumpvectordata</em>: a boolean flag enabling or disabling creation of a vector data dump from GeoServer (shapefiles or DB tables). If <code>false</code> (or <code>no</code>) vector data won't be stored / re-stored.</p>
+</li>
+<li>
+<p><em>dumprasterdata</em>: a boolean flag enabling or disabling creation of a raster data dump from GeoServer (geotiffs). If <code>false</code> (or <code>no</code>) raster data won't be stored / re-stored.</p>
+</li>
+<li>
+<p><em>data_dt_filter</em>: {cmp_operator} {ISO8601} e.g. &gt; 2019-04-05T24:00 which means "include on backup archive only the files that have been modified later than 2019-04-05T24:00</p>
+</li>
+<li>
+<p><em>data_layername_filter</em>: comma separated list of <code>layer names</code>, optionally with glob syntax e.g.: tuscany_<em>,italy; Only <code>RASTER</code> original data and <code>VECTORIAL</code> table dumps matching those filters will be </em><em>included</em>* into the backup ZIP archive</p>
+</li>
+<li>
+<p><em>data_layername_exclude_filter</em>: comma separated list of <code>layer names</code>, optionally with glob syntax e.g.: tuscany_<em>,italy; The <code>RASTER</code> original data and <code>VECTORIAL</code> table dumps matching those filters will be </em><em>excluded</em>* from the backup ZIP archive</p>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Enabling these options <strong>requires</strong> the GeoServer Data Dir to be accessible and <strong>fully writable</strong> for the <code>geonode</code> and / or <code>httpd server</code> users when executing a backup / restore command.</p>
+</div>
+<h4 id="fixtures-section">[fixtures] Section<a class="headerlink" href="#fixtures-section" title="Permanent link">&para;</a></h4>
+<pre><code>[fixtures]
+apps  = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
+dumps = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
+</code></pre>
+<p>This section is the most complex one. Usually you don't need to modify it. Only an expert user who knows Python and GeoNode model structure should modify this section.</p>
+<p>What its properties mean:</p>
+<ul>
+<li>
+<p><em>apps</em>; an ordered list of GeoNode Django applications. The backup / restore procedure will dump / restore the fixtures in a portable format.</p>
+</li>
+<li>
+<p><em>dumps</em>; this is the list of <code>files</code> associated to the Django applications. The order <strong>must</strong> be the same as in the <em>apps</em> property above. Each name represents the <code>file name</code> where to dump to / read from the single app's fixtures.</p>
+</li>
+</ul>
+<h2 id="executing-from-the-cli">Executing from the CLI<a class="headerlink" href="#executing-from-the-cli" title="Permanent link">&para;</a></h2>
+<p>The following sections shows instructions on how to perform backup / restore from the command line by using the Django Admin Management Commands.</p>
+<p>In order to obtain a basic user guide for the management command from the command line, just run</p>
+<pre><code>    python manage.py backup --help
+
+    python manage.py restore --help
+</code></pre>
+<p><code>--help</code> will provide the list of available command line options with a brief description.</p>
+<p>By default both procedures activate <code>Read Only</code> mode, disabling any content modifying requests, which is reverted
+to the previous state (from before the execution) after finish, regardless of the command's result (success or failure).
+To disable activation of this mode, <code>--skip-read-only</code> argument can be passed to the command.</p>
+<p>It is worth notice that both commands allows the following option</p>
+<pre><code>    python manage.py backup --force / -f
+
+    python manage.py restore --force / -f
+</code></pre>
+<p>Which enables a non-interactive mode, meaning the user will not be asked for an explicit confirmation.</p>
+<h2 id="backup">Backup<a class="headerlink" href="#backup" title="Permanent link">&para;</a></h2>
+<p>In order to perform a backup just run the command:</p>
+<pre><code>    python manage.py backup --backup-dir=&lt;target_bk_folder_path&gt; --config=&lt;/path/to/settings.ini&gt;
+</code></pre>
+<p>The management command will automatically generate a <code>.zip</code> archive file on the target folder in case of success. In the target directory
+<code>.md5</code> file with the same name as backup will be created. It contains the MD5 hash of the backup file, which can be used to check archive's
+integrity before restoration.</p>
+<p>It is worth to mention that <code>br</code> (Backup &amp; Restore GeoNode application) will not be dumped, even if specified in the <code>settings.ini</code> as
+its content is strictly related to the certain GeoNode instance.</p>
+<p>Currently, GeoNode does not support any automatic extraction of the backup file. It should be manually transferred, if needed to the target
+instance environment.</p>
+<h2 id="restore">Restore<a class="headerlink" href="#restore" title="Permanent link">&para;</a></h2>
+<p>The <code>restore</code> command has a number of arguments, modifying its execution:</p>
+<p><code>-c</code> / <code>--config</code>: path to the <code>settings.ini</code> configuration file. If the Backup archive is provided with his settings, the latter will be used by the restore command and this option won't be mandatory anymore</p>
+<ul>
+<li>
+<p><code>--skip-geoserver</code>: the GeoServer backup restoration won't be performed</p>
+</li>
+<li>
+<p><code>--skip-geoserver-info</code>: {Default: True} Skips GeoServer Global Infos, like the proxy base url and other global GeoServer metadata info</p>
+</li>
+<li>
+<p><code>--skip-geoserver-security</code>: {Default: True} Skips GeoServer all the Security Settings</p>
+</li>
+<li>
+<p><code>--backup-file</code>: (exclusive together with <code>--backup-files-dir</code>) path to the backup <code>.zip</code> archive</p>
+</li>
+<li>
+<p><code>--backup-files-dir</code>: (exclusive together with <code>--backup-file</code>) directory containing backup archives. The directory may contain a number of files, but <strong>only</strong> backup archives are allowed with a <code>.zip</code> extension. In case multiple archives are present in the directory, the newest one, created after the last already restored backup creation time, will be restored. This option was implemented with a thought of automated restores.</p>
+</li>
+<li>
+<p><code>--recovery-file</code>: Backup archive containing GeoNode data to restore in case of failure.</p>
+</li>
+<li>
+<p><code>-l</code> / <code>--with-logs</code>: the backup file will be checked against the restoration logs (history). In case this backup has already been restored (MD5 based comparision), RuntimeError is raised, preventing restore execution.</p>
+</li>
+<li>
+<p><code>-n</code> / <code>--notify</code>: the restore procedure outcome will be send by an e-mail notification to the superusers of the instance (note: notification will be sent to the superusers of the instance before restoration).</p>
+</li>
+<li>
+<p><code>--skip-read-only</code>: the restore procedure will be conducted without setting <code>Read Only</code> mode during execution.</p>
+</li>
+<li>
+<p><code>--soft-reset</code>: the restore procedure will preserve geoserver table / resources during the restore. By default the procedure will drop tables and resources</p>
+</li>
+</ul>
+<p>In order to perform a default backup restoration just run the command:</p>
+<pre><code>  python manage.py restore --backup-file=&lt;target_restore_file_path&gt; --config=&lt;/path/to/settings.ini&gt;
+</code></pre>
+<p>For restore to run it requires either <code>--backup-file</code> or <code>--backup-files-dir</code> argument defined.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The Restore will <strong>overwrite</strong> the whole target instances of GeoNode (and by default GeoServer) including users, catalog and database, so be very careful.</p>
+</div>
+<h2 id="geonode-admin-gui-inspection">GeoNode Admin GUI Inspection<a class="headerlink" href="#geonode-admin-gui-inspection" title="Permanent link">&para;</a></h2>
+<p>The history of restored backups can be verified in the admin panel.</p>
+<p>Login to the admin panel and select <code>Restored backups</code> table from <code>BACKUP/RESTORE</code> application.</p>
+<p><img alt="br_1" src="../img/br_1.png" /></p>
+<p>A list will be displayed with a history of all restored backups. You can select a certain backup to view it's data.</p>
+<p><img alt="br_2" src="../img/br_2.png" /></p>
+<p>The detailed view of the restored backup shows backup archive's name, it's MD5 hash, it's creation/modification date (in the target folder), and the date of the restoration. Please note Restored Backup history cannot be modified.</p>
+<p><img alt="br_3" src="../img/br_3.png" /></p>
+<h2 id="br-in-docker-environment">B/R in Docker environment<a class="headerlink" href="#br-in-docker-environment" title="Permanent link">&para;</a></h2>
+<p>When executing B/R in the Docker environment, creation backup to / restoration from should be executed in <code>/backup_restore</code> directory.
+It is a shared volume between Geoserver and Geonode images, created for this purpose only. Pointing at another
+location will fail, as one of the images won't have an access to the files.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When executing B/R in Docker environment <strong>remember</strong> to create <code>settings.ini</code> file basing on <code>settings_docker_sample.ini</code> to point at a proper Geoserver data directory! In other case configuration mismatch may cause unexpected errors.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Important Notes</p>
+<p>The only other volume shared between images is <code>/geoserver_data/data</code>, but backup creation <strong>should not</strong> be performed there, as the recursive Geoserver backups may be created in such case.</p>
+</div>
+<h3 id="how-to-run-the-backup">How to run the backup<a class="headerlink" href="#how-to-run-the-backup" title="Permanent link">&para;</a></h3>
+<p>The geonode-project environment provides an util to run the backup from the terminal:</p>
+<div class="highlight"><pre><span></span><code>docker exec -it django4&lt;project_name&gt; sh -c &#39;SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./&lt;project_name&gt;/br/backup.sh $BKP_FOLDER_NAME&#39;
+</code></pre></div>
+<h3 id="how-to-run-the-restore">How to run the restore<a class="headerlink" href="#how-to-run-the-restore" title="Permanent link">&para;</a></h3>
+<p>The geonode-project environment provides an util to run the restore from the terminal:</p>
+<div class="highlight"><pre><span></span><code>#  docker exec -it django4&lt;project_name&gt; sh -c &#39;SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./&lt;project_name&gt;/br/restore.sh $BKP_FOLDER_NAME&#39;
+</code></pre></div>
+<h2 id="br-jenkins-job-in-docker-environment">B/R Jenkins Job in Docker environment<a class="headerlink" href="#br-jenkins-job-in-docker-environment" title="Permanent link">&para;</a></h2>
+<p>When installing GeoNode through the <code>geonode-project</code> Docker (see :ref:<code>geonode-project-basic</code>), an instance of <code>Jenkins CI/CD &lt;https://www.jenkins.io/&gt;</code>_ is also automatically deployed and available through <code>http://&lt;geonode_host&gt;/jenkins</code>.</p>
+<p><img alt="br_jenkins_1" src="../img/br_jenkins_1.png" /></p>
+<h3 id="configure-jenkins-at-first-startup">Configure Jenkins at first startup<a class="headerlink" href="#configure-jenkins-at-first-startup" title="Permanent link">&para;</a></h3>
+<p>The very first time you try to access Jenkins, you will need to unlock it and generate a new administrator username and password.</p>
+<p>In order to do that, you need to print the contents of the auto-generated file <code>/var/jenkins_home/secrets/initialAdminPassword</code></p>
+<ul>
+<li>First of all search for the Jenkins container ID, usually <code>jenkins4{{project_name}}</code> where <code>{{project_name}}</code> is the name of your <code>geonode-project</code> instance (e.g. <code>my_geonode</code>)</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$&gt; docker ps
+
+ CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS              PORTS                                                                                NAMES
+ e9fc97a75d1a        geonode/nginx:geoserver      &quot;/docker-entrypoint.…&quot;   2 hours ago         Up 2 hours          0.0.0.0:80-&gt;80/tcp, 0.0.0.0:443-&gt;443/tcp                                             nginx4my_geonode
+ c5496400b1b9        my_geonode_django            &quot;/bin/sh -c &#39;service…&quot;   2 hours ago         Up 2 hours                                                                                               django4my_geonode
+ bc899f81fa28        my_geonode_celery            &quot;/bin/sh -c &#39;service…&quot;   2 hours ago         Up 2 hours                                                                                               celery4my_geonode
+ 3b213400d630        geonode/geoserver:2.17.1     &quot;/usr/local/tomcat/t…&quot;   2 hours ago         Up 2 hours          8080/tcp                                                                             geoserver4my_geonode
+ d2f59d70a0d3        geonode/postgis:11           &quot;docker-entrypoint.s…&quot;   2 hours ago         Up 2 hours          5432/tcp                                                                             db4my_geonode
+ 3f9ce0be7f88        rabbitmq                     &quot;docker-entrypoint.s…&quot;   2 hours ago         Up 2 hours          4369/tcp, 5671-5672/tcp, 25672/tcp                                                   rabbitmq4my_geonode
+ 02fdbce9ae73        geonode/letsencrypt:latest   &quot;./docker-entrypoint…&quot;   2 hours ago         Up 14 seconds                                                                                            my_geonode_letsencrypt_1
+ c745520fd551        jenkins/jenkins:lts          &quot;/sbin/tini -- /usr/…&quot;   2 hours ago         Up 2 hours          0.0.0.0:9080-&gt;9080/tcp, 8080/tcp, 0.0.0.0:50000-&gt;50000/tcp, 0.0.0.0:9443-&gt;8443/tcp   jenkins4my_geonode
+</code></pre></div>
+<ul>
+<li>Now just <code>cat</code> the file above inside the Jenkins container</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$&gt; docker container exec -u 0 -it jenkins4my_geonode sh -c &#39;cat /var/jenkins_home/secrets/initialAdminPassword&#39;
+b91e9d*****************373834
+</code></pre></div>
+<ul>
+<li>Copy the hash code you just got form the print above, and copy-and-paste to the browser window</li>
+</ul>
+<p><img alt="br_jenkins_2" src="../img/br_jenkins_2.png" /></p>
+<p>In the next step just install the <code>Default Plugins</code>. You can install more of them later on from the management page.</p>
+<p><img alt="br_jenkins_3" src="../img/br_jenkins_3.png" /></p>
+<p>Wait until Jenkins has finished configuring the plugins</p>
+<p><img alt="br_jenkins_4" src="../img/br_jenkins_4.png" /></p>
+<p>Provide the administrator credentials as requested</p>
+<p><img alt="br_jenkins_5" src="../img/br_jenkins_5.png" /></p>
+<p>Confirm the Jenkins instance URL, this can be changed form the configuration later in case you will need to update the server address</p>
+<p><img alt="br_jenkins_6" src="../img/br_jenkins_6.png" /></p>
+<p>Well done, Jenkins is ready now</p>
+<p><img alt="br_jenkins_7" src="../img/br_jenkins_7.png" /></p>
+<p>The next step is to configure a Jenkins Job able to interact with the Django Docker container and run a full backup</p>
+<p><img alt="br_jenkins_8" src="../img/br_jenkins_8.png" /></p>
+<h3 id="configure-a-jenkins-job-to-run-a-full-backup-on-the-django-container">Configure a Jenkins Job to run a full backup on the Django Container<a class="headerlink" href="#configure-a-jenkins-job-to-run-a-full-backup-on-the-django-container" title="Permanent link">&para;</a></h3>
+<p>Before creating the new Jenkins job, we need to install and configure a new plugin, <code>Publish over SSH &lt;https://plugins.jenkins.io/publish-over-ssh&gt;</code>_</p>
+<p>In order to do that, once logged in as <code>admin</code>, go to the Jenkins <code>Management Page &gt; Manage Plugins</code> tab</p>
+<p><img alt="br_jenkins_9" src="../img/br_jenkins_9.png" /></p>
+<p><img alt="br_jenkins_10" src="../img/br_jenkins_10.png" /></p>
+<p>Click on <code>Available</code> tab and search for <code>SSH</code> available plugins</p>
+<p><img alt="br_jenkins_10" src="../img/br_jenkins_11.png" /></p>
+<p>Select and check the <code>Publish over SSH</code> one</p>
+<p><img alt="br_jenkins_10" src="../img/br_jenkins_12.png" /></p>
+<p>Install the plugins and restart Jenkins</p>
+<p><img alt="br_jenkins_10" src="../img/br_jenkins_13.png" /></p>
+<p>The next step is to configure the <code>SSH Server Connection</code> for the <code>Publish over SSH</code> plugin.</p>
+<p>Move to <code>Jenkins Configuration</code> </p>
+<p><img alt="br_jenkins_14" src="../img/br_jenkins_14.png" />
+ì
+Scroll down until you find the <code>Publish over SSH</code> plugin section</p>
+<p><img alt="br_jenkins_15" src="../img/br_jenkins_15.png" /></p>
+<p>Depending on how your <code>HOST SSH service</code> has been configured, you might need several information in order to setup the connection.</p>
+<p>Here below an example using a global host (<code>master.demo.geonode.org</code>) accepting <code>SSH</code> connections via <code>RSA keys</code></p>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_16.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Important Notes</p>
+<p>Before saving the configuration always ensure the connection is ok by using the <code>Test Configuration</code> button</p>
+</div>
+<p><img alt="br_jenkins_17" src="../img/br_jenkins_17.png" /></p>
+<p>It is possible also to run and configure <code>Jenkins</code> to run locally, as an instance on <code>localhost</code>.
+In that case you will need to change few things in order to allow <code>Jenkins</code> to access your local network.</p>
+<ul>
+<li>
+<p>First of all, be sure <code>OpenSSH Server</code> is correctly installed and running on your PC. Eventually check any firewall rules.
+      <div class="highlight"><pre><span></span><code>$&gt; sudo apt install openssh-server
+
+# Test your connection locally
+$&gt; ssh -p 22 user@localhost
+   user@localhost&#39;s password: 
+</code></pre></div></p>
+</li>
+<li>
+<p>You will need to do some changed to your <code>docker-compose.yml</code> file in order to enable the <code>host network</code> configuration.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Important Notes</p>
+<p>Enable <code>network_mode: "host"</code> on Jenkins container</p>
+<div class="highlight"><pre><span></span><code>$&gt; vim docker-compose.yml
+
+...
+jenkins:
+   image: jenkins/jenkins:lts
+   # image: istresearch/jenkins:latest
+   container_name: jenkins4${COMPOSE_PROJECT_NAME}
+   user: jenkins
+   ports:
+      - &#39;${JENKINS_HTTP_PORT}:${JENKINS_HTTP_PORT}&#39;
+      - &#39;${JENKINS_HTTPS_PORT}:${JENKINS_HTTPS_PORT}&#39;
+      - &#39;50000:50000&#39;
+   network_mode: &quot;host&quot;
+   volumes:
+      - jenkins_data:/var/jenkins_home
+      - backup-restore:/backup_restore
+      # - /var/run/docker.sock:/var/run/docker.sock
+   environment:
+      - &#39;JENKINS_OPTS=--httpPort=${JENKINS_HTTP_PORT} --httpsPort=${JENKINS_HTTPS_PORT} --prefix=/jenkins&#39;
+...
+
+# Recreate the Jenkins container
+$&gt; docker-compose stop jenkins
+$&gt; docker-compose rm jenkins
+$&gt; docker-compose up -d jenkins
+</code></pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>From now on, your local Jenkins instance will be accessible from <code>http://localhost:9080/jenkins</code></p>
+</div>
+<ul>
+<li>Add <code>localhost</code> Server to the <code>Publish over SSH</code> plugin configuration</li>
+</ul>
+<p>Mode to <code>http://localhost:9080/jenkins/configure</code> and fill the required information</p>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_18.png" />
+      :align: center</p>
+<div class="admonition note">
+<p class="admonition-title">Important Notes</p>
+<p>Before saving the configuration always ensure the connection is ok by using the <code>Test Configuration</code> button</p>
+<p>.. figure:: img/br_jenkins_17.png
+     :align: center</p>
+</div>
+<p>We are now ready to create the Jenkins Job which will run a full backup &amp; restore of our GeoNode dockerized instance.</p>
+<ul>
+<li>Move to the Jenkins Home and click on <code>Create a Job</code> button</li>
+</ul>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_19.png" /></p>
+<ul>
+<li>Provide a name to the Job and select <code>Freestyle project</code></li>
+</ul>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_20.png" /></p>
+<ul>
+<li>Enable the <code>Log rotation</code> strategy if needed</li>
+</ul>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_21.png" /></p>
+<ul>
+<li>Configure the <code>Job Parameters</code> which will be used by the script later on.</li>
+</ul>
+<p>Add three <code>String Parameters</code></p>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_22.png" /></p>
+<p>as shown below</p>
+<ul>
+<li><code>BKP_FOLDER_NAME</code></li>
+</ul>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_23.png" /></p>
+<ul>
+<li>
+<p><code>SOURCE_URL</code></p>
+<p>.. warning:: Provide the correct URL of your GeoNode instance
+<img alt="br_jenkins_16" src="../img/br_jenkins_24.png" /></p>
+</li>
+<li>
+<p><code>TARGET_URL</code></p>
+<p>.. warning:: Provide the correct URL of your GeoNode instance
+<img alt="br_jenkins_16" src="../img/br_jenkins_25.png" /></p>
+</li>
+<li>
+<p>Enable the <code>Delete workspace before build starts</code> and <code>Add timestamps to the Console Output</code> <code>Build Environment</code> options</p>
+</li>
+</ul>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_26.png" /></p>
+<ul>
+<li>Finally let's create the <code>SSH Build Step</code></li>
+</ul>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_27.png" /></p>
+<p>Select the correct <code>SSH Server</code> and provide the <code>Exec Command</code> below</p>
+<div class="admonition warning">
+<p class="admonition-title">warning</p>
+<p>Replace <code>{{project_name}}</code> with your <code>geonode-project instance name</code> (e.g. <code>my_geonode</code>)</p>
+<pre><code> ```
+
+ # Replace {{project_name}} with your geonode-project instance name (e.g. my_geonode)
+ # docker exec -u 0 -it django4{{project_name}} sh -c 'SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./{{project_name}}/br/backup.sh $BKP_FOLDER_NAME'
+ # e.g.:
+ docker exec -u 0 -it django4my_geonode sh -c 'SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./my_geonode/br/backup.sh $BKP_FOLDER_NAME'
+ ```
+</code></pre>
+<p><img alt="br_jenkins_28" src="../img/br_jenkins_28.png" /></p>
+</div>
+<p>Click on <code>Advanced</code> and change the parameters as shown below</p>
+<pre><code>  .. figure:: img/br_jenkins_29.png
+     :align: center
+</code></pre>
+<p><strong>Save!</strong> You are ready to run the Job...</p>
+<p><img alt="br_jenkins_16" src="../img/br_jenkins_30.png" />
+<img alt="br_jenkins_16" src="../img/br_jenkins_31.png" />
+<img alt="br_jenkins_16" src="../img/br_jenkins_32.png" />
+<img alt="br_jenkins_16" src="../img/br_jenkins_33.png" /></p>
+<h3 id="link-the-backup_restore-folder-to-a-local-folder-on-the-host">Link the <code>backup_restore</code> folder to a local folder on the <code>HOST</code><a class="headerlink" href="#link-the-backup_restore-folder-to-a-local-folder-on-the-host" title="Permanent link">&para;</a></h3>
+<p>In the case you need to save the backup archives outside the docker container, there's the possibility to directly link the <code>backup_restore</code> folder to a local folder on the <code>HOST</code>.</p>
+<p>In that case you won't need to <code>docker cp</code> the files everytime from the containers, they will be directly available on the host filesystem.</p>
+<div class="admonition warning">
+<p class="admonition-title">warning</p>
+<p>Always keep an eye to the disk space. Backups archives may be huge.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Important Notes</p>
+<p>You might want also to consider filtering the files through the backup dt filters on the <code>settings.ini</code> in order to reduce the size of the archive files, including only the new ones.</p>
+</div>
+<p>Modify the <code>docker-compose.override.yml</code> as follows in order to link the backup folders outside.</p>
+<div class="admonition note">
+<p class="admonition-title">Important Notes</p>
+<p><code>/data/backup_restore</code> is a folder physically located into the host filesystem.</p>
+</div>
+<div class="highlight"><pre><span></span><code>$&gt; vim docker-compose.override.yml
+
+version: &#39;2.2&#39;
+services:
+
+django:
+   build: .
+   # Loading the app is defined here to allow for
+   # autoreload on changes it is mounted on top of the
+   # old copy that docker added when creating the image
+   volumes:
+      - &#39;.:/usr/src/my_geonode&#39;
+      - &#39;/data/backup_restore:/backup_restore&#39;  # Link to local volume in the HOST
+
+celery:
+  volumes:
+    - &#39;/data/backup_restore:/backup_restore&#39;  # Link to local volume in the HOST
+
+geoserver:
+  volumes:
+    - &#39;/data/backup_restore:/backup_restore&#39;  # Link to local volume in the HOST
+
+jenkins:
+  volumes:
+    - &#39;/data/backup_restore:/backup_restore&#39;  # Link to local volume in the HOST
+
+# Restart the containers
+$&gt; docker-compose up -d
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["header.autohide", "navigation.instant", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "content.code.copy"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../theme/js/dl-anchors.js"></script>
+      
+    
+  </body>
+</html>

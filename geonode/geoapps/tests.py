@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.geoapps.models import GeoApp
 from geonode.base.models import TopicCategory
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, geoapp_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.metadata.manager import metadata_manager
 from geonode.base.populate_test_data import all_public, create_models, remove_models
@@ -47,7 +47,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.bobby = get_user_model().objects.get(username="bobby")
-        self.geo_app = resource_manager_registry.get_for_model(GeoApp).create(
+        self.geo_app = geoapp_manager.create(
             None,
             resource_type=GeoApp,
             defaults=dict(

@@ -82,7 +82,7 @@ from geonode.base.templatetags.thesaurus import (
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import dataset_manager
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
@@ -1205,7 +1205,7 @@ class TestRegions(GeoNodeBaseTestSupport):
 
     @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
     def test_regions_are_assigned_if_handler_is_used(self):
-        dataset = resource_manager_registry.get_for_model(Dataset).create(
+        dataset = dataset_manager.create(
             None,
             resource_type=Dataset,
             defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),

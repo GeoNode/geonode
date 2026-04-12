@@ -54,7 +54,7 @@ from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -2592,9 +2592,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager_registry.get_for_model(Dataset).create(
-            str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
-        )
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
     @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
@@ -2603,9 +2601,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager_registry.get_for_model(Dataset).create(
-            str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
-        )
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
     @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
@@ -2616,9 +2612,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager_registry.get_for_model(Dataset).create(
-            str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
-        )
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
@@ -2633,9 +2627,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager_registry.get_for_model(Dataset).create(
-            str(uuid.uuid4), Dataset, defaults={"owner": self.group_member}
-        )
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
 
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]

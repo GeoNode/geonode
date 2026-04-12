@@ -23,7 +23,6 @@ import re
 import sys
 import json
 import logging
-from builtins import Exception
 from typing import Iterable
 
 from django.test import RequestFactory, override_settings
@@ -52,7 +51,7 @@ from geonode.catalogue import get_catalogue
 from geonode.catalogue.models import catalogue_post_save
 from geonode.catalogue.views import csw_global_dispatch
 
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.assets.utils import create_asset_and_link
@@ -2602,7 +2601,7 @@ class BaseApiTests(APITestCase):
     def test_resource_service_copy(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
-        resource = resource_manager_registry.get_for_model(Dataset).create(
+        resource = dataset_manager.create(
             str(uuid4()),
             Dataset,
             defaults={
@@ -2701,7 +2700,7 @@ class BaseApiTests(APITestCase):
         with self.settings(ASYNC_SIGNALS=False):
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
-            resource = resource_manager_registry.get_for_model(Dataset).create(
+            resource = dataset_manager.create(
                 None,
                 resource_type=Dataset,
                 defaults={
@@ -3823,7 +3822,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager_registry.get_for_model(Dataset).create(
+        dt = dataset_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 
@@ -3843,7 +3842,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager_registry.get_for_model(Dataset).create(
+        dt = dataset_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 

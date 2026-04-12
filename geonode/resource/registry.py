@@ -22,11 +22,17 @@ from typing import Type
 from django.utils.module_loading import import_string
 
 from geonode.base.models import ResourceBase
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
+from geonode.layers.models import Dataset
+from geonode.maps.models import Map
 from geonode.resource.manager import BaseResourceManager
 from geonode.resource.api.utils import resolve_type_serializer
 
-
+import logging
 from . import settings as rm_settings
+
+logger = logging.getLogger(__file__)
 
 
 class ResourceManagerRegistry:
@@ -63,7 +69,7 @@ class ResourceManagerRegistry:
         for model_cls, manager in self.REGISTRY.items():
             if isinstance(real, model_cls):
                 return manager
-        if isinstance(real, ResourceBase):
+        if type(real) is ResourceBase:
             return BaseResourceManager()
         raise ValueError("No resource manager registered for instance")
 
@@ -74,7 +80,7 @@ class ResourceManagerRegistry:
         manager = self.REGISTRY.get(model_cls)
         if manager is not None:
             return manager
-        if issubclass(model_cls, ResourceBase):
+        if model_cls is ResourceBase:
             return BaseResourceManager()
         raise ValueError("No resource manager registered for model")
 
@@ -103,4 +109,28 @@ class ResourceManagerRegistry:
             self.add(manager_class())
 
 
+class ResourceRegistryLazyLoader:
+    def __init__(self, class_instance):
+        self._instance = None
+        self.class_instance = class_instance
+
+    def get_instance(self):
+        if self._instance is None:
+            try:
+                self._instance = resource_manager_registry.get_for_model(self.class_instance)
+            except Exception:
+                logger.warning("resource registry not found, re-initialization")
+                resource_manager_registry.init_registry()
+                self._instance = resource_manager_registry.get_for_model(self.class_instance)
+
+        return self._instance
+
+    def __getattr__(self, name):
+        return getattr(self.get_instance(), name)
+
+
 resource_manager_registry = ResourceManagerRegistry()
+document_manager = ResourceRegistryLazyLoader(class_instance=Document)
+dataset_manager = ResourceRegistryLazyLoader(class_instance=Dataset)
+map_manager = ResourceRegistryLazyLoader(class_instance=Map)
+geoapp_manager = ResourceRegistryLazyLoader(class_instance=GeoApp)

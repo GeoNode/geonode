@@ -49,7 +49,7 @@ from geonode.thumbs.background import (
     GenericWMSBackground,
 )
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 
 logger = logging.getLogger(__name__)
 
@@ -698,7 +698,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         try:
             dt_files = [os.path.join(os.path.abspath(os.path.dirname(__file__)), "data", "WY_USNG.zip")]
             # raises an exception if resource_type is not provided
-            res = self.rm.get_for_model(Dataset).create(
+            res = dataset_manager.create(
                 None, resource_type=Dataset, defaults={"owner": self.user_admin, "files": dt_files}
             )
             # ingest with datasets
@@ -713,4 +713,4 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 self._fetch_thumb_and_compare(res.thumbnail_url, expected_thumb)
         finally:
             if res:
-                self.rm.get_for_model(Dataset).delete(res.uuid)
+                dataset_manager.delete(res.uuid)

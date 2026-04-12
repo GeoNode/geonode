@@ -40,7 +40,13 @@ from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import create_single_doc, create_single_map, create_single_dataset
 from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.security.registry import permissions_registry
-from geonode.resource.registry import resource_manager_registry
+from geonode.resource.registry import (
+    resource_manager_registry,
+    document_manager,
+    dataset_manager,
+    map_manager,
+    geoapp_manager,
+)
 from geonode.layers.manager import DatasetResourceManager
 from geonode.geoapps.manager import GeoAppResourceManager
 from geonode.maps.manager import MapResourceManager
@@ -489,11 +495,17 @@ class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
         self.registry.reset()
         super().tearDown()
 
-    def test_get_for_instance_real_managers(self):
+    def test_get_for_model_real_managers(self):
         self.assertIsInstance(resource_manager_registry.get_for_model(Document), DocumentResourceManager)
         self.assertIsInstance(resource_manager_registry.get_for_model(Map), MapResourceManager)
         self.assertIsInstance(resource_manager_registry.get_for_model(Dataset), DatasetResourceManager)
         self.assertIsInstance(resource_manager_registry.get_for_model(GeoApp), GeoAppResourceManager)
+
+    def test_lazy_loader_real_managers(self):
+        self.assertIsInstance(document_manager.get_instance(), DocumentResourceManager)
+        self.assertIsInstance(map_manager.get_instance(), MapResourceManager)
+        self.assertIsInstance(dataset_manager.get_instance(), DatasetResourceManager)
+        self.assertIsInstance(geoapp_manager.get_instance(), GeoAppResourceManager)
 
     def test_get_for_instance_from_objects(self):
         doc = Document.objects.first()
@@ -510,11 +522,12 @@ class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
         doc = Document.objects.first()
         self.assertIs(self.registry.get_for_instance(doc), mgr)
 
-    def test_remove_returns_base_manager(self):
+    def test_remove_missing_manager_raises(self):
         mgr = DummyDocumentManager()
         self.registry.add(mgr)
         self.registry.remove(Document)
-        self.assertIsInstance(self.registry.get_for_model(Document), BaseResourceManager)
+        with self.assertRaises(ValueError):
+            self.registry.get_for_model(Document)
 
     def test_get_for_type_and_uuid(self):
         mgr = DummyDocumentManager()
