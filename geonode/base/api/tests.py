@@ -4175,3 +4175,152 @@ class MapCachingTest(GeoNodeBaseTestSupport):
         # Check that the permissions in the layers are the same
         for layer1, layer2 in zip(data1["map"]["maplayers"], data2["map"]["maplayers"]):
             self.assertEqual(layer1["dataset"]["perms"], layer2["dataset"]["perms"])
+
+
+class DeprecatedExtraMetadataApiTest(GeoNodeBaseTestSupport):
+    """Tests for the deprecated backward-compatible ExtraMetadata API adapters.
+
+    These adapters re-expose the old ``/extra_metadata/`` endpoint and the
+    ``metadata`` serializer field using SparseField as the storage backend.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.admin = get_user_model().objects.get(username="admin")
+        self.dataset = create_single_dataset("deprecated_em_test")
+
+    def _url(self, pk=None):
+        pk = pk or self.dataset.pk
+        return urljoin(
+            f"{reverse('base-resources-list')}/",
+            f"{pk}/extra_metadata/",
+        )
+
+    def test_get_empty_extra_metadata(self):
+        """GET should return an empty list when no extra metadata exists."""
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
+
+    def test_post_extra_metadata(self):
+        """POST should create new extra metadata entries."""
+        from geonode.metadata.models import SparseField
+
+        self.client.login(username="admin", password="admin")
+        payload = [
+            {"field_name": "test_field", "field_value": "test_value"},
+            {"field_name": "another", "field_value": "value2"},
+        ]
+        response = self.client.post(
+            self._url(),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 201)
+        result = response.json()
+        self.assertEqual(len(result), 2)
+        # Each entry should have an id and the metadata fields
+        for item in result:
+            self.assertIn("id", item)
+            self.assertIn("field_name", item)
+            self.assertIn("field_value", item)
+
+        # Verify SparseField entries were created
+        sf_count = SparseField.objects.filter(
+            resource=self.dataset.resourcebase_ptr,
+            name__startswith="extra_metadata_",
+        ).count()
+        self.assertEqual(sf_count, 2)
+
+    def test_get_returns_posted_metadata(self):
+        """GET after POST should return the created metadata."""
+        self.client.login(username="admin", password="admin")
+        payload = [{"field_name": "myfield", "field_value": "myvalue"}]
+        self.client.post(
+            self._url(),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["field_name"], "myfield")
+        self.assertEqual(result[0]["field_value"], "myvalue")
+
+    def test_put_updates_existing_metadata(self):
+        """PUT should update an existing entry by id."""
+        self.client.login(username="admin", password="admin")
+        # Create first
+        payload = [{"field_name": "original", "field_value": "v1"}]
+        response = self.client.post(
+            self._url(),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        created_id = response.json()[0]["id"]
+
+        # Update
+        update_payload = [
+            {"id": created_id, "field_name": "updated", "field_value": "v2"}
+        ]
+        response = self.client.put(
+            self._url(),
+            data=json.dumps(update_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["field_name"], "updated")
+        self.assertEqual(result[0]["field_value"], "v2")
+
+    def test_delete_removes_metadata(self):
+        """DELETE should remove entries by id."""
+        self.client.login(username="admin", password="admin")
+        # Create
+        payload = [
+            {"field_name": "to_delete", "field_value": "val"},
+            {"field_name": "to_keep", "field_value": "keep"},
+        ]
+        response = self.client.post(
+            self._url(),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        items = response.json()
+        delete_id = items[0]["id"]
+
+        # Delete one
+        response = self.client.delete(
+            self._url(),
+            data=json.dumps([delete_id]),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertEqual(len(result), 1)
+        self.assertNotEqual(result[0]["id"], delete_id)
+
+    def test_metadata_field_in_serializer(self):
+        """The deprecated ``metadata`` field should appear when requested
+        via include[] and return data from SparseField entries."""
+        from geonode.metadata.models import SparseField
+
+        self.client.login(username="admin", password="admin")
+        SparseField.objects.create(
+            resource=self.dataset.resourcebase_ptr,
+            name="extra_metadata_1",
+            value=json.dumps({"field_name": "test", "field_value": "val"}),
+        )
+        url = f"{reverse('base-resources-list')}/{self.dataset.pk}?include[]=metadata"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json().get("resource", response.json())
+        self.assertIn("metadata", data)
+        metadata = data["metadata"]
+        self.assertIsInstance(metadata, list)
+        if metadata:
+            self.assertIn("id", metadata[0])
+            self.assertIn("field_name", metadata[0])

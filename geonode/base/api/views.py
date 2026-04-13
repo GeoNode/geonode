@@ -110,6 +110,7 @@ from .serializers import (
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import patch_perms
+from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataMixin
 from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
@@ -303,7 +304,9 @@ class ApiPresetsInitializer(APIView):
             request.GET._mutable = False
 
 
-class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
+class ResourceBaseViewSet(
+    ApiPresetsInitializer, MultiLangViewMixin, DeprecatedExtraMetadataMixin, DynamicModelViewSet
+):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
