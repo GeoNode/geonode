@@ -1,5 +1,5 @@
 bs4==0.0.2
 mkdocs==1.6.1
-mkdocs-material==9.7.0
+mkdocs-material==9.7.6
 mkdocs-with-pdf==0.9.3
 mkdocs-autorefs==1.4.4
