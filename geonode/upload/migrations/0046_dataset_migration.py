@@ -62,7 +62,7 @@ def dataset_migration(apps, _):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("upload", "0053_drop_celery_results_tables"),
+        ("upload", "0045_fixup_dynamic_shema_table_names"),
     ]
 
     operations = [
