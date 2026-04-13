@@ -15,11 +15,11 @@ def dataset_migration(apps, _):
             # generating orchestrator expected data file
             if not old_resource.files:
                 if old_resource.is_vector():
-                    converted_files = [{"base_file": "placeholder.shp"}]
+                    converted_files = [{"base_file": "placeholder.shp", "action": "upload"}]
                 else:
-                    converted_files = [{"base_file": "placeholder.tiff"}]
+                    converted_files = [{"base_file": "placeholder.tiff", "action": "upload"}]
             else:
-                converted_files = [{"base_file": x} for x in old_resource.files]
+                converted_files = [{"base_file": x, "action": "upload"} for x in old_resource.files]
             # try to get the handler for the file of the old resource
             # when is found, we can exit
             handler_to_use = None
@@ -32,33 +32,37 @@ def dataset_migration(apps, _):
             match old_resource.subtype:
                 case 'vector':
                     # taking a default handler for all the vector file
-                    handler_to_use = orchestrator.load_handler_by_id("shp")()
+                    handler_to_use = orchestrator.load_handler_by_id("shp")
                 case 'raster':
                     # taking a default handler for all the raster file
-                    handler_to_use = orchestrator.load_handler_by_id("tiff")()
+                    handler_to_use = orchestrator.load_handler_by_id("tiff")
                 case '3dtiles':
-                    handler_to_use = orchestrator.load_handler_by_id("3dtiles")()
+                    handler_to_use = orchestrator.load_handler_by_id("3dtiles")
                 case 'tabular':
-                    handler_to_use = orchestrator.load_handler_by_id("csv")()
+                    handler_to_use = orchestrator.load_handler_by_id("csv")
                 case 'flatgeobuf':
-                    handler_to_use = orchestrator.load_handler("geonode.upload.handlers.remote.flatgeobuf.RemoteFlatGeobufResourceHandler")()
+                    handler_to_use = orchestrator.load_handler("geonode.upload.handlers.remote.flatgeobuf.RemoteFlatGeobufResourceHandler")
                 case 'cog':
-                    handler_to_use = orchestrator.load_handler("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler")()
+                    handler_to_use = orchestrator.load_handler("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler")
                 case _:
                     handler_to_use = None
 
-        if handler_to_use:
-            handler_to_use.create_resourcehandlerinfo(
-                handler_module_path=str(handler_to_use),
-                resource=old_resource,
-                execution_id=None,
-                kwargs={"manual_fix": True},
-            )
+        if handler_to_use :
+            try:
+                handler_to_use().create_resourcehandlerinfo(
+                    handler_module_path=str(handler_to_use()), 
+                    resource=old_resource,
+                    execution_id=None,
+                    kwargs={"is_legacy": True},
+                )
+            except Exception as e:
+                print(e)
+                continue
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("upload", "0045_fixup_dynamic_shema_table_names"),
+        ("upload", "0053_drop_celery_results_tables"),
     ]
 
     operations = [
