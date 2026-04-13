@@ -395,6 +395,7 @@ class BaseRasterFileHandler(BaseHandler):
                 vals=dict(
                     name=alternate,
                     workspace=dataset.workspace,
+                    store=alternate.split(":")[-1],
                     subtype="raster",
                     alternate=f"{dataset.workspace}:{alternate}",
                     dirty_state=True,
