@@ -973,8 +973,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def can_have_style(self):
         return self.subtype not in {"tabular", "tileStore", "remote", "tabular"}
 
-    @property
-    def can_have_thumbnail(self):
+    def can_set_thumbnail(self, thumbnail_data=None):
+        """
+        Decide whether the resource allows setting a thumbnail.
+        Manual uploads are allowed; otherwise, only subtypes that
+        support auto-generated thumbnails are permitted.
+        """
+        if thumbnail_data:
+            return True
+
+        # No thumbnail data provided: allow only subtypes that support auto-generation.
         return self.subtype not in {"tabular", "3dtiles", "cog", "flatgeobuf"}
 
     @property
