@@ -62,6 +62,13 @@ SPARSE_FIELD_PREFIX = "extra_metadata_"
 # limit cannot be stored and are silently skipped with a log warning.
 SPARSE_FIELD_VALUE_MAX_LENGTH = 1024
 
+# Query parameter names that should *not* be treated as legacy
+# ``metadata__<key>`` filters in the deprecated GET endpoint.
+_NON_FILTER_QUERY_PARAMS = {
+    "api_preset", "page", "page_size", "format", "include[]",
+    "exclude[]", "sort[]",
+}
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -199,15 +206,9 @@ class DeprecatedExtraMetadataMixin:
     @staticmethod
     def _extra_metadata_get(request, resource):
         qs = _sparse_fields_for_resource(resource)
-        # Known non-filter query params that should not be treated as
-        # legacy metadata__<key> filters.
-        _skip_params = {
-            "api_preset", "page", "page_size", "format", "include[]",
-            "exclude[]", "filter{}", "sort[]",
-        }
         # Support the old query-param filtering (e.g. ?field_name=value)
         for key, value in request.query_params.items():
-            if key in _skip_params or key.startswith("filter{"):
+            if key in _NON_FILTER_QUERY_PARAMS or key.startswith("filter{"):
                 continue
             # Old API used metadata__<key>=value JSONField lookups.
             # We approximate this by filtering on the JSON string.
