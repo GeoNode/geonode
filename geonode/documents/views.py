@@ -35,7 +35,7 @@ from geonode.utils import mkdtemp
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.storage.manager import storage_manager
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import document_manager, resource_manager_registry
 from geonode.base import enumerations
 
 from pathlib import Path
@@ -131,7 +131,6 @@ class DocumentUploadView(CreateView):
         If the form is valid, save the associated model.
         """
         doc_form = form.cleaned_data
-        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
 
         file = doc_form.pop("doc_file", None)
         if file:
@@ -140,11 +139,11 @@ class DocumentUploadView(CreateView):
             name = Path(file.name)
             filepath = storage_manager.save(f"{dirname}/{name.stem}{name.suffix.lower()}", file)
             storage_path = storage_manager.path(filepath)
-            self.object = resource_manager.create(
+            self.object = document_manager.create(
                 None,
                 resource_type=Document,
                 defaults=dict(
-                    owner=resolved_owner,
+                    owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", file.name),
                     description=doc_form.pop("abstract", None),
@@ -163,22 +162,17 @@ class DocumentUploadView(CreateView):
             shutil.rmtree(tempdir, ignore_errors=True)
 
         else:
-            self.object = resource_manager.create(
+            self.object = document_manager.create(
                 None,
                 resource_type=Document,
                 defaults=dict(
-                    owner=resolved_owner,
+                    owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", None),
                     extension=doc_form.pop("extension", None),
                     sourcetype=enumerations.SOURCE_TYPE_REMOTE,
                 ),
             )
-
-        self.object.handle_moderated_uploads()
-        resource_manager.finalize_creation_permissions(
-            self.object, owner=resolved_owner, initial_user=self.request.user
-        )
 
         abstract = None
         date = None
@@ -203,7 +197,8 @@ class DocumentUploadView(CreateView):
                 logger.debug("Exif extraction failed.")
 
         bbox_poly = BBOXHelper.from_xy(bbox).as_polygon() if bbox else None
-        resource_manager.update(
+        resolved_resource_manager = resource_manager_registry.get_for_instance(self.object)
+        resolved_resource_manager.update(
             self.object.uuid,
             instance=self.object,
             keywords=keywords,
@@ -217,12 +212,6 @@ class DocumentUploadView(CreateView):
             ),
             notify=True,
         )
-
-        # Only trigger thumbnailing for local documents, not for remote URLs
-        if self.object.is_local:
-            resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
-        else:
-            logger.info(f"Skipping thumbnail generation for remote document: {self.object.doc_url}")
 
         register_event(self.request, enumerations.EventType.EVENT_UPLOAD, self.object)
 

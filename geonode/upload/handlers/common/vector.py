@@ -57,7 +57,7 @@ from geonode.upload.handlers.utils import (
     drop_dynamic_model_schema,
     create_layer_key,
 )
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 from osgeo import ogr, gdal
 from geonode.upload.api.exceptions import ImportException, UpsertException
@@ -820,7 +820,7 @@ class BaseVectorFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager.create(
+        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace, **kwargs),
@@ -886,7 +886,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("xml_file", "")
-        resource_manager.update(
+        resource_manager_registry.get_for_instance(saved_dataset).update(
             None,
             instance=saved_dataset,
             xml_file=_path,
@@ -896,7 +896,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_sld_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("sld_file", "")
-        resource_manager.exec(
+        resource_manager_registry.get_for_instance(saved_dataset).exec(
             "set_style",
             None,
             instance=saved_dataset,
@@ -906,7 +906,7 @@ class BaseVectorFileHandler(BaseHandler):
         )
 
     def handle_thumbnail(self, saved_dataset: Dataset, _exec: ExecutionRequest):
-        resource_manager.set_thumbnail(None, instance=saved_dataset)
+        resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
     def create_resourcehandlerinfo(
         self,
@@ -992,7 +992,7 @@ class BaseVectorFileHandler(BaseHandler):
                 else None
             )
 
-            resource_manager.exec(
+            resource_manager_registry.get_for_instance(new_resource).exec(
                 "set_time_info",
                 None,
                 instance=new_resource,
@@ -1549,8 +1549,8 @@ class BaseVectorFileHandler(BaseHandler):
             dataset.workspace,
         )
         payload.pop("asset")
-
-        dataset = resource_manager.update(
+        resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
+        dataset = resolved_resource_manager.update(
             dataset.uuid,
             instance=dataset,
             vals=payload,
@@ -1559,7 +1559,7 @@ class BaseVectorFileHandler(BaseHandler):
         self.handle_xml_file(dataset, exec_obj)
         self.handle_sld_file(dataset, exec_obj)
 
-        resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+        resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
         dataset.refresh_from_db()
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})

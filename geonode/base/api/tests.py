@@ -52,7 +52,7 @@ from geonode.catalogue import get_catalogue
 from geonode.catalogue.models import catalogue_post_save
 from geonode.catalogue.views import csw_global_dispatch
 
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.assets.utils import create_asset_and_link
@@ -2108,7 +2108,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(expected, response.json())
 
-    @patch("geonode.base.api.views.resource_manager.set_thumbnail")
+    @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail")
     def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_set_thumbnail):
         """
         Given a logged User and an existing dataset, should successfully trigger thumbnail generation.
@@ -2167,7 +2167,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 405)
         self.assertEqual(expected, response.json())
 
-    @patch("geonode.base.api.views.resource_manager.set_thumbnail", return_value=False)
+    @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail", return_value=False)
     def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_set_thumbnail):
         """
         Given a logged User and an existing dataset, should raise a ThumbnailException.
@@ -2602,7 +2602,7 @@ class BaseApiTests(APITestCase):
     def test_resource_service_copy(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
-        resource = resource_manager.create(
+        resource = dataset_manager.create(
             str(uuid4()),
             Dataset,
             defaults={
@@ -2701,7 +2701,7 @@ class BaseApiTests(APITestCase):
         with self.settings(ASYNC_SIGNALS=False):
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
-            resource = resource_manager.create(
+            resource = dataset_manager.create(
                 None,
                 resource_type=Dataset,
                 defaults={
@@ -3140,10 +3140,12 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
         self.assertEqual([], response.json())
 
     def test_user_without_view_perms_cannot_see_the_endpoint(self):
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
         self.client.login(username="bobby", password="bob")
-        resource_manager.remove_permissions(self.layer.uuid, instance=self.layer.get_self_resource())
+        resource_manager_registry.get_for_instance(self.layer.get_self_resource()).remove_permissions(
+            self.layer.uuid, instance=self.layer.get_self_resource()
+        )
         url = reverse("base-resources-extra-metadata", args=[self.layer.id])
         response = self.client.get(url, content_type="application/json")
         self.assertTrue(401, response.status_code)
@@ -3753,7 +3755,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
     def test_simple_resourcebase_can_be_created_by_resourcemanager(self):
         self.maxDiff = None
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
 
@@ -3807,19 +3809,21 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         self.assertEqual(record.identification[0].title, resource.title)
 
     def test_resource_index_created(self):
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
 
-        resource = resource_manager.update(resource.uuid, instance=resource, vals={})
+        resource = resource_manager_registry.get_for_instance(resource).update(
+            resource.uuid, instance=resource, vals={}
+        )
 
         self.assertTrue(ResourceIndex.objects.filter(resource=resource).exists())
 
     def test_csw_should_not_return_resourcebase_by_default(self):
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager.create(
+        dt = dataset_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 
@@ -3836,10 +3840,10 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
     @override_settings(PYCSW=pycsw_settings_all)
     def test_csw_should_return_resourcebase_if_defined_in_settings(self):
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager.create(
+        dt = dataset_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 

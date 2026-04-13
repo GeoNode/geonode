@@ -39,7 +39,7 @@ from geonode.people.api.serializers import UserSerializer
 from geonode.people.utils import get_available_users
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
 
 logger = logging.getLogger()
@@ -208,7 +208,7 @@ class UserViewSet(DynamicModelViewSet):
                 the owner
                 """
                 prev_owner = get_object_or_404(get_user_model(), id=previous_owner)
-                resource_manager.transfer_ownership(instance, target, prev_owner)
+                resource_manager_registry.get_for_instance(instance).transfer_ownership(instance, target, prev_owner)
 
             return Response("Resources transfered successfully", status=200)
 
