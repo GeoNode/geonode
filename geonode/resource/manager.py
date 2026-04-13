@@ -959,7 +959,7 @@ class BaseResourceManager(ResourceManagerInterface):
         map_thumb_from_bbox: bool = False,
     ) -> bool:
         _resource = instance or BaseResourceManager._get_instance(uuid)
-        if _resource and _resource.can_have_thumbnail:
+        if _resource and _resource.can_set_thumbnail(thumbnail):
             try:
                 with transaction.atomic():
                     if thumbnail:
