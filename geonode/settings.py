@@ -25,6 +25,7 @@ import sys
 import logging
 import subprocess
 import dj_database_url
+from schema import Optional
 from urllib.parse import urlparse, urljoin
 
 #
@@ -2067,6 +2068,32 @@ TOPICCATEGORY_MANDATORY = ast.literal_eval(os.environ.get("TOPICCATEGORY_MANDATO
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+# ---- Deprecated ExtraMetadata settings (kept for backward compatibility) ----
+# These settings are deprecated and will be removed in a future version.
+# The ExtraMetadata model has been replaced by SparseField.
+# External clients (e.g. mapstore-client) may still reference these settings.
+
+DEFAULT_EXTRA_METADATA_SCHEMA = {
+    Optional("id"): int,
+    "filter_header": object,
+    "field_name": object,
+    "field_label": object,
+    "field_value": object,
+}
+
+CUSTOM_METADATA_SCHEMA = os.getenv("CUSTOM_METADATA_SCHEMA ", {})
+
+EXTRA_METADATA_SCHEMA = {
+    **{
+        "map": os.getenv("MAP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
+        "dataset": os.getenv("DATASET_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
+        "document": os.getenv("DOCUMENT_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
+        "geoapp": os.getenv("GEOAPP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
+    },
+    **CUSTOM_METADATA_SCHEMA,
+}
+# ---- End deprecated ExtraMetadata settings ----
 
 """
 List of modules that implement custom metadata storers that will be called when the metadata of a resource is saved

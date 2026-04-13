@@ -4193,7 +4193,7 @@ class DeprecatedExtraMetadataApiTest(GeoNodeBaseTestSupport):
         pk = pk or self.dataset.pk
         return urljoin(
             f"{reverse('base-resources-list')}/",
-            f"{pk}/extra_metadata",
+            f"{pk}/extra_metadata/",
         )
 
     def test_get_empty_extra_metadata(self):

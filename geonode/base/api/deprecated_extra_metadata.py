@@ -27,11 +27,15 @@ deprecation period.
 To remove these adapters:
   1. Delete this file.
   2. Remove the ``metadata`` field and import from ``serializers.py``.
-  3. Remove the ``extra_metadata`` action and import from ``views.py``.
+  3. Remove ``DeprecatedExtraMetadataMixin`` and its import from ``views.py``.
+  4. Remove deprecated settings from ``settings.py``
+     (``DEFAULT_EXTRA_METADATA_SCHEMA``, ``CUSTOM_METADATA_SCHEMA``,
+     ``EXTRA_METADATA_SCHEMA``, and the ``from schema import Optional`` import).
 """
 
 import json
 import logging
+import uuid
 import warnings
 
 from deprecated import deprecated
@@ -40,6 +44,8 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 
 from dynamic_rest.fields.fields import DynamicComputedField
+
+from django.db import IntegrityError
 
 from geonode.base.models import ResourceBase
 from geonode.metadata.models import SparseField
@@ -84,7 +90,12 @@ def _sparse_to_legacy(sparse_field):
 
 
 def _next_sparse_name(resource):
-    """Generate the next available ``extra_metadata_<N>`` name."""
+    """Generate the next available ``extra_metadata_<N>`` name.
+
+    Falls back to a UUID-based suffix if a name collision occurs (e.g. under
+    concurrent requests), keeping the ``extra_metadata_`` prefix intact.
+    The numeric part is still preferred for readability.
+    """
     existing = (
         SparseField.objects.filter(
             resource=resource,
@@ -100,7 +111,11 @@ def _next_sparse_name(resource):
             max_n = max(max_n, int(suffix))
         except (ValueError, TypeError):
             pass
-    return f"{SPARSE_FIELD_PREFIX}{max_n + 1}"
+    candidate = f"{SPARSE_FIELD_PREFIX}{max_n + 1}"
+    # Guard against a race: if the candidate already exists, use a UUID suffix
+    if SparseField.objects.filter(resource=resource, name=candidate).exists():
+        candidate = f"{SPARSE_FIELD_PREFIX}{uuid.uuid4().hex[:12]}"
+    return candidate
 
 
 # ---------------------------------------------------------------------------
@@ -122,6 +137,7 @@ class DeprecatedExtraMetadataField(DynamicComputedField):
     @deprecated(version=DEPRECATION_VERSION, reason=DEPRECATION_REASON)
     def get_attribute(self, instance):
         warnings.warn(DEPRECATION_REASON, DeprecationWarning, stacklevel=2)
+        logger.warning(DEPRECATION_REASON)
         try:
             qs = _sparse_fields_for_resource(instance)
             return [_sparse_to_legacy(sf) for sf in qs]
@@ -183,8 +199,16 @@ class DeprecatedExtraMetadataMixin:
     @staticmethod
     def _extra_metadata_get(request, resource):
         qs = _sparse_fields_for_resource(resource)
+        # Known non-filter query params that should not be treated as
+        # legacy metadata__<key> filters.
+        _skip_params = {
+            "api_preset", "page", "page_size", "format", "include[]",
+            "exclude[]", "filter{}", "sort[]",
+        }
         # Support the old query-param filtering (e.g. ?field_name=value)
         for key, value in request.query_params.items():
+            if key in _skip_params or key.startswith("filter{"):
+                continue
             # Old API used metadata__<key>=value JSONField lookups.
             # We approximate this by filtering on the JSON string.
             filtered = []
@@ -234,9 +258,16 @@ class DeprecatedExtraMetadataMixin:
                 )
                 continue
             name = _next_sparse_name(resource)
-            SparseField.objects.create(
-                resource=resource, name=name, value=value
-            )
+            try:
+                SparseField.objects.create(
+                    resource=resource, name=name, value=value
+                )
+            except IntegrityError:
+                # Concurrent request created the same name; retry with UUID
+                name = f"{SPARSE_FIELD_PREFIX}{uuid.uuid4().hex[:12]}"
+                SparseField.objects.create(
+                    resource=resource, name=name, value=value
+                )
 
         result = [_sparse_to_legacy(sf) for sf in _sparse_fields_for_resource(resource)]
         return Response(result, status=201)
