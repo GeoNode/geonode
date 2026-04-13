@@ -1,0 +1,99 @@
+site_name: GeoNode documentation
+repo_name: 'GeoNode/geonode'
+repo_url: https://github.com/GeoNode/geonode/
+use_directory_urls: true
+docs_dir: 'src'
+nav:
+  - Home: index.md
+  - User Guide:
+    - User account: "user-guide/user_account.md"
+    - Catalog Resources: "user-guide/catalog.md"
+    - Datasets:
+      - Upload a dataset: "user-guide/datasets/create.md"
+      - Preview and Styling: "user-guide/datasets/preview.md"
+      - Update and Replace: "user-guide/datasets/update_replace.md"
+      - Remote datasets: "user-guide/datasets/remote.md"
+      - Create empty dataset: "user-guide/datasets/empty.md"
+    - Sharing: "user-guide/sharing.md"
+    - Metadata: "user-guide/metadata.md"
+  - Administration:
+    - Accessing the panel: "admin/panel.md"
+    - Users: "admin/user.md"
+    - Groups: "admin/group.md"
+    - Social Logins: "admin/social.md"
+    - OAuth2: "admin/oauth.md"
+  - Developer Guide: 
+    - API Usage: "development/api.md"
+  - Setup:
+    - Install:
+      - Docker installation:
+            - Prerequisites: setup/docker/prerequisites.md
+            - Vanilla Docker installation: setup/docker/vanilla-docker-installation.md
+            - GeoNode project Docker installation: setup/docker/project-docker-installation.md
+      - Bare installation:
+            - Prerequisites: setup/bare/prerequisites.md
+            - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
+            - GeoNode project bare installation: setup/bare/project-bare-installation.md
+    - Configuration:
+      - Settings: setup/configuration/settings.md
+      - Environmental Variables: setup/configuration/environmental_variables.md
+  - Miscellaneous:
+    - Thesauri: "miscellaneous/thesauri.md"
+    - Backup And Restore: "miscellaneous/br.md"
+
+extra_css:
+  - theme/css/extra.css
+
+extra_javascript:
+  - theme/js/dl-anchors.js
+
+theme:
+  name: material
+  logo: theme/img/geonode-logo-white.svg
+  favicon: theme/img/favicon.ico
+  custom_dir: 'src/theme'
+  language: 'en'
+  features:
+    - header.autohide
+    - navigation.instant
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.path
+    - navigation.indexes
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.blocks.caption
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+    
+plugins:
+  - with-pdf: # https://pypi.org/project/mkdocs-with-pdf/
+      author: GeoSolutions Group
+      copyright: 'OsGeo ©'
+      #
+      #cover: false
+      #back_cover: true
+      cover_logo: 'theme/geonode.png'
+      cover_title: GeoNode Documentation
+      cover_subtitle: User Guide and Developer Guide
+      toc_level: 3
+      output_path: pdf/geonode_documentation.pdf
+      enabled_if_env: ENABLE_PDF_EXPORT
+      debug_html: false # set to true to log the html content of the pdf on the console on build
+      show_anchors: true
+      verbose: false    # set to true to log the pdf generation steps in detail
+      custom_template_path: 'src/print_template' # includes custom styles.scss for pdf
+  - search
+  - autorefs

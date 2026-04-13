@@ -54,7 +54,7 @@ from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -922,7 +922,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource
         if layer is None:
             raise Exception("error during import")
-        layer = resource_manager.update(
+        layer = resource_manager_registry.get_for_instance(layer).update(
             layer.uuid, instance=layer, notify=False, vals=dict(owner=bobby, workspace=settings.DEFAULT_WORKSPACE)
         )
 
@@ -2592,7 +2592,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
     @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
@@ -2601,7 +2601,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
     @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
@@ -2612,7 +2612,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
@@ -2627,7 +2627,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
 
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
@@ -3736,3 +3736,60 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         temp_user.delete()
         temp_group_profile.delete()
         temp_group.delete()
+
+    def test_clear_permissions_cache(self):
+        """Test that clear_permissions_cache removes all cache entries."""
+        test_resource = self.resources[0]
+        anonymous_user = Profile.objects.get(username="AnonymousUser")
+
+        admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        self.assertIsNotNone(cache.get(admin_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.clear_permissions_cache()
+
+        self.assertIsNone(cache.get(admin_key))
+        self.assertIsNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(group_key))
+        self.assertIsNone(cache.get(all_key))
+
+    def test_configuration_read_only_change_clears_permissions_cache(self):
+        """Permissions cache is cleared when read_only flag changes."""
+        test_resource = self.resources[0]
+        user = self.admin_user
+
+        config = Configuration.load()
+        original_read_only = config.read_only
+
+        try:
+            cache.clear()
+
+            config.read_only = False
+            config.save()
+
+            permissions_registry.get_perms(instance=test_resource, user=user, use_cache=True)
+            cache_key = permissions_registry._get_cache_key([test_resource.pk], users=[user])
+            self.assertIsNotNone(cache.get(cache_key))
+
+            config.read_only = True
+            config.save()
+
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            config.read_only = original_read_only
+            config.save()

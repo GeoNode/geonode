@@ -35,7 +35,7 @@ from geonode.layers.models import Dataset
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.utils import update_resource
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.security.registry import permissions_registry
 from geonode.security.permissions import _to_compact_perms
 
@@ -97,7 +97,7 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
         result = super().partial_update(request, *args, **kwargs)
 
         dataset = self.get_object()
-        resource_manager.update(dataset.uuid, instance=dataset, notify=True),
+        resource_manager_registry.get_for_instance(dataset).update(dataset.uuid, instance=dataset, notify=True),
 
         return result
 
@@ -269,7 +269,8 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
                 layer.has_time = True
                 layer.save()
 
-                resource_manager.exec(
+                resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+                resolved_resource_manager.exec(
                     "set_time_info",
                     None,
                     instance=layer,
@@ -283,7 +284,7 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
                     },
                 )
 
-                resource_manager.update(
+                resolved_resource_manager.update(
                     layer.uuid,
                     instance=layer,
                     notify=True,

@@ -18,7 +18,7 @@
 #########################################################################
 import logging
 
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.xml.exceptions import InvalidXmlException
 from owslib.etree import etree as dlxml
@@ -96,7 +96,7 @@ class XMLFileHandler(MetadataFileHandler):
             original_handler.handle_xml_file(dataset, _exec)
         else:
             _path = _exec.input_params.get("files", {}).get("xml_file", _exec.input_params.get("base_file", {}))
-            resource_manager.update(
+            resource_manager_registry.get_for_instance(dataset).update(
                 None,
                 instance=dataset,
                 xml_file=_path,

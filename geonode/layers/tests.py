@@ -56,7 +56,7 @@ from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from guardian.shortcuts import get_anonymous_user
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -817,6 +817,31 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(self.dataset.bbox_polygon)
         self.assertIsNotNone(self.dataset.ll_bbox_polygon)
 
+    @patch("geonode.base.models.bbox_to_projection", side_effect=Exception("Unsupported CRS"))
+    def test_set_bbox_and_srid_fallback_to_ll_bbox(self, _mock_bbox_to_projection):
+        """
+        If native bbox reprojection fails, fallback to EPSG:4326 and ll_bbox for both polygons.
+        """
+        native_bbox = [1535760, 1786050, 4652670, 5126620]
+        ll_bbox = [8.7, 9.2, 45.1, 45.5]
+
+        self.dataset.set_bbox_and_srid(bbox=native_bbox, ll_bbox=ll_bbox, srid="EPSG:3003")
+
+        self.assertEqual(self.dataset.srid, "EPSG:4326")
+        self.assertIsNotNone(self.dataset.bbox_polygon)
+        self.assertIsNotNone(self.dataset.ll_bbox_polygon)
+        self.assertEqual(self.dataset.bbox_polygon.wkt, self.dataset.ll_bbox_polygon.wkt)
+
+    def test_set_bbox_and_srid_uses_native_bbox_when_supported(self):
+        native_bbox = [0, 10, 0, 10]
+        ll_bbox = [0, 10, 0, 10]
+
+        self.dataset.set_bbox_and_srid(bbox=native_bbox, ll_bbox=ll_bbox, srid="EPSG:4326")
+
+        self.assertEqual(self.dataset.srid, "EPSG:4326")
+        self.assertIsNotNone(self.dataset.bbox_polygon)
+        self.assertIsNotNone(self.dataset.ll_bbox_polygon)
+
     @patch("geonode.layers.models.Dataset.recalc_bbox_on_geoserver")
     def test_recalc_bbox_view_success(self, mock_recalc_bbox):
         """Test the recalc_bbox view returns 200 when successful."""
@@ -920,7 +945,9 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test only users with view permissions to a map can view them in layer detail view
         """
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+        resource_manager_registry.get_for_instance(self.map.get_self_resource()).remove_permissions(
+            self.map.uuid, instance=self.map.get_self_resource()
+        )
         self.client.login(username="admin", password="admin")
         response = self.client.get(reverse("dataset_embed", args=(self.layer.alternate,)))
         self.assertEqual(response.context["resource"].alternate, self.map_dataset.name)
@@ -931,7 +958,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         self.test_dataset = None
         try:
-            self.test_dataset = resource_manager.create(
+            self.test_dataset = dataset_manager.create(
                 None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
             )
             from geonode.metadata.manager import metadata_manager
@@ -992,7 +1019,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
 
-            _l = resource_manager.create(
+            _l = dataset_manager.create(
                 None,
                 resource_type=Dataset,
                 defaults=dict(
@@ -1045,7 +1072,9 @@ class TestCustomUUidHandler(TestCase):
 
     @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
     def test_dataset_will_override_the_uuid_if_handler_is_defined(self):
-        resource_manager.update(None, instance=self.sut, keywords=["updating", "values"])
+        resource_manager_registry.get_for_instance(self.sut).update(
+            None, instance=self.sut, keywords=["updating", "values"]
+        )
         expected = "abc:abc-1234-abc"
         actual = Dataset.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)

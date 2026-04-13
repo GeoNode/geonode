@@ -20,7 +20,7 @@ import enum
 import sys
 import tempfile
 import os
-from geonode.resource.manager import ResourceManager
+from geonode.resource.manager import BaseResourceManager
 from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.base.models import ResourceBase
 from django.utils.translation import gettext_lazy as _
@@ -35,6 +35,7 @@ from geonode.resource.models import ExecutionRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.template.loader import render_to_string
+from osgeo import ogr
 
 
 DEFAULT_PK_COLUMN_NAME = "fid"
@@ -96,11 +97,29 @@ def create_vrt_file(layer, source_filepath):
         for i in range(layer_defn.GetFieldCount())
     ]
 
+    points_from_columns = None
+    wkt_field = None
+    if layer.GetGeomType() == ogr.wkbNone:
+        source_fields = {field["src"].lower(): field["src"] for field in fields}
+        wkt_field = next(
+            (source_fields[g] for g in ("geom", "geometry", "wkt_geom", "the_geom") if g in source_fields), None
+        )
+        if wkt_field:
+            # Avoid importing the same source column both as attribute and geometry in wkt case.
+            fields = [field for field in fields if field["src"] != wkt_field]
+        else:
+            x_field = next((source_fields[x] for x in ("longitude", "long", "x") if x in source_fields), None)
+            y_field = next((source_fields[y] for y in ("latitude", "lat", "y") if y in source_fields), None)
+            if x_field and y_field:
+                points_from_columns = {"x": x_field, "y": y_field}
+
     context = {
         "layer_name": vrt_layer_name,
         "source_filepath": source_filepath,
         "original_layer_name": layer.GetName(),
         "fields": fields,
+        "geometry_wkt_field": wkt_field,
+        "geometry_from_columns": points_from_columns,
     }
     vrt_content = render_to_string("upload/vrt_template.xml", context)
 
@@ -138,7 +157,7 @@ class ImporterConcreteManager(GeoServerResourceManager):
         return ResourceBase.objects.get(uuid=uuid)
 
 
-custom_resource_manager = ResourceManager(concrete_manager=ImporterConcreteManager())
+custom_resource_manager = BaseResourceManager(concrete_manager=ImporterConcreteManager())
 
 
 def call_rollback_function(

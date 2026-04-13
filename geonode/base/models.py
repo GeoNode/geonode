@@ -1078,9 +1078,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a layer, map or document is deleted
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
-        resource_manager.remove_permissions(self.uuid, instance=self.get_real_instance())
+        resource_manager_registry.get_for_instance(self).remove_permissions(
+            self.uuid, instance=self.get_real_instance()
+        )
 
         # delete assets. TODO: when standalone Assets will be allowed, only dependable Assets shall be removed
         links_with_assets = Link.objects.filter(resource=self, asset__isnull=False).prefetch_related("asset")
@@ -2110,6 +2112,15 @@ class Configuration(SingletonModel):
 
     read_only = models.BooleanField(default=False)
     maintenance = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        previous_read_only = Configuration.objects.filter(pk=self.pk).values_list("read_only", flat=True).first()
+        super().save(*args, **kwargs)
+
+        if previous_read_only != self.read_only:
+            from geonode.security.registry import permissions_registry
+
+            permissions_registry.clear_permissions_cache()
 
     class Meta:
         verbose_name_plural = "Configuration"

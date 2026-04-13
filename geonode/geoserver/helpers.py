@@ -75,6 +75,7 @@ from geonode.utils import (
     get_legend_url,
     is_monochromatic_image,
     set_resource_default_links,
+    normalize_bbox_to_float_list,
 )
 
 from .geofence import GeoFenceClient, GeoFenceUtils
@@ -611,7 +612,7 @@ def gs_slurp(
     It returns a list of dictionaries with the name of the layer,
     the result of the operation and the errors and traceback if it failed.
     """
-    from geonode.resource.manager import resource_manager
+    from geonode.resource.registry import resource_manager_registry, dataset_manager
 
     if console is None:
         console = open(os.devnull, "w")
@@ -724,7 +725,7 @@ def gs_slurp(
             created = False
             layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = resource_manager.create(
+                layer = dataset_manager.create(
                     str(uuid.uuid4()),
                     resource_type=Dataset,
                     defaults=dict(
@@ -755,17 +756,18 @@ def gs_slurp(
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
-            resource_manager.set_permissions(layer.uuid, permissions=perm_spec)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+            resolved_resource_manager.set_permissions(layer.uuid, instance=layer, permissions=perm_spec)
 
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
 
             # in some cases we need to explicitily save the resource to execute the signals
             # (for sure when running updatelayers)
-            resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
+            resolved_resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
 
             # Creating the Thumbnail
-            resource_manager.set_thumbnail(layer.uuid, overwrite=True, check_bbox=False)
+            resolved_resource_manager.set_thumbnail(layer.uuid, instance=layer, overwrite=True, check_bbox=False)
 
         except Exception as e:
             # Hide the resource until finished
@@ -2038,18 +2040,9 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     # are bypassed by custom create/updates we need to ensure the
                     # bbox is calculated properly.
                     srid = gs_resource.projection
-                    bbox = gs_resource.native_bbox
-                    ll_bbox = gs_resource.latlon_bbox
-                    try:
-                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-                    except GeoNodeException as e:
-                        if not ll_bbox:
-                            raise
-                        else:
-                            logger.exception(e)
-                            instance.srid = "EPSG:4326"
-                            Dataset.objects.filter(id=instance.id).update(srid=instance.srid)
-                    instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
+                    bbox = normalize_bbox_to_float_list(gs_resource.native_bbox)
+                    ll_bbox = normalize_bbox_to_float_list(gs_resource.latlon_bbox)
+                    instance.set_bbox_and_srid(bbox=bbox, ll_bbox=ll_bbox, srid=srid)
 
                     if instance.srid:
                         instance.srid_url = (

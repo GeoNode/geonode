@@ -399,7 +399,7 @@ def publish_resource(
         )
         _exec = orchestrator.get_execution_object(execution_id)
         _files = _exec.input_params.get("files")
-        _overwrite = _exec.input_params.get("overwrite_existing_layer")
+        _overwrite = action == ira.REPLACE.value
 
         _publisher = DataPublisher(handler_module_path)
         kwargs.update({"exec_id": execution_id})
@@ -509,7 +509,7 @@ def create_geonode_resource(
         handler_module_path = handler_module_path or _exec.input_params.get("handler_module_path")
 
         handler = import_string(handler_module_path)()
-        _overwrite = _exec.input_params.get("overwrite_existing_layer")
+        _overwrite = action == ira.REPLACE.value
 
         if _overwrite:
             resource = handler.overwrite_geonode_resource(
@@ -535,7 +535,7 @@ def create_geonode_resource(
             handler.create_resourcehandlerinfo(handler_module_path, resource, _exec, **kwargs)
 
         if _overwrite and handler.have_table:
-            handler.fixup_dynamic_model_fields(_exec, _files)
+            handler.fixup_dynamic_model_fields(_exec, _files, resource=resource)
 
         # at the end recall the import_orchestrator for the next step
         import_orchestrator.apply_async(
@@ -975,7 +975,7 @@ def rollback(self, *args, **kwargs):
     )
 
     handler = import_string(handler_module_path)()
-    if exec_object.input_params.get("overwrite_existing_layer"):
+    if exec_object.action == ira.REPLACE.value:
         logger.warning("Rollback is skipped for the overwrite")
     else:
         handler.rollback(exec_id, rollback_from_step, action_to_rollback, *args, **kwargs)

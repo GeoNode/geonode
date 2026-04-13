@@ -29,7 +29,7 @@ from django.db.models import Q
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_tasks import UpdateTaskClass, import_orchestrator
@@ -38,7 +38,7 @@ from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
-from geonode.upload.utils import find_key_recursively
+from geonode.upload.utils import find_key_recursively, ImporterRequestAction as ira
 from osgeo import gdal
 from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
@@ -123,7 +123,6 @@ class BaseRasterFileHandler(BaseHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -276,7 +275,7 @@ class BaseRasterFileHandler(BaseHandler):
             # start looping on the layers available
             layer_name = self.fixup_name(filename)
 
-            should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+            should_be_overwritten = _exec.action == ira.REPLACE.value
             # should_be_imported check if the user+layername already exists or not
             if should_be_imported(
                 layer_name,
@@ -318,7 +317,7 @@ class BaseRasterFileHandler(BaseHandler):
                         "geonode.upload.import_resource",
                         layer_name,
                         alternate,
-                        exa.UPLOAD.value,
+                        _input.get("action", exa.UPLOAD.value),
                     )
                 )
                 return layer_name, alternate, execution_id
@@ -350,7 +349,7 @@ class BaseRasterFileHandler(BaseHandler):
             getattr(settings, "CASCADE_WORKSPACE", "geonode"),
         )
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if not saved_dataset.exists() and _overwrite:
@@ -358,7 +357,7 @@ class BaseRasterFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager.create(
+        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=dict(
@@ -378,7 +377,7 @@ class BaseRasterFileHandler(BaseHandler):
         self.handle_xml_file(saved_dataset, _exec)
         self.handle_sld_file(saved_dataset, _exec)
 
-        resource_manager.set_thumbnail(None, instance=saved_dataset)
+        resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
@@ -398,19 +397,20 @@ class BaseRasterFileHandler(BaseHandler):
 
         dataset = resource_type.objects.filter(alternate__icontains=alternate, owner=_exec.user)
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
 
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
 
-            dataset = resource_manager.update(dataset.uuid, instance=dataset)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
+            dataset = resolved_resource_manager.update(dataset.uuid, instance=dataset)
 
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)
 
-            resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+            resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
             dataset.refresh_from_db()
             return dataset
         elif not dataset.exists() and _overwrite:
@@ -424,7 +424,7 @@ class BaseRasterFileHandler(BaseHandler):
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("xml_file", "")
-        resource_manager.update(
+        resource_manager_registry.get_for_instance(saved_dataset).update(
             None,
             instance=saved_dataset,
             xml_file=_path,
@@ -434,7 +434,7 @@ class BaseRasterFileHandler(BaseHandler):
 
     def handle_sld_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("sld_file", "")
-        resource_manager.exec(
+        resource_manager_registry.get_for_instance(saved_dataset).exec(
             "set_style",
             None,
             instance=saved_dataset,
@@ -547,7 +547,7 @@ class BaseRasterFileHandler(BaseHandler):
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(instance_name)
 
-    def fixup_dynamic_model_fields(self, _exec, files):
+    def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
         """
         Raster dataset does not have the dynamic model, so this can be skept
         """
