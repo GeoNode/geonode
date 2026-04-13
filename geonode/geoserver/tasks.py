@@ -154,6 +154,9 @@ def geoserver_create_style(self, instance_id, name, sld_file, tempdir):
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
+    if not instance.should_create_style:
+        return
+
     lock_id = f"{self.request.id}" if self.request.id else instance.name
     log_lock.debug(f"geoserver_create_style: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
