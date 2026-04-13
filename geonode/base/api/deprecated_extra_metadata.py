@@ -52,6 +52,9 @@ DEPRECATION_REASON = (
     "version. Use the sparse fields API instead."
 )
 SPARSE_FIELD_PREFIX = "extra_metadata_"
+# SparseField.value is CharField(max_length=1024); entries exceeding this
+# limit cannot be stored and are silently skipped with a log warning.
+SPARSE_FIELD_VALUE_MAX_LENGTH = 1024
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +200,7 @@ class DeprecatedExtraMetadataMixin:
 
         if isinstance(qs, list):
             return Response([_sparse_to_legacy(sf) for sf in qs])
-        return Response([_sparse_to_legacy(sf) for sf in qs])
+        return Response([_sparse_to_legacy(sf) for sf in qs.iterator()])
 
     # -- POST ---------------------------------------------------------------
 
@@ -224,10 +227,10 @@ class DeprecatedExtraMetadataMixin:
                 continue
             meta_dict.pop("id", None)
             value = json.dumps(meta_dict)
-            if len(value) > 1024:
+            if len(value) > SPARSE_FIELD_VALUE_MAX_LENGTH:
                 logger.warning(
                     "extra_metadata entry skipped: serialized value exceeds "
-                    "1024 characters"
+                    f"{SPARSE_FIELD_VALUE_MAX_LENGTH} characters"
                 )
                 continue
             name = _next_sparse_name(resource)
@@ -265,10 +268,10 @@ class DeprecatedExtraMetadataMixin:
             if sf_id is None:
                 continue
             value = json.dumps(meta_dict)
-            if len(value) > 1024:
+            if len(value) > SPARSE_FIELD_VALUE_MAX_LENGTH:
                 logger.warning(
                     "extra_metadata entry skipped: serialized value exceeds "
-                    "1024 characters"
+                    f"{SPARSE_FIELD_VALUE_MAX_LENGTH} characters"
                 )
                 continue
             SparseField.objects.filter(
