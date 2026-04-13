@@ -67,6 +67,7 @@ from geonode.layers.utils import get_download_handlers, get_default_dataset_down
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
+from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataField
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
 from geonode.security.registry import permissions_registry
@@ -654,6 +655,8 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
     links = DynamicRelationField(LinksSerializer, source="id", read_only=True)
 
     # Deferred fields
+    # Deprecated: use the sparse fields API instead of ``metadata``.
+    metadata = DeprecatedExtraMetadataField(deferred=True, read_only=True)
     data = DataBlobField(DataBlobSerializer, source="id", deferred=True, required=False)
     executions = DynamicRelationField(
         ResourceExecutionRequestSerializer, source="id", deferred=True, required=False, read_only=True
@@ -735,6 +738,7 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
             "sourcetype",
             "is_copyable",
             "blob",
+            "metadata",  # Deprecated: use sparse fields API instead
             "executions",
             "linked_resources",
             "download_url",
