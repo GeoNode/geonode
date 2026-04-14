@@ -33,7 +33,7 @@ import json
 import logging
 import os
 from subprocess import PIPE, Popen
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 import shlex
 from celery import chord, group
 from django.db import transaction
@@ -77,6 +77,7 @@ from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 from geonode.upload.registry import feature_validators_registry
 from django.core.exceptions import ValidationError
+
 
 logger = logging.getLogger("importer")
 
@@ -605,7 +606,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def setup_dynamic_model(
         self,
-        layer: ogr.Layer,
+        layer: Union[ogr.Layer, str],
         execution_id: str,
         should_be_overwritten: bool,
         username: str,
