@@ -214,7 +214,7 @@ class XLSXFileHandler(CSVFileHandler):
             self._convert_to_csv(headers, rows_gen, output_file)
 
         except Exception:
-            logger.exception("XLSX Pre-processing failed")
+            logger.exception(f"XLSX Pre-processing failed: {str(e)}")
             raise InvalidInputFileException(detail="Failed to securely parse Excel.")
 
         # update the file path in the payload
