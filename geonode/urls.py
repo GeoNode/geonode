@@ -37,7 +37,7 @@ from . import views
 from . import version
 
 from geonode.api.urls import api, router
-from geonode.api.views import verify_token, UserInfoView, roles, users, admin_role
+from geonode.api.views import verify_token, user_info, roles, users, admin_role
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -117,7 +117,7 @@ urlpatterns += [
     # OAuth2/OIDC Provider
     re_path(r"^o/", include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace="oauth2_provider")),
     re_path(r"^api/o/v4/tokeninfo", verify_token, name="tokeninfo"),
-    re_path(r"^api/o/v4/userinfo", UserInfoView.as_view(), name="userinfo"),
+    re_path(r"^api/o/v4/userinfo", user_info, name="userinfo"),
     # Api Views
     re_path(r"^api/roles", roles, name="roles"),
     re_path(r"^api/adminRole", admin_role, name="adminRole"),
