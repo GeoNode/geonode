@@ -2014,7 +2014,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Strategy for synchronizing user group memberships from Social Providers (e.g., Azure, Google).
 # - FULL_SYNC: (Default) Strict mirroring. Wipes all local groups and joins only those in the provider token.
-# - SAFE_SYNC: Skips sync if the provider response is missing group/role keys (e.g., Azure overage). 
+# - SAFE_SYNC: Skips sync if the provider response is missing group/role keys (e.g., Azure overage).
 #              Protects existing local memberships from accidental wipes.
 # - NO_SYNC:   Ignores provider group data entirely. Groups are managed manually within GeoNode.
 SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN = os.getenv("SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")

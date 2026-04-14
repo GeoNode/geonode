@@ -282,7 +282,7 @@ ID_TOKEN_ISSUER = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_
 def _update_user_groups_from_social(sociallogin, user):
 
     # Retrieve the strategy from settings, defaulting FULL_SYNC
-    sync_strategy = getattr(settings, "SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "SAFE_SYNC")
+    sync_strategy = getattr(settings, "SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")
 
     if sync_strategy == "NO_SYNC":
         return user
