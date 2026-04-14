@@ -302,29 +302,6 @@ The permission level assigned to those groups is defined by ``RESOURCE_CREATOR_G
 
 This setting is applied only during resource creation.
 
-**RESOURCE_CREATOR_GROUPS_PERMISSIONS**
-
-:   - Default ``view``
-    - Env: ``RESOURCE_CREATOR_GROUPS_PERMISSIONS``
-
-Defines the compact permission level assigned to the groups of the resource creator when ``AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS`` is enabled.
-
-Supported values are:
-
-- ``view``
-- ``download``
-- ``edit``
-- ``manage``
-
-Example:
-
-```python
-AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = True
-RESOURCE_CREATOR_GROUPS_PERMISSIONS = "download"
-```
-
-If an unsupported value is configured, GeoNode logs a warning and falls back to ``view``.
-
 **AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN**
 
 :   - Default ``False``
@@ -335,28 +312,6 @@ When this setting is enabled, GeoNode automatically assigns ownership of newly c
 The administrator user is defined by ``RESOURCE_OWNERSHIP_ADMIN_USERNAME``.
 
 This setting is applied only during resource creation. The original uploader keeps ``manage`` permissions on the resource.
-
-**RESOURCE_OWNERSHIP_ADMIN_USERNAME**
-
-:   - Default ``admin``
-    - Env: ``RESOURCE_OWNERSHIP_ADMIN_USERNAME``
-
-Defines the username of the administrator that should become the owner of newly created resources when ``AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN`` is enabled.
-
-The configured user must exist and must be a superuser.
-
-Example:
-
-```python
-AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = True
-RESOURCE_OWNERSHIP_ADMIN_USERNAME = "admin"
-```
-
-With this configuration, when a user creates a resource, GeoNode assigns the resource ownership to the configured administrator and grants ``manage`` permissions to the original uploader.
-
-If ``RESOURCE_OWNERSHIP_ADMIN_USERNAME`` is not set, GeoNode defaults to ``admin``.
-
-
 
 **AUTO_GENERATE_AVATAR_SIZES**
 
@@ -1292,6 +1247,50 @@ publish/unpublish resources.
 By default, resources are published when created. When this setting is set to
 True the staff members will be able to unpublish a resource (and eventually
 publish it back).
+
+**RESOURCE_CREATOR_GROUPS_PERMISSIONS**
+
+:   - Default ``view``
+    - Env: ``RESOURCE_CREATOR_GROUPS_PERMISSIONS``
+
+Defines the compact permission level assigned to the groups of the resource creator when ``AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS`` is enabled.
+
+Supported values are:
+
+- ``view``
+- ``download``
+- ``edit``
+- ``manage``
+
+Example:
+
+```python
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = True
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = "download"
+```
+
+If an unsupported value is configured, GeoNode logs a warning and falls back to ``view``.
+
+**RESOURCE_OWNERSHIP_ADMIN_USERNAME**
+
+:   - Default ``admin``
+    - Env: ``RESOURCE_OWNERSHIP_ADMIN_USERNAME``
+
+Defines the username of the administrator that should become the owner of newly created resources when ``AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN`` is enabled.
+
+The configured user must exist and must be a superuser.
+
+Example:
+
+```python
+AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = True
+RESOURCE_OWNERSHIP_ADMIN_USERNAME = "admin"
+```
+
+With this configuration, when a user creates a resource, GeoNode assigns the resource ownership to the configured administrator and grants ``manage`` permissions to the original uploader.
+
+If ``RESOURCE_OWNERSHIP_ADMIN_USERNAME`` is not set, GeoNode defaults to ``admin``.
+
 
 ## S
 
