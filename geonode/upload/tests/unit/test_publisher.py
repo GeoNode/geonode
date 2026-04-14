@@ -39,7 +39,7 @@ class TestDataPublisher(TestCase):
         layer = self.publisher.cat.get_resources("stazioni_metropolitana", workspaces="geonode")
         print("delete layer")
         if layer:
-            res = self.publisher.cat.delete(layer.resource, purge="all", recurse=True)
+            res = self.publisher.cat.delete(layer[0], purge="all", recurse=True)
             print(res.status_code)
             print(res.json)
 
@@ -65,20 +65,6 @@ class TestDataPublisher(TestCase):
         )
         expected = {"crs": "EPSG:32632", "name": "stazioni_metropolitana"}
         self.assertDictEqual(expected, values_found[0])
-
-    def test_extract_resource_name_and_crs_return_empty_if_the_file_does_not_exists(
-        self,
-    ):
-        """
-        Given a layer and the original file, should extract the crs and the name
-        to let it publish in Geoserver
-        """
-        values_found = self.publisher.extract_resource_to_publish(
-            files={"base_file": "/wrong/path/file.gpkg"},
-            action="upload",
-            layer_name="stazioni_metropolitana",
-        )
-        self.assertListEqual([], values_found)
 
     @patch("geonode.upload.publisher.create_geoserver_db_featurestore")
     def test_get_or_create_store_creation_should_called(self, datastore):

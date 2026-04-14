@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "pip >= 19.1", "wheel"]
+requires = ["setuptools>=61.0", "pip >= 26.0.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -27,7 +27,7 @@ dependencies = [
     "Pillow==12.1.1",
     "lxml==5.2.1",
     "psycopg2==2.9.9",
-    "Django==5.2.12",
+    "Django==5.2.13",
 
     # Other
     "beautifulsoup4==4.12.3",
@@ -157,10 +157,10 @@ dependencies = [
     "selenium-requests==2.0.4",
     "webdriver_manager==4.0.1",
     # Security and audit
-    "cryptography==46.0.5",
-    "jwcrypto>=1.5.6",
+    "cryptography==46.0.7",
+    "jwcrypto>=1.5.7",
     # dependency for XLSX handler
-    "python-calamine==0.6.1",
+    "python-calamine==0.6.2",
 ]
 
 [project.optional-dependencies]

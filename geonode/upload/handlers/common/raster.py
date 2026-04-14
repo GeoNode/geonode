@@ -25,7 +25,6 @@ from subprocess import PIPE, Popen
 from typing import List
 
 from django.conf import settings
-from django.db.models import Q
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
@@ -238,11 +237,7 @@ class BaseRasterFileHandler(BaseHandler):
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(
-                        Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
-                    )
-                    .first()
-                    .srid,
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid,
                     "raster_path": raster_path,
                 }
             ]
@@ -328,12 +323,7 @@ class BaseRasterFileHandler(BaseHandler):
         return
 
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = Dataset,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
         """
         Base function to create the resource into geonode. Each handler can specify
@@ -385,12 +375,7 @@ class BaseRasterFileHandler(BaseHandler):
         return saved_dataset
 
     def overwrite_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = Dataset,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
 
         _exec = self._get_execution_request_object(execution_id)
@@ -403,9 +388,21 @@ class BaseRasterFileHandler(BaseHandler):
 
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
-
             resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
-            dataset = resolved_resource_manager.update(dataset.uuid, instance=dataset)
+            dataset = resolved_resource_manager.update(
+                dataset.uuid,
+                instance=dataset,
+                vals=dict(
+                    name=alternate,
+                    workspace=dataset.workspace,
+                    store=alternate.split(":")[-1],
+                    subtype="raster",
+                    alternate=f"{dataset.workspace}:{alternate}",
+                    dirty_state=True,
+                    title=layer_name,
+                    owner=_exec.user,
+                ),
+            )
 
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)
