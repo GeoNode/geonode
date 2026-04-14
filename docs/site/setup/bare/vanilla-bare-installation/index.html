@@ -1,0 +1,3642 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../prerequisites/">
+      
+      
+        <link rel="next" href="../project-bare-installation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../theme/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Vanilla bare installation - GeoNode documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../theme/css/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vanilla-geonode-bare-installation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="GeoNode documentation" class="md-header__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoNode documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Vanilla bare installation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+
+<!-- Navigation tabs -->
+<nav
+  class="md-tabs"
+  aria-label="Tabs"
+  data-md-component="tabs"
+>
+  <div class="md-grid">
+    <div style="display: flex; justify-content: space-between">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../user-guide/user_account/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../admin/panel/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../development/api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../docker/prerequisites/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Setup
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../miscellaneous/thesauri/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Miscellaneous
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+    <ul class="md-tabs__list">
+      <li class="md-tabs__item pull-right export-pdf-li" style="display:flex;" title="Export PDF"></li>
+    </ul>
+    </div>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="GeoNode documentation" class="md-nav__button md-logo" aria-label="GeoNode documentation" data-md-component="logo">
+      
+  <img src="../../../theme/img/geonode-logo-white.svg" alt="logo">
+
+    </a>
+    GeoNode documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GeoNode/geonode/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GeoNode/geonode
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/user_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User account
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Catalog Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Datasets
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upload a dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/preview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preview and Styling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/update_replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update and Replace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/remote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote datasets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/datasets/empty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Create empty dataset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/sharing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sharing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Administration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/panel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessing the panel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/user/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/group/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/social/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Social Logins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../admin/oauth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Install
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_1" id="__nav_5_1_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Docker installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/vanilla-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/project-docker-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project Docker installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bare installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bare installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla bare installation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vanilla bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-basic-geonode-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basic GeoNode installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Basic GeoNode installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-python-virtual-environent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a Python Virtual Environent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clone-and-set-up-geonode-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clone and Set Up GeoNode core
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-postgis-database-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. PostGIS database setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. PostGIS database setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-and-configure-the-postgresql-database-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install and Configure the PostgreSQL Database System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Install and Configure the PostgreSQL Database System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#databases-and-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Databases and Permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-migrations-and-data-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database migrations and data initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-install-geoserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Install GeoServer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Install GeoServer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-apache-tomcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Apache Tomcat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-geoserver-on-tomcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install GeoServer on Tomcat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conifgure-the-geofence-db" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conifgure the Geofence DB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-geonode-in-development-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run GeoNode in development mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-web-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Web Server
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Web Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-and-configure-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install and configure NGINX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serving-geonode-geoserver-via-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serving {“geonode”, “geoserver”} via NGINX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-the-settings-in-order-to-use-the-postgresql-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update the settings in order to use the PostgreSQL Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-update-the-settings-in-order-to-update-geonode-and-geoserver-services-running-on-a-public-ip-or-hostname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Update the settings in order to update GeoNode and GeoServer services running on a public IP or hostname
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-install-and-enable-https-secured-connection-through-the-lets-encrypt-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Install and enable HTTPS secured connection through the Let's Encrypt provider
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-enabling-fully-asynchronous-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Enabling Fully Asynchronous Tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Enabling Fully Asynchronous Tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#redis-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redis installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managing-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managing Redis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daemonize-and-configure-celery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Daemonize and configure Celery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manage-celery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manage Celery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-memcached" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Memcached
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-bare-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoNode project bare installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/environmental_variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Miscellaneous
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Miscellaneous
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../miscellaneous/thesauri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thesauri
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../miscellaneous/br/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup And Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-basic-geonode-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basic GeoNode installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Basic GeoNode installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-python-virtual-environent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a Python Virtual Environent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clone-and-set-up-geonode-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clone and Set Up GeoNode core
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-postgis-database-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. PostGIS database setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. PostGIS database setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-and-configure-the-postgresql-database-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install and Configure the PostgreSQL Database System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Install and Configure the PostgreSQL Database System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#databases-and-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Databases and Permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-migrations-and-data-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database migrations and data initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-install-geoserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Install GeoServer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Install GeoServer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-apache-tomcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Apache Tomcat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-geoserver-on-tomcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install GeoServer on Tomcat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conifgure-the-geofence-db" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conifgure the Geofence DB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-geonode-in-development-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run GeoNode in development mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-web-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Web Server
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Web Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-and-configure-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install and configure NGINX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serving-geonode-geoserver-via-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serving {“geonode”, “geoserver”} via NGINX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-the-settings-in-order-to-use-the-postgresql-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update the settings in order to use the PostgreSQL Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-update-the-settings-in-order-to-update-geonode-and-geoserver-services-running-on-a-public-ip-or-hostname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Update the settings in order to update GeoNode and GeoServer services running on a public IP or hostname
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-install-and-enable-https-secured-connection-through-the-lets-encrypt-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Install and enable HTTPS secured connection through the Let's Encrypt provider
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-enabling-fully-asynchronous-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Enabling Fully Asynchronous Tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Enabling Fully Asynchronous Tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#redis-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redis installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managing-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managing Redis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daemonize-and-configure-celery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Daemonize and configure Celery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manage-celery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manage Celery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-memcached" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Memcached
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../docker/prerequisites/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Setup
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../docker/prerequisites/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Install
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../prerequisites/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Bare installation
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="vanilla-geonode-bare-installation">Vanilla GeoNode bare installation<a class="headerlink" href="#vanilla-geonode-bare-installation" title="Permanent link">&para;</a></h1>
+<h2 id="1-basic-geonode-installation">1. Basic GeoNode installation<a class="headerlink" href="#1-basic-geonode-installation" title="Permanent link">&para;</a></h2>
+<p>This is the most basic installation of GeoNode. It won’t use any external server like <code>Apache Tomcat</code>, <code>PostgreSQL</code> or <code>HTTPD</code> for the moment.</p>
+<p>First of all we need to prepare a new Python Virtual Environment.</p>
+<h3 id="create-a-python-virtual-environent">Create a Python Virtual Environent<a class="headerlink" href="#create-a-python-virtual-environent" title="Permanent link">&para;</a></h3>
+<p>Since geonode needs a large number of different python libraries and packages, its recommended to use a python virtual environment to avoid conflicts on dependencies with system wide python packages and other installed software.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The GeoNode Virtual Environment must be created only the first time. You won’t need to create it again everytime.</p>
+</div>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.virtualenvs
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>~/.virtualenvs/geonode
+<span class="nb">source</span><span class="w"> </span>~/.virtualenvs/geonode/bin/activate
+</code></pre></div>
+<p>At this point your command prompt shows a <code>(geonode)</code> prefix, this indicates that your virtualenv is active.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The next time you need to access the Virtual Environment just run
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>~/.virtualenvs/geonode/bin/activate
+</code></pre></div></p>
+</div>
+<h3 id="clone-and-set-up-geonode-core">Clone and Set Up GeoNode core<a class="headerlink" href="#clone-and-set-up-geonode-core" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Let&#39;s create the GeoNode core base folder and clone it</span>
+sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/geonode/<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>www-data<span class="w"> </span><span class="nv">$USER</span><span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>-Rf<span class="w"> </span><span class="nv">$USER</span>:www-data<span class="w"> </span>/opt/geonode/<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">775</span><span class="w"> </span>/opt/geonode/
+
+<span class="c1"># Clone the GeoNode source code (using the branch 5.0.x) on /opt/geonode</span>
+<span class="nb">cd</span><span class="w"> </span>/opt<span class="p">;</span><span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/GeoNode/geonode.git<span class="w"> </span>-b<span class="w"> </span><span class="m">5</span>.0.x<span class="w"> </span>geonode
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install the Python packages</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/geonode
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt<span class="w"> </span>--upgrade
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--upgrade
+</code></pre></div>
+<p>Edit /opt/geonode/celery-cmd.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">CELERY__STATE_DB</span><span class="o">=</span><span class="si">${</span><span class="nv">CELERY__STATE_DB</span><span class="k">:-</span><span class="s2">&quot;/opt/geonode/worker@%h.state&quot;</span><span class="si">}</span>
+</code></pre></div>
+<p>Edit /opt/geonode/geonode/settings.py.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">FILE_UPLOAD_DIRECTORY_PERMISSIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0o777
+<span class="nv">FILE_UPLOAD_PERMISSIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0o777
+</code></pre></div>
+<p>Edit /opt/geonode/uwsgi.ini.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">chdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/opt/geonode/
+
+touch-reload<span class="w"> </span><span class="o">=</span><span class="w"> </span>/opt/geonode/geonode/wsgi.py
+</code></pre></div>
+<h2 id="2-postgis-database-setup">2. PostGIS database setup<a class="headerlink" href="#2-postgis-database-setup" title="Permanent link">&para;</a></h2>
+<p>Be sure you have successfully completed all the steps of the section <a href="../prerequisites">Install the dependencies</a>.</p>
+<p>In this section, we are going to setup users and databases for GeoNode in PostgreSQL.</p>
+<h3 id="install-and-configure-the-postgresql-database-system">Install and Configure the PostgreSQL Database System<a class="headerlink" href="#install-and-configure-the-postgresql-database-system" title="Permanent link">&para;</a></h3>
+<p>In this section we are going to install the <code>PostgreSQL</code> packages along with the <code>PostGIS</code> extension. Those steps must be done only if you don’t have the DB already installed on your system.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Ubuntu 24.04 (focal)</span>
+sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;echo &quot;deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main&quot; &gt; /etc/apt/sources.list.d/pgdg.list&#39;</span>
+wget<span class="w"> </span>-qO-<span class="w"> </span>https://www.postgresql.org/media/keys/ACCC4CF8.asc<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/trusted.gpg.d/pgdg.gpg<span class="w"> </span>&gt;/dev/null
+
+<span class="c1"># Install PostgreSQL and PostGIS</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>postgresql-15<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>postgresql-client-15<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>postgresql-15-postgis-3<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>postgresql-15-postgis-3-scripts
+</code></pre></div>
+<p>We now must create two databases, <code>geonode</code> and <code>geonode_data</code>, belonging to the role <code>geonode</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is our default configuration. You can use any database or role you need. The connection parameters must be correctly configured on settings, as we will see later in this section.</p>
+</div>
+<h4 id="databases-and-permissions">Databases and Permissions<a class="headerlink" href="#databases-and-permissions" title="Permanent link">&para;</a></h4>
+<p>First, create the geonode user. GeoNode is going to use this user to access the database</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>service<span class="w"> </span>postgresql<span class="w"> </span>start
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>createuser<span class="w"> </span>-P<span class="w"> </span>geonode
+
+<span class="c1"># Use the password: geonode</span>
+</code></pre></div>
+<p>You will be prompted asked to set a password for the user. <strong>Enter geonode as password</strong>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is a sample password used for the sake of simplicity. This password is very <strong>weak</strong> and should be changed in a production environment.</p>
+</div>
+<p>Create database <code>geonode</code> and <code>geonode_data</code> with owner <code>geonode</code></p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>createdb<span class="w"> </span>-O<span class="w"> </span>geonode<span class="w"> </span>geonode
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>createdb<span class="w"> </span>-O<span class="w"> </span>geonode<span class="w"> </span>geonode_data
+</code></pre></div>
+<p>Next let's create PostGIS extensions</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;CREATE EXTENSION postgis;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL ON geometry_columns TO PUBLIC;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL ON spatial_ref_sys TO PUBLIC;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO geonode;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO geonode;&#39;</span>
+
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode_data<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;CREATE EXTENSION postgis;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode_data<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL ON geometry_columns TO PUBLIC;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode_data<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL ON spatial_ref_sys TO PUBLIC;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode_data<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO geonode;&#39;</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-d<span class="w"> </span>geonode_data<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO geonode;&#39;</span>
+</code></pre></div>
+<p>Final step is to change user access policies for local connections in the file <code>pg_hba.conf</code></p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>vim<span class="w"> </span>/etc/postgresql/15/main/pg_hba.conf
+</code></pre></div>
+<p>Scroll down to the bottom of the document. We want to make local connection <code>trusted</code> for the default user.</p>
+<p>Make sure your configuration looks like the one below.</p>
+<div class="highlight"><pre><span></span><code>...
+<span class="c1"># DO NOT DISABLE!</span>
+<span class="c1"># If you change this first entry you will need to make sure that the</span>
+<span class="c1"># database superuser can access the database using some other method.</span>
+<span class="c1"># Noninteractive access to all databases is required during automatic</span>
+<span class="c1"># maintenance (custom daily cronjobs, replication, and similar tasks).</span>
+<span class="c1">#</span>
+<span class="c1"># Database administrative login by Unix domain socket</span>
+<span class="nb">local</span><span class="w">   </span>all<span class="w">             </span>postgres<span class="w">                                </span>trust
+
+<span class="c1"># TYPE  DATABASE        USER            ADDRESS                 METHOD</span>
+
+<span class="c1"># &quot;local&quot; is for Unix domain socket connections only</span>
+<span class="nb">local</span><span class="w">   </span>all<span class="w">             </span>all<span class="w">                                     </span>md5
+<span class="c1"># IPv4 local connections:</span>
+host<span class="w">    </span>all<span class="w">             </span>all<span class="w">             </span><span class="m">127</span>.0.0.1/32<span class="w">            </span>md5
+<span class="c1"># IPv6 local connections:</span>
+host<span class="w">    </span>all<span class="w">             </span>all<span class="w">             </span>::1/128<span class="w">                 </span>md5
+<span class="c1"># Allow replication connections from localhost, by a user with the</span>
+<span class="c1"># replication privilege.</span>
+<span class="nb">local</span><span class="w">   </span>replication<span class="w">     </span>all<span class="w">                                     </span>peer
+host<span class="w">    </span>replication<span class="w">     </span>all<span class="w">             </span><span class="m">127</span>.0.0.1/32<span class="w">            </span>md5
+host<span class="w">    </span>replication<span class="w">     </span>all<span class="w">             </span>::1/128<span class="w">                 </span>md5
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If your <code>PostgreSQL</code> database resides on a <strong>separate/remote machine</strong>, you'll have to <strong>allow</strong> remote access to the databases in the <code>/etc/postgresql/13/main/pg_hba.conf</code> to the <code>geonode</code> user and tell PostgreSQL to <strong>accept</strong> non-local connections in your <code>/etc/postgresql/13/main/postgresql.conf</code> file</p>
+</div>
+<p>Restart PostgreSQL to make the change effective.</p>
+<div class="highlight"><pre><span></span><code>sudo service postgresql restart
+</code></pre></div>
+<p>PostgreSQL is now ready. To test the configuration, try to connect to the <code>geonode</code> database as <code>geonode</code> role.</p>
+<div class="highlight"><pre><span></span><code>psql -U postgres geonode
+# This should not ask for any password
+
+psql -U geonode geonode
+# This should ask for the password geonode
+
+# Repeat the test with geonode_data DB
+psql -U postgres geonode_data
+psql -U geonode geonode_data
+</code></pre></div>
+<h3 id="database-migrations-and-data-initialization">Database migrations and data initialization<a class="headerlink" href="#database-migrations-and-data-initialization" title="Permanent link">&para;</a></h3>
+<p>After the creation of the databases, you need to apply database migrations:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/opt/geonode_projects/my_project
+<span class="c1"># Run migrations for the my_geonode database</span>
+python<span class="w"> </span>manage.py<span class="w"> </span>migrate
+<span class="c1"># Run migrations for the my_geonode_data database</span>
+python<span class="w"> </span>manage.py<span class="w"> </span>migrate<span class="w"> </span>--database<span class="o">=</span>datastore
+</code></pre></div>
+<p>And then initialize the data</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>manage.py<span class="w"> </span>loaddata<span class="w"> </span>/opt/geonode/geonode/people/fixtures/sample_admin.json
+python<span class="w"> </span>manage.py<span class="w"> </span>loaddata<span class="w"> </span>/opt/geonode/geonode/base/fixtures/default_oauth_apps.json
+python<span class="w"> </span>manage.py<span class="w"> </span>loaddata<span class="w"> </span>/opt/geonode/geonode/base/fixtures/initial_data.json
+</code></pre></div>
+<h2 id="3-install-geoserver">3. Install GeoServer<a class="headerlink" href="#3-install-geoserver" title="Permanent link">&para;</a></h2>
+<p>In this section, we are going to install the <code>Apache Tomcat 9</code> Servlet Java container, which will be started by default on the internal port <code>8080</code>.</p>
+<p>We will also perform several optimizations to:</p>
+<ol>
+<li>Correctly setup the Java VM Options, like the available heap memory and the garbage collector options.</li>
+<li>Externalize the <code>GeoServer</code> and <code>GeoWebcache</code> catalogs in order to allow further updates without the risk of deleting our datasets.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is still a basic setup of those components. More details will be provided on sections of the documentation concerning the hardening of the system in a production environment. Nevertheless, you will need to tweak a bit those settings accordingly with your current system. As an instance, if your machine does not have enough memory, you will need to lower down the initial amount of available heap memory. <strong>Warnings</strong> and <strong>notes</strong> will be placed below the statements that will require your attention.</p>
+</div>
+<h4 id="install-apache-tomcat">Install Apache Tomcat<a class="headerlink" href="#install-apache-tomcat" title="Permanent link">&para;</a></h4>
+<p>The reference version of Tomcat for the Geoserver for GeoNode is <strong>Tomcat 9</strong>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Apache Tomcat 9 and Geoserver require Java 11 or newer to be installed on the server.
+Check the steps before in order to be sure you have OpenJDK 11 correctly installed on your system.</p>
+</div>
+<p>First, it is not recommended to run Apache Tomcat as user root, so we will create a new system user which will run the Apache Tomcat server</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>-U<span class="w"> </span>-d<span class="w"> </span>/opt/tomcat<span class="w"> </span>-s<span class="w"> </span>/bin/bash<span class="w"> </span>tomcat
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>www-data<span class="w"> </span>tomcat
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Now, go to the official Apache Tomcat <code>website &lt;https://tomcat.apache.org/&gt;</code>_ and download the most recent version of the software to your server. But don't use Tomcat10 because there are still some errors between Geoserver and Tomcat. </p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="nv">VERSION</span><span class="o">=</span><span class="m">9</span>.0.106<span class="p">;</span><span class="w"> </span>wget<span class="w"> </span>https://archive.apache.org/dist/tomcat/tomcat-9/v<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>/bin/apache-tomcat-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>.tar.gz
+</code></pre></div>
+<p>Once the download is complete, extract the tar file to the /opt/tomcat directory:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>/opt/tomcat
+sudo<span class="w"> </span>tar<span class="w"> </span>-xf<span class="w"> </span>apache-tomcat-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>.tar.gz<span class="w"> </span>-C<span class="w"> </span>/opt/tomcat/<span class="p">;</span><span class="w"> </span>rm<span class="w"> </span>apache-tomcat-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>.tar.gz
+</code></pre></div>
+<p>Apache Tomcat is updated regulary. So, to have more control over versions and updates, we’ll create a symbolic link as below:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/opt/tomcat/apache-tomcat-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="w"> </span>/opt/tomcat/latest
+</code></pre></div>
+<p>Now, let’s change the ownership of all Apache Tomcat files as below:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span>tomcat:www-data<span class="w"> </span>/opt/tomcat/
+</code></pre></div>
+<p>Make the shell scripts inside the bin directory executable:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;chmod +x /opt/tomcat/latest/bin/*.sh&#39;</span>
+</code></pre></div>
+<p>Create the a systemd file with the following content:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check the correct JAVA_HOME location</span>
+<span class="nv">JAVA_HOME</span><span class="o">=</span><span class="k">$(</span>readlink<span class="w"> </span>-f<span class="w"> </span>/usr/bin/java<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s2">&quot;s:bin/java::&quot;</span><span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$JAVA_HOME</span>
+$&gt;<span class="w"> </span>/usr/lib/jvm/java-11-openjdk-amd64/
+
+<span class="c1"># Let&#39;s create a symbolic link to the JDK</span>
+sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/usr/lib/jvm/java-1.11.0-openjdk-amd64<span class="w"> </span>/usr/lib/jvm/jre
+
+<span class="c1"># Let&#39;s create the tomcat service</span>
+sudo<span class="w"> </span>vim<span class="w"> </span>/etc/systemd/system/tomcat9.service
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Tomcat<span class="w"> </span><span class="m">9</span><span class="w"> </span>servlet<span class="w"> </span>container
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>forking
+
+<span class="nv">User</span><span class="o">=</span>tomcat
+<span class="nv">Group</span><span class="o">=</span>tomcat
+
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">&quot;JAVA_HOME=/usr/lib/jvm/jre&quot;</span>
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">&quot;JAVA_OPTS=-Djava.security.egd=file:///dev/urandom -Djava.awt.headless=true&quot;</span>
+
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">&quot;CATALINA_BASE=/opt/tomcat/latest&quot;</span>
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">&quot;CATALINA_HOME=/opt/tomcat/latest&quot;</span>
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">&quot;CATALINA_PID=/opt/tomcat/latest/temp/tomcat.pid&quot;</span>
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">&quot;CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC&quot;</span>
+
+<span class="nv">ExecStart</span><span class="o">=</span>/opt/tomcat/latest/bin/startup.sh
+<span class="nv">ExecStop</span><span class="o">=</span>/opt/tomcat/latest/bin/shutdown.sh
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>
+<p>Now you can start the Apache Tomcat 9 server and enable it to start on boot time using the following command:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>tomcat9.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>tomcat9.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>tomcat9.service
+</code></pre></div>
+<p>For verification, type the following ss command, which will show you the 8080 open port number, the default open port reserved for Apache Tomcat Server.</p>
+<div class="highlight"><pre><span></span><code>ss<span class="w"> </span>-ltn
+</code></pre></div>
+<p>In a clean Ubuntu 24.04, the ss command may not be found and the iproute2 library should be installed first.</p>
+<div class="highlight"><pre><span></span><code>sudo apt install iproute2
+# Then run the ss command
+ss -ltn
+</code></pre></div>
+<p>If your server is protected by a firewall and you want to access Tomcat from the outside of your local network, you need to open port 8080.</p>
+<p>Use the following command to open the necessary port:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">8080</span>/tcp
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Generally, when running Tomcat in a production environment, you should use a load balancer or reverse proxy.
+It’s a best practice to allow access to port <code>8080</code> only from your internal network. We will use <code>NGINX</code> in order to provide Apache Tomcat through the standard <code>HTTP</code> port.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Alternatively you can define the Tomcat Service as follow, in case you would like to use <code>systemctl</code>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>vim<span class="w"> </span>/usr/lib/systemd/system/tomcat9.service
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Apache<span class="w"> </span>Tomcat<span class="w"> </span>Server
+<span class="nv">After</span><span class="o">=</span>syslog.target<span class="w"> </span>network.target
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>forking
+<span class="nv">User</span><span class="o">=</span>tomcat
+<span class="nv">Group</span><span class="o">=</span>tomcat
+
+<span class="nv">Environment</span><span class="o">=</span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/lib/jvm/jre
+<span class="nv">Environment</span><span class="o">=</span><span class="nv">JAVA_OPTS</span><span class="o">=</span>-Djava.security.egd<span class="o">=</span>file:///dev/urandom
+<span class="nv">Environment</span><span class="o">=</span><span class="nv">CATALINA_PID</span><span class="o">=</span>/opt/tomcat/latest/temp/tomcat.pid
+<span class="nv">Environment</span><span class="o">=</span><span class="nv">CATALINA_HOME</span><span class="o">=</span>/opt/tomcat/latest
+<span class="nv">Environment</span><span class="o">=</span><span class="nv">CATALINA_BASE</span><span class="o">=</span>/opt/tomcat/latest
+
+<span class="nv">ExecStart</span><span class="o">=</span>/opt/tomcat/latest/bin/startup.sh
+<span class="nv">ExecStop</span><span class="o">=</span>/opt/tomcat/latest/bin/shutdown.sh
+
+<span class="nv">RestartSec</span><span class="o">=</span><span class="m">30</span>
+<span class="nv">Restart</span><span class="o">=</span>always
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>tomcat9.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>tomcat9.service
+</code></pre></div></p>
+</div>
+<h4 id="install-geoserver-on-tomcat">Install GeoServer on Tomcat<a class="headerlink" href="#install-geoserver-on-tomcat" title="Permanent link">&para;</a></h4>
+<p>Let's externalize the <code>GEOSERVER_DATA_DIR</code> and <code>logs</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create the target folders</span>
+sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/data
+sudo<span class="w"> </span>chown<span class="w"> </span>-Rf<span class="w"> </span><span class="nv">$USER</span>:www-data<span class="w"> </span>/opt/data
+sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">775</span><span class="w"> </span>/opt/data
+sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/data/logs
+sudo<span class="w"> </span>chown<span class="w"> </span>-Rf<span class="w"> </span><span class="nv">$USER</span>:www-data<span class="w"> </span>/opt/data/logs
+sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">775</span><span class="w"> </span>/opt/data/logs
+
+<span class="c1"># Download and extract the default GEOSERVER_DATA_DIR</span>
+<span class="nv">GS_VERSION</span><span class="o">=</span><span class="m">2</span>.24.2
+sudo<span class="w"> </span>wget<span class="w"> </span><span class="s2">&quot;https://artifacts.geonode.org/geoserver/</span><span class="nv">$GS_VERSION</span><span class="s2">/geonode-geoserver-ext-web-app-data.zip&quot;</span><span class="w"> </span>-O<span class="w"> </span>data-<span class="nv">$GS_VERSION</span>.zip
+
+sudo<span class="w"> </span>unzip<span class="w"> </span>data-<span class="nv">$GS_VERSION</span>.zip<span class="w"> </span>-d<span class="w"> </span>/opt/data/
+
+sudo<span class="w"> </span>mv<span class="w"> </span>/opt/data/data/<span class="w"> </span>/opt/data/geoserver_data
+sudo<span class="w"> </span>chown<span class="w"> </span>-Rf<span class="w"> </span>tomcat:www-data<span class="w"> </span>/opt/data/geoserver_data
+sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">775</span><span class="w"> </span>/opt/data/geoserver_data
+
+sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/data/geoserver_logs
+sudo<span class="w"> </span>chown<span class="w"> </span>-Rf<span class="w"> </span>tomcat:www-data<span class="w"> </span>/opt/data/geoserver_logs
+sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">775</span><span class="w"> </span>/opt/data/geoserver_logs
+
+sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/data/gwc_cache_dir
+sudo<span class="w"> </span>chown<span class="w"> </span>-Rf<span class="w"> </span>tomcat:www-data<span class="w"> </span>/opt/data/gwc_cache_dir
+sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">775</span><span class="w"> </span>/opt/data/gwc_cache_dir
+
+<span class="c1"># Download and install GeoServer</span>
+sudo<span class="w"> </span>wget<span class="w"> </span><span class="s2">&quot;https://artifacts.geonode.org/geoserver/</span><span class="nv">$GS_VERSION</span><span class="s2">/geoserver.war&quot;</span><span class="w"> </span>-O<span class="w"> </span>geoserver-<span class="nv">$GS_VERSION</span>.war
+sudo<span class="w"> </span>mv<span class="w"> </span>geoserver-<span class="nv">$GS_VERSION</span>.war<span class="w"> </span>/opt/tomcat/latest/webapps/geoserver.war
+</code></pre></div>
+<p>Let's now configure the <code>JAVA_OPTS</code>, i.e. the parameters to run the Servlet Container, like heap memory, garbage collector and so on.</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>sed<span class="w"> </span>-i<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/xom-\*\.jar/xom-\*\.jar,bcprov\*\.jar/g&#39;</span><span class="w"> </span>/opt/tomcat/latest/conf/catalina.properties
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">JAVA_HOME</span><span class="o">=</span><span class="k">$(</span>readlink<span class="w"> </span>-f<span class="w"> </span>/usr/bin/java<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s2">&quot;s:bin/java::&quot;</span><span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;JAVA_HOME=&#39;</span><span class="nv">$JAVA_HOME</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>--append<span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+sudo<span class="w"> </span>sed<span class="w"> </span>-i<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;s/JAVA_OPTS=/#JAVA_OPTS=/g&quot;</span><span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;GEOSERVER_DATA_DIR=&quot;/opt/data/geoserver_data&quot;&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>--append<span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;GEOSERVER_LOG_LOCATION=&quot;/opt/data/geoserver_logs/geoserver.log&quot;&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>--append<span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;GEOWEBCACHE_CACHE_DIR=&quot;/opt/data/gwc_cache_dir&quot;&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>--append<span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;GEOFENCE_DIR=&quot;$GEOSERVER_DATA_DIR/geofence&quot;&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>--append<span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;TIMEZONE=&quot;UTC&quot;&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>--append<span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;JAVA_OPTS=&quot;-server -Djava.awt.headless=true -Dorg.geotools.shapefile.datetime=false -DGS-SHAPEFILE-CHARSET=UTF-8 -XX:+UseParallelGC -XX:ParallelGCThreads=4 -Dfile.encoding=UTF8 -Duser.timezone=$TIMEZONE -Xms512m -Xmx4096m -Djavax.servlet.request.encoding=UTF-8 -Djavax.servlet.response.encoding=UTF-8 -DGEOSERVER_CSRF_DISABLED=true -DPRINT_BASE_URL=http://localhost:8080/geoserver/pdf -DGEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR -Dgeofence.dir=$GEOFENCE_DIR -DGEOSERVER_LOG_LOCATION=$GEOSERVER_LOG_LOCATION -DGEOWEBCACHE_CACHE_DIR=$GEOWEBCACHE_CACHE_DIR -Dgwc.context.suffix=gwc&quot;&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>--append<span class="w"> </span>/opt/tomcat/latest/bin/setenv.sh
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After the execution of the above statements, you should be able to see the new options written at the bottom of the file <code>/opt/tomcat/latest/bin/setenv.sh</code>.</p>
+<div class="highlight"><pre><span></span><code># If you run Tomcat on port numbers that are all higher than 1023, then you
+# do not need authbind.  It is used for binding Tomcat to lower port numbers.
+# (yes/no, default: no)
+#AUTHBIND=no
+JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
+GEOSERVER_DATA_DIR=&quot;/opt/data/geoserver_data&quot;
+GEOSERVER_LOG_LOCATION=&quot;/opt/data/geoserver_logs/geoserver.log&quot;
+GEOWEBCACHE_CACHE_DIR=&quot;/opt/data/gwc_cache_dir&quot;
+GEOFENCE_DIR=&quot;$GEOSERVER_DATA_DIR/geofence&quot;
+TIMEZONE=&quot;UTC&quot;
+JAVA_OPTS=&quot;-server -Djava.awt.headless=true -Dorg.geotools.shapefile.datetime=false -DGS-SHAPEFILE-CHARSET=UTF-8 -XX:+UseParallelGC -XX:ParallelGCThreads=4 -Dfile.encoding=UTF8 -Duser.timezone=$TIMEZONE -Xms512m -Xmx4096m -Djavax.servlet.request.encoding=UTF-8 -Djavax.servlet.response.encoding=UTF-8 -DGEOSERVER_CSRF_DISABLED=true -DPRINT_BASE_URL=http://localhost:8080/geoserver/pdf -DGEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR -Dgeofence.dir=$GEOFENCE_DIR -DGEOSERVER_LOG_LOCATION=$GEOSERVER_LOG_LOCATION -DGEOWEBCACHE_CACHE_DIR=$GEOWEBCACHE_CACHE_DIR&quot;
+</code></pre></div>
+<p>Those options could be updated or changed manually at any time, accordingly to your needs.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The default options we are going to add to the Servlet Container, assume you can reserve at least <code>4GB</code> of <code>RAM</code> to <code>GeoServer</code> (see the option <code>-Xmx4096m</code>). You must be sure your machine has enough memory to run both <code>GeoServer</code> and <code>GeoNode</code>, which in this case means at least <code>4GB</code> for <code>GeoServer</code> plus at least <code>2GB</code> for <code>GeoNode</code>. A total of at least <code>6GB</code> of <code>RAM</code> available on your machine. If you don't have enough <code>RAM</code> available, you can lower down the values <code>-Xms512m -Xmx4096m</code>. Consider that with less <code>RAM</code> available, the performances of your services will be highly impacted.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create the Logrotate config</span>
+sudo<span class="w"> </span>tee<span class="w"> </span>/etc/logrotate.d/geoserver<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">/opt/data/geoserver_logs/geoserver.log</span>
+<span class="s">/opt/tomcat/apache-tomcat-*/logs/*.log</span>
+<span class="s">/opt/tomcat/apache-tomcat-*/logs/*.out</span>
+<span class="s">/opt/tomcat/apache-tomcat-*/logs/*.txt</span>
+<span class="s">{</span>
+<span class="s">  copytruncate</span>
+<span class="s">  daily</span>
+<span class="s">  rotate 5</span>
+<span class="s">  delaycompress</span>
+<span class="s">  missingok</span>
+<span class="s">  su tomcat tomcat</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<h4 id="conifgure-the-geofence-db">Conifgure the Geofence DB<a class="headerlink" href="#conifgure-the-geofence-db" title="Permanent link">&para;</a></h4>
+<p>Before starting the service, Geofence must be configured to connect to the PostgreSQL DB, where its rules will be stored.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In previous versions this step was optional and a file-based H2 DB could be used. This option has been dropped since using H2 is highly discouraged.</p>
+</div>
+<p>Open the <code>geofence-datasource-ovr.properties</code> file for edit:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>vim<span class="w"> </span>/opt/data/geoserver_data/geofence/geofence-datasource-ovr.properties
+</code></pre></div>
+<p>And paste the following code by replace the placehoders with the required files</p>
+<div class="highlight"><pre><span></span><code>ggeofenceVendorAdapter.databasePlatform<span class="o">=</span>org.hibernate.spatial.dialect.postgis.PostgisDialect
+geofenceDataSource.driverClassName<span class="o">=</span>org.postgresql.Driver
+geofenceDataSource.url<span class="o">=</span>jdbc:postgresql://localhost:5432/geonode_data
+geofenceDataSource.username<span class="o">=</span>geonode
+geofenceDataSource.password<span class="o">=</span>geonode
+geofenceEntityManagerFactory.jpaPropertyMap<span class="o">[</span>hibernate.default_schema<span class="o">]=</span>public
+
+geofenceDataSource.testOnBorrow<span class="o">=</span><span class="nb">true</span>
+geofenceDataSource.validationQuery<span class="o">=</span>SELECT<span class="w"> </span><span class="m">1</span>
+geofenceEntityManagerFactory.jpaPropertyMap<span class="o">[</span>hibernate.testOnBorrow<span class="o">]=</span><span class="nb">true</span>
+geofenceEntityManagerFactory.jpaPropertyMap<span class="o">[</span>hibernate.validationQuery<span class="o">]=</span>SELECT<span class="w"> </span><span class="m">1</span>
+
+geofenceDataSource.removeAbandoned<span class="o">=</span><span class="nb">true</span>
+geofenceDataSource.removeAbandonedTimeout<span class="o">=</span><span class="m">60</span>
+geofenceDataSource.connectionProperties<span class="o">=</span><span class="nv">ApplicationName</span><span class="o">=</span>GeoFence<span class="p">;</span>
+</code></pre></div>
+<p>In order to make the changes effective, you'll need to restart the Servlet Container.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Restart the server</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>tomcat9.service
+
+<span class="c1"># Follow the startup logs</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-F<span class="w"> </span>-n<span class="w"> </span><span class="m">300</span><span class="w"> </span>/opt/data/geoserver_logs/geoserver.log
+</code></pre></div>
+<p>If you can see on the logs something similar to this, without errors:</p>
+<div class="highlight"><pre><span></span><code>...
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,190<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span><span class="m">5</span><span class="w"> </span>bindable<span class="w"> </span>processes<span class="w"> </span><span class="k">in</span><span class="w"> </span>GeoServer<span class="w"> </span>specific<span class="w"> </span>processes
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,281<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span><span class="m">89</span><span class="w"> </span>bindable<span class="w"> </span>processes<span class="w"> </span><span class="k">in</span><span class="w"> </span>Deprecated<span class="w"> </span>processes
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,298<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span><span class="m">31</span><span class="w"> </span>bindable<span class="w"> </span>processes<span class="w"> </span><span class="k">in</span><span class="w"> </span>Vector<span class="w"> </span>processes
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,307<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span><span class="m">48</span><span class="w"> </span>bindable<span class="w"> </span>processes<span class="w"> </span><span class="k">in</span><span class="w"> </span>Geometry<span class="w"> </span>processes
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,307<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span><span class="m">1</span><span class="w"> </span>bindable<span class="w"> </span>processes<span class="w"> </span><span class="k">in</span><span class="w"> </span>PolygonLabelProcess
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,311<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Blacklisting<span class="w"> </span>process<span class="w"> </span>ras:ConvolveCoverage<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>kernel<span class="w"> </span>of<span class="w"> </span><span class="nb">type</span><span class="w"> </span>class<span class="w"> </span>javax.media.jai.KernelJAI<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>handled
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,319<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Blacklisting<span class="w"> </span>process<span class="w"> </span>ras:RasterZonalStatistics2<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>zones<span class="w"> </span>of<span class="w"> </span><span class="nb">type</span><span class="w"> </span>class<span class="w"> </span>java.lang.Object<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>handled
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,320<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Blacklisting<span class="w"> </span>process<span class="w"> </span>ras:RasterZonalStatistics2<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>nodata<span class="w"> </span>of<span class="w"> </span><span class="nb">type</span><span class="w"> </span>class<span class="w"> </span>it.geosolutions.jaiext.range.Range<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>handled
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,320<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Blacklisting<span class="w"> </span>process<span class="w"> </span>ras:RasterZonalStatistics2<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>rangeData<span class="w"> </span>of<span class="w"> </span><span class="nb">type</span><span class="w"> </span>class<span class="w"> </span>java.lang.Object<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>handled
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,320<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Blacklisting<span class="w"> </span>process<span class="w"> </span>ras:RasterZonalStatistics2<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>output<span class="w"> </span>zonal<span class="w"> </span>statistics<span class="w"> </span>of<span class="w"> </span><span class="nb">type</span><span class="w"> </span>interface<span class="w"> </span>java.util.List<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>handled
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,321<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.wps<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span><span class="m">18</span><span class="w"> </span>bindable<span class="w"> </span>processes<span class="w"> </span><span class="k">in</span><span class="w"> </span>Raster<span class="w"> </span>processes
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,917<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>ows.OWSHandlerMapping<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Mapped<span class="w"> </span>URL<span class="w"> </span>path<span class="w"> </span><span class="o">[</span>/TestWfsPost<span class="o">]</span><span class="w"> </span>onto<span class="w"> </span>handler<span class="w"> </span><span class="s1">&#39;wfsTestServlet&#39;</span>
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,918<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>ows.OWSHandlerMapping<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Mapped<span class="w"> </span>URL<span class="w"> </span>path<span class="w"> </span><span class="o">[</span>/wfs/*<span class="o">]</span><span class="w"> </span>onto<span class="w"> </span>handler<span class="w"> </span><span class="s1">&#39;dispatcher&#39;</span>
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:34,918<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>ows.OWSHandlerMapping<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Mapped<span class="w"> </span>URL<span class="w"> </span>path<span class="w"> </span><span class="o">[</span>/wfs<span class="o">]</span><span class="w"> </span>onto<span class="w"> </span>handler<span class="w"> </span><span class="s1">&#39;dispatcher&#39;</span>
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,237<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.security<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Start<span class="w"> </span>reloading<span class="w"> </span>user/groups<span class="w"> </span><span class="k">for</span><span class="w"> </span>service<span class="w"> </span>named<span class="w"> </span>default
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,241<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.security<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Reloading<span class="w"> </span>user/groups<span class="w"> </span>successful<span class="w"> </span><span class="k">for</span><span class="w"> </span>service<span class="w"> </span>named<span class="w"> </span>default
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,357<span class="w"> </span>WARN<span class="w"> </span><span class="o">[</span>auth.GeoFenceAuthenticationProvider<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>INIT<span class="w"> </span>FROM<span class="w"> </span>CONFIG
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,494<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.security<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>AuthenticationCache<span class="w"> </span>Initialized<span class="w"> </span>with<span class="w"> </span><span class="m">1000</span><span class="w"> </span>Max<span class="w"> </span>Entries,<span class="w"> </span><span class="m">300</span><span class="w"> </span>seconds<span class="w"> </span>idle<span class="w"> </span>time,<span class="w"> </span><span class="m">600</span><span class="w"> </span>seconds<span class="w"> </span><span class="nb">time</span><span class="w"> </span>to<span class="w"> </span>live<span class="w"> </span>and<span class="w"> </span><span class="m">3</span><span class="w"> </span>concurrency<span class="w"> </span>level
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,495<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.security<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>AuthenticationCache<span class="w"> </span>Eviction<span class="w"> </span>Task<span class="w"> </span>created<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>every<span class="w"> </span><span class="m">600</span><span class="w"> </span>seconds
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,506<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>config.GeoserverXMLResourceProvider<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span>configuration<span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>/opt/data/gwc_cache_dir
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,516<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>config.GeoserverXMLResourceProvider<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Found<span class="w"> </span>configuration<span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>/opt/data/gwc_cache_dir
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,542<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>config.XMLConfiguration<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Wrote<span class="w"> </span>configuration<span class="w"> </span>to<span class="w"> </span>/opt/data/gwc_cache_dir
+<span class="m">2019</span>-05-31<span class="w"> </span><span class="m">10</span>:06:42,547<span class="w"> </span>INFO<span class="w"> </span><span class="o">[</span>geoserver.importer<span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Enabling<span class="w"> </span>import<span class="w"> </span>store:<span class="w"> </span>memory
+</code></pre></div>
+<p>Your <code>GeoServer</code> should be up and running at</p>
+<div class="highlight"><pre><span></span><code>http://localhost:8080/geoserver/
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In case of errors or the file <code>geoserver.log</code> is not created, check the Catalina logs in order to try to understand what's happened.</p>
+</div>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>less<span class="w"> </span>/opt/tomcat/latest/logs/catalina.out
+</code></pre></div>
+<h3 id="run-geonode-in-development-mode">Run GeoNode in development mode<a class="headerlink" href="#run-geonode-in-development-mode" title="Permanent link">&para;</a></h3>
+<p>Now you have a completely working GeoNode instance installed which can be run by running the development server of Django.</p>
+<p>To start GeoNode in development mode run the following:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/opt/geonode
+python<span class="w"> </span>manage.py<span class="w"> </span>runserver
+</code></pre></div>
+<p>If you navigate to <a href="http://localhost:8000">http://localhost:8000</a> you should see the <code>home</code> page of GeoNode.</p>
+<p>You can login as administrator by using the credentials below:
+<div class="highlight"><pre><span></span><code>username:<span class="w"> </span>admin
+password:<span class="w"> </span>admin
+</code></pre></div></p>
+<p>Next sections are focused on setting GeoNode in a production environment.</p>
+<h2 id="4-web-server">4. Web Server<a class="headerlink" href="#4-web-server" title="Permanent link">&para;</a></h2>
+<p>Until now we have seen how to start <code>GeoNode</code> in <code>DEBUG</code> mode from the command line, through the <code>paver</code> utilities. This is of course not the best way to start it. Moreover you will need a dedicated <code>HTTPD</code> server running on port <code>80</code> if you would like to expose your server to the world.</p>
+<p>In this section we will see:</p>
+<ol>
+<li>How to configure <code>NGINX</code> HTTPD Server to host <code>GeoNode</code> and <code>GeoServer</code>. In the initial setup we will still run the services on <code>http://localhost</code></li>
+<li>Update the <code>settings</code> in order to link <code>GeoNode</code> and <code>GeoServer</code> to the <code>PostgreSQL</code> Database.</li>
+<li>Update the <code>settings</code> in order to update <code>GeoNode</code> and <code>GeoServer</code> services running on a <strong>public IP</strong> or <strong>hostname</strong>.</li>
+<li>Install and enable <code>HTTPS</code> secured connection through the <code>Let's Encrypt</code> provider.</li>
+</ol>
+<h4 id="install-and-configure-nginx">Install and configure NGINX<a class="headerlink" href="#install-and-configure-nginx" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install the services</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>nginx<span class="w"> </span>uwsgi<span class="w"> </span>uwsgi-plugin-python3
+</code></pre></div>
+<h3 id="serving-geonode-geoserver-via-nginx">Serving {“geonode”, “geoserver”} via NGINX<a class="headerlink" href="#serving-geonode-geoserver-via-nginx" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create the UWSGI config</span>
+sudo<span class="w"> </span>vim<span class="w"> </span>/opt/geonode/uwsgi.ini
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>uwsgi<span class="o">]</span>
+<span class="c1"># uwsgi-socket = 0.0.0.0:8000</span>
+http-socket<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.0.0.0:8000
+<span class="nv">logto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/var/log/geonode.log
+<span class="c1"># pidfile = /tmp/geonode.pid</span>
+
+<span class="nv">chdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/opt/geonode/
+<span class="nv">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>geonode.wsgi:application
+
+<span class="nv">strict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span>
+<span class="nv">master</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+enable-threads<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+<span class="nv">vacuum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="w">                        </span><span class="p">;</span><span class="w"> </span>Delete<span class="w"> </span>sockets<span class="w"> </span>during<span class="w"> </span>shutdown
+single-interpreter<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+die-on-term<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="w">                   </span><span class="p">;</span><span class="w"> </span>Shutdown<span class="w"> </span>when<span class="w"> </span>receiving<span class="w"> </span>SIGTERM<span class="w"> </span><span class="o">(</span>default<span class="w"> </span>is<span class="w"> </span>respawn<span class="o">)</span>
+need-app<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+thunder-lock<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+
+touch-reload<span class="w"> </span><span class="o">=</span><span class="w"> </span>/opt/geonode/geonode/wsgi.py
+buffer-size<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">32768</span>
+
+<span class="nv">harakiri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">600</span><span class="w">                       </span><span class="p">;</span><span class="w"> </span>forcefully<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>workers<span class="w"> </span>after<span class="w"> </span><span class="m">600</span><span class="w"> </span>seconds
+py-callos-afterfork<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="w">           </span><span class="p">;</span><span class="w"> </span>allow<span class="w"> </span>workers<span class="w"> </span>to<span class="w"> </span><span class="nb">trap</span><span class="w"> </span>signals
+
+max-requests<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="w">                  </span><span class="p">;</span><span class="w"> </span>Restart<span class="w"> </span>workers<span class="w"> </span>after<span class="w"> </span>this<span class="w"> </span>many<span class="w"> </span>requests
+max-worker-lifetime<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3600</span><span class="w">           </span><span class="p">;</span><span class="w"> </span>Restart<span class="w"> </span>workers<span class="w"> </span>after<span class="w"> </span>this<span class="w"> </span>many<span class="w"> </span>seconds
+reload-on-rss<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2048</span><span class="w">                 </span><span class="p">;</span><span class="w"> </span>Restart<span class="w"> </span>workers<span class="w"> </span>after<span class="w"> </span>this<span class="w"> </span>much<span class="w"> </span>resident<span class="w"> </span>memory
+worker-reload-mercy<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">60</span><span class="w">             </span><span class="p">;</span><span class="w"> </span>How<span class="w"> </span>long<span class="w"> </span>to<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>before<span class="w"> </span>forcefully<span class="w"> </span>killing<span class="w"> </span>workers
+
+cheaper-algo<span class="w"> </span><span class="o">=</span><span class="w"> </span>busyness
+<span class="nv">processes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">128</span><span class="w">                      </span><span class="p">;</span><span class="w"> </span>Maximum<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>workers<span class="w"> </span>allowed
+<span class="nv">cheaper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="w">                          </span><span class="p">;</span><span class="w"> </span>Minimum<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>workers<span class="w"> </span>allowed
+cheaper-initial<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="w">                 </span><span class="p">;</span><span class="w"> </span>Workers<span class="w"> </span>created<span class="w"> </span>at<span class="w"> </span>startup
+cheaper-overload<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">                 </span><span class="p">;</span><span class="w"> </span>Length<span class="w"> </span>of<span class="w"> </span>a<span class="w"> </span>cycle<span class="w"> </span><span class="k">in</span><span class="w"> </span>seconds
+cheaper-step<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="w">                    </span><span class="p">;</span><span class="w"> </span>How<span class="w"> </span>many<span class="w"> </span>workers<span class="w"> </span>to<span class="w"> </span>spawn<span class="w"> </span>at<span class="w"> </span>a<span class="w"> </span><span class="nb">time</span>
+
+cheaper-busyness-multiplier<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span><span class="w">     </span><span class="p">;</span><span class="w"> </span>How<span class="w"> </span>many<span class="w"> </span>cycles<span class="w"> </span>to<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>before<span class="w"> </span>killing<span class="w"> </span>workers
+cheaper-busyness-min<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="w">            </span><span class="p">;</span><span class="w"> </span>Below<span class="w"> </span>this<span class="w"> </span>threshold,<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>workers<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>stable<span class="w"> </span><span class="k">for</span><span class="w"> </span>multiplier<span class="w"> </span>cycles<span class="o">)</span>
+cheaper-busyness-max<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">70</span><span class="w">            </span><span class="p">;</span><span class="w"> </span>Above<span class="w"> </span>this<span class="w"> </span>threshold,<span class="w"> </span>spawn<span class="w"> </span>new<span class="w"> </span>workers
+cheaper-busyness-backlog-alert<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="w">  </span><span class="p">;</span><span class="w"> </span>Spawn<span class="w"> </span>emergency<span class="w"> </span>workers<span class="w"> </span><span class="k">if</span><span class="w"> </span>more<span class="w"> </span>than<span class="w"> </span>this<span class="w"> </span>many<span class="w"> </span>requests<span class="w"> </span>are<span class="w"> </span>waiting<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>queue
+cheaper-busyness-backlog-step<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="w">    </span><span class="p">;</span><span class="w"> </span>How<span class="w"> </span>many<span class="w"> </span>emergency<span class="w"> </span>workers<span class="w"> </span>to<span class="w"> </span>create<span class="w"> </span><span class="k">if</span><span class="w"> </span>there<span class="w"> </span>are<span class="w"> </span>too<span class="w"> </span>many<span class="w"> </span>requests<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>queue
+
+<span class="c1"># daemonize = /var/log/uwsgi/geonode.log</span>
+<span class="c1"># cron = -1 -1 -1 -1 -1 /usr/local/bin/python /usr/src/geonode/manage.py collect_metrics -n</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create the UWSGI system service</span>
+sudo<span class="w"> </span>vim<span class="w"> </span>/etc/systemd/system/geonode-uwsgi.service
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>IMPORTANT</strong></p>
+<p>Change the line <code>ExecStart=...</code> below with your current user home directory!</p>
+<p>e.g.: If the user is <code>geosolutions</code> then <code>ExecStart=/home/geosolutions/.virtualenvs/geonode/bin/uwsgi --ini /opt/geonode/uwsgi.ini</code></p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>GeoNode<span class="w"> </span>UWSGI<span class="w"> </span>Service
+<span class="nv">After</span><span class="o">=</span>rc-local.service
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">EnvironmentFile</span><span class="o">=</span>/opt/geonode/.env
+<span class="nv">User</span><span class="o">=</span>geosolutions
+<span class="nv">Group</span><span class="o">=</span>geosolutions
+<span class="nv">PIDFile</span><span class="o">=</span>/run/geonode-uwsgi.pid
+<span class="nv">ExecStart</span><span class="o">=</span>/home/geosolutions/.virtualenvs/geonode/bin/uwsgi<span class="w"> </span>--ini<span class="w"> </span>/opt/geonode/uwsgi.ini
+<span class="nv">PrivateTmp</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">Restart</span><span class="o">=</span>always
+<span class="nv">KillMode</span><span class="o">=</span>process
+<span class="nv">TimeoutSec</span><span class="o">=</span><span class="m">900</span>
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Enable the UWSGI service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>geonode-uwsgi.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>geonode-uwsgi.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>geonode-uwsgi.service
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create the Logrotate config</span>
+sudo<span class="w"> </span>tee<span class="w"> </span>/etc/logrotate.d/uwsgi-geonode<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">&quot;/var/log/geonode.log&quot; {</span>
+<span class="s">    copytruncate</span>
+<span class="s">    daily</span>
+<span class="s">    rotate 5</span>
+<span class="s">    delaycompress</span>
+<span class="s">    missingok</span>
+<span class="s">    notifempty</span>
+<span class="s">    su root root</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Backup the original NGINX config</span>
+<span class="w">  </span>sudo<span class="w"> </span>mv<span class="w"> </span>/etc/nginx/nginx.conf<span class="w"> </span>/etc/nginx/nginx.conf.orig
+
+<span class="w">  </span><span class="c1"># Create the GeoNode Default NGINX config</span>
+<span class="w">  </span>sudo<span class="w"> </span>vim<span class="w"> </span>/etc/nginx/nginx.conf
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Make sure your nginx.config matches the following one</span>
+user<span class="w"> </span>www-data<span class="p">;</span>
+worker_processes<span class="w"> </span>auto<span class="p">;</span>
+pid<span class="w"> </span>/run/nginx.pid<span class="p">;</span>
+include<span class="w"> </span>/etc/nginx/modules-enabled/*.conf<span class="p">;</span>
+
+events<span class="w"> </span><span class="o">{</span>
+worker_connections<span class="w"> </span><span class="m">768</span><span class="p">;</span>
+<span class="c1"># multi_accept on;</span>
+<span class="o">}</span>
+
+http<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="c1">##</span>
+<span class="w">    </span><span class="c1"># Basic Settings</span>
+<span class="w">    </span><span class="c1">##</span>
+
+<span class="w">    </span>sendfile<span class="w"> </span>on<span class="p">;</span>
+<span class="w">    </span>tcp_nopush<span class="w"> </span>on<span class="p">;</span>
+<span class="w">    </span>tcp_nodelay<span class="w"> </span>on<span class="p">;</span>
+<span class="w">    </span>keepalive_timeout<span class="w"> </span><span class="m">65</span><span class="p">;</span>
+<span class="w">    </span>types_hash_max_size<span class="w"> </span><span class="m">2048</span><span class="p">;</span>
+<span class="w">    </span><span class="c1"># server_tokens off;</span>
+
+<span class="w">    </span><span class="c1"># server_names_hash_bucket_size 64;</span>
+<span class="w">    </span><span class="c1"># server_name_in_redirect off;</span>
+
+<span class="w">    </span>include<span class="w"> </span>/etc/nginx/mime.types<span class="p">;</span>
+<span class="w">    </span>default_type<span class="w"> </span>application/octet-stream<span class="p">;</span>
+
+<span class="w">    </span><span class="c1">##</span>
+<span class="w">    </span><span class="c1"># SSL Settings</span>
+<span class="w">    </span><span class="c1">##</span>
+
+<span class="w">    </span>ssl_protocols<span class="w"> </span>TLSv1<span class="w"> </span>TLSv1.1<span class="w"> </span>TLSv1.2<span class="p">;</span><span class="w"> </span><span class="c1"># Dropping SSLv3, ref: POODLE</span>
+<span class="w">    </span>ssl_prefer_server_ciphers<span class="w"> </span>on<span class="p">;</span>
+
+<span class="w">    </span><span class="c1">##</span>
+<span class="w">    </span><span class="c1"># Logging Settings</span>
+<span class="w">    </span><span class="c1">##</span>
+
+<span class="w">    </span>access_log<span class="w"> </span>/var/log/nginx/access.log<span class="p">;</span>
+<span class="w">    </span>error_log<span class="w"> </span>/var/log/nginx/error.log<span class="p">;</span>
+
+<span class="w">    </span><span class="c1">##</span>
+<span class="w">    </span><span class="c1"># Gzip Settings</span>
+<span class="w">    </span><span class="c1">##</span>
+
+<span class="w">    </span>gzip<span class="w"> </span>on<span class="p">;</span>
+<span class="w">    </span>gzip_vary<span class="w"> </span>on<span class="p">;</span>
+<span class="w">    </span>gzip_proxied<span class="w"> </span>any<span class="p">;</span>
+<span class="w">    </span>gzip_http_version<span class="w"> </span><span class="m">1</span>.1<span class="p">;</span>
+<span class="w">    </span>gzip_disable<span class="w"> </span><span class="s2">&quot;MSIE [1-6]\.&quot;</span><span class="p">;</span>
+<span class="w">    </span>gzip_buffers<span class="w"> </span><span class="m">16</span><span class="w"> </span>8k<span class="p">;</span>
+<span class="w">    </span>gzip_min_length<span class="w"> </span><span class="m">1100</span><span class="p">;</span>
+<span class="w">    </span>gzip_comp_level<span class="w"> </span><span class="m">6</span><span class="p">;</span>
+<span class="w">    </span>gzip_types<span class="w"> </span>video/mp4<span class="w"> </span>text/plain<span class="w"> </span>application/javascript<span class="w"> </span>application/x-javascript<span class="w"> </span>text/javascript<span class="w"> </span>text/xml<span class="w"> </span>text/css<span class="w"> </span>image/jpeg<span class="p">;</span>
+
+<span class="w">    </span><span class="c1">##</span>
+<span class="w">    </span><span class="c1"># Virtual Host Configs</span>
+<span class="w">    </span><span class="c1">##</span>
+
+<span class="w">    </span>include<span class="w"> </span>/etc/nginx/conf.d/*.conf<span class="p">;</span>
+<span class="w">    </span>include<span class="w"> </span>/etc/nginx/sites-enabled/*<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Remove the Default NGINX config</span>
+sudo<span class="w"> </span>rm<span class="w"> </span>/etc/nginx/sites-enabled/default
+
+<span class="c1"># Create the GeoNode App NGINX config</span>
+sudo<span class="w"> </span>vim<span class="w"> </span>/etc/nginx/sites-available/geonode
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>uwsgi_intercept_errors<span class="w"> </span>on<span class="p">;</span>
+
+upstream<span class="w"> </span>geoserver_proxy<span class="w"> </span><span class="o">{</span>
+server<span class="w"> </span>localhost:8080<span class="p">;</span>
+<span class="o">}</span>
+
+<span class="c1"># Expires map</span>
+map<span class="w"> </span><span class="nv">$sent_http_content_type</span><span class="w"> </span><span class="nv">$expires</span><span class="w"> </span><span class="o">{</span>
+default<span class="w">                    </span>off<span class="p">;</span>
+text/html<span class="w">                  </span>epoch<span class="p">;</span>
+text/css<span class="w">                   </span>max<span class="p">;</span>
+application/javascript<span class="w">     </span>max<span class="p">;</span>
+~image/<span class="w">                    </span>max<span class="p">;</span>
+<span class="o">}</span>
+
+server<span class="w"> </span><span class="o">{</span>
+listen<span class="w"> </span><span class="m">80</span><span class="w"> </span>default_server<span class="p">;</span>
+listen<span class="w"> </span><span class="o">[</span>::<span class="o">]</span>:80<span class="w"> </span>default_server<span class="p">;</span>
+
+root<span class="w"> </span>/var/www/html<span class="p">;</span>
+index<span class="w"> </span>index.html<span class="w"> </span>index.htm<span class="w"> </span>index.nginx-debian.html<span class="p">;</span>
+
+server_name<span class="w"> </span>_<span class="p">;</span>
+
+charset<span class="w"> </span>utf-8<span class="p">;</span>
+
+etag<span class="w"> </span>on<span class="p">;</span>
+expires<span class="w"> </span><span class="nv">$expires</span><span class="p">;</span>
+proxy_read_timeout<span class="w"> </span>600s<span class="p">;</span>
+<span class="c1"># set client body size to 2M #</span>
+client_max_body_size<span class="w"> </span>50000M<span class="p">;</span>
+
+location<span class="w"> </span>/<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>etag<span class="w"> </span>off<span class="p">;</span>
+<span class="w">    </span>proxy_pass<span class="w"> </span>http://127.0.0.1:8000<span class="p">;</span>
+<span class="w">    </span>include<span class="w"> </span>proxy_params<span class="p">;</span>
+<span class="o">}</span>
+
+location<span class="w"> </span>/static/<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">alias</span><span class="w"> </span>/opt/geonode/geonode/static_root/<span class="p">;</span>
+<span class="o">}</span>
+
+location<span class="w"> </span>/uploaded/<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">alias</span><span class="w"> </span>/opt/geonode/geonode/uploaded/<span class="p">;</span>
+<span class="o">}</span>
+
+location<span class="w"> </span>/geoserver<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>proxy_pass<span class="w"> </span>http://geoserver_proxy<span class="p">;</span>
+<span class="w">    </span>include<span class="w"> </span>proxy_params<span class="p">;</span>
+<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Prepare the uploaded folder</span>
+sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/geonode/geonode/uploaded
+sudo<span class="w"> </span>chown<span class="w"> </span>-Rf<span class="w"> </span>tomcat:www-data<span class="w"> </span>/opt/geonode/geonode/uploaded
+sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">777</span><span class="w"> </span>/opt/geonode/geonode/uploaded/
+
+sudo<span class="w"> </span>touch<span class="w"> </span>/opt/geonode/geonode/.celery_results
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">777</span><span class="w"> </span>/opt/geonode/geonode/.celery_results
+
+<span class="c1"># Enable GeoNode NGINX config</span>
+sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/geonode<span class="w"> </span>/etc/nginx/sites-enabled/geonode
+
+<span class="c1"># Restart the services</span>
+sudo<span class="w"> </span>service<span class="w"> </span>tomcat9<span class="w"> </span>restart
+sudo<span class="w"> </span>service<span class="w"> </span>nginx<span class="w"> </span>restart
+</code></pre></div>
+<h3 id="update-the-settings-in-order-to-use-the-postgresql-database">Update the settings in order to use the <code>PostgreSQL</code> Database<a class="headerlink" href="#update-the-settings-in-order-to-use-the-postgresql-database" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure you already installed and configured the Database as explained in the previous sections.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Instead of using the <code>local_settings.py</code>, you can drive the GeoNode behavior through the <code>.env*</code> variables; see as an instance the file <code>./paver_dev.sh</code> or <code>./manage_dev.sh</code> in order to understand how to use them. In that case <strong>you don't need to create</strong> the <code>local_settings.py</code> file; you can just stick with the decault one, which will take the values from the ENV. We tend to prefer this method in a production/dockerized system.</p>
+</div>
+<div class="highlight"><pre><span></span><code>workon<span class="w"> </span>geonode
+<span class="nb">cd</span><span class="w"> </span>/opt/geonode
+
+<span class="c1"># Initialize GeoNode</span>
+chmod<span class="w"> </span>+x<span class="w"> </span>*.sh
+./paver_local.sh<span class="w"> </span>reset
+./paver_local.sh<span class="w"> </span>setup
+./paver_local.sh<span class="w"> </span>sync
+./manage_local.sh<span class="w"> </span>collectstatic<span class="w"> </span>--noinput
+sudo<span class="w"> </span>chmod<span class="w"> </span>-Rf<span class="w"> </span><span class="m">777</span><span class="w"> </span>geonode/static_root/<span class="w"> </span>geonode/uploaded/
+</code></pre></div>
+<p>Before finalizing the configuration we will need to update the <code>UWSGI</code> settings</p>
+<p>Restart <code>UWSGI</code> and update <code>OAuth2</code> by using the new <code>geonode.settings</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># As superuser</span>
+sudo<span class="w"> </span>su
+
+<span class="c1"># Restart Tomcat</span>
+service<span class="w"> </span>tomcat9<span class="w"> </span>restart
+
+<span class="c1"># Restart UWSGI</span>
+pkill<span class="w"> </span>-9<span class="w"> </span>-f<span class="w"> </span>uwsgi
+
+<span class="c1"># Update the GeoNode ip or hostname</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/geonode
+
+<span class="c1"># This must be done the first time only</span>
+cp<span class="w"> </span>package/support/geonode.binary<span class="w"> </span>/usr/bin/geonode
+cp<span class="w"> </span>package/support/geonode.updateip<span class="w"> </span>/usr/bin/geonode_updateip
+chmod<span class="w"> </span>+x<span class="w"> </span>/usr/bin/geonode
+chmod<span class="w"> </span>+x<span class="w"> </span>/usr/bin/geonode_updateip
+
+<span class="c1"># Refresh GeoNode and GeoServer OAuth2 settings</span>
+<span class="nb">source</span><span class="w"> </span>.env_local
+<span class="nv">PYTHONWARNINGS</span><span class="o">=</span>ignore<span class="w"> </span><span class="nv">VIRTUAL_ENV</span><span class="o">=</span><span class="nv">$VIRTUAL_ENV</span><span class="w"> </span><span class="nv">DJANGO_SETTINGS_MODULE</span><span class="o">=</span>geonode.settings<span class="w"> </span><span class="nv">GEONODE_ETC</span><span class="o">=</span>/opt/geonode/geonode<span class="w"> </span><span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>/opt/data/geoserver_data<span class="w"> </span><span class="nv">TOMCAT_SERVICE</span><span class="o">=</span><span class="s2">&quot;service tomcat9&quot;</span><span class="w"> </span><span class="nv">APACHE_SERVICE</span><span class="o">=</span><span class="s2">&quot;service nginx&quot;</span><span class="w"> </span>geonode_updateip<span class="w"> </span>-p<span class="w"> </span>localhost
+
+<span class="c1"># Go back to standard user</span>
+<span class="nb">exit</span>
+</code></pre></div>
+<p>Check for any error with</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>tail<span class="w"> </span>-F<span class="w"> </span>-n<span class="w"> </span><span class="m">300</span><span class="w"> </span>/var/log/geonode.log
+</code></pre></div>
+<p>Reload the UWSGI configuration with</p>
+<div class="highlight"><pre><span></span><code>touch<span class="w"> </span>/opt/geonode/geonode/wsgi.py
+</code></pre></div>
+<h2 id="5-update-the-settings-in-order-to-update-geonode-and-geoserver-services-running-on-a-public-ip-or-hostname">5. Update the settings in order to update GeoNode and GeoServer services running on a public IP or hostname<a class="headerlink" href="#5-update-the-settings-in-order-to-update-geonode-and-geoserver-services-running-on-a-public-ip-or-hostname" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Before exposing your services to the Internet, <strong>make sure</strong> your system is <strong>hardened</strong> and <strong>secure enough</strong>. See the specific documentation section for more details.</p>
+</div>
+<p>Let's say you want to run your services on a public IP or domain, e.g. <code>www.example.org</code>. You will need to slightly update your services in order to reflect the new server name.</p>
+<p>In particular the steps to do are:</p>
+<ol>
+<li>Update <code>NGINX</code> configuration in order to serve the new domain name.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>vim<span class="w"> </span>/etc/nginx/sites-enabled/geonode
+
+<span class="c1"># Update the &#39;server_name&#39; directive</span>
+server_name<span class="w"> </span>example.org<span class="w"> </span>www.example.org<span class="p">;</span>
+
+<span class="c1"># Restart the service</span>
+sudo<span class="w"> </span>service<span class="w"> </span>nginx<span class="w"> </span>restart
+</code></pre></div>
+<ol>
+<li>Update <code>.env</code> with the new domain name.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>vim<span class="w"> </span>/opt/geonode/.env
+
+<span class="c1"># Change everywhere &#39;localhost&#39; to the new hostname</span>
+:%s/localhost/www.example.org/g
+:wq
+
+<span class="c1"># Restart the service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>geonode-uwsgi
+</code></pre></div>
+<ol>
+<li>Update <code>OAuth2</code> configuration in order to hit the new hostname.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>workon<span class="w"> </span>geonode
+sudo<span class="w"> </span>su
+<span class="nb">cd</span><span class="w"> </span>/opt/geonode
+
+<span class="c1"># Update the GeoNode ip or hostname</span>
+<span class="nv">PYTHONWARNINGS</span><span class="o">=</span>ignore<span class="w"> </span><span class="nv">VIRTUAL_ENV</span><span class="o">=</span><span class="nv">$VIRTUAL_ENV</span><span class="w"> </span><span class="nv">DJANGO_SETTINGS_MODULE</span><span class="o">=</span>geonode.settings<span class="w"> </span><span class="nv">GEONODE_ETC</span><span class="o">=</span>/opt/geonode/geonode<span class="w"> </span><span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>/opt/data/geoserver_data<span class="w"> </span><span class="nv">TOMCAT_SERVICE</span><span class="o">=</span><span class="s2">&quot;service tomcat9&quot;</span><span class="w"> </span><span class="nv">APACHE_SERVICE</span><span class="o">=</span><span class="s2">&quot;service nginx&quot;</span><span class="w"> </span>geonode_updateip<span class="w"> </span>-l<span class="w"> </span>localhost<span class="w"> </span>-p<span class="w"> </span>www.example.org
+
+<span class="nb">exit</span>
+</code></pre></div>
+<ol>
+<li>Update the existing <code>GeoNode</code> links in order to hit the new hostname.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>workon<span class="w"> </span>geonode
+
+<span class="c1"># To avoid spatialite conflict if using postgresql</span>
+vim<span class="w"> </span><span class="nv">$VIRTUAL_ENV</span>/bin/postactivate
+
+<span class="c1"># Add these to make available. Change user, password and server information to yours</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span><span class="s1">&#39;postgresql://&lt;postgresqluser&gt;:&lt;postgresqlpass&gt;@localhost:5432/geonode&#39;</span>
+
+<span class="c1"># Close virtual environment and aopen it again to update variables</span>
+deactivate
+
+workon<span class="w"> </span>geonode
+<span class="nb">cd</span><span class="w"> </span>/opt/geonode
+
+<span class="c1"># Update the GeoNode ip or hostname</span>
+<span class="nv">DJANGO_SETTINGS_MODULE</span><span class="o">=</span>geonode.settings<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>migrate_baseurl<span class="w"> </span>--source-address<span class="o">=</span>http://localhost<span class="w"> </span>--target-address<span class="o">=</span>http://www.example.org
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If at the end you get a "bad gateway" error when accessing your geonode site, check uwsgi log with <code>sudo tail -f /var/log/geonode.log</code> and if theres is an error related with port 5432 check the listening configuration from the postgresql server and allow the incoming traffic from geonode.</p>
+</div>
+<h2 id="6-install-and-enable-https-secured-connection-through-the-lets-encrypt-provider">6. Install and enable HTTPS secured connection through the Let's Encrypt provider<a class="headerlink" href="#6-install-and-enable-https-secured-connection-through-the-lets-encrypt-provider" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install Let&#39;s Encrypt Certbot</span>
+<span class="c1"># sudo add-apt-repository ppa:certbot/certbot  # for ubuntu 18.04 and lower</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span>-y<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3-certbot-nginx<span class="w"> </span>-y
+
+<span class="c1"># Reload NGINX config and make sure the firewall denies access to HTTP</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
+sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="s1">&#39;Nginx Full&#39;</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span>delete<span class="w"> </span>allow<span class="w"> </span><span class="s1">&#39;Nginx HTTP&#39;</span>
+
+<span class="c1"># Create and dump the Let&#39;s Encrypt Certificates</span>
+sudo<span class="w"> </span>certbot<span class="w"> </span>--nginx<span class="w"> </span>-d<span class="w"> </span>example.org<span class="w"> </span>-d<span class="w"> </span>www.example.org
+<span class="c1"># ...choose the redirect option when asked for</span>
+</code></pre></div>
+<p>Next, the steps to do are:</p>
+<p>1.Update the <code>GeoNode</code> <strong>OAuth2</strong> <code>Redirect URIs</code> accordingly.</p>
+<p>From the <code>GeoNode Admin Dashboard</code> go to <code>Home › Django/GeoNode OAuth Toolkit › Applications › GeoServer</code></p>
+<p><img alt="Redirect URIs" src="../img/ubuntu-https-001.png" />
+<em>Redirect URIs</em></p>
+<p>2.Update the <code>GeoServer</code> <code>Proxy Base URL</code> accordingly.</p>
+<p>From the <code>GeoServer Admin GUI</code> go to <code>About &amp; Status &gt; Global</code></p>
+<p><img alt="Proxy Base URL" src="../img/ubuntu-https-002.png" />
+<em>Proxy Base URL</em></p>
+<p>3.Update the <code>GeoServer</code> <code>Role Base URL</code> accordingly.</p>
+<p>From the <code>GeoServer Admin GUI</code> go to <code>Security &gt; Users, Groups, Roles &gt; geonode REST role service</code></p>
+<p><img alt="Role Base URL" src="../img/ubuntu-https-003.png" />
+<em>Role Base URL</em></p>
+<p>4.Update the <code>GeoServer</code> <code>OAuth2 Service Parameters</code> accordingly.</p>
+<p>From the <code>GeoServer Admin GUI</code> go to <code>Security &gt; Authentication &gt; Authentication Filters &gt; geonode-oauth2</code></p>
+<p><img alt="OAuth2 Service Parameters" src="../img/ubuntu-https-004.png" />
+<em>OAuth2 Service Parameters</em></p>
+<p>5.Update the <code>.env</code> file</p>
+<div class="highlight"><pre><span></span><code>vim<span class="w"> </span>/opt/geonode/.env
+
+<span class="c1"># Change everywhere &#39;http&#39; to &#39;https&#39;</span>
+%s/http/https/g
+
+<span class="c1"># Restart the service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>geonode-uwsgi
+</code></pre></div>
+<h2 id="7-enabling-fully-asynchronous-tasks">7. Enabling Fully Asynchronous Tasks<a class="headerlink" href="#7-enabling-fully-asynchronous-tasks" title="Permanent link">&para;</a></h2>
+<h4 id="redis-installation">Redis installation<a class="headerlink" href="#redis-installation" title="Permanent link">&para;</a></h4>
+<p>GeoNode 5 uses Redis as a message broker and <code>Celery backend</code> for the asyncronous tasks.</p>
+<p>Reference: <a href="https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-linux/">Redis installation</a></p>
+<p>Add Redis repository (optional, to get latest stable version):</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>add-apt-repository<span class="w"> </span>ppa:redislabs/redis<span class="w"> </span>-y
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+</code></pre></div>
+<p>Install Redis Server</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>redis<span class="w"> </span>-y
+</code></pre></div>
+<p>Check Redis status</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>redis
+</code></pre></div>
+<p>Redis should already be running and enabled to start on boot.</p>
+<h4 id="managing-redis">Managing Redis<a class="headerlink" href="#managing-redis" title="Permanent link">&para;</a></h4>
+<p>You can manage the Redis service like any other system service:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>redis
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>redis
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>redis
+</code></pre></div>
+<p>Redis also provides a command-line tool redis-cli for administration:</p>
+<div class="highlight"><pre><span></span><code>redis-cli
+
+<span class="c1"># Ping Redis</span>
+ping
+
+<span class="c1"># You should see the following response:</span>
+PONG
+</code></pre></div>
+<h4 id="daemonize-and-configure-celery">Daemonize and configure Celery<a class="headerlink" href="#daemonize-and-configure-celery" title="Permanent link">&para;</a></h4>
+<p><strong>Create the Systemd unit</strong></p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>vim<span class="w"> </span>/etc/systemd/system/celery.service
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Celery
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="c1"># the specific user that our service will run as</span>
+<span class="nv">EnvironmentFile</span><span class="o">=</span>/opt/geonode/.env
+<span class="nv">User</span><span class="o">=</span>geosolutions
+<span class="nv">Group</span><span class="o">=</span>geosolutions
+<span class="c1"># another option for an even more restricted service is</span>
+<span class="c1"># DynamicUser=yes</span>
+<span class="c1"># see http://0pointer.net/blog/dynamic-users-with-systemd.html</span>
+<span class="nv">RuntimeDirectory</span><span class="o">=</span>celery
+<span class="nv">WorkingDirectory</span><span class="o">=</span>/opt/geonode
+<span class="nv">ExecStart</span><span class="o">=</span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;source /home/geosolutions/.virtualenvs/geonode/bin/activate &amp;&amp; /opt/geonode/celery-cmd&#39;</span>
+<span class="nv">ExecReload</span><span class="o">=</span>/bin/kill<span class="w"> </span>-s<span class="w"> </span>HUP<span class="w"> </span><span class="nv">$MAINPID</span>
+<span class="nv">Restart</span><span class="o">=</span>always
+<span class="nv">TimeoutSec</span><span class="o">=</span><span class="m">900</span>
+<span class="nv">TimeoutStopSec</span><span class="o">=</span><span class="m">60</span>
+<span class="nv">PrivateTmp</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create the Logrotate config</span>
+sudo<span class="w"> </span>tee<span class="w"> </span>/etc/logrotate.d/celery<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">&quot;/var/log/celery.log&quot; {</span>
+<span class="s">    copytruncate</span>
+<span class="s">    daily</span>
+<span class="s">    rotate 5</span>
+<span class="s">    delaycompress</span>
+<span class="s">    missingok</span>
+<span class="s">    notifempty</span>
+<span class="s">    su root root</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<hr />
+<h4 id="manage-celery">Manage Celery<a class="headerlink" href="#manage-celery" title="Permanent link">&para;</a></h4>
+<p>Restart Celery </p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Restart Celery</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>celery
+
+<span class="c1"># Kill old celery workers (if any)</span>
+sudo<span class="w"> </span>pkill<span class="w"> </span>-f<span class="w"> </span>celery
+</code></pre></div>
+<p>Inspect the logs</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check the celery service status</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>celery
+
+<span class="c1"># Check the celery logs</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-F<span class="w"> </span>-n<span class="w"> </span><span class="m">300</span><span class="w"> </span>/var/log/celery.log
+</code></pre></div>
+<hr />
+<h4 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h4>
+<p>Celery might crash during startup with this error:</p>
+<div class="highlight"><pre><span></span><code>looking<span class="w"> </span><span class="k">for</span><span class="w"> </span>plugins<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s1">&#39;/usr/lib64/sasl2&#39;</span>,<span class="w"> </span>failed<span class="w"> </span>to<span class="w"> </span>open<span class="w"> </span>directory,<span class="w"> </span>error:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
+</code></pre></div>
+<p>The workaround is a symlink at that path.</p>
+<div class="highlight"><pre><span></span><code>ln<span class="w"> </span>-sfn<span class="w"> </span>/usr/lib/x86_64-linux-gnu/sasl2/<span class="w"> </span>/usr/lib64/sasl2
+</code></pre></div>
+<h4 id="install-memcached">Install Memcached<a class="headerlink" href="#install-memcached" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>memcached
+
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>memcached
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>memcached
+
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>celery
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>celery
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["header.autohide", "navigation.instant", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../theme/js/dl-anchors.js"></script>
+      
+    
+  </body>
+</html>
