@@ -159,11 +159,7 @@ def proxy(
     )
     if response is None:
         logger.error(f"Proxy request failed: {content}")
-        return HttpResponse(
-            content="Proxy request failed.",
-            status=500,
-            content_type="text/plain"
-        )
+        return HttpResponse(content="Proxy request failed.", status=500, content_type="text/plain")
 
     content = response.content or response.reason
     status = response.status_code
