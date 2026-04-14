@@ -282,7 +282,7 @@ ID_TOKEN_ISSUER = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_
 def _update_user_groups_from_social(sociallogin, user):
 
     # Retrieve the strategy from settings, defaulting FULL_SYNC
-    sync_strategy = getattr(settings, "SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")
+    sync_strategy = getattr(settings, "SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "SAFE_SYNC")
 
     if sync_strategy == "NO_SYNC":
         return user
@@ -294,7 +294,7 @@ def _update_user_groups_from_social(sociallogin, user):
         groups = extractor.extract_groups(sociallogin.account.extra_data)
 
         # If groups are missing, try roles
-        if groups == "":
+        if not isinstance(groups, list):
             groups = extractor.extract_roles(sociallogin.account.extra_data)
 
         # If groups is STILL "", it means BOTH were missing.

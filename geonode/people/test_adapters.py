@@ -413,8 +413,8 @@ class GenericOpenIDConnectAdapterTestCase(GeoNodeBaseTestSupport):
         """Verify SAFE_SYNC preserves 'bar' if group data is missing."""
         # Setup mock extractor to return "" (missing key signal)
         mock_ext = mock.MagicMock()
-        mock_ext.extract_groups.return_value = ""
-        mock_ext.extract_roles.return_value = ""
+        mock_ext.extract_groups.return_value = None
+        mock_ext.extract_roles.return_value = None
         mock_get_extractor.return_value = mock_ext
 
         # Run logic with no groups in extra_data
