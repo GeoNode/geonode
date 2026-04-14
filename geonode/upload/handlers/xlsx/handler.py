@@ -213,7 +213,7 @@ class XLSXFileHandler(CSVFileHandler):
             # Note: rows_gen continues from the row after the headers
             self._convert_to_csv(headers, rows_gen, output_file)
 
-        except Exception:
+        except Exception as e:
             logger.exception(f"XLSX Pre-processing failed: {str(e)}")
             raise InvalidInputFileException(detail="Failed to securely parse Excel.")
 
