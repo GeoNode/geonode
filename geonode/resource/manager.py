@@ -253,11 +253,6 @@ class BaseResourceManager(ResourceManagerInterface):
         """
         if not instance:
             return False
-        enabled = getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False) or getattr(
-            settings, "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", False
-        )
-        if not enabled:
-            return False
         instance.set_default_permissions(owner=owner or instance.owner, created=True)
         return True
 

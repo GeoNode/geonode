@@ -290,6 +290,74 @@ Auto assign users to a default ``REGISTERED_MEMBERS_GROUP_NAME`` private group a
 
 Notice that whenever ``ACCOUNT_EMAIL_VERIFICATION == True`` and ``ACCOUNT_APPROVAL_REQUIRED == False``, users will be able to register and they became ``active`` already, even if they won't be able to login until the email has been verified.
 
+
+**AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS**
+
+:   - Default ``False``
+    - Env: ``AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS``
+
+When this setting is enabled, GeoNode automatically assigns permissions to all groups that the resource creator belongs to when a new resource is created.
+
+The permission level assigned to those groups is defined by ``RESOURCE_CREATOR_GROUPS_PERMISSIONS``.
+
+This setting is applied only during resource creation.
+
+**RESOURCE_CREATOR_GROUPS_PERMISSIONS**
+
+:   - Default ``view``
+    - Env: ``RESOURCE_CREATOR_GROUPS_PERMISSIONS``
+
+Defines the compact permission level assigned to the groups of the resource creator when ``AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS`` is enabled.
+
+Supported values are:
+
+- ``view``
+- ``download``
+- ``edit``
+- ``manage``
+
+Example:
+
+```python
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = True
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = "download"
+```
+
+If an unsupported value is configured, GeoNode logs a warning and falls back to ``view``.
+
+**AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN**
+
+:   - Default ``False``
+    - Env: ``AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN``
+
+When this setting is enabled, GeoNode automatically assigns ownership of newly created resources to an administrator instead of keeping the uploader as the resource owner.
+
+The administrator user is defined by ``RESOURCE_OWNERSHIP_ADMIN_USERNAME``.
+
+This setting is applied only during resource creation. The original uploader keeps ``manage`` permissions on the resource.
+
+**RESOURCE_OWNERSHIP_ADMIN_USERNAME**
+
+:   - Default ``admin``
+    - Env: ``RESOURCE_OWNERSHIP_ADMIN_USERNAME``
+
+Defines the username of the administrator that should become the owner of newly created resources when ``AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN`` is enabled.
+
+The configured user must exist and must be a superuser.
+
+Example:
+
+```python
+AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = True
+RESOURCE_OWNERSHIP_ADMIN_USERNAME = "admin"
+```
+
+With this configuration, when a user creates a resource, GeoNode assigns the resource ownership to the configured administrator and grants ``manage`` permissions to the original uploader.
+
+If ``RESOURCE_OWNERSHIP_ADMIN_USERNAME`` is not set, GeoNode defaults to ``admin``.
+
+
+
 **AUTO_GENERATE_AVATAR_SIZES**
 
 
