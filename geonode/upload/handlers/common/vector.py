@@ -619,7 +619,7 @@ class BaseVectorFileHandler(BaseHandler):
             - celery_group -> the celery group of the field creation
         """
 
-        layer_name = self.fixup_name(self._extract_layer(layer).GetName())
+        layer_name = self.fixup_name(layer if isinstance(layer, str) else self._extract_layer(layer).GetName())
         _exec_obj = orchestrator.get_execution_object(execution_id)
 
         is_dynamic_model_managed = _exec_obj.input_params.get("is_dynamic_model_managed", False)
@@ -768,7 +768,7 @@ class BaseVectorFileHandler(BaseHandler):
             "Multi" not in geometry_name
             and "Point" not in geometry_name
             and "3D" not in geometry_name
-            and geometry_name != "Unknown (any)"
+            and geometry_name not in ("Unknown (any)", "Geometry")
         ):
             return f"Multi {geometry_name.title()}"
         return geometry_name
