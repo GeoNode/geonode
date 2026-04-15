@@ -34,6 +34,7 @@ ATTRIBUTE_TYPE_MAP = {
     "Point": "com.vividsolutions.jts.geom.Point",
     "LineString": "com.vividsolutions.jts.geom.LineString",
     "Polygon": "com.vividsolutions.jts.geom.Polygon",
+    "Geometry": "org.locationtech.jts.geom.Geometry",
 }
 RESTRICTION_OPTIONS_TYPE_MAP = {"string": "string", "float": "float", "integer": "int"}
 
