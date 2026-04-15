@@ -1776,3 +1776,21 @@ def get_allowed_extensions():
         for val in _type["formats"]:
             allowed_extention.append(val["required_ext"][0])
     return list(set(allowed_extention))
+
+
+def strtobool(value):
+    """Convert common string/int boolean representations to bool.
+
+    Raises ValueError when the input is not a recognized truth value.
+    """
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        raise ValueError("invalid truth value None")
+
+    normalized = str(value).strip().lower()
+    if normalized in {"y", "yes", "t", "true", "on", "1"}:
+        return True
+    if normalized in {"n", "no", "f", "false", "off", "0"}:
+        return False
+    raise ValueError(f"invalid truth value {value!r}")

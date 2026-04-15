@@ -36,7 +36,7 @@ from requests.auth import HTTPBasicAuth
 from geonode.layers.models import Dataset
 from geonode.base.models import Link, ResourceBase
 from geonode.layers.enumerations import GXP_PTYPES
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.thumbs.exceptions import ThumbnailError
 
 from .. import models
@@ -538,7 +538,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             target_crs = geonode_resource.srid
         else:
             target_crs = f"EPSG:{geonode_resource.srid}"
-        success = resource_manager.set_thumbnail(
+        success = resource_manager_registry.get_for_instance(geonode_resource).set_thumbnail(
             geonode_resource.uuid,
             instance=geonode_resource,
             bbox=geonode_resource.bbox,

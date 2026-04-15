@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.geoapps.models import GeoApp
 from geonode.base.models import TopicCategory
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, geoapp_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.metadata.manager import metadata_manager
 from geonode.base.populate_test_data import all_public, create_models, remove_models
@@ -47,7 +47,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.bobby = get_user_model().objects.get(username="bobby")
-        self.geo_app = resource_manager.create(
+        self.geo_app = geoapp_manager.create(
             None,
             resource_type=GeoApp,
             defaults=dict(
@@ -82,7 +82,9 @@ class GeoAppTests(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         geoapp_copy = None
         try:
-            geoapp_copy = resource_manager.copy(self.geoapp, defaults=dict(title="Testing GeoApp 2"))
+            geoapp_copy = resource_manager_registry.get_for_instance(self.geoapp).copy(
+                self.geoapp, defaults=dict(title="Testing GeoApp 2")
+            )
             self.assertIsNotNone(geoapp_copy)
             self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")
         finally:

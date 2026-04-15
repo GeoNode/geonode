@@ -399,7 +399,7 @@ def publish_resource(
         )
         _exec = orchestrator.get_execution_object(execution_id)
         _files = _exec.input_params.get("files")
-        _overwrite = _exec.input_params.get("overwrite_existing_layer")
+        _overwrite = action == ira.REPLACE.value
 
         _publisher = DataPublisher(handler_module_path)
         kwargs.update({"exec_id": execution_id})
@@ -509,7 +509,7 @@ def create_geonode_resource(
         handler_module_path = handler_module_path or _exec.input_params.get("handler_module_path")
 
         handler = import_string(handler_module_path)()
-        _overwrite = _exec.input_params.get("overwrite_existing_layer")
+        _overwrite = action == ira.REPLACE.value
 
         if _overwrite:
             resource = handler.overwrite_geonode_resource(
@@ -975,7 +975,7 @@ def rollback(self, *args, **kwargs):
     )
 
     handler = import_string(handler_module_path)()
-    if exec_object.input_params.get("overwrite_existing_layer"):
+    if exec_object.action == ira.REPLACE.value:
         logger.warning("Rollback is skipped for the overwrite")
     else:
         handler.rollback(exec_id, rollback_from_step, action_to_rollback, *args, **kwargs)
@@ -1045,6 +1045,9 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
         _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
 
         _datastore.pre_processing(**kwargs)
+
+        if not _datastore.input_is_valid():
+            raise Exception("dataset is invalid")
 
         is_valid, errors = _datastore.upsert_validation(execution_id, **kwargs)
         if not is_valid:

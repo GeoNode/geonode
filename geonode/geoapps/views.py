@@ -31,7 +31,7 @@ from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 from geonode.geoapps.models import GeoApp
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
 from geonode.utils import resolve_object
 from geonode.security.registry import permissions_registry
@@ -80,13 +80,14 @@ def geoapp_embed(request, geoappid, template="apps/app_embed.html"):
 
     r = geoapp_obj
     if request.method in ("POST", "PATCH", "PUT"):
-        r = resource_manager.update(geoapp_obj.uuid, instance=geoapp_obj, notify=True)
+        resolved_resource_manager = resource_manager_registry.get_for_instance(geoapp_obj)
+        r = resolved_resource_manager.update(geoapp_obj.uuid, instance=geoapp_obj, notify=True)
 
-        resource_manager.set_permissions(
+        resolved_resource_manager.set_permissions(
             geoapp_obj.uuid, instance=geoapp_obj, permissions=ast.literal_eval(permissions_json)
         )
 
-        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+        resolved_resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
 
     access_token = None
     if request and request.user:

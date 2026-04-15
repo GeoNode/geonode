@@ -1,0 +1,136 @@
+#########################################################################
+#
+# Copyright (C) 2026 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
+from typing import Type
+
+from django.utils.module_loading import import_string
+
+from geonode.base.models import ResourceBase
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
+from geonode.layers.models import Dataset
+from geonode.maps.models import Map
+from geonode.resource.manager import BaseResourceManager
+from geonode.resource.api.utils import resolve_type_serializer
+
+import logging
+from . import settings as rm_settings
+
+logger = logging.getLogger(__file__)
+
+
+class ResourceManagerRegistry:
+    """Registry for concrete resource managers keyed by handled model class."""
+
+    REGISTRY = {}
+
+    def init_registry(self):
+        self.reset()
+        self._register()
+
+    def add(self, manager):
+        model_cls = getattr(manager, "handled_model", None)
+        if model_cls is None:
+            raise ValueError(f"Manager {manager.__class__.__name__} must define 'handled_model'")
+        self.REGISTRY[model_cls] = manager
+
+    def remove(self, model_cls):
+        self.REGISTRY.pop(model_cls, None)
+
+    def reset(self):
+        self.REGISTRY = {}
+
+    @classmethod
+    def get_registry(cls):
+        return ResourceManagerRegistry.REGISTRY
+
+    def get_for_instance(self, instance: ResourceBase) -> BaseResourceManager:
+        """Resolve a manager from a concrete model instance."""
+        if instance is None:
+            raise ValueError("Cannot resolve manager for a null instance")
+
+        real = instance.get_real_instance() if hasattr(instance, "get_real_instance") else instance
+        for model_cls, manager in self.REGISTRY.items():
+            if isinstance(real, model_cls):
+                return manager
+        if type(real) is ResourceBase:
+            return BaseResourceManager()
+        raise ValueError("No resource manager registered for instance")
+
+    def get_for_model(self, model_cls: Type[ResourceBase]) -> BaseResourceManager:
+        """Resolve a manager from a concrete model class."""
+        if model_cls is None:
+            raise ValueError("Cannot resolve manager for a null model")
+        manager = self.REGISTRY.get(model_cls)
+        if manager is not None:
+            return manager
+        if model_cls is ResourceBase:
+            return BaseResourceManager()
+        raise ValueError("No resource manager registered for model")
+
+    def get_for_type(self, resource_type: str) -> BaseResourceManager:
+        """Resolve a manager from a resource type string (e.g. 'dataset', 'map')."""
+        if not resource_type:
+            raise ValueError("Cannot resolve manager for empty resource type")
+        model_cls = resolve_type_serializer(resource_type)[0]
+        return self.get_for_model(model_cls)
+
+    def get_for_uuid(self, uuid: str) -> BaseResourceManager:
+        """
+        Accepts:
+        - uuid of a resource
+        """
+        if not uuid:
+            raise ValueError("Cannot resolve manager for empty uuid")
+        rb = ResourceBase.objects.filter(uuid=uuid).first()
+        if rb is None:
+            raise ValueError(f"No ResourceBase found for uuid: {uuid}")
+        return self.get_for_instance(rb)
+
+    def _register(self):
+        for module_path in rm_settings.RESOURCE_MANAGERS:
+            manager_class = import_string(module_path)
+            self.add(manager_class())
+
+
+class ResourceRegistryLazyLoader:
+    def __init__(self, class_instance):
+        self._instance = None
+        self.class_instance = class_instance
+
+    def get_instance(self):
+        if self._instance is None:
+            try:
+                self._instance = resource_manager_registry.get_for_model(self.class_instance)
+            except Exception:
+                logger.warning("resource registry not found, re-initialization")
+                resource_manager_registry.init_registry()
+                self._instance = resource_manager_registry.get_for_model(self.class_instance)
+
+        return self._instance
+
+    def __getattr__(self, name):
+        return getattr(self.get_instance(), name)
+
+
+resource_manager_registry = ResourceManagerRegistry()
+document_manager = ResourceRegistryLazyLoader(class_instance=Document)
+dataset_manager = ResourceRegistryLazyLoader(class_instance=Dataset)
+map_manager = ResourceRegistryLazyLoader(class_instance=Map)
+geoapp_manager = ResourceRegistryLazyLoader(class_instance=GeoApp)

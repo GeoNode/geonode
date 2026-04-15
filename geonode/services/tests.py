@@ -39,7 +39,7 @@ from owslib.map.wms111 import ContentMetadata
 from geonode.harvesting.models import Harvester
 from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.base import enumerations as base_enumerations
 from geonode.harvesting.harvesters.wms import WebMapService
 from geonode.services.utils import parse_services_types, test_resource_table_status
@@ -448,7 +448,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             result = handler.create_geonode_service(test_user)
             geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
             handler._harvest_resource(dataset_meta, geonode_service)
             geonode_dataset = Dataset.objects.filter(remote_service=geonode_service).get()
@@ -459,7 +459,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             response = self.client.get(reverse("dataset_embed", args=(geonode_dataset.name,)))
             self.assertEqual(response.status_code, 200)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
         except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
             logger.error(e)
@@ -683,7 +683,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         try:
             geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
             result = list(handler.get_resources())
             dataset_meta = handler.get_resource(result[0].name)
