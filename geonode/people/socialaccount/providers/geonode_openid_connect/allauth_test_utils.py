@@ -2,7 +2,7 @@
 This file includes code originally from The django-allauth
 (https://github.com/pennersr/django-allauth/), which is licensed under the MIT License (MIT).
 
-Copyright (c) 2010-2021 Raymond Penners and contributors.
+Copyright (c) 2010-2026 Raymond Penners and contributors.
 
 
 This file is distributed as part of a larger work licensed under the
