@@ -43,14 +43,23 @@ It allows specifying the HTTP method used when confirming e-mail addresses.
 
 :   - Default ``True``
 
-This is a [django-allauth setting](https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration)
-which controls whether the user is required to provide an e-mail address upon registration.
+This is a deprecated.
+Use ``ACCOUNT_SIGNUP_FIELDS`` instead.
+It controls whether the user is required to provide an e-mail address upon registration.
 
 **ACCOUNT_EMAIL_VERIFICATION**
 
 :   - Default ``optional``
 
 This is a [django-allauth setting](https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration)
+
+**ACCOUNT_LOGIN_METHODS**
+
+:   - Default ``{'email', 'username'}``
+    - Env: ``ACCOUNT_LOGIN_METHODS``
+
+This is a [django-allauth setting](https://docs.allauth.org/en/dev/account/configuration.html)
+which controls which identifiers users can use to log in.
 
 **ACCOUNT_LOGIN_REDIRECT_URL**
 
@@ -86,6 +95,14 @@ This is a [django-user-accounts setting](https://django-user-accounts.readthedoc
 
 This is a [django-user-accounts setting](https://django-user-accounts.readthedocs.io/en/latest/settings.html)
 Whether or not people are allowed to self-register to GeoNode or not.
+
+**ACCOUNT_SIGNUP_FIELDS**
+
+:   - Default ``['email*', 'username*', 'password1*', 'password2*']``
+    - Env: ``ACCOUNT_SIGNUP_FIELDS``
+
+This is a [django-allauth setting](https://docs.allauth.org/en/dev/account/configuration.html)
+which controls which fields are shown during signup. Fields marked with ``*`` are required.
 
 **ACCOUNT_SIGNUP_FORM_CLASS**
 
