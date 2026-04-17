@@ -51,17 +51,22 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        exclude = (
-            "user",
-            "password",
-            "last_login",
-            "groups",
-            "user_permissions",
-            "username",
-            "is_staff",
-            "is_superuser",
-            "is_active",
-            "date_joined",
+        # Explicitly listing fields instead of exclude them
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "organization",
+            "profile",
+            "position",
+            "voice",
+            "fax",
+            "delivery",
+            "city",
+            "area",
+            "zipcode",
+            "country",
             "language",
-            "extra_data",
+            "keywords",
+            "timezone",
         )
