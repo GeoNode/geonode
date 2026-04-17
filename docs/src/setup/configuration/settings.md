@@ -43,7 +43,7 @@ It allows specifying the HTTP method used when confirming e-mail addresses.
 
 :   - Default ``True``
 
-This is a deprecated.
+This is deprecated.
 Use ``ACCOUNT_SIGNUP_FIELDS`` instead.
 It controls whether the user is required to provide an e-mail address upon registration.
 
