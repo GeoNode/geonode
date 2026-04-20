@@ -104,6 +104,14 @@ SESSION_LANG_KEY = "language_override"
 
 
 class ProfileLanguageMiddleware(MiddlewareMixin):
+    """
+    The middleware is designed so that the session language
+    (set via the UI switcher) takes precedence over the user's
+    stored language. The profile language is only used to initialize
+    the session when no override exists, ensuring that user changes
+    are preserved for the duration of the session.
+    """
+
     def process_request(self, request):
         if not request.user.is_authenticated:
             return None
