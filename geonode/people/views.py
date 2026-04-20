@@ -37,6 +37,7 @@ from geonode.people.utils import get_available_users
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
+from geonode.base.middleware import SESSION_LANG_KEY
 from dal import autocomplete
 
 
@@ -169,9 +170,6 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
             )
 
         return qs
-
-
-SESSION_LANG_KEY = "language_override"
 
 
 @require_POST
