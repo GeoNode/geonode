@@ -22,12 +22,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import check_for_language, gettext_lazy as _
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 from django.views import View
+from django.views.decorators.http import require_POST
+from django.views.i18n import set_language as django_set_language
 
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
@@ -167,3 +169,17 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
             )
 
         return qs
+
+
+SESSION_LANG_KEY = "language_override"
+
+
+@require_POST
+def set_session_language(request):
+    lang_code = request.POST.get("language")  # LANGUAGE_QUERY_PARAMETER is "language"
+
+    if lang_code and check_for_language(lang_code):
+        request.session[SESSION_LANG_KEY] = lang_code
+
+    # Delegate all redirect/cookie logic to Django
+    return django_set_language(request)
