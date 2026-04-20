@@ -2162,7 +2162,13 @@ FILE_UPLOAD_HANDLERS = [
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
 ]
 
-DEFAULT_MAX_UPLOAD_SIZE = 104857600  # 100 MB
+# This setting is used only once during installation.
+# Further adjustments need to be done using the admin WebUI:
+#
+#   https://docs.geonode.org/en/5.0.x/admin/upload-size-limits/index.html#upload-size-limits
+#
+# 100MB
+DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv("DEFAULT_MAX_UPLOAD_SIZE") or 100 * 1024 * 1024)
 DEFAULT_BUFFER_CHUNK_SIZE = int(os.getenv("DEFAULT_BUFFER_CHUNK_SIZE", 64 * 1024))
 DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER = int(os.getenv("DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5))
 
