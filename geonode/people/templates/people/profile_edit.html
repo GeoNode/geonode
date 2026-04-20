@@ -29,7 +29,18 @@
       {% for field in form %}
         {% if field.name not in PROFILE_EDIT_EXCLUDE_FIELD  %}
         <div id="div_{{ field.auto_id }}" class="form-group">
-            <label for="{{ field.auto_id }}" class="control-label">{{ field.label }}</label>
+            <label for="{{ field.auto_id }}" class="control-label">
+              {{ field.label }}
+              {% if field.name == 'language' %}
+                <span class="text-info" 
+                      data-toggle="tooltip" 
+                      data-placement="top" 
+                      title="{% trans 'Your permanent language preference. Manual changes made via the top-bar switcher will override this until you log out or clear your browser data.' %}">
+                  <i class="glyphicon glyphicon-info-sign"></i>
+                </span>
+              {% endif %}
+            
+            </label>
             <div class="">
                 {% render_field field class="form-control" %}
             </div>
