@@ -338,6 +338,19 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             )
             self.assertEqual(form.errors, {"doc_file": [expected_error]})
 
+    @patch("geonode.upload.validators.FileValidator._detect_mime", return_value="application/x-dosexec")
+    def test_upload_document_form_rejects_file_with_mismatched_content_type(self, _mock_detect_mime):
+        form_data = {
+            "title": "GeoNode Map",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("fake.pdf", b"MZ executable content", "application/pdf")}
+
+        form = DocumentCreateForm(form_data, file_data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("doc_file", form.errors)
+
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""
         d = Document.objects.all().first()

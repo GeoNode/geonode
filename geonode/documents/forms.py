@@ -17,12 +17,10 @@
 #
 #########################################################################
 
-import os
 import json
 import logging
 
 from django import forms
-from django.conf import settings
 from django.forms import HiddenInput
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import filesizeformat
@@ -30,6 +28,7 @@ from django.template.defaultfilters import filesizeformat
 from geonode.documents.models import Document
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.api.exceptions import FileUploadLimitException
+from geonode.upload.validators import FileValidator
 
 logger = logging.getLogger(__name__)
 
@@ -137,8 +136,7 @@ class DocumentCreateForm(forms.ModelForm):
         """
         doc_file = self.cleaned_data.get("doc_file")
 
-        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
-            logger.debug("This file type is not allowed")
-            raise forms.ValidationError(_("This file type is not allowed"))
+        if doc_file:
+            FileValidator(doc_file, context="document").validate()
 
         return doc_file

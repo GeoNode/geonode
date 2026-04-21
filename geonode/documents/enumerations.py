@@ -124,3 +124,33 @@ DOCUMENT_MIMETYPE_MAP = {
     "flv": "video/flv",
     "vdo": "video/vdo",
 }
+
+DOCUMENT_MAGIC_MIMETYPE_MAP = {extension: {mime_type} for extension, mime_type in DOCUMENT_MIMETYPE_MAP.items()}
+
+DOCUMENT_MAGIC_MIMETYPE_MAP.update(
+    {
+        "log": {"text/plain", "text/csv"},
+        "xml": {"application/xml", "text/xml"},
+        "sld": {"text/plain", "application/xml", "text/xml"},
+        "qml": {"text/plain", "application/xml", "text/xml"},
+        "doc": {"application/msword", "application/x-ole-storage"},
+        "ods": {"text/plain", "application/vnd.oasis.opendocument.spreadsheet"},
+        "odt": {"text/plain", "application/vnd.oasis.opendocument.text"},
+        "xls": {"application/excel", "application/vnd.ms-excel", "application/x-ole-storage"},
+        "ppt": {"application/powerpoint", "application/vnd.ms-powerpoint", "application/x-ole-storage"},
+        "docx": {
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        },
+        "xlsx": {
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+        "pptx": {
+            "application/x-mspowerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        },
+        "odp": {"application/odp", "application/vnd.oasis.opendocument.presentation"},
+        "csv": {"text/plain", "text/csv"},
+    }
+)

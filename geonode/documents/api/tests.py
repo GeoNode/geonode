@@ -17,6 +17,8 @@
 #
 #########################################################################
 import logging
+from tempfile import NamedTemporaryFile
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
@@ -135,6 +137,43 @@ class DocumentsApiTests(APITestCase):
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
+
+    @patch("geonode.upload.validators.FileValidator._detect_mime", return_value="application/x-dosexec")
+    def test_creation_rejects_file_with_mismatched_content_type(self, _mock_detect_mime):
+        self.client.force_login(self.admin)
+        with NamedTemporaryFile(suffix=".pdf") as test_file:
+            test_file.write(b"MZ executable content")
+            test_file.flush()
+            payload = {
+                "document": {
+                    "title": "Fake PDF document",
+                    "metadata_only": True,
+                    "file_path": test_file.name,
+                }
+            }
+            actual = self.client.post(self.url, data=payload, format="json")
+
+        self.assertEqual(400, actual.status_code)
+        self.assertEqual("document_exception", actual.json()["code"])
+        self.assertEqual(
+            ["The uploaded file content does not match the expected file type for .pdf files."],
+            actual.json()["errors"],
+        )
+
+    @patch("geonode.upload.validators.FileValidator._get_max_size", return_value=1)
+    def test_creation_rejects_file_exceeding_document_size_limit(self, _mock_get_max_size):
+        self.client.force_login(self.admin)
+        payload = {
+            "document": {
+                "title": "Oversized document",
+                "metadata_only": True,
+                "file_path": self.valid_file_path,
+            }
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+
+        self.assertEqual(400, actual.status_code)
+        self.assertEqual("total_upload_size_exceeded", actual.json()["code"])
 
     def test_document_listing_advertised(self):
         document = Document.objects.first()

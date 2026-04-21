@@ -161,6 +161,8 @@ dependencies = [
     "jwcrypto>=1.5.7",
     # dependency for XLSX handler
     "python-calamine==0.6.2",
+    # dependency for file validation
+    "python-magic==0.4.27",
 ]
 
 [project.optional-dependencies]

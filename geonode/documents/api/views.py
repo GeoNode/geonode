@@ -17,15 +17,18 @@
 #
 #########################################################################
 
-from drf_spectacular.utils import extend_schema
+import logging
 from pathlib import Path
 from uuid import uuid4
+
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from geonode import settings
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
@@ -37,11 +40,10 @@ from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.registry import document_manager
+from geonode.upload.validators import FileValidator
 
 from .serializers import DocumentSerializer
 from .permissions import DocumentPermissionsFilter
-
-import logging
 
 
 logger = logging.getLogger(__name__)
@@ -102,12 +104,17 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
         if file and doc_url:
             raise DocumentException(detail="Either a file or a URL must be specified, not both")
 
-        if not extension and file:
-            filename = file if isinstance(file, str) else file.name
-            extension = Path(filename).suffix.replace(".", "")
-
-        if extension not in settings.ALLOWED_DOCUMENT_TYPES:
-            raise DocumentException("The file provided is not in the supported extensions list")
+        if file:
+            try:
+                file_validator = FileValidator(file, context="document")
+                file_validator.validate()
+            except ValidationError as exc:
+                raise DocumentException(detail=exc.messages[0])
+            extension = file_validator.extension
+        else:
+            extension = (extension or Path(doc_url).suffix.replace(".", "")).lower()
+            if extension not in settings.ALLOWED_DOCUMENT_TYPES:
+                raise DocumentException("The file provided is not in the supported extensions list")
 
         try:
             request_user = self.request.user
