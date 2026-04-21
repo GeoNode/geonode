@@ -1851,7 +1851,10 @@ GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get("GROUP_MANDATORY_RES
 AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
-
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "False")
+)
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = os.getenv("RESOURCE_CREATOR_GROUPS_PERMISSIONS", "view")
 AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", "False")
 )
@@ -1897,6 +1900,7 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.DefaultSpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+    "geonode.security.handlers.ResourceCreatorGroupsPermissionsHandler",
     "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
 ]
 
@@ -2029,6 +2033,13 @@ _SOCIALACCOUNT_PROVIDER = os.environ.get("SOCIALACCOUNT_PROVIDER", "google")
 SOCIALACCOUNT_PROVIDERS = {
     SOCIALACCOUNT_OIDC_PROVIDER: SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
+
+# Strategy for synchronizing user group memberships from Social Providers (e.g., Azure, Google).
+# - FULL_SYNC: (Default) Strict mirroring. Wipes all local groups and joins only those in the provider token.
+# - SAFE_SYNC: Skips sync if the provider response is missing group/role keys (e.g., Azure overage).
+#              Protects existing local memberships from accidental wipes.
+# - NO_SYNC:   Ignores provider group data entirely. Groups are managed manually within GeoNode.
+SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN = os.getenv("SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")
 
 DISPLAY_RATINGS = ast.literal_eval(os.getenv("DISPLAY_RATINGS", "True"))
 DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv("DISPLAY_WMS_LINKS", "True"))
