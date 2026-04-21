@@ -71,7 +71,6 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     ThesaurusKeyword,
-    ExtraMetadata,
     RestrictionCodeType,
     License,
     Group,
@@ -3082,79 +3081,6 @@ class BaseApiTests(APITestCase):
         # the value should be updated
         self.assertTrue(doc.metadata_uploaded_preserve)
         self.assertTrue(response.json()["resource"]["metadata_uploaded_preserve"])
-
-
-class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
-    def setUp(self):
-        self.layer = create_single_dataset("single_layer")
-        self.metadata = {
-            "filter_header": "Foo Filter header",
-            "field_name": "metadata-name",
-            "field_label": "this is the help text",
-            "field_value": "foo",
-        }
-        m = ExtraMetadata.objects.create(resource=self.layer, metadata=self.metadata)
-        self.layer.metadata.add(m)
-        self.mdata = ExtraMetadata.objects.first()
-
-    def test_get_will_return_the_list_of_extra_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("base-resources-extra-metadata", args=[self.layer.id])
-        response = self.client.get(url, content_type="application/json")
-        self.assertTrue(200, response.status_code)
-        expected = [{**{"id": self.mdata.id}, **self.metadata}]
-        self.assertEqual(expected, response.json())
-
-    def test_put_will_update_the_whole_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("base-resources-extra-metadata", args=[self.layer.id])
-        input_metadata = {
-            "id": self.mdata.id,
-            "filter_header": "Foo Filter header",
-            "field_name": "metadata-updated",
-            "field_label": "this is the help text",
-            "field_value": "foo",
-        }
-        response = self.client.put(url, data=[input_metadata], content_type="application/json")
-        self.assertTrue(200, response.status_code)
-        self.assertEqual([input_metadata], response.json())
-
-    def test_post_will_add_new_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("base-resources-extra-metadata", args=[self.layer.id])
-        input_metadata = {
-            "filter_header": "Foo Filter header",
-            "field_name": "metadata-updated",
-            "field_label": "this is the help text",
-            "field_value": "foo",
-        }
-        response = self.client.post(url, data=[input_metadata], content_type="application/json")
-        self.assertTrue(201, response.status_code)
-        self.assertEqual(2, len(response.json()))
-
-    def test_delete_will_delete_single_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("base-resources-extra-metadata", args=[self.layer.id])
-        response = self.client.delete(url, data=[self.mdata.id], content_type="application/json")
-        self.assertTrue(200, response.status_code)
-        self.assertEqual([], response.json())
-
-    def test_user_without_view_perms_cannot_see_the_endpoint(self):
-        from geonode.resource.registry import resource_manager_registry
-
-        self.client.login(username="bobby", password="bob")
-        resource_manager_registry.get_for_instance(self.layer.get_self_resource()).remove_permissions(
-            self.layer.uuid, instance=self.layer.get_self_resource()
-        )
-        url = reverse("base-resources-extra-metadata", args=[self.layer.id])
-        response = self.client.get(url, content_type="application/json")
-        self.assertTrue(401, response.status_code)
-
-        perm_spec = {"users": {"bobby": ["view_resourcebase"]}, "groups": {}}
-        self.layer.set_permissions(perm_spec)
-        url = reverse("base-resources-extra-metadata", args=[self.layer.id])
-        response = self.client.get(url, content_type="application/json")
-        self.assertTrue(200, response.status_code)
 
 
 class TestApiLinkedResources(GeoNodeBaseTestSupport):
