@@ -20,6 +20,7 @@
 import logging
 from pathlib import Path
 from uuid import uuid4
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -112,7 +113,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
                 raise DocumentException(detail=exc.messages[0])
             extension = file_validator.extension
         else:
-            extension = (extension or Path(doc_url).suffix.replace(".", "")).lower()
+            extension = (extension or Path(urlparse(doc_url).path).suffix.replace(".", "")).lower()
             if extension not in settings.ALLOWED_DOCUMENT_TYPES:
                 raise DocumentException("The file provided is not in the supported extensions list")
 

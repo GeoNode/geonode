@@ -102,10 +102,9 @@ class FileValidator:
     def _get_max_size(self):
         slug = DOCUMENT_UPLOAD_SIZE_SLUG if self.context == "document" else f"{self.context}_upload_size"
         try:
-            max_size_db_obj = UploadSizeLimit.objects.get(slug=slug)
+            return UploadSizeLimit.objects.get(slug=slug).max_size
         except UploadSizeLimit.DoesNotExist:
-            max_size_db_obj = UploadSizeLimit.objects.create_default_limit_with_slug(slug=slug)
-        return max_size_db_obj.max_size
+            return settings.DEFAULT_MAX_UPLOAD_SIZE
 
     def _read_sample(self):
         if isinstance(self.file, str):
