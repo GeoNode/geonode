@@ -18,6 +18,8 @@ nav:
     - Metadata: "user-guide/metadata.md"
   - Administration:
     - Accessing the panel: "admin/panel.md"
+    - Reset or Change the admin password: "admin/reset_pwd.md"
+    - Theming: "admin/theming.md"
     - Users: "admin/user.md"
     - Groups: "admin/group.md"
     - Social Logins: "admin/social.md"
