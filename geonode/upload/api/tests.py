@@ -16,6 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import io
+import zipfile
+
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from geonode.layers.models import Dataset
@@ -147,6 +150,40 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertEqual(400, response.status_code)
         self.assertFalse(Dataset.objects.filter(name="fake").exists())
+
+    def test_importer_upload_rejects_zip_with_path_traversal(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("../../etc/passwd", b"root:x:0:0")
+        payload = {
+            "base_file": SimpleUploadedFile(name="traversal.zip", content=buf.getvalue()),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"traversal", response.content)
+        self.assertFalse(Dataset.objects.filter(name="traversal").exists())
+
+    def test_importer_upload_rejects_zip_bomb(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            info = zipfile.ZipInfo("bomb.bin")
+            info.compress_type = zipfile.ZIP_DEFLATED
+            zf.writestr(info, b"\x00" * (5 * 1024 * 1024))
+        payload = {
+            "base_file": SimpleUploadedFile(name="bomb.zip", content=buf.getvalue()),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"compression ratio", response.content)
+        self.assertFalse(Dataset.objects.filter(name="bomb").exists())
 
     def test_gpkg_raise_error_with_invalid_payload(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))

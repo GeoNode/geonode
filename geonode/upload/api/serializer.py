@@ -22,6 +22,7 @@ from geonode.base.api.serializers import BaseDynamicModelSerializer
 from geonode.base.models import ResourceBase
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
 
 
 class ImporterSerializer(DynamicModelSerializer):
@@ -44,6 +45,30 @@ class ImporterSerializer(DynamicModelSerializer):
     store_spatial_files = serializers.BooleanField(required=False, default=True)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     action = serializers.CharField(required=False, default=exa.UPLOAD.value)
+
+    def validate_base_file(self, f):
+        """
+        Inspect the central directory of zip-based uploads (.zip for 3D Tiles
+        and zipped shapefiles, .kmz, .xlsx) to reject path-traversal entries,
+        symlinks, oversized archives and zip-bomb compression ratios before
+        any handler extracts the file.
+        """
+        if not is_zip_extension(getattr(f, "name", None)):
+            return f
+        source = f.temporary_file_path() if hasattr(f, "temporary_file_path") else f
+        try:
+            validate_safe_zip(source)
+        except ZipValidationError as exc:
+            raise serializers.ValidationError(str(exc))
+        finally:
+            # Rewind any in-memory file-like we read so downstream code sees
+            # the full stream.
+            if hasattr(f, "seek"):
+                try:
+                    f.seek(0)
+                except (OSError, ValueError):
+                    pass
+        return f
 
 
 class OverwriteImporterSerializer(ImporterSerializer):
