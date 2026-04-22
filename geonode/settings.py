@@ -1878,6 +1878,10 @@ EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "True")
 )
 
+REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES = ast.literal_eval(
+    os.getenv("REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES", "False")
+)
+
 PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",

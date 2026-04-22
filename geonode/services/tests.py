@@ -933,6 +933,9 @@ class TestServiceViews(GeoNodeBaseTestSupport):
             metadata_only=True,
             base_url="http://bogus.pocus.com/ows",
         )
+        self.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
         self.sut.clear_dirty_state()
 
     def test_user_admin_can_access_to_page(self):
@@ -942,6 +945,24 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     def test_anonymous_user_can_see_the_services(self):
         response = self.client.get(reverse("services"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_allowed_for_admin(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_denied_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 403)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_register_service_allowed_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
         self.assertEqual(response.status_code, 200)
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
