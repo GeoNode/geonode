@@ -19,17 +19,90 @@
 import base64
 import binascii
 import html
+from pathlib import Path
 
+import magic
 from django.conf import settings
 from django.core.exceptions import RequestDataTooBig, TooManyFieldsSent
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.files.uploadhandler import FileUploadHandler
+from django.core.files.uploadhandler import FileUploadHandler, StopUpload
 from django.http import QueryDict
 from django.http.multipartparser import FIELD, FILE, ChunkIter, LazyStream, Parser, exhaust
 from django.utils.datastructures import MultiValueDict
 from django.utils.encoding import force_str
 from django.urls import reverse
+
 from geonode.upload.models import UploadSizeLimit
+
+
+class FileValidationUploadHandler(FileUploadHandler):
+    """
+    Validate uploads early in the upload stream.
+
+    Validation is enabled per URL name through settings.FILE_VALIDATION_UPLOAD_CONFIG.
+    Each URL config defines the allowed extensions and MIME map.
+    """
+
+    sniff_bytes = 8192
+
+    def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
+        self.validation_config = None
+        self.activated = False
+
+        if self.request.resolver_match:
+            self.validation_config = settings.FILE_VALIDATION_UPLOAD_CONFIG.get(self.request.resolver_match.url_name)
+
+        self.activated = self.validation_config is not None
+
+    def new_file(self, *args, **kwargs):
+        super().new_file(*args, **kwargs)
+        self.extension = None
+        self.detected_mime = None
+        self._buffer = bytearray()
+        self._checked = False
+
+        if not self.activated:
+            return
+
+        self.allowed_extensions = self.validation_config["allowed_extensions"]
+        self.magic_mimetype_map = self.validation_config["magic_mimetype_map"]
+
+        self.extension = Path(self.file_name).suffix.replace(".", "").lower()
+        if self.extension not in self.allowed_extensions:
+            raise StopUpload(connection_reset=True)
+
+        if self.extension not in self.magic_mimetype_map:
+            raise StopUpload(connection_reset=True)
+
+    def receive_data_chunk(self, raw_data, start):
+        if not self.activated or self._checked:
+            return raw_data
+
+        needed = self.sniff_bytes - len(self._buffer)
+        if needed > 0:
+            self._buffer.extend(raw_data[:needed])
+
+        content_complete = self.content_length is not None and start + len(raw_data) >= self.content_length
+        if len(self._buffer) >= self.sniff_bytes or content_complete:
+            self._validate_magic_mime()
+
+        return raw_data
+
+    def file_complete(self, file_size):
+        # Validate small files that finish before sniff_bytes is reached.
+        if self.activated and not self._checked:
+            self._validate_magic_mime()
+
+    def _validate_magic_mime(self):
+        sample = bytes(self._buffer)
+        self.detected_mime = self._detect_mime(sample)
+        expected_mimes = self.magic_mimetype_map.get(self.extension, set())
+        if self.detected_mime not in expected_mimes:
+            raise StopUpload(connection_reset=True)
+        self._checked = True
+
+    def _detect_mime(self, sample):
+        return magic.from_buffer(sample, mime=True)
 
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):

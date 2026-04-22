@@ -114,7 +114,7 @@ class DocumentUploadView(CreateView):
         if self.request.GET.get("no__redirect", False):
             plaintext_errors = []
             for field in form.errors.values():
-                plaintext_errors.append(field.data[0].message)
+                plaintext_errors.append(str(field.data[0].message))
             out = {"success": False}
             out["message"] = ".".join(plaintext_errors)
             status_code = 400

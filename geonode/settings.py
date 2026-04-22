@@ -32,6 +32,7 @@ from urllib.parse import urlparse, urljoin
 # General Django development settings
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from geonode.documents.enumerations import DOCUMENT_MAGIC_MIMETYPE_MAP, DOCUMENT_TYPE_MAP
 from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
@@ -627,65 +628,12 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_DOCUMENT_TYPES = (
-        [
-            "txt",
-            "csv",
-            "log",
-            "doc",
-            "docx",
-            "ods",
-            "odt",
-            "sld",
-            "qml",
-            "xls",
-            "xlsx",
-            "xml",
-            "dwg",
-            "dxf",
-            "gif",
-            "jpg",
-            "jpeg",
-            "png",
-            "tif",
-            "tiff",
-            "pbm",
-            "odp",
-            "ppt",
-            "pptx",
-            "pdf",
-            "tar",
-            "tgz",
-            "rar",
-            "gz",
-            "7z",
-            "zip",
-            "aif",
-            "aifc",
-            "aiff",
-            "au",
-            "mp3",
-            "mpga",
-            "wav",
-            "afl",
-            "avi",
-            "avs",
-            "fli",
-            "mp2",
-            "mp4",
-            "mpg",
-            "ogg",
-            "webm",
-            "3gp",
-            "flv",
-            "vdo",
-            "glb",
-            "pcd",
-            "gltf",
-            "ifc",
-        ]
+        DOCUMENT_TYPE_MAP.keys()
         if os.getenv("ALLOWED_DOCUMENT_TYPES") is None
         else re.split(r" *[,|:;] *", os.getenv("ALLOWED_DOCUMENT_TYPES"))
     )
+
+ALLOWED_DOCUMENT_TYPES = [t for t in ALLOWED_DOCUMENT_TYPES if t in DOCUMENT_TYPE_MAP.keys()]
 
 MAX_DOCUMENT_SIZE = int(os.getenv("MAX_DOCUMENT_SIZE ", "2"))  # MB
 
@@ -2168,6 +2116,7 @@ MULTILANG_POSTGRES_LANGS = {
 }
 
 FILE_UPLOAD_HANDLERS = [
+    "geonode.upload.uploadhandler.FileValidationUploadHandler",
     "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
@@ -2199,6 +2148,19 @@ SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "document_upload",
     "base-resources-assets",
 )
+
+FILE_VALIDATION_UPLOAD_CONFIG = {
+    # /documents/upload
+    "document_upload": {
+        "allowed_extensions": ALLOWED_DOCUMENT_TYPES,
+        "magic_mimetype_map": DOCUMENT_MAGIC_MIMETYPE_MAP,
+    },
+    # /api/v2/documents
+    "documents-list": {
+        "allowed_extensions": ALLOWED_DOCUMENT_TYPES,
+        "magic_mimetype_map": DOCUMENT_MAGIC_MIMETYPE_MAP,
+    },
+}
 
 INSTALLED_APPS += (
     "dynamic_models",

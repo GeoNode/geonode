@@ -23,6 +23,7 @@ from urllib.parse import urljoin
 
 from django.urls import reverse
 from django.test import override_settings
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
@@ -168,6 +169,23 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual(new_count, prev_count + 1)
 
         Document.objects.update(advertised=True)
+
+    def test_api_document_upload_rejects_file_with_mismatched_content(self):
+        self.client.force_login(self.admin)
+        pe_like_content = (
+            b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
+        )
+        fake_file = SimpleUploadedFile(
+            "fake.pdf",
+            pe_like_content,
+            content_type="application/pdf",
+        )
+        payload = {"title": "fake_pdf", "metadata_only": True, "doc_file": fake_file}
+
+        response = self.client.post(self.url, data=payload, format="multipart")
+
+        self.assertEqual(400, response.status_code)
+        self.assertFalse(Document.objects.filter(title="fake_pdf").exists())
 
     def test_creation_should_create_the_doc(self):
         """
