@@ -17,13 +17,21 @@ nav:
     - Sharing: "user-guide/sharing.md"
     - Metadata: "user-guide/metadata.md"
   - Administration:
-    - Accessing the panel: "admin/panel.md"
-    - Reset or Change the admin password: "admin/reset_pwd.md"
-    - Theming: "admin/theming.md"
-    - Users: "admin/user.md"
-    - Groups: "admin/group.md"
+    - GeoNode Admins Guide:
+      - Accessing the panel: "admin/admin_panel/panel.md"
+      - Reset or Change the admin password: "admin/admin_panel/reset_pwd.md"
+      - Theming: "admin/admin_panel/theming.md"
+      - Users: "admin/admin_panel/user.md"
+      - Groups: "admin/admin_panel/group.md"
+      - Group based advanced data workflow: "admin/admin_panel/group_based_advanced_workflow.md"
+      - Manage profiles using the admin panel: "admin/admin_panel/manage_profiles_using_the_admin_panel.md"
+      - Manage datasets using the admin panel: "admin/admin_panel/manage_datasets_using_the_admin_panel.md"
+      - Manage the maps using the admin panel: "admin/admin_panel/manage_maps_using_the_admin_panel.md"
+      - Manage the documents using the admin panel: "admin/admin_panel/manage_the_documents_using_the_admin_panel.md"
+      - Manage the base metadata choices using the admin panel: "admin/admin_panel/manage_metadata_choices_using_the_admin_panel.md"
+      - Menus, Items and Placeholders: "admin/admin_panel/menus_items_and_placeholders.md"
+      - OAuth2: "admin/admin_panel/oauth.md"
     - Social Logins: "admin/social.md"
-    - OAuth2: "admin/oauth.md"
   - Developer Guide: 
     - API Usage: "development/api.md"
   - Setup:
