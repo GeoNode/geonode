@@ -40,7 +40,17 @@ class FileValidationUploadHandler(FileUploadHandler):
     Validate uploads early in the upload stream.
 
     Validation is enabled per URL name through settings.FILE_VALIDATION_UPLOAD_CONFIG.
-    Each URL config defines the allowed extensions and MIME map.
+    Each URL config defines the allowed extensions and at least one of the two
+    magic-based maps:
+
+    * magic_mimetype_map: extension -> set of MIME types accepted by libmagic
+      (magic.from_buffer(sample, mime=True)).
+    * magic_description_map: extension -> set of substrings that must appear in
+      the libmagic description (magic.from_buffer(sample)). Used for formats
+      whose MIME is too generic to be trustworthy (e.g. Shapefile / GeoPackage
+      detected as application/octet-stream).
+
+    When both maps list the same extension, both checks must pass.
     """
 
     sniff_bytes = 8192
@@ -58,6 +68,7 @@ class FileValidationUploadHandler(FileUploadHandler):
         super().new_file(*args, **kwargs)
         self.extension = None
         self.detected_mime = None
+        self.detected_description = None
         self._buffer = bytearray()
         self._checked = False
 
@@ -65,13 +76,14 @@ class FileValidationUploadHandler(FileUploadHandler):
             return
 
         self.allowed_extensions = self.validation_config["allowed_extensions"]
-        self.magic_mimetype_map = self.validation_config["magic_mimetype_map"]
+        self.magic_mimetype_map = self.validation_config.get("magic_mimetype_map", {})
+        self.magic_description_map = self.validation_config.get("magic_description_map", {})
 
         self.extension = Path(self.file_name).suffix.replace(".", "").lower()
         if self.extension not in self.allowed_extensions:
             raise StopUpload(connection_reset=True)
 
-        if self.extension not in self.magic_mimetype_map:
+        if self.extension not in self.magic_mimetype_map and self.extension not in self.magic_description_map:
             raise StopUpload(connection_reset=True)
 
     def receive_data_chunk(self, raw_data, start):
@@ -95,14 +107,25 @@ class FileValidationUploadHandler(FileUploadHandler):
 
     def _validate_magic_mime(self):
         sample = bytes(self._buffer)
-        self.detected_mime = self._detect_mime(sample)
-        expected_mimes = self.magic_mimetype_map.get(self.extension, set())
-        if self.detected_mime not in expected_mimes:
-            raise StopUpload(connection_reset=True)
+
+        if self.extension in self.magic_mimetype_map:
+            self.detected_mime = self._detect_mime(sample)
+            if self.detected_mime not in self.magic_mimetype_map[self.extension]:
+                raise StopUpload(connection_reset=True)
+
+        if self.extension in self.magic_description_map:
+            self.detected_description = self._detect_description(sample)
+            expected_substrings = self.magic_description_map[self.extension]
+            if not any(token in self.detected_description for token in expected_substrings):
+                raise StopUpload(connection_reset=True)
+
         self._checked = True
 
     def _detect_mime(self, sample):
         return magic.from_buffer(sample, mime=True)
+
+    def _detect_description(self, sample):
+        return magic.from_buffer(sample)
 
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):

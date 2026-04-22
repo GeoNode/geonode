@@ -33,6 +33,11 @@ from urllib.parse import urlparse, urljoin
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode.documents.enumerations import DOCUMENT_MAGIC_MIMETYPE_MAP, DOCUMENT_TYPE_MAP
+from geonode.upload.enumerations import (
+    SPATIAL_ALLOWED_EXTENSIONS,
+    SPATIAL_MAGIC_DESCRIPTION_MAP,
+    SPATIAL_MAGIC_MIMETYPE_MAP,
+)
 from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
@@ -2159,6 +2164,14 @@ FILE_VALIDATION_UPLOAD_CONFIG = {
     "documents-list": {
         "allowed_extensions": ALLOWED_DOCUMENT_TYPES,
         "magic_mimetype_map": DOCUMENT_MAGIC_MIMETYPE_MAP,
+    },
+    # /uploads/upload (spatial upload pipeline, base.add_resourcebase).
+    # Extensions and magic signatures are derived from the handlers listed in
+    # geonode.upload.settings.SYSTEM_HANDLERS.
+    "importer_upload": {
+        "allowed_extensions": SPATIAL_ALLOWED_EXTENSIONS,
+        "magic_mimetype_map": SPATIAL_MAGIC_MIMETYPE_MAP,
+        "magic_description_map": SPATIAL_MAGIC_DESCRIPTION_MAP,
     },
 }
 
