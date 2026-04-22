@@ -81,10 +81,10 @@ class FileValidationUploadHandler(FileUploadHandler):
 
         self.extension = Path(self.file_name).suffix.replace(".", "").lower()
         if self.extension not in self.allowed_extensions:
-            raise StopUpload(connection_reset=True)
+            self._reject(f"File extension '.{self.extension}' is not allowed for this endpoint.")
 
         if self.extension not in self.magic_mimetype_map and self.extension not in self.magic_description_map:
-            raise StopUpload(connection_reset=True)
+            self._reject(f"File extension '.{self.extension}' has no content-type validation configured.")
 
     def receive_data_chunk(self, raw_data, start):
         if not self.activated or self._checked:
@@ -111,15 +111,33 @@ class FileValidationUploadHandler(FileUploadHandler):
         if self.extension in self.magic_mimetype_map:
             self.detected_mime = self._detect_mime(sample)
             if self.detected_mime not in self.magic_mimetype_map[self.extension]:
-                raise StopUpload(connection_reset=True)
+                self._reject(
+                    f"Detected content type '{self.detected_mime}' does not match extension '.{self.extension}'."
+                )
 
         if self.extension in self.magic_description_map:
             self.detected_description = self._detect_description(sample)
             expected_substrings = self.magic_description_map[self.extension]
             if not any(token in self.detected_description for token in expected_substrings):
-                raise StopUpload(connection_reset=True)
+                self._reject(
+                    f"File content does not match expected signature for '.{self.extension}'."
+                )
 
         self._checked = True
+
+    def _reject(self, reason):
+        """
+        Record the validation failure on the request, then raise StopUpload
+        with connection_reset=False so Django drains the remaining request
+        body. That keeps the TCP connection alive and lets the downstream
+        view return a proper HTTP 400 response instead of an aborted
+        connection.
+        """
+        self.request.upload_validation_error = reason
+        # tell Django's MultiPartParser to stop parsing the multipart body 
+        # and drain (exhaust) the remaining data, but not to reset the connection 
+        # since we want to return a 400 response with the error message instead of dropping the connection.
+        raise StopUpload(connection_reset=False)
 
     def _detect_mime(self, sample):
         return magic.from_buffer(sample, mime=True)

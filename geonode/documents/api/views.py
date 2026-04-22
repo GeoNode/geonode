@@ -91,6 +91,9 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
         --form 'doc_file=@"/C:/Users/user/Pictures/BcMc-a6T9IM.jpg"' \
         --form 'metadata_only="False"'
         """
+        validation_error = getattr(self.request, "upload_validation_error", None)
+        if validation_error:
+            raise DocumentException(detail=validation_error)
         serializer.is_valid(raise_exception=True)
         file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
         doc_url = serializer.validated_data.pop("doc_url", None)
