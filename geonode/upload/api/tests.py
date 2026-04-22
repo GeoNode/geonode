@@ -38,32 +38,30 @@ def _build_gpkg_header():
     """
     hdr = b"SQLite format 3\x00"
     hdr += (0x1000).to_bytes(2, "big")  # page size
-    hdr += b"\x01\x01"                   # write / read format versions
-    hdr += b"\x00"                        # reserved space
-    hdr += b"\x40\x20\x20"               # payload fraction fields
-    hdr += (0).to_bytes(4, "big")         # file change counter
-    hdr += (1).to_bytes(4, "big")         # database size in pages
-    hdr += (0).to_bytes(4, "big")         # first freelist trunk
-    hdr += (0).to_bytes(4, "big")         # total freelist pages
-    hdr += (0).to_bytes(4, "big")         # schema cookie
-    hdr += (4).to_bytes(4, "big")         # schema format
-    hdr += (0).to_bytes(4, "big")         # default page cache size
-    hdr += (0).to_bytes(4, "big")         # largest root b-tree page
-    hdr += (1).to_bytes(4, "big")         # text encoding UTF-8
-    hdr += (0).to_bytes(4, "big")         # user version
-    hdr += (0).to_bytes(4, "big")         # incremental vacuum
-    hdr += b"GPKG"                        # application id (GeoPackage)
-    hdr += b"\x00" * 20                   # reserved
-    hdr += (1).to_bytes(4, "big")         # version-valid-for
-    hdr += (3039000).to_bytes(4, "big")   # sqlite version number
+    hdr += b"\x01\x01"  # write / read format versions
+    hdr += b"\x00"  # reserved space
+    hdr += b"\x40\x20\x20"  # payload fraction fields
+    hdr += (0).to_bytes(4, "big")  # file change counter
+    hdr += (1).to_bytes(4, "big")  # database size in pages
+    hdr += (0).to_bytes(4, "big")  # first freelist trunk
+    hdr += (0).to_bytes(4, "big")  # total freelist pages
+    hdr += (0).to_bytes(4, "big")  # schema cookie
+    hdr += (4).to_bytes(4, "big")  # schema format
+    hdr += (0).to_bytes(4, "big")  # default page cache size
+    hdr += (0).to_bytes(4, "big")  # largest root b-tree page
+    hdr += (1).to_bytes(4, "big")  # text encoding UTF-8
+    hdr += (0).to_bytes(4, "big")  # user version
+    hdr += (0).to_bytes(4, "big")  # incremental vacuum
+    hdr += b"GPKG"  # application id (GeoPackage)
+    hdr += b"\x00" * 20  # reserved
+    hdr += (1).to_bytes(4, "big")  # version-valid-for
+    hdr += (3039000).to_bytes(4, "big")  # sqlite version number
     assert len(hdr) == 100
     return hdr
 
 
 GPKG_VALID_HEADER = _build_gpkg_header()
-PE_LIKE_CONTENT = (
-    b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
-)
+PE_LIKE_CONTENT = b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
 
 
 class TestImporterViewSet(ImporterBaseTestSupport):

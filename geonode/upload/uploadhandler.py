@@ -55,7 +55,7 @@ class FileValidationUploadHandler(FileUploadHandler):
 
     sniff_bytes = 8192
 
-    def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
+    def handle_raw_input(self):
         self.validation_config = None
         self.activated = False
 
@@ -119,9 +119,7 @@ class FileValidationUploadHandler(FileUploadHandler):
             self.detected_description = self._detect_description(sample)
             expected_substrings = self.magic_description_map[self.extension]
             if not any(token in self.detected_description for token in expected_substrings):
-                self._reject(
-                    f"File content does not match expected signature for '.{self.extension}'."
-                )
+                self._reject(f"File content does not match expected signature for '.{self.extension}'.")
 
         self._checked = True
 
@@ -134,8 +132,8 @@ class FileValidationUploadHandler(FileUploadHandler):
         connection.
         """
         self.request.upload_validation_error = reason
-        # tell Django's MultiPartParser to stop parsing the multipart body 
-        # and drain (exhaust) the remaining data, but not to reset the connection 
+        # tell Django's MultiPartParser to stop parsing the multipart body
+        # and drain (exhaust) the remaining data, but not to reset the connection
         # since we want to return a 400 response with the error message instead of dropping the connection.
         raise StopUpload(connection_reset=False)
 
