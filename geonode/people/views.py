@@ -174,10 +174,15 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
 
 @require_POST
 def set_session_language(request):
-    lang_code = request.POST.get("language")  # LANGUAGE_QUERY_PARAMETER is "language"
+    raw_lang = request.POST.get("language")
+    lang_code = raw_lang.split("-")[0].lower() if raw_lang else None
 
     if lang_code and check_for_language(lang_code):
         request.session[SESSION_LANG_KEY] = lang_code
 
-    # Delegate all redirect/cookie logic to Django
+        if request.user.is_authenticated and hasattr(request.user, "language"):
+            if request.user.language != lang_code:
+                request.user.language = lang_code
+                request.user.save(update_fields=["language"])
+
     return django_set_language(request)

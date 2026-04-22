@@ -23,6 +23,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 # Ported in from django-registration
 attrs_dict = {"class": "required"}
@@ -47,6 +48,11 @@ class ForgotUsernameForm(forms.Form):
 class ProfileForm(forms.ModelForm):
     keywords = taggit.forms.TagField(
         label=_("Keywords"), required=False, help_text=_("A space or comma-separated list of keywords")
+    )
+
+    language = forms.ChoiceField(
+        label=_("Language"),
+        choices=settings.PROFILE_LANGUAGE_CHOICES,
     )
 
     class Meta:

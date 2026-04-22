@@ -1487,6 +1487,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         ("it-it", "Italiano"),
     )
 
+    # This setting includes supported Maptstore language choices in a DB-based format
+    PROFILE_LANGUAGE_CHOICES = tuple((code.split("-")[0].lower(), label) for code, label in MAPSTORE_DEFAULT_LANGUAGES)
+
     if os.getenv("LANGUAGES"):
         # Map given languages to mapstore supported languages.
         LANGUAGES = tuple(

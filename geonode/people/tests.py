@@ -1333,17 +1333,13 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         session = self.client.session
         self.assertEqual(session["language_override"], "it")
 
-    def test_authenticated_user_language_switch_overrides_session_only(self):
-
+    def test_authenticated_user_language_switch_updates_session_and_db(self):
         user = get_user_model().objects.get(username="bobby")
-        # set DB language to something different
         user.language = "en"
         user.save(update_fields=["language"])
 
-        # login
         self.client.login(username="bobby", password="bob")
 
-        # change language via switcher
         response = self.client.post(
             "/i18n/setlang/",
             data={"language": "it", "next": "/"},
@@ -1351,41 +1347,26 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         )
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.client.session["language_override"], "it")
 
-        # session override should be applied
-        session = self.client.session
-        self.assertEqual(session["language_override"], "it")
-
-        # DB should remain unchanged
         user.refresh_from_db()
-        self.assertEqual(user.language, "en")
+        self.assertEqual(user.language, "it")
 
-    def test_authenticated_user_uses_db_language_when_session_not_set(self):
-        user = get_user_model().objects.get(username="bobby")
-        user.language = "el"
-        user.save(update_fields=["language"])
-
-        self.client.login(username="bobby", password="bob")
-
-        # trigger a real request so middleware runs
-        self.client.get("/")
-
-        session = self.client.session
-        self.assertEqual(session.get("language_override"), "el")
-
-    def test_logout_clears_override_and_next_login_uses_db_language(self):
+    def test_logout_and_next_login_keep_updated_db_language(self):
         user = get_user_model().objects.get(username="bobby")
         user.language = "en"
         user.save(update_fields=["language"])
 
-        self.client.post("/i18n/setlang/", data={"language": "fr", "next": "/"})
         self.client.login(username="bobby", password="bob")
+
+        self.client.post("/i18n/setlang/", data={"language": "fr", "next": "/"})
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "fr")
         self.assertEqual(self.client.session.get("language_override"), "fr")
 
         self.client.logout()
         self.client.login(username="bobby", password="bob")
 
-        # trigger a real request so middleware runs
-        self.client.get("/")
-
-        self.assertEqual(self.client.session.get("language_override"), "en")
+        user.refresh_from_db()
+        self.assertEqual(user.language, "fr")

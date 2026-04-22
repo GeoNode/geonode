@@ -68,7 +68,6 @@ class ProfileAdmin(admin.ModelAdmin):
                     "area",
                     "zipcode",
                     "country",
-                    "language",
                     "keywords",
                 )
             },
