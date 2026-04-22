@@ -89,12 +89,23 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertEqual(expected, response.json())
 
     @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
-    def test_remote_dataset_add_allowed_for_admin(self):
+    @patch("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler.is_valid_url")
+    @patch("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler.can_handle")
+    @patch("geonode.upload.api.views.import_orchestrator.s")
+    def test_remote_dataset_add_allowed_for_admin(
+        self,
+        mock_sig,
+        mock_can_handle,
+        mock_is_valid_url,
+    ):
+        mock_is_valid_url.return_value = True
+        mock_can_handle.return_value = True
+
         self.client.force_login(get_user_model().objects.get(username="admin"))
 
         payload = {
             "url": "https://example.com/data.tif",
-            "title": "Remote dataset denied",
+            "title": "Remote dataset",
             "type": "cog",
             "action": "upload",
         }

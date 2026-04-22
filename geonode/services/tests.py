@@ -340,6 +340,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
     @skip("test to be revisioned")
     @mock.patch("arcrest.MapService", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_arcgis_alternative_structure(self, mock_map_service):
         LayerESRIExtent = namedtuple("LayerESRIExtent", "spatialReference xmin ymin ymax xmax")
         LayerESRIExtentSpatialReference = namedtuple("LayerESRIExtentSpatialReference", "wkid latestWkid")
@@ -664,6 +665,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resources", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resource", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_resources(self, mock_wms_get_resource, mock_wms_get_resources, mock_wms_parsed_service, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
@@ -735,6 +737,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         )
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse("register_service"))
@@ -805,6 +808,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertFalse(Harvester.objects.filter(id=harvester.id).exists())
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_add_duplicate_remote_service_url(self):
         form_data = {
             "url": "https://gs-stable.geo-solutions.it/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities",
