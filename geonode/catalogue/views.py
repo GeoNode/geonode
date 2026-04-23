@@ -46,7 +46,7 @@ def csw_global_dispatch(request, dataset_filter=None, config_updater=None):
     if settings.CATALOGUE["default"]["ENGINE"] != "geonode.catalogue.backends.pycsw_local":
         return HttpResponseRedirect(settings.CATALOGUE["default"]["URL"])
 
-    mdict = dict(settings.PYCSW["CONFIGURATION"], **CONFIGURATION)
+    mdict = dict(CONFIGURATION, **settings.PYCSW["CONFIGURATION"])
     mdict = config_updater(mdict) if config_updater else mdict
 
     access_token = None
