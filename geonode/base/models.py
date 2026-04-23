@@ -959,7 +959,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_wfs_links(self):
-        return self.subtype == "vector"
+        return self.subtype in {"vector", "tabular"}
 
     @property
     def can_have_wps_links(self):
