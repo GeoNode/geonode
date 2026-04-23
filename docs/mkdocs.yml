@@ -20,7 +20,7 @@ nav:
     - GeoNode Admins Guide:
       - Accessing the panel: "admin/admin_panel/panel.md"
       - Reset or Change the admin password: "admin/admin_panel/reset_pwd.md"
-      - Theming: "admin/admin_panel/theming.md"
+      - Theming: "admin/admin_panel/admin_panel_theming.md"
       - Users: "admin/admin_panel/user.md"
       - Groups: "admin/admin_panel/group.md"
       - Group based advanced data workflow: "admin/admin_panel/group_based_advanced_workflow.md"
@@ -40,8 +40,18 @@ nav:
       - Delete Certain GeoNode Resources: "admin/management_commands/delete_gnode_resources.md"
       - Async execution over http: "admin/management_commands/async_execution_http.md"
     - GeoNode Async Signals: "admin/async.md"
-    - Changing the Default Language: "admin/default_lang/default_lang.md"
-    - Thesauri: "admin/thesauri.md"
+    - Harvesting resources from remote services:
+      - Overview: "admin/harvesting/harvesting_overview.md"
+      - GeoNode harvesting concepts: "admin/harvesting/gnode_harvesting_concepts.md"
+      - Harvesting workflows: "admin/harvesting/harvesting_workflows.md"
+      - Harvesting operations: "admin/harvesting/harvesting_operations.md"
+      - Standard harvester workers: "admin/harvesting/harvester_workers.md"
+    - Read-only and Maintenance modes: "admin/modes/modes.md"
+    - Customize the look and feel:
+      - GeoNode Themes: "admin/gnode_theme/geonode_themes.md"
+      - Theming your GeoNode Project: "admin/gnode_theme/theme_geonode_project.md"
+    - Changing the Default Language: "admin/default_lang.md"
+    - Thesauri: "admin/thesauri/thesauri.md"
     - Social Logins: "admin/social.md"
   - Developer Guide: 
     - API Usage: "development/api.md"
