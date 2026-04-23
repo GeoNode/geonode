@@ -31,6 +31,10 @@ nav:
       - Manage the base metadata choices using the admin panel: "admin/admin_panel/manage_metadata_choices_using_the_admin_panel.md"
       - Menus, Items and Placeholders: "admin/admin_panel/menus_items_and_placeholders.md"
       - OAuth2: "admin/admin_panel/oauth.md"
+    - GeoNode Management Commands:
+      - Migrate GeoNode base URL: "admin/management_commands/migrate_geonode.md"
+      - Update Permissions, Metadata, Legends and Download Links: "admin/management_commands/update_perms_metadata.md"
+      - Loading Data into GeoNode: "admin/management_commands/loading_data.md"
     - Social Logins: "admin/social.md"
   - Developer Guide: 
     - API Usage: "development/api.md"
