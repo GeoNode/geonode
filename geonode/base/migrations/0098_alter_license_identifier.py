@@ -3,16 +3,24 @@
 from django.db import migrations, models
 from django.utils.text import slugify
 import uuid
+import logging
+
+logger = logging.getLogger(__name__)
+
+MAX_LEN = 255
+SUFFIX_LEN = 7  
+
 
 def _base_identifier(lic):
-    return slugify((lic.abbreviation or "").strip()) or "license"
+    return slugify((lic.identifier or lic.abbreviation or "").strip()) or "license"
 
 
 def _unique_identifier(base, seen):
+    base = base[: MAX_LEN - SUFFIX_LEN]
     candidate = base
     while candidate in seen:
         candidate = f"{base}-{uuid.uuid4().hex[:6]}"
-    return candidate
+    return candidate[:MAX_LEN]
 
 
 def populate_license_identifiers(apps, schema_editor):
@@ -26,8 +34,18 @@ def populate_license_identifiers(apps, schema_editor):
             seen.add(current)
             continue
 
+        replacing_non_empty = bool(current)
         base = _base_identifier(lic)
         new_identifier = _unique_identifier(base, seen)
+
+        if replacing_non_empty:
+            logger.warning(
+                "Replacing duplicate License.identifier '%s' (license id=%s) with '%s'",
+                current,
+                lic.id,
+                new_identifier,
+            )
+
         lic.identifier = new_identifier
         lic.save(update_fields=["identifier"])
         seen.add(new_identifier)
