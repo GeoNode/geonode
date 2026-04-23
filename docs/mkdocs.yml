@@ -35,6 +35,13 @@ nav:
       - Migrate GeoNode base URL: "admin/management_commands/migrate_geonode.md"
       - Update Permissions, Metadata, Legends and Download Links: "admin/management_commands/update_perms_metadata.md"
       - Loading Data into GeoNode: "admin/management_commands/loading_data.md"
+      - Create Users and Super Users: "admin/management_commands/create_users.md"
+      - Batch Sync Permissions: "admin/management_commands/batch_sync_perms.md"
+      - Delete Certain GeoNode Resources: "admin/management_commands/delete_gnode_resources.md"
+      - Async execution over http: "admin/management_commands/async_execution_http.md"
+    - GeoNode Async Signals: "admin/async.md"
+    - Changing the Default Language: "admin/default_lang/default_lang.md"
+    - Thesauri: "admin/thesauri.md"
     - Social Logins: "admin/social.md"
   - Developer Guide: 
     - API Usage: "development/api.md"
@@ -48,12 +55,10 @@ nav:
             - Prerequisites: setup/bare/prerequisites.md
             - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
             - GeoNode project bare installation: setup/bare/project-bare-installation.md
+    - Backup And Restore: "setup/br.md"
     - Configuration:
       - Settings: setup/configuration/settings.md
       - Environmental Variables: setup/configuration/environmental_variables.md
-  - Miscellaneous:
-    - Thesauri: "miscellaneous/thesauri.md"
-    - Backup And Restore: "miscellaneous/br.md"
 
 extra_css:
   - theme/css/extra.css
