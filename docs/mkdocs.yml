@@ -4,7 +4,7 @@ repo_url: https://github.com/GeoNode/geonode/
 use_directory_urls: true
 docs_dir: 'src'
 nav:
-  - Home: index.md
+  - Overview: index.md
   - User Guide:
     - User account: "user-guide/user_account.md"
     - Catalog Resources: "user-guide/catalog.md"
