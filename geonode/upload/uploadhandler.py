@@ -55,7 +55,7 @@ class FileValidationUploadHandler(FileUploadHandler):
 
     sniff_bytes = 8192
 
-    def handle_raw_input(self):
+    def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
         self.validation_config = None
         self.activated = False
 
