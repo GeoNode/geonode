@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 MAX_LEN = 255
-SUFFIX_LEN = 7  
+SUFFIX_LEN = 7
 
 
 def _base_identifier(lic):
@@ -16,11 +16,15 @@ def _base_identifier(lic):
 
 
 def _unique_identifier(base, seen):
-    base = base[: MAX_LEN - SUFFIX_LEN]
-    candidate = base
+    candidate = base[:MAX_LEN]
+    if candidate not in seen:
+        return candidate
+
+    suffixed_base = base[: MAX_LEN - SUFFIX_LEN]
+    candidate = f"{suffixed_base}-{uuid.uuid4().hex[:6]}"
     while candidate in seen:
-        candidate = f"{base}-{uuid.uuid4().hex[:6]}"
-    return candidate[:MAX_LEN]
+        candidate = f"{suffixed_base}-{uuid.uuid4().hex[:6]}"
+    return candidate
 
 
 def populate_license_identifiers(apps, schema_editor):
@@ -49,6 +53,7 @@ def populate_license_identifiers(apps, schema_editor):
         lic.identifier = new_identifier
         lic.save(update_fields=["identifier"])
         seen.add(new_identifier)
+
 
 class Migration(migrations.Migration):
 
