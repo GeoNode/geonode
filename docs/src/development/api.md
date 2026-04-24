@@ -239,12 +239,99 @@ response = requests.request("GET", url, headers=headers)
 
 ### Overwriting a dataset
 
-Uploading a resource will create by default a new dataset. This behaviour can be changed by setting the ``overwrite_existing_layer`` parameter to ``True``. 
-In this case the upload procedure will overwrite a resource whose name matches with the new one.
+Uploading a resource will by default create a new dataset. To overwrite an existing dataset instead, set the ``action`` parameter to ``replace`` and provide the ``resource_pk`` of the dataset to be replaced.
+
+- API: ``POST /api/v2/uploads/upload``
+- Status Code: ``201``
+
+Example:
+```python
+import requests
+
+RESOURCE_PK = 1  # the primary key (ID) of the existing dataset to be replaced
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+files = [
+    ('base_file', ('BoulderCityLimits.gpkg', open('/home/myuser/BoulderCityLimits.gpkg', 'rb'), 'application/octet-stream')),
+]
+data = {
+    'action': 'replace',
+    'resource_pk': RESOURCE_PK,
+}
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+response = requests.request("POST", url, headers=headers, data=data, files=files)
+```
+
+cURL example:
+```bash
+curl --location --request POST 'https://master.demo.geonode.org/api/v2/uploads/upload' \
+--header 'Authorization: Basic dXNlcjpwYXNzd29yZA==' \
+--form 'base_file=@/home/myuser/BoulderCityLimits.gpkg' \
+--form 'action=replace' \
+--form 'resource_pk=1'
+```
+
+### Upserting dataset features
+
+The ``upsert`` action merges new features into an existing dataset based on a key field. Features that already exist (matched by the key) are updated; new features are inserted. Set the ``action`` parameter to ``upsert``, provide the ``resource_pk`` of the target dataset, and optionally specify the ``upsert_key`` field name (defaults to ``fid``).
+
+- API: ``POST /api/v2/uploads/upload``
+- Status Code: ``201``
+
+Example:
+```python
+import requests
+
+RESOURCE_PK = 1  # the primary key (ID) of the existing dataset to upsert into
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+files = [
+    ('base_file', ('BoulderCityLimits_updates.gpkg', open('/home/myuser/BoulderCityLimits_updates.gpkg', 'rb'), 'application/octet-stream')),
+]
+data = {
+    'action': 'upsert',
+    'resource_pk': RESOURCE_PK,
+    'upsert_key': 'fid',  # the field used to match existing features; defaults to 'fid'
+}
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+response = requests.request("POST", url, headers=headers, data=data, files=files)
+```
+
+cURL example:
+```bash
+curl --location --request POST 'https://master.demo.geonode.org/api/v2/uploads/upload' \
+--header 'Authorization: Basic dXNlcjpwYXNzd29yZA==' \
+--form 'base_file=@/home/myuser/BoulderCityLimits_updates.gpkg' \
+--form 'action=upsert' \
+--form 'resource_pk=1' \
+--form 'upsert_key=fid'
+```
 
 ### Skip existing dataset
 
-If the parameter ``skip_existing_layers`` is set to true ``True`` the uplad procedure will ignore files whose name matched with already existing resources.
+If the parameter ``skip_existing_layers`` is set to ``True`` the upload procedure will ignore files whose name matches with an already existing resource.
+
+- API: ``POST /api/v2/uploads/upload``
+- Status Code: ``201``
+
+Example:
+```python
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+files = [
+    ('base_file', ('BoulderCityLimits.gpkg', open('/home/myuser/BoulderCityLimits.gpkg', 'rb'), 'application/octet-stream')),
+]
+data = {
+    'skip_existing_layers': True,
+}
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+response = requests.request("POST", url, headers=headers, data=data, files=files)
+```
 
 ### Upload of a metadata file
 
