@@ -17,8 +17,11 @@
 #
 #########################################################################
 from abc import ABC
+import logging
 from django.conf import settings
-from geonode.security.permissions import _to_extended_perms, MANAGE_RIGHTS
+from geonode.security.permissions import _to_extended_perms, VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS
+
+logger = logging.getLogger(__name__)
 
 
 class BasePermissionsHandler(ABC):
@@ -128,12 +131,13 @@ class AutoAssignResourceOwnershipHandler(BasePermissionsHandler):
         if not kwargs.get("created", False):
             return perms_payload
 
-        initial_user = kwargs.get("initial_user", None)
-        if not initial_user:
+        originators = getattr(instance, "originator", None) or []
+        originator = originators[0] if originators else None
+        if not originator:
             return perms_payload
 
-        initial_username = initial_user if isinstance(initial_user, str) else getattr(initial_user, "username", None)
-        if not initial_username or initial_username == getattr(instance.owner, "username", None):
+        originator_username = originator if isinstance(originator, str) else getattr(originator, "username", None)
+        if not originator_username or originator_username == getattr(instance.owner, "username", None):
             return perms_payload
 
         _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
@@ -143,7 +147,68 @@ class AutoAssignResourceOwnershipHandler(BasePermissionsHandler):
         payload = perms_payload or {}
         if "users" not in payload:
             payload["users"] = {}
-        payload["users"][initial_username] = sorted(manage_perms)
+        payload["users"][originator_username] = sorted(manage_perms)
+        return payload
+
+
+class ResourceCreatorGroupsPermissionsHandler(BasePermissionsHandler):
+    """
+    Auto-assign configured permissions to all groups of the resource creator on creation.
+    """
+
+    VALID_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS}
+
+    @staticmethod
+    def _get_valid_resource_creator_groups_permission(raw_value):
+        default_value = VIEW_RIGHTS
+        normalized_value = str(raw_value or default_value).strip().lower() or default_value
+
+        if normalized_value not in ResourceCreatorGroupsPermissionsHandler.VALID_COMPACT_PERMISSIONS:
+            logger.warning(
+                "RESOURCE_CREATOR_GROUPS_PERMISSIONS contains unsupported value '%s'. Defaulting to 'view'.",
+                normalized_value,
+            )
+            return default_value
+
+        return normalized_value
+
+    @staticmethod
+    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        from geonode.security.utils import get_user_groups
+
+        if not kwargs.get("created", False):
+            return perms_payload
+
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", False):
+            return perms_payload
+
+        originators = getattr(instance, "originator", None) or []
+        originator = originators[0] if originators else None
+        if not originator:
+            return perms_payload
+
+        # Skip when uploader is a superuser to avoid granting permissions to all admin groups.
+        # Superusers can belong to every groups by default, which could assign this resource to every group.
+        if originator.is_superuser:
+            return perms_payload
+
+        payload = perms_payload or {}
+        payload.setdefault("users", {})
+        payload.setdefault("groups", {})
+
+        _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
+        _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
+
+        compact_permission = ResourceCreatorGroupsPermissionsHandler._get_valid_resource_creator_groups_permission(
+            getattr(settings, "RESOURCE_CREATOR_GROUPS_PERMISSIONS", VIEW_RIGHTS)
+        )
+        extended_permissions = set(_to_extended_perms(compact_permission, _resource_type, _resource_subtype) or [])
+
+        if not extended_permissions:
+            extended_permissions = set(_to_extended_perms("view", _resource_type, _resource_subtype) or [])
+
+        for user_group in get_user_groups(originator):
+            payload["groups"][user_group] = sorted(extended_permissions)
         return payload
 
 

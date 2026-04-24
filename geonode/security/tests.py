@@ -49,7 +49,11 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.compat import ensure_string
-from geonode.security.handlers import BasePermissionsHandler, GroupManagersPermissionsHandler
+from geonode.security.handlers import (
+    BasePermissionsHandler,
+    GroupManagersPermissionsHandler,
+    ResourceCreatorGroupsPermissionsHandler,
+)
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
@@ -60,6 +64,7 @@ from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
 from geonode.security.registry import permissions_registry
+from geonode.metadata.manager import metadata_manager
 
 from geonode.base.models import Configuration, UserGeoLimit, GroupGeoLimit
 from geonode.base.populate_test_data import (
@@ -3084,6 +3089,66 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
 
         # Still empty, since user had no base perms
         self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
+    )
+    def test_resource_creator_groups_permissions_handler_on_create(self):
+        from geonode.security.permissions import _to_extended_perms
+
+        owner = get_user_model().objects.create_user(
+            "creator_owner", "creator_owner@fakemail.com", "creator_owner_password", is_active=True
+        )
+        group_profile_1 = GroupProfile.objects.create(title="creator group 1", slug="creator_group_1")
+        group_profile_2 = GroupProfile.objects.create(title="creator group 2", slug="creator_group_2")
+        GroupMember.objects.create(user=owner, group=group_profile_1, role=GroupMember.MEMBER)
+        GroupMember.objects.create(user=owner, group=group_profile_2, role=GroupMember.MEMBER)
+
+        resource = create_single_dataset("creator_groups_dataset")
+        resource.owner = owner
+        resource.save()
+
+        metadata_manager.update_schema_instance_partial(
+            resource,
+            {"contacts": {"originator": [{"id": str(owner.id), "label": owner.username}]}},
+            user=None,
+        )
+
+        payload = {"users": {}, "groups": {}}
+        handler = ResourceCreatorGroupsPermissionsHandler()
+        updated_perms = handler.fixup_perms(resource, payload, created=True, include_virtual=False)
+
+        resource_type = getattr(resource, "resource_type", None) or resource.polymorphic_ctype.name
+        resource_subtype = (getattr(resource, "subtype", None) or "").lower()
+        expected_perms = sorted(_to_extended_perms("download", resource_type, resource_subtype))
+
+        self.assertIn(group_profile_1.group, updated_perms["groups"])
+        self.assertIn(group_profile_2.group, updated_perms["groups"])
+        self.assertListEqual(sorted(updated_perms["groups"][group_profile_1.group]), expected_perms)
+        self.assertListEqual(sorted(updated_perms["groups"][group_profile_2.group]), expected_perms)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
+    )
+    def test_resource_creator_groups_permissions_handler_skips_when_not_created(self):
+        owner = get_user_model().objects.create_user(
+            "creator_owner_no_create",
+            "creator_owner_no_create@fakemail.com",
+            "creator_owner_no_create_password",
+            is_active=True,
+        )
+        group_profile = GroupProfile.objects.create(title="creator group no create", slug="creator_group_no_create")
+        GroupMember.objects.create(user=owner, group=group_profile, role=GroupMember.MEMBER)
+
+        resource = create_single_dataset("creator_groups_dataset_no_create")
+        resource.owner = owner
+        resource.save()
+
+        payload = {"users": {}, "groups": {}}
+        handler = ResourceCreatorGroupsPermissionsHandler()
+        updated_perms = handler.fixup_perms(resource, payload, created=False, include_virtual=False)
+
+        self.assertDictEqual({"users": {}, "groups": {}}, updated_perms)
 
 
 @override_settings(

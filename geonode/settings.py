@@ -1855,7 +1855,10 @@ GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get("GROUP_MANDATORY_RES
 AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
-
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "False")
+)
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = os.getenv("RESOURCE_CREATOR_GROUPS_PERMISSIONS", "view")
 AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", "False")
 )
@@ -1883,6 +1886,7 @@ PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+    "geonode.security.handlers.ResourceCreatorGroupsPermissionsHandler",
     "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
 ]
 
