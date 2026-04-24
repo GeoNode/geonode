@@ -52,7 +52,6 @@ nav:
       - Theming your GeoNode Project: "admin/gnode_theme/theme_geonode_project.md"
     - Changing the Default Language: "admin/default_lang.md"
     - Thesauri: "admin/thesauri/thesauri.md"
-    - Social Logins: "admin/social.md"
   - Developer Guide: 
     - API Usage: "development/api.md"
   - Setup:
@@ -69,7 +68,19 @@ nav:
     - Configuration:
       - Settings: setup/configuration/settings.md
       - Environmental Variables: setup/configuration/environmental_variables.md
-
+      - Social Logins: setup/configuration/social.md
+      - "OAuth2 Security: Authentication and Authorization":
+        - Overview: setup/configuration/components/overview.md
+        - "GeoNode Security Backend": setup/configuration/components/geonode_security_backend/geonode_security_backend.md
+        - "GeoServer Security Backend": setup/configuration/components/geoserver_security_backend.md
+        - "Connection to the GeoNode REST Role Service": setup/configuration/components/geonode_rest/geonode_rest.md
+        - "Setup of the GeoServer OAuth2 Authentication Filter": setup/configuration/components/geoserver_oauth2_filter/geoserver_oauth2_filter.md
+        - "Configuration of the GeoServer Filter Chains": setup/configuration/components/geoserver_filter_chains/geoserver_filter_chains.md
+        - "Setup and test of the GeoFence Server and Default Rules": setup/configuration/components/geofence_server_rules/geofence_server_rules.md
+        - "Troubleshooting and Advanced Features": setup/configuration/components/troubleshooting_advanced_features.md
+        - "SSL Trusted Certificates": setup/configuration/components/ssl_trusted_certificates/ssl_trusted_certificates.md
+        - "GeoFence Advanced Features": setup/configuration/components/geofence_advanced_features.md
+      - Hardening GeoNode: setup/configuration/hardening.md
 extra_css:
   - theme/css/extra.css
 
