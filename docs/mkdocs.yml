@@ -53,7 +53,15 @@ nav:
     - Changing the Default Language: "admin/default_lang.md"
     - Thesauri: "admin/thesauri/thesauri.md"
   - Developer Guide: 
-    - API Usage: "development/api.md"
+    - API Usage: "development/api/api.md"
+    - Metadata:
+      - Intro to GeoNode metadata management: "development/metadata/intro.md"
+      - Metadata app design and implementation: "development/metadata/design.md"
+      - Metadata localization: "development/metadata/i18n.md"
+      - Schema caching: "development/metadata/caching.md"
+      - Metadata editor client: "development/metadata/client.md"
+      - Examples:Adding a metadata field: "development/metadata/example.md"
+      - Example:Adding an handler: "development/metadata/example2.md"
   - Setup:
     - Install:
       - Docker installation:

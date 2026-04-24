@@ -637,11 +637,10 @@ The operation will be completed once the ``status`` property is updated with the
 
 ## Linked Resources Listing and Details
 
-All available linked_resources  can be listed with API ``GET /api/v2/resources/{pk}/linked_resources``.
-where pk Resource base id
+All available `linked_resources` can be listed with API `GET /api/v2/resources/{pk}/linked_resources`,
+where `pk` is the resource base id.
 
 Example Requests:
-^^^^^^^^^^^^^^^^^
 
 1. List all resource links:
 ```python
