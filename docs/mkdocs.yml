@@ -4,9 +4,38 @@ repo_url: https://github.com/GeoNode/geonode/
 use_directory_urls: true
 docs_dir: 'src'
 nav:
-  - Overview: index.md
+  - Overview:
+    - Overview: overview/index.md
+    - GeoNode basics: "overview/basics/basics.md"
+    - Quick Start Installation: "overview/quick/quick.md"
+  - Setup:
+    - Install:
+      - Docker installation:
+            - Prerequisites: setup/docker/prerequisites.md
+            - Vanilla Docker installation: setup/docker/vanilla-docker-installation.md
+            - GeoNode project Docker installation: setup/docker/project-docker-installation.md
+      - Bare installation:
+            - Prerequisites: setup/bare/prerequisites.md
+            - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
+            - GeoNode project bare installation: setup/bare/project-bare-installation.md
+    - Backup And Restore: "setup/br.md"
+    - Configuration:
+      - Settings: setup/configuration/settings.md
+      - Environmental Variables: setup/configuration/environmental_variables.md
+      - Social Logins: setup/configuration/social.md
+      - "OAuth2 Security: Authentication and Authorization":
+        - Overview: setup/configuration/components/overview.md
+        - "GeoNode Security Backend": setup/configuration/components/geonode_security_backend/geonode_security_backend.md
+        - "GeoServer Security Backend": setup/configuration/components/geoserver_security_backend.md
+        - "Connection to the GeoNode REST Role Service": setup/configuration/components/geonode_rest/geonode_rest.md
+        - "Setup of the GeoServer OAuth2 Authentication Filter": setup/configuration/components/geoserver_oauth2_filter/geoserver_oauth2_filter.md
+        - "Configuration of the GeoServer Filter Chains": setup/configuration/components/geoserver_filter_chains/geoserver_filter_chains.md
+        - "Setup and test of the GeoFence Server and Default Rules": setup/configuration/components/geofence_server_rules/geofence_server_rules.md
+        - "Troubleshooting and Advanced Features": setup/configuration/components/troubleshooting_advanced_features.md
+        - "SSL Trusted Certificates": setup/configuration/components/ssl_trusted_certificates/ssl_trusted_certificates.md
+        - "GeoFence Advanced Features": setup/configuration/components/geofence_advanced_features.md
+      - Hardening GeoNode: setup/configuration/hardening.md
   - User Guide:
-    - GeoNode basics: "user-guide/basics/basics.md"
     - User account: "user-guide/user_account.md"
     - Catalog Resources: "user-guide/catalog.md"
     - Datasets:
@@ -66,33 +95,6 @@ nav:
     - How to develop:
       - Start to develop with Docker: "development/how_to_develop/docker.md"
       - Start MapStore2 client in development mode: "development/how_to_develop/mapstore.md"
-  - Setup:
-    - Install:
-      - Docker installation:
-            - Prerequisites: setup/docker/prerequisites.md
-            - Vanilla Docker installation: setup/docker/vanilla-docker-installation.md
-            - GeoNode project Docker installation: setup/docker/project-docker-installation.md
-      - Bare installation:
-            - Prerequisites: setup/bare/prerequisites.md
-            - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
-            - GeoNode project bare installation: setup/bare/project-bare-installation.md
-    - Backup And Restore: "setup/br.md"
-    - Configuration:
-      - Settings: setup/configuration/settings.md
-      - Environmental Variables: setup/configuration/environmental_variables.md
-      - Social Logins: setup/configuration/social.md
-      - "OAuth2 Security: Authentication and Authorization":
-        - Overview: setup/configuration/components/overview.md
-        - "GeoNode Security Backend": setup/configuration/components/geonode_security_backend/geonode_security_backend.md
-        - "GeoServer Security Backend": setup/configuration/components/geoserver_security_backend.md
-        - "Connection to the GeoNode REST Role Service": setup/configuration/components/geonode_rest/geonode_rest.md
-        - "Setup of the GeoServer OAuth2 Authentication Filter": setup/configuration/components/geoserver_oauth2_filter/geoserver_oauth2_filter.md
-        - "Configuration of the GeoServer Filter Chains": setup/configuration/components/geoserver_filter_chains/geoserver_filter_chains.md
-        - "Setup and test of the GeoFence Server and Default Rules": setup/configuration/components/geofence_server_rules/geofence_server_rules.md
-        - "Troubleshooting and Advanced Features": setup/configuration/components/troubleshooting_advanced_features.md
-        - "SSL Trusted Certificates": setup/configuration/components/ssl_trusted_certificates/ssl_trusted_certificates.md
-        - "GeoFence Advanced Features": setup/configuration/components/geofence_advanced_features.md
-      - Hardening GeoNode: setup/configuration/hardening.md
 extra_css:
   - theme/css/extra.css
 
