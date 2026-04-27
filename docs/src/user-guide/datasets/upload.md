@@ -30,3 +30,7 @@ A progress bar and a spinning icon show the operation made during the dataset up
     `The number of active parallel uploads exceeds 5. Wait for the pending ones to finish.`
 
     You can modify the upload parallelism limits at the admin panel for parallelism limits.
+
+## Upload from a URL
+
+GeoNode supports the upload of a remote dataset through a URL. For more information please take a look at [this section](remote.md#remote-3d-tiles).
