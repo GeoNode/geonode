@@ -6,6 +6,7 @@ docs_dir: 'src'
 nav:
   - Overview: index.md
   - User Guide:
+    - GeoNode basics: "user-guide/basics/basics.md"
     - User account: "user-guide/user_account.md"
     - Catalog Resources: "user-guide/catalog.md"
     - Datasets:
@@ -110,7 +111,6 @@ theme:
     - navigation.top
     - navigation.tabs
     - navigation.tabs.sticky
-    - navigation.path
     - navigation.indexes
     - content.code.copy
 
