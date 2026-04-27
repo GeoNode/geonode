@@ -33,15 +33,18 @@ from django.utils.encoding import force_str
 from django.urls import reverse
 
 from geonode.upload.models import UploadSizeLimit
+from geonode.upload.validation import FileValidationConfigRegistry
 
 
 class FileValidationUploadHandler(FileUploadHandler):
     """
     Validate uploads early in the upload stream.
 
-    Validation is enabled per URL name through settings.FILE_VALIDATION_UPLOAD_CONFIG.
-    Each URL config defines the allowed extensions and at least one of the two
-    magic-based maps:
+    Per-URL config is supplied by ValidationConfigProvider classes listed in
+    settings.FILE_VALIDATION_CONFIGURATION_PROVIDERS. Their merged output is
+    installed into FileValidationConfigRegistry at app-ready time; this
+    handler just looks it up by URL name. Each config entry exposes at
+    least one of:
 
     * magic_mimetype_map: extension -> set of MIME types accepted by libmagic
       (magic.from_buffer(sample, mime=True)).
@@ -60,7 +63,7 @@ class FileValidationUploadHandler(FileUploadHandler):
         self.activated = False
 
         if self.request.resolver_match:
-            self.validation_config = settings.FILE_VALIDATION_UPLOAD_CONFIG.get(self.request.resolver_match.url_name)
+            self.validation_config = FileValidationConfigRegistry.get(self.request.resolver_match.url_name)
 
         self.activated = self.validation_config is not None
 

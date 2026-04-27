@@ -67,9 +67,7 @@ def validate_safe_zip(source):
         _check_not_symlink(info)
         total_uncompressed += info.file_size
         if total_uncompressed > MAX_TOTAL_UNCOMPRESSED:
-            raise ZipValidationError(
-                f"Archive decompresses to more than {MAX_TOTAL_UNCOMPRESSED} bytes."
-            )
+            raise ZipValidationError(f"Archive decompresses to more than {MAX_TOTAL_UNCOMPRESSED} bytes.")
         _check_compression_ratio(info)
 
 
@@ -107,8 +105,7 @@ def _check_compression_ratio(info):
     ratio = info.file_size / max(info.compress_size, 1)
     if ratio > MAX_COMPRESSION_RATIO:
         raise ZipValidationError(
-            f"Entry {info.filename!r} has a suspicious compression ratio "
-            f"({ratio:.0f}x); possible zip bomb."
+            f"Entry {info.filename!r} has a suspicious compression ratio " f"({ratio:.0f}x); possible zip bomb."
         )
 
 

@@ -32,12 +32,7 @@ from urllib.parse import urlparse, urljoin
 # General Django development settings
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
-from geonode.documents.enumerations import DOCUMENT_MAGIC_MIMETYPE_MAP, DOCUMENT_TYPE_MAP
-from geonode.upload.enumerations import (
-    SPATIAL_ALLOWED_EXTENSIONS,
-    SPATIAL_MAGIC_DESCRIPTION_MAP,
-    SPATIAL_MAGIC_MIMETYPE_MAP,
-)
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
@@ -2154,26 +2149,14 @@ SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "base-resources-assets",
 )
 
-FILE_VALIDATION_UPLOAD_CONFIG = {
-    # /documents/upload
-    "document_upload": {
-        "allowed_extensions": ALLOWED_DOCUMENT_TYPES,
-        "magic_mimetype_map": DOCUMENT_MAGIC_MIMETYPE_MAP,
-    },
-    # /api/v2/documents
-    "documents-list": {
-        "allowed_extensions": ALLOWED_DOCUMENT_TYPES,
-        "magic_mimetype_map": DOCUMENT_MAGIC_MIMETYPE_MAP,
-    },
-    # /uploads/upload (spatial upload pipeline, base.add_resourcebase).
-    # Extensions and magic signatures are derived from the handlers listed in
-    # geonode.upload.settings.SYSTEM_HANDLERS.
-    "importer_upload": {
-        "allowed_extensions": SPATIAL_ALLOWED_EXTENSIONS,
-        "magic_mimetype_map": SPATIAL_MAGIC_MIMETYPE_MAP,
-        "magic_description_map": SPATIAL_MAGIC_DESCRIPTION_MAP,
-    },
-}
+# FileValidationUploadHandler config providers, run once at app-ready time
+# (see geonode.upload.handlers.apps.run_setup_hooks). Each provider declares
+# the URL names it covers and returns the merged validation config dict.
+# To add per-endpoint validation, register a ValidationConfigProvider here.
+FILE_VALIDATION_CONFIGURATION_PROVIDERS = [
+    "geonode.documents.validation.DocumentFileValidationConfigProvider",
+    "geonode.upload.validation.datasets.DatasetFileValidationConfigProvider",
+]
 
 INSTALLED_APPS += (
     "dynamic_models",
