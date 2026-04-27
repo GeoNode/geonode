@@ -25,7 +25,7 @@ classifiers = [
 # Core dependencies (consolidated from requirements.txt)
 dependencies = [
     "Pillow==12.1.1",
-    "lxml==5.2.1",
+    "lxml==6.1.0",
     "psycopg2==2.9.12",
     "Django==5.2.13",
 
