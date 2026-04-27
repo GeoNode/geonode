@@ -162,6 +162,10 @@ class PermissionsHandlerRegistry:
                 # add custom permissions
                 perms.add(p)
 
+        # Create a synthetic permission for adding remote resources
+        if user.is_superuser or user.is_staff or getattr(settings, "REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES", False):
+            perms.add("add_remote_resource")
+
         # check READ_ONLY mode
         config = Configuration.load()
         if config.read_only:

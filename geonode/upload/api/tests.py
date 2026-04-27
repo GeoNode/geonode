@@ -19,6 +19,7 @@
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from geonode.layers.models import Dataset
+from django.test import override_settings
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
 
@@ -36,6 +37,9 @@ class TestImporterViewSet(ImporterBaseTestSupport):
     def setUpClass(cls):
         super().setUpClass()
         cls.url = reverse("importer_upload")
+        cls.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
 
     def setUp(self):
         self.dataset = create_single_dataset(name="test_dataset_copy")
@@ -83,6 +87,45 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertEqual(400, response.status_code)
         self.assertEqual(expected, response.json())
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    @patch("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler.is_valid_url")
+    @patch("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler.can_handle")
+    @patch("geonode.upload.api.views.import_orchestrator.s")
+    def test_remote_dataset_add_allowed_for_admin(
+        self,
+        mock_sig,
+        mock_can_handle,
+        mock_is_valid_url,
+    ):
+        mock_is_valid_url.return_value = True
+        mock_can_handle.return_value = True
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        payload = {
+            "url": "https://example.com/data.tif",
+            "title": "Remote dataset",
+            "type": "cog",
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(201, response.status_code)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_dataset_add_forbidden_for_regular_user_by_default(self):
+        self.client.force_login(self.test_user)
+
+        payload = {
+            "url": "https://example.com/data.tif",
+            "title": "Remote dataset denied",
+            "type": "cog",
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(403, response.status_code)
 
     @patch("geonode.upload.api.views.import_orchestrator")
     def test_gpkg_task_is_called(self, patch_upload):

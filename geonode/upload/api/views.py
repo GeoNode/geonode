@@ -50,6 +50,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from geonode.proxy.utils import proxy_urls_registry
 from geonode.storage.manager import FileSystemStorageManager
+from geonode.security.utils import check_add_remote_resource_perm
 
 from geonode.upload.api.serializer import (
     UploadParallelismLimitSerializer,
@@ -147,6 +148,9 @@ class ImporterViewSet(DynamicModelViewSet):
             **data.data.copy(),
             **{key: value[0] if isinstance(value, list) else value for key, value in request.FILES.items()},
         }
+
+        if "url" in _data:
+            check_add_remote_resource_perm(request.user)
 
         # clone the memory files into local file system
         if "url" not in _data and not _data.get("is_empty", False):
