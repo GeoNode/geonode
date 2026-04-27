@@ -2376,16 +2376,34 @@ class BaseApiTests(APITestCase):
         self.assertEqual(group_permissions.get("registered-members"), "edit")
 
     @override_settings(
-        DEFAULT_ANONYMOUS_PERMISSIONS=None,
-        DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
-        DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,
-        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS=None,
+        DEFAULT_ANONYMOUS_PERMISSIONS="view",
+        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download",
+        DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,  # conflicting legacy
+        DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,  # conflicting legacy
     )
-    def test_resource_service_permissions_default_groups_from_legacy_settings(self):
+    def test_resource_service_permissions_compact_wins_over_legacy_conflict(self):
         self.assertTrue(self.client.login(username="admin", password="admin"))
         admin = get_user_model().objects.get(username="admin")
         dataset = dataset_manager.create(
-            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_legacy_default", "owner": admin}
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_compact_precedence", "owner": admin}
+        )
+        url = reverse("base-resources-perms-spec", kwargs={"pk": dataset.pk})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        self.assertEqual(group_permissions.get("anonymous"), "view")  # compact wins
+        self.assertEqual(group_permissions.get("registered-members"), "download")
+
+    @override_settings(
+        DEFAULT_ANONYMOUS_PERMISSIONS="view",
+        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="none",
+    )
+    def test_resource_service_permissions_default_groups_compact_view_none(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        dataset = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_compact_view_none", "owner": admin}
         )
         url = reverse("base-resources-perms-spec", kwargs={"pk": dataset.pk})
         response = self.client.get(url, format="json")

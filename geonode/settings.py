@@ -1908,6 +1908,10 @@ elif (
         "Please use DEFAULT_ANONYMOUS_PERMISSIONS instead."
     )
 
+# Keep legacy booleans aligned with resolved compact permission (backward compatibility)
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = DEFAULT_ANONYMOUS_PERMISSIONS in ("view", "download")
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = DEFAULT_ANONYMOUS_PERMISSIONS == "download"
+
 
 EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "True")
