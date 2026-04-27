@@ -378,15 +378,13 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             if isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
-            # Default anonymous permissions now come from compact setting.
+            # Ensure the groups value is empty by default
             expected_permissions = {}
             anonymous_compact = settings.DEFAULT_ANONYMOUS_PERMISSIONS
             if anonymous_compact == "download":
-                expected_permissions["anonymous"] = ["view_resourcebase", "download_resourcebase"]
-            elif anonymous_compact == "view":
-                expected_permissions["anonymous"] = ["view_resourcebase"]
-            else:
-                expected_permissions["anonymous"] = []
+                expected_permissions.setdefault("anonymous", []).append("download_resourcebase")
+            if anonymous_compact == "view":
+                expected_permissions.setdefault("anonymous", []).append("view_resourcebase")
 
             self.assertCountEqual(permissions.get("groups"), expected_permissions)
 
