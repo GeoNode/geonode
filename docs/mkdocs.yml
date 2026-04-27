@@ -38,7 +38,10 @@ nav:
     - Production Enhancements: "setup/prod_enhancements/prod_enhancements.md"
   - User Guide:
     - User account: "user-guide/user_account.md"
-    - Catalog Resources: "user-guide/catalog.md"
+    - Users and Groups: "user-guide/users_groups.md"
+    - Catalog Resources:
+      - Managing Data: "user-guide/catalog/data_types.md"
+      - Finding Data: "user-guide/catalog/finding_data.md"
     - Datasets:
       - Upload a dataset: "user-guide/datasets/create.md"
       - Preview and Styling: "user-guide/datasets/preview.md"

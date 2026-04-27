@@ -82,6 +82,20 @@ The **My Activities** link allows to see all your recent activities on GeoNode s
 *Recent activities*
 ///
 
+### Editing Profile Information
+
+Your *Profile* contains personal information such as your address, your telephone number, your organization and so on, but it is empty by default at the beginning.
+
+Through the **Edit profile** button of the *Profile* page you can set your details, including your avatar.
+
+![UpdateProfileInformation](img/user_profile_update_info.png)
+/// caption
+*Updating Profile information*
+///
+
+When finished, click **Update profile**. You will be redirected to the *Profile* page.
+A message will confirm the profile has been correctly updated.
+
 ### Associating your Account with an e-mail
 Your account is automatically associated with the e-mail that you used to register yourself on the platform.
 
