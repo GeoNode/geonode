@@ -14,49 +14,49 @@ Whenever you need to change them, set the environment variable accordingly (wher
 
 **ACCESS_TOKEN_EXPIRE_SECONDS**
 
-:   - :   Default:  ``86400``
-    - Env: ``ACCESS_TOKEN_EXPIRE_SECONDS``
+- Default: ``86400``
+- Env: ``ACCESS_TOKEN_EXPIRE_SECONDS``
 
 When a user logs into GeoNode, if no ``ACCESS_TOKEN`` exists, a new one will be created with a default expiration time of ``ACCESS_TOKEN_EXPIRE_SECONDS`` seconds (1 day by default).
 
 **ACCOUNT_ADAPTER**
 
-:   - :   Default:  ``geonode.people.adapters.LocalAccountAdapter``
+- Default: ``geonode.people.adapters.LocalAccountAdapter``
 
 Custom GeoNode People (Users) Account Adapter.
 
 **ACCOUNT_APPROVAL_REQUIRED**
 
-:   - Default ``False``
-    - Env: ``ACCOUNT_APPROVAL_REQUIRED``
+- Default: ``False``
+- Env: ``ACCOUNT_APPROVAL_REQUIRED``
 
 If ``ACCOUNT_APPROVAL_REQUIRED`` equals ``True``, newly registered users must be activated by a superuser through the Admin gui, before they can access GeoNode.
 
 **ACCOUNT_CONFIRM_EMAIL_ON_GET**
 
-:   - Default ``True``
+- Default: ``True``
 
 This is a [django-allauth setting](https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration)
 It allows specifying the HTTP method used when confirming e-mail addresses.
 
 **ACCOUNT_EMAIL_REQUIRED**
 
-:   - Default ``True``
+- Default: ``True``
 
 This is a [django-allauth setting](https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration)
 which controls whether the user is required to provide an e-mail address upon registration.
 
 **ACCOUNT_EMAIL_VERIFICATION**
 
-:   - Default ``optional``
+- Default: ``optional``
 
 This is a [django-allauth setting](https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration)
 
 **ACCOUNT_LOGIN_REDIRECT_URL**
 
 
-:   - Default ``SITEURL``
-    - Env: ``LOGIN_REDIRECT_URL``
+- Default: ``SITEURL``
+- Env: ``LOGIN_REDIRECT_URL``
 
 This is a [django-user-accounts setting](https://django-user-accounts.readthedocs.io/en/latest/settings.html)
 It allows specifying the default redirect URL after a successful login.
@@ -64,8 +64,8 @@ It allows specifying the default redirect URL after a successful login.
 **ACCOUNT_LOGOUT_REDIRECT_URL**
 
 
-:   - Default ``SITEURL``
-    - Env: ``LOGOUT_REDIRECT_URL``
+- Default: ``SITEURL``
+- Env: ``LOGOUT_REDIRECT_URL``
 
 This is a [django-user-accounts setting](https://django-user-accounts.readthedocs.io/en/latest/settings.html)
 It allows specifying the default redirect URL after a successful logout.
@@ -73,16 +73,16 @@ It allows specifying the default redirect URL after a successful logout.
 **ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE**
 
 
-:   - Default ``True``
-    - Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
+- Default: ``True``
+- Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
 
 This is a [django-user-accounts setting](https://django-user-accounts.readthedocs.io/en/latest/settings.html)
 
 **ACCOUNT_OPEN_SIGNUP**
 
 
-:   - Default ``True``
-    - Env: ``ACCOUNT_OPEN_SIGNUP``
+- Default: ``True``
+- Env: ``ACCOUNT_OPEN_SIGNUP``
 
 This is a [django-user-accounts setting](https://django-user-accounts.readthedocs.io/en/latest/settings.html)
 Whether or not people are allowed to self-register to GeoNode or not.
@@ -90,24 +90,24 @@ Whether or not people are allowed to self-register to GeoNode or not.
 **ACCOUNT_SIGNUP_FORM_CLASS**
 
 
-:   - Default ``geonode.people.forms.AllauthReCaptchaSignupForm``
-    - Env: ``ACCOUNT_SIGNUP_FORM_CLASS``
+- Default: ``geonode.people.forms.AllauthReCaptchaSignupForm``
+- Env: ``ACCOUNT_SIGNUP_FORM_CLASS``
 
-Enabled only when the :ref:`recaptcha_enabled` option is ``True``.
-
-Ref. to :ref:`recaptcha_enabled`
+Enabled only when the `recaptcha_enabled` option is `True`.
 
 **ACTSTREAM_SETTINGS**
 
 
-:   - Default
+- Default:
 
+```python
 {
-'FETCH_RELATIONS': True,
-'USE_PREFETCH': False,
-'USE_JSONFIELD': True,
-'GFK_FETCH_DEPTH': 1,
+    'FETCH_RELATIONS': True,
+    'USE_PREFETCH': False,
+    'USE_JSONFIELD': True,
+    'GFK_FETCH_DEPTH': 1,
 }
+```
 
 Actstream Settings.
 
@@ -136,14 +136,14 @@ Please rely on geonode.tests.test_utils.TestSupportedTypes for an example
 **ADMIN_IP_WHITELIST**
 
 
-:   - Default ``[]``
+- Default: ``[]``
 
 When this list is popuplated with a list of IPs or IP ranges (e.g. 192.168.1.0/24) requests from and admin user will be allowe only from IPs matching with the list.
 
 **ADMIN_MODERATE_UPLOADS**
 
 
-:   - Default ``False``
+- Default: ``False``
 
 When this variable is set to ``True``, every uploaded resource must be approved before becoming visible to the public users.
 
@@ -155,7 +155,7 @@ Otherwise, if ``RESOURCE_PUBLISHING`` is set to ``False``, the resource becomes 
 **ADMINS_ONLY_NOTICE_TYPES**
 
 
-:   - Default ``['monitoring_alert',]``
+- Default: ``['monitoring_alert',]``
 
 A list of notification labels that standard users should not either see or set.
 
@@ -164,7 +164,7 @@ Such notifications will be hidden from the notify settings page and automaticall
 
 **ADVANCED_EDIT_EXCLUDE_FIELD**
 
-:   - Default ``[]``
+- Default: ``[]``
 
 A list of element (item name) to exclude from the Advanced Edit page.
 
@@ -176,62 +176,64 @@ Example:
 **AGON_RATINGS_CATEGORY_CHOICES**
 
 
-:   - Default:
-    ```python
-    {
-        "maps.Map": {
+- Default:
+
+```python
+{
+    "maps.Map": {
         "map": "How good is this map?"
     },
-        "layers.Layer": {
+    "layers.Layer": {
         "layer": "How good is this layer?"
     },
-        "documents.Document": {
+    "documents.Document": {
         "document": "How good is this document?"
     }
-    }
-    ```
+}
+```
 
 **ALLOWED_DOCUMENT_TYPES**
 
 
-:   - Default:
-    ```python
-    ['doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
-    'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
-    'zip', 'gz', 'qml']
-    ```
+- Default:
+
+```python
+['doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
+'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
+'zip', 'gz', 'qml']
+```
 
 A list of acceptable file extensions that can be uploaded to the Documents app.
 
 **ANONYMOUS_USER_ID**
 
 
-:   - Default ``-1``
-    - Env: ``ANONYMOUS_USER_ID``
+- Default: ``-1``
+- Env: ``ANONYMOUS_USER_ID``
 
 The id of an anonymous user. This is an django-guardian setting.
 
 **API_INCLUDE_REGIONS_COUNT**
 
 
-:   - Default ``False``
-    - Env: ``API_INCLUDE_REGIONS_COUNT``
+- Default: ``False``
+- Env: ``API_INCLUDE_REGIONS_COUNT``
 
 If set to ``True``, a counter with the total number of available regions will be added to the API JSON Serializer.
 
 **API_LIMIT_PER_PAGE**
 
 
-:   - Default ``200``
-    - Env: ``API_LIMIT_PER_PAGE``
+- Default: ``200``
+- Env: ``API_LIMIT_PER_PAGE``
 
 The Number of items returned by the APIs 0 equals no limit. Different from ``CLIENT_RESULTS_LIMIT``, affecting the number of items per page in the resource list.
 
 **API_LOCKDOWN**
 
 
-:   - Default ``True``
-    - Env: ``API_LOCKDOWN``
+- Default: ``True``
+- Env: ``API_LOCKDOWN``
 
 If this is set to ``True`` users must be authenticated to get search results when search for for users, groups, categories, regions, tags etc.
 Filtering search results of Resourcebase-objects like Layers, Maps or Documents by one of the above types does not work.
@@ -240,24 +242,26 @@ Attention: If API_LOCKDOWN is set to ``False`` all details can be accessed by an
 **ASYNC_SIGNALS**
 
 
-:   - Default ``False``
-    - Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
+- Default: ``False``
+- Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
 
 **AUTH_EXEMPT_URLS**
 
 
-:   - Default:
-    ```python
-    (r'^/?$',
-    '/gs/*',
-    '/static/*',
-    '/o/*',
-    '/api/o/*',
-    '/api/roles',
-    '/api/adminRole',
-    '/api/users',
-    '/api/layers',)
-    ```
+- Default:
+
+```python
+(r'^/?$',
+'/gs/*',
+'/static/*',
+'/o/*',
+'/api/o/*',
+'/api/roles',
+'/api/adminRole',
+'/api/users',
+'/api/layers',)
+```
+
 A tuple of URL patterns that the user can visit without being authenticated.
 This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For example,
 ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
@@ -266,35 +270,35 @@ browse maps.
 **AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS**
 
 
-:   - Default ``True``
-    - Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS``
+- Default: ``True``
+- Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS``
 
 Assign **new** registered users to the contributors group. If set to `False` new registered members will not obtain automatic permissions to create and edit resources.
 
 **AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME**
 
 
-:   - Default ``True``
-    - Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME``
+- Default: ``True``
+- Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME``
 
 Auto assign users to a default ``REGISTERED_MEMBERS_GROUP_NAME`` private group after ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT``.
 
 **AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT**
 
 
-:   - Default ``activation``
-    - Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT``
-| Options: ``"registration" | "activation" | "login"``
+- Default: ``activation``
+- Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT``
+- Options: `"registration" | "activation" | "login"`
 
-Auto assign users to a default ``REGISTERED_MEMBERS_GROUP_NAME`` private group after {"registration" | "activation" | "login"}.
+Auto assign users to a default `REGISTERED_MEMBERS_GROUP_NAME` private group after `"registration"`, `"activation"`, or `"login"`.
 
 Notice that whenever ``ACCOUNT_EMAIL_VERIFICATION == True`` and ``ACCOUNT_APPROVAL_REQUIRED == False``, users will be able to register and they became ``active`` already, even if they won't be able to login until the email has been verified.
 
 
 **AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS**
 
-:   - Default ``False``
-    - Env: ``AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS``
+- Default: ``False``
+- Env: ``AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS``
 
 When this setting is enabled, GeoNode automatically assigns permissions to all groups that the resource creator belongs to when a new resource is created.
 
@@ -304,8 +308,8 @@ This setting is applied only during resource creation.
 
 **AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN**
 
-:   - Default ``False``
-    - Env: ``AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN``
+- Default: ``False``
+- Env: ``AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN``
 
 When this setting is enabled, GeoNode automatically assigns ownership of newly created resources to an administrator instead of keeping the uploader as the resource owner.
 
@@ -316,48 +320,50 @@ This setting is applied only during resource creation. The original uploader kee
 **AUTO_GENERATE_AVATAR_SIZES**
 
 
-:   - Default ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
+- Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
 
 An iterable of integers representing the sizes of avatars to generate on upload. This can save rendering time later on if you pre-generate the resized versions.
 
 **AVATAR_GRAVATAR_SSL**
 
 
-  | :   Default:  ``False``
-      - Env: ``AVATAR_GRAVATAR_SSL``
-  | Options: ``True | False``
+- Default: ``False``
+- Env: ``AVATAR_GRAVATAR_SSL``
+- Options: `True | False`
 
-  Force SSL when loading fallback image from gravatar.com.
+Force SSL when loading fallback image from gravatar.com.
 
 **AVATAR_DEFAULT_URL**
 
 
-  | :   Default:  ``/geonode/img/avatar.png``
-      - Env: ``AVATAR_GRAVATAR_SSL``
-  | Options: ``"filepath to image"``
+- Default: ``/geonode/img/avatar.png``
+- Env: ``AVATAR_GRAVATAR_SSL``
+- Options: `"filepath to image"`
 
-  Allows to set a custom fallback image in case a User has not uploaded a profile image.
-  Needs ``AVATAR_PROVIDERS`` to be set correctly.
+Allows you to set a custom fallback image in case a user has not uploaded a profile image.
+Needs `AVATAR_PROVIDERS` to be set correctly.
 
 **AVATAR_PROVIDERS**
 
 
-  | Default:
-```
+- Default:
+
+```python
 'avatar.providers.PrimaryAvatarProvider','avatar.providers.GravatarAvatarProvider','avatar.providers.DefaultAvatarProvider'
 ```
 
-      - Env: ``AVATAR_PROVIDERS``
-  | Options: ``Avatar provider object``
+- Env: ``AVATAR_PROVIDERS``
+- Options: `Avatar provider object`
 
 
-  This setting configures in which order gravatar images are loaded. A common use case is the use of a local image over a fallback image loaded from gravatar.com.
-  To do so you would change the order like:
+This setting configures in which order gravatar images are loaded. A common use case is the use of a local image over a fallback image loaded from gravatar.com.
+To do so you would change the order like:
 
-```
+```python
 'avatar.providers.PrimaryAvatarProvider','avatar.providers.DefaultAvatarProvider','avatar.providers.GravatarAvatarProvider'
 ```
-  (DefaultAvatarProvider before GravatarAvatarProvider)
+
+`DefaultAvatarProvider` before `GravatarAvatarProvider`.
 
 
 ## B
@@ -365,8 +371,8 @@ An iterable of integers representing the sizes of avatars to generate on upload.
 **BING_API_KEY**
 
 
-:   - Default ``None``
-    - Env: ``BING_API_KEY``
+- Default: ``None``
+- Env: ``BING_API_KEY``
 
 This property allows to enable a Bing Aerial background.
 
@@ -391,21 +397,22 @@ DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
 **CACHES**
 
 
-:   - Default:
-    ```python
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        },
-        'resources': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'TIMEOUT': 600,
-            'OPTIONS': {
-                'MAX_ENTRIES': 10000
-            }
+- Default:
+
+```python
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+    'resources': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 600,
+        'OPTIONS': {
+            'MAX_ENTRIES': 10000
         }
     }
-    ```
+}
+```
 
 A dictionary containing the settings for all caches to be used with Django.
 This is a [Django setting](https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-CACHES)
@@ -424,7 +431,8 @@ The ``'resources'`` is not currently used. It might be helpful for [caching Djan
 This is a [Django Compressed Manifet storage provided by WhiteNoise](http://whitenoise.evans.io/en/stable/django.html#add-compression-and-caching-support)
 A boolean allowing you to enable the ``WhiteNoise CompressedManifestStaticFilesStorage storage``. This works only on a production system.
 
-.. warning:: This works only if ``DEBUG = False``
+!!! Warning
+    This works only if `DEBUG = False`
 
 
 **CASCADE_WORKSPACE**
@@ -450,30 +458,30 @@ are managed in the PYCSW entry.
 **CATALOGUE_METADATA_TEMPLATE**
 
 
-Default : ``catalogue/full_metadata.xml``
+- Default: ``catalogue/full_metadata.xml``
 
 A string with the catalogue xml file needed for the metadata.
 
 **CATALOGUE_METADATA_XSL**
 
 
-Default : ``'/static/metadataxsl/metadata.xsl``
+- Default: ``'/static/metadataxsl/metadata.xsl```
 
 A string pointing to the XSL used to transform the metadata XML into human readable HTML.
 
 **CLIENT_RESULTS_LIMIT**
 
 
-:   - Default ``5``
-    - Env: ``CLIENT_RESULTS_LIMIT``
+- Default: ``5``
+- Env: ``CLIENT_RESULTS_LIMIT``
 
 The Number of results per page listed in the GeoNode search pages. Different from ``API_LIMIT_PER_PAGE``, affecting the number of items returned by the APIs.
 
 **CORS_ALLOW_ALL_ORIGINS**
 
 
-:   - Default ``False``
-    - Env: ``CORS_ALLOW_ALL_ORIGINS``
+- Default: ``False``
+- Env: ``CORS_ALLOW_ALL_ORIGINS``
 
 If set to true `Access-Control-Allow-Origin: *` header is set for any response. A safer option (not managed through env vars at the moment) is `CORS_ALLOWED_ORIGINS`, where a list of hosts can be configured, o `CORS_ALLOWED_ORIGIN_REGEXES`, where the list can contain regexes.
 Notice that the Nginx in front of GeoNode always includes `Access-Control-Allow-Credentials true`. This must also taken into account when CORS is enabled. 
@@ -481,15 +489,15 @@ Notice that the Nginx in front of GeoNode always includes `Access-Control-Allow-
 **CREATE_LAYER**
 
 
-:   - Default ``False``
-    - Env: ``CREATE_LAYER``
+- Default: ``False``
+- Env: ``CREATE_LAYER``
 
 Enable the creaation of a new empty layer.
 
 **CUSTOM_METADATA_SCHEMA**
 
 
-:   - Default ``{}``
+- Default: ``{}``
 
 If present, will extend the available metadata schema used for store
 new value for each resource. By default override the existing one.
@@ -500,7 +508,7 @@ The expected schema is the same as the default
 **DATA_UPLOAD_MAX_NUMBER_FIELDS**
 
 
-:   Default:  ``100000``
+- Default: ``100000``
 
 Maximum value of parsed attributes.
 
@@ -508,30 +516,28 @@ Maximum value of parsed attributes.
 **DATASET_DOWNLOAD_HANDLERS**
 
 
-:   Default:  ``[]``
+- Default: ``[]``
 
 Additional download handlers that provides a link to download the resource
 
 **DEBUG**
 
 
-:   - Default ``False``
-    - Env: ``DEBUG``
+- Default: ``False``
+- Env: ``DEBUG``
 
 One of the main features of debug mode is the display of detailed error pages. If your app raises an exception when DEBUG is True, Django will display a detailed traceback, including a lot of metadata about your environment, such as all the currently defined Django settings (from settings.py).
 This is a [Django Setting](https://docs.djangoproject.com/en/3.2/ref/settings/#debug)
 
-[](){ #default-anonymous-download-permission }
 **DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION**
 
-:   Default:  ``True``
+- Default: ``True``
 
 Whether the uploaded resources should downloadable by default.
 
-[](){ #default-anonymous-view-permission }
 **DEFAULT_ANONYMOUS_VIEW_PERMISSION**
 
-:   Default:  ``True``
+- Default: ``True``
 
 Whether the uploaded resources should be public by default.
 
@@ -539,7 +545,7 @@ Whether the uploaded resources should be public by default.
 **DEFAULT_DATASET_DOWNLOAD_HANDLER**
 
 
-:   Default:  ``geonode.layers.download_handler.DatasetDownloadHandler``
+- Default: ``geonode.layers.download_handler.DatasetDownloadHandler``
 
 from GeoNode 4.2.x has bee introduced with this issue #11296 and later improved with this issue #11421 
 the concept of Download Handler and ofc GeoNode provides a default implementation of it
@@ -548,16 +554,17 @@ which process the download via WPS
 **DEFAULT_EXTRA_METADATA_SCHEMA**
 
 
-:   Default:
-    ```json
-    {
-    Optional("id"): int,
-    "filter_header": object,
-    "field_name": object,
-    "field_label": object,
-    "field_value": object,
-    }
-    ```
+- Default:
+
+```json
+{
+  Optional("id"): int,
+  "filter_header": object,
+  "field_name": object,
+  "field_label": object,
+  "field_value": object
+}
+```
 
 Define the default metadata schema used for add to the resource extra metadata without modify the actual model.
 This schema is used as validation for the input metadata provided by the user
@@ -591,8 +598,8 @@ An example of metadata that can be ingested is the follow:
 **DEFAULT_LAYER_FORMAT**
 
 
-:   - Default ``image/png``
-    - Env: ``DEFAULT_LAYER_FORMAT``
+- Default: ``image/png``
+- Env: ``DEFAULT_LAYER_FORMAT``
 
 The default format for requested tile images.
 
@@ -600,8 +607,8 @@ The default format for requested tile images.
 **DEFAULT_MAP_CENTER**
 
 
-:   - Default ``(0, 0)``
-    - Env: ``DEFAULT_MAP_CENTER_X`` ``DEFAULT_MAP_CENTER_Y``
+- Default: ``(0, 0)``
+- Env: ``DEFAULT_MAP_CENTER_X`` ``DEFAULT_MAP_CENTER_Y``
 
 A 2-tuple with the latitude/longitude coordinates of the center-point to use
 in newly created maps.
@@ -609,16 +616,16 @@ in newly created maps.
 **DEFAULT_MAP_CRS**
 
 
-:   - Default ``EPSG:3857``
-    - Env: ``DEFAULT_MAP_CRS``
+- Default: ``EPSG:3857``
+- Env: ``DEFAULT_MAP_CRS``
 
-The default map projection. :   Default:  EPSG:3857
+The default map projection.
 
 **DEFAULT_MAP_ZOOM**
 
 
-:   - Default ``0``
-    - Env: ``DEFAULT_MAP_ZOOM``
+- Default: ``0``
+- Env: ``DEFAULT_MAP_ZOOM``
 
 The zoom-level to use in newly created maps.  This works like the OpenLayers
 zoom level setting; 0 is at the world extent and each additional level cuts
@@ -627,31 +634,28 @@ the viewport in half in each direction.
 **DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER**
 
 
-:   Default:  ``5``
+- Default: ``5``
 
-When [uploading datasets](../../usage/managing_datasets/uploading_datasets.html#datasets-uploading), 
+When uploading datasets,
 this value limits the number os parallel uploads.
 
 The parallelism limit is set during installation using the value of this variable.
 After installation, only an user with administrative rights can change it.
-These limits can be changed in the [admin panel](../../admin/upload-parallelism-limit/index.html#upload-parallelism-limit)
-or [accessing by api](../../devel/api/V2/index.html#getapi-v2-upload-parallelism-limits-).
+These limits can be changed in the admin panel or through the API.
 
 
 
 **DEFAULT_MAX_UPLOAD_SIZE**
 
 
-:   Default:  ``104857600`` (100 MB in bytes)
+- Default: ``104857600`` (100 MB in bytes)
 
-When [uploading datasets](../../usage/managing_datasets/uploading_datasets.html#datasets-uploading)
-or [uploading documents](../../usage/managing_documents/uploading_documents.html#uploading-documents),
+When uploading datasets or uploading documents,
 the total size of the uploaded files is verified.
 
 The size limits are set during installation using the value of this variable.
 After installation, only an user with administrative rights can change it.
-These limits can be changed in the [admin panel](../../admin/upload-size-limits/index.html#upload-size-limits)
-or [accessing by api](../../devel/api/V2/index.html#getapi-v2-upload-size-limits-).
+These limits can be changed in the admin panel or through the API.
 
 
 **DEFAULT_SEARCH_SIZE**
@@ -681,8 +685,8 @@ If set to False direct WMS link to GeoServer is hidden.
 **DISPLAY_ORIGINAL_DATASET_LINK**
 
 
-:   - Default ``True``
-    - Env: ``DISPLAY_ORIGINAL_DATASET_LINK``
+- Default: ``True``
+- Env: ``DISPLAY_ORIGINAL_DATASET_LINK``
 
 If set to False original dataset download is hidden.
 
@@ -690,41 +694,44 @@ If set to False original dataset download is hidden.
 
 Specifies which metadata formats are available for users to download.
 
-:   - Default:
-    ```python
-    DOWNLOAD_FORMATS_METADATA = [
+- Default:
+
+```python
+DOWNLOAD_FORMATS_METADATA = [
     'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
-    ]
-    ```
+]
+```
 
 **DOWNLOAD_FORMATS_VECTOR**
 
 Specifies which formats for vector data are available for users to download.
 
-:   - Default:
-    ```python
-    DOWNLOAD_FORMATS_VECTOR = [
+- Default:
+
+```python
+DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
     'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
-    ]
-    ```
+]
+```
 
 **DOWNLOAD_FORMATS_RASTER**
 
 Specifies which formats for raster data are available for users to download.
 
-:   - Default
-    ```python
-    DOWNLOAD_FORMATS_RASTER = [
-    'JPEG', 'PDF', 'PNG' 'Tiles',
-    ]
-    ```
+- Default:
+
+```python
+DOWNLOAD_FORMATS_RASTER = [
+    'JPEG', 'PDF', 'PNG', 'Tiles',
+]
+```
 
 ## E
 
 **EMAIL_ENABLE**
 
-:   - Default ``False``
+- Default: ``False``
 
 Options:
 
@@ -740,17 +747,18 @@ Options:
 **EPSG_CODE_MATCHES**
 
 
-:   - Default:
-    ```python
-    {
+- Default:
+
+```python
+{
     'EPSG:4326': '(4326) WGS 84',
     'EPSG:900913': '(900913) Google Maps Global Mercator',
     'EPSG:3857': '(3857) WGS 84 / Pseudo-Mercator',
     'EPSG:3785': '(3785 DEPRECATED) Popular Visualization CRS / Mercator',
     'EPSG:32647': '(32647) WGS 84 / UTM zone 47N',
     'EPSG:32736': '(32736) WGS 84 / UTM zone 36S'
-    }
-    ```
+}
+```
 
 Supported projections human readable descriptions associated to their EPSG Codes.
 This list will be presented to the user during the upload process whenever GeoNode won't be able to recognize a suitable projection.
@@ -997,19 +1005,20 @@ A sample configuration using the Bing background without OpenStreetMap, could be
     }
 ]
 ```
-.. warning:: To use a Bing background, you need to correctly set and provide a valid ``BING_API_KEY``
+!!! Warning
+    To use a Bing background, you need to correctly set and provide a valid `BING_API_KEY`.
 
 **MAX_DOCUMENT_SIZE**
 
 
-:   - Default``2``
-    - Env: ``MAX_DOCUMENT_SIZE``
+- Default: ``2``
+- Env: ``MAX_DOCUMENT_SIZE``
 
 Allowed size for documents in MB.
 
 **METADATA_PARSERS**
 
-:   It's possible to define multiple XML parsers for ingest XML during the layer upload.
+It is possible to define multiple XML parsers for ingesting XML during layer upload.
 
 The variable should be declared in this way inside the `settings.py`:
 

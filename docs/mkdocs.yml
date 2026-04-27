@@ -35,6 +35,7 @@ nav:
         - "SSL Trusted Certificates": setup/configuration/components/ssl_trusted_certificates/ssl_trusted_certificates.md
         - "GeoFence Advanced Features": setup/configuration/components/geofence_advanced_features.md
       - Hardening GeoNode: setup/configuration/hardening.md
+    - Production Enhancements: "setup/prod_enhancements/prod_enhancements.md"
   - User Guide:
     - User account: "user-guide/user_account.md"
     - Catalog Resources: "user-guide/catalog.md"
