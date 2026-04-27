@@ -523,7 +523,7 @@ This is a [Django Setting](https://docs.djangoproject.com/en/3.2/ref/settings/#d
 
 **DEFAULT_ANONYMOUS_PERMISSIONS**
 
-:   - Default ``None``
+:   - Default ``download``
     - Env: ``DEFAULT_ANONYMOUS_PERMISSIONS``
 
 Defines the default compact permission level assigned to anonymous users when a new resource is created.
@@ -534,7 +534,16 @@ Supported values are:
 - ``download``
 - ``none``
 
-If this setting is not configured, GeoNode falls back to the deprecated ``DEFAULT_ANONYMOUS_VIEW_PERMISSION`` and ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION`` settings.
+If this setting is configured, GeoNode ignores the deprecated
+``DEFAULT_ANONYMOUS_VIEW_PERMISSION`` and ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION``
+settings, and logs a warning when they are also provided.
+
+If this setting is not configured and legacy settings are provided, GeoNode maps
+legacy values using this precedence:
+
+- ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True`` -> ``download``
+- ``DEFAULT_ANONYMOUS_VIEW_PERMISSION=True`` (while download is not true) -> ``view``
+- otherwise -> ``none``
 
 Example:
 
@@ -546,7 +555,7 @@ If an unsupported value is configured, GeoNode logs a warning and falls back to 
 
 **DEFAULT_REGISTERED_MEMBERS_PERMISSIONS**
 
-:   - Default ``None``
+:   - Default ``download``
     - Env: ``DEFAULT_REGISTERED_MEMBERS_PERMISSIONS``
 
 Defines the default compact permission level assigned to the registered members group when a new resource is created.
@@ -572,20 +581,22 @@ If an unsupported value is configured, GeoNode logs a warning and falls back to 
 [](){ #default-anonymous-download-permission }
 **DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION**
 
-:   - Default:  ``True``
+:   - Default:  ``None``
     - Env: ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION``
 
 Deprecated. Use ``DEFAULT_ANONYMOUS_PERMISSIONS`` instead.
 
 Whether uploaded resources should be downloadable by anonymous users by default.
 
-This legacy setting is used only when ``DEFAULT_ANONYMOUS_PERMISSIONS`` is not configured. When ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION`` is ``True``, GeoNode treats the anonymous default compact permission as ``download``.
+This legacy setting is used only when ``DEFAULT_ANONYMOUS_PERMISSIONS`` is not configured.
+When ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION`` is ``True``, GeoNode maps the anonymous
+default compact permission to ``download``.
 
 
 [](){ #default-anonymous-view-permission }
 **DEFAULT_ANONYMOUS_VIEW_PERMISSION**
 
-:   - Default:  ``True``
+:   - Default:  ``None``
     - Env: ``DEFAULT_ANONYMOUS_VIEW_PERMISSION``
 
 Deprecated. Use ``DEFAULT_ANONYMOUS_PERMISSIONS`` instead.

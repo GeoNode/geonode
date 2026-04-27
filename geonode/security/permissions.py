@@ -154,19 +154,13 @@ def _normalize_compact_permission(raw_value, valid_values, setting_name):
 
 def get_default_anonymous_compact_permission():
     raw_value = getattr(settings, "DEFAULT_ANONYMOUS_PERMISSIONS", None)
-    if raw_value is not None:
-        return _normalize_compact_permission(
-            raw_value,
-            VALID_ANONYMOUS_COMPACT_PERMISSIONS,
-            "DEFAULT_ANONYMOUS_PERMISSIONS",
-        )
-    legacy_download = getattr(settings, "DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", True)
-    legacy_view = getattr(settings, "DEFAULT_ANONYMOUS_VIEW_PERMISSION", True)
-    if legacy_download:
-        return DOWNLOAD_RIGHTS
-    if legacy_view:
-        return VIEW_RIGHTS
-    return None
+    if raw_value is None:
+        return None
+    return _normalize_compact_permission(
+        raw_value,
+        VALID_ANONYMOUS_COMPACT_PERMISSIONS,
+        "DEFAULT_ANONYMOUS_PERMISSIONS",
+    )
 
 
 def get_default_registered_members_compact_permission():

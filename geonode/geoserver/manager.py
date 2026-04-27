@@ -34,10 +34,8 @@ from geonode.base.models import ResourceBase
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.security.utils import skip_registered_members_common_group
+from geonode.security.registry import permissions_registry
 from geonode.security.permissions import (
-    get_default_anonymous_compact_permission,
-    VIEW_RIGHTS,
-    DOWNLOAD_RIGHTS,
     VIEW_PERMISSIONS,
     OWNER_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
@@ -248,12 +246,26 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                         create_geofence_rules(_resource, perms, None, user_group, batch)
                                         exist_geolimits = exist_geolimits or has_geolimits(_resource, None, user_group)
                                 # Anonymous
-                                anonymous_compact = get_default_anonymous_compact_permission()
-                                if anonymous_compact in (VIEW_RIGHTS, DOWNLOAD_RIGHTS):
+                                effective_permissions = permissions_registry.get_perms(instance=_resource) or {}
+                                anonymous_group = next(
+                                    (
+                                        g
+                                        for g in effective_permissions.get("groups", {})
+                                        if getattr(g, "name", None) == "anonymous"
+                                    ),
+                                    None,
+                                )
+                                anonymous_perms = (
+                                    effective_permissions.get("groups", {}).get(anonymous_group, [])
+                                    if anonymous_group
+                                    else []
+                                )
+
+                                if "view_resourcebase" in anonymous_perms:
                                     create_geofence_rules(_resource, VIEW_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
-                                if anonymous_compact == DOWNLOAD_RIGHTS:
+                                if "download_resourcebase" in anonymous_perms:
                                     create_geofence_rules(_resource, DOWNLOAD_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
