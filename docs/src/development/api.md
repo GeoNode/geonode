@@ -945,11 +945,7 @@ headers = {
 payload = json.dumps({
         "title": "Updated Dataset Title",
         "abstract": "This is the updated abstract describing the dataset."
-        ........
-        ......
-        ....
-        ..
-
+        # ... other fields can be included here
     })
 
 response = requests.put(url, headers=headers, data=payload)
