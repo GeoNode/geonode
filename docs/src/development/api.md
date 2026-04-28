@@ -1,7 +1,7 @@
 In this section, we are going to demostrate how GeoNode API can be utilized/integrated with other applications using Python.
 
 ## Resource Listing and Details
-As mentioned in previous chapters, GeoNode resources are categorized in different types e.g. datasets, maps, documents. Etc.
+As mentioned in previous chapters, GeoNode resources are categorized in different types e.g. datasets, maps, documents. etc.
 All available resources can be listed with API ``GET /api/v2/resources``.
 
 To obtain a single resource, a primary key is provided in the url. Eg ``GET /api/v2/resources/{resource.pk}``.
@@ -105,50 +105,237 @@ response = requests.request("GET", url, headers=headers, data=payload)
     It's important to note that other methods are case sensitive except the icontains.
 
 
-## Dataset specific resources
-Get the metadata of uploaded datasets with:
-
-- API: ``GET /api/v2/datasets/{id}``
-- Status Code: ``200``
-!!! note
-       This is very similar to `GET /api/v2/resources` but provides additional metadata specifically for datasets like `featureinfo_custom_template` or `attribute_set`
-    
-Example:
-
-```python
-import requests
-
-DATASET_ID = "the dataset id"
-url = f"https://master.demo.geonode.org/api/v2/datasets/{DATASET_ID}"
-headers = {
-    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
-}
-response = requests.request("GET", url, headers=headers)
-```
-
 ## Resource Upload
 The API supports the upload of datasets and documents.
 
 ### Datasets
-The dataset upload form accepts file formats of ESRI Shapefile, GeoTIFF, Comma Separated Value (CSV), Zip Archive, XML Metadata File, and Styled Layer Descriptor (SLD).
-For a successful upload, the form requires base_file, dbf_file, shx_file, and prj_file. The xml_file, and Sld_file are optional.
+The dataset upload accepts file formats of ESRI Shapefile, GeoTIFF, Comma Separated Value (CSV), Zip Archive, XML Metadata File, and Styled Layer Descriptor (SLD).
+
+For a successful upload, it requires a base_file to upload and it is controlled by the ``action`` parameter.
 
 - API: ``POST /api/v2/uploads/upload``
-- Status Code: ``200``
+- Status Code: ``201``
+
+**Common request parameters:**
+
+These parameters can be included in the body of your request. The requirement of `base_file` depends entirely on the `action` you are performing.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| **`base_file`** | `File` | Yes* | Primary file to upload. Requirement depends on the selected action. |
+| **`action`** | `String` | No | Dictates the behavior of the endpoint. Defaults to `upload`. See the [**Supported Actions**](#actions) table below for accepted values. |
+| **`store_spatial_files`** | `Boolean` | No | Determines whether the raw spatial files should be stored. Defaults to `true`. |
+| **`skip_existing_layers`** | `Boolean` | No | If set to `true`, the upload will bypass layers that already exist. Defaults to `false`. |
+| **`sld_file`** | `File` | No | An optional Styled Layer Descriptor (SLD) file to apply styling during a supported upload. |
+| **`xml_file`** | `File` | No | An optional XML metadata file to apply alongside supported uploads. |
+
+
+!!! note
+    `base_file` is required for most file-based operations but not for all actions (e.g., `create`).
+
+Use the `action` parameter to change how the API processes your request. Some actions require additional parameters to function correctly.
+
+| Action Value | Purpose | Additional Required Parameters |
+| :--- | :--- | :--- |
+| **`upload`** *(default)* | Performs a standard dataset upload using the provided `base_file`. | None |
+| **`replace`** | Replaces the underlying data of an existing dataset. | `resource_pk` |
+| **`upsert`** | Updates existing rows or inserts new rows into an existing dataset. | `resource_pk`<br>*(Optional: `upsert_key`)* |
+| **`create`** | Generates a new, empty dataset without requiring an uploaded file. | `title`, `geom`, `attributes` |
+| **`resource_style_upload`**| Uploads and applies an SLD style file to an existing dataset. | `resource_pk`<br>`base_file` *(must be the SLD)* |
+| **`resource_metadata_upload`**| Uploads and applies an XML metadata file to an existing dataset. | `resource_pk`<br>`base_file` *(must be the XML)* |
+
+## Actions
+#### Upload (default action)
+
+```python
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+payload = {'action': 'upload'}
+files=[
+    (
+        'base_file',
+        (
+            'BoulderCityLimits.zip',
+            open('/home/myuser/BoulderCityLimits.zip', 'rb'),
+            'application/zip'
+        )
+    )
+]
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+response = requests.request(
+        "POST",
+        url,
+        headers=headers,
+        data=payload,
+        files=files
+    )
+```
+
+#### Replace (action = "replace")
+
+Use when you want to replace the data of an existing dataset. Provide the ``resource_pk`` of the target dataset.
+
+**Required:**
+- `resource_pk`
+- `base_file`
+
 
 Example:
 ```python
 import requests
 
 url = "https://master.demo.geonode.org/api/v2/uploads/upload"
-files= [
-('sld_file',('BoulderCityLimits.sld',open('/home/myuser/BoulderCityLimits.sld','rb'),'application/octet-stream')),   ('base_file',('BoulderCityLimits.shp',open('/home/BoulderCityLimits.shp','rb'),'application/octet-stream')),  ('dbf_file',('BoulderCityLimits.dbf',open('/home/BoulderCityLimits.dbf','rb'),'application/octet-stream')),  ('shx_file',('BoulderCityLimits.shx',open('/home/BoulderCityLimits.shx','rb'),'application/octet-stream')),
-('prj_file',('BoulderCityLimits.prj',open('/home/myuser/BoulderCityLimits.prj','rb'),'application/octet-stream))
+files = [
+    (
+        "base_file",
+        ("update.zip", open("/path/update.zip", "rb"), "application/zip"),
+    )
 ]
+data = {
+    "action": "replace",
+    "resource_pk": "123",
+}
+headers = {
+    "Authorization": "Basic dXNlcjpwYXNzd29yZA==",
+}
+response = requests.request(
+    "POST",
+    url,
+    headers=headers,
+    data=data,
+    files=files,
+)
+```
+
+#### Upsert (action = "upsert")
+
+The ``upsert`` action merges new features into an existing dataset based on a key field. Features that already exist (matched by the key) are updated; new features are inserted. Set the ``action`` parameter to ``upsert``, provide the ``resource_pk`` of the target dataset, and optionally specify the ``upsert_key`` field name (defaults to ``fid``).
+
+
+Example:
+```python
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+
+files = [
+    ('base_file', ('update.zip', open('/path/update.zip','rb'),'application/zip'))
+]
+
+data = {
+    'action': 'upsert',
+    'resource_pk': 123,
+    'upsert_key': 'fid',  # the field used to match existing features; defaults to 'fid'
+}
+
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+
+response = requests.request(
+            "POST",
+            url,
+            headers=headers,
+            data=data,
+            files=files
+        )
+```
+
+#### Create (action = "create")
+
+The create action allows creating an empty dataset (no uploaded file). Use the ``attributes`` parameter to declare fields and their constraints.
+
+Required params: ``title``, ``geom`` (e.g. ``POINT / POLYGON / etc``), ``attributes`` (JSON string describing columns).
+
+Example (minimal):
+```python
+import requests, json
+
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+
+data = json.dumps({
+    'action': 'create',
+    'title': 'New empty dataset',
+    'geom': 'Point',
+    'attributes': [{'name': 'id', 'type': 'integer', 'nullable': False}, {'name': 'label','type':'string'}]
+})
+
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+
+response = requests.request(
+            "POST",
+            url,
+            headers=headers,
+            data=data
+        )
+```
+
+#### Apply SLD / style upload (action = "resource_style_upload")
+
+Apply an SLD to an existing dataset using the upload endpoint with ``action=resource_style_upload`` and ``resource_pk``. Provide the SLD as ``base_file`` (or ``sld_file`` depending on the client).
+
+Example:
+```python
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+
+files = [
+    ('base_file', ('style.sld', open('/path/style.sld','rb'),'application/xml')),
+    ('sld_file', ('style.sld', open('/path/style.sld','rb'),'application/xml')),
+
+]
+
+data = {'action': 'resource_style_upload', 'resource_pk': '123'}
+
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+
+response = requests.request(
+            "POST",
+            url,
+            headers=headers,
+            data=data,
+            files=files
+        )
+```
+
+#### Apply XML metadata (action = "resource_metadata_upload" or dedicated endpoint)
+
+You can apply XML metadata via the upload endpoint (``action=resource_metadata_upload`` + ``resource_pk`` + metadata file), or use the dedicated dataset metadata endpoint:
+
+- API (dedicated): ``PUT /api/v2/datasets/{dataset_id}/metadata``
+
+Example (upload action):
+```python
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+
+files = [
+    ('base_file', ('metadata.xml', open('/path/metadata.xml','rb'),'text/xml')),
+    ('xml_file', ('metadata.xml', open('/path/metadata.xml','rb'),'text/xml'))
+]
+
+data = {'action': 'resource_metadata_upload', 'resource_pk': '123'}
+
 headers = {
 'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
-response = requests.request("POST", url, headers=headers, files=files)
+
+response = requests.request(
+                "POST",
+                url,
+                headers=headers,
+                data=data,
+                files=files
+            )
 ```
 
 ### Documents
@@ -237,15 +424,6 @@ headers = {
 response = requests.request("GET", url, headers=headers)
 ```
 
-### Overwriting a dataset
-
-Uploading a resource will create by default a new dataset. This behaviour can be changed by setting the ``overwrite_existing_layer`` parameter to ``True``. 
-In this case the upload procedure will overwrite a resource whose name matches with the new one.
-
-### Skip existing dataset
-
-If the parameter ``skip_existing_layers`` is set to true ``True`` the uplad procedure will ignore files whose name matched with already existing resources.
-
 ### Upload of a metadata file
 
 A complete metadata file conforming to ISO-19115 can be uploaded for a dataset.
@@ -310,28 +488,6 @@ import requests
 url = "https://master.demo.geonode.org/documents/1781/download"
 response = requests.request("GET", url)
 ```
-
-## Dataset Update Metadata 
-
-- API: ``PATCH /api/v2/datasets/{id}``
-- Status Code: ``200``
-
-The following example changes the title and the license of a dataset.
-```python
-import requests
-
-url = ROOT + "api/v2/datasets/" + DATASET_ID
-auth = (LOGIN_NAME, LOGIN_PASSWORD)
-
-data = {
-    "title": "a new title",
-    "license": 4, 
-}
-response = requests.patch(url, auth=auth, json=data)
-```
-
-!!! note
-    `bbox_polygon` and `ll_bbox_polygon` are derived values which cannot be changed.
 
 ## Users, Groups and Permissions
 
@@ -640,8 +796,7 @@ The operation will be completed once the ``status`` property is updated with the
 All available linked_resources  can be listed with API ``GET /api/v2/resources/{pk}/linked_resources``.
 where pk Resource base id
 
-Example Requests:
-^^^^^^^^^^^^^^^^^
+**Example Requests:**
 
 1. List all resource links:
 ```python
@@ -716,4 +871,165 @@ headers = {
 'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
 response = requests.request("DELETE", url, headers=headers)
+```
+
+## Metadata Management
+The GeoNode v2 API handles metadata dynamically using a JSON Schema approach. This ensures the metadata structure can be heavily customized (e.g., for specific ISO profiles or custom Sparse Fields) while keeping the API interaction standardized.
+
+The `/api/v2/metadata` endpoint provides access to both the overall metadata schema definitions and the specific metadata payloads (instances) attached to resources.
+
+### Read Metadata Schema
+Before reading or editing a specific resource's metadata, it is highly recommended to retrieve the JSON schema. This schema acts as the blueprint, dictating what fields exist, their data types, and which attributes are required.
+
+**API**: `GET /api/v2/metadata/schema`
+
+**Query Parameters:**
+
+* **`lang`** *(String, Optional)*: Sets the language for the schema localization (e.g., `en`, `fr`). If omitted, it defaults to the language set in your session cookies.
+
+**Example Request:**
+```python
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/metadata/schema/?lang=en"
+
+headers = {
+'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+
+response = requests.get(url, headers=headers)
+```
+
+### Read Metadata Instance
+To retrieve the populated metadata for a specific resource, use the instance endpoint. This returns a JSON object that adheres strictly to the rules defined by the metadata schema.
+
+**API**: `GET /api/v2/metadata/instance/{resource_pk}`
+
+**Query Parameters:**
+
+* **`lang`** *(String, Optional)*: Sets the language for the schema localization (e.g., `en`, `fr`). If omitted, it defaults to the language set in your session cookies.
+
+**Example Request:**
+```
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/metadata/instance/123?lang=en"
+
+headers = {
+'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+
+response = requests.get(url, headers=headers)
+```
+
+### Edit Metadata Fields
+To modify a resource's metadata, send a PUT request with your updated JSON payload. The payload must conform to the JSON schema.
+
+GeoNode's metadata manager automatically parses the incoming JSON, delegates fields to their respective backend handlers (including Base Fields and dynamic Sparse Fields), and persists the changes to the database.
+
+**API**: `PUT /api/v2/metadata/instance/{resource_pk}`
+
+**Example Request:**
+
+```python
+import requests
+import json
+
+url = "https://master.demo.geonode.org/api/v2/metadata/instance/123"
+
+headers = {
+        'Authorization': 'Basic dXNlcjpwYXNzd29yZA==',
+        'Content-Type': 'application/json'
+    }
+
+payload = json.dumps({
+        "title": "Updated Dataset Title",
+        "abstract": "This is the updated abstract describing the dataset."
+        ........
+        ......
+        ....
+        ..
+
+    })
+
+response = requests.put(url, headers=headers, data=payload)
+```
+
+
+## Sparse Fields
+
+Sparse Fields provide a simple, flexible way to store custom, free-form metadata on GeoNode resources without requiring changes to the underlying database schema. 
+
+They are designed for metadata keys that must remain outside the core `ResourceBase` model, while still ensuring the data is stored, retrievable via the API, and editable within the metadata editor.
+
+### Access & Permissions
+
+
+* **Security Note:** Access to sparse fields is governed by standard resource-level permissions.
+* **Allowed Operations:** The API grants read access to any sparse field on a resource that a user has permission to view.
+* **Blocked Operations:** To prevent conflicts, the API actively **blocks** read and write operations on keys that are already declared in the core JSON Schema (e.g., default fields like `title`, `abstract`, etc.).
+
+---
+
+### API Reference
+
+#### 1. Retrieve a Sparse Field
+
+Retrieves the exact value of a single sparse field associated with a specific resource.
+
+**Endpoint** `GET /api/v2/metadata/sparse/<resource_pk>/<sparse_key>`
+
+**Parameters**
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `resource_pk` | Integer | The primary key (ID) of the GeoNode resource. |
+| `sparse_key` | String | The custom key name of the sparse field (e.g., `project_code`). |
+
+**Example Request**
+
+```python
+import requests
+
+url="https://master.demo.geonode.org/api/v2/metadata/sparse/123/sparse_key"
+headers = {
+        'Authorization': 'Basic dXNlcjpwYXNzd29yZA==',
+    }
+response = requests.request("GET", url, headers=headers)
+```
+
+**Example Response**
+```
+{ 
+  "value": "sparse value" 
+}
+```
+
+#### 2. Create or Update a Sparse Field
+
+Creates a new sparse field or updates the value of an existing one (upsert).
+
+**Endpoint** `PUT /api/v2/metadata/sparse/<resource_pk>/<sparse_key>`
+
+**Parameters**
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `resource_pk` | Integer | The primary key (ID) of the GeoNode resource. |
+| `sparse_key` | String | The custom key name of the sparse field to be created or updated. |
+
+**Example Request**
+
+```python
+import requests
+import json
+
+url = "https://master.demo.geonode.org/api/v2/metadata/sparse/123/sparse_key"
+payload = json.dumps({"value": "sparse value updated"})
+
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA==',
+    'Content-Type': 'application/json'
+}
+response = requests.request("PUT", url, headers=headers, data=payload)
 ```
