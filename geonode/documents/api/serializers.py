@@ -25,13 +25,6 @@ from geonode.documents.models import Document
 logger = logging.getLogger(__name__)
 
 
-# Fields that must never be mutable via the document API (they can point a
-# Document at an arbitrary server filesystem path or rename the stored file).
-# POST/PUT are disabled entirely; PATCH-time enforcement lives in
-# DocumentSerializer.update().
-IMMUTABLE_DOCUMENT_FIELDS = frozenset({"name", "extension", "files"})
-
-
 class DocumentSerializer(ResourceBaseSerializer):
     title = serializers.CharField(required=False)
 
@@ -53,13 +46,7 @@ class DocumentSerializer(ResourceBaseSerializer):
                 )
             )
         )
-
-    def update(self, instance, validated_data):
-        # Defense in depth: make sure PATCH payloads can never rewrite the
-        # fields that determine where the document file lives on disk. Field
-        # definitions that carried a file have already been dropped
-        # (file_path, doc_file) -- this guards against anything that sneaks
-        # through dynamic_rest / nested serializer magic.
-        for field_name in IMMUTABLE_DOCUMENT_FIELDS:
-            validated_data.pop(field_name, None)
-        return super().update(instance, validated_data)
+        # name and extension determine where the document file lives on disk
+        # and how it is served. POST/PUT are blocked at the http_method_names
+        # layer; making them read-only locks them down on PATCH too.
+        read_only_fields = ("name", "extension")
