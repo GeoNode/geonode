@@ -201,3 +201,4 @@ urlpatterns += [
 ]
 
 handler500 = "geonode.views.err500"
+handler403 = "geonode.views.err403"

@@ -49,11 +49,16 @@ logger = logging.getLogger(__name__)
 
 def services(request):
     """This view shows the list of all registered services"""
+    perms = permissions_registry.get_db_perms_by_user(request.user)
 
     return render(
         request,
         "services/service_list.html",
-        {"services": Service.objects.all(), "can_add_resources": request.user.has_perm("base.add_resourcebase")},
+        {
+            "services": Service.objects.all(),
+            "can_add_resources": request.user.has_perm("base.add_resourcebase"),
+            "can_add_remote_resources": "add_remote_resource" in perms,
+        },
     )
 
 
