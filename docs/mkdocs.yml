@@ -44,6 +44,7 @@ nav:
       - Finding Data: "user-guide/catalog/finding_data.md"
     - Datasets:
       - Upload a dataset: "user-guide/datasets/upload.md"
+      - Dataset Information: "user-guide/datasets/dataset_info.md"
       - Preview and Styling: "user-guide/datasets/preview.md"
       - Edit a dataset: "user-guide/datasets/dataset_editing.md"
       - Download a dataset: "user-guide/datasets/dataset_download.md"
@@ -54,6 +55,7 @@ nav:
       - Advanced dataset management: "user-guide/datasets/dataset_advanved.md"
     - Maps:
       - Creating Maps: "user-guide/maps/creating_maps.md"
+      - Map Information: "user-guide/maps/map_info.md"
       - Map tools and configuration:
         - Overview: "user-guide/maps/maps_configuration/maps_conf_overview.md"
         - Map Viewer: "user-guide/maps/maps_configuration/map_viewers.md"
@@ -61,7 +63,9 @@ nav:
         - Attributes Table: "user-guide/maps/maps_configuration/attribute_table.md"
         - Timeline: "user-guide/maps/maps_configuration/timeline.md"
         - Other Menu Tools: "user-guide/maps/maps_configuration/options_menu.md"
-    - Documents: "user-guide/documents/upload.md"
+    - Documents:
+      - Upload/Add Documents: "user-guide/documents/upload.md"
+      - Document Information: "user-guide/documents/document_info.md"
     - GeoStories: "user-guide/geostory/geostory.md"
     - Dashboards: "user-guide/dashboard/dashboard.md"
     - Sharing: "user-guide/sharing.md"
@@ -103,7 +107,7 @@ nav:
     - Changing the Default Language: "admin/default_lang.md"
     - Thesauri: "admin/thesauri/thesauri.md"
   - Developer Guide: 
-    - API Usage: "development/api/api.md"
+    - API Usage: "development/api.md"
     - Metadata:
       - Intro to GeoNode metadata management: "development/metadata/intro.md"
       - Metadata app design and implementation: "development/metadata/design.md"
