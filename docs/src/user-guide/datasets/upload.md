@@ -33,4 +33,4 @@ A progress bar and a spinning icon show the operation made during the dataset up
 
 ## Upload from a URL
 
-GeoNode supports the upload of a remote dataset through a URL. For more information please take a look at [this section](remote.md#remote-3d-tiles).
+GeoNode supports the upload of a remote dataset through a URL. For more information please take a look at [this section](remote/#remote-3d-tiles).

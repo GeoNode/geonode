@@ -51,7 +51,7 @@ The development community is very supportive of new projects and contributes ide
 The next steps are:
 
 1. Make a ride on the [Online Demo](#online_demo).
-2. Follow the [Quick Start Installation](../quick/quick.md) to set up your local instance and access all the admin functionalities.
+2. Follow the [Quick Start Installation](quick.md) to set up your local instance and access all the admin functionalities.
 3. Read the documentation starting from the User Guide to the Administration section.
 4. Subscribe to the [geonode-users](https://lists.osgeo.org/mailman/listinfo/geonode-users) and/or [geonode-devel](https://lists.osgeo.org/mailman/listinfo/geonode-devel) mailing lists to join the community.
 

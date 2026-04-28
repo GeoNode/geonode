@@ -5,9 +5,9 @@ use_directory_urls: true
 docs_dir: 'src'
 nav:
   - Overview:
-    - Overview: overview/index.md
-    - GeoNode basics: "overview/basics/basics.md"
-    - Quick Start Installation: "overview/quick/quick.md"
+    - Overview: index.md
+    - GeoNode basics: "overview/basics.md"
+    - Quick Start Installation: "overview/quick.md"
   - Setup:
     - Install:
       - Docker installation:
