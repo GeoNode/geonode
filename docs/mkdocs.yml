@@ -52,6 +52,15 @@ nav:
       - Remote datasets: "user-guide/datasets/remote.md"
       - Create empty dataset: "user-guide/datasets/empty.md"
       - Advanced dataset management: "user-guide/datasets/dataset_advanved.md"
+    - Maps:
+      - Creating Maps: "user-guide/maps/creating_maps.md"
+      - Map tools and configuration:
+        - Overview: "user-guide/maps/maps_configuration/maps_conf_overview.md"
+        - Map Viewer: "user-guide/maps/maps_configuration/map_viewers.md"
+        - Table of Contents (TOC): "user-guide/maps/maps_configuration/toc.md"
+        - Attributes Table: "user-guide/maps/maps_configuration/attribute_table.md"
+        - Timeline: "user-guide/maps/maps_configuration/timeline.md"
+        - Other Menu Tools: "user-guide/maps/maps_configuration/options_menu.md"
     - Documents: "user-guide/documents/upload.md"
     - GeoStories: "user-guide/geostory/geostory.md"
     - Dashboards: "user-guide/dashboard/dashboard.md"
