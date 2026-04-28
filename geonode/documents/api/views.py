@@ -26,6 +26,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import base_linked_resources, ApiPresetsInitializer
 from geonode.documents.models import Document
@@ -51,7 +52,10 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
     """
 
     http_method_names = ["get", "patch"]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # UserHasPerms enforces resource-level EDIT_PERMISSIONS on PATCH (its
+    # default perms_map maps PATCH -> EDIT_PERMISSIONS). Without it any
+    # authenticated user could PATCH any document.
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
