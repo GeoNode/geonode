@@ -67,7 +67,7 @@
     "maxLength": 255,
      "properties": {
        "id": {
-         "type": "string"
+         "type": "integer"
        },
        "label": {
          "type": "string"

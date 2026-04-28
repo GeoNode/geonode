@@ -43,6 +43,7 @@ from geonode.base.models import (
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
     ResourceBase,
+    License,
 )
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
@@ -1048,7 +1049,7 @@ class OwnershipTransferTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         return {
             "date_type": "publication",
             "hkeywords": [],
-            "license": {"id": "not_specified", "label": "Not Specified"},
+            "license": {"id": License.objects.get(identifier="not_specified").id, "label": "Not Specified"},
             "regions": [],
             "supplemental_information": "No information provided",
             "linkedresources": [],

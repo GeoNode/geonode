@@ -115,14 +115,14 @@ class LicenseSubHandler(SubHandler):
         if db_value is None:
             return None
         elif isinstance(db_value, License):
-            return {"id": db_value.identifier, "label": _(db_value.name)}
+            return {"id": db_value.id, "label": _(db_value.name)}
         else:
             logger.warning(f"License: can't decode <{type(db_value)}>'{db_value}'")
             return None
 
     @classmethod
     def deserialize(cls, field_value):
-        return License.objects.get(identifier=field_value["id"]) if field_value else None
+        return License.objects.get(id=field_value["id"]) if field_value else None
 
 
 class RestrictionsSubHandler(SubHandler):
