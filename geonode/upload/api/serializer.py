@@ -25,26 +25,16 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
 
 
-class ImporterSerializer(DynamicModelSerializer):
-    class Meta:
-        ref_name = "ImporterSerializer"
-        model = ResourceBase
-        view_name = "importer_upload"
-        fields = (
-            "base_file",
-            "xml_file",
-            "sld_file",
-            "store_spatial_files",
-            "skip_existing_layers",
-            "action",
-        )
+class BaseImporterSerializer(DynamicModelSerializer):
+    """
+    Base for every serializer wired into the importer endpoint.
 
-    base_file = serializers.FileField()
-    xml_file = serializers.FileField(required=False)
-    sld_file = serializers.FileField(required=False)
-    store_spatial_files = serializers.BooleanField(required=False, default=True)
-    skip_existing_layers = serializers.BooleanField(required=False, default=False)
-    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
+    Holds the zip-safety check that must run for any ``base_file`` capable of
+    carrying a zip-based archive (.zip / .kmz / .xlsx). DRF only invokes
+    ``validate_base_file`` when the subclass declares a ``base_file`` field,
+    so subclasses without one (e.g. RemoteResourceSerializer,
+    EmptyDatasetSerializer) inherit harmlessly.
+    """
 
     def validate_base_file(self, f):
         """
@@ -69,6 +59,28 @@ class ImporterSerializer(DynamicModelSerializer):
                 except (OSError, ValueError):
                     pass
         return f
+
+
+class ImporterSerializer(BaseImporterSerializer):
+    class Meta:
+        ref_name = "ImporterSerializer"
+        model = ResourceBase
+        view_name = "importer_upload"
+        fields = (
+            "base_file",
+            "xml_file",
+            "sld_file",
+            "store_spatial_files",
+            "skip_existing_layers",
+            "action",
+        )
+
+    base_file = serializers.FileField()
+    xml_file = serializers.FileField(required=False)
+    sld_file = serializers.FileField(required=False)
+    store_spatial_files = serializers.BooleanField(required=False, default=True)
+    skip_existing_layers = serializers.BooleanField(required=False, default=False)
+    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
 
 
 class OverwriteImporterSerializer(ImporterSerializer):
