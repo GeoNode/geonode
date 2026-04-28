@@ -15,4 +15,4 @@ Editing the Dataset Style
 TBD
 
 ### Create Map
-Datasets can be previewed inside a map. The viewer provides a subset of the map tools that are available for Maps, because the viewer is mainly intended for just previewing the spatial content of a dataset. For a full featured map (including map widgets, and additional plugins) a Map can be created, containing the dataset.
+Datasets can be previewed inside a map. The viewer provides a subset of the map tools that are available for Maps, because the viewer is mainly intended for just previewing the spatial content of a dataset. For a full featured map, including map widgets and additional plugins, a Map can be created containing the dataset. For more information, see [Creating Maps](../maps/creating_maps.md#creating-map).
