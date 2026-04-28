@@ -18,7 +18,7 @@
 #########################################################################
 
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.validation.base import ValidationConfigProvider, merge_handler_configs
+from geonode.upload.validation.base import ValidationConfigProvider
 
 
 class DatasetFileValidationConfigProvider(ValidationConfigProvider):
@@ -26,16 +26,16 @@ class DatasetFileValidationConfigProvider(ValidationConfigProvider):
     File validation config for the dataset importer endpoint (URL name
     "importer_upload" / permission base.add_resourcebase).
 
-    The merged config is computed by walking ``BaseHandler.REGISTRY``: every
-    handler that exposes ``upload_validation_config`` contributes its
-    extensions, libmagic MIME set, and libmagic description substrings. A
-    handler that does not declare the property contributes nothing, which
-    means disabling a handler (e.g. via a feature flag) automatically
-    removes its file types from the allowed set.
+    The merged config is built incrementally as handlers register: each
+    handler's ``upload_validation_config`` is folded into
+    ``BaseHandler.UPLOAD_VALIDATION_CONFIG`` from ``BaseHandler.register()``.
+    A handler that does not declare the property contributes nothing, which
+    means disabling a handler (e.g. via a feature flag) automatically keeps
+    its file types out of the allowed set.
     """
 
     def url_names(self):
         return ("importer_upload",)
 
     def build_config(self):
-        return merge_handler_configs(BaseHandler.REGISTRY)
+        return BaseHandler.UPLOAD_VALIDATION_CONFIG

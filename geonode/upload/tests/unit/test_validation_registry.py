@@ -23,38 +23,49 @@ from types import MappingProxyType
 
 from django.test import SimpleTestCase, override_settings
 
+from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.validation import FileValidationConfigRegistry
-from geonode.upload.validation.base import (
-    ValidationConfigProvider,
-    merge_handler_configs,
-)
+from geonode.upload.validation.base import ValidationConfigProvider
 
 
-class _FakeHandler:
+EMPTY_CONFIG = {
+    "allowed_extensions": frozenset(),
+    "magic_mimetype_map": {},
+    "magic_description_map": {},
+}
+
+
+class _FakeHandler(BaseHandler):
     upload_validation_config = {
         "shp": {"description_contains": {"ESRI Shapefile"}},
         "xml": {"mimes": {"application/xml"}},
     }
 
 
-class _OverlappingHandler:
+class _OverlappingHandler(BaseHandler):
     upload_validation_config = {
         "xml": {"mimes": {"text/xml"}, "description_contains": {"XML"}},
     }
 
 
-class _EmptyHandler:
-    pass
+class _EmptyHandler(BaseHandler):
+    """Handler that does not declare upload_validation_config."""
 
 
-class _BrokenInstantiationHandler:
-    def __init__(self):
-        raise RuntimeError("boom")
+class BaseHandlerValidationConfigTests(SimpleTestCase):
+    """Cover the merge / read classmethods on BaseHandler."""
 
+    def setUp(self):
+        self._saved = BaseHandler.UPLOAD_VALIDATION_CONFIG
+        BaseHandler.UPLOAD_VALIDATION_CONFIG = EMPTY_CONFIG
 
-class MergeHandlerConfigsTests(SimpleTestCase):
-    def test_unions_mimes_and_descriptions_across_handlers(self):
-        merged = merge_handler_configs([_FakeHandler, _OverlappingHandler])
+    def tearDown(self):
+        BaseHandler.UPLOAD_VALIDATION_CONFIG = self._saved
+
+    def test_merge_unions_mimes_and_descriptions_across_handlers(self):
+        _FakeHandler.merge_upload_validation_config()
+        _OverlappingHandler.merge_upload_validation_config()
+        merged = BaseHandler.UPLOAD_VALIDATION_CONFIG
 
         self.assertEqual(merged["allowed_extensions"], frozenset({"shp", "xml"}))
         self.assertEqual(merged["magic_mimetype_map"]["xml"], frozenset({"application/xml", "text/xml"}))
@@ -62,17 +73,12 @@ class MergeHandlerConfigsTests(SimpleTestCase):
         self.assertEqual(merged["magic_description_map"]["xml"], frozenset({"XML"}))
 
     def test_handler_without_property_contributes_nothing(self):
-        merged = merge_handler_configs([_EmptyHandler])
-        self.assertEqual(merged["allowed_extensions"], frozenset())
-        self.assertEqual(merged["magic_mimetype_map"], {})
-        self.assertEqual(merged["magic_description_map"], {})
-
-    def test_failing_instance_does_not_break_merge(self):
-        merged = merge_handler_configs([_BrokenInstantiationHandler, _FakeHandler])
-        self.assertIn("shp", merged["allowed_extensions"])
+        _EmptyHandler.merge_upload_validation_config()
+        self.assertEqual(BaseHandler.UPLOAD_VALIDATION_CONFIG, EMPTY_CONFIG)
 
     def test_extension_with_only_mimes_omits_description_entry(self):
-        merged = merge_handler_configs([_FakeHandler])
+        _FakeHandler.merge_upload_validation_config()
+        merged = BaseHandler.UPLOAD_VALIDATION_CONFIG
         self.assertNotIn("xml", merged["magic_description_map"])
         self.assertIn("xml", merged["magic_mimetype_map"])
 

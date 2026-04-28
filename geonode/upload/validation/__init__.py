@@ -17,12 +17,11 @@
 #
 #########################################################################
 
-from geonode.upload.validation.base import ValidationConfigProvider, merge_handler_configs
+from geonode.upload.validation.base import ValidationConfigProvider
 from geonode.upload.validation.registry import FileValidationConfigRegistry
 
 
 __all__ = [
     "FileValidationConfigRegistry",
     "ValidationConfigProvider",
-    "merge_handler_configs",
 ]

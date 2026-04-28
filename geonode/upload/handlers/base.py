@@ -54,6 +54,16 @@ class BaseHandler(ABC):
 
     REGISTRY = []
 
+    # Merged FileValidationUploadHandler config across all registered handlers.
+    # Populated incrementally by ``register()`` from each handler's
+    # ``upload_validation_config`` property. Read by
+    # geonode.upload.validation.datasets.DatasetFileValidationConfigProvider.
+    UPLOAD_VALIDATION_CONFIG = {
+        "allowed_extensions": frozenset(),
+        "magic_mimetype_map": {},
+        "magic_description_map": {},
+    }
+
     TASKS = {
         exa.UPLOAD.value: (),
         exa.COPY.value: (),
@@ -71,10 +81,49 @@ class BaseHandler(ABC):
     @classmethod
     def register(cls):
         BaseHandler.REGISTRY.append(cls)
+        cls.merge_upload_validation_config()
 
     @classmethod
     def get_registry(cls):
         return BaseHandler.REGISTRY
+
+    @classmethod
+    def merge_upload_validation_config(cls):
+        """
+        Fold this handler's ``upload_validation_config`` into
+        ``BaseHandler.UPLOAD_VALIDATION_CONFIG``. Handlers that do not
+        declare the property contribute nothing. Idempotent: re-registering
+        a handler unions the same set values without duplicating anything.
+
+        Resulting dict shape::
+
+            {
+                "allowed_extensions": frozenset[str],
+                "magic_mimetype_map": dict[str, frozenset[str]],
+                "magic_description_map": dict[str, frozenset[str]],
+            }
+        """
+        # cls() is needed because handlers declare upload_validation_config
+        # as @property (mirroring supported_file_extension_config); reading
+        # the property requires an instance.
+        new_cfg = getattr(cls(), "upload_validation_config", {})
+        if not new_cfg:
+            return
+        current = BaseHandler.UPLOAD_VALIDATION_CONFIG
+        allowed = set(current["allowed_extensions"])
+        mimes = {ext: set(s) for ext, s in current["magic_mimetype_map"].items()}
+        descs = {ext: set(s) for ext, s in current["magic_description_map"].items()}
+        for ext, rules in new_cfg.items():
+            allowed.add(ext)
+            for m in rules.get("mimes", ()):
+                mimes.setdefault(ext, set()).add(m)
+            for d in rules.get("description_contains", ()):
+                descs.setdefault(ext, set()).add(d)
+        BaseHandler.UPLOAD_VALIDATION_CONFIG = {
+            "allowed_extensions": frozenset(allowed),
+            "magic_mimetype_map": {ext: frozenset(s) for ext, s in mimes.items() if s},
+            "magic_description_map": {ext: frozenset(s) for ext, s in descs.items() if s},
+        }
 
     @classmethod
     def get_task_list(cls, action) -> tuple:
