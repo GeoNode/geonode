@@ -343,6 +343,50 @@ response = requests.request(
             )
 ```
 
+### Remote sources
+
+Catalog resources can also be created for the following remote sources:
+
+- 3D Tiles
+  
+    - `title`: Title for the resource
+    - `url`: URL of the remote `tileset.json` file
+    - `type`: `"3dtiles"`
+
+- COG Geotiff
+  
+    - `title`: Title for the resource
+    - `url`: URL of the remote COG file
+    - `type`: `"cog"`
+
+- WMS
+
+    - `title`: Title for the resource
+    - `url`: URL of the remote WMS service. Notice that, in case the URL matches a registered Remote Service, the resource is automatically connected to the service.
+    - `type`: `"wms"`
+    - `identifier`: The name of the layer to be published in GeoServer. In case of a WMS service this is mandatory and should be in format `workspace:layername`
+    - `parse_remote_metadata`: if set to `true`, GeoNode will try to parse the metadata of the remote resource and set it on the GeoNode resource. This is only supported for WMS services at the moment.
+
+Example for a WMS resource:
+
+```python
+import requests
+
+url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+payload = {
+    "title": "Remote Title",
+    "url": "http://geoserver:8080/geoserver/wms",
+    "type": "wms",
+    "identifier": "geonode:boxes_with_date",
+    "parse_remote_metadata": True,
+    "action": "upload"
+}
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+```
+
 ### Documents
 
 Documents can be uploaded as form data.
@@ -798,10 +842,10 @@ The operation will be completed once the ``status`` property is updated with the
 
 ## Linked Resources Listing and Details
 
-All available linked_resources  can be listed with API ``GET /api/v2/resources/{pk}/linked_resources``.
-where pk Resource base id
+All available `linked_resources` can be listed with API `GET /api/v2/resources/{pk}/linked_resources`,
+where `pk` is the resource base id.
 
-**Example Requests:**
+Example Requests:
 
 1. List all resource links:
 ```python

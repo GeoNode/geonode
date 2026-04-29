@@ -4,26 +4,10 @@ repo_url: https://github.com/GeoNode/geonode/
 use_directory_urls: true
 docs_dir: 'src'
 nav:
-  - Home: index.md
-  - User Guide:
-    - User account: "user-guide/user_account.md"
-    - Catalog Resources: "user-guide/catalog.md"
-    - Datasets:
-      - Upload a dataset: "user-guide/datasets/create.md"
-      - Preview and Styling: "user-guide/datasets/preview.md"
-      - Update and Replace: "user-guide/datasets/update_replace.md"
-      - Remote datasets: "user-guide/datasets/remote.md"
-      - Create empty dataset: "user-guide/datasets/empty.md"
-    - Sharing: "user-guide/sharing.md"
-    - Metadata: "user-guide/metadata.md"
-  - Administration:
-    - Accessing the panel: "admin/panel.md"
-    - Users: "admin/user.md"
-    - Groups: "admin/group.md"
-    - Social Logins: "admin/social.md"
-    - OAuth2: "admin/oauth.md"
-  - Developer Guide: 
-    - API Usage: "development/api.md"
+  - Overview:
+    - Overview: index.md
+    - GeoNode basics: "overview/basics.md"
+    - Quick Start Installation: "overview/quick.md"
   - Setup:
     - Install:
       - Docker installation:
@@ -34,13 +18,107 @@ nav:
             - Prerequisites: setup/bare/prerequisites.md
             - Vanilla bare installation: setup/bare/vanilla-bare-installation.md
             - GeoNode project bare installation: setup/bare/project-bare-installation.md
+    - Backup And Restore: "setup/br.md"
     - Configuration:
       - Settings: setup/configuration/settings.md
       - Environmental Variables: setup/configuration/environmental_variables.md
-  - Miscellaneous:
-    - Thesauri: "miscellaneous/thesauri.md"
-    - Backup And Restore: "miscellaneous/br.md"
-
+      - Social Logins: setup/configuration/social.md
+      - "OAuth2 Security: Authentication and Authorization":
+        - Overview: setup/configuration/components/overview.md
+        - "GeoNode Security Backend": setup/configuration/components/geonode_security_backend/geonode_security_backend.md
+        - "GeoServer Security Backend": setup/configuration/components/geoserver_security_backend.md
+        - "Connection to the GeoNode REST Role Service": setup/configuration/components/geonode_rest/geonode_rest.md
+        - "Setup of the GeoServer OAuth2 Authentication Filter": setup/configuration/components/geoserver_oauth2_filter/geoserver_oauth2_filter.md
+        - "Configuration of the GeoServer Filter Chains": setup/configuration/components/geoserver_filter_chains/geoserver_filter_chains.md
+        - "Setup and test of the GeoFence Server and Default Rules": setup/configuration/components/geofence_server_rules/geofence_server_rules.md
+        - "Troubleshooting and Advanced Features": setup/configuration/components/troubleshooting_advanced_features.md
+        - "SSL Trusted Certificates": setup/configuration/components/ssl_trusted_certificates/ssl_trusted_certificates.md
+        - "GeoFence Advanced Features": setup/configuration/components/geofence_advanced_features.md
+      - Hardening GeoNode: setup/configuration/hardening.md
+    - Production Enhancements: "setup/prod_enhancements/prod_enhancements.md"
+  - User Guide:
+    - User account: "user-guide/user_account.md"
+    - Users and Groups: "user-guide/users_groups.md"
+    - Resource Information: "user-guide/resource_info.md"
+    - Catalog Resources:
+      - Managing Data: "user-guide/catalog/data_types.md"
+      - Finding Data: "user-guide/catalog/finding_data.md"
+    - Datasets:
+      - Upload a dataset: "user-guide/datasets/upload.md"
+      - Preview and Styling: "user-guide/datasets/preview.md"
+      - Edit a dataset: "user-guide/datasets/dataset_editing.md"
+      - Download a dataset: "user-guide/datasets/dataset_download.md"
+      - Mapping tools: "user-guide/datasets/mapping_tools.md"
+      - Update and Replace: "user-guide/datasets/update_replace.md"
+      - Remote datasets: "user-guide/datasets/remote.md"
+      - Create empty dataset: "user-guide/datasets/empty.md"
+      - Advanced dataset management: "user-guide/datasets/dataset_advanved.md"
+    - Maps:
+      - Creating Maps: "user-guide/maps/creating_maps.md"
+      - Map Styling: "user-guide/maps/map_styling.md"
+      - Map tools and configuration:
+        - Overview: "user-guide/maps/maps_configuration/maps_conf_overview.md"
+        - Map Viewer: "user-guide/maps/maps_configuration/map_viewers.md"
+        - Table of Contents (TOC): "user-guide/maps/maps_configuration/toc.md"
+        - Attributes Table: "user-guide/maps/maps_configuration/attribute_table.md"
+        - Timeline: "user-guide/maps/maps_configuration/timeline.md"
+        - Other Menu Tools: "user-guide/maps/maps_configuration/options_menu.md"
+    - Documents:
+      - Upload/Add Documents: "user-guide/documents/upload.md"
+    - GeoStories: "user-guide/geostory/geostory.md"
+    - Dashboards: "user-guide/dashboard/dashboard.md"
+    - Styling: "user-guide/resource_styling.md"
+    - Sharing: "user-guide/sharing.md"
+    - Metadata: "user-guide/metadata.md"
+  - Administration:
+    - GeoNode Admins Guide:
+      - Accessing the panel: "admin/admin_panel/panel.md"
+      - Reset or Change the admin password: "admin/admin_panel/reset_pwd.md"
+      - Theming: "admin/admin_panel/admin_panel_theming.md"
+      - Users: "admin/admin_panel/user.md"
+      - Groups: "admin/admin_panel/group.md"
+      - Group based advanced data workflow: "admin/admin_panel/group_based_advanced_workflow.md"
+      - Manage profiles using the admin panel: "admin/admin_panel/manage_profiles_using_the_admin_panel.md"
+      - Manage datasets using the admin panel: "admin/admin_panel/manage_datasets_using_the_admin_panel.md"
+      - Manage the maps using the admin panel: "admin/admin_panel/manage_maps_using_the_admin_panel.md"
+      - Manage the documents using the admin panel: "admin/admin_panel/manage_the_documents_using_the_admin_panel.md"
+      - Manage the base metadata choices using the admin panel: "admin/admin_panel/manage_metadata_choices_using_the_admin_panel.md"
+      - Menus, Items and Placeholders: "admin/admin_panel/menus_items_and_placeholders.md"
+      - OAuth2: "admin/admin_panel/oauth.md"
+    - GeoNode Management Commands:
+      - Migrate GeoNode base URL: "admin/management_commands/migrate_geonode.md"
+      - Update Permissions, Metadata, Legends and Download Links: "admin/management_commands/update_perms_metadata.md"
+      - Loading Data into GeoNode: "admin/management_commands/loading_data.md"
+      - Create Users and Super Users: "admin/management_commands/create_users.md"
+      - Batch Sync Permissions: "admin/management_commands/batch_sync_perms.md"
+      - Delete Certain GeoNode Resources: "admin/management_commands/delete_gnode_resources.md"
+      - Async execution over http: "admin/management_commands/async_execution_http.md"
+    - GeoNode Async Signals: "admin/async.md"
+    - Harvesting resources from remote services:
+      - Overview: "admin/harvesting/harvesting_overview.md"
+      - GeoNode harvesting concepts: "admin/harvesting/gnode_harvesting_concepts.md"
+      - Harvesting workflows: "admin/harvesting/harvesting_workflows.md"
+      - Harvesting operations: "admin/harvesting/harvesting_operations.md"
+      - Standard harvester workers: "admin/harvesting/harvester_workers.md"
+    - Read-only and Maintenance modes: "admin/modes/modes.md"
+    - Customize the look and feel:
+      - GeoNode Themes: "admin/gnode_theme/geonode_themes.md"
+      - Theming your GeoNode Project: "admin/gnode_theme/theme_geonode_project.md"
+    - Changing the Default Language: "admin/default_lang.md"
+    - Thesauri: "admin/thesauri/thesauri.md"
+  - Developer Guide: 
+    - API Usage: "development/api.md"
+    - Metadata:
+      - Intro to GeoNode metadata management: "development/metadata/intro.md"
+      - Metadata app design and implementation: "development/metadata/design.md"
+      - Metadata localization: "development/metadata/i18n.md"
+      - Schema caching: "development/metadata/caching.md"
+      - Metadata editor client: "development/metadata/client.md"
+      - Examples:Adding a metadata field: "development/metadata/example.md"
+      - Example:Adding an handler: "development/metadata/example2.md"
+    - How to develop:
+      - Start to develop with Docker: "development/how_to_develop/docker.md"
+      - Start MapStore2 client in development mode: "development/how_to_develop/mapstore.md"
 extra_css:
   - theme/css/extra.css
 
@@ -59,7 +137,6 @@ theme:
     - navigation.top
     - navigation.tabs
     - navigation.tabs.sticky
-    - navigation.path
     - navigation.indexes
     - content.code.copy
 
