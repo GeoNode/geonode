@@ -145,7 +145,11 @@ Use the `action` parameter to change how the API processes your request. Some ac
 | **`resource_metadata_upload`**| Uploads and applies an XML metadata file to an existing dataset. | `resource_pk`<br>`base_file` *(must be the XML)* |
 
 ## Actions
-#### Upload (default action)
+These actions are used to create, upload, and manage dataset resources in GeoNode. They cover common operations such as uploading new data, replacing existing datasets, merging features, and creating empty dataset schemas.
+
+#### Upload
+
+Use this as the default action (action=upload) to upload a new dataset.
 
 ```python
 import requests
@@ -174,9 +178,11 @@ response = requests.request(
     )
 ```
 
-#### Replace (action = "replace")
+#### Replace
 
-Use when you want to replace the data of an existing dataset. Provide the ``resource_pk`` of the target dataset.
+Use when you want to replace the data of an existing dataset(action=replace).
+
+Provide the ``resource_pk`` of the target dataset.
 
 **Required:**
 - `resource_pk`
@@ -210,7 +216,7 @@ response = requests.request(
 )
 ```
 
-#### Upsert (action = "upsert")
+#### Upsert
 
 The ``upsert`` action merges new features into an existing dataset based on a key field. Features that already exist (matched by the key) are updated; new features are inserted. Set the ``action`` parameter to ``upsert``, provide the ``resource_pk`` of the target dataset, and optionally specify the ``upsert_key`` field name (defaults to ``fid``).
 
@@ -227,7 +233,7 @@ files = [
 
 data = {
     'action': 'upsert',
-    'resource_pk': 123,
+    'resource_pk': '123',
     'upsert_key': 'fid',  # the field used to match existing features; defaults to 'fid'
 }
 
@@ -244,11 +250,11 @@ response = requests.request(
         )
 ```
 
-#### Create (action = "create")
+#### Create
 
 The create action allows creating an empty dataset (no uploaded file). Use the ``attributes`` parameter to declare fields and their constraints.
 
-Required params: ``title``, ``geom`` (e.g. ``POINT / POLYGON / etc``), ``attributes`` (JSON string describing columns).
+Required params: ``title``, ``geom`` (e.g. ``POINT / POLYGON / etc.``), ``attributes`` (JSON string describing columns).
 
 Example (minimal):
 ```python
@@ -260,7 +266,7 @@ data = json.dumps({
     'action': 'create',
     'title': 'New empty dataset',
     'geom': 'Point',
-    'attributes': [{'name': 'id', 'type': 'integer', 'nullable': False}, {'name': 'label','type':'string'}]
+    'attributes': [{'name': 'id', 'type': 'integer', 'nullable': False}, {'name': 'label', 'type': 'string'}]
 })
 
 headers = {
@@ -275,7 +281,7 @@ response = requests.request(
         )
 ```
 
-#### Apply SLD / style upload (action = "resource_style_upload")
+#### Apply SLD / style upload
 
 Apply an SLD to an existing dataset using the upload endpoint with ``action=resource_style_upload`` and ``resource_pk``. Provide the SLD as ``base_file`` (or ``sld_file`` depending on the client).
 
@@ -288,7 +294,6 @@ url = "https://master.demo.geonode.org/api/v2/uploads/upload"
 files = [
     ('base_file', ('style.sld', open('/path/style.sld','rb'),'application/xml')),
     ('sld_file', ('style.sld', open('/path/style.sld','rb'),'application/xml')),
-
 ]
 
 data = {'action': 'resource_style_upload', 'resource_pk': '123'}
@@ -306,7 +311,7 @@ response = requests.request(
         )
 ```
 
-#### Apply XML metadata (action = "resource_metadata_upload" or dedicated endpoint)
+#### Apply XML metadata
 
 You can apply XML metadata via the upload endpoint (``action=resource_metadata_upload`` + ``resource_pk`` + metadata file), or use the dedicated dataset metadata endpoint:
 
@@ -424,7 +429,7 @@ headers = {
 response = requests.request("GET", url, headers=headers)
 ```
 
-### Upload of a metadata file
+### Upload a metadata file
 
 A complete metadata file conforming to ISO-19115 can be uploaded for a dataset.
 
@@ -910,7 +915,7 @@ To retrieve the populated metadata for a specific resource, use the instance end
 * **`lang`** *(String, Optional)*: Sets the language for the schema localization (e.g., `en`, `fr`). If omitted, it defaults to the language set in your session cookies.
 
 **Example Request:**
-```
+```python
 import requests
 
 url = "https://master.demo.geonode.org/api/v2/metadata/instance/123?lang=en"
@@ -952,7 +957,7 @@ response = requests.put(url, headers=headers, data=payload)
 ```
 
 
-## Sparse Fields
+## Sparse Metadata Fields
 
 Sparse Fields provide a simple, flexible way to store custom, free-form metadata on GeoNode resources without requiring changes to the underlying database schema. 
 
@@ -995,7 +1000,7 @@ response = requests.request("GET", url, headers=headers)
 ```
 
 **Example Response**
-```
+```json
 { 
   "value": "sparse value" 
 }
