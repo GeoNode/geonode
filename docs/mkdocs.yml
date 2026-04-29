@@ -56,6 +56,7 @@ nav:
     - Maps:
       - Creating Maps: "user-guide/maps/creating_maps.md"
       - Map Information: "user-guide/maps/map_info.md"
+      - Map Styling: "user-guide/maps/map_styling.md"
       - Map tools and configuration:
         - Overview: "user-guide/maps/maps_configuration/maps_conf_overview.md"
         - Map Viewer: "user-guide/maps/maps_configuration/map_viewers.md"
@@ -68,6 +69,7 @@ nav:
       - Document Information: "user-guide/documents/document_info.md"
     - GeoStories: "user-guide/geostory/geostory.md"
     - Dashboards: "user-guide/dashboard/dashboard.md"
+    - Styling: "user-guide/resource_styling.md"
     - Sharing: "user-guide/sharing.md"
     - Metadata: "user-guide/metadata.md"
   - Administration:
