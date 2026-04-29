@@ -39,12 +39,12 @@ nav:
   - User Guide:
     - User account: "user-guide/user_account.md"
     - Users and Groups: "user-guide/users_groups.md"
+    - Resource Information: "user-guide/resource_info.md"
     - Catalog Resources:
       - Managing Data: "user-guide/catalog/data_types.md"
       - Finding Data: "user-guide/catalog/finding_data.md"
     - Datasets:
       - Upload a dataset: "user-guide/datasets/upload.md"
-      - Dataset Information: "user-guide/datasets/dataset_info.md"
       - Preview and Styling: "user-guide/datasets/preview.md"
       - Edit a dataset: "user-guide/datasets/dataset_editing.md"
       - Download a dataset: "user-guide/datasets/dataset_download.md"
@@ -55,7 +55,6 @@ nav:
       - Advanced dataset management: "user-guide/datasets/dataset_advanved.md"
     - Maps:
       - Creating Maps: "user-guide/maps/creating_maps.md"
-      - Map Information: "user-guide/maps/map_info.md"
       - Map Styling: "user-guide/maps/map_styling.md"
       - Map tools and configuration:
         - Overview: "user-guide/maps/maps_configuration/maps_conf_overview.md"
@@ -66,7 +65,6 @@ nav:
         - Other Menu Tools: "user-guide/maps/maps_configuration/options_menu.md"
     - Documents:
       - Upload/Add Documents: "user-guide/documents/upload.md"
-      - Document Information: "user-guide/documents/document_info.md"
     - GeoStories: "user-guide/geostory/geostory.md"
     - Dashboards: "user-guide/dashboard/dashboard.md"
     - Styling: "user-guide/resource_styling.md"
