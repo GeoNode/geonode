@@ -12,6 +12,10 @@ build:
  os: ubuntu-22.04
  tools:
    python: "3.10"
+ jobs:
+   post_build:
+     - mkdir -p $READTHEDOCS_OUTPUT/pdf
+     - cp $READTHEDOCS_OUTPUT/html/pdf/geonode_documentation.pdf $READTHEDOCS_OUTPUT/pdf/geonode_documentation.pdf
 
 mkdocs:
   configuration: docs/mkdocs.yml
@@ -20,6 +24,3 @@ mkdocs:
 python:
   install:
   - requirements: docs/requirements.txt
-
-formats:
-  - pdf
