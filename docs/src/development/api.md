@@ -12,14 +12,14 @@ Example Requests:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources"
+url = "https://development.demo.geonode.org/api/v2/resources"
 response = requests.request("GET", url)
 ```
 2. Detail:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/1797"
+url = "https://development.demo.geonode.org/api/v2/resources/1797"
 response = requests.request("GET", url)
 ```
 
@@ -30,7 +30,7 @@ response = requests.request("GET", url)
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources"
+url = "https://development.demo.geonode.org/api/v2/resources"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -85,14 +85,14 @@ extent ``(Four comer separated coordinates)`` |  /api/v2/resources?extent=-180,-
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/?filter{resource_type}=map"
+url = "https://development.demo.geonode.org/api/v2/resources/?filter{resource_type}=map"
 response = requests.request("GET", url, headers=headers, data=payload
 ```
 2. Filter with multiple values
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/?filter{resource_type.in}=map&filter{resource_type.in}=dataset"
+url = "https://development.demo.geonode.org/api/v2/resources/?filter{resource_type.in}=map&filter{resource_type.in}=dataset"
 response = requests.request("GET", url, headers=headers, data=payload)
 ```
 
@@ -154,7 +154,7 @@ Use this as the default action (action=upload) to upload a new dataset.
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
 payload = {'action': 'upload'}
 files=[
     (
@@ -193,7 +193,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
 files = [
     (
         "base_file",
@@ -225,7 +225,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
 
 files = [
     ('base_file', ('update.zip', open('/path/update.zip','rb'),'application/zip'))
@@ -260,7 +260,7 @@ Example (minimal):
 ```python
 import requests, json
 
-url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
 
 data = json.dumps({
     'action': 'create',
@@ -289,7 +289,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
 
 files = [
     ('base_file', ('style.sld', open('/path/style.sld','rb'),'application/xml')),
@@ -321,7 +321,7 @@ Example (upload action):
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/uploads/upload"
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
 
 files = [
     ('base_file', ('metadata.xml', open('/path/metadata.xml','rb'),'text/xml')),
@@ -458,7 +458,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/1778"
+url = "https://development.demo.geonode.org/api/v2/resources/1778"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -477,7 +477,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/datasets/geonode:BoulderCityLimits3/dataset_download"
+url = "https://development.demo.geonode.org/datasets/geonode:BoulderCityLimits3/dataset_download"
 response = requests.request("GET", url)
 ```
 
@@ -490,7 +490,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/documents/1781/download"
+url = "https://development.demo.geonode.org/documents/1781/download"
 response = requests.request("GET", url)
 ```
 
@@ -507,7 +507,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/users"
+url = "https://development.demo.geonode.org/api/v2/users"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -523,7 +523,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/users/1000"
+url = "https://development.demo.geonode.org/api/v2/users/1000"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -538,7 +538,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/users"
+url = "https://development.demo.geonode.org/api/v2/users"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -559,7 +559,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/users/1000"
+url = "https://development.demo.geonode.org/api/v2/users/1000"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -575,7 +575,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/users/1000"
+url = "https://development.demo.geonode.org/api/v2/users/1000"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -592,7 +592,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/users/1000/groups"
+url = "https://development.demo.geonode.org/api/v2/users/1000/groups"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -606,7 +606,7 @@ Example:
 ```python
 import requests
 payload={"owner": 1001}
-url = "https://master.demo.geonode.org/api/v2/users/1000/transfer_resources"
+url = "https://development.demo.geonode.org/api/v2/users/1000/transfer_resources"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -625,7 +625,7 @@ Example:
 ```python
 import requests
 payload={"groups": [1,2,3]}
-url = "https://master.demo.geonode.org/api/v2/users/1000/remove_from_group_manager"
+url = "https://development.demo.geonode.org/api/v2/users/1000/remove_from_group_manager"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -645,7 +645,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/groups"
+url = "https://development.demo.geonode.org/api/v2/groups"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -672,7 +672,7 @@ Example:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/1791/permissions"
+url = "https://development.demo.geonode.org/api/v2/resources/1791/permissions"
 headers = {
     'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
 }
@@ -730,7 +730,7 @@ The perm spec is sent as JSON, with ``application/json Content-Type``, inside a 
 import requests
 import json
 
-url = "https://master.demo.geonode.org/api/v2/resources/1791/permissions"
+url = "https://development.demo.geonode.org/api/v2/resources/1791/permissions"
 payload = json.dumps({
 "users": [
     {
@@ -773,7 +773,7 @@ This is an asynchrnous operation which returns a response similar to the followi
 {
     "status": "ready",
     "execution_id": "7ed578c2-7db8-47fe-a3f5-6ed3ca545b67",
-    "status_url": "https://master.demo.geonode.org/api/v2/resource-service/execution-status/7ed578c2-7db8-47fe-a3f5-6ed3ca545b67"
+    "status_url": "https://development.demo.geonode.org/api/v2/resource-service/execution-status/7ed578c2-7db8-47fe-a3f5-6ed3ca545b67"
 }
 ```
 
@@ -807,7 +807,7 @@ where pk Resource base id
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/{pk}/linked_resources"
+url = "https://development.demo.geonode.org/api/v2/resources/{pk}/linked_resources"
 response = requests.request("GET", url)
 ```
 
@@ -837,7 +837,7 @@ Example Request:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/{pk}/assets/"
+url = "https://development.demo.geonode.org/api/v2/resources/{pk}/assets/"
 
 payload = {
 'title': 'My Asset Title',
@@ -870,7 +870,7 @@ Example Request:
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/resources/{resource_pk}/assets/{asset_pk}"
+url = "https://development.demo.geonode.org/api/v2/resources/{resource_pk}/assets/{asset_pk}"
 
 headers = {
 'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
@@ -896,7 +896,7 @@ Before reading or editing a specific resource's metadata, it is highly recommend
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/metadata/schema/?lang=en"
+url = "https://development.demo.geonode.org/api/v2/metadata/schema/?lang=en"
 
 headers = {
 'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
@@ -918,7 +918,7 @@ To retrieve the populated metadata for a specific resource, use the instance end
 ```python
 import requests
 
-url = "https://master.demo.geonode.org/api/v2/metadata/instance/123?lang=en"
+url = "https://development.demo.geonode.org/api/v2/metadata/instance/123?lang=en"
 
 headers = {
 'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
@@ -940,7 +940,7 @@ GeoNode's metadata manager automatically parses the incoming JSON, delegates fie
 import requests
 import json
 
-url = "https://master.demo.geonode.org/api/v2/metadata/instance/123"
+url = "https://development.demo.geonode.org/api/v2/metadata/instance/123"
 
 headers = {
         'Authorization': 'Basic dXNlcjpwYXNzd29yZA==',
@@ -992,7 +992,7 @@ Retrieves the exact value of a single sparse field associated with a specific re
 ```python
 import requests
 
-url="https://master.demo.geonode.org/api/v2/metadata/sparse/123/sparse_key"
+url="https://development.demo.geonode.org/api/v2/metadata/sparse/123/sparse_key"
 headers = {
         'Authorization': 'Basic dXNlcjpwYXNzd29yZA==',
     }
@@ -1025,7 +1025,7 @@ Creates a new sparse field or updates the value of an existing one (upsert).
 import requests
 import json
 
-url = "https://master.demo.geonode.org/api/v2/metadata/sparse/123/sparse_key"
+url = "https://development.demo.geonode.org/api/v2/metadata/sparse/123/sparse_key"
 payload = json.dumps({"value": "sparse value updated"})
 
 headers = {
