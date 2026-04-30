@@ -1487,9 +1487,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         ("it-it", "Italiano"),
     )
 
-    # This setting includes supported Maptstore language choices in a DB-based format
-    PROFILE_LANGUAGE_CHOICES = tuple((code.split("-")[0].lower(), label) for code, label in MAPSTORE_DEFAULT_LANGUAGES)
-
     if os.getenv("LANGUAGES"):
         # Map given languages to mapstore supported languages.
         LANGUAGES = tuple(
@@ -1497,6 +1494,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         )
     else:
         LANGUAGES = MAPSTORE_DEFAULT_LANGUAGES
+
+    # This setting includes supported Maptstore language choices in a DB-based format
+    PROFILE_LANGUAGE_CHOICES = tuple((code.split("-")[0].lower(), label) for code, label in LANGUAGES)
 
     # The default mapstore client compiles the translations json files in the /static/mapstore directory
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework

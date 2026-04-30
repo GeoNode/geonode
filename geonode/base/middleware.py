@@ -25,6 +25,7 @@ from django.utils import translation
 from django.utils.deprecation import MiddlewareMixin
 
 from geonode.base.utils import configuration_session_cache
+from geonode.people.utils import profile_to_runtime_lang
 
 
 class ReadOnlyMiddleware:
@@ -108,9 +109,11 @@ class ProfileLanguageMiddleware(MiddlewareMixin):
         if not request.user.is_authenticated:
             return None
 
-        lang = getattr(request.user, "language", None)
-        if lang:
-            translation.activate(lang)
-            request.LANGUAGE_CODE = lang
+        profile_lang = getattr(request.user, "language", None)
+        runtime_lang = profile_to_runtime_lang(profile_lang)
+
+        if runtime_lang:
+            translation.activate(runtime_lang)
+            request.LANGUAGE_CODE = runtime_lang
 
         return None

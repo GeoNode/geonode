@@ -22,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.utils.translation import check_for_language, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.http import HttpResponseForbidden
@@ -33,7 +33,7 @@ from django.views.i18n import set_language as django_set_language
 
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
-from geonode.people.utils import get_available_users
+from geonode.people.utils import get_available_users, runtime_to_profile_lang
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
@@ -175,14 +175,16 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
 @require_POST
 def set_session_language(request):
     raw_lang = request.POST.get("language")
-    lang_code = raw_lang.split("-")[0].lower() if raw_lang else None
+    profile_lang = runtime_to_profile_lang(raw_lang)
 
-    if lang_code and check_for_language(lang_code):
-        request.session[SESSION_LANG_KEY] = lang_code
+    valid_profile_codes = {code for code, _label in settings.PROFILE_LANGUAGE_CHOICES}
+
+    if profile_lang in valid_profile_codes:
+        request.session[SESSION_LANG_KEY] = profile_lang
 
         if request.user.is_authenticated and hasattr(request.user, "language"):
-            if request.user.language != lang_code:
-                request.user.language = lang_code
+            if request.user.language != profile_lang:
+                request.user.language = profile_lang
                 request.user.save(update_fields=["language"])
 
     return django_set_language(request)
