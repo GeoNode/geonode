@@ -126,9 +126,10 @@ class DefaultSpecialGroupsPermissionsHandler(BasePermissionsHandler):
 
         anonymous_compact = get_default_anonymous_compact_permission()
         anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
-        payload["groups"][anonymous_group] = sorted(
-            _to_extended_perms(anonymous_compact, _resource_type, _resource_subtype)
-        )
+        if anonymous_group not in payload["groups"]:
+            payload["groups"][anonymous_group] = sorted(
+                _to_extended_perms(anonymous_compact, _resource_type, _resource_subtype)
+            )
 
         registered_compact = get_default_registered_members_compact_permission()
         try:
@@ -136,7 +137,7 @@ class DefaultSpecialGroupsPermissionsHandler(BasePermissionsHandler):
         except Group.DoesNotExist:
             registered_group = None
 
-        if registered_group:
+        if registered_group and registered_group not in payload["groups"]:
             payload["groups"][registered_group] = sorted(
                 _to_extended_perms(registered_compact, _resource_type, _resource_subtype)
             )
