@@ -45,12 +45,15 @@ ACTIONS = [ACTION_CREATE, ACTION_UPDATE, ACTION_APPEND, ACTION_PARSE]
 FAKE_BASE_URI = "http://automatically/added/uri/"
 
 
-def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
+def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE, default_lang: str = None, langs: List[str] = [], log_details=True):
     g = Graph()
 
     # if the input_file is an UploadedFile object rather than a file path the Graph.parse()
     # method may not have enough info to correctly guess the type; in this case supply the
     # name, which should include the extension, to guess_format manually...
+
+    # explodes list of comma separated langs into single list of langs
+    langs = [lang for item in langs for lang in item.split(",")]
 
     filename = input_file.name if isinstance(input_file, UploadedFile) else input_file
     rdf_format = guess_format(filename)
@@ -65,7 +68,7 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
     if scheme is None:
         raise CommandError("ConceptScheme not found in file")
 
-    default_lang = getattr(settings, "THESAURUS_DEFAULT_LANG", None)
+    default_lang = default_lang or getattr(settings, "THESAURUS_DEFAULT_LANG", None) or getattr(settings, "LANGUAGE_CODE", 'en')
 
     available_titles = [t
                         for t in itertools.chain(g.objects(scheme, DC.title), g.objects(scheme, DCTERMS.title))
@@ -81,15 +84,22 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
         Thesaurus,
         {"identifier": identifier},
         {"date": date_issued, "description": description, "title": thesaurus_title, "about": str(scheme)},
-        {"card_min": 0, "card_max": 0, "facet": False}
+        {"card_min": 0, "card_max": 0, "facet": False},
+        log_details
     )
 
     tl_cnt = tl_add = 0
     tk_cnt = tk_add = 0
     tkl_cnt = tkl_add = 0
+    tkl_skp = 0
 
     for lang in available_titles:
         if lang.language is not None:
+            tl_cnt += 1
+            if langs and lang.language not in langs:
+                logger.debug(f"Skipping label for language '{lang.language}' not in requested langs {langs}")
+                tkl_skp += 1
+                continue
             thesaurus_label, c = _run_action(
                 action,
                 ThesaurusLabel,
@@ -99,8 +109,8 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
                 },
                 {"label": lang.value},
                 {},
+                log_details
             )
-            tl_cnt += 1
             tl_add += 1 if c else 0
 
     for concept in g.subjects(RDF.type, SKOS.Concept):
@@ -115,7 +125,8 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
             available_labels = [t for t in g.objects(concept, SKOS.prefLabel) if isinstance(t, Literal)]
             alt_label = value_for_language(available_labels, default_lang) or about
 
-        logger.info(f" - Parsed Concept -> about:'{about}' alt:'{alt_label}' pref:'{str(pref)}' ")
+        if log_details:
+            logger.info(f" - Parsed Concept -> about:'{about}' alt:'{alt_label}' pref:'{str(pref)}' ")
 
         tk, c = _run_action(
             action,
@@ -126,14 +137,21 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
             },
             {"alt_label": alt_label},
             {},
+            log_details
         )
         tk_cnt += 1
         tk_add += 1 if c else 0
 
         for _, pref_label in preferredLabel(g, concept):
+            tkl_cnt += 1
             lang = pref_label.language
+            if langs and lang not in langs:
+                logger.debug(f"Skipping label for language '{lang}' not in requested langs {langs}")
+                tkl_skp += 1
+                continue
             label = str(pref_label)
-            logger.info(f"   - Label {lang}: {label}")
+            if log_details:
+                logger.info(f"   - Label {lang}: {label}")
 
             tkl, c = _run_action(
                 action,
@@ -144,8 +162,8 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
                 },
                 {"label": label},
                 {},
+                log_details
             )
-            tkl_cnt += 1
             tkl_add += 1 if c else 0
 
     logger.warning(f"Thesaurus added:                {cr_t}")
@@ -154,7 +172,7 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE):
     logger.warning(f"ThesaurusKeywordLabel added:  {tkl_add:3}/{tkl_cnt:3}")
 
 
-def _run_action(action: str, model: type[models.Model], pk_dict, upd_dict, create_dict) -> tuple[models.Model, bool]:
+def _run_action(action: str, model: type[models.Model], pk_dict, upd_dict, create_dict, log_details) -> tuple[models.Model, bool]:
     def update_or_create(defaults=upd_dict, create_defaults=create_dict, **pk_dict):
         # this signature is available since django 5
         obj, created = model.objects.get_or_create(defaults=upd_dict | create_dict, **pk_dict)
@@ -162,7 +180,8 @@ def _run_action(action: str, model: type[models.Model], pk_dict, upd_dict, creat
         if not created:
             rows = model.objects.filter(pk=obj.pk).update(**upd_dict)
             if rows != 1:
-                logger.error(f"UPDATED {rows} rows for {model.__name__} -> {pk_dict}")
+                if log_details:
+                    logger.error(f"UPDATED {rows} rows for {model.__name__} -> {pk_dict}")
 
         return obj, created
 
@@ -176,14 +195,17 @@ def _run_action(action: str, model: type[models.Model], pk_dict, upd_dict, creat
     elif action == ACTION_UPDATE:
         obj, created = update_or_create(defaults=upd_dict, create_defaults=create_dict, **pk_dict)
         if created:
-            logger.info(f"{model.__name__} -> Created id:{pk_dict}")
+            if log_details:
+                logger.info(f"{model.__name__} -> Created id:{pk_dict}")
         else:
-            logger.info(f"{model.__name__} -> Updated id:{pk_dict} DATA:{upd_dict}")
+            if log_details:
+                logger.info(f"{model.__name__} -> Updated id:{pk_dict} DATA:{upd_dict}")
 
     elif action == ACTION_APPEND:
         obj, created = model.objects.get_or_create(defaults=upd_dict | create_dict, **pk_dict)
         if created:
-            logger.info(f"{model.__name__} -> Created {pk_dict}")
+            if log_details:
+                logger.info(f"{model.__name__} -> Created {pk_dict}")
     else:
         raise CommandError("No valid action found")
 

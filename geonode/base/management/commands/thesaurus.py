@@ -43,6 +43,12 @@ class Command(BaseCommand):
             choices=ACTIONS,
             help="Actions to run upon data loading (default: create)",
         )
+        load_group.add_argument(
+            "--langs",
+            dest="langs",
+            action="append",
+            help="Only import labels for the requested languages; can be repeated",
+        )
 
         dump_group = parser.add_argument_group('Params for "dump" subcommand')
         dump_group.add_argument("-o", "--out", nargs="?", help="Full path to the output file to be created")
@@ -101,6 +107,8 @@ class Command(BaseCommand):
             input_file = options.get("file")
             action = options.get("action")
             identifier = options.get("identifier")
+            lang = options.get("lang")
+            langs = options.get("langs") or []
 
             if not input_file:
                 raise CommandError("'load' command requires the <file> parameter.")
@@ -109,7 +117,7 @@ class Command(BaseCommand):
                 action = ACTION_CREATE
                 logger.info(f"Missing action param: setting actions as '{action}'")
 
-            load_thesaurus(input_file, identifier, action)
+            load_thesaurus(input_file, identifier, action, lang=lang, langs=langs)
 
         elif subcommand == COMMAND_AUTOLOAD:
             autoload_thesauri()

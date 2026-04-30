@@ -17,6 +17,7 @@ def autoload_thesauri():
     loaded = 0
     for app_config in apps.get_app_configs():
         thesauri_dir = os.path.join(app_config.path, "thesauri")
+        logger.debug(f"Looking for auto thesaurus in app '{app_config.name}' path: {thesauri_dir}")
         if not os.path.isdir(thesauri_dir):
             continue
         rdf_files = [f for f in os.listdir(thesauri_dir) if f.lower().endswith(".rdf")]
@@ -24,8 +25,8 @@ def autoload_thesauri():
             rdf_path = os.path.join(thesauri_dir, rdf_file)
             logger.info(f"Autoloading thesaurus from app '{app_config.name}': {rdf_path}")
             try:
-                load_thesaurus(rdf_path, identifier=None, action=ACTION_UPDATE)
+                load_thesaurus(rdf_path, identifier=None, action=ACTION_UPDATE, log_details=False)
                 loaded += 1
             except Exception as e:
-                logger.error(f"Failed to load thesaurus '{rdf_path}': {e}")
+                logger.error(f"Failed to load thesaurus '{rdf_path}': {e}", exc_info=True)
     logger.info(f"Autoload complete: {loaded} thesaurus file(s) loaded.")
