@@ -1866,10 +1866,48 @@ if AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN and not _resource_ownership_admin_use
     )
 RESOURCE_OWNERSHIP_ADMIN_USERNAME = (_resource_ownership_admin_username or "admin").strip() or "admin"
 
-# Whether the uplaoded resources should be public and downloadable by default
-# or not
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "True"))
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "True"))
+# Whether the uploaded resources should be public and downloadable by default
+# DEPRECATED: use DEFAULT_ANONYMOUS_PERMISSIONS (compact permissions)
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "None"))
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "None"))
+
+# Resolve anonymous compact fallback from deprecated settings for cases where the new setting is not provided
+_anonymous_compact_fallback = "download"
+if (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is True:
+        _anonymous_compact_fallback = "download"
+    elif DEFAULT_ANONYMOUS_VIEW_PERMISSION is True:
+        _anonymous_compact_fallback = "view"
+    else:
+        _anonymous_compact_fallback = "none"
+
+# Compact permissions for default groups
+# Valid values:
+#  - DEFAULT_ANONYMOUS_PERMISSIONS: view | download | none
+#  - DEFAULT_REGISTERED_MEMBERS_PERMISSIONS: view | download | edit | manage | none
+DEFAULT_ANONYMOUS_PERMISSIONS = os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS", _anonymous_compact_fallback)
+DEFAULT_REGISTERED_MEMBERS_PERMISSIONS = os.getenv("DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", "download")
+
+if os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS") is not None and (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    logger.warning(
+        "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated and ignored "
+        "because DEFAULT_ANONYMOUS_PERMISSIONS is set."
+    )
+elif (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    logger.warning(
+        "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated. "
+        "Please use DEFAULT_ANONYMOUS_PERMISSIONS instead."
+    )
+
 
 EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "True")

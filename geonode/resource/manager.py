@@ -249,7 +249,6 @@ class BaseResourceManager(ResourceManagerInterface):
     ) -> bool:
         """
         Finalize default permissions for newly created resources,
-        including optional creation-time ownership handling.
         """
         if not instance:
             return False

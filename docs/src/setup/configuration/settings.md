@@ -529,17 +529,88 @@ Additional download handlers that provides a link to download the resource
 One of the main features of debug mode is the display of detailed error pages. If your app raises an exception when DEBUG is True, Django will display a detailed traceback, including a lot of metadata about your environment, such as all the currently defined Django settings (from settings.py).
 This is a [Django Setting](https://docs.djangoproject.com/en/3.2/ref/settings/#debug)
 
+**DEFAULT_ANONYMOUS_PERMISSIONS**
+
+:   - Default ``download``
+    - Env: ``DEFAULT_ANONYMOUS_PERMISSIONS``
+
+Defines the default compact permission level assigned to anonymous users when a new resource is created.
+
+Supported values are:
+
+- ``view``
+- ``download``
+- ``none``
+
+If this setting is configured, GeoNode ignores the deprecated
+``DEFAULT_ANONYMOUS_VIEW_PERMISSION`` and ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION``
+settings, and logs a warning when they are also provided.
+
+If this setting is not configured and legacy settings are provided, GeoNode maps
+legacy values using this precedence:
+
+- ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True`` -> ``download``
+- ``DEFAULT_ANONYMOUS_VIEW_PERMISSION=True`` (while download is not true) -> ``view``
+- otherwise -> ``none``
+
+Example:
+
+```python
+DEFAULT_ANONYMOUS_PERMISSIONS = "download"
+```
+
+If an unsupported value is configured, GeoNode logs a warning and falls back to ``none``.
+
+**DEFAULT_REGISTERED_MEMBERS_PERMISSIONS**
+
+:   - Default ``download``
+    - Env: ``DEFAULT_REGISTERED_MEMBERS_PERMISSIONS``
+
+Defines the default compact permission level assigned to the registered members group when a new resource is created.
+
+Supported values are:
+
+- ``view``
+- ``download``
+- ``edit``
+- ``manage``
+- ``none``
+
+When set to ``none``, no default permissions are assigned to the registered members group.
+
+Example:
+
+```python
+DEFAULT_REGISTERED_MEMBERS_PERMISSIONS = "edit"
+```
+
+If an unsupported value is configured, GeoNode logs a warning and falls back to ``none``.
+
 **DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION**
 
-- Default: ``True``
+:   - Default:  ``None``
+    - Env: ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION``
 
-Whether the uploaded resources should downloadable by default.
+Deprecated. Use ``DEFAULT_ANONYMOUS_PERMISSIONS`` instead.
+
+Whether uploaded resources should be downloadable by anonymous users by default.
+
+This legacy setting is used only when ``DEFAULT_ANONYMOUS_PERMISSIONS`` is not configured.
+When ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION`` is ``True``, GeoNode maps the anonymous
+default compact permission to ``download``.
+
 
 **DEFAULT_ANONYMOUS_VIEW_PERMISSION**
 
-- Default: ``True``
+:   - Default:  ``None``
+    - Env: ``DEFAULT_ANONYMOUS_VIEW_PERMISSION``
 
-Whether the uploaded resources should be public by default.
+Deprecated. Use ``DEFAULT_ANONYMOUS_PERMISSIONS`` instead.
+
+Whether uploaded resources should be visible to anonymous users by default.
+
+This legacy setting is used only when ``DEFAULT_ANONYMOUS_PERMISSIONS`` is not configured. When ``DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION`` is ``False`` and ``DEFAULT_ANONYMOUS_VIEW_PERMISSION`` is ``True``, GeoNode treats the anonymous default compact permission as ``view``.
+
 
 
 **DEFAULT_DATASET_DOWNLOAD_HANDLER**

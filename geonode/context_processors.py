@@ -27,6 +27,11 @@ from geonode.catalogue import default_catalogue_backend
 from geonode.notifications_helper import has_notifications
 from geonode.base.models import Configuration, Thesaurus
 from geonode.utils import get_geonode_app_types
+from geonode.security.permissions import (
+    DOWNLOAD_RIGHTS,
+    VIEW_RIGHTS,
+    get_default_anonymous_compact_permission,
+)
 
 from allauth.socialaccount.models import SocialApp
 
@@ -34,6 +39,9 @@ from allauth.socialaccount.models import SocialApp
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
+    anonymous_compact = get_default_anonymous_compact_permission()
+    default_anonymous_view = anonymous_compact in (VIEW_RIGHTS, DOWNLOAD_RIGHTS)
+    default_anonymous_download = anonymous_compact == DOWNLOAD_RIGHTS
     thesaurus = Thesaurus.objects.filter(facet=True).all().order_by("order", "id")
     if hasattr(settings, "THESAURUS"):
         warnings.warn(
@@ -76,8 +84,8 @@ def resource_urls(request):
         LICENSES_METADATA=getattr(settings, "LICENSES", dict()).get("METADATA", "never"),
         USE_GEOSERVER=getattr(settings, "USE_GEOSERVER", False),
         USE_NOTIFICATIONS=has_notifications,
-        DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, "DEFAULT_ANONYMOUS_VIEW_PERMISSION", False),
-        DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, "DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", False),
+        DEFAULT_ANONYMOUS_VIEW_PERMISSION=default_anonymous_view,
+        DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=default_anonymous_download,
         EXIF_ENABLED=getattr(settings, "EXIF_ENABLED", False),
         FAVORITE_ENABLED=getattr(settings, "FAVORITE_ENABLED", False),
         THESAURI_FILTERS=(

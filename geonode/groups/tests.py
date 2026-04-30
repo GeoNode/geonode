@@ -380,9 +380,10 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
             # Ensure the groups value is empty by default
             expected_permissions = {}
-            if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+            anonymous_compact = settings.DEFAULT_ANONYMOUS_PERMISSIONS
+            if anonymous_compact == "download":
                 expected_permissions.setdefault("anonymous", []).append("download_resourcebase")
-            if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+            if anonymous_compact == "view":
                 expected_permissions.setdefault("anonymous", []).append("view_resourcebase")
 
             self.assertCountEqual(permissions.get("groups"), expected_permissions)
