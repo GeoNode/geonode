@@ -235,6 +235,7 @@ class PermissionsHandlerRegistry:
                 payload["users"][user].append("add_resourcebase")
             result = payload["users"][user]
         elif group:
+            group_perms = get_group_perms(group, instance)
             if group.name == "anonymous":
                 group_perms = get_groups_with_perms(instance.get_self_resource(), attach_perms=True).get(group)
             payload = permissions or {"users": {}, "groups": {group: group_perms}}
