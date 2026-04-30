@@ -28,7 +28,8 @@ from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISS
 from django.contrib.auth.models import Permission
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from guardian.utils import get_user_obj_perms_model
+from guardian.shortcuts import get_groups_with_perms, get_user_obj_perms_model
+
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
     ADMIN_PERMISSIONS,
@@ -232,10 +233,11 @@ class PermissionsHandlerRegistry:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             if include_user_add_resource and user.has_perm("base.add_resourcebase"):
                 payload["users"][user].append("add_resourcebase")
-
             result = payload["users"][user]
         elif group:
-            payload = permissions or {"users": {}, "groups": {group: list(get_group_perms(group, instance))}}
+            if group.name == "anonymous":
+                group_perms = get_groups_with_perms(instance.get_self_resource(), attach_perms=True).get(group)
+            payload = permissions or {"users": {}, "groups": {group: group_perms}}
             for handler in self.REGISTRY:
                 payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
             result = payload["groups"][group]

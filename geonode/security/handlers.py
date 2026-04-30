@@ -107,14 +107,11 @@ class SpecialGroupsPermissionsHandler(BasePermissionsHandler):
 
         return perms_copy
 
-
-class DefaultSpecialGroupsPermissionsHandler(BasePermissionsHandler):
-    """
-    Auto-assign configured permissions to anonymous and registered members groups on creation.
-    """
-
     @staticmethod
     def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        """
+        Auto-assign configured permissions to anonymous and registered members groups on creation.
+        """
         if not kwargs.get("created", False):
             return perms_payload
 

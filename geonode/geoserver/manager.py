@@ -246,19 +246,11 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                         create_geofence_rules(_resource, perms, None, user_group, batch)
                                         exist_geolimits = exist_geolimits or has_geolimits(_resource, None, user_group)
                                 # Anonymous
-                                effective_permissions = permissions_registry.get_perms(instance=_resource) or {}
-                                anonymous_group = next(
-                                    (
-                                        g
-                                        for g in effective_permissions.get("groups", {})
-                                        if getattr(g, "name", None) == "anonymous"
-                                    ),
-                                    None,
-                                )
                                 anonymous_perms = (
-                                    effective_permissions.get("groups", {}).get(anonymous_group, [])
-                                    if anonymous_group
-                                    else []
+                                    permissions_registry.get_perms(
+                                        instance=_resource, group=Group.objects.get(name="anonymous"), use_cache=True
+                                    )
+                                    or {}
                                 )
 
                                 if VIEW_PERMISSIONS[0] in anonymous_perms:
