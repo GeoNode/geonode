@@ -92,6 +92,7 @@ GeoNode provides a single command (``thesaurus``) with multiple actions:
 * ``list``: list existing thesauri
 * ``load``: load a RDF file
 * ``dump``: dump a thesaurus into a file
+* ``autoload``: automatically discover and load all thesauri shipped by installed apps
 
 .. code-block:: 
 
@@ -102,12 +103,13 @@ GeoNode provides a single command (``thesaurus``) with multiple actions:
                                [--format {json-ld,n3,nt,pretty-xml,sorted-xml,trig,ttl,xml}] [--default-lang LANG] [--version]
                                [-v {0,1,2,3}] [--settings SETTINGS] [--pythonpath PYTHONPATH] [--traceback] [--no-color]
                                [--force-color] [--skip-checks]
-                               [{list,load,dump}]
+                               [{list,load,dump,autoload}]
 
-    Handles thesaurus commands ['list', 'load', 'dump']
+    Handles thesaurus commands ['list', 'load', 'dump', 'autoload']
 
     positional arguments:
-      {list,load,dump}      thesaurus operation to run
+      {list,load,dump,autoload}
+                            thesaurus operation to run
 
     options:
       -h, --help            show this help message and exit
@@ -225,6 +227,63 @@ Also in our GeoNode instance, we added some labels which override the standard o
 In order to only export the entries we edited, we'll issue the command::
 
     python manage.py thesaurus dump -i labels-i18n --include "proj1_*" --include "*_ovr" -f labels-i18n.proj1.rdf
+
+
+### Auto-loading thesauri: ``thesaurus autoload``
+
+The ``autoload`` subcommand scans every installed Django app for a ``thesauri/`` directory
+at the top level of the app package, then loads all ``.rdf`` files it finds there.
+This is how GeoNode and third-party apps can ship thesauri that are loaded automatically at start-up.
+
+```bash
+python manage.py thesaurus autoload
+```
+
+For each ``.rdf`` file discovered, the command runs the equivalent of ``thesaurus load --action update``,
+so the operation is **idempotent**: running it multiple times will not create duplicates; instead,
+existing records are updated and missing ones are created.
+
+**Convention for app-provided thesauri**
+
+Place one or more ``.rdf`` files inside a ``thesauri/`` directory at the root of your app package:
+
+```
+my_geonode_app/
+    thesauri/
+        my_vocabulary.rdf
+        another_vocab.rdf
+    models.py
+    ...
+```
+
+All ``.rdf`` files in that directory are picked up automatically whenever ``thesaurus autoload``
+(or ``invoke loadthesauri``) is executed.
+
+!!! note
+    The ``autoload`` command is automatically run during GeoNode's Docker container start-up sequence (see [Initialization at boot](#initialization-at-boot)).
+
+
+## Initialization at boot { #initialization-at-boot }
+
+When GeoNode starts (e.g. via the Docker entrypoint), the following initialization steps are executed in order:
+
+1. **Database migrations** – applies any pending schema migrations.
+2. **Fixtures** – loads default OAuth2 apps, admin user, and site data (only on first boot or when ``FORCE_REINIT=true``).
+3. **Static files** – collects static assets.
+4. **Thesauri autoload** – runs ``thesaurus autoload`` to load or update all ``.rdf`` files found in any installed app's ``thesauri/`` directory. This step runs on **every** boot so that thesaurus updates shipped with an upgraded app are applied automatically.
+
+To run the thesaurus autoload step manually:
+
+```bash
+# Inside the GeoNode container
+python manage.py thesaurus autoload
+```
+
+Or using the invoke task:
+
+```bash
+invoke loadthesauri
+```
 
 
 ## Configuring a Thesaurus
