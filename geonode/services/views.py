@@ -34,7 +34,7 @@ from django.contrib.auth.decorators import login_required
 from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_visible_resources, check_add_remote_resource_perm
 from django.core.cache import caches
 
 from .models import Service
@@ -59,6 +59,8 @@ def services(request):
 
 @login_required
 def register_service(request):
+    check_add_remote_resource_perm(request.user)
+
     service_register_template = "services/service_register.html"
     if request.method == "POST":
         form = forms.CreateServiceForm(request.POST)

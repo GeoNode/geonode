@@ -632,6 +632,26 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         finally:
             staff_user.delete()
 
+    def test_add_remote_resource_perm_admin_always_has_it(self):
+        """Superusers always have the add_remote_resource permission."""
+        admin = get_user_model().objects.get(username="admin")
+        perms = permissions_registry.get_db_perms_by_user(admin)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_add_remote_resource_perm_regular_user_default(self):
+        """Regular users do NOT have add_remote_resource when setting is False (default)."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_db_perms_by_user(bobby)
+        self.assertNotIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_add_remote_resource_perm_regular_user_enabled(self):
+        """Regular users DO have add_remote_resource when setting is True."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_db_perms_by_user(bobby)
+        self.assertIn("add_remote_resource", perms)
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
         """Test that Dataset is correctly synchronized with guardian:

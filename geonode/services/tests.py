@@ -340,6 +340,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
     @skip("test to be revisioned")
     @mock.patch("arcrest.MapService", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_arcgis_alternative_structure(self, mock_map_service):
         LayerESRIExtent = namedtuple("LayerESRIExtent", "spatialReference xmin ymin ymax xmax")
         LayerESRIExtentSpatialReference = namedtuple("LayerESRIExtentSpatialReference", "wkid latestWkid")
@@ -664,6 +665,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resources", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resource", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_resources(self, mock_wms_get_resource, mock_wms_get_resources, mock_wms_parsed_service, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
@@ -735,6 +737,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         )
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse("register_service"))
@@ -805,6 +808,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertFalse(Harvester.objects.filter(id=harvester.id).exists())
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_add_duplicate_remote_service_url(self):
         form_data = {
             "url": "https://gs-stable.geo-solutions.it/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities",
@@ -933,6 +937,9 @@ class TestServiceViews(GeoNodeBaseTestSupport):
             metadata_only=True,
             base_url="http://bogus.pocus.com/ows",
         )
+        self.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
         self.sut.clear_dirty_state()
 
     def test_user_admin_can_access_to_page(self):
@@ -942,6 +949,24 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     def test_anonymous_user_can_see_the_services(self):
         response = self.client.get(reverse("services"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_allowed_for_admin(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_denied_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 403)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_register_service_allowed_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
         self.assertEqual(response.status_code, 200)
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)

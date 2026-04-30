@@ -24,6 +24,7 @@ from itertools import chain
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.exceptions import PermissionDenied
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
 
 from geonode.groups.conf import settings as groups_settings
@@ -163,6 +164,15 @@ ResourceGroupsAndMembersSet = collections.namedtuple(
     "ResourceGroupsAndMembersSet",
     ["anonymous_group", "registered_members_group", "owner_groups", "resource_groups", "managers"],
 )
+
+
+def check_add_remote_resource_perm(user):
+    """
+    Checks whether the given user has permission to add remote resources.
+    """
+    perms = permissions_registry.get_db_perms_by_user(user)
+    if "add_remote_resource" not in perms:
+        raise PermissionDenied("You do not have permission to add remote resources.")
 
 
 class AdvancedSecurityWorkflowManager:

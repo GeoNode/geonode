@@ -26,7 +26,7 @@ classifiers = [
 dependencies = [
     "Pillow==12.1.1",
     "lxml==5.2.1",
-    "psycopg2==2.9.9",
+    "psycopg2==2.9.12",
     "Django==5.2.13",
 
     # Other
@@ -43,7 +43,7 @@ dependencies = [
     "schema==0.7.7",
     "rdflib==6.3.2",
     "smart_open==7.0.4",
-    "PyMuPDF==1.26.3",
+    "PyMuPDF==1.27.2.3",
     "defusedxml==0.7.1",
     "zipstream-ng==1.8.0",
 
@@ -157,7 +157,7 @@ dependencies = [
     "selenium-requests==2.0.4",
     "webdriver_manager==4.0.1",
     # Security and audit
-    "cryptography==46.0.7",
+    "cryptography==47.0.0",
     "jwcrypto>=1.5.7",
     # dependency for XLSX handler
     "python-calamine==0.6.2",
