@@ -21,7 +21,11 @@
 # Geonode functionality
 
 from django.shortcuts import render
+from django.utils import translation
+from django.utils.deprecation import MiddlewareMixin
+
 from geonode.base.utils import configuration_session_cache
+from geonode.people.utils import profile_to_runtime_lang
 
 
 class ReadOnlyMiddleware:
@@ -95,3 +99,21 @@ class MaintenanceMiddleware:
                 # check if the request is not against whitelisted views (check by URL names)
                 if request.resolver_match.url_name not in self.WHITELISTED_URL_NAMES:
                     return render(request, "base/maintenance.html", status=503)
+
+
+SESSION_LANG_KEY = "language_override"
+
+
+class ProfileLanguageMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        if not request.user.is_authenticated:
+            return None
+
+        profile_lang = getattr(request.user, "language", None)
+        runtime_lang = profile_to_runtime_lang(profile_lang)
+
+        if runtime_lang:
+            translation.activate(runtime_lang)
+            request.LANGUAGE_CODE = runtime_lang
+
+        return None

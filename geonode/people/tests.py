@@ -17,7 +17,9 @@
 #
 #########################################################################
 import django
+from django.test import RequestFactory
 from django.test.utils import override_settings
+from django.utils import translation
 from mock import MagicMock, PropertyMock, patch
 from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupMember, GroupProfile
@@ -39,6 +41,7 @@ from geonode.base.populate_test_data import all_public, create_models, create_si
 from geonode.security.registry import permissions_registry
 from geonode.people.hashers import SHA1PasswordHasher
 from geonode.people.hashers import PBKDF2SHA1WrappedSHA1PasswordHasher
+from geonode.base.middleware import ProfileLanguageMiddleware
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
@@ -1322,3 +1325,100 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(user.check_password("password"))
         # after checking it should be migrated to default hash
         self.assertTrue(user.password.startswith("pbkdf2_sha1"))
+
+    def test_language_switcher_sets_session_override(self):
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it", "next": "/"},
+            follow=False,
+        )
+        self.assertEqual(response.status_code, 302)
+        session = self.client.session
+        self.assertEqual(session["language_override"], "it")
+
+    def test_authenticated_user_language_switch_updates_session_and_db(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it", "next": "/"},
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.client.session["language_override"], "it")
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "it")
+
+    @override_settings(
+        LANGUAGES=(
+            ("en-us", "English"),
+            ("it-it", "Italiano"),
+        ),
+        PROFILE_LANGUAGE_CHOICES=(
+            ("en", "English"),
+            ("it", "Italiano"),
+        ),
+    )
+    def test_authenticated_user_language_switch_stores_profile_code_from_runtime_code(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it-it", "next": "/"},
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.client.session["language_override"], "it")
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "it")
+
+    @override_settings(
+        LANGUAGES=(
+            ("en-us", "English"),
+            ("it-it", "Italiano"),
+        ),
+    )
+    def test_profile_language_middleware_uses_runtime_language_code(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "it"
+
+        request = RequestFactory().get("/")
+        request.user = user
+        request.LANGUAGE_CODE = "en-us"
+
+        try:
+            ProfileLanguageMiddleware(lambda request: None).process_request(request)
+            self.assertEqual(request.LANGUAGE_CODE, "it-it")
+        finally:
+            translation.deactivate()
+
+    def test_logout_and_next_login_keep_updated_db_language(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        self.client.post("/i18n/setlang/", data={"language": "fr", "next": "/"})
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "fr")
+        self.assertEqual(self.client.session.get("language_override"), "fr")
+
+        self.client.logout()
+        self.client.login(username="bobby", password="bob")
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "fr")

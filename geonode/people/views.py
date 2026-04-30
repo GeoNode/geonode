@@ -28,13 +28,16 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 from django.views import View
+from django.views.decorators.http import require_POST
+from django.views.i18n import set_language as django_set_language
 
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
-from geonode.people.utils import get_available_users
+from geonode.people.utils import get_available_users, runtime_to_profile_lang
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
+from geonode.base.middleware import SESSION_LANG_KEY
 from dal import autocomplete
 
 
@@ -167,3 +170,21 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
             )
 
         return qs
+
+
+@require_POST
+def set_session_language(request):
+    raw_lang = request.POST.get("language")
+    profile_lang = runtime_to_profile_lang(raw_lang)
+
+    valid_profile_codes = {code for code, _label in settings.PROFILE_LANGUAGE_CHOICES}
+
+    if profile_lang in valid_profile_codes:
+        request.session[SESSION_LANG_KEY] = profile_lang
+
+        if request.user.is_authenticated and hasattr(request.user, "language"):
+            if request.user.language != profile_lang:
+                request.user.language = profile_lang
+                request.user.save(update_fields=["language"])
+
+    return django_set_language(request)
