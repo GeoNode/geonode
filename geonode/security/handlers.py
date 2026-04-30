@@ -19,7 +19,17 @@
 from abc import ABC
 import logging
 from django.conf import settings
-from geonode.security.permissions import _to_extended_perms, VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS
+from geonode.security.permissions import (
+    _to_extended_perms,
+    get_default_anonymous_compact_permission,
+    get_default_registered_members_compact_permission,
+    MANAGE_RIGHTS,
+    VIEW_RIGHTS,
+    DOWNLOAD_RIGHTS,
+    EDIT_RIGHTS,
+)
+from geonode.groups.conf import settings as groups_settings
+from django.contrib.auth.models import Group
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +106,40 @@ class SpecialGroupsPermissionsHandler(BasePermissionsHandler):
             perms_copy["users"][u] = list(updated)
 
         return perms_copy
+
+    @staticmethod
+    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        """
+        Auto-assign configured permissions to anonymous and registered members groups on creation.
+        """
+        if not kwargs.get("created", False):
+            return perms_payload
+
+        payload = perms_payload or {}
+        payload.setdefault("groups", {})
+
+        _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
+        _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
+
+        anonymous_compact = get_default_anonymous_compact_permission()
+        anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
+        if anonymous_group not in payload["groups"]:
+            payload["groups"][anonymous_group] = sorted(
+                _to_extended_perms(anonymous_compact, _resource_type, _resource_subtype)
+            )
+
+        registered_compact = get_default_registered_members_compact_permission()
+        try:
+            registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        except Group.DoesNotExist:
+            registered_group = None
+
+        if registered_group and registered_group not in payload["groups"]:
+            payload["groups"][registered_group] = sorted(
+                _to_extended_perms(registered_compact, _resource_type, _resource_subtype)
+            )
+
+        return payload
 
 
 class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):

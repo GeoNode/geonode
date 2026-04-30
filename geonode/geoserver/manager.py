@@ -34,6 +34,7 @@ from geonode.base.models import ResourceBase
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.security.utils import skip_registered_members_common_group
+from geonode.security.registry import permissions_registry
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
     OWNER_PERMISSIONS,
@@ -244,13 +245,19 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                     if not skip_registered_members_common_group(user_group):
                                         create_geofence_rules(_resource, perms, None, user_group, batch)
                                         exist_geolimits = exist_geolimits or has_geolimits(_resource, None, user_group)
-
                                 # Anonymous
-                                if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+                                anonymous_perms = (
+                                    permissions_registry.get_perms(
+                                        instance=_resource, group=Group.objects.get(name="anonymous"), use_cache=True
+                                    )
+                                    or {}
+                                )
+
+                                if VIEW_PERMISSIONS[0] in anonymous_perms:
                                     create_geofence_rules(_resource, VIEW_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
-                                if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+                                if DOWNLOAD_PERMISSIONS[0] in anonymous_perms:
                                     create_geofence_rules(_resource, DOWNLOAD_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
