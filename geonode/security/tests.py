@@ -52,7 +52,7 @@ from geonode.compat import ensure_string
 from geonode.security.handlers import (
     BasePermissionsHandler,
     GroupManagersPermissionsHandler,
-    DefaultSpecialGroupsPermissionsHandler,
+    SpecialGroupsPermissionsHandler,
     ResourceCreatorGroupsPermissionsHandler,
 )
 from geonode.upload.models import ResourceHandlerInfo
@@ -3883,11 +3883,11 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
             config.save()
 
 
-class TestDefaultSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
+class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
     @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="view", DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download")
     def test_handler_sets_default_groups_on_create(self):
         resource = create_single_dataset("test_default_special_groups")
-        handler = DefaultSpecialGroupsPermissionsHandler()
+        handler = SpecialGroupsPermissionsHandler()
         perms_payload = {"users": {}, "groups": {}}
 
         updated = handler.fixup_perms(resource, perms_payload, created=True)
@@ -3902,7 +3902,7 @@ class TestDefaultSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
 
     def test_handler_skips_when_not_created(self):
         resource = create_single_dataset("test_default_special_groups_skip")
-        handler = DefaultSpecialGroupsPermissionsHandler()
+        handler = SpecialGroupsPermissionsHandler()
         perms_payload = {"users": {}, "groups": {}}
 
         updated = handler.fixup_perms(resource, perms_payload, created=False)

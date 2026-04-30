@@ -1923,7 +1923,6 @@ REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES = ast.literal_eval(
 PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
-    "geonode.security.handlers.DefaultSpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
     "geonode.security.handlers.ResourceCreatorGroupsPermissionsHandler",
     "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
