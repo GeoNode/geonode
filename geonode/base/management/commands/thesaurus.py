@@ -1,10 +1,8 @@
-import os
-
-from django.apps import apps
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.management.command_utils import setup_logger
+from geonode.base.management.commands.thesaurus_subcommands.autoload import autoload_thesauri
 from geonode.base.management.commands.thesaurus_subcommands.dump import (
     dump_thesaurus,
     DUMP_FORMATS,
@@ -12,7 +10,7 @@ from geonode.base.management.commands.thesaurus_subcommands.dump import (
     DUMP_FORMAT_SORTED,
 )
 from geonode.base.management.commands.thesaurus_subcommands.list import list_thesauri
-from geonode.base.management.commands.thesaurus_subcommands.load import load_thesaurus, ACTIONS, ACTION_CREATE, ACTION_UPDATE
+from geonode.base.management.commands.thesaurus_subcommands.load import load_thesaurus, ACTIONS, ACTION_CREATE
 
 logger = setup_logger()
 
@@ -118,26 +116,3 @@ class Command(BaseCommand):
 
         else:
             raise CommandError(f"Unknown subcommand: {subcommand}")
-
-
-def autoload_thesauri():
-    """
-    Discover and load all thesauri (.rdf files) found in a `thesauri/` directory
-    within each installed Django app. Uses the `update` action so existing entries
-    are updated and new ones are created without duplicates.
-    """
-    loaded = 0
-    for app_config in apps.get_app_configs():
-        thesauri_dir = os.path.join(app_config.path, "thesauri")
-        if not os.path.isdir(thesauri_dir):
-            continue
-        rdf_files = [f for f in os.listdir(thesauri_dir) if f.lower().endswith(".rdf")]
-        for rdf_file in sorted(rdf_files):
-            rdf_path = os.path.join(thesauri_dir, rdf_file)
-            logger.info(f"Autoloading thesaurus from app '{app_config.name}': {rdf_path}")
-            try:
-                load_thesaurus(rdf_path, identifier=None, action=ACTION_UPDATE)
-                loaded += 1
-            except Exception as e:
-                logger.error(f"Failed to load thesaurus '{rdf_path}': {e}")
-    logger.info(f"Autoload complete: {loaded} thesaurus file(s) loaded.")
