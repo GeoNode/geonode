@@ -137,6 +137,13 @@ VALID_REGISTERED_MEMBERS_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, ED
 
 
 def _normalize_compact_permission(raw_value, valid_values, setting_name):
+    """
+    Normalize a compact permission value against the allowed set.
+
+    `valid_values` is caller-provided and defines which compact values are
+    accepted for the specific setting (e.g. anonymous vs registered-members).
+    Returns normalized lowercase value when valid, otherwise None.
+    """
     if raw_value is None:
         return None
     normalized_value = str(raw_value).strip().lower()
@@ -153,6 +160,12 @@ def _normalize_compact_permission(raw_value, valid_values, setting_name):
 
 
 def get_default_anonymous_compact_permission():
+    """
+    Resolve the default anonymous compact permission from settings.
+
+    Reads DEFAULT_ANONYMOUS_PERMISSIONS and returns a normalized compact
+    value (e.g. "view", "download") or None when unset/none/invalid.
+    """
     raw_value = getattr(settings, "DEFAULT_ANONYMOUS_PERMISSIONS", None)
     if raw_value is None:
         return None
@@ -164,6 +177,13 @@ def get_default_anonymous_compact_permission():
 
 
 def get_default_registered_members_compact_permission():
+    """
+    Resolve the default registered-members compact permission from settings.
+
+    Reads DEFAULT_REGISTERED_MEMBERS_PERMISSIONS and returns a normalized
+    compact value (e.g. "view", "download", "edit", "manage") or None
+    when unset/none/invalid.
+    """
     raw_value = getattr(settings, "DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", None)
     if raw_value is None:
         return None

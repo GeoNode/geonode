@@ -261,11 +261,11 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                     else []
                                 )
 
-                                if "view_resourcebase" in anonymous_perms:
+                                if VIEW_PERMISSIONS[0] in anonymous_perms:
                                     create_geofence_rules(_resource, VIEW_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
-                                if "download_resourcebase" in anonymous_perms:
+                                if DOWNLOAD_PERMISSIONS[0] in anonymous_perms:
                                     create_geofence_rules(_resource, DOWNLOAD_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 

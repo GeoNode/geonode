@@ -1872,7 +1872,7 @@ DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOU
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "None"))
 
 # Resolve anonymous compact fallback from deprecated settings for cases where the new setting is not provided
-_anonymous_compact_fallback = None
+_anonymous_compact_fallback = "download"
 if (
     os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
     or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
@@ -1888,7 +1888,7 @@ if (
 # Valid values:
 #  - DEFAULT_ANONYMOUS_PERMISSIONS: view | download | none
 #  - DEFAULT_REGISTERED_MEMBERS_PERMISSIONS: view | download | edit | manage | none
-DEFAULT_ANONYMOUS_PERMISSIONS = os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS", _anonymous_compact_fallback or "download")
+DEFAULT_ANONYMOUS_PERMISSIONS = os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS", _anonymous_compact_fallback)
 DEFAULT_REGISTERED_MEMBERS_PERMISSIONS = os.getenv("DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", "download")
 
 if os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS") is not None and (
@@ -1907,10 +1907,6 @@ elif (
         "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated. "
         "Please use DEFAULT_ANONYMOUS_PERMISSIONS instead."
     )
-
-# Keep legacy booleans aligned with resolved compact permission (backward compatibility)
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = DEFAULT_ANONYMOUS_PERMISSIONS in ("view", "download")
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = DEFAULT_ANONYMOUS_PERMISSIONS == "download"
 
 
 EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
