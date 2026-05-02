@@ -37,7 +37,6 @@ from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
 from ..base.models import (
-    ExtraMetadata,
     Link,
     License,
     ResourceBase,
@@ -142,7 +141,6 @@ def update_resource(
     regions: list = [],
     keywords: list = [],
     vals: dict = {},
-    extra_metadata: list = [],
 ):
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
@@ -276,12 +274,6 @@ def update_resource(
 
     # Refresh from DB
     instance.refresh_from_db()
-
-    if extra_metadata:
-        instance.metadata.all().delete()
-        for _m in extra_metadata:
-            new_m = ExtraMetadata.objects.create(resource=instance, metadata=_m)
-            instance.metadata.add(new_m)
 
     return instance
 
