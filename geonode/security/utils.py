@@ -167,8 +167,7 @@ def check_add_remote_resource_perm(user):
     """
     Checks whether the given user has permission to add remote resources.
     """
-    perms = permissions_registry.get_db_perms_by_user(user)
-    if "add_remote_resource" not in perms:
+    if not permissions_registry.user_has_perm(user, perm="add_remote_resource"):
         raise PermissionDenied("You do not have permission to add remote resources.")
 
 
