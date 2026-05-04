@@ -1968,10 +1968,47 @@ ACCOUNT_OPEN_SIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SIGNUP", "Tr
 ACCOUNT_OPEN_SOCIALSIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SOCIALSIGNUP", "True"))
 ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(os.getenv("ACCOUNT_APPROVAL_REQUIRED", "False"))
 ACCOUNT_ADAPTER = "geonode.people.adapters.LocalAccountAdapter"
-ACCOUNT_AUTHENTICATION_METHOD = os.environ.get("ACCOUNT_AUTHENTICATION_METHOD", "username_email")
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get("ACCOUNT_CONFIRM_EMAIL_ON_GET", "True"))
-ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get("ACCOUNT_EMAIL_REQUIRED", "True"))
 ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "none")
+
+# Deprecated django-allauth settings for backward compatibility.
+# New deployments should use ACCOUNT_LOGIN_METHODS and ACCOUNT_SIGNUP_FIELDS instead.
+_account_authentication_method = os.environ.get("ACCOUNT_AUTHENTICATION_METHOD")
+_account_email_required = os.environ.get("ACCOUNT_EMAIL_REQUIRED")
+if _account_authentication_method is not None:
+    logger.warning(
+        "settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: "
+        "settings.ACCOUNT_LOGIN_METHODS = {'email', 'username'}"
+    )
+else:
+    _account_authentication_method = "username_email"
+
+_default_login_methods = {
+    "username": {"username"},
+    "email": {"email"},
+    "username_email": {"username", "email"},
+}.get(_account_authentication_method, {"username", "email"})
+
+ACCOUNT_LOGIN_METHODS = ast.literal_eval(os.environ.get("ACCOUNT_LOGIN_METHODS", repr(_default_login_methods)))
+
+if _account_email_required is not None:
+    logger.warning(
+        "settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: "
+        "settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']"
+    )
+
+    _account_email_required = ast.literal_eval(_account_email_required)
+else:
+    _account_email_required = True
+
+_default_signup_fields = [
+    "email*" if _account_email_required else "email",
+    "username*",
+    "password1*",
+    "password2*",
+]
+
+ACCOUNT_SIGNUP_FIELDS = ast.literal_eval(os.environ.get("ACCOUNT_SIGNUP_FIELDS", repr(_default_signup_fields)))
 
 # Invitation Adapter
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
