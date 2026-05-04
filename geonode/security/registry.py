@@ -70,13 +70,21 @@ class PermissionsHandlerRegistry:
         for item in self.REGISTRY:
             self.__check_item(item)
 
-    def user_has_perm(self, user, instance, perm, include_virtual=False):
+    def user_has_perm(self, user, instance=None, perm="", include_virtual=False):
         """
         Returns True if the user has the defined perm (permission)
         """
-        return perm in self.get_perms(
+        if not perm:
+            return False
+
+        resolved_perms = self.get_perms(
             instance=instance, user=user, include_virtual=True, include_user_add_resource=True
         )
+
+        if isinstance(perm, list):
+            return all(p in resolved_perms for p in perm)
+
+        return perm in resolved_perms
 
     def user_can_feature(self, user, resource):
         """
@@ -143,40 +151,9 @@ class PermissionsHandlerRegistry:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
 
-    def get_db_perms_by_user(self, user):
-        from geonode.base.models import Configuration
-
-        perms = set()
-        if user.is_superuser or user.is_staff:
-            # return all permissions for admins
-            perms.update(PERMISSIONS.values())
-
-        user_groups = user.groups.values_list("name", flat=True)
-        group_perms = (
-            Permission.objects.filter(group__name__in=user_groups).distinct().values_list("codename", flat=True)
-        )
-        for p in group_perms:
-            if p in PERMISSIONS:
-                # return constant names defined by GeoNode
-                perms.add(PERMISSIONS[p])
-            else:
-                # add custom permissions
-                perms.add(p)
-
-        # Create a synthetic permission for adding remote resources
-        if user.is_superuser or user.is_staff or getattr(settings, "REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES", False):
-            perms.add("add_remote_resource")
-
-        # check READ_ONLY mode
-        config = Configuration.load()
-        if config.read_only:
-            # exclude permissions affected by readonly
-            perms = [perm for perm in perms if perm not in READ_ONLY_AFFECTED_PERMISSIONS]
-        return list(perms)
-
     def get_perms(
         self,
-        instance,
+        instance=None,
         user=None,
         include_virtual=True,
         include_user_add_resource=False,
@@ -188,6 +165,7 @@ class PermissionsHandlerRegistry:
     ):
         """
         Return the permissions for the specified user, group, or all permissions.
+        At least one of `instance` or `user` is required. Providing neither will raise a ValueError.
 
         Args:
             instance: Resource instance
@@ -203,61 +181,22 @@ class PermissionsHandlerRegistry:
         if isinstance(user, DjangoAnonymousUser):
             user = get_anonymous_user()
 
-        cache_key = None
-        if use_cache:
-            cache_key = self._get_cache_key([instance.pk], [user] if user else None, [group] if group else None)
-            if cache_key:
-                if isinstance(cache_key, list):
-                    user_cache_key, group_cache_key = cache_key
-                    user_cached = cache.get(user_cache_key)
-                    group_cached = cache.get(group_cache_key)
+        if not instance:
+            if not user:
+                raise ValueError("At least one of 'instance' or 'user' must be provided. ")
+            return self._get_global_perms(user)
 
-                    if user_cached is not None and group_cached is not None:
-                        return {"users": {user: user_cached}, "groups": {group: group_cached}}
-                else:
-                    cached = cache.get(cache_key)
-                    if cached is not None:
-                        return cached
-
-        if user and group:
-            payload = permissions or {
-                "users": {user: instance.get_user_perms(user)},
-                "groups": {group: list(get_group_perms(group, instance))},
-            }
-            for handler in self.REGISTRY:
-                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
-            result = payload
-        elif user:
-            payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
-            for handler in self.REGISTRY:
-                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
-            if include_user_add_resource and user.has_perm("base.add_resourcebase"):
-                payload["users"][user].append("add_resourcebase")
-            result = payload["users"][user]
-        elif group:
-            group_perms = get_group_perms(group, instance)
-            if group.name == "anonymous":
-                group_perms = get_groups_with_perms(instance.get_self_resource(), attach_perms=True).get(group)
-            payload = permissions or {"users": {}, "groups": {group: group_perms}}
-            for handler in self.REGISTRY:
-                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
-            result = payload["groups"][group]
-        else:
-            payload = permissions or instance.get_all_level_info()
-            for handler in self.REGISTRY:
-                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
-            result = payload
-
-        if use_cache and isinstance(cache_key, list):
-            if user_cache_key and group_cache_key:
-                cache.set(user_cache_key, result["users"][user], settings.PERMISSION_CACHE_EXPIRATION_TIME)
-                cache.set(group_cache_key, result["groups"][group], settings.PERMISSION_CACHE_EXPIRATION_TIME)
-        elif use_cache and cache_key:
-            cache.set(cache_key, result, settings.PERMISSION_CACHE_EXPIRATION_TIME)
-        else:
-            pass
-
-        return result
+        return self._get_perms_for_instance(
+            instance,
+            user,
+            include_virtual,
+            include_user_add_resource,
+            use_cache,
+            group,
+            permissions,
+            *args,
+            **kwargs,
+        )
 
     def get_visible_resources(
         self,
@@ -475,6 +414,112 @@ class PermissionsHandlerRegistry:
         """
         # This wipes everything in the default cache
         cache.clear()
+
+    def _get_global_perms(self, user):
+        """
+        Return global (non-object-level) permissions for a user.
+        """
+        from geonode.base.models import Configuration
+
+        perms = set()
+
+        if user.is_superuser or user.is_staff:
+            # return all permissions for admins
+            perms.update(PERMISSIONS.values())
+
+        for p in user.get_all_permissions():
+            codename = p.rsplit(".", 1)[-1]
+
+            if codename in PERMISSIONS:
+                # return constant names defined by GeoNode
+                perms.add(PERMISSIONS[codename])
+            else:
+                # add custom permissions
+                perms.add(codename)
+
+        # Create a synthetic permission for adding remote resources
+        if user.is_superuser or user.is_staff or getattr(settings, "REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES", False):
+            perms.add("add_remote_resource")
+
+        # Apply read-only restrictions
+        config = Configuration.load()
+        if config.read_only:
+            perms.difference_update(READ_ONLY_AFFECTED_PERMISSIONS)
+
+        return list(perms)
+
+    def _get_perms_for_instance(
+        self,
+        instance,
+        user=None,
+        include_virtual=True,
+        include_user_add_resource=False,
+        use_cache=False,
+        group=None,
+        permissions={},
+        *args,
+        **kwargs,
+    ):
+        """
+        Return object-level permissions for a specific instance
+        """
+
+        cache_key = None
+        if use_cache:
+            cache_key = self._get_cache_key([instance.pk], [user] if user else None, [group] if group else None)
+            if cache_key:
+                if isinstance(cache_key, list):
+                    user_cache_key, group_cache_key = cache_key
+                    user_cached = cache.get(user_cache_key)
+                    group_cached = cache.get(group_cache_key)
+
+                    if user_cached is not None and group_cached is not None:
+                        return {"users": {user: user_cached}, "groups": {group: group_cached}}
+                else:
+                    cached = cache.get(cache_key)
+                    if cached is not None:
+                        return cached
+
+        if user and group:
+            payload = permissions or {
+                "users": {user: instance.get_user_perms(user)},
+                "groups": {group: list(get_group_perms(group, instance))},
+            }
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
+            result = payload
+        elif user:
+            payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
+            if include_user_add_resource and user.has_perm("base.add_resourcebase"):
+                payload["users"][user].append("add_resourcebase")
+
+            result = payload["users"][user]
+        elif group:
+            group_perms = get_group_perms(group, instance)
+            if group.name == "anonymous":
+                group_perms = get_groups_with_perms(instance.get_self_resource(), attach_perms=True).get(group)
+            payload = permissions or {"users": {}, "groups": {group: group_perms}}
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
+            result = payload["groups"][group]
+        else:
+            payload = permissions or instance.get_all_level_info()
+            for handler in self.REGISTRY:
+                payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
+            result = payload
+
+        if use_cache and isinstance(cache_key, list):
+            if user_cache_key and group_cache_key:
+                cache.set(user_cache_key, result["users"][user], settings.PERMISSION_CACHE_EXPIRATION_TIME)
+                cache.set(group_cache_key, result["groups"][group], settings.PERMISSION_CACHE_EXPIRATION_TIME)
+        elif use_cache and cache_key:
+            cache.set(cache_key, result, settings.PERMISSION_CACHE_EXPIRATION_TIME)
+        else:
+            pass
+
+        return result
 
     def __check_item(self, item):
         """

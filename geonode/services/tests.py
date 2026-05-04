@@ -961,7 +961,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
     def test_register_service_denied_for_regular_user(self):
         self.client.force_login(self.test_user)
         response = self.client.get(reverse("register_service"))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_register_service_allowed_for_regular_user(self):

@@ -635,22 +635,45 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def test_add_remote_resource_perm_admin_always_has_it(self):
         """Superusers always have the add_remote_resource permission."""
         admin = get_user_model().objects.get(username="admin")
-        perms = permissions_registry.get_db_perms_by_user(admin)
+        perms = permissions_registry.get_perms(user=admin)
         self.assertIn("add_remote_resource", perms)
 
     @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
     def test_add_remote_resource_perm_regular_user_default(self):
         """Regular users do NOT have add_remote_resource when setting is False (default)."""
         bobby = get_user_model().objects.get(username="bobby")
-        perms = permissions_registry.get_db_perms_by_user(bobby)
+        perms = permissions_registry.get_perms(user=bobby)
         self.assertNotIn("add_remote_resource", perms)
 
     @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_add_remote_resource_perm_regular_user_enabled(self):
         """Regular users DO have add_remote_resource when setting is True."""
         bobby = get_user_model().objects.get(username="bobby")
-        perms = permissions_registry.get_db_perms_by_user(bobby)
+        perms = permissions_registry.get_perms(user=bobby)
         self.assertIn("add_remote_resource", perms)
+
+    def test_user_has_perm_returns_false_when_perm_is_empty_string(self):
+        """Empty perm should never return True"""
+        user = get_user_model().objects.create_user(username="test")
+        result = permissions_registry.user_has_perm(user, perm="")
+        self.assertFalse(result)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_get_perms_without_instance_returns_global_perms_for_user(self):
+        username = f"global_perms_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        perms = permissions_registry.get_perms(user=user)
+        self.assertIsInstance(perms, list)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_user_has_perm_accepts_instance_none(self):
+        username = f"global_perm_check_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        self.assertTrue(permissions_registry.user_has_perm(user, instance=None, perm="add_remote_resource"))
+        self.assertFalse(permissions_registry.user_has_perm(user, instance=None, perm=""))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):

@@ -36,11 +36,13 @@ from geonode.harvesting.models import Harvester
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources, check_add_remote_resource_perm
 from django.core.cache import caches
+from django.core.exceptions import PermissionDenied
 
 from .models import Service
 from . import forms, enumerations
 from .serviceprocessors import get_service_handler
 from geonode.security.registry import permissions_registry
+from geonode.views import err403
 
 service_cache = caches["services"]
 
@@ -49,17 +51,24 @@ logger = logging.getLogger(__name__)
 
 def services(request):
     """This view shows the list of all registered services"""
-
     return render(
         request,
         "services/service_list.html",
-        {"services": Service.objects.all(), "can_add_resources": request.user.has_perm("base.add_resourcebase")},
+        {
+            "services": Service.objects.all(),
+            "can_add_remote_resources": permissions_registry.user_has_perm(
+                request.user, perm=["add_remote_resource", "add_resource"]
+            ),
+        },
     )
 
 
 @login_required
 def register_service(request):
-    check_add_remote_resource_perm(request.user)
+    try:
+        check_add_remote_resource_perm(request.user)
+    except PermissionDenied as e:
+        return err403(request, e)
 
     service_register_template = "services/service_register.html"
     if request.method == "POST":
