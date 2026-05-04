@@ -225,7 +225,7 @@ class RestrictionCodeType(models.Model):
 
 
 class License(models.Model):
-    identifier = models.CharField(max_length=255, editable=False)
+    identifier = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)

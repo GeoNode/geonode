@@ -52,6 +52,7 @@ from geonode.compat import ensure_string
 from geonode.security.handlers import (
     BasePermissionsHandler,
     GroupManagersPermissionsHandler,
+    SpecialGroupsPermissionsHandler,
     ResourceCreatorGroupsPermissionsHandler,
 )
 from geonode.upload.models import ResourceHandlerInfo
@@ -64,6 +65,8 @@ from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
 from geonode.security.registry import permissions_registry
+from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import _to_extended_perms
 from geonode.metadata.manager import metadata_manager
 
 from geonode.base.models import Configuration, UserGeoLimit, GroupGeoLimit
@@ -2634,7 +2637,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
@@ -2643,7 +2646,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_download_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
@@ -2652,7 +2655,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on(self):
         """
@@ -2665,7 +2668,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on_moderate(
         self,
@@ -3901,3 +3904,30 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         finally:
             config.read_only = original_read_only
             config.save()
+
+
+class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="view", DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download")
+    def test_handler_sets_default_groups_on_create(self):
+        resource = create_single_dataset("test_default_special_groups")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=True)
+
+        anonymous_group = Group.objects.get(name="anonymous")
+        registered_group, _ = Group.objects.get_or_create(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        expected_anonymous = _to_extended_perms("view", resource.resource_type, resource.subtype)
+        expected_registered = _to_extended_perms("download", resource.resource_type, resource.subtype)
+
+        self.assertSetEqual(set(updated["groups"][anonymous_group]), set(expected_anonymous))
+        self.assertSetEqual(set(updated["groups"][registered_group]), set(expected_registered))
+
+    def test_handler_skips_when_not_created(self):
+        resource = create_single_dataset("test_default_special_groups_skip")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=False)
+
+        self.assertDictEqual(perms_payload, updated)

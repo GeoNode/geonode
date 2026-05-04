@@ -31,6 +31,9 @@ from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
 from geonode.security.registry import permissions_registry
 from geonode.security.permissions import (
+    get_default_anonymous_compact_permission,
+    VIEW_RIGHTS,
+    DOWNLOAD_RIGHTS,
     PermSpecCompact,
     EDIT_PERMISSIONS,
     VIEW_PERMISSIONS,
@@ -174,11 +177,11 @@ def check_add_remote_resource_perm(user):
 class AdvancedSecurityWorkflowManager:
     @staticmethod
     def is_anonymous_can_view():
-        return settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+        return get_default_anonymous_compact_permission() in (VIEW_RIGHTS, DOWNLOAD_RIGHTS)
 
     @staticmethod
     def is_anonymous_can_download():
-        return settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+        return get_default_anonymous_compact_permission() == DOWNLOAD_RIGHTS
 
     @staticmethod
     def is_group_private_mode():

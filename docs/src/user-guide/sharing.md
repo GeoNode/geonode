@@ -9,8 +9,12 @@ Permissions in GeoNode are set per resource, where a resource can be a dataset, 
 
 ### Permissions
 
-Resource permissions can be generally set from the *resource detail* page. The detail page has a menu item *Share* which is visible to people who are permitted to set permissions on a resource.
-The share link opens a panel on the right to edit user and group permissions on the resource. See picture below:
+Resource permissions can be generally set from the *Share* tab of the *properties table* which is visible to people who are permitted to set permissions on a resource.
+
+There are two ways to open the *Share* tab. 
+
+- From the *Share* button in the navigation bar of the resource's detail page
+- By opening the *properties table* and selecting the *Share* tab directly
 
 ![](img/change_dataset_permissions.png)
 
@@ -24,6 +28,8 @@ You can set the following types of permissions:
 - *Download* allows to download the resource;
 - *Edit:* allows to change attributes, properties of the datasets features, styles and metadata for the specified resource;
 - *Manage:* allows to update, delete, change permissions, publish and unpublish the resource.
+
+To save the new share settings, click on `Resource` tab (from the navigation bar above the map) and then click on `Save`
 
 !!! Warning 
     When assigning permissions to a group, all the group members will have those permissions. Be careful in case of editing permissions.
@@ -56,11 +62,8 @@ The :fontawesome-solid-refresh: icon removes all changes that are not saved.
 
 ![](img/geo_limits_003.png)
 
-Once you finished editing your geometries, save them into the DB using the *Save* link in the resource menu.
 
-The user with the specified geometries won't be able from now on to access the whole dataset data.
-
-![](img/geo_limits_004.png)
+After saving the new `share` options, the user with the specified geometries won't be able from now on to access the whole dataset data.
 
 !!! Warning
     The `Geo Limits` will be persisted on GeoNode DB for that resource. That means that everytime you will update the general permissions, also the geospatial restrictions will be applied.

@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Django",
+            "type": "python",
+            "request": "launch",
+            "program": "./manage.py",
+            "args": [
+                "runserver",
+                "0.0.0.0:8000"
+            ],
+            "django": true,
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.devcontainer/.env",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
