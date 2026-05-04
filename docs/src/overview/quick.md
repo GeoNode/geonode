@@ -5,14 +5,14 @@ The following is a quick guide to get started with GeoNode on the most common op
 !!! Note
     For a full setup and deployment, please refer to the complete installation guides:
     
-    - [Docker installation](../../setup/docker/prerequisites.md)
-    - [Bare installation](../../setup/bare/prerequisites.md)
+    - [Docker installation](../../setup/docker/prerequisites/)
+    - [Bare installation](../../setup/bare/prerequisites/)
 
 This is meant to be run on a fresh machine with no previously installed packages or GeoNode versions.
 
 !!! Warning
     The methods presented here are meant to be used for a limited internal demo only.
-    Before exposing your GeoNode instance to a public server, please read carefully the [hardening guide](../../setup/configuration/hardening.md).
+    Before exposing your GeoNode instance to a public server, please read carefully the [hardening guide](../../setup/configuration/hardening/).
 
 ## Recommended Minimum System Requirements
 
@@ -47,4 +47,4 @@ Multiple containers can run on the same machine and share the OS kernel with oth
 
 This documentation refers to the usage of Docker on an Ubuntu host, but you can of course run Docker also on other Linux distributions, Windows, and Mac.
 
-For the steps to set up Docker on Ubuntu, jump to the [Docker installation prerequisites](../../setup/docker/prerequisites.md).
+For the steps to set up Docker on Ubuntu, jump to the [Docker installation prerequisites](../../setup/docker/prerequisites/).

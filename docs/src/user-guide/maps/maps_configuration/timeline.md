@@ -55,7 +55,7 @@ The expanded section of the *Timeline* panel contains the *Time Datasets List* a
 You can show or hide the datasets list by clicking ![](img/show_hide_datasets_list_button.png){ width="30px" height="30px" }.
 
 Through the *Time Range* function you can observe the data in a finite temporal interval.
-Click ![](img/time_range_button.png){ width="30px" height="30px" } and set the initial and the final times to use it.
+Click the *Time Range* button and set the initial and the final times to use it.
 
 ![](img/time_range.png){ align=center }
 /// caption

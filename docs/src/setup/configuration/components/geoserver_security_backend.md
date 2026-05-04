@@ -4,7 +4,7 @@
 
 GeoServer has a robust security subsystem, modeled on Spring Security. Most of the security features are available through the Web administration interface.
 
-For more details on how this works and how to configure and modify it, please refer to the official GeoServer guide [here](http://docs.geoserver.org/stable/en/user/security/webadmin/index.html).
+For more details on how this works and how to configure and modify it, please refer to the official GeoServer guide [here](https://docs.geoserver.org/main/en/user/security/webadmin/index.html).
 
 By using the `GeoServer Data Dir` provided with GeoNode build, the following configuration are already available. You will need just to update them accordingly to your environment, like IP addresses and host names, OAuth2 keys, and similar things.
 
