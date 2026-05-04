@@ -51,18 +51,14 @@ logger = logging.getLogger(__name__)
 
 def services(request):
     """This view shows the list of all registered services"""
-    can_add_resources = permissions_registry.user_has_perm(request.user, perm="add_resource")
-    can_add_remote_resources = False
-    if can_add_resources:
-        can_add_remote_resources = permissions_registry.user_has_perm(request.user, perm="add_remote_resource")
-
     return render(
         request,
         "services/service_list.html",
         {
             "services": Service.objects.all(),
-            "can_add_resources": can_add_resources,
-            "can_add_remote_resources": can_add_remote_resources,
+            "can_add_remote_resources": permissions_registry.user_has_perm(
+                request.user, perm=["add_remote_resource", "add_resource"]
+            ),
         },
     )
 

@@ -76,9 +76,15 @@ class PermissionsHandlerRegistry:
         """
         if not perm:
             return False
-        return perm in self.get_perms(
+
+        resolved_perms = self.get_perms(
             instance=instance, user=user, include_virtual=True, include_user_add_resource=True
         )
+
+        if isinstance(perm, list):
+            return all(p in resolved_perms for p in perm)
+
+        return perm in resolved_perms
 
     def user_can_feature(self, user, resource):
         """
@@ -159,6 +165,7 @@ class PermissionsHandlerRegistry:
     ):
         """
         Return the permissions for the specified user, group, or all permissions.
+        At least one of `instance` or `user` is required. Providing neither will raise a ValueError.
 
         Args:
             instance: Resource instance
@@ -176,7 +183,7 @@ class PermissionsHandlerRegistry:
 
         if not instance:
             if not user:
-                return []
+                raise ValueError("At least one of 'instance' or 'user' must be provided. ")
             return self._get_global_perms(user)
 
         return self._get_perms_for_instance(
