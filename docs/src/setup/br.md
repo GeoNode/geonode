@@ -57,7 +57,7 @@ perform a backup and restore of GeoNode.
     It is worth to notice that this functionality requires the latest `GeoServer Extension <https://build.geo-solutions.it/geonode/geoserver/latest/>`_ (2.9.x or greater) for GeoNode in order to correctly work.
 
 !!! note "Important notes"
-    GeoServer full documentation is also available here `GeoServer Docs <https://docs.geoserver.org/stable/en/user/community/backuprestore/index.html>`_
+    GeoServer full documentation is also available here [GeoServer Docs](https://docs.geoserver.org/main/en/user/community/backuprestore/index.html).
 
 ## Requisites and Setup
 

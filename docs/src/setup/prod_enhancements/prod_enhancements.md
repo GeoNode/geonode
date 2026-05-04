@@ -29,7 +29,7 @@ This means that your JVM will be started with Xms amount of memory and will be a
 `-DGEOSERVER_CSRF_DISABLED (True)`
 
 The GeoServer web admin employs a CSRF (Cross-Site Request Forgery) protection filter that will block any form submissions that did not appear to originate from GeoServer. This can sometimes cause problems for certain proxy configurations. You can disable the CSRF filter by setting the `GEOSERVER_CSRF_DISABLED` property to `true`.
-[Further details](https://docs.geoserver.org/stable/en/user/security/webadmin/csrf.html)
+[Further details](https://docs.geoserver.org/main/en/user/security/webadmin/csrf/)
 
 Whenever you need to change one or more of the JVM options, you will need to restart the GeoServer Docker container.
 
@@ -68,7 +68,7 @@ docker-compose restart geoserver
 - GeoServer `Image Processing Settings`: unless you are using some specific renderer or GeoServer plugin, use the following recommended options.
 
     !!! Note
-        Further details are available in the [GeoServer image processing documentation](https://docs.geoserver.org/stable/en/user/configuration/image_processing/index.html#image-processing).
+        Further details are available in the [GeoServer image processing documentation](https://docs.geoserver.org/main/en/user/configuration/image_processing/index.html#image-processing).
 
   ![](img/production_geoserver_003.png){ align=center width="350px" }
   /// caption

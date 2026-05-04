@@ -9,15 +9,15 @@ In this section, we are going to explore all tools provided on the Map View page
 
 The Map View, based on [MapStore](https://docs.mapstore.geosolutionsgroup.com/en/latest/), provides the following tools:
 
-- the [Table of Contents (TOC)](toc.md#table-of-contents-toc) to manage the map contents
+- the [Table of Contents (TOC)](toc.md#toc) to manage the map contents
 - the *Basemap Switcher* to change the basemap
 - the *Search Bar* to search by location, name and coordinates
-- the [Other Menu Tools](options_menu.md#other-menu-tools) which include the link to the datasets *Catalog*
+- the [Other Menu Tools](options_menu.md#options-menu-tools) which include the link to the datasets *Catalog*
 - the *Sidebar* which contains, by default, the link to the *Print* tool and to the *Measure* tool
 - the *Navigation Bar* and its tools such as the *Zoom* tools, the *3D Navigation* tool and the *Get Features Info* tool
 - the *Footer Tools* to manage the scale of the map, to track the mouse coordinates and change the CRS (Coordinates Reference System)
 
-A map can be configured to use a custom [Map Viewer](map_viewers.md#map-viewer), with which the list of tools available in the map can be customized.
+A map can be configured to use a custom [Map Viewer](map_viewers.md#map-viewers), with which the list of tools available in the map can be customized.
 
 ### Search Bar
 
