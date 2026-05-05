@@ -38,6 +38,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
 from geonode.base.middleware import SESSION_LANG_KEY
+from geonode.base.models import Configuration
 from dal import autocomplete
 
 
@@ -177,14 +178,18 @@ def set_session_language(request):
     raw_lang = request.POST.get("language")
     profile_lang = runtime_to_profile_lang(raw_lang)
 
-    valid_profile_codes = {code for code, _label in settings.PROFILE_LANGUAGE_CHOICES}
-
-    if profile_lang in valid_profile_codes:
+    if profile_lang in {code for code, _label in settings.PROFILE_LANGUAGE_CHOICES}:
         request.session[SESSION_LANG_KEY] = profile_lang
 
-        if request.user.is_authenticated and hasattr(request.user, "language"):
-            if request.user.language != profile_lang:
-                request.user.language = profile_lang
-                request.user.save(update_fields=["language"])
+        is_read_only = Configuration.load().read_only
+
+        if (
+            not is_read_only
+            and request.user.is_authenticated
+            and hasattr(request.user, "language")
+            and request.user.language != profile_lang
+        ):
+            request.user.language = profile_lang
+            request.user.save(update_fields=["language"])
 
     return django_set_language(request)

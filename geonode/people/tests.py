@@ -1422,3 +1422,32 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         user.refresh_from_db()
         self.assertEqual(user.language, "fr")
+
+    @patch("geonode.people.views.Configuration.load")
+    def test_language_switch_does_not_update_profile_when_read_only(self, mock_config_load):
+        config = MagicMock()
+        config.read_only = True
+        # We should define mainenance, otherwise, the set_language view is blocked by the MaintenanceMiddleware
+        config.maintenance = False
+        mock_config_load.return_value = config
+
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it-it", "next": "/"},
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        # Session is updated, so the language switch can still apply for the current session.
+        self.assertEqual(self.client.session.get("language_override"), "it")
+
+        # DB is not updated because the instance is read-only.
+        user.refresh_from_db()
+        self.assertEqual(user.language, "en")

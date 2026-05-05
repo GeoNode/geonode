@@ -42,6 +42,8 @@ class ReadOnlyMiddleware:
         "account_login",
         "account_logout",
         "ows_endpoint",
+        # The  set_session_language view updates only session/cookie when read-only is enabled
+        "set_language",
     ]
 
     def __init__(self, get_response):
@@ -109,8 +111,20 @@ class ProfileLanguageMiddleware(MiddlewareMixin):
         if not request.user.is_authenticated:
             return None
 
-        profile_lang = getattr(request.user, "language", None)
-        runtime_lang = profile_to_runtime_lang(profile_lang)
+        # Get the configuration cache for the session, in order to retrieve the ready_only field
+        configuration_session_cache(request.session)
+
+        is_read_only = request.session.get("config", {}).get("configuration", {}).get("read_only", False)
+
+        runtime_lang = None
+
+        # In read-only mode >> try cookie first
+        if is_read_only:
+            runtime_lang = request.session.get(SESSION_LANG_KEY)
+
+        if not runtime_lang:
+            profile_lang = getattr(request.user, "language", None)
+            runtime_lang = profile_to_runtime_lang(profile_lang)
 
         if runtime_lang:
             translation.activate(runtime_lang)
