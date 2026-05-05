@@ -21,7 +21,11 @@
 # Geonode functionality
 
 from django.shortcuts import render
+from django.utils import translation
+from django.utils.deprecation import MiddlewareMixin
+
 from geonode.base.utils import configuration_session_cache
+from geonode.people.utils import profile_to_runtime_lang
 
 
 class ReadOnlyMiddleware:
@@ -38,6 +42,8 @@ class ReadOnlyMiddleware:
         "account_login",
         "account_logout",
         "ows_endpoint",
+        # The  set_session_language view updates only session/cookie when read-only is enabled
+        "set_language",
     ]
 
     def __init__(self, get_response):
@@ -95,3 +101,33 @@ class MaintenanceMiddleware:
                 # check if the request is not against whitelisted views (check by URL names)
                 if request.resolver_match.url_name not in self.WHITELISTED_URL_NAMES:
                     return render(request, "base/maintenance.html", status=503)
+
+
+SESSION_LANG_KEY = "language_override"
+
+
+class ProfileLanguageMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        if not request.user.is_authenticated:
+            return None
+
+        # Get the configuration cache for the session, in order to retrieve the ready_only field
+        configuration_session_cache(request.session)
+
+        is_read_only = request.session.get("config", {}).get("configuration", {}).get("read_only", False)
+
+        runtime_lang = None
+
+        # In read-only mode >> try cookie first
+        if is_read_only:
+            runtime_lang = request.session.get(SESSION_LANG_KEY)
+
+        if not runtime_lang:
+            profile_lang = getattr(request.user, "language", None)
+            runtime_lang = profile_to_runtime_lang(profile_lang)
+
+        if runtime_lang:
+            translation.activate(runtime_lang)
+            request.LANGUAGE_CODE = runtime_lang
+
+        return None

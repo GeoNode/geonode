@@ -42,7 +42,7 @@ from geonode.api.views import verify_token, user_info, roles, users, admin_role
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.base import register_url_event
-from .people.views import CustomSignupView, CustomLoginView
+from .people.views import CustomSignupView, CustomLoginView, set_session_language
 from oauth2_provider.urls import app_name as oauth2_app_name, base_urlpatterns, oidc_urlpatterns
 
 admin.autodiscover()
@@ -141,6 +141,7 @@ urlpatterns += [
         ImporterViewSet.as_view({"post": "create"}),
         name="importer_upload",
     ),
+    path("i18n/setlang/", set_session_language, name="set_language"),
 ]
 
 # django-select2 Widgets

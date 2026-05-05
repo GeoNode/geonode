@@ -51,6 +51,7 @@ class UpdateProfileTestCase(TestCase):
         self.fake_profile = "phony_profile"
         self.fake_voice = "phony_voice"
         self.fake_zipcode = "phony_zipcode"
+        self.fake_language = "phony_language"
         mock_social_login_class = mock.MagicMock(spec="allauth.socialaccount.models.SocialLogin")
         self.mock_social_login = mock_social_login_class.return_value
         self.mock_social_login.user = self.fake_user
@@ -69,6 +70,7 @@ class UpdateProfileTestCase(TestCase):
         self.mock_extractor.extract_profile.return_value = self.fake_profile
         self.mock_extractor.extract_voice.return_value = self.fake_voice
         self.mock_extractor.extract_zipcode.return_value = self.fake_zipcode
+        self.mock_extractor.extract_language.return_value = self.fake_language
 
     @mock.patch.object(adapters, "get_data_extractor")
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
@@ -189,6 +191,15 @@ class UpdateProfileTestCase(TestCase):
         args_list = mock_user_field.call_args_list
         expected_call = mock.call(self.fake_user, "zipcode", self.fake_zipcode)
         self.assertIn(expected_call, args_list)
+
+    @mock.patch.object(adapters, "get_data_extractor")
+    @mock.patch("geonode.people.adapters.user_field", autospec=True)
+    def test_update_profile_covers_language_field(self, mock_user_field, mock_get_extractor):
+        mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
+        adapters.update_profile(self.mock_social_login)
+        self.mock_extractor.extract_language.assert_called_once_with(self.mock_social_login.account.extra_data)
+        mock_user_field.assert_any_call(self.fake_user, "language", self.fake_language)
 
 
 class SiteAllowsSignupTestCase(TestCase):

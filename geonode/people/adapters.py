@@ -100,6 +100,7 @@ def update_profile(sociallogin):
             "profile",
             "voice",
             "zipcode",
+            "language",
         )
         for field in profile_fields:
             try:
