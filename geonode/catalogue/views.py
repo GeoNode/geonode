@@ -47,6 +47,8 @@ def csw_global_dispatch(request, dataset_filter=None, config_updater=None):
         return HttpResponseRedirect(settings.CATALOGUE["default"]["URL"])
 
     mdict = dict(CONFIGURATION, **settings.PYCSW["CONFIGURATION"])
+    if "server" in settings.PYCSW["CONFIGURATION"]:
+        mdict["server"] = dict(CONFIGURATION.get("server", {}), **settings.PYCSW["CONFIGURATION"]["server"])
     mdict = config_updater(mdict) if config_updater else mdict
 
     access_token = None
