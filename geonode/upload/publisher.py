@@ -173,7 +173,7 @@ class DataPublisher:
             res = list(
                 filter(
                     None,
-                    (self.cat.get_resource(x, workspace=self.workspace) for x in possible_layer_name),
+                    (self.cat.get_resource(x, store=self.store, workspace=self.workspace) for x in possible_layer_name),
                 )
             )
             if not res or (res and not res[0].projection):
