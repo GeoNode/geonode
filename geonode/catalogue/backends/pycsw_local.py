@@ -125,10 +125,8 @@ class CatalogueBackend(GenericCatalogueBackend):
         """
 
         mdict = dict(CONFIGURATION, **settings.PYCSW["CONFIGURATION"])
-        # if "server" in settings.PYCSW["CONFIGURATION"]:
-        #     # override server system defaults with user specified directives
-        #     # When swapping parameters from dict(), this if statement becomes useless
-        #     mdict["server"].update(settings.PYCSW["CONFIGURATION"]["server"])
+        if "server" in settings.PYCSW["CONFIGURATION"]:
+            mdict["server"] = dict(CONFIGURATION.get("server", {}), **settings.PYCSW["CONFIGURATION"]["server"])
 
         # fake HTTP environment variable
         os.environ["QUERY_STRING"] = ""
