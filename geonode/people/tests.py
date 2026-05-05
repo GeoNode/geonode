@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from datetime import datetime, timedelta
 import django
 from django.test import RequestFactory
 from django.test.utils import override_settings
@@ -1397,6 +1398,15 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         request = RequestFactory().get("/")
         request.user = user
         request.LANGUAGE_CODE = "en-us"
+        request.session = {
+            "config": {
+                "configuration": {
+                    "read_only": False,
+                    "maintenance": False,
+                },
+                "expiration": (datetime.utcnow() + timedelta(seconds=60)).isoformat(),
+            }
+        }
 
         try:
             ProfileLanguageMiddleware(lambda request: None).process_request(request)
