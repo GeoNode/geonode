@@ -53,7 +53,7 @@
   <mdb:metadataScope xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/1.0">
       <mdb:MD_MetadataScope>
          <mdb:resourceScope>
-            <mcc:MD_ScopeCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#MD_ScopeCode" codeListValue="{{ item.csw_type }}"/>
+            <mcc:MD_ScopeCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#MD_ScopeCode" codeListValue="{{ layer.csw_type }}"/>
          </mdb:resourceScope>
       </mdb:MD_MetadataScope>
   </mdb:metadataScope>
@@ -79,7 +79,7 @@
                   </cit:positionName>
                   <cit:contactInfo>
                     <cit:CI_Contact>
-                      {% if not contact.voice %}
+                      {% if contact.voice %}
                       <cit:phone>
                         <cit:CI_Telephone>
                           <cit:number>
@@ -91,14 +91,14 @@
                         </cit:CI_Telephone>
                       </cit:phone>
                       {% endif %}
-                      {% if not contact.fax %}
+                      {% if contact.fax %}
                       <cit:phone>
                         <cit:CI_Telephone>
                           <cit:number>
                             <gco:CharacterString>{{ contact.fax }}</gco:CharacterString>
                           </cit:number>
                           <cit:numberType>
-                            <cit:CI_TelephoneTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_TelephoneTypeCode" codeListValue="fax">voice</cit:CI_TelephoneTypeCode>
+                            <cit:CI_TelephoneTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_TelephoneTypeCode" codeListValue="fax">fax</cit:CI_TelephoneTypeCode>
                           </cit:numberType>
                         </cit:CI_Telephone>
                       </cit:phone>
@@ -274,10 +274,10 @@
               <cit:individual>
                 <cit:CI_Individual>
                   <cit:name>
-                    <gco:CharacterString{% if not owner.first_name or not owner.last_name  %}gco:nilReason="missing">{% else %}>{{ owner.get_full_name }}{% endif %}</gco:CharacterString>
+                    <gco:CharacterString{% if not owner.first_name or not owner.last_name  %} gco:nilReason="missing">{% else %}>{{ owner.get_full_name }}{% endif %}</gco:CharacterString>
                   </cit:name>
                   <cit:positionName>
-                    <gco:CharacterString{% if not owner.position %} gco:nilReason="missing">{{ else }}>{{ owner.position }}{% endif %}</gco:CharacterString>
+                    <gco:CharacterString{% if not owner.position %} gco:nilReason="missing">{% else %}>{{ owner.position }}{% endif %}</gco:CharacterString>
                   </cit:positionName>
                   <cit:contactInfo>
                     <cit:CI_Contact>
@@ -395,7 +395,7 @@
         </mri:MD_Resolution>
       </mri:spatialResolution>
       {% endcomment %}
-      {% if not layer.category %}
+      {% if layer.category %}
       <mri:topicCategory>
         <mri:MD_TopicCategoryCode>{{ layer.category.identifier }}</mri:MD_TopicCategoryCode>
       </mri:topicCategory>
@@ -558,7 +558,7 @@
       <mcc:MD_Scope>
         <mcc:resourceLevel>
             <mcc:MD_ScopeCode codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_ScopeCode" 
-                              codeListValue="{{ item.get_csw_type_display }}">{{ item.get_csw_type_display }}</mcc:MD_ScopeCode>
+                              codeListValue="{{ layer.get_csw_type_display }}">{{ layer.get_csw_type_display }}</mcc:MD_ScopeCode>
         </mcc:resourceLevel>
       </mcc:MD_Scope>
     </mrl:scope>

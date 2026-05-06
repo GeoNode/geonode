@@ -1207,15 +1207,14 @@ CATALOGUE = {
 # Metadata format
 CATALOGUE_DEFAULT_FORMAT=os.getenv("CATALOGUE_DEFAULT_FORMAT", "ISO")
 
-assert CATALOGUE_DEFAULT_FORMAT in ("ISO", "ISO19115-3_2018"), f"Metadata profile invalid: {CATALOGUE_DEFAULT_FORMAT}"
+METADATA_TEMPLATES = {
+    "ISO": "catalogue/full_metadata.xml",
+    "ISO19115-3_2018": "catalogue/full_metadata_iso19115-3.xml",
+}
+if CATALOGUE_DEFAULT_FORMAT not in METADATA_TEMPLATES:
+    raise ValueError(f"Metadata profile invalid: {CATALOGUE_DEFAULT_FORMAT}")
 
-match CATALOGUE_DEFAULT_FORMAT:
-    case "ISO":
-        metadata_template = "catalogue/full_metadata.xml"
-    case "ISO19115-3_2018":
-        metadata_template = "catalogue/full_metadata_iso19115-3.xml"
-
-CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", metadata_template)
+CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", METADATA_TEMPLATES[CATALOGUE_DEFAULT_FORMAT])
 
 # pycsw settings
 PYCSW = {

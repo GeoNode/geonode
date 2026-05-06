@@ -31,7 +31,7 @@ match settings.CATALOGUE_DEFAULT_FORMAT:
     case "ISO19115-3_2018":
         from owslib.iso3 import MD_Metadata
     case _:
-        raise Exception(f"Unsuported metadata format: {settings.CATALOGUE_DEFAULT_FORMAT}")
+        raise ValueError(f"Unsuported metadata format: {settings.CATALOGUE_DEFAULT_FORMAT}")
 
 
 true_value = "true"
