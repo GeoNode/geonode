@@ -20,11 +20,19 @@
 import os
 from owslib.etree import etree as dlxml
 from django.conf import settings
-from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 from geonode.catalogue.backends.generic import METADATA_FORMATS
 from shapely.errors import ShapelyError
+
+match settings.CATALOGUE_DEFAULT_FORMAT:
+    case "ISO":
+        from owslib.iso import MD_Metadata
+    case "ISO19115-3_2018":
+        from owslib.iso3 import MD_Metadata
+    case _:
+        raise Exception(f"Unsuported metadata format: {settings.CATALOGUE_DEFAULT_FORMAT}")
+
 
 true_value = "true"
 false_value = "false"
@@ -66,7 +74,7 @@ CONFIGURATION = {
 class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
         GenericCatalogueBackend.__init__(CatalogueBackend, self, *args, **kwargs)
-        self.catalogue.formats = ["Atom", "DIF", "Dublin Core", "ebRIM", "FGDC", "ISO"]
+        self.catalogue.formats = list(METADATA_FORMATS.keys())
         self.catalogue.local = True
 
     def remove_record(self, uuid):
@@ -80,7 +88,7 @@ class CatalogueBackend(GenericCatalogueBackend):
         if len(results) < 1:
             return None
 
-        result = dlxml.fromstring(results).find("{http://www.isotc211.org/2005/gmd}MD_Metadata")
+        result = dlxml.fromstring(results).find("{%s}MD_Metadata" % self.default_schema)
 
         if result is None:
             return None
@@ -103,7 +111,7 @@ class CatalogueBackend(GenericCatalogueBackend):
             e = dlxml.fromstring(lresults)
 
             self.catalogue.records = [
-                MD_Metadata(x) for x in e.findall("//{http://www.isotc211.org/2005/gmd}MD_Metadata")
+                MD_Metadata(x) for x in e.findall("//{%s}MD_Metadata" % self.default_schema)
             ]
 
             # build results into JSON for API
@@ -150,7 +158,7 @@ class CatalogueBackend(GenericCatalogueBackend):
                 "typenames": formats,
                 "resulttype": "results",
                 "constraintlanguage": "CQL_TEXT",
-                "outputschema": "http://www.isotc211.org/2005/gmd",
+                "outputschema": self.default_schema,
                 "constraint": None,
                 "startposition": start,
                 "maxrecords": limit,
@@ -162,7 +170,7 @@ class CatalogueBackend(GenericCatalogueBackend):
                 "version": "2.0.2",
                 "request": "GetRecordById",
                 "id": identifier,
-                "outputschema": "http://www.isotc211.org/2005/gmd",
+                "outputschema": self.default_schema,
             }
             # FIXME(Ariel): Remove this try/except block when pycsw deals with
             # empty geometry fields better.

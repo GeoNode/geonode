@@ -94,7 +94,13 @@ def catalogue_post_save(instance, sender, **kwargs):
         LOGGER.exception(e)
         csw_anytext = ""
 
-    resources.update(metadata_xml=md_doc, csw_wkt_geometry=instance.geographic_bounding_box, csw_anytext=csw_anytext)
+    resources.update(
+        csw_typename=catalogue.default_root_node, 
+        csw_schema=catalogue.default_schema,
+        metadata_xml=md_doc, 
+        csw_wkt_geometry=instance.geographic_bounding_box, 
+        csw_anytext=csw_anytext
+    )
 
 
 if "geonode.catalogue" in settings.INSTALLED_APPS:

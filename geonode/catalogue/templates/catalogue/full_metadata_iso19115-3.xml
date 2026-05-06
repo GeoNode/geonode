@@ -1,0 +1,657 @@
+{% load thesaurus %}
+{% load l10n %}
+<mdb:MD_Metadata xmlns:mdb="http://standards.iso.org/iso/19115/-3/mdb/2.0"
+                 xmlns:cat="http://standards.iso.org/iso/19115/-3/cat/1.0"
+                 xmlns:gfc="http://standards.iso.org/iso/19110/gfc/1.1"
+                 xmlns:cit="http://standards.iso.org/iso/19115/-3/cit/2.0"
+                 xmlns:gcx="http://standards.iso.org/iso/19115/-3/gcx/1.0"
+                 xmlns:gex="http://standards.iso.org/iso/19115/-3/gex/1.0"
+                 xmlns:lan="http://standards.iso.org/iso/19115/-3/lan/1.0"
+                 xmlns:srv="http://standards.iso.org/iso/19115/-3/srv/2.1"
+                 xmlns:mas="http://standards.iso.org/iso/19115/-3/mas/1.0"
+                 xmlns:mcc="http://standards.iso.org/iso/19115/-3/mcc/1.0"
+                 xmlns:mco="http://standards.iso.org/iso/19115/-3/mco/1.0"
+                 xmlns:mda="http://standards.iso.org/iso/19115/-3/mda/1.0"
+                 xmlns:mds="http://standards.iso.org/iso/19115/-3/mds/2.0"
+                 xmlns:mdt="http://standards.iso.org/iso/19115/-3/mdt/2.0"
+                 xmlns:mex="http://standards.iso.org/iso/19115/-3/mex/1.0"
+                 xmlns:mmi="http://standards.iso.org/iso/19115/-3/mmi/1.0"
+                 xmlns:mpc="http://standards.iso.org/iso/19115/-3/mpc/1.0"
+                 xmlns:mrc="http://standards.iso.org/iso/19115/-3/mrc/2.0"
+                 xmlns:mrd="http://standards.iso.org/iso/19115/-3/mrd/1.0"
+                 xmlns:mri="http://standards.iso.org/iso/19115/-3/mri/1.0"
+                 xmlns:mrl="http://standards.iso.org/iso/19115/-3/mrl/2.0"
+                 xmlns:mrs="http://standards.iso.org/iso/19115/-3/mrs/1.0"
+                 xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/2.0"
+                 xmlns:mdq="http://standards.iso.org/iso/19157/-2/mdq/1.0"
+                 xmlns:mac="http://standards.iso.org/iso/19115/-3/mac/2.0"
+                 xmlns:gco="http://standards.iso.org/iso/19115/-3/gco/1.0"
+                 xmlns:gml="http://www.opengis.net/gml/3.2"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://standards.iso.org/iso/19115/-3/mds/2.0 http://standards.iso.org/iso/19115/-3/mds/2.0/mds.xsd">
+  <mdb:metadataIdentifier>
+      <mcc:MD_Identifier>
+         <mcc:code>
+            <gco:CharacterString>{{layer.uuid}}</gco:CharacterString>
+         </mcc:code>
+         <mcc:codeSpace>
+            <gco:CharacterString>urn:uuid</gco:CharacterString>
+         </mcc:codeSpace>
+      </mcc:MD_Identifier>
+  </mdb:metadataIdentifier>
+  <mdb:defaultLocale xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/1.0">
+      <lan:PT_Locale>
+         <lan:language>
+            <lan:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="{{layer.language}}"/>
+         </lan:language>
+         <lan:characterEncoding>
+            <lan:MD_CharacterSetCode codeList="https://www.iana.org/assignments/character-sets/character-sets.xml" codeListValue="UTF-8"/>
+         </lan:characterEncoding>
+      </lan:PT_Locale>
+  </mdb:defaultLocale>
+  <mdb:metadataScope xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/1.0">
+      <mdb:MD_MetadataScope>
+         <mdb:resourceScope>
+            <mcc:MD_ScopeCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#MD_ScopeCode" codeListValue="{{ item.csw_type }}"/>
+         </mdb:resourceScope>
+      </mdb:MD_MetadataScope>
+  </mdb:metadataScope>
+  {% for contact_role in layer.contactrole_set.all %}
+  {% with role=contact_role.role contact=contact_role.contact %}
+  <mdb:contact xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/1.0">
+      <cit:CI_Responsibility>
+         <cit:role>
+            <cit:CI_RoleCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#CI_RoleCode" codeListValue="{{ role }}"/>
+         </cit:role>
+         <cit:party>
+            <cit:CI_Organisation>
+              <cit:name>
+                <gco:CharacterString{% if not contact.organization %} gco:nilReason="missing">{% else %}>{{ contact.organization }}{% endif %}</gco:CharacterString>
+              </cit:name>
+              <cit:individual>
+                <cit:CI_Individual>
+                  <cit:name>
+                    <gco:CharacterString{% if not contact.first_name or not contact.last_name %} gco:nilReason="missing">{% else %}>{{ contact.get_full_name }}{% endif %}</gco:CharacterString>
+                  </cit:name>
+                  <cit:positionName>
+                    <gco:CharacterString{% if not contact.position %} gco:nilReason="missing">{% else %}>{{ contact.position }}{% endif %}</gco:CharacterString>
+                  </cit:positionName>
+                  <cit:contactInfo>
+                    <cit:CI_Contact>
+                      {% if not contact.voice %}
+                      <cit:phone>
+                        <cit:CI_Telephone>
+                          <cit:number>
+                            <gco:CharacterString>{{ contact.voice }}</gco:CharacterString>
+                          </cit:number>
+                          <cit:numberType>
+                            <cit:CI_TelephoneTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_TelephoneTypeCode" codeListValue="voice">voice</cit:CI_TelephoneTypeCode>
+                          </cit:numberType>
+                        </cit:CI_Telephone>
+                      </cit:phone>
+                      {% endif %}
+                      {% if not contact.fax %}
+                      <cit:phone>
+                        <cit:CI_Telephone>
+                          <cit:number>
+                            <gco:CharacterString>{{ contact.fax }}</gco:CharacterString>
+                          </cit:number>
+                          <cit:numberType>
+                            <cit:CI_TelephoneTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_TelephoneTypeCode" codeListValue="fax">voice</cit:CI_TelephoneTypeCode>
+                          </cit:numberType>
+                        </cit:CI_Telephone>
+                      </cit:phone>
+                      {% endif %}
+                      <cit:address>
+                        <cit:CI_Address>
+                          <cit:deliveryPoint>
+                              <gco:CharacterString{% if not contact.delivery %} gco:nilReason="missing">{% else %}>{{ contact.delivery }}{% endif %}</gco:CharacterString>
+                          </cit:deliveryPoint>
+                          <cit:city>
+                              <gco:CharacterString{% if not contact.city %} gco:nilReason="missing">{% else %}>{{ contact.city }}{% endif %}</gco:CharacterString>
+                          </cit:city>
+                          <cit:administrativeArea>
+                              <gco:CharacterString{%if not contact.area %} gco:nilReason="missing">{% else %}>{{ contact.area }}{% endif %}</gco:CharacterString>
+                          </cit:administrativeArea>
+                          <cit:postalCode>
+                              <gco:CharacterString{%if not contact.zipcode %} gco:nilReason="missing">{% else %}>{{ contact.zipcode }}{% endif %}</gco:CharacterString>
+                          </cit:postalCode>
+                          <cit:country>
+                              <gco:CharacterString{% if not contact.country %} gco:nilReason="missing">{% else %}>{{ contact.country }}{% endif %}</gco:CharacterString>
+                          </cit:country>
+                          <cit:electronicMailAddress>
+                              <gco:CharacterString{% if not contact.email %} gco:nilReason="missing">{% else %}>{{ contact.email }}{% endif %}</gco:CharacterString>
+                          </cit:electronicMailAddress>
+                        </cit:CI_Address>
+                      </cit:address>
+                      <cit:onlineResource>
+                        <cit:CI_OnlineResource>
+                            <cit:linkage>
+                                <gco:CharacterString>{{ SITEURL }}{{ contact.get_absolute_url }}</gco:CharacterString>
+                            </cit:linkage>
+                            <cit:name>
+                              <gco:CharacterString>Profile</gco:CharacterString>
+                            </cit:name>
+                            <cit:protocol>
+                              <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
+                            </cit:protocol>
+                            <cit:description>
+                              <gco:CharacterString>GeoNode profile page</gco:CharacterString>
+                            </cit:description>
+                        </cit:CI_OnlineResource>
+                      </cit:onlineResource>
+                    </cit:CI_Contact>
+                  </cit:contactInfo>
+                </cit:CI_Individual>
+              </cit:individual>
+            </cit:CI_Organisation>
+         </cit:party>
+      </cit:CI_Responsibility>
+  </mdb:contact>
+  {% endwith %}
+  {% endfor %}
+  <mdb:dateInfo>
+      <cit:CI_Date>
+        <cit:date>
+          <gco:DateTime>{{layer.csw_insert_date|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
+        </cit:date>
+        <cit:dateType>
+          <cit:CI_DateTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_DateTypeCode" codeListValue="creation">creation</cit:CI_DateTypeCode>
+        </cit:dateType>
+      </cit:CI_Date>
+  </mdb:dateInfo>
+  <mdb:metadataStandard xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/1.0">
+      <cit:CI_Citation>
+         <cit:title>
+            <gco:CharacterString>ISO 19115-3:2014</gco:CharacterString>
+         </cit:title>
+      </cit:CI_Citation>
+  </mdb:metadataStandard>
+  <mdb:metadataProfile xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/1.0">
+      <cit:CI_Citation>
+         <cit:title>
+            <gco:CharacterString>ISO 19115-3:2014</gco:CharacterString>
+         </cit:title>
+      </cit:CI_Citation>
+  </mdb:metadataProfile>
+  <mdb:metadataLinkage>
+      <cit:CI_OnlineResource>
+         <cit:linkage>
+            <gco:CharacterString>{{ SITEURL }}{{ layer.get_absolute_url }}</gco:CharacterString>
+         </cit:linkage>
+         <cit:function>
+            <cit:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#CI_OnLineFunctionCode"
+                                       codeListValue="completeMetadata"/>
+         </cit:function>
+      </cit:CI_OnlineResource>
+  </mdb:metadataLinkage>
+  {% comment %}
+  <mdb:referenceSystemInfo>
+    <mrs:MD_ReferenceSystem>
+      <mrs:referenceSystemIdentifier>
+         <mcc:MD_Identifier>
+            <mcc:code>
+               <gco:CharacterString>{{ 4674 }}</gco:CharacterString>
+            </mcc:code>
+            <mcc:codeSpace>
+               <gco:CharacterString>{{ EPSG }}</gco:CharacterString>
+            </mcc:codeSpace>
+         </mcc:MD_Identifier>
+      </mrs:referenceSystemIdentifier>
+    </mrs:MD_ReferenceSystem>
+  </mdb:referenceSystemInfo>
+  {% endcomment %}
+
+  <mdb:identificationInfo xmlns:msr="http://standards.iso.org/iso/19115/-3/msr/1.0">
+    <mri:MD_DataIdentification>
+      <mri:citation>
+        <cit:CI_Citation>
+          <cit:title>
+            <gco:CharacterString>{{layer.title}}</gco:CharacterString>
+          </cit:title>
+          {% if layer.alternate %}
+          <cit:alternateTitle>
+            <gco:CharacterString>{{layer.alternate}}</gco:CharacterString>
+          </cit:alternateTitle>
+          {% endif %}
+          <cit:date>
+            <cit:CI_Date>
+              <cit:date>
+                <gco:DateTime>{{layer.date|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
+              </cit:date>
+              <cit:dateType>
+                <cit:CI_DateTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_DateTypeCode" codeListValue="{{layer.date_type}}">{{layer.date_type}}</cit:CI_DateTypeCode>
+              </cit:dateType>
+            </cit:CI_Date>
+          </cit:date>
+          {% if layer.edition %}
+          <cit:edition>
+            <gco:CharacterString>{{layer.edition}}</gco:CharacterString>
+          </cit:edition>
+          {% endif %}
+          {% if layer.doi %}
+          <cit:identifier>
+            <mcc:MD_Identifier>
+              <mcc:code>
+                <gcx:Anchor xlink:actuate="onRequest" xlink:href="https://dx.doi.org/{{ layer.doi }}" xlink:title="DOI">doi:{{ layer.doi }}</gcx:Anchor>
+              </mcc:code>
+            </mcc:MD_Identifier>
+            <mcc:codeSpace>
+              <gco:CharacterString>doi</gco:CharacterString>
+            </mcc:codeSpace>
+            <mcc:description>
+              <gco:CharacterString>Digital Object Identifier (DOI)</gco:CharacterString>
+            </mcc:description>
+          </cit:identifier>
+          {% endif %}
+          <cit:presentationForm>
+            <cit:CI_PresentationFormCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_PresentationFormCode" codeListValue="mapDigital">mapDigital</cit:CI_PresentationFormCode>
+          </cit:presentationForm>
+        </cit:CI_Citation>
+      </mri:citation>
+      <mri:abstract>
+        <gco:CharacterString>{{ layer.raw_abstract }}</gco:CharacterString>
+      </mri:abstract>
+      <mri:purpose>
+        <gco:CharacterString {% if not layer.raw_purpose %}gco:nilReason="missing">{% else %}>{{ layer.raw_purpose }}</gco:CharacterString>{% endif %}
+      </mri:purpose>
+      <mri:status>
+        <mcc:MD_ProgressCode codeSpace="http://standards.iso.org/iso/19115" codeListValue="completed"
+                              codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#MD_ProgressCode"/>
+      </mri:status>
+      {% with layer.owner as owner %}
+      <mri:pointOfContact>
+        <cit:CI_Responsibility>
+          <cit:role>
+              <cit:CI_RoleCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#CI_RoleCode" codeListValue="owner"/>
+          </cit:role>
+          <cit:party>
+            <cit:CI_Organisation>
+              <cit:name>
+                <gco:CharacterString{% if not owner.organization %} gco:nilReason="missing">{% else %}>{{ owner.organization }}{% endif %}</gco:CharacterString>
+              </cit:name>
+              <cit:individual>
+                <cit:CI_Individual>
+                  <cit:name>
+                    <gco:CharacterString{% if not owner.first_name or not owner.last_name  %}gco:nilReason="missing">{% else %}>{{ owner.get_full_name }}{% endif %}</gco:CharacterString>
+                  </cit:name>
+                  <cit:positionName>
+                    <gco:CharacterString{% if not owner.position %} gco:nilReason="missing">{{ else }}>{{ owner.position }}{% endif %}</gco:CharacterString>
+                  </cit:positionName>
+                  <cit:contactInfo>
+                    <cit:CI_Contact>
+                      {% if not owner.voice %}
+                      <cit:phone>
+                        <cit:CI_Telephone>
+                          <cit:number>
+                            <gco:CharacterString>{{ owner.voice }}</gco:CharacterString>
+                          </cit:number>
+                          <cit:numberType>
+                            <cit:CI_TelephoneTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_TelephoneTypeCode" codeListValue="voice">voice</cit:CI_TelephoneTypeCode>
+                          </cit:numberType>
+                        </cit:CI_Telephone>
+                      </cit:phone>
+                      {% endif %}
+                      {% if not owner.fax %}
+                      <cit:phone>
+                        <cit:CI_Telephone>
+                          <cit:number>
+                            <gco:CharacterString>{{ owner.fax }}</gco:CharacterString>
+                          </cit:number>
+                          <cit:numberType>
+                            <cit:CI_TelephoneTypeCode codeSpace="http://standards.iso.org/iso/19115" codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_TelephoneTypeCode" codeListValue="fax">voice</cit:CI_TelephoneTypeCode>
+                          </cit:numberType>
+                        </cit:CI_Telephone>
+                      </cit:phone>
+                      {% endif %}
+                      <cit:address>
+                        <cit:CI_Address>
+                          <cit:deliveryPoint>
+                              <gco:CharacterString{% if not owner.delivery %} gco:nilReason="missing">{% else %}>{{ owner.delivery }}{% endif %}</gco:CharacterString>
+                          </cit:deliveryPoint>
+                          <cit:city>
+                              <gco:CharacterString{% if not owner.city %} gco:nilReason="missing">{% else %}>{{ owner.city }}{% endif %}</gco:CharacterString>
+                          </cit:city>
+                          <cit:administrativeArea>
+                              <gco:CharacterString{%if not owner.area %} gco:nilReason="missing">{% else %}>{{ owner.area }}{% endif %}</gco:CharacterString>
+                          </cit:administrativeArea>
+                          <cit:postalCode>
+                              <gco:CharacterString{%if not owner.zipcode %} gco:nilReason="missing">{% else %}>{{ owner.zipcode }}{% endif %}</gco:CharacterString>
+                          </cit:postalCode>
+                          <cit:country>
+                              <gco:CharacterString{% if not owner.country %} gco:nilReason="missing">{% else %}>{{ owner.country }}{% endif %}</gco:CharacterString>
+                          </cit:country>
+                          <cit:electronicMailAddress>
+                              <gco:CharacterString{% if not owner.email %} gco:nilReason="missing">{% else %}>{{ owner.email }}{% endif %}</gco:CharacterString>
+                          </cit:electronicMailAddress>
+                        </cit:CI_Address>
+                      </cit:address>
+                      <cit:onlineResource>
+                        <cit:CI_OnlineResource>
+                            <cit:linkage>
+                              <gco:CharacterString>{{ SITEURL }}{{ owner.get_absolute_url }}</gco:CharacterString>
+                            </cit:linkage>
+                            <cit:name>
+                              <gco:CharacterString>Profile</gco:CharacterString>
+                            </cit:name>
+                            <cit:protocol>
+                              <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
+                            </cit:protocol>
+                            <cit:description>
+                              <gco:CharacterString>GeoNode profile page</gco:CharacterString>
+                            </cit:description>
+                        </cit:CI_OnlineResource>
+                      </cit:onlineResource>
+                    </cit:CI_Contact>
+                  </cit:contactInfo>
+                </cit:CI_Individual>
+              </cit:individual>
+            </cit:CI_Organisation>
+          </cit:party>
+        </cit:CI_Responsibility>
+      </mri:pointOfContact>
+      {% endwith %}
+      {% if layer.maintenance_frequency %}
+      <mri:resourceMaintenance>
+        <mmi:MD_MaintenanceInformation>
+          <mmi:maintenanceAndUpdateFrequency>
+            <mmi:MD_MaintenanceFrequencyCode codeSpace="http://standards.iso.org/iso/19115" 
+                                             codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_MaintenanceFrequencyCode" 
+                                             codeListValue="{{layer.maintenance_frequency}}">{{layer.maintenance_frequency}}</mmi:MD_MaintenanceFrequencyCode>
+          </mmi:maintenanceAndUpdateFrequency>
+        </mmi:MD_MaintenanceInformation>
+      </mri:resourceMaintenance>
+      {% endif %}
+      <mri:graphicOverview>
+        <mcc:MD_BrowseGraphic>
+          <mcc:fileName>
+            <gco:CharacterString>{{ layer.get_thumbnail_url }}</gco:CharacterString>
+          </mcc:fileName>
+          <mcc:fileDescription>
+            <gco:CharacterString>Thumbnail for '{{ layer.title }}'</gco:CharacterString>
+          </mcc:fileDescription>
+          <mcc:fileType>
+            <gco:CharacterString>image/png</gco:CharacterString>
+          </mcc:fileType>
+        </mcc:MD_BrowseGraphic>
+      </mri:graphicOverview>
+      {% if layer.spatial_representation_type %}
+      <mri:spatialRepresentationType>
+        <mcc:MD_SpatialRepresentationTypeCode codeListValue="{{ layer.spatial_representation_type.identifier }}"
+                                              codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#MD_SpatialRepresentationTypeCode"/>
+      </mri:spatialRepresentationType>
+      {% endif %}
+      {% comment %}
+      <mri:spatialResolution>
+        <mri:MD_Resolution>
+            <mri:equivalentScale>
+              <mri:MD_RepresentativeFraction>
+                  <mri:denominator>
+                    <gco:Integer/>
+                  </mri:denominator>
+              </mri:MD_RepresentativeFraction>
+            </mri:equivalentScale>
+        </mri:MD_Resolution>
+      </mri:spatialResolution>
+      {% endcomment %}
+      {% if not layer.category %}
+      <mri:topicCategory>
+        <mri:MD_TopicCategoryCode>{{ layer.category.identifier }}</mri:MD_TopicCategoryCode>
+      </mri:topicCategory>
+      {% endif %}
+      <mri:extent>
+        <gex:EX_Extent>
+            <gex:geographicElement>
+              <gex:EX_GeographicBoundingBox>
+                {% localize off %}
+                <gex:westBoundLongitude>
+                  <gco:Decimal>{{ layer.ll_bbox.0 }}</gco:Decimal>
+                </gex:westBoundLongitude>
+                <gex:eastBoundLongitude>
+                  <gco:Decimal>{{ layer.ll_bbox.1 }}</gco:Decimal>
+                </gex:eastBoundLongitude>
+                <gex:southBoundLatitude>
+                  <gco:Decimal>{{ layer.ll_bbox.2 }}</gco:Decimal>
+                </gex:southBoundLatitude>
+                <gex:northBoundLatitude>
+                  <gco:Decimal>{{ layer.ll_bbox.3 }}</gco:Decimal>
+                </gex:northBoundLatitude>
+               {% endlocalize %}
+              </gex:EX_GeographicBoundingBox>
+            </gex:geographicElement>
+        </gex:EX_Extent>
+      </mri:extent>
+      {% if layer.keyword_list %}
+      <mri:descriptiveKeywords>
+        <mri:MD_Keywords>
+          {% for kw in layer.keyword_list %}
+          <mri:keyword>
+            <gco:CharacterString>{{ kw }}</gco:CharacterString>
+          </mri:keyword>
+          {% endfor %}
+          <mri:type>
+            <mri:MD_KeywordTypeCode codeSpace="http://standards.iso.org/iso/19115" 
+                                    codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_KeywordTypeCode" 
+                                    codeListValue="theme">theme</mri:MD_KeywordTypeCode>
+          </mri:type>
+        </mri:MD_Keywords>
+      </mri:descriptiveKeywords>
+      {% endif %}
+      {% if layer.tkeywords %}
+      {% for thesaurus_id in layer.tkeywords|get_unique_thesaurus_set %}
+      <mri:descriptiveKeywords>
+        <mri:MD_Keywords>
+          {% for keyword in layer.tkeywords.all|with_localized_labels %}
+          {% if keyword.thesaurus.id == thesaurus_id %}
+          <mri:keyword>
+            <gco:CharacterString>{{ keyword.localized_label }}</gco:CharacterString>
+          </mri:keyword>
+          {% endif %}
+          {% endfor %}
+          <mri:thesaurusName>
+            <cit:CI_Citation>
+              <cit:title>
+                <gco:CharacterString>{{ thesaurus_id|get_thesaurus_title }}</gco:CharacterString>
+              </cit:title>
+              <cit:date>
+                <cit:CI_Date>
+                  <cit:date>
+                    <gco:Date>{{ thesaurus_id|get_thesaurus_date }}</gco:Date>
+                  </cit:date>
+                  <cit:dateType>
+                    <cit:CI_DateTypeCode
+                          codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#CI_DateTypeCode"
+                          codeListValue="publication">publication</cit:CI_DateTypeCode>
+                  </cit:dateType>
+                </cit:CI_Date>
+              </cit:date>
+            </cit:CI_Citation>
+          </mri:thesaurusName>
+        </mri:MD_Keywords>
+      </mri:descriptiveKeywords>
+      {% endfor %}
+      {% endif %}
+      {% if layer.regions.exists %}
+      <mri:descriptiveKeywords>
+        <mri:MD_Keywords>
+          {% for region in layer.regions.all %}
+          <mri:keyword>
+            <gco:CharacterString>{{ region.name }}</gco:CharacterString>
+          </mri:keyword>
+          {% endfor %}
+          <mri:type>
+            <mri:MD_KeywordTypeCode codeSpace="http://standards.iso.org/iso/19115" 
+                                    codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_KeywordTypeCode" 
+                                    codeListValue="place">place</mri:MD_KeywordTypeCode>
+          </mri:type>
+        </mri:MD_Keywords>
+      </mri:descriptiveKeywords>
+      {% endif %}
+      <mri:defaultLocale>
+        <lan:PT_Locale>
+          <lan:language>
+            <lan:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="{{layer.language}}"/>
+          </lan:language>
+          <lan:characterEncoding>
+            <lan:MD_CharacterSetCode codeList="https://www.iana.org/assignments/character-sets/character-sets.xml" codeListValue="UTF-8"/>
+          </lan:characterEncoding>
+        </lan:PT_Locale>
+      </mri:defaultLocale>
+      {% if layer.raw_supplemental_information %}
+      <mri:supplementalInformation>
+        <gco:CharacterString>{{ layer.raw_supplemental_information }}</gco:CharacterString>
+      </mri:supplementalInformation>
+      {% endif %}
+      {% if LICENSES_METADATA == 'light' and layer.license %}
+       <mri:resourceConstraints>
+         <mco:MD_LegalConstraints>
+           <mco:useConstraints>
+             <mco:MD_RestrictionCode codeSpace="http://standards.iso.org/iso/19115" 
+                                     codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_RestrictionCode" 
+                                     codeListValue="license">license</mco:MD_RestrictionCode>
+           </mco:useConstraints>
+           <mco:otherConstraints>
+             <gco:CharacterString>{{layer.license_light}}</gco:CharacterString>
+           </mco:otherConstraints>
+           {% if layer.doi %}
+           <mco:otherConstraints>
+             <gco:CharacterString>DOI: {{layer.doi}}</gco:CharacterString>
+           </mco:otherConstraints>
+           {% endif %}
+         </mco:MD_LegalConstraints>
+       </mri:resourceConstraints>
+       {% endif %}
+       {% if LICENSES_METADATA == 'verbose' and layer.license %}
+       <mri:resourceConstraints>
+         <mco:MD_LegalConstraints>
+           <mco:useConstraints>
+             <mco:MD_RestrictionCode codeSpace="http://standards.iso.org/iso/19115" 
+                                     codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_RestrictionCode" 
+                                     codeListValue="license">license</mco:MD_RestrictionCode></mco:useConstraints>
+           <mco:otherConstraints>
+             <gco:CharacterString>{{layer.license_verbose}}</gco:CharacterString>
+           </mco:otherConstraints>
+         </mco:MD_LegalConstraints>
+       </mri:resourceConstraints>
+       {% endif %}
+       <mri:resourceConstraints>
+         <mco:MD_LegalConstraints>
+           <mco:useConstraints>
+              <mco:MD_RestrictionCode codeSpace="http://standards.iso.org/iso/19115" 
+                                     codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_RestrictionCode" 
+                                     codeListValue="{{ layer.restriction_code_type.identifier }}">{{ layer.restriction_code_type.identifier }}</mco:MD_RestrictionCode>
+           </mco:useConstraints>
+           <mco:otherConstraints>
+             <gco:CharacterString>{{layer.raw_constraints_other}}</gco:CharacterString>
+           </mco:otherConstraints>
+         </mco:MD_LegalConstraints>
+       </mri:resourceConstraints>
+    </mri:MD_DataIdentification>
+  </mdb:identificationInfo>
+  {% if layer.raw_data_quality_statement %}
+  <mrl:LI_Lineage>
+    <mrl:statement>
+      <gco:CharacterString>{{ layer.raw_data_quality_statement }}</gco:CharacterString>
+    </mrl:statement>
+    <mrl:scope>
+      <mcc:MD_Scope>
+        <mcc:resourceLevel>
+            <mcc:MD_ScopeCode codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_ScopeCode" 
+                              codeListValue="{{ item.get_csw_type_display }}">{{ item.get_csw_type_display }}</mcc:MD_ScopeCode>
+        </mcc:resourceLevel>
+      </mcc:MD_Scope>
+    </mrl:scope>
+  </mrl:LI_Lineage>
+  {% endif %}
+  <mdb:contentInfo>
+    {% if layer.subtype == 'raster' %}
+    <mrc:MD_CoverageDescription>
+      <mrc:attributeDescription gco:nilReason="inapplicable"/>
+      <mrc:contentType>
+        <mrc:MD_CoverageContentTypeCode codeList="http://standards.iso.org/iso/19115/resources/Codelist/cat/codelists.xml#MD_CoverageContentTypeCode" 
+                                        codeListValue="image">image</mrc:MD_CoverageContentTypeCode>
+      </mrc:contentType>
+    </mrc:MD_CoverageDescription>
+    {% elif layer.subtype == 'vector' %}
+    <mrc:MD_FeatureCatalogueDescription>
+      <mrc:includedWithDataset>
+        <gco:Boolean>0</gco:Boolean>
+      </mrc:includedWithDataset>
+      <mrc:featureCatalogueCitation uuidref="{{layer.uuid}}" xlink:href="{{ SITEURL }}{{ layer.get_absolute_url }}/feature_catalogue"/>
+    </mrc:MD_FeatureCatalogueDescription>
+    {% endif %}
+   </mdb:contentInfo>
+  <mdb:distributionInfo>
+    <mrd:MD_Distribution>
+      <mrd:transferOptions>
+        <mrd:MD_DigitalTransferOptions>
+          <mrd:onLine>
+            <cit:CI_OnlineResource>
+              <cit:linkage>
+                <gco:CharacterString>{{ SITEURL }}{% url 'resolve_uuid' uuid=layer.uuid %}</gco:CharacterString>
+              </cit:linkage>
+              <cit:protocol>
+                <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
+              </cit:protocol>
+              <cit:name>
+                <gco:CharacterString>{{ layer.alternate }}</gco:CharacterString>
+              </cit:name>
+              <cit:description>
+                <gco:CharacterString>Online link to the '{{ layer.title }}' description on GeoNode</gco:CharacterString>
+              </cit:description>
+              <cit:function>
+                <cit:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#CI_OnLineFunctionCode"
+                                            codeListValue="browsing"/>
+              </cit:function>
+            </cit:CI_OnlineResource>
+          </mrd:onLine>
+          {% for link in layer.link_set.download %}
+          <mrd:onLine>
+            <cit:CI_OnlineResource>
+              <cit:linkage>
+                <gco:CharacterString>{{ link.url }}</gco:CharacterString>
+              </cit:linkage>
+              <cit:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
+              </cit:protocol>
+              <cit:name>
+                <gco:CharacterString>{{ layer.name }}.{{ link.extension }}</gco:CharacterString>
+              </cit:name>
+              <cit:description>
+                <gco:CharacterString>{{ layer.title }} ({{ link.name }} Format)</gco:CharacterString>
+              </cit:description>
+              <cit:function>
+                <cit:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#CI_OnLineFunctionCode"
+                                            codeListValue="download"/>
+              </cit:function>
+            </cit:CI_OnlineResource>
+          </mrd:onLine>
+          {% endfor %}
+          {% for link in layer.link_set.ows %}
+          <mrd:onLine>
+            <cit:CI_OnlineResource>
+              <cit:linkage>
+                <gco:CharacterString>{{ link.url }}</gco:CharacterString>
+              </cit:linkage>
+              <cit:protocol>
+                <gco:CharacterString>{{ link.link_type }}</gco:CharacterString>
+              </cit:protocol>
+              <cit:name>
+                <gco:CharacterString>{{ layer.alternate }}</gco:CharacterString>
+              </cit:name>
+              <cit:description>
+                <gco:CharacterString>{{layer.workspace}} Service - Provides Layer: {{ layer.title }}</gco:CharacterString>
+              </cit:description>
+              <cit:function>
+                <cit:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#CI_OnLineFunctionCode"
+                                            codeListValue="download"/>
+              </cit:function>
+            </cit:CI_OnlineResource>
+          </mrd:onLine>
+          {% endfor %}
+        </mrd:MD_DigitalTransferOptions>
+      </mrd:transferOptions>
+    </mrd:MD_Distribution>
+  </mdb:distributionInfo>
+</mdb:MD_Metadata>
