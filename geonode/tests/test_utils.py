@@ -31,7 +31,8 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, bbox_to_wkt
+from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects
+from unittest.mock import MagicMock
 
 
 class TestCopyTree(GeoNodeBaseTestSupport):
@@ -267,3 +268,113 @@ class TestRegionsCrossingDateLine(TestCase):
         _, wkt = bbox_across_idl.split(";")
         poly = GEOSGeometry(wkt, srid=4326)
         self.assertEqual(poly.geom_type, "MultiPolygon", f"Expexted 'MultiPolygon' type but received {poly.geom_type}")
+
+
+class TestIsSafeURL(TestCase):
+
+    def test_allows_http_and_https_urls(self):
+        urls = [
+            "http://example.com/path",
+            "https://example.com/path",
+        ]
+
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("8.8.8.8", 0))]
+
+            for url in urls:
+                with self.subTest(url=url):
+                    self.assertTrue(is_safe_url(url))
+
+    def test_rejects_loopback_and_private_ips(self):
+        urls = [
+            "http://127.0.0.1/",  # IPv4 loopback (localhost)
+            "http://127.0.0.2/",  # IPv4 loopback range (127.0.0.0/8)
+            "http://[::1]/",  # IPv6 loopback (localhost)
+            "http://10.0.0.1/",  # Private network (RFC1918 - Class A)
+            "http://172.16.0.1/",  # Private network (RFC1918 - Class B)
+            "http://192.168.1.100/",  # Private network (RFC1918 - Class C)
+            "http://0.0.0.0/",  # Unspecified / non-routable address
+        ]
+
+        for url in urls:
+            with self.subTest(url=url):
+                self.assertFalse(is_safe_url(url))
+
+    def test_rejects_non_http_schemes(self):
+        urls = [
+            "ftp://example.com/file.txt",  # Unsupported scheme
+            "file:///etc/passwd",  # Local file access
+        ]
+
+        for url in urls:
+            with self.subTest(url=url):
+                self.assertFalse(is_safe_url(url))
+
+    def test_rejects_script_and_data_schemes(self):
+        urls = [
+            "javascript:alert(1)",  # JS execution (XSS vector)
+            "javascript://example.com/%0aalert(1)",  # Obfuscated JS payload
+            "data:text/html,<script>alert(1)</script>",  # Inline script via data URI
+        ]
+
+        for url in urls:
+            with self.subTest(url=url):
+                self.assertFalse(is_safe_url(url))
+
+    def test_rejects_malformed_urls(self):
+        urls = [
+            "http:///path/only",  # Missing hostname
+            "http://",  # Incomplete URL
+            "://missing.scheme",  # Missing scheme name
+        ]
+
+        for url in urls:
+            with self.subTest(url=url):
+                self.assertFalse(is_safe_url(url))
+
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_rejects_dns_resolution_to_private_ip(self, mock_dns):
+        """Domains resolving to private/loopback IPs must be rejected."""
+        mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
+
+        url = "http://example.com"
+
+        self.assertFalse(is_safe_url(url))
+
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_allows_dns_resolution_to_public_ip(self, mock_dns):
+        """Domains resolving to public IPs should be allowed."""
+        mock_dns.return_value = [(None, None, None, None, ("8.8.8.8", 0))]
+
+        url = "http://example.com"
+
+        self.assertTrue(is_safe_url(url))
+
+    @patch("geonode.utils.requests.Session")
+    def test_rejects_redirect_to_loopback(self, mock_requests_session):
+
+        redirect_response = MagicMock()
+        redirect_response.is_redirect = True
+        redirect_response.headers = {"Location": "http://127.0.0.1/"}
+        mock_requests_session.return_value.head.return_value = redirect_response
+
+        result, blocked_url = is_safe_url_with_redirects("https://example.com")
+
+        self.assertFalse(result)
+        self.assertEqual(blocked_url, "http://127.0.0.1/")
+
+    @patch("geonode.utils.requests.Session")
+    def test_allows_redirect_to_public_domain(self, mock_requests_session):
+        redirect_response = MagicMock()
+        redirect_response.is_redirect = True
+        redirect_response.headers = {"Location": "https://example.com/new-path"}
+
+        final_response = MagicMock()
+        final_response.is_redirect = False
+
+        mock_requests_session.return_value.head.side_effect = [redirect_response, final_response]
+
+        result, blocked_url = is_safe_url_with_redirects("https://example.com")
+
+        self.assertTrue(result)
+        self.assertIsNone(blocked_url)

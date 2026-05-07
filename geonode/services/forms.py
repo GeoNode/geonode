@@ -28,6 +28,7 @@ from . import enumerations
 from .models import Service
 from .serviceprocessors import get_service_handler
 from geonode.services.serviceprocessors import get_available_service_types
+from geonode.utils import is_safe_url
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,10 @@ class CreateServiceForm(forms.Form):
 
     def clean_url(self):
         proposed_url = self.cleaned_data["url"]
+
+        if not is_safe_url(proposed_url):
+            raise ValidationError(_("Invalid URL provided"))
+
         existing = Service.objects.filter(base_url=proposed_url).exists()
         if existing:
             raise ValidationError(_("Service %(url)s is already registered"), params={"url": proposed_url})
