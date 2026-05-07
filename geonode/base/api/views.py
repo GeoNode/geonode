@@ -355,7 +355,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
 
     @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None, *args, **kwargs):
-        """API endpoint allowing to retrieve the favorite Resources."""
+        """API endpoint allowing to add or remove a resource from favorites."""
         resource = self.get_object()
         user = request.user
 
@@ -374,7 +374,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
             except Favorite.DoesNotExist:
                 return Response({"message": "Resource not in favorites"}, status=404)
 
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=["get"], serializer_class=ResourceBaseTypesSerializer)
     def resource_types(self, request, *args, **kwargs):
         """
         Returns the list of available ResourceBase polymorphic_ctypes.
