@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-from drf_spectacular.utils import extend_schema
 from pathlib import Path
 from uuid import uuid4
 from dynamic_rest.viewsets import DynamicModelViewSet
@@ -30,7 +29,6 @@ from geonode import settings
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
-from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import base_linked_resources, ApiPresetsInitializer
 from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
@@ -133,11 +131,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
             logger.error(f"Error creating document {serializer.validated_data}", exc_info=e)
             raise e
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve linked resources",
-    )
     @action(detail=True, methods=["get"])
     def linked_resources(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve linked resources"""
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
