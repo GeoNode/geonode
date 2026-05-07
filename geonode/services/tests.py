@@ -38,6 +38,9 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.harvesting.models import Harvester
 from geonode.layers.models import Dataset
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.models import AuthConfig
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.registry import resource_manager_registry
 from geonode.base import enumerations as base_enumerations
@@ -594,6 +597,28 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(result.title, self.phony_title)
         # mata_data_only is set to Try
         self.assertTrue(result.metadata_only)
+
+    @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
+    @mock.patch.object(wms.WmsServiceHandler, "parsed_service")
+    def test_create_geonode_service_with_basic_auth_config(self, mock_wms_parsed_service, mock_wms):
+        mock_wms.return_value = (self.phony_url, self.parsed_wms)
+        mock_wms_parsed_service.return_value = self.parsed_wms
+        mock_wms_parsed_service.provider.url = self.phony_url
+        mock_wms_parsed_service.identification.title = self.phony_title
+        mock_wms_parsed_service.identification.version = self.phony_version
+
+        auth_config = AuthConfig(
+            type=BasicAuthHandler.handled_type,
+            payload=BasicAuthHandler.encrypt_payload({"username": "demo-user", "password": "demo-pass"}),
+        )
+        handler = wms.WmsServiceHandler(self.phony_url, auth_config=auth_config)
+        result = handler.create_geonode_service(self.test_user)
+
+        self.assertIsNotNone(result.auth_config)
+        self.assertEqual(result.auth_config.type, "basic")
+
+        auth_handler = auth_handler_registry.build(result.auth_config)
+        self.assertEqual(auth_handler.get_credentials(), ("demo-user", "demo-pass"))
 
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)

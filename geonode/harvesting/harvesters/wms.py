@@ -22,6 +22,7 @@ import uuid
 from datetime import datetime
 from functools import lru_cache
 from urllib.parse import unquote, urlparse, urlencode, parse_qsl, ParseResult
+from owslib.util import Authentication
 
 import requests
 from lxml import etree
@@ -32,7 +33,6 @@ from owslib.util import clean_ows_url
 from django.conf import settings
 from django.contrib.gis import geos
 from django.template.defaultfilters import slugify
-from requests.auth import HTTPBasicAuth
 from geonode.layers.models import Dataset
 from geonode.base.models import Link, ResourceBase
 from geonode.layers.enumerations import GXP_PTYPES
@@ -53,7 +53,15 @@ logger = logging.getLogger(__name__)
 
 @lru_cache()
 def WebMapService(
-    url, version="1.3.0", xml=None, username=None, password=None, parse_remote_metadata=False, timeout=30, headers=None
+    url,
+    version="1.3.0",
+    xml=None,
+    username=None,
+    password=None,
+    parse_remote_metadata=False,
+    timeout=30,
+    headers=None,
+    auth=None,
 ):
     """
     API for Web Map Service (WMS) methods and metadata.
@@ -72,6 +80,7 @@ def WebMapService(
 
     clean_url = clean_ows_url(url)
     base_ows_url = clean_url
+    auth = Authentication(auth_delegate=auth)
 
     if version in ["1.1.1"]:
         return (
@@ -81,6 +90,7 @@ def WebMapService(
                 version=version,
                 xml=xml,
                 parse_remote_metadata=parse_remote_metadata,
+                auth=auth,
                 username=username,
                 password=password,
                 timeout=timeout,
@@ -95,6 +105,7 @@ def WebMapService(
                 version=version,
                 xml=xml,
                 parse_remote_metadata=parse_remote_metadata,
+                auth=auth,
                 username=username,
                 password=password,
                 timeout=timeout,
@@ -203,15 +214,12 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         # getting the service
         from geonode.services.models import Service
 
-        # check if the connected service has username and password
-        has_basic_auth = Service.objects.filter(
-            harvester__pk=self.harvester_id, username__isnull=False, password__isnull=False
-        )
         basic_auth = None
-        if has_basic_auth.exists():
-            # if the username and password are set, we can prepare the basic auth for the request
-            service = has_basic_auth.first()
-            basic_auth = HTTPBasicAuth(service.username, service.get_password())
+        service = Service.objects.filter(harvester__pk=self.harvester_id).select_related("auth_config").first()
+        if service and service.needs_authentication:
+            from geonode.security.auth_registry import auth_handler_registry
+
+            basic_auth = auth_handler_registry.build(service.auth_config).get_request_auth()
 
         response = self.http_session.get(
             self.get_ogc_wms_url(wms_url, version=_version), params=params, auth=basic_auth

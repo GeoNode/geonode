@@ -40,6 +40,8 @@ from geonode import GeoNodeException
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
 from geonode.harvesting.harvesters.wms import OgcWmsHarvester, WebMapService
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.auth_registry import auth_handler_registry
 
 from .. import enumerations
 from ..enumerations import CASCADED
@@ -95,11 +97,14 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
     @property
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
+        auth = self.kwargs.get("auth")
+        auth_config = self.kwargs.get("auth_config")
+        if auth is None and auth_config is not None:
+            auth = BasicAuthHandler(auth_config).get_request_auth()
         _url, _parsed_service = WebMapService(
             cleaned_url.geturl(),
             version=version,
-            username=self.kwargs.get("username"),
-            password=self.kwargs.get("password"),
+            auth=auth,
         )
         return _parsed_service
 
@@ -132,6 +137,13 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         service = None
         try:
             cleaned_url, service_name, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
+            auth_config = self.kwargs.get("auth_config")
+            if auth_config is None:
+                auth_config = BasicAuthHandler.create_auth_config(
+                    self.kwargs.get("username", None), self.kwargs.get("password", None)
+                )
+            elif auth_config.pk is None:
+                auth_config.save()
             with transaction.atomic():
                 service = models.Service.objects.create(
                     uuid=str(uuid4()),
@@ -150,8 +162,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
                     abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode("utf-8")
                     or _("Not provided"),
                     operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version),
-                    username=self.kwargs.get("username", None),
-                    password=self.kwargs.get("password", None),
+                    auth_config=auth_config,
                 )
                 service_harvester = Harvester.objects.create(
                     name=self.name,
@@ -288,12 +299,14 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     @property
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
+        auth = None
+        if service.needs_authentication:
+            auth = auth_handler_registry.build(service.auth_config).get_request_auth()
         _parsed_service = get_service_handler(
             cleaned_url.geturl(),
             service.type,
             service.id,
-            username=service.username if service.needs_authentication else None,
-            password=service.get_password() if service.needs_authentication else None,
+            auth=auth,
         )
         return _parsed_service
 

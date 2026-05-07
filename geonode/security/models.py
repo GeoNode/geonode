@@ -24,6 +24,7 @@ import traceback
 
 from functools import reduce
 
+from django.db import models
 from django.db.models import Q
 from geonode.security.permissions import (
     get_default_anonymous_compact_permission,
@@ -462,3 +463,27 @@ class PermissionLevelMixin:
         Checks if a has a given permission to the resource.
         """
         return permissions_registry.user_has_perm(user, self, permission)
+
+
+class AuthConfig(models.Model):
+    type = models.CharField(max_length=128)
+    payload = models.CharField(max_length=4096)
+
+    class Meta:
+        verbose_name = "Authentication Configuration"
+        verbose_name_plural = "Authentication Configurations"
+
+    def __str__(self):
+        return f"{self.type}:{self.pk}"
+
+
+class URLPatternAuthConfig(models.Model):
+    auth_config = models.ForeignKey(AuthConfig, on_delete=models.CASCADE, related_name="url_patterns")
+    pattern = models.CharField(max_length=2048)
+
+    class Meta:
+        verbose_name = "URL Pattern Authentication Configuration"
+        verbose_name_plural = "URL Pattern Authentication Configurations"
+
+    def __str__(self):
+        return self.pattern

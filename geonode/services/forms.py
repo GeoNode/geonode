@@ -24,6 +24,9 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import taggit
 
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.models import AuthConfig
+
 from . import enumerations
 from .models import Service
 from .serviceprocessors import get_service_handler
@@ -75,13 +78,23 @@ class CreateServiceForm(forms.Form):
         super().clean()
         url = self.cleaned_data.get("url")
         service_type = self.cleaned_data.get("type")
+        username = self.cleaned_data.get("username", None)
+        password = self.cleaned_data.get("password", None)
         if url is not None and service_type is not None:
             try:
+                auth_config = None
+                if username is not None or password is not None:
+                    payload = {"username": username, "password": password}
+                    BasicAuthHandler.validate(payload)
+                    auth_config = AuthConfig(
+                        type=BasicAuthHandler.handled_type,
+                        payload=BasicAuthHandler.encrypt_payload(payload),
+                    )
+
                 service_handler = get_service_handler(
                     base_url=url,
                     service_type=service_type,
-                    username=self.cleaned_data.get("username", None),
-                    password=self.cleaned_data.get("password", None),
+                    auth_config=auth_config,
                 )
             except Exception as e:
                 logger.error(f"CreateServiceForm cleaning error: {e}")

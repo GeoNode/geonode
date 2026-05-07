@@ -28,6 +28,7 @@ import importlib
 import mock
 from uuid import uuid4
 
+from requests import Request
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
 from avatar.templatetags.avatar_tags import avatar_url
@@ -99,6 +100,9 @@ from .permissions import PermSpec, PermSpecCompact
 from django.core.cache import cache
 from geonode.base.models import ResourceBase
 from geonode.people.models import Profile
+from geonode.security.auth_handlers import AuthHandler, BasicAuthHandler, HashableAuthBase
+from geonode.security.auth_registry import AuthHandlerRegistry, auth_handler_registry
+from geonode.security.models import AuthConfig, URLPatternAuthConfig
 
 logger = logging.getLogger(__name__)
 
@@ -3931,3 +3935,115 @@ class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
         updated = handler.fixup_perms(resource, perms_payload, created=False)
 
         self.assertDictEqual(perms_payload, updated)
+
+
+class AuthConfigTests(TestCase):
+    def test_auth_config_string_representation(self):
+        auth_config = AuthConfig.objects.create(type="basic", payload="encrypted-payload")
+        self.assertEqual(str(auth_config), f"basic:{auth_config.pk}")
+
+    def test_url_pattern_auth_config_string_representation(self):
+        auth_config = AuthConfig.objects.create(type="basic", payload="encrypted-payload")
+        url_pattern_auth_config = URLPatternAuthConfig.objects.create(
+            auth_config=auth_config,
+            pattern="https://example.com/*",
+        )
+        self.assertEqual(str(url_pattern_auth_config), "https://example.com/*")
+
+    def test_basic_auth_payload_round_trip(self):
+        auth_config = BasicAuthHandler.create_auth_config("demo-user", "demo-pass")
+
+        self.assertEqual(auth_config.type, "basic")
+        self.assertNotIn("demo-user", auth_config.payload)
+        self.assertNotIn("demo-pass", auth_config.payload)
+
+        handler = BasicAuthHandler(auth_config)
+        self.assertEqual(handler.get_credentials(), ("demo-user", "demo-pass"))
+
+
+class AuthHandlerTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.auth_config = AuthConfig.objects.create(
+            type="basic",
+            payload=BasicAuthHandler.encrypt_payload({"username": "demo-user", "password": "demo-pass"}),
+        )
+
+    def test_build_returns_basic_auth_handler(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        self.assertIsInstance(auth_handler, BasicAuthHandler)
+        self.assertEqual(auth_handler.username, "demo-user")
+        self.assertEqual(auth_handler.password, "demo-pass")
+
+    def test_build_raises_for_unsupported_type(self):
+        unsupported_auth_config = AuthConfig.objects.create(type="unsupported", payload="opaque")
+        with self.assertRaises(ValueError):
+            auth_handler_registry.build(unsupported_auth_config)
+
+    def test_basic_auth_handler_get_request_auth(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        request_auth = auth_handler.get_request_auth()
+        self.assertIsInstance(request_auth, HashableAuthBase)
+        self.assertEqual(request_auth.auth.username, "demo-user")
+        self.assertEqual(request_auth.auth.password, "demo-pass")
+
+    def test_basic_auth_handler_auth_request_sets_request_auth(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        request = Request("GET", "https://example.com/data")
+        request = auth_handler.auth_request(request)
+        self.assertIsInstance(request.auth, HashableAuthBase)
+        self.assertEqual(request.auth.auth.username, "demo-user")
+        self.assertEqual(request.auth.auth.password, "demo-pass")
+
+
+class AuthHandlerRegistryTests(TestCase):
+    class SampleAuthHandler(AuthHandler):
+        handled_type = "sample"
+
+        def _init_from_config(self):
+            self.payload = self.config.payload
+
+        def get_request_auth(self):
+            return None
+
+        def auth_request(self, request, **kwargs):
+            return request
+
+        def get_credentials(self):
+            return self.payload
+
+    def test_register_adds_handler_class(self):
+        registry = AuthHandlerRegistry()
+        registry.register(BasicAuthHandler)
+        self.assertEqual(registry.registry["basic"], BasicAuthHandler)
+
+    def test_register_and_build_sample_handler(self):
+        auth_config = AuthConfig.objects.create(type="sample", payload="demo")
+        registry = AuthHandlerRegistry()
+        registry.register(self.SampleAuthHandler)
+        auth_handler = registry.build(auth_config)
+        self.assertIsInstance(auth_handler, self.SampleAuthHandler)
+        self.assertEqual(auth_handler.config, auth_config)
+
+    def test_register_raises_when_handled_type_is_missing(self):
+        class MissingHandledTypeAuthHandler(AuthHandler):
+            handled_type = None
+
+            def _init_from_config(self):
+                pass
+
+        registry = AuthHandlerRegistry()
+        with self.assertRaises(ValueError):
+            registry.register(MissingHandledTypeAuthHandler)
+
+    def test_build_returns_handler_instance(self):
+        auth_config = AuthConfig.objects.create(
+            type="basic",
+            payload=BasicAuthHandler.encrypt_payload({"username": "demo-user", "password": "demo-pass"}),
+        )
+        registry = AuthHandlerRegistry()
+        registry.register(BasicAuthHandler)
+        auth_handler = registry.build(auth_config)
+        self.assertIsInstance(auth_handler, BasicAuthHandler)
+        self.assertEqual(auth_handler.username, "demo-user")
+        self.assertEqual(auth_handler.password, "demo-pass")
