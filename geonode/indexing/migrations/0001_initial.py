@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("base", "0096_remove_modeltranslation"),
+        ("people", "0039_profile_extra_data")
     ]
 
     operations = [
