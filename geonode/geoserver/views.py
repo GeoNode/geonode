@@ -290,6 +290,8 @@ def geoserver_proxy(request, proxy_path, downstream_path, workspace=None, layern
                 logger.warn(f"Could not find any Dataset {os.path.basename(request.path)} on DB")
 
     kwargs = {"affected_datasets": affected_datasets}
+    kwargs["safe_url"] = True  # required to let the proxy accept the internal Geoserver URL as safe
+
     raw_url = unquote(raw_url)
     timeout = getattr(ogc_server_settings, "TIMEOUT") or 60
     response = proxy(

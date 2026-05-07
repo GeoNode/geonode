@@ -94,7 +94,7 @@ def proxy(
     raw_url = url or request.GET["url"]
     raw_url = urljoin(settings.SITEURL, raw_url) if raw_url.startswith("/") else raw_url
 
-    if not is_safe_url(raw_url):
+    if not kwargs.get("safe_url", False) and not is_safe_url(raw_url):
         return HttpResponse(
             "Invalid URL provided.",
             status=403,

@@ -517,6 +517,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
 class ImporterWMSImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "ASYNC_SIGNALS": "False"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", ASYNC_SIGNALS=False)
+    @override_settings(SAFE_URL_CHECK_ENABLED=False)
     def test_import_wms(self):
         _, wms = WebMapService(
             f"{os.getenv('GEOSERVER_LOCATION')}/ows?service=WMS&version=1.3.0&request=GetCapabilities"
@@ -549,6 +550,7 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "ASYNC_SIGNALS": "False"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", ASYNC_SIGNALS=False)
+    @override_settings(SAFE_URL_CHECK_ENABLED=False)
     def test_import_wms_harvestable_resource_should_be_created(self):
         """
         The WMS import should generate the harvestable resource if the remote service URL
