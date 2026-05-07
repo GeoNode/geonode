@@ -22,6 +22,8 @@ import logging
 import collections
 from itertools import chain
 
+from osgeo import gdal
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
@@ -46,6 +48,11 @@ from geonode.security.permissions import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def init_gdal_security():
+    gdal.SetConfigOption("GDAL_HTTP_UNSAFE_REDIRECTS", "NO")
+    assert gdal.GetConfigOption("GDAL_HTTP_UNSAFE_REDIRECTS") == "NO"
 
 
 def get_visible_resources(

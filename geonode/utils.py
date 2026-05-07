@@ -30,6 +30,7 @@ import requests
 import tempfile
 import ipaddress
 import traceback
+import socket
 
 from lxml import etree
 from osgeo import ogr
@@ -1778,3 +1779,60 @@ def get_allowed_extensions():
         for val in _type["formats"]:
             allowed_extention.append(val["required_ext"][0])
     return list(set(allowed_extention))
+
+
+def is_safe_url(url: str) -> bool:
+    def _is_ip_allowed(ip: str) -> bool:
+        obj = ipaddress.ip_address(ip.split("%")[0])
+        return not (obj.is_loopback or obj.is_private or obj.is_link_local or obj.is_multicast or obj.is_reserved)
+
+    def _resolve_hostname(hostname: str) -> set:
+        try:
+            return {info[4][0] for info in socket.getaddrinfo(hostname, None)}
+        except socket.gaierror:
+            return set()
+
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return False
+    if not parsed.hostname:
+        return False
+    ips = _resolve_hostname(parsed.hostname)
+    if not ips:
+        return False
+    return all(_is_ip_allowed(ip) for ip in ips)
+
+
+def is_safe_url_with_redirects(url: str, max_redirects: int = 3):
+    """
+    Checks if a URL and all its redirect hops are safe.
+    """
+    visited: set[str] = set()
+    current_url = url
+    session = requests.Session()
+
+    for i in range(max_redirects + 1):
+
+        if not is_safe_url(current_url):
+            return False, current_url
+
+        if current_url in visited:
+            return False, current_url
+        visited.add(current_url)
+
+        try:
+            response = session.head(current_url, allow_redirects=False, timeout=5)
+
+            if response.is_redirect:
+                next_url = response.headers.get("Location")
+                if not next_url:
+                    return False, current_url
+
+                current_url = urljoin(current_url, next_url)
+            else:
+                return True, None  # No redirect
+
+        except requests.RequestException:
+            return False, current_url
+
+    return False, current_url

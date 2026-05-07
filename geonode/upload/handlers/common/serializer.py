@@ -20,6 +20,7 @@ from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.utils import is_safe_url
 
 
 class RemoteResourceSerializer(DynamicModelSerializer):
@@ -38,3 +39,8 @@ class RemoteResourceSerializer(DynamicModelSerializer):
     action = serializers.CharField(required=False, default=exa.UPLOAD.value)
 
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
+
+    def validate_url(self, value):
+        if not is_safe_url(value):
+            raise serializers.ValidationError("URL is not allowed.")
+        return value
