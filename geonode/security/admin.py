@@ -46,9 +46,7 @@ class AuthConfigAdminForm(forms.ModelForm):
             choices = choices + [(current_type, current_type)]
         self.fields["type"].choices = choices
         if self.instance.pk and self.instance.payload:
-            auth_handler_cls = auth_handler_registry.get_handler_class(current_type)
-            if auth_handler_cls:
-                self.initial["payload"] = json.dumps(auth_handler_cls.decrypt_payload(self.instance.payload))
+            self.initial["payload"] = json.dumps(self.instance.get_payload())
 
     def clean(self):
         cleaned_data = super().clean()
@@ -77,8 +75,7 @@ class AuthConfigAdminForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         if hasattr(self, "cleaned_payload"):
-            auth_handler_cls = auth_handler_registry.get_handler_class(instance.type)
-            instance.payload = auth_handler_cls.encrypt_payload(self.cleaned_payload)
+            instance.set_payload(self.cleaned_payload)
         if commit:
             instance.save()
         return instance

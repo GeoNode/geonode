@@ -86,10 +86,8 @@ class CreateServiceForm(forms.Form):
                 if username is not None or password is not None:
                     payload = {"username": username, "password": password}
                     BasicAuthHandler.validate(payload)
-                    auth_config = AuthConfig(
-                        type=BasicAuthHandler.handled_type,
-                        payload=BasicAuthHandler.encrypt_payload(payload),
-                    )
+                    auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+                    auth_config.set_payload(payload)
 
                 service_handler = get_service_handler(
                     base_url=url,

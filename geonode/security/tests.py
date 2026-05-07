@@ -3964,10 +3964,9 @@ class AuthConfigTests(TestCase):
 class AuthHandlerTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.auth_config = AuthConfig.objects.create(
-            type="basic",
-            payload=BasicAuthHandler.encrypt_payload({"username": "demo-user", "password": "demo-pass"}),
-        )
+        self.auth_config = AuthConfig.objects.create(type="basic", payload="")
+        self.auth_config.set_payload({"username": "demo-user", "password": "demo-pass"})
+        self.auth_config.save()
 
     def test_build_returns_basic_auth_handler(self):
         auth_handler = auth_handler_registry.build(self.auth_config)
@@ -4037,10 +4036,9 @@ class AuthHandlerRegistryTests(TestCase):
             registry.register(MissingHandledTypeAuthHandler)
 
     def test_build_returns_handler_instance(self):
-        auth_config = AuthConfig.objects.create(
-            type="basic",
-            payload=BasicAuthHandler.encrypt_payload({"username": "demo-user", "password": "demo-pass"}),
-        )
+        auth_config = AuthConfig.objects.create(type="basic", payload="")
+        auth_config.set_payload({"username": "demo-user", "password": "demo-pass"})
+        auth_config.save()
         registry = AuthHandlerRegistry()
         registry.register(BasicAuthHandler)
         auth_handler = registry.build(auth_config)

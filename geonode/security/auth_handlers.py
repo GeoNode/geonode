@@ -16,21 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import base64
-import hashlib
-import json
 from abc import ABC, abstractmethod
 
-from cryptography.fernet import Fernet
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from requests.auth import AuthBase, HTTPBasicAuth
 
 from geonode.security.models import AuthConfig
-
-SECRET_KEY = settings.SECRET_KEY
-ENCRYPTION_KEY = base64.urlsafe_b64encode(hashlib.sha256(SECRET_KEY.encode()).digest())
-cipher = Fernet(ENCRYPTION_KEY)
 
 
 class AuthHandler(ABC):
@@ -61,14 +52,6 @@ class AuthHandler(ABC):
     @classmethod
     def create_auth_config(cls, **kwargs):
         raise NotImplementedError
-
-    @classmethod
-    def encrypt_payload(cls, payload):
-        return cipher.encrypt(json.dumps(payload).encode()).decode()
-
-    @classmethod
-    def decrypt_payload(cls, payload):
-        return json.loads(cipher.decrypt(payload.encode()).decode())
 
 
 class HashableAuthBase(AuthBase):
@@ -113,14 +96,13 @@ class BasicAuthHandler(AuthHandler):
             return None
         payload = {"username": username, "password": password}
         cls.validate(payload)
-
-        return AuthConfig.objects.create(
-            type=cls.handled_type,
-            payload=cls.encrypt_payload(payload),
-        )
+        auth_config = AuthConfig(type=cls.handled_type)
+        auth_config.set_payload(payload)
+        auth_config.save()
+        return auth_config
 
     def _init_from_config(self):
-        payload = self.decrypt_payload(self.config.payload)
+        payload = self.config.get_payload()
         self.username = payload.get("username")
         self.password = payload.get("password")
 

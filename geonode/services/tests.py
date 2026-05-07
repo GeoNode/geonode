@@ -607,10 +607,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_wms_parsed_service.identification.title = self.phony_title
         mock_wms_parsed_service.identification.version = self.phony_version
 
-        auth_config = AuthConfig(
-            type=BasicAuthHandler.handled_type,
-            payload=BasicAuthHandler.encrypt_payload({"username": "demo-user", "password": "demo-pass"}),
-        )
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.set_payload({"username": "demo-user", "password": "demo-pass"})
         handler = wms.WmsServiceHandler(self.phony_url, auth_config=auth_config)
         result = handler.create_geonode_service(self.test_user)
 

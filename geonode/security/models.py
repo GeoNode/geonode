@@ -18,12 +18,17 @@
 #########################################################################
 
 import copy
+import json
 import logging
 import operator
 import traceback
+import base64
+import hashlib
 
 from functools import reduce
+from cryptography.fernet import Fernet
 
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from geonode.security.permissions import (
@@ -57,6 +62,10 @@ from geonode.security.registry import permissions_registry
 from guardian.utils import get_user_obj_perms_model
 
 logger = logging.getLogger(__name__)
+
+SECRET_KEY = settings.SECRET_KEY
+ENCRYPTION_KEY = base64.urlsafe_b64encode(hashlib.sha256(SECRET_KEY.encode()).digest())
+cipher = Fernet(ENCRYPTION_KEY)
 
 
 class PermissionLevelError(Exception):
@@ -475,6 +484,14 @@ class AuthConfig(models.Model):
 
     def __str__(self):
         return f"{self.type}:{self.pk}"
+
+    def set_payload(self, payload):
+        self.payload = cipher.encrypt(json.dumps(payload).encode()).decode()
+
+    def get_payload(self):
+        if not self.payload:
+            return {}
+        return json.loads(cipher.decrypt(self.payload.encode()).decode())
 
 
 class URLPatternAuthConfig(models.Model):
