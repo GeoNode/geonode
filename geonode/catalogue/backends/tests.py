@@ -7,6 +7,12 @@ from django.test.client import RequestFactory
 from geonode.catalogue.views import csw_global_dispatch
 from django.test import TestCase
 from django.conf import settings
+from urllib.parse import urlencode
+
+from .generic import METADATA_FORMATS
+
+
+SCHEMA = urlencode(METADATA_FORMATS[settings.CATALOGUE_DEFAULT_FORMAT][1])
 
 pycsw_settings = settings.PYCSW.copy()
 pycsw_settings_all = settings.PYCSW.copy()
@@ -50,7 +56,7 @@ class TestGeoNodeRepository(TestCase):
     def __request_factory():
         factory = RequestFactory()
         url = "http://localhost:8000/catalogue/csw?request=GetRecords"
-        url += "&service=CSW&version=2.0.2&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd"
+        url += f"&service=CSW&version=2.0.2&outputschema={SCHEMA}"
         url += "&elementsetname=brief&typenames=csw:Record&resultType=results"
         request = factory.get(url)
 

@@ -30,9 +30,11 @@ from owslib.fes import PropertyIsLike, BBox
 from geonode.catalogue.backends.base import BaseCatalogueBackend
 from geonode.metadata.manager import metadata_manager
 
+
 logger = logging.getLogger(__name__)
 
 TIMEOUT = 10
+
 METADATA_FORMATS = {
     "Atom": ("atom:entry", "http://www.w3.org/2005/Atom"),
     "DIF": ("dif:DIF", "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/"),
@@ -40,10 +42,25 @@ METADATA_FORMATS = {
     "ebRIM": ("rim:RegistryObject", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"),
     "FGDC": ("fgdc:metadata", "http://www.opengis.net/cat/csw/csdgm"),
     "ISO": ("gmd:MD_Metadata", "http://www.isotc211.org/2005/gmd"),
+    "ISO19115-3_2018": ("mdb:MD_Metadata", "http://standards.iso.org/iso/19115/-3/mdb/2.0")
 }
 
 
-class Catalogue(CatalogueServiceWeb):
+class DefaultMetadataFormatMixin:
+    @property
+    def default_format(self):
+        return settings.CATALOGUE_DEFAULT_FORMAT
+
+    @property
+    def default_root_node(self):
+        return METADATA_FORMATS[settings.CATALOGUE_DEFAULT_FORMAT][0]
+    
+    @property
+    def default_schema(self):
+        return METADATA_FORMATS[settings.CATALOGUE_DEFAULT_FORMAT][1]
+
+
+class Catalogue(CatalogueServiceWeb, DefaultMetadataFormatMixin):
     def __init__(self, *args, **kwargs):
         self.url = kwargs["URL"]
         self.user = None
@@ -180,7 +197,7 @@ class Catalogue(CatalogueServiceWeb):
             constraints=dataset_query_like + bbox_query,
             startposition=startposition,
             maxrecords=maxrecords,
-            outputschema="http://www.isotc211.org/2005/gmd",
+            outputschema=self.default_schema,
             esn="full",
         )
 
@@ -226,7 +243,7 @@ class Catalogue(CatalogueServiceWeb):
         # construct the link to the Catalogue metadata record (not
         # self-indexed)
         result["metadata_links"] = [
-            ("text/xml", "ISO", self.url_for_uuid(rec.identifier, "http://www.isotc211.org/2005/gmd"))
+            ("text/xml", self.default_format, self.url_for_uuid(rec.identifier, self.default_schema))
         ]
 
         return result
@@ -255,7 +272,7 @@ class Catalogue(CatalogueServiceWeb):
         return links
 
 
-class CatalogueBackend(BaseCatalogueBackend):
+class CatalogueBackend(BaseCatalogueBackend, DefaultMetadataFormatMixin):
     def __init__(self, *args, **kwargs):
         self.catalogue = Catalogue(*args, **kwargs)
 
@@ -302,6 +319,6 @@ class CatalogueBackend(BaseCatalogueBackend):
             record = self.catalogue.get_by_uuid(item.uuid)
             if record is None:
                 md_link = self.catalogue.create_from_dataset(item)
-                item.metadata_links = [("text/xml", "ISO", md_link)]
+                item.metadata_links = [("text/xml", self.default_format, md_link)]
             else:
                 self.catalogue.update_dataset(item)

@@ -1204,6 +1204,18 @@ CATALOGUE = {
     }
 }
 
+# Metadata format
+CATALOGUE_DEFAULT_FORMAT=os.getenv("CATALOGUE_DEFAULT_FORMAT", "ISO")
+
+METADATA_TEMPLATES = {
+    "ISO": "catalogue/full_metadata.xml",
+    "ISO19115-3_2018": "catalogue/full_metadata_iso19115-3.xml",
+}
+if CATALOGUE_DEFAULT_FORMAT not in METADATA_TEMPLATES:
+    raise ValueError(f"Metadata profile invalid: {CATALOGUE_DEFAULT_FORMAT}")
+
+CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", METADATA_TEMPLATES[CATALOGUE_DEFAULT_FORMAT])
+
 # pycsw settings
 PYCSW = {
     # pycsw configuration
@@ -1223,8 +1235,8 @@ PYCSW = {
             "pretty_print": "true",
             # 'domainquerytype': 'range',
             "domaincounts": "true",
-            "profiles": "apiso,ebrim",
         },
+        "profiles": {"apiso", "ebrim", "iso19115p3"},
         "manager": {
             # authentication/authorization is handled by Django
             "transactions": "false",
@@ -2158,8 +2170,6 @@ MODIFY_TOPICCATEGORY = ast.literal_eval(os.getenv("MODIFY_TOPICCATEGORY", "True"
 # If this option is enabled, Topic Categories will become strictly Mandatory on
 # Metadata Wizard
 TOPICCATEGORY_MANDATORY = ast.literal_eval(os.environ.get("TOPICCATEGORY_MANDATORY", "False"))
-
-CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
