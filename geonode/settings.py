@@ -45,8 +45,6 @@ SILENCED_SYSTEM_CHECKS = [
     "fields.W340",
     "auth.W004",
     "urls.W002",
-    "drf_spectacular.W001",
-    "drf_spectacular.W002",
 ]
 
 # GeoNode Version
@@ -497,7 +495,6 @@ INSTALLED_APPS = (
     "rest_framework",
     "rest_framework_gis",
     "dynamic_rest",
-    "drf_spectacular",
     # Theme
     "django_select2",
     "django_forms_bootstrap",
@@ -553,7 +550,6 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "dynamic_rest.renderers.DynamicBrowsableAPIRenderer",
     ],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "geonode.base.api.exceptions.geonode_exception_handler",
 }
 REST_FRAMEWORK_EXTENSIONS = {
