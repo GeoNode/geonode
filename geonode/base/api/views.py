@@ -97,10 +97,8 @@ from .permissions import (
 
 from .serializers import (
     FavoriteSerializer,
-    PermSpecSerialiazer,
     GroupProfileSerializer,
     ResourceBaseSerializer,
-    ResourceBaseTypesSerializer,
     OwnerSerializer,
     HierarchicalKeywordSerializer,
     TopicCategorySerializer,
