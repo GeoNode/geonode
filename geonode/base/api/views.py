@@ -484,6 +484,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
         url_name="perms-spec",
         methods=["get", "put", "patch", "delete"],
         permission_classes=[IsAuthenticated],
+        serializer_class=PermSpecSerialiazer,
     )
     def resource_service_permissions(self, request, pk, *args, **kwargs):
         """
