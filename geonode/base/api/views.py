@@ -374,7 +374,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
             except Favorite.DoesNotExist:
                 return Response({"message": "Resource not in favorites"}, status=404)
 
-    @action(detail=False, methods=["get"], serializer_class=ResourceBaseTypesSerializer)
+    @action(detail=False, methods=["get"])
     def resource_types(self, request, *args, **kwargs):
         """
         Returns the list of available ResourceBase polymorphic_ctypes.
@@ -484,7 +484,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
         url_name="perms-spec",
         methods=["get", "put", "patch", "delete"],
         permission_classes=[IsAuthenticated],
-        serializer_class=PermSpecSerialiazer,
     )
     def resource_service_permissions(self, request, pk, *args, **kwargs):
         """
