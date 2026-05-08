@@ -19,8 +19,11 @@
 from tastypie.api import Api
 from dynamic_rest import routers
 
+from django.urls import path
+
 from . import api as resources
 from . import resourcebase_api as resourcebase_resources
+from .views import UserInfoView
 
 api = Api(api_name="api")
 
@@ -43,4 +46,6 @@ api.register(resourcebase_resources.ResourceBaseResource())
 
 router = routers.DynamicRouter()
 
-urlpatterns = []
+urlpatterns = [
+    path("userinfo/", UserInfoView.as_view(), name="userinfo"),
+]

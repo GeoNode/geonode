@@ -103,7 +103,8 @@ class ProxyTest(TestCase):
 
     @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=(), PROXY_ALLOWED_PATH_NEEDLES=())
     # @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
-    def test_validate_remote_links_hosts(self):
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    def test_validate_remote_links_hosts(self, _mock_is_safe_url):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 200
         for Remote Services hosts."""
         from geonode.base.models import Link
@@ -198,7 +199,8 @@ class ProxyTest(TestCase):
         }
         self.assertTrue(expected_subset.items() <= dict(response.headers.copy()).items())
 
-    def test_proxy_url_forgery(self):
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    def test_proxy_url_forgery(self, _mock_is_safe_url):
         import geonode.proxy.views
         from urllib.parse import urlsplit
 
@@ -252,6 +254,31 @@ class ProxyTest(TestCase):
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 200)
+
+    def test_rejects_unsafe_schemes(self):
+        """Proxy should reject non-http(s) and script-based schemes."""
+        urls = [
+            "ftp://example.com/file.txt",  # Unsupported scheme
+            "file:///etc/passwd",  # Local file access
+            "javascript:alert(1)",  # JS execution vector
+            "javascript://example.com/%0aalert(1)",  # Obfuscated JS payload
+            "data:text/html,<script>alert(1)</script>",  # Inline script payload
+        ]
+
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.client.get(f"{self.proxy_url}?url={url}")
+                self.assertEqual(response.status_code, 403)
+
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_rejects_dns_resolution_to_private_ip(self, mock_dns):
+        """Even valid domains should be rejected if they resolve to private IPs."""
+        mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
+
+        url = "http://example.com"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
 
 
 class DownloadResourceTestCase(TestCase):
