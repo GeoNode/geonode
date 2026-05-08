@@ -1828,6 +1828,10 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # START SECURITY SETTINGS
 # ########################################################################### #
 
+AUTH_HANDLERS = [
+    "geonode.security.auth_handlers.BasicAuthHandler",
+]
+
 ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))
 
 # ######################################################## #

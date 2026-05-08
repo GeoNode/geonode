@@ -266,9 +266,12 @@ def _get_auth_info(dataset: "Dataset") -> dict:
     """Gets authentication info for a dataset if it's a remote service requiring auth."""
     auth_info = {}
     if dataset.remote_service and dataset.remote_service.needs_authentication:
+        from geonode.security.auth_registry import auth_handler_registry
+
+        username, password = auth_handler_registry.build(dataset.remote_service.auth_config).get_credentials()
         auth_info = {
-            "username": dataset.remote_service.username,
-            "password": dataset.remote_service.get_password(),
+            "username": username,
+            "password": password,
         }
     return auth_info
 
