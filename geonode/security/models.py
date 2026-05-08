@@ -476,7 +476,7 @@ class PermissionLevelMixin:
 
 class AuthConfig(models.Model):
     type = models.CharField(max_length=128)
-    payload = models.CharField(max_length=4096)
+    _payload = models.CharField(max_length=4096, db_column="payload")
 
     class Meta:
         verbose_name = "Authentication Configuration"
@@ -485,13 +485,15 @@ class AuthConfig(models.Model):
     def __str__(self):
         return f"{self.type}:{self.pk}"
 
-    def set_payload(self, payload):
-        self.payload = cipher.encrypt(json.dumps(payload).encode()).decode()
-
-    def get_payload(self):
-        if not self.payload:
+    @property
+    def payload(self):
+        if not self._payload:
             return {}
-        return json.loads(cipher.decrypt(self.payload.encode()).decode())
+        return json.loads(cipher.decrypt(self._payload.encode()).decode())
+
+    @payload.setter
+    def payload(self, value):
+        self._payload = cipher.encrypt(json.dumps(value).encode()).decode()
 
 
 class URLPatternAuthConfig(models.Model):

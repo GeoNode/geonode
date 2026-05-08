@@ -608,7 +608,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_wms_parsed_service.identification.version = self.phony_version
 
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
-        auth_config.set_payload({"username": "demo-user", "password": "demo-pass"})
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
         handler = wms.WmsServiceHandler(self.phony_url, auth_config=auth_config)
         result = handler.create_geonode_service(self.test_user)
 
@@ -616,7 +616,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(result.auth_config.type, "basic")
 
         auth_handler = auth_handler_registry.build(result.auth_config)
-        self.assertEqual(auth_handler.get_credentials(), ("demo-user", "demo-pass"))
+        self.assertEqual(auth_handler.get_credentials(), ("test_user", "test_password"))
 
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)

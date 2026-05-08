@@ -92,7 +92,7 @@ class CreateServiceForm(forms.Form):
                     payload = {"username": username, "password": password}
                     BasicAuthHandler.validate(payload)
                     auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
-                    auth_config.set_payload(payload)
+                    auth_config.payload = payload
 
                 service_handler = get_service_handler(
                     base_url=url,

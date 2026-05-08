@@ -33,10 +33,11 @@ def _get_auth_type_choices():
 
 class AuthConfigAdminForm(forms.ModelForm):
     type = forms.ChoiceField(choices=(), required=True)
+    payload = forms.CharField(widget=forms.Textarea, required=True)
 
     class Meta:
         model = AuthConfig
-        fields = "__all__"
+        fields = ("type",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -45,18 +46,14 @@ class AuthConfigAdminForm(forms.ModelForm):
         if current_type and current_type not in {value for value, _ in choices}:
             choices = choices + [(current_type, current_type)]
         self.fields["type"].choices = choices
-        if self.instance.pk and self.instance.payload:
-            self.initial["payload"] = json.dumps(self.instance.get_payload())
+        if self.instance.pk and self.instance._payload:
+            self.initial["payload"] = json.dumps(self.instance.payload)
 
     def clean(self):
         cleaned_data = super().clean()
         auth_type = cleaned_data.get("type")
         payload_value = cleaned_data.get("payload")
         if not auth_type or not payload_value:
-            return cleaned_data
-
-        if self.instance.pk and payload_value == self.instance.payload:
-            # unchanged existing encrypted payload
             return cleaned_data
 
         auth_handler_cls = auth_handler_registry.get_handler_class(auth_type)
@@ -75,7 +72,7 @@ class AuthConfigAdminForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         if hasattr(self, "cleaned_payload"):
-            instance.set_payload(self.cleaned_payload)
+            instance.payload = self.cleaned_payload
         if commit:
             instance.save()
         return instance

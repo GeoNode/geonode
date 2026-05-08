@@ -97,12 +97,12 @@ class BasicAuthHandler(AuthHandler):
         payload = {"username": username, "password": password}
         cls.validate(payload)
         auth_config = AuthConfig(type=cls.handled_type)
-        auth_config.set_payload(payload)
+        auth_config.payload = payload
         auth_config.save()
         return auth_config
 
     def _init_from_config(self):
-        payload = self.config.get_payload()
+        payload = self.config.payload
         self.username = payload.get("username")
         self.password = payload.get("password")
 
