@@ -36,7 +36,6 @@ from ..base.auth import get_token_object_from_session, get_auth_token
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 
 
 def verify_access_token(request, key):
@@ -57,45 +56,15 @@ def verify_access_token(request, key):
     return token
 
 
-@csrf_exempt
-def user_info(request):
-    user = request.user
-
-    if not user or user.is_anonymous:
-        out = {"success": False, "status": "error", "errors": {"user": ["User is not authenticated"]}}
-        return json_response(out, status=401)
-
-    access_token = get_auth_token(user)
-
-    groups = [group.name for group in user.groups.all()]
-    if user.is_superuser:
-        groups.append("admin")
-
-    user_info = json.dumps(
-        {
-            "sub": str(user.id),
-            "name": " ".join([user_field(user, "first_name"), user_field(user, "last_name")]),
-            "given_name": user_field(user, "first_name"),
-            "family_name": user_field(user, "last_name"),
-            "email": user_email(user),
-            "preferred_username": user_username(user),
-            "groups": groups,
-            "access_token": str(access_token),
-        }
-    )
-
-    response = HttpResponse(user_info, content_type="application/json")
-    response["Cache-Control"] = "no-store"
-    response["Pragma"] = "no-cache"
-
-    return response
-
-
 class UserInfoView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
+
+        if not user or user.is_anonymous:
+            out = {"success": False, "status": "error", "errors": {"user": ["User is not authenticated"]}}
+            return json_response(out, status=401)
+
         access_token = get_auth_token(user)
 
         groups = [group.name for group in user.groups.all()]

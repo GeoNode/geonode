@@ -1798,6 +1798,10 @@ def strtobool(value):
 
 
 def is_safe_url(url: str) -> bool:
+    # Required to let tests disable the safe url check via settings orerride
+    if not getattr(settings, "SAFE_URL_CHECK_ENABLED", True):
+        return True
+
     def _is_ip_allowed(ip: str) -> bool:
         obj = ipaddress.ip_address(ip.split("%")[0])
         return not (obj.is_loopback or obj.is_private or obj.is_link_local or obj.is_multicast or obj.is_reserved)

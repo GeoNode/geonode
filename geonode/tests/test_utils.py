@@ -25,6 +25,7 @@ from datetime import datetime, timedelta
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
+from django.test import override_settings, TestCase as djangoTestCase
 
 from geonode.maps.models import Dataset
 from geonode.layers.models import Attribute
@@ -270,7 +271,8 @@ class TestRegionsCrossingDateLine(TestCase):
         self.assertEqual(poly.geom_type, "MultiPolygon", f"Expexted 'MultiPolygon' type but received {poly.geom_type}")
 
 
-class TestIsSafeURL(TestCase):
+@override_settings(SAFE_URL_CHECK_ENABLED=True)
+class TestIsSafeURL(djangoTestCase):
 
     def test_allows_http_and_https_urls(self):
         urls = [
