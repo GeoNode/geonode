@@ -20,6 +20,7 @@ from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.utils import is_safe_url
 
 
 class RemoteResourceSerializer(DynamicModelSerializer):
@@ -36,3 +37,8 @@ class RemoteResourceSerializer(DynamicModelSerializer):
         help_text="Remote resource type, for example wms or 3dtiles. Is used by the handler to understand if can handle the resource",
     )
     action = serializers.CharField(required=False, default=exa.UPLOAD.value)
+
+    def validate_url(self, value):
+        if not is_safe_url(value):
+            raise serializers.ValidationError("URL is not allowed.")
+        return value

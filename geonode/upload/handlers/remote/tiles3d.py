@@ -27,6 +27,7 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.base.models import ResourceBase
+from geonode.utils import is_safe_url_with_redirects
 
 logger = logging.getLogger("importer")
 
@@ -89,8 +90,14 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
     ):
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, **kwargs)
         _exec = orchestrator.get_execution_object(exec_id=execution_id)
+
+        url = _exec.input_params.get("url")
+        is_safe, unsafe_url = is_safe_url_with_redirects(url)
+        if not is_safe:
+            raise Invalid3DTilesException("Invalid URL Provided")
+
         try:
-            js_file = requests.get(_exec.input_params.get("url"), timeout=10).json()
+            js_file = requests.get(url, timeout=10).json()
         except Exception as e:
             raise Invalid3DTilesException(e)
 
