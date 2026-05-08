@@ -204,6 +204,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertEqual(201, response.status_code)
 
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
     def test_remote_upload_rejects_unsafe_url(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         invalid_urls = [
@@ -225,6 +226,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
                 self.assertEqual(400, response.status_code)
 
     @patch("geonode.utils.socket.getaddrinfo")
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
     def test_remote_upload_rejects_dns_resolving_to_private_ip(self, mock_dns):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
