@@ -30,14 +30,12 @@ from oauth2_provider.models import AccessToken
 from oauth2_provider.exceptions import OAuthToolkitError, FatalClientError
 from allauth.account.utils import user_field, user_email, user_username
 
+from ..utils import json_response
 from ..decorators import superuser_or_apiauth
 from ..base.auth import get_token_object_from_session, get_auth_token
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.authentication import SessionAuthentication
 
 
 def verify_access_token(request, key):
@@ -59,11 +57,14 @@ def verify_access_token(request, key):
 
 
 class UserInfoView(APIView):
-    authentication_classes = [OAuth2Authentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
+
+        if not user or user.is_anonymous:
+            out = {"success": False, "status": "error", "errors": {"user": ["User is not authenticated"]}}
+            return json_response(out, status=401)
+
         access_token = get_auth_token(user)
 
         groups = [group.name for group in user.groups.all()]
