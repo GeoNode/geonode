@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.management.command_utils import setup_logger
+from geonode.base.management.commands.thesaurus_subcommands.autoload import autoload_thesauri
 from geonode.base.management.commands.thesaurus_subcommands.dump import (
     dump_thesaurus,
     DUMP_FORMATS,
@@ -16,7 +17,8 @@ logger = setup_logger()
 COMMAND_LIST = "list"
 COMMAND_DUMP = "dump"
 COMMAND_LOAD = "load"
-COMMANDS = [COMMAND_LIST, COMMAND_LOAD, COMMAND_DUMP]
+COMMAND_AUTOLOAD = "autoload"
+COMMANDS = [COMMAND_LIST, COMMAND_LOAD, COMMAND_DUMP, COMMAND_AUTOLOAD]
 
 
 class Command(BaseCommand):
@@ -40,6 +42,12 @@ class Command(BaseCommand):
             default=ACTION_CREATE,
             choices=ACTIONS,
             help="Actions to run upon data loading (default: create)",
+        )
+        load_group.add_argument(
+            "--langs",
+            dest="langs",
+            action="append",
+            help="Only import labels for the requested languages; can be repeated",
         )
 
         dump_group = parser.add_argument_group('Params for "dump" subcommand')
@@ -99,6 +107,8 @@ class Command(BaseCommand):
             input_file = options.get("file")
             action = options.get("action")
             identifier = options.get("identifier")
+            lang = options.get("lang")
+            langs = options.get("langs") or []
 
             if not input_file:
                 raise CommandError("'load' command requires the <file> parameter.")
@@ -107,7 +117,10 @@ class Command(BaseCommand):
                 action = ACTION_CREATE
                 logger.info(f"Missing action param: setting actions as '{action}'")
 
-            load_thesaurus(input_file, identifier, action)
+            load_thesaurus(input_file, identifier, action, lang=lang, langs=langs)
+
+        elif subcommand == COMMAND_AUTOLOAD:
+            autoload_thesauri()
 
         else:
             raise CommandError(f"Unknown subcommand: {subcommand}")

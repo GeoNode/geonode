@@ -81,6 +81,15 @@ Executing UWSGI server uwsgi --ini /usr/src/app/uwsgi.ini for Production
 [uWSGI] getting INI configuration from /usr/src/app/uwsgi.ini
 ```
 
+The container performs these initialization steps before starting the application server:
+
+1. **Database migrations** – applies any pending schema migrations.
+2. **Fixtures** – loads default OAuth2 apps, admin user and site data (only on first boot or when ``FORCE_REINIT=true``).
+3. **Static files** – collects static assets.
+4. **Thesauri autoload** – scans all installed apps for a ``thesauri/`` directory and loads (or updates) any ``.rdf`` files found there. This makes sure thesauri shipped by GeoNode apps are always up-to-date.
+
+See [Thesauri – Initialization at boot](../../../admin/thesauri/thesauri.md#initialization-at-boot) for more details on the thesaurus autoload step.
+
 To exit just hit `CTRL+C`.
 
 This message means that the GeoNode containers have been started. Browsing to `http://localhost/` will show the GeoNode home page. You should be able to successfully log with the credentials of admin user which are defined in the .env file and start using it right away.

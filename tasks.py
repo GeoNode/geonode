@@ -393,6 +393,15 @@ def updateadmin(ctx):
 
 
 @task
+def loadthesauri(ctx):
+    print("**************************thesauri*******************************")
+    ctx.run(
+        f"python manage.py thesaurus autoload --settings={_localsettings()}",
+        pty=True,
+    )
+
+
+@task
 def collectmetrics(ctx):
     print("************************collect metrics******************************")
     ctx.run(
