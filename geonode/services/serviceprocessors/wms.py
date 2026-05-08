@@ -100,7 +100,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         auth = self.kwargs.get("auth")
         auth_config = self.kwargs.get("auth_config")
         if auth is None and auth_config is not None:
-            auth = BasicAuthHandler(auth_config).get_request_auth()
+            auth = auth_handler_registry.build(auth_config).get_request_auth()
         _url, _parsed_service = WebMapService(
             cleaned_url.geturl(),
             version=version,

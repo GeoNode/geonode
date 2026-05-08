@@ -25,6 +25,7 @@ from django.utils.translation import gettext_lazy as _
 import taggit
 
 from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 
 from . import enumerations
@@ -90,8 +91,9 @@ class CreateServiceForm(forms.Form):
                 auth_config = None
                 if username is not None or password is not None:
                     payload = {"username": username, "password": password}
-                    BasicAuthHandler.validate(payload)
                     auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+                    auth_handler_cls = auth_handler_registry.get_handler_class(auth_config.type)
+                    auth_handler_cls.validate(payload)
                     auth_config.payload = payload
 
                 service_handler = get_service_handler(
