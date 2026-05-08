@@ -1797,8 +1797,10 @@ def strtobool(value):
         return False
     raise ValueError(f"invalid truth value {value!r}")
 
+
 # Required for e2e tests to be able to disable the safe url check via env variable
-SAFE_URL_CHECK_ENABLED = ast.literal_eval(os.getenv("SAFE_URL_CHECK_ENABLED", 'True'))
+SAFE_URL_CHECK_ENABLED = ast.literal_eval(os.getenv("SAFE_URL_CHECK_ENABLED", "True"))
+
 
 def is_safe_url(url: str) -> bool:
     # Required to let tests disable the safe url check via settings orerride
