@@ -19,6 +19,7 @@
 
 import os
 import re
+import ast
 import json
 import time
 import base64
@@ -1796,10 +1797,12 @@ def strtobool(value):
         return False
     raise ValueError(f"invalid truth value {value!r}")
 
+# Required for e2e tests to be able to disable the safe url check via env variable
+SAFE_URL_CHECK_ENABLED = ast.literal_eval(os.getenv("SAFE_URL_CHECK_ENABLED", 'True'))
 
 def is_safe_url(url: str) -> bool:
-    check_enabled = getattr(settings, "SAFE_URL_CHECK_ENABLED", True)
-    if not check_enabled:
+    # Required to let tests disable the safe url check via settings orerride
+    if not (SAFE_URL_CHECK_ENABLED and getattr(settings, "SAFE_URL_CHECK_ENABLED", True)):
         return True
 
     def _is_ip_allowed(ip: str) -> bool:
