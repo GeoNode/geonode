@@ -157,20 +157,23 @@ markdown_extensions:
     
 plugins:
   - with-pdf: # https://pypi.org/project/mkdocs-with-pdf/
-      author: GeoSolutions Group
-      copyright: 'OsGeo ©'
-      #
-      #cover: false
-      #back_cover: true
+      author: GeoNode Project
+      copyright: '© OsGeo'
       cover_logo: 'theme/geonode.png'
       cover_title: GeoNode Documentation
-      cover_subtitle: User Guide and Developer Guide
+      cover_subtitle: User, Administrator and Developer Guide
       toc_level: 3
       output_path: pdf/geonode_documentation.pdf
       enabled_if_env: ENABLE_PDF_EXPORT
       debug_html: false # set to true to log the html content of the pdf on the console on build
       show_anchors: true
       verbose: false    # set to true to log the pdf generation steps in detail
-      custom_template_path: 'src/print_template' # includes custom styles.scss for pdf
+      custom_template_path: 'theme/print_template' # includes custom styles.scss for pdf
   - search
   - autorefs
+
+hooks:
+      - hooks/inject_version.py
+
+extra:
+      geonode_version: ""   # placeholder; overwritten by the hook
