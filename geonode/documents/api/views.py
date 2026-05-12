@@ -17,8 +17,6 @@
 #
 #########################################################################
 
-from pathlib import Path
-from uuid import uuid4
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -67,71 +65,6 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
     queryset = Document.objects.all().order_by("-created")
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
-
-    def perform_create(self, serializer):
-        """
-        Function to create document via API v2.
-        file_path: path to the file
-        doc_file: the open file
-
-        The API expect this kind of JSON:
-        {
-            "document": {
-                "title": "New document",
-                "metadata_only": true,
-                "file_path": "/home/mattia/example.json"
-            }
-        }
-        File path rappresent the filepath where the file to upload is saved.
-
-        or can be also a form-data:
-        curl --location --request POST 'http://localhost:8000/api/v2/documents' \
-        --form 'title="Super Title2"' \
-        --form 'doc_file=@"/C:/Users/user/Pictures/BcMc-a6T9IM.jpg"' \
-        --form 'metadata_only="False"'
-        """
-        serializer.is_valid(raise_exception=True)
-        file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
-        doc_url = serializer.validated_data.pop("doc_url", None)
-        extension = serializer.validated_data.pop("extension", None)
-
-        if not file and not doc_url:
-            raise DocumentException(detail="A file, file path or URL must be speficied")
-
-        if file and doc_url:
-            raise DocumentException(detail="Either a file or a URL must be specified, not both")
-
-        if not extension and file:
-            filename = file if isinstance(file, str) else file.name
-            extension = Path(filename).suffix.replace(".", "")
-
-        if extension not in settings.ALLOWED_DOCUMENT_TYPES:
-            raise DocumentException("The file provided is not in the supported extensions list")
-
-        try:
-            request_user = self.request.user
-            payload = {
-                **serializer.validated_data,
-                "owner": request_user,
-                "extension": extension,
-                "resource_type": "document",
-            }
-            if doc_url:
-                payload["doc_url"] = doc_url
-                payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
-
-            instance = document_manager.create(
-                str(uuid4()),
-                resource_type=Document,
-                defaults=payload,
-                file=file,
-                user=request_user,
-            )
-            serializer.instance = instance
-        except Exception as e:
-            logger.error(f"Error creating document {serializer.validated_data}", exc_info=e)
-            raise e
-
 
     @action(detail=True, methods=["get"])
     def linked_resources(self, request, pk=None, *args, **kwargs):
