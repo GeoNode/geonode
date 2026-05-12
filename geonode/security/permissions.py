@@ -411,6 +411,11 @@ class PermSpecConverterBase(object):
         # if possible
         if not isinstance(json, dict):
             self._binding_failed("expected dict, got %s", type(json))
+        # ``pop`` below mutates this dict; copy so callers (and any
+        # caller-owned references via shared list items) stay intact. Each
+        # recursive ``_bind_json`` call does the same for its own input, so a
+        # shallow copy at every level is sufficient.
+        json = dict(json)
         for binding in self._bindings:
             val = json.pop(binding.name, None)
             if binding.expected and val is None:
