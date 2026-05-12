@@ -739,6 +739,71 @@ class PermSpecCompact(PermSpecConverterBase):
                 )
         return json.copy()
 
+    def diff(self, other: "PermSpecCompact") -> dict:
+        """Compute the differences between ``self`` and ``other``.
+
+        ``self`` is treated as the current state and ``other`` as the proposed
+        one. The returned dict has the same top-level buckets as the compact
+        spec (``users``, ``organizations``, ``groups``); each bucket reports
+        the mutations needed to go from ``self`` to ``other``:
+
+        - ``added``   — entries present in ``other`` but not in ``self``.
+        - ``removed`` — entries present in ``self`` but not in ``other``.
+        - ``changed`` — entries present in both with a different ``permissions``
+          value; each item carries ``from`` and ``to`` to describe the
+          transition.
+
+        Entities are matched by ``id``. ``"none"`` is treated as a permission
+        value, not as absence — callers wanting to collapse it to a removal
+        can post-process the result.
+
+        Example::
+
+            {
+                "users": {
+                    "added":   [{"id": 5, "username": "alice", "permissions": "view"}],
+                    "removed": [{"id": 7, "username": "bob",   "permissions": "edit"}],
+                    "changed": [{"id": 3, "username": "carol", "from": "view", "to": "edit"}],
+                },
+                "organizations": {"added": [], "removed": [], "changed": []},
+                "groups":        {"added": [], "removed": [], "changed": []},
+            }
+        """
+
+        def _index(entries):
+            indexed = {}
+            for entry in entries or []:
+                entry_id = getattr(entry, "id", None)
+                if entry_id is None or entry_id in indexed:
+                    continue
+                indexed[entry_id] = entry
+            return indexed
+
+        def _payload(entry):
+            return entry._to_json_object(top_level=False)
+
+        result = {}
+        for bucket in (b.name for b in self._bindings):
+            current = _index(getattr(self, bucket, None))
+            proposed = _index(getattr(other, bucket, None))
+
+            added = [_payload(proposed[i]) for i in proposed.keys() - current.keys()]
+            removed = [_payload(current[i]) for i in current.keys() - proposed.keys()]
+            changed = []
+            for entry_id in current.keys() & proposed.keys():
+                before = current[entry_id].permissions
+                after = proposed[entry_id].permissions
+                if before == after:
+                    continue
+                payload = _payload(proposed[entry_id])
+                payload.pop("permissions", None)
+                payload["from"] = before
+                payload["to"] = after
+                changed.append(payload)
+
+            result[bucket] = {"added": added, "removed": removed, "changed": changed}
+        return result
+
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):
         """Merges 'perm_spec_compact_patch' to the current one.
 
