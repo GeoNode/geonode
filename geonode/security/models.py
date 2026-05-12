@@ -18,12 +18,18 @@
 #########################################################################
 
 import copy
+import json
 import logging
 import operator
 import traceback
+import base64
+import hashlib
 
 from functools import reduce
+from cryptography.fernet import Fernet
 
+from django.conf import settings
+from django.db import models
 from django.db.models import Q
 from geonode.security.permissions import (
     get_default_anonymous_compact_permission,
@@ -56,6 +62,10 @@ from geonode.security.registry import permissions_registry
 from guardian.utils import get_user_obj_perms_model
 
 logger = logging.getLogger(__name__)
+
+SECRET_KEY = settings.SECRET_KEY
+ENCRYPTION_KEY = base64.urlsafe_b64encode(hashlib.sha256(SECRET_KEY.encode()).digest())
+cipher = Fernet(ENCRYPTION_KEY)
 
 
 class PermissionLevelError(Exception):
@@ -462,3 +472,37 @@ class PermissionLevelMixin:
         Checks if a has a given permission to the resource.
         """
         return permissions_registry.user_has_perm(user, self, permission)
+
+
+class AuthConfig(models.Model):
+    type = models.CharField(max_length=128)
+    _payload = models.CharField(max_length=4096, db_column="payload")
+
+    class Meta:
+        verbose_name = "Authentication Configuration"
+        verbose_name_plural = "Authentication Configurations"
+
+    def __str__(self):
+        return f"{self.type}:{self.pk}"
+
+    @property
+    def payload(self):
+        if not self._payload:
+            return {}
+        return json.loads(cipher.decrypt(self._payload.encode()).decode())
+
+    @payload.setter
+    def payload(self, value):
+        self._payload = cipher.encrypt(json.dumps(value).encode()).decode()
+
+
+class URLPatternAuthConfig(models.Model):
+    auth_config = models.ForeignKey(AuthConfig, on_delete=models.CASCADE, related_name="url_patterns")
+    pattern = models.CharField(max_length=2048)
+
+    class Meta:
+        verbose_name = "URL Pattern Authentication Configuration"
+        verbose_name_plural = "URL Pattern Authentication Configurations"
+
+    def __str__(self):
+        return self.pattern
