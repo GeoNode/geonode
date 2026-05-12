@@ -1212,7 +1212,6 @@ class ResourceBaseViewSet(
             return Response({"thumbnail_url": resource.thumbnail_url})
         return Response("Unable to set thumbnail", status=status.HTTP_400_BAD_REQUEST)
 
-
     @action(
         detail=True,
         methods=["get"],
