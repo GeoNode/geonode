@@ -21,13 +21,11 @@
 
 import io
 import stat
-import struct
 import zipfile
 
 from django.test import SimpleTestCase
 
 from geonode.upload.zip_validation import (
-    MAX_COMPRESSION_RATIO,
     MAX_ENTRIES,
     ZipValidationError,
     is_zip_extension,
