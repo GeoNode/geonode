@@ -79,10 +79,10 @@ Learn GeoNode
 -------------
 
 After you´ve finished the setup process make yourself familiar with the
-general usage and settings of your GeoNodes instance. - the [User
-Training](https://docs.geonode.org/en/master/usage/index.html)
-is going in depth into what we can do. - the [Administrators
-Workshop](https://docs.geonode.org/en/master/admin/index.html)
+general usage and settings of your GeoNodes instance. - The [User
+Guide](https://docs.geonode.org/en/latest/user-guide/user_account/)
+is going in depth into what we can do. - the [Administration
+Section](https://docs.geonode.org/en/latest/admin/admin_panel/panel/)
 will guide you to the most important parts regarding management commands
 and configuration settings.
 

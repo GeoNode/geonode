@@ -124,10 +124,9 @@ class CatalogueBackend(GenericCatalogueBackend):
         HTTP-less CSW
         """
 
-        mdict = dict(settings.PYCSW["CONFIGURATION"], **CONFIGURATION)
+        mdict = dict(CONFIGURATION, **settings.PYCSW["CONFIGURATION"])
         if "server" in settings.PYCSW["CONFIGURATION"]:
-            # override server system defaults with user specified directives
-            mdict["server"].update(settings.PYCSW["CONFIGURATION"]["server"])
+            mdict["server"] = dict(CONFIGURATION.get("server", {}), **settings.PYCSW["CONFIGURATION"]["server"])
 
         # fake HTTP environment variable
         os.environ["QUERY_STRING"] = ""

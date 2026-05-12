@@ -385,7 +385,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         )
 
     def test_remove_permissions(self):
-        with self.settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
+        with self.settings(DEFAULT_ANONYMOUS_PERMISSIONS="view"):
             dt = create_single_dataset("test_dataset")
             map = create_single_map("test_exec_map")
             self.assertFalse(self.rm.remove_permissions("invalid", instance=None))
@@ -423,7 +423,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         # Test with no specified permissions
         with patch("geonode.security.utils.skip_registered_members_common_group") as mock_v:
             mock_v.return_value = True
-            with self.settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False, DEFAULT_ANONYMOUS_VIEW_PERMISSION=False):
+            with self.settings(DEFAULT_ANONYMOUS_PERMISSIONS="none"):
                 self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
                 self.assertFalse(anonymous.has_perm("view_resourcebase", dt.get_self_resource()))
                 self.assertFalse(anonymous.has_perm("download_resourcebase", dt.get_self_resource()))

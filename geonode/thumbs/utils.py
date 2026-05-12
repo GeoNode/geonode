@@ -145,7 +145,7 @@ def get_map(
     max_retries: int = 3,
     retry_delay: int = 1,
     instance=None,
-    auth_info: dict = None,
+    auth=None,
 ):
     """
     Function fetching an image from OGC server.
@@ -165,7 +165,7 @@ def get_map(
     :param height: height of the returned image
     :param max_retries: maximum number of retries before skipping retrieval
     :param retry_delay: number of seconds waited between retries
-    :param auth_info: optional dict with 'username' and 'password' for remote service authentication
+    :param auth: optional auth object for remote service authentication
     :returns: retrieved image
     """
     from geonode.geoserver.helpers import ogc_server_settings
@@ -203,14 +203,6 @@ def get_map(
         else:
             headers["Authorization"] = f"Bearer {additional_kwargs['access_token']}"
 
-    # Check if auth_info is provided (for remote services with authentication)
-    if auth_info and auth_info.get("username") and auth_info.get("password"):
-        # Use provided authentication credentials for remote service
-        encoded_credentials = base64.b64encode(
-            f"{auth_info['username']}:{auth_info['password']}".encode("UTF-8")
-        ).decode("ascii")
-        headers["Authorization"] = f"Basic {encoded_credentials}"
-
     image = None
     for retry in range(max_retries):
         try:
@@ -219,6 +211,7 @@ def get_map(
                 f"{thumbnail_url}{wms_endpoint}",
                 version=wms_version,
                 headers=headers,
+                auth=auth,
                 layers=layers,
                 styles=styles,
                 srs=bbox[-1] if bbox else None,
@@ -318,6 +311,7 @@ def getmap(
     base_url,
     version="1.3.0",
     headers={},
+    auth=None,
     layers=None,
     styles=None,
     srs=None,
@@ -394,7 +388,7 @@ def getmap(
     """
     from owslib.etree import etree
     from owslib.namespaces import Namespaces
-    from owslib.util import openURL, ServiceException, nspath
+    from owslib.util import Authentication, openURL, ServiceException, nspath
 
     n = Namespaces()
 
@@ -417,7 +411,8 @@ def getmap(
 
     data = urlencode(request)
 
-    u = openURL(base_url, data, method, timeout=timeout, auth=None, headers=headers)
+    auth = Authentication(auth_delegate=auth)
+    u = openURL(base_url, data, method, timeout=timeout, auth=auth, headers=headers)
 
     # need to handle casing in the header keys
     headers = {}

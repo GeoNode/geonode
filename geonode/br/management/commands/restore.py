@@ -424,6 +424,9 @@ class Command(BaseCommand):
                 logger.info("*** Sync layers with GeoServer...")
                 call_command("sync_geonode_datasets", updatepermissions=True, ignore_errors=True)
 
+                logger.info("*** Running reindex to populate search indexes...")
+                call_command("reindex")
+
                 if notify:
                     restore_notification.apply_async(args=(admin_emails, backup_file, backup_md5), expiration=30)
 

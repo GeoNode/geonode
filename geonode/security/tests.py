@@ -28,6 +28,7 @@ import importlib
 import mock
 from uuid import uuid4
 
+from requests import Request
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
 from avatar.templatetags.avatar_tags import avatar_url
@@ -52,6 +53,7 @@ from geonode.compat import ensure_string
 from geonode.security.handlers import (
     BasePermissionsHandler,
     GroupManagersPermissionsHandler,
+    SpecialGroupsPermissionsHandler,
     ResourceCreatorGroupsPermissionsHandler,
 )
 from geonode.upload.models import ResourceHandlerInfo
@@ -64,6 +66,8 @@ from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
 from geonode.security.registry import permissions_registry
+from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import _to_extended_perms
 from geonode.metadata.manager import metadata_manager
 
 from geonode.base.models import Configuration, UserGeoLimit, GroupGeoLimit
@@ -96,6 +100,9 @@ from .permissions import PermSpec, PermSpecCompact
 from django.core.cache import cache
 from geonode.base.models import ResourceBase
 from geonode.people.models import Profile
+from geonode.security.auth_handlers import AuthHandler, BasicAuthHandler, HashableAuthBase
+from geonode.security.auth_registry import AuthHandlerRegistry, auth_handler_registry
+from geonode.security.models import AuthConfig, URLPatternAuthConfig
 
 logger = logging.getLogger(__name__)
 
@@ -628,6 +635,49 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertIn("can_manage_registered_member_permissions", staff_perms)
         finally:
             staff_user.delete()
+
+    def test_add_remote_resource_perm_admin_always_has_it(self):
+        """Superusers always have the add_remote_resource permission."""
+        admin = get_user_model().objects.get(username="admin")
+        perms = permissions_registry.get_perms(user=admin)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_add_remote_resource_perm_regular_user_default(self):
+        """Regular users do NOT have add_remote_resource when setting is False (default)."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_perms(user=bobby)
+        self.assertNotIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_add_remote_resource_perm_regular_user_enabled(self):
+        """Regular users DO have add_remote_resource when setting is True."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_perms(user=bobby)
+        self.assertIn("add_remote_resource", perms)
+
+    def test_user_has_perm_returns_false_when_perm_is_empty_string(self):
+        """Empty perm should never return True"""
+        user = get_user_model().objects.create_user(username="test")
+        result = permissions_registry.user_has_perm(user, perm="")
+        self.assertFalse(result)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_get_perms_without_instance_returns_global_perms_for_user(self):
+        username = f"global_perms_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        perms = permissions_registry.get_perms(user=user)
+        self.assertIsInstance(perms, list)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_user_has_perm_accepts_instance_none(self):
+        username = f"global_perm_check_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        self.assertTrue(permissions_registry.user_has_perm(user, instance=None, perm="add_remote_resource"))
+        self.assertFalse(permissions_registry.user_has_perm(user, instance=None, perm=""))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
@@ -2591,7 +2641,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
@@ -2600,7 +2650,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_download_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
@@ -2609,7 +2659,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on(self):
         """
@@ -2622,7 +2672,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on_moderate(
         self,
@@ -3858,3 +3908,143 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         finally:
             config.read_only = original_read_only
             config.save()
+
+
+class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="view", DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download")
+    def test_handler_sets_default_groups_on_create(self):
+        resource = create_single_dataset("test_default_special_groups")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=True)
+
+        anonymous_group = Group.objects.get(name="anonymous")
+        registered_group, _ = Group.objects.get_or_create(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        expected_anonymous = _to_extended_perms("view", resource.resource_type, resource.subtype)
+        expected_registered = _to_extended_perms("download", resource.resource_type, resource.subtype)
+
+        self.assertSetEqual(set(updated["groups"][anonymous_group]), set(expected_anonymous))
+        self.assertSetEqual(set(updated["groups"][registered_group]), set(expected_registered))
+
+    def test_handler_skips_when_not_created(self):
+        resource = create_single_dataset("test_default_special_groups_skip")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=False)
+
+        self.assertDictEqual(perms_payload, updated)
+
+
+class AuthConfigTests(TestCase):
+    def test_auth_config_string_representation(self):
+        auth_config = AuthConfig.objects.create(type="basic", _payload="encrypted-payload")
+        self.assertEqual(str(auth_config), f"basic:{auth_config.pk}")
+
+    def test_url_pattern_auth_config_string_representation(self):
+        auth_config = AuthConfig.objects.create(type="basic", _payload="encrypted-payload")
+        url_pattern_auth_config = URLPatternAuthConfig.objects.create(
+            auth_config=auth_config,
+            pattern="https://example.com/*",
+        )
+        self.assertEqual(str(url_pattern_auth_config), "https://example.com/*")
+
+    def test_basic_auth_payload_round_trip(self):
+        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+
+        self.assertEqual(auth_config.type, "basic")
+        self.assertNotIn("test_user", auth_config._payload)
+        self.assertNotIn("test_password", auth_config._payload)
+        self.assertEqual(auth_config.payload, {"username": "test_user", "password": "test_password"})
+
+        handler = BasicAuthHandler(auth_config)
+        self.assertEqual(handler.get_credentials(), ("test_user", "test_password"))
+
+
+class AuthHandlerTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.auth_config = AuthConfig.objects.create(type="basic")
+        self.auth_config.payload = {"username": "test_user", "password": "test_password"}
+        self.auth_config.save()
+
+    def test_build_returns_basic_auth_handler(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        self.assertIsInstance(auth_handler, BasicAuthHandler)
+        self.assertEqual(auth_handler.username, "test_user")
+        self.assertEqual(auth_handler.password, "test_password")
+
+    def test_build_raises_for_unsupported_type(self):
+        unsupported_auth_config = AuthConfig.objects.create(type="unsupported", _payload="opaque")
+        with self.assertRaises(ValueError):
+            auth_handler_registry.build(unsupported_auth_config)
+
+    def test_basic_auth_handler_get_request_auth(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        request_auth = auth_handler.get_request_auth()
+        self.assertIsInstance(request_auth, HashableAuthBase)
+        self.assertEqual(request_auth.auth.username, "test_user")
+        self.assertEqual(request_auth.auth.password, "test_password")
+
+    def test_basic_auth_handler_auth_request_sets_request_auth(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        request = Request("GET", "https://example.com/data")
+        request = auth_handler.auth_request(request)
+        self.assertIsInstance(request.auth, HashableAuthBase)
+        self.assertEqual(request.auth.auth.username, "test_user")
+        self.assertEqual(request.auth.auth.password, "test_password")
+
+
+class AuthHandlerRegistryTests(TestCase):
+    class SampleAuthHandler(AuthHandler):
+        handled_type = "sample"
+
+        def _init_from_config(self):
+            self.payload = self.config.payload
+
+        def get_request_auth(self):
+            return None
+
+        def auth_request(self, request, **kwargs):
+            return request
+
+        def get_credentials(self):
+            return self.payload
+
+    def test_register_adds_handler_class(self):
+        registry = AuthHandlerRegistry()
+        registry.register(BasicAuthHandler)
+        self.assertEqual(registry.registry["basic"], BasicAuthHandler)
+
+    def test_register_and_build_sample_handler(self):
+        auth_config = AuthConfig.objects.create(type="sample")
+        auth_config.payload = {"value": "demo"}
+        auth_config.save()
+        registry = AuthHandlerRegistry()
+        registry.register(self.SampleAuthHandler)
+        auth_handler = registry.build(auth_config)
+        self.assertIsInstance(auth_handler, self.SampleAuthHandler)
+        self.assertEqual(auth_handler.config, auth_config)
+
+    def test_register_raises_when_handled_type_is_missing(self):
+        class MissingHandledTypeAuthHandler(AuthHandler):
+            handled_type = None
+
+            def _init_from_config(self):
+                pass
+
+        registry = AuthHandlerRegistry()
+        with self.assertRaises(ValueError):
+            registry.register(MissingHandledTypeAuthHandler)
+
+    def test_build_returns_handler_instance(self):
+        auth_config = AuthConfig.objects.create(type="basic")
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        auth_config.save()
+        registry = AuthHandlerRegistry()
+        registry.register(BasicAuthHandler)
+        auth_handler = registry.build(auth_config)
+        self.assertIsInstance(auth_handler, BasicAuthHandler)
+        self.assertEqual(auth_handler.username, "test_user")
+        self.assertEqual(auth_handler.password, "test_password")
