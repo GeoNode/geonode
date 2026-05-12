@@ -1046,6 +1046,9 @@ def upsert_data(self, execution_id, /, handler_module_path, action, **kwargs):
 
         _datastore.pre_processing(**kwargs)
 
+        if not _datastore.input_is_valid():
+            raise Exception("dataset is invalid")
+
         is_valid, errors = _datastore.upsert_validation(execution_id, **kwargs)
         if not is_valid:
             raise UpsertException(errors)

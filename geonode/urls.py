@@ -37,12 +37,12 @@ from . import views
 from . import version
 
 from geonode.api.urls import api, router
-from geonode.api.views import verify_token, user_info, roles, users, admin_role
+from geonode.api.views import verify_token, roles, users, admin_role
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.base import register_url_event
-from .people.views import CustomSignupView, CustomLoginView
+from .people.views import CustomSignupView, CustomLoginView, set_session_language
 from oauth2_provider.urls import app_name as oauth2_app_name, base_urlpatterns, oidc_urlpatterns
 
 admin.autodiscover()
@@ -117,7 +117,6 @@ urlpatterns += [
     # OAuth2/OIDC Provider
     re_path(r"^o/", include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace="oauth2_provider")),
     re_path(r"^api/o/v4/tokeninfo", verify_token, name="tokeninfo"),
-    re_path(r"^api/o/v4/userinfo", user_info, name="userinfo"),
     # Api Views
     re_path(r"^api/roles", roles, name="roles"),
     re_path(r"^api/adminRole", admin_role, name="adminRole"),
@@ -141,6 +140,7 @@ urlpatterns += [
         ImporterViewSet.as_view({"post": "create"}),
         name="importer_upload",
     ),
+    path("i18n/setlang/", set_session_language, name="set_language"),
 ]
 
 # django-select2 Widgets

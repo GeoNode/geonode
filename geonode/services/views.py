@@ -34,13 +34,15 @@ from django.contrib.auth.decorators import login_required
 from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_visible_resources, check_add_remote_resource_perm
 from django.core.cache import caches
+from django.core.exceptions import PermissionDenied
 
 from .models import Service
 from . import forms, enumerations
 from .serviceprocessors import get_service_handler
 from geonode.security.registry import permissions_registry
+from geonode.views import err403
 
 service_cache = caches["services"]
 
@@ -49,16 +51,25 @@ logger = logging.getLogger(__name__)
 
 def services(request):
     """This view shows the list of all registered services"""
-
     return render(
         request,
         "services/service_list.html",
-        {"services": Service.objects.all(), "can_add_resources": request.user.has_perm("base.add_resourcebase")},
+        {
+            "services": Service.objects.all(),
+            "can_add_remote_resources": permissions_registry.user_has_perm(
+                request.user, perm=["add_remote_resource", "add_resource"]
+            ),
+        },
     )
 
 
 @login_required
 def register_service(request):
+    try:
+        check_add_remote_resource_perm(request.user)
+    except PermissionDenied as e:
+        return err403(request, e)
+
     service_register_template = "services/service_register.html"
     if request.method == "POST":
         form = forms.CreateServiceForm(request.POST)
@@ -97,13 +108,13 @@ def _get_service_handler(request, service):
     multiple Capabilities requests (this is a time saver on servers that
     feature many layers.
     """
-    service_handler = get_service_handler(
-        service.service_url,
-        service.type,
-        service.id,
-        username=service.username if service.needs_authentication else None,
-        password=service.get_password() if service.needs_authentication else None,
-    )
+    auth = None
+    if service.needs_authentication:
+        from geonode.security.auth_registry import auth_handler_registry
+
+        auth = auth_handler_registry.build(service.auth_config).get_request_auth()
+
+    service_handler = get_service_handler(service.service_url, service.type, service.id, auth=auth)
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
     # commented out due to jsonserializer error, will be replaced with cache

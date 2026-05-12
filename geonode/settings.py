@@ -44,8 +44,6 @@ SILENCED_SYSTEM_CHECKS = [
     "fields.W340",
     "auth.W004",
     "urls.W002",
-    "drf_spectacular.W001",
-    "drf_spectacular.W002",
 ]
 
 # GeoNode Version
@@ -496,7 +494,6 @@ INSTALLED_APPS = (
     "rest_framework",
     "rest_framework_gis",
     "dynamic_rest",
-    "drf_spectacular",
     # Theme
     "django_select2",
     "django_forms_bootstrap",
@@ -552,7 +549,6 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "dynamic_rest.renderers.DynamicBrowsableAPIRenderer",
     ],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "geonode.base.api.exceptions.geonode_exception_handler",
 }
 REST_FRAMEWORK_EXTENSIONS = {
@@ -850,6 +846,7 @@ MIDDLEWARE = (
     "django_user_agents.middleware.UserAgentMiddleware",
     "geonode.base.middleware.MaintenanceMiddleware",
     "geonode.base.middleware.ReadOnlyMiddleware",  # a Middleware enabling Read Only mode of Geonode
+    "geonode.base.middleware.ProfileLanguageMiddleware",
 )
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
@@ -1062,6 +1059,7 @@ PROXY_ALLOWED_PATH_NEEDLES = ast.literal_eval(os.getenv("PROXY_ALLOWED_PATH_NEED
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
+SAFE_URL_CHECK_ENABLED = ast.literal_eval(os.getenv("SAFE_URL_CHECK_ENABLED", "True"))
 
 # Avoid permissions prefiltering
 SKIP_PERMS_FILTER = ast.literal_eval(os.getenv("SKIP_PERMS_FILTER", "False"))
@@ -1493,6 +1491,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
     else:
         LANGUAGES = MAPSTORE_DEFAULT_LANGUAGES
 
+    # This setting includes supported Maptstore language choices in a DB-based format
+    PROFILE_LANGUAGE_CHOICES = tuple((code.split("-")[0].lower(), label) for code, label in LANGUAGES)
+
     # The default mapstore client compiles the translations json files in the /static/mapstore directory
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
     MAPSTORE_TRANSLATIONS_PATH = os.environ.get(
@@ -1823,6 +1824,10 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # START SECURITY SETTINGS
 # ########################################################################### #
 
+AUTH_HANDLERS = [
+    "geonode.security.auth_handlers.BasicAuthHandler",
+]
+
 ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))
 
 # ######################################################## #
@@ -1850,7 +1855,10 @@ GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get("GROUP_MANDATORY_RES
 AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
-
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "False")
+)
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = os.getenv("RESOURCE_CREATOR_GROUPS_PERMISSIONS", "view")
 AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", "False")
 )
@@ -1862,10 +1870,48 @@ if AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN and not _resource_ownership_admin_use
     )
 RESOURCE_OWNERSHIP_ADMIN_USERNAME = (_resource_ownership_admin_username or "admin").strip() or "admin"
 
-# Whether the uplaoded resources should be public and downloadable by default
-# or not
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "True"))
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "True"))
+# Whether the uploaded resources should be public and downloadable by default
+# DEPRECATED: use DEFAULT_ANONYMOUS_PERMISSIONS (compact permissions)
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "None"))
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "None"))
+
+# Resolve anonymous compact fallback from deprecated settings for cases where the new setting is not provided
+_anonymous_compact_fallback = "download"
+if (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is True:
+        _anonymous_compact_fallback = "download"
+    elif DEFAULT_ANONYMOUS_VIEW_PERMISSION is True:
+        _anonymous_compact_fallback = "view"
+    else:
+        _anonymous_compact_fallback = "none"
+
+# Compact permissions for default groups
+# Valid values:
+#  - DEFAULT_ANONYMOUS_PERMISSIONS: view | download | none
+#  - DEFAULT_REGISTERED_MEMBERS_PERMISSIONS: view | download | edit | manage | none
+DEFAULT_ANONYMOUS_PERMISSIONS = os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS", _anonymous_compact_fallback)
+DEFAULT_REGISTERED_MEMBERS_PERMISSIONS = os.getenv("DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", "download")
+
+if os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS") is not None and (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    logger.warning(
+        "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated and ignored "
+        "because DEFAULT_ANONYMOUS_PERMISSIONS is set."
+    )
+elif (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    logger.warning(
+        "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated. "
+        "Please use DEFAULT_ANONYMOUS_PERMISSIONS instead."
+    )
+
 
 EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "True")
@@ -1874,10 +1920,15 @@ EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "True")
 )
 
+REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES = ast.literal_eval(
+    os.getenv("REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES", "False")
+)
+
 PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+    "geonode.security.handlers.ResourceCreatorGroupsPermissionsHandler",
     "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
 ]
 
@@ -1921,10 +1972,47 @@ ACCOUNT_OPEN_SIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SIGNUP", "Tr
 ACCOUNT_OPEN_SOCIALSIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SOCIALSIGNUP", "True"))
 ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(os.getenv("ACCOUNT_APPROVAL_REQUIRED", "False"))
 ACCOUNT_ADAPTER = "geonode.people.adapters.LocalAccountAdapter"
-ACCOUNT_AUTHENTICATION_METHOD = os.environ.get("ACCOUNT_AUTHENTICATION_METHOD", "username_email")
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get("ACCOUNT_CONFIRM_EMAIL_ON_GET", "True"))
-ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get("ACCOUNT_EMAIL_REQUIRED", "True"))
 ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "none")
+
+# Deprecated django-allauth settings for backward compatibility.
+# New deployments should use ACCOUNT_LOGIN_METHODS and ACCOUNT_SIGNUP_FIELDS instead.
+_account_authentication_method = os.environ.get("ACCOUNT_AUTHENTICATION_METHOD")
+_account_email_required = os.environ.get("ACCOUNT_EMAIL_REQUIRED")
+if _account_authentication_method is not None:
+    logger.warning(
+        "settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: "
+        "settings.ACCOUNT_LOGIN_METHODS = {'email', 'username'}"
+    )
+else:
+    _account_authentication_method = "username_email"
+
+_default_login_methods = {
+    "username": {"username"},
+    "email": {"email"},
+    "username_email": {"username", "email"},
+}.get(_account_authentication_method, {"username", "email"})
+
+ACCOUNT_LOGIN_METHODS = ast.literal_eval(os.environ.get("ACCOUNT_LOGIN_METHODS", repr(_default_login_methods)))
+
+if _account_email_required is not None:
+    logger.warning(
+        "settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: "
+        "settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']"
+    )
+
+    _account_email_required = ast.literal_eval(_account_email_required)
+else:
+    _account_email_required = True
+
+_default_signup_fields = [
+    "email*" if _account_email_required else "email",
+    "username*",
+    "password1*",
+    "password2*",
+]
+
+ACCOUNT_SIGNUP_FIELDS = ast.literal_eval(os.environ.get("ACCOUNT_SIGNUP_FIELDS", repr(_default_signup_fields)))
 
 # Invitation Adapter
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
@@ -2010,6 +2098,13 @@ _SOCIALACCOUNT_PROVIDER = os.environ.get("SOCIALACCOUNT_PROVIDER", "google")
 SOCIALACCOUNT_PROVIDERS = {
     SOCIALACCOUNT_OIDC_PROVIDER: SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
+
+# Strategy for synchronizing user group memberships from Social Providers (e.g., Azure, Google).
+# - FULL_SYNC: (Default) Strict mirroring. Wipes all local groups and joins only those in the provider token.
+# - SAFE_SYNC: Skips sync if the provider response is missing group/role keys (e.g., Azure overage).
+#              Protects existing local memberships from accidental wipes.
+# - NO_SYNC:   Ignores provider group data entirely. Groups are managed manually within GeoNode.
+SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN = os.getenv("SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")
 
 DISPLAY_RATINGS = ast.literal_eval(os.getenv("DISPLAY_RATINGS", "True"))
 DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv("DISPLAY_WMS_LINKS", "True"))

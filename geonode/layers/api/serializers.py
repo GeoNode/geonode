@@ -188,6 +188,7 @@ class DatasetSerializer(ResourceBaseSerializer):
                     "store",
                     "subtype",
                     "ptype",
+                    "is_tabular",
                 )
             )
         )

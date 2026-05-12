@@ -29,6 +29,7 @@ from django.template import loader
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect
 
+from geonode.security.utils import check_add_remote_resource_perm
 from geonode.base.api.exceptions import geonode_exception_handler
 from geonode.client.hooks import hookset
 from geonode.utils import mkdtemp
@@ -162,6 +163,8 @@ class DocumentUploadView(CreateView):
             shutil.rmtree(tempdir, ignore_errors=True)
 
         else:
+            check_add_remote_resource_perm(self.request.user)
+
             self.object = document_manager.create(
                 None,
                 resource_type=Document,
