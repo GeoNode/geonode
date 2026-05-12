@@ -65,8 +65,13 @@ SPARSE_FIELD_VALUE_MAX_LENGTH = 1024
 # Query parameter names that should *not* be treated as legacy
 # ``metadata__<key>`` filters in the deprecated GET endpoint.
 _NON_FILTER_QUERY_PARAMS = {
-    "api_preset", "page", "page_size", "format", "include[]",
-    "exclude[]", "sort[]",
+    "api_preset",
+    "page",
+    "page_size",
+    "format",
+    "include[]",
+    "exclude[]",
+    "sort[]",
 }
 
 
@@ -113,7 +118,7 @@ def _next_sparse_name(resource):
     )
     max_n = 0
     for name in existing:
-        suffix = name[len(SPARSE_FIELD_PREFIX):]
+        suffix = name[len(SPARSE_FIELD_PREFIX) :]
         try:
             max_n = max(max_n, int(suffix))
         except (ValueError, TypeError):
@@ -172,8 +177,7 @@ class DeprecatedExtraMetadataMixin:
     @extend_schema(
         methods=["get", "put", "delete", "post"],
         description=(
-            "[DEPRECATED] Get/Update/Delete/Add extra metadata for a resource. "
-            "Use the sparse fields API instead."
+            "[DEPRECATED] Get/Update/Delete/Add extra metadata for a resource. " "Use the sparse fields API instead."
         ),
         deprecated=True,
     )
@@ -260,15 +264,11 @@ class DeprecatedExtraMetadataMixin:
                 continue
             name = _next_sparse_name(resource)
             try:
-                SparseField.objects.create(
-                    resource=resource, name=name, value=value
-                )
+                SparseField.objects.create(resource=resource, name=name, value=value)
             except IntegrityError:
                 # Concurrent request created the same name; retry with UUID
                 name = f"{SPARSE_FIELD_PREFIX}{uuid.uuid4().hex[:12]}"
-                SparseField.objects.create(
-                    resource=resource, name=name, value=value
-                )
+                SparseField.objects.create(resource=resource, name=name, value=value)
 
         result = [_sparse_to_legacy(sf) for sf in _sparse_fields_for_resource(resource)]
         return Response(result, status=201)

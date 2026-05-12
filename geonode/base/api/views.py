@@ -113,7 +113,6 @@ from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -289,9 +288,7 @@ class ApiPresetsInitializer(APIView):
             request.GET._mutable = False
 
 
-class ResourceBaseViewSet(
-    ApiPresetsInitializer, MultiLangViewMixin, DeprecatedExtraMetadataMixin, DynamicModelViewSet
-):
+class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedExtraMetadataMixin, DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
     """

@@ -1993,10 +1993,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.json(), "The url must be of an image with format (png, jpeg or jpg)")
 
         # using Base64 data as an ASCII byte string
-        data["file"] = (
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
+        data["file"] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
         fAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
-        )
         with patch("geonode.base.models.is_monochromatic_image") as _mck:
             _mck.return_value = False
             response = self.client.put(url, data=data, format="json")
@@ -4318,9 +4316,7 @@ class DeprecatedExtraMetadataApiTest(GeoNodeBaseTestSupport):
         created_id = response.json()[0]["id"]
 
         # Update
-        update_payload = [
-            {"id": created_id, "field_name": "updated", "field_value": "v2"}
-        ]
+        update_payload = [{"id": created_id, "field_name": "updated", "field_value": "v2"}]
         response = self.client.put(
             self._url(),
             data=json.dumps(update_payload),
