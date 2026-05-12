@@ -77,7 +77,7 @@ from geonode.utils import (
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
-from geonode.security.models import PermissionLevelMixin
+from geonode.security.models import PermissionLevelMixin, AuthConfig
 from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS
 
 from geonode.notifications_helper import send_notification, get_notification_recipients
@@ -884,6 +884,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
 
     blob = JSONField(null=True, default=dict, blank=True)
+    auth_config = models.ForeignKey(
+        AuthConfig,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="authconfigresources",
+    )
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
 

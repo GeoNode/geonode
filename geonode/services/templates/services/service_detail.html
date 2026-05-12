@@ -11,7 +11,7 @@
       <p><strong>{% trans "Keywords" %}:</strong> {{ service.keywords.all|join:", " }}</p>
       <p><strong>{% trans "Contact" %}:</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
       {% if service.type == 'WMS' and service.needs_authentication %}
-        <p><strong>SERVICE NOTES:</strong> The service is accessed by Basic auth via the user <strong>{{service.username}}</strong></p>
+        <p><strong>SERVICE NOTES:</strong> The service is accessed using configured authentication.</p>
       {% endif %}
     {% autoescape off %}
         <div id="harvestProgressWrapper" style="display:none;">

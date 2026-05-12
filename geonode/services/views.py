@@ -108,13 +108,13 @@ def _get_service_handler(request, service):
     multiple Capabilities requests (this is a time saver on servers that
     feature many layers.
     """
-    service_handler = get_service_handler(
-        service.service_url,
-        service.type,
-        service.id,
-        username=service.username if service.needs_authentication else None,
-        password=service.get_password() if service.needs_authentication else None,
-    )
+    auth = None
+    if service.needs_authentication:
+        from geonode.security.auth_registry import auth_handler_registry
+
+        auth = auth_handler_registry.build(service.auth_config).get_request_auth()
+
+    service_handler = get_service_handler(service.service_url, service.type, service.id, auth=auth)
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
     # commented out due to jsonserializer error, will be replaced with cache
