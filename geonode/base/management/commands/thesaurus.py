@@ -117,7 +117,7 @@ class Command(BaseCommand):
                 action = ACTION_CREATE
                 logger.info(f"Missing action param: setting actions as '{action}'")
 
-            load_thesaurus(input_file, identifier, action, lang=lang, langs=langs)
+            load_thesaurus(input_file, identifier, action, default_lang=lang, langs=langs)
 
         elif subcommand == COMMAND_AUTOLOAD:
             autoload_thesauri()

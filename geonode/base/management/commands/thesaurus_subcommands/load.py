@@ -53,7 +53,7 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE, def
     # name, which should include the extension, to guess_format manually...
 
     # explodes list of comma separated langs into single list of langs
-    langs = [lang for item in langs for lang in item.split(",")]
+    langs = [lang.strip() for item in langs for lang in item.split(",") if lang.strip()]
 
     filename = input_file.name if isinstance(input_file, UploadedFile) else input_file
     rdf_format = guess_format(filename)

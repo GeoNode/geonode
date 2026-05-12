@@ -20,7 +20,14 @@ def autoload_thesauri():
         logger.debug(f"Looking for auto thesaurus in app '{app_config.name}' path: {thesauri_dir}")
         if not os.path.isdir(thesauri_dir):
             continue
-        rdf_files = [f for f in os.listdir(thesauri_dir) if f.lower().endswith(".rdf")]
+        try:
+            rdf_files = [f for f in os.listdir(thesauri_dir) if f.lower().endswith(".rdf")]
+        except OSError as e:
+            logger.error(
+                f"Failed to scan thesauri directory for app '{app_config.name}' at '{thesauri_dir}': {e}",
+                exc_info=True,
+            )
+            continue
         for rdf_file in sorted(rdf_files):
             rdf_path = os.path.join(thesauri_dir, rdf_file)
             logger.info(f"Autoloading thesaurus from app '{app_config.name}': {rdf_path}")
