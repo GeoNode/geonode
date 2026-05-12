@@ -739,13 +739,13 @@ class PermSpecCompact(PermSpecConverterBase):
                 )
         return json.copy()
 
-    def diff(self, other: "PermSpecCompact") -> dict:
+    def diff(self, other: "PermSpecCompact") -> "PermSpecCompactDiff":
         """Compute the differences between ``self`` and ``other``.
 
         ``self`` is treated as the current state and ``other`` as the proposed
-        one. The returned dict has the same top-level buckets as the compact
-        spec (``users``, ``organizations``, ``groups``); each bucket reports
-        the mutations needed to go from ``self`` to ``other``:
+        one. Returns a :class:`PermSpecCompactDiff` describing the mutations
+        needed to move from ``self`` to ``other``, bucketed by
+        ``users`` / ``organizations`` / ``groups``:
 
         - ``added``   — entries present in ``other`` but not in ``self``.
         - ``removed`` — entries present in ``self`` but not in ``other``.
@@ -756,18 +756,6 @@ class PermSpecCompact(PermSpecConverterBase):
         Entities are matched by ``id``. ``"none"`` is treated as a permission
         value, not as absence — callers wanting to collapse it to a removal
         can post-process the result.
-
-        Example::
-
-            {
-                "users": {
-                    "added":   [{"id": 5, "username": "alice", "permissions": "view"}],
-                    "removed": [{"id": 7, "username": "bob",   "permissions": "edit"}],
-                    "changed": [{"id": 3, "username": "carol", "from": "view", "to": "edit"}],
-                },
-                "organizations": {"added": [], "removed": [], "changed": []},
-                "groups":        {"added": [], "removed": [], "changed": []},
-            }
         """
 
         def _index(entries):
@@ -782,7 +770,7 @@ class PermSpecCompact(PermSpecConverterBase):
         def _payload(entry):
             return entry._to_json_object(top_level=False)
 
-        result = {}
+        buckets = {}
         for bucket in (b.name for b in self._bindings):
             current = _index(getattr(self, bucket, None))
             proposed = _index(getattr(other, bucket, None))
@@ -801,8 +789,8 @@ class PermSpecCompact(PermSpecConverterBase):
                 payload["to"] = after
                 changed.append(payload)
 
-            result[bucket] = {"added": added, "removed": removed, "changed": changed}
-        return result
+            buckets[bucket] = {"added": added, "removed": removed, "changed": changed}
+        return PermSpecCompactDiff(**buckets)
 
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):
         """Merges 'perm_spec_compact_patch' to the current one.
@@ -825,6 +813,98 @@ class PermSpecCompact(PermSpecConverterBase):
                         getattr(self, _elem).append(_up)
                     else:
                         getattr(self, _elem).add(_up)
+
+
+class PermSpecCompactDiff:
+    """Structured result of diffing two ``PermSpecCompact`` instances.
+
+    The diff is bucketed (``users`` / ``organizations`` / ``groups``); each
+    bucket carries ``added`` / ``removed`` / ``changed`` lists describing the
+    mutations needed to move from a current to a proposed state. ``added`` and
+    ``removed`` items are full compact entries (with ``permissions``);
+    ``changed`` items carry identifying fields plus ``from`` / ``to`` to
+    describe the permission transition.
+
+    See :meth:`PermSpecCompact.diff` for how an instance is produced and
+    :meth:`apply` for how to materialize the result onto a current compact
+    spec.
+    """
+
+    _BUCKETS = ("users", "organizations", "groups")
+
+    def __init__(self, users=None, organizations=None, groups=None):
+        self.users = self._normalize_bucket(users)
+        self.organizations = self._normalize_bucket(organizations)
+        self.groups = self._normalize_bucket(groups)
+
+    @staticmethod
+    def _normalize_bucket(bucket):
+        bucket = bucket or {}
+        return {
+            "added": list(bucket.get("added", []) or []),
+            "removed": list(bucket.get("removed", []) or []),
+            "changed": list(bucket.get("changed", []) or []),
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        data = data or {}
+        return cls(
+            users=data.get("users"),
+            organizations=data.get("organizations"),
+            groups=data.get("groups"),
+        )
+
+    def to_dict(self):
+        return {bucket: dict(getattr(self, bucket)) for bucket in self._BUCKETS}
+
+    def is_empty(self):
+        for bucket in self._BUCKETS:
+            entries = getattr(self, bucket)
+            if entries["added"] or entries["removed"] or entries["changed"]:
+                return False
+        return True
+
+    def apply(self, current_perms_compact, resource) -> "PermSpecCompact":
+        """Materialize the diff on top of a current compact spec.
+
+        ``current_perms_compact`` is the dict-shaped compact spec to start
+        from; ``resource`` is the target resource (used by the underlying
+        ``PermSpecCompact`` constructor). Within each bucket: ``removed``
+        entries are dropped by id, ``changed`` entries update the
+        ``permissions`` of existing entries (matched by id), and ``added``
+        entries are appended (replacing any pre-existing entry with the same
+        id so the operation is idempotent against stale diffs).
+        """
+        result = PermSpecCompact(current_perms_compact, resource)
+        binding_cls_by_bucket = {b.name: b.binding for b in result._bindings}
+
+        for bucket, binding_cls in binding_cls_by_bucket.items():
+            bucket_diff = getattr(self, bucket)
+            entries = getattr(result, bucket, None) or []
+            setattr(result, bucket, entries)
+
+            removed_ids = {e["id"] for e in bucket_diff["removed"] if e.get("id") is not None}
+            if removed_ids:
+                entries[:] = [e for e in entries if e.id not in removed_ids]
+
+            change_map = {e["id"]: e["to"] for e in bucket_diff["changed"] if e.get("id") is not None}
+            if change_map:
+                for e in entries:
+                    if e.id in change_map:
+                        e.permissions = change_map[e.id]
+
+            for new in bucket_diff["added"]:
+                new_id = new.get("id")
+                if new_id is None:
+                    continue
+                entries[:] = [e for e in entries if e.id != new_id]
+                entries.append(binding_cls(new, resource, parent=result))
+
+        return result
+
+    def __repr__(self):
+        return f"PermSpecCompactDiff({self.to_dict()!r})"
 
 
 def get_compact_perms_list(
