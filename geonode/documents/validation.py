@@ -37,7 +37,5 @@ class DocumentFileValidationConfigProvider(ValidationConfigProvider):
     def build_config(self):
         return {
             "allowed_extensions": frozenset(settings.ALLOWED_DOCUMENT_TYPES),
-            "magic_mimetype_map": {
-                ext: frozenset(mimes) for ext, mimes in DOCUMENT_MAGIC_MIMETYPE_MAP.items()
-            },
+            "magic_mimetype_map": {ext: frozenset(mimes) for ext, mimes in DOCUMENT_MAGIC_MIMETYPE_MAP.items()},
         }

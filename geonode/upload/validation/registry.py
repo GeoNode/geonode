@@ -60,9 +60,7 @@ class FileValidationConfigRegistry:
         Replace the registry with a frozen copy of ``configs``. Called once
         from HandlersConfig.ready() after all providers have run.
         """
-        cls.REGISTRY = MappingProxyType(
-            {url_name: MappingProxyType(dict(cfg)) for url_name, cfg in configs.items()}
-        )
+        cls.REGISTRY = MappingProxyType({url_name: MappingProxyType(dict(cfg)) for url_name, cfg in configs.items()})
         logger.info(
             "FileValidation registry installed for URL names: %s",
             ", ".join(sorted(cls.REGISTRY)) or "<none>",
