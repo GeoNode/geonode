@@ -39,7 +39,7 @@ from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.security.utils import AdvancedSecurityWorkflowManager
 from geonode.thumbs.utils import get_thumbs, remove_thumb
 from geonode.utils import get_legend_url
-from geonode.security.permissions import PermSpecCompact, PermSpecCompactDiff
+from geonode.security.permissions import PermSpecCompactDiff
 
 logger = logging.getLogger("geonode.base.utils")
 
