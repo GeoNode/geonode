@@ -763,6 +763,8 @@ class PermSpecCompact(PermSpecConverterBase):
         can post-process the result.
         """
 
+        # Index each bucket's entries by id so membership/lookup is O(1).
+        # Duplicate ids in the same bucket are first-wins (matches merge()).
         def _index(entries):
             indexed = {}
             for entry in entries or []:
@@ -772,14 +774,24 @@ class PermSpecCompact(PermSpecConverterBase):
                 indexed[entry_id] = entry
             return indexed
 
+        # Serialize an indexed entry back to its dict form for the diff payload.
         def _payload(entry):
             return entry._to_json_object(top_level=False)
 
         buckets = {}
+        # Iterate the same buckets the compact spec already defines
+        # (users / organizations / groups), driven by _bindings so the diff
+        # stays in lockstep with the schema.
         for bucket in (b.name for b in self._bindings):
             current = _index(getattr(self, bucket, None))
             proposed = _index(getattr(other, bucket, None))
 
+            # Set algebra over ids gives us the three mutation kinds in one shot:
+            #   added   = proposed \ current   (ids only in other)
+            #   removed = current  \ proposed  (ids only in self)
+            #   changed = proposed ∩ current   (ids in both, filtered by perm)
+            # "none" is a legal permission value, not absence — equal perms on
+            # both sides (including "none" == "none") yield no entry at all.
             added = [_payload(proposed[i]) for i in proposed.keys() - current.keys()]
             removed = [_payload(current[i]) for i in current.keys() - proposed.keys()]
             changed = []
@@ -788,6 +800,10 @@ class PermSpecCompact(PermSpecConverterBase):
                 after = proposed[entry_id].permissions
                 if before == after:
                     continue
+                # Build the changed entry from the proposed side (so identifier
+                # fields reflect the latest values), then replace the single
+                # "permissions" key with the explicit from/to transition —
+                # validators downstream need direction, not just the new value.
                 payload = _payload(proposed[entry_id])
                 payload.pop("permissions", None)
                 payload["from"] = before
