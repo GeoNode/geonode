@@ -599,10 +599,11 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                         )
                     if excluded_ids:
                         request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
-                current_compact = PermSpecCompact(perms_spec.compact, resource)
+                current_perms_compact = perms_spec.compact
+                current_compact = PermSpecCompact(current_perms_compact, resource)
                 proposed_compact = PermSpecCompact(request.data, resource)
                 perms_diff = current_compact.diff(proposed_compact)
-                perms_spec_compact_resource = patch_perms(perms_spec.compact, perms_diff, resource)
+                perms_spec_compact_resource = patch_perms(current_perms_compact, perms_diff, resource)
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
