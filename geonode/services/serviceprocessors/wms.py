@@ -40,7 +40,6 @@ from geonode import GeoNodeException
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
 from geonode.harvesting.harvesters.wms import OgcWmsHarvester, WebMapService
-from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.auth_registry import auth_handler_registry
 
 from .. import enumerations
@@ -138,12 +137,9 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         try:
             cleaned_url, service_name, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
             auth_config = self.kwargs.get("auth_config")
-            if auth_config is None:
-                auth_config = BasicAuthHandler.create_auth_config(
-                    self.kwargs.get("username", None), self.kwargs.get("password", None)
-                )
-            elif auth_config.pk is None:
+            if auth_config is not None and auth_config.pk is None:
                 auth_config.save()
+
             with transaction.atomic():
                 service = models.Service.objects.create(
                     uuid=str(uuid4()),
