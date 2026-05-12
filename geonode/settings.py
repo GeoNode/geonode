@@ -2075,6 +2075,13 @@ METADATA_STORERS = [
     # 'geonode.resource.regions_storer.spatial_predicate_region_assignor',
 ]
 
+"""
+Kept for backward compatibility with geonode_mapstore_client and other packages
+that may still reference this setting. ExtraMetadata has been removed in favour
+of SparseFields; this empty dict prevents AttributeError on startup.
+"""
+EXTRA_METADATA_SCHEMA = {}
+
 MULTILANG_FIELDS = (
     # "title",
     # "abstract",
