@@ -149,7 +149,7 @@ class BaseVectorFileHandler(BaseHandler):
         return
 
     def create_geonode_resource(
-        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, files=None
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, files=None, **kwargs
     ):
         """
         Base function to create the resource into geonode. Each handler can specify

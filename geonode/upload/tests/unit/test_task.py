@@ -80,7 +80,6 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             step="dummy_step",
             input_params={
                 "files": {"base_file": self.existing_file},
-                # "overwrite_existing_layer": True,
                 "store_spatial_files": True,
             },
         )
@@ -217,9 +216,9 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 user=get_user_model().objects.get(username=self.user),
                 func_name="dummy_func",
                 step="dummy_step",
+                action="replace",
                 input_params={
                     "files": {"base_file": self.existing_file},
-                    "overwrite_existing_layer": True,
                     "store_spatial_files": True,
                 },
             )
@@ -269,9 +268,9 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                     user=get_user_model().objects.get(username=self.user),
                     func_name="dummy_func",
                     step="dummy_step",
+                    action="replace",
                     input_params={
                         "files": {"base_file": self.existing_file},
-                        "overwrite_existing_layer": True,
                         "store_spatial_files": True,
                     },
                 )
@@ -308,7 +307,6 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             ExecutionRequest.objects.filter(exec_id=self.exec_id).update(
                 input_params={
                     "files": {"base_file": f"{_dir.name}/valid.gpkg"},
-                    # "overwrite_existing_layer": True,
                     "store_spatial_files": True,
                 }
             )
@@ -445,7 +443,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
     @patch("geonode.upload.handlers.common.raster.create_alternate")
     @patch("geonode.upload.publisher.Catalog")
     @patch("geonode.geoserver.manager.geoserver_create_style")
-    @patch("geonode.resource.manager.ResourceManager.set_thumbnail")
+    @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail")
     def test_raster_copy_workflow(self, mock_set_thumbnail, mock_create_style, MockCatalog, mock_create_alternate):
         try:
             user = get_user_model().objects.first()
@@ -612,7 +610,6 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
             step="dummy_step",
             input_params={
                 "files": {"base_file": self.existing_file},
-                # "overwrite_existing_layer": True,
                 "store_spatial_files": True,
             },
         )

@@ -2,6 +2,12 @@
 
 from unittest import TestCase
 
+from django.test import override_settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+
+from geonode.groups.models import GroupProfile
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.people import adapters
 
 try:
@@ -45,6 +51,7 @@ class UpdateProfileTestCase(TestCase):
         self.fake_profile = "phony_profile"
         self.fake_voice = "phony_voice"
         self.fake_zipcode = "phony_zipcode"
+        self.fake_language = "phony_language"
         mock_social_login_class = mock.MagicMock(spec="allauth.socialaccount.models.SocialLogin")
         self.mock_social_login = mock_social_login_class.return_value
         self.mock_social_login.user = self.fake_user
@@ -63,6 +70,7 @@ class UpdateProfileTestCase(TestCase):
         self.mock_extractor.extract_profile.return_value = self.fake_profile
         self.mock_extractor.extract_voice.return_value = self.fake_voice
         self.mock_extractor.extract_zipcode.return_value = self.fake_zipcode
+        self.mock_extractor.extract_language.return_value = self.fake_language
 
     @mock.patch.object(adapters, "get_data_extractor")
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
@@ -183,6 +191,15 @@ class UpdateProfileTestCase(TestCase):
         args_list = mock_user_field.call_args_list
         expected_call = mock.call(self.fake_user, "zipcode", self.fake_zipcode)
         self.assertIn(expected_call, args_list)
+
+    @mock.patch.object(adapters, "get_data_extractor")
+    @mock.patch("geonode.people.adapters.user_field", autospec=True)
+    def test_update_profile_covers_language_field(self, mock_user_field, mock_get_extractor):
+        mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
+        adapters.update_profile(self.mock_social_login)
+        self.mock_extractor.extract_language.assert_called_once_with(self.mock_social_login.account.extra_data)
+        mock_user_field.assert_any_call(self.fake_user, "language", self.fake_language)
 
 
 class SiteAllowsSignupTestCase(TestCase):
@@ -382,3 +399,107 @@ class SocialAccountAdapterTestCase(TestCase):
         result = self.extractor.respond_user_inactive(self.django_request, dummy_user)
         mock_func.assert_called_with(dummy_user)
         self.assertEqual(result, dummy_return)
+
+
+class GenericOpenIDConnectAdapterTestCase(GeoNodeBaseTestSupport):
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="test_user")
+        self.group_bar = GroupProfile.objects.get(slug="bar")
+
+        # Ensure a clean state: put user in 'bar' to start
+        if not self.user.groups.filter(pk=self.group_bar.pk).exists():
+            self.group_bar.join(self.user)
+
+        # Mock the SocialLogin
+        self.mock_sociallogin = mock.MagicMock()
+        self.mock_sociallogin.account.provider = "openid_connect"
+        self.mock_sociallogin.user = self.user
+
+    @mock.patch("geonode.people.adapters.get_data_extractor")
+    @override_settings(SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN="SAFE_SYNC")
+    def test_safe_sync_skips_on_missing_key(self, mock_get_extractor):
+        """Verify SAFE_SYNC preserves 'bar' if group data is missing."""
+        # Setup mock extractor to return "" (missing key signal)
+        mock_ext = mock.MagicMock()
+        mock_ext.extract_groups.return_value = None
+        mock_ext.extract_roles.return_value = None
+        mock_get_extractor.return_value = mock_ext
+
+        # Run logic with no groups in extra_data
+        self.mock_sociallogin.account.extra_data = {"id": "123"}
+        adapters._update_user_groups_from_social(self.mock_sociallogin, self.user)
+
+        # Assert: User is still in 'bar'
+        self.assertTrue(self.user.groups.filter(groupprofile__slug="bar").exists())
+
+    @mock.patch("geonode.people.adapters.get_data_extractor")
+    @override_settings(SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN="SAFE_SYNC")
+    def test_safe_sync_wipes_on_empty_list(self, mock_get_extractor):
+        """Verify SAFE_SYNC wipes 'bar' if provider explicitly sends empty list."""
+        mock_ext = mock.MagicMock()
+        mock_ext.extract_groups.return_value = []
+        mock_get_extractor.return_value = mock_ext
+
+        self.mock_sociallogin.account.extra_data = {"groups": []}
+        adapters._update_user_groups_from_social(self.mock_sociallogin, self.user)
+
+        # Assert: User is removed from everything
+        self.assertEqual(self.user.groups.count(), 0)
+
+    @mock.patch("geonode.people.adapters.get_data_extractor")
+    @override_settings(SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN="SAFE_SYNC")
+    def test_safe_sync_performs_correct_update(self, mock_get_extractor):
+        """Verify SAFE_SYNC acts like FULL_SYNC when valid data is present."""
+        azure_uuid = "4b7e2db3-2bd2-4c8e-aa71-7d6d2714e603"
+
+        # Create the base Django Group first
+        dj_group, _ = Group.objects.get_or_create(name="Azure Group")
+
+        GroupProfile.objects.get_or_create(slug=azure_uuid, defaults={"group": dj_group, "title": "Azure Group"})
+
+        mock_ext = mock.MagicMock()
+        mock_ext.extract_groups.return_value = [azure_uuid]
+        mock_get_extractor.return_value = mock_ext
+
+        self.mock_sociallogin.account.extra_data = {"groups": [azure_uuid]}
+        adapters._update_user_groups_from_social(self.mock_sociallogin, self.user)
+
+        # User should have left 'bar' and joined the Azure group
+        self.assertFalse(self.user.groups.filter(groupprofile__slug="bar").exists())
+        self.assertTrue(self.user.groups.filter(groupprofile__slug=azure_uuid).exists())
+
+    @mock.patch("geonode.people.adapters.get_data_extractor")
+    @override_settings(SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN="FULL_SYNC")
+    def test_full_sync_wipes_on_missing_key(self, mock_get_extractor):
+        """Verify FULL_SYNC (default) wipes groups even if the key is missing."""
+        # Mock extractor to return "" (missing key signal)
+        mock_ext = mock.MagicMock()
+        mock_ext.extract_groups.return_value = ""
+        mock_ext.extract_roles.return_value = ""
+        mock_get_extractor.return_value = mock_ext
+
+        # Simulate Azure response with NO groups key
+        self.mock_sociallogin.account.extra_data = {"id": "123"}
+        adapters._update_user_groups_from_social(self.mock_sociallogin, self.user)
+
+        # In FULL_SYNC, the user should be removed from 'bar'
+        self.assertFalse(self.user.groups.filter(groupprofile__slug="bar").exists())
+
+    @mock.patch("geonode.people.adapters.get_data_extractor")
+    @override_settings(SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN="NO_SYNC")
+    def test_no_sync_ignores_provider_data(self, mock_get_extractor):
+        """Verify NO_SYNC does not touch local groups regardless of provider data."""
+        mock_ext = mock.MagicMock()
+        # Even if provider says the user belongs to 'bar'
+        mock_ext.extract_groups.return_value = ["bar"]
+        mock_get_extractor.return_value = mock_ext
+
+        # and we simulate an empty list in the token
+        self.mock_sociallogin.account.extra_data = {"groups": []}
+        adapters._update_user_groups_from_social(self.mock_sociallogin, self.user)
+
+        # User should STILL be in 'bar' because we are not syncing
+        self.assertTrue(self.user.groups.filter(groupprofile__slug="bar").exists())

@@ -35,6 +35,7 @@ from pathlib import Path
 
 from django.urls import reverse
 from django.conf import settings
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.defaultfilters import filesizeformat
@@ -46,7 +47,7 @@ from geonode.maps.models import Map
 from geonode.compat import ensure_string
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.apps import DocumentsAppConfig
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import document_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
@@ -156,11 +157,50 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d = create_single_doc("example_doc_name")
         self.assertTrue(d.download_is_ajax_safe)
 
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_allowed_for_admin(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        title = "Remote doc allowed for admin user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_forbidden_for_regular_user(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc denied for regular user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Document.objects.filter(title=title).exists())
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_remote_document_add_allowed_for_regular_user_when_enabled(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc allowed for regular user"
+
+        form_data = {
+            "title": title,
+            "doc_url": "https://raw.githubusercontent.com/GeoNode/geonode/master/geonode/documents/tests/data/test.CSV",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Document.objects.filter(title=title).exists())
+
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
 
         superuser = get_user_model().objects.get(pk=2)
-        c = resource_manager.create(
+        c = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -403,7 +443,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         create_thumb.return_value = True
         # Setup some document names to work with
         superuser = get_user_model().objects.get(pk=2)
-        document = resource_manager.create(
+        document = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True),
@@ -590,7 +630,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         cls.not_admin.set_password("very-secret")
         cls.not_admin.save()  # Two database writes (create + save password) run only once!
 
-        cls.test_doc = resource_manager.create(
+        cls.test_doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=cls.not_admin, title="test", is_approved=True),
@@ -622,7 +662,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 200)
         # test document link with external url
-        doc = resource_manager.create(
+        doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(

@@ -25,7 +25,11 @@ import traceback
 from functools import reduce
 
 from django.db.models import Q
-from django.conf import settings
+from geonode.security.permissions import (
+    get_default_anonymous_compact_permission,
+    VIEW_RIGHTS,
+    DOWNLOAD_RIGHTS,
+)
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group, Permission
@@ -179,7 +183,7 @@ class PermissionLevelMixin:
         Removes all the permissions except for the owner and assign the
         view permission to the anonymous group.
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
         # default permissions for anonymous users
         anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
@@ -198,7 +202,8 @@ class PermissionLevelMixin:
         user_groups = Group.objects.filter(name__in=_owner.groupmember_set.values_list("group__slug", flat=True))
 
         # Anonymous
-        anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+        anonymous_compact = get_default_anonymous_compact_permission()
+        anonymous_can_view = anonymous_compact == VIEW_RIGHTS
         if anonymous_can_view:
             perm_spec["groups"][anonymous_group] = ["view_resourcebase"]
         else:
@@ -211,7 +216,7 @@ class PermissionLevelMixin:
                 ):
                     perm_spec["groups"][user_group] = ["view_resourcebase"]
 
-        anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+        anonymous_can_download = anonymous_compact == DOWNLOAD_RIGHTS
         if anonymous_can_download:
             perm_spec["groups"][anonymous_group] = ["view_resourcebase", "download_resourcebase"]
         else:
@@ -225,7 +230,7 @@ class PermissionLevelMixin:
                     perm_spec["groups"][user_group] = ["view_resourcebase", "download_resourcebase"]
 
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
-        return resource_manager.set_permissions(
+        return resource_manager_registry.get_for_instance(self).set_permissions(
             self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created, **kwargs
         )
 
@@ -248,9 +253,9 @@ class PermissionLevelMixin:
             ]
         }
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
-        return resource_manager.set_permissions(
+        return resource_manager_registry.get_for_instance(self).set_permissions(
             self.uuid,
             instance=self,
             permissions=perm_spec,

@@ -79,6 +79,14 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         }
 
     @staticmethod
+    def can_do(action) -> bool:
+        """
+        This endpoint will return True or False if with the info provided
+        the handler is able to handle the file or not
+        """
+        return action in Tiles3DFileHandler.TASKS
+
+    @staticmethod
     def can_handle(_data) -> bool:
         """
         This endpoint will return True or False if with the info provided
@@ -178,7 +186,6 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
             "original_zip_name": _data.pop("original_zip_name", None),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
@@ -192,7 +199,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         filename = _exec.input_params.get("original_zip_name") or Path(files.get("base_file")).stem
         # start looping on the layers available
         layer_name = self.fixup_name(filename)
-        should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+        should_be_overwritten = _exec.action == ira.REPLACE.value
         # should_be_imported check if the user+layername already exists or not
         if should_be_imported(
             layer_name,
@@ -229,6 +236,9 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return layer_name, alternate, execution_id
 
     def pre_processing(self, files, execution_id, **kwargs):
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        if _exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
+            raise Invalid3DTilesException("Upsert and replace are not available for 3dtiles")
         _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
         # removing the content file from the files location
         if "content_file" in _data["files"]:
@@ -240,16 +250,11 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return _data, execution_id
 
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = ...,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = ..., asset=None, **kwargs
     ):
         exec_obj = orchestrator.get_execution_object(execution_id)
 
-        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
+        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset, **kwargs)
         asset = self.create_asset_and_link(
             resource,
             files=exec_obj.input_params["files"],

@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from drf_spectacular.utils import extend_schema
-
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -35,7 +33,7 @@ from geonode.layers.models import Dataset
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.utils import update_resource
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.security.registry import permissions_registry
 from geonode.security.permissions import _to_compact_perms
 
@@ -97,16 +95,10 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
         result = super().partial_update(request, *args, **kwargs)
 
         dataset = self.get_object()
-        resource_manager.update(dataset.uuid, instance=dataset, notify=True),
+        resource_manager_registry.get_for_instance(dataset).update(dataset.uuid, instance=dataset, notify=True),
 
         return result
 
-    @extend_schema(
-        request=DatasetMetadataSerializer,
-        methods=["put"],
-        responses={200},
-        description="API endpoint to upload metadata file.",
-    )
     @action(
         detail=False,
         url_path=r"(?P<pk>\d+)/metadata",
@@ -177,24 +169,16 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
             if storage_manager:
                 storage_manager.delete_retrieved_paths()
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: SimpleMapLayerSerializer(many=True)},
-        description="API endpoint allowing to retrieve the MapLayers list.",
-    )
     @action(detail=True, methods=["get"])
     def maplayers(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve the MapLayers list."""
         dataset = self.get_object()
         resources = dataset.maplayers
         return Response(SimpleMapLayerSerializer(many=True).to_representation(resources))
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: SimpleMapSerializer(many=True)},
-        description="API endpoint allowing to retrieve maps using the dataset.",
-    )
     @action(detail=True, methods=["get"])
     def maps(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve maps using the dataset."""
         dataset = self.get_object()
         resources = dataset.maps
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
@@ -269,7 +253,8 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
                 layer.has_time = True
                 layer.save()
 
-                resource_manager.exec(
+                resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+                resolved_resource_manager.exec(
                     "set_time_info",
                     None,
                     instance=layer,
@@ -283,7 +268,7 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
                     },
                 )
 
-                resource_manager.update(
+                resolved_resource_manager.update(
                     layer.uuid,
                     instance=layer,
                     notify=True,

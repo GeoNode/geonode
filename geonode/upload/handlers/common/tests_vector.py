@@ -298,6 +298,9 @@ class TestBaseVectorFileHandler(TestCase):
         If the resource exists and should be skept, the celery task
         is not going to be called and the layer is skipped
         """
+        mocked_obj = MagicMock()
+        mocked_obj.name = "CSV"
+        ogr2ogr_driver.return_value = mocked_obj
         exec_id = None
         try:
             # create the executionId
@@ -312,9 +315,9 @@ class TestBaseVectorFileHandler(TestCase):
                 # start the resource import
                 self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
             self.assertIn(
-                "No valid layers found",
+                "not recognized as a supported file format.",
                 exception.exception.args[0],
-                "No valid layers found.",
+                "not recognized as a supported file format.",
             )
 
             celery_chord.assert_not_called()

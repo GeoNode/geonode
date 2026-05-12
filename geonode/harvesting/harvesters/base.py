@@ -29,7 +29,7 @@ from django.core.files import uploadedfile
 
 from geonode.base import enumerations
 from geonode.base.models import ResourceBase
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.storage.manager import storage_manager
 
 from .. import (
@@ -236,7 +236,7 @@ class BaseHarvesterWorker(abc.ABC):
         # Make sure you set the "harvestable_resource.geonode_resource" before calling the "resource_manager"
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
-        geonode_resource = resource_manager.update(
+        geonode_resource = resource_manager_registry.get_for_instance(geonode_resource).update(
             str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords
         )
         self.finalize_resource_update(
@@ -250,12 +250,16 @@ class BaseHarvesterWorker(abc.ABC):
         resource_defaults = defaults.copy()
 
         logger.debug("calling resource_manager.create...")
-        geonode_resource = resource_manager.create(resource_defaults["uuid"], geonode_resource_type, defaults)
+        geonode_resource = resource_manager_registry.get_for_model(geonode_resource_type).create(
+            resource_defaults["uuid"], geonode_resource_type, defaults
+        )
         return geonode_resource
 
     def _update_existing_geonode_resource(self, geonode_resource: ResourceBase, defaults: typing.Dict):
         resource_defaults = defaults.copy()
-        result = resource_manager.update(geonode_resource.uuid, vals=resource_defaults)
+        result = resource_manager_registry.get_for_instance(geonode_resource).update(
+            geonode_resource.uuid, vals=resource_defaults
+        )
         return result
 
 

@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import ast
 import logging
 from typing import Optional
 from uuid import UUID
@@ -85,12 +84,11 @@ class ImportOrchestrator:
             if _serializer:
                 return _serializer
         logger.info("specific serializer not found, fallback on the default one")
-        is_overwrite_flow = _data.get("overwrite_existing_layer", False)
         if _data.get("action") == ira.UPSERT.value:
             return UpsertImporterSerializer
-        if isinstance(is_overwrite_flow, str):
-            is_overwrite_flow = ast.literal_eval(is_overwrite_flow.title())
-        return OverwriteImporterSerializer if is_overwrite_flow else ImporterSerializer
+        elif _data.get("action") == ira.REPLACE.value:
+            return OverwriteImporterSerializer
+        return ImporterSerializer
 
     def load_handler(self, module_path):
         try:

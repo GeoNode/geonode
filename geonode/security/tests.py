@@ -49,17 +49,25 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.compat import ensure_string
-from geonode.security.handlers import BasePermissionsHandler, GroupManagersPermissionsHandler
+from geonode.security.handlers import (
+    BasePermissionsHandler,
+    GroupManagersPermissionsHandler,
+    SpecialGroupsPermissionsHandler,
+    ResourceCreatorGroupsPermissionsHandler,
+)
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
 from geonode.security.registry import permissions_registry
+from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import _to_extended_perms
+from geonode.metadata.manager import metadata_manager
 
 from geonode.base.models import Configuration, UserGeoLimit, GroupGeoLimit
 from geonode.base.populate_test_data import (
@@ -624,6 +632,49 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         finally:
             staff_user.delete()
 
+    def test_add_remote_resource_perm_admin_always_has_it(self):
+        """Superusers always have the add_remote_resource permission."""
+        admin = get_user_model().objects.get(username="admin")
+        perms = permissions_registry.get_perms(user=admin)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_add_remote_resource_perm_regular_user_default(self):
+        """Regular users do NOT have add_remote_resource when setting is False (default)."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_perms(user=bobby)
+        self.assertNotIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_add_remote_resource_perm_regular_user_enabled(self):
+        """Regular users DO have add_remote_resource when setting is True."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_perms(user=bobby)
+        self.assertIn("add_remote_resource", perms)
+
+    def test_user_has_perm_returns_false_when_perm_is_empty_string(self):
+        """Empty perm should never return True"""
+        user = get_user_model().objects.create_user(username="test")
+        result = permissions_registry.user_has_perm(user, perm="")
+        self.assertFalse(result)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_get_perms_without_instance_returns_global_perms_for_user(self):
+        username = f"global_perms_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        perms = permissions_registry.get_perms(user=user)
+        self.assertIsInstance(perms, list)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_user_has_perm_accepts_instance_none(self):
+        username = f"global_perm_check_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        self.assertTrue(permissions_registry.user_has_perm(user, instance=None, perm="add_remote_resource"))
+        self.assertFalse(permissions_registry.user_has_perm(user, instance=None, perm=""))
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
         """Test that Dataset is correctly synchronized with guardian:
@@ -922,7 +973,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource
         if layer is None:
             raise Exception("error during import")
-        layer = resource_manager.update(
+        layer = resource_manager_registry.get_for_instance(layer).update(
             layer.uuid, instance=layer, notify=False, vals=dict(owner=bobby, workspace=settings.DEFAULT_WORKSPACE)
         )
 
@@ -2586,25 +2637,25 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_download_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on(self):
         """
@@ -2612,12 +2663,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on_moderate(
         self,
@@ -2627,7 +2678,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
 
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
@@ -3084,6 +3135,66 @@ class TestPermissionsHandlers(GeoNodeBaseTestSupport):
 
         # Still empty, since user had no base perms
         self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
+    )
+    def test_resource_creator_groups_permissions_handler_on_create(self):
+        from geonode.security.permissions import _to_extended_perms
+
+        owner = get_user_model().objects.create_user(
+            "creator_owner", "creator_owner@fakemail.com", "creator_owner_password", is_active=True
+        )
+        group_profile_1 = GroupProfile.objects.create(title="creator group 1", slug="creator_group_1")
+        group_profile_2 = GroupProfile.objects.create(title="creator group 2", slug="creator_group_2")
+        GroupMember.objects.create(user=owner, group=group_profile_1, role=GroupMember.MEMBER)
+        GroupMember.objects.create(user=owner, group=group_profile_2, role=GroupMember.MEMBER)
+
+        resource = create_single_dataset("creator_groups_dataset")
+        resource.owner = owner
+        resource.save()
+
+        metadata_manager.update_schema_instance_partial(
+            resource,
+            {"contacts": {"originator": [{"id": str(owner.id), "label": owner.username}]}},
+            user=None,
+        )
+
+        payload = {"users": {}, "groups": {}}
+        handler = ResourceCreatorGroupsPermissionsHandler()
+        updated_perms = handler.fixup_perms(resource, payload, created=True, include_virtual=False)
+
+        resource_type = getattr(resource, "resource_type", None) or resource.polymorphic_ctype.name
+        resource_subtype = (getattr(resource, "subtype", None) or "").lower()
+        expected_perms = sorted(_to_extended_perms("download", resource_type, resource_subtype))
+
+        self.assertIn(group_profile_1.group, updated_perms["groups"])
+        self.assertIn(group_profile_2.group, updated_perms["groups"])
+        self.assertListEqual(sorted(updated_perms["groups"][group_profile_1.group]), expected_perms)
+        self.assertListEqual(sorted(updated_perms["groups"][group_profile_2.group]), expected_perms)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
+    )
+    def test_resource_creator_groups_permissions_handler_skips_when_not_created(self):
+        owner = get_user_model().objects.create_user(
+            "creator_owner_no_create",
+            "creator_owner_no_create@fakemail.com",
+            "creator_owner_no_create_password",
+            is_active=True,
+        )
+        group_profile = GroupProfile.objects.create(title="creator group no create", slug="creator_group_no_create")
+        GroupMember.objects.create(user=owner, group=group_profile, role=GroupMember.MEMBER)
+
+        resource = create_single_dataset("creator_groups_dataset_no_create")
+        resource.owner = owner
+        resource.save()
+
+        payload = {"users": {}, "groups": {}}
+        handler = ResourceCreatorGroupsPermissionsHandler()
+        updated_perms = handler.fixup_perms(resource, payload, created=False, include_virtual=False)
+
+        self.assertDictEqual({"users": {}, "groups": {}}, updated_perms)
 
 
 @override_settings(
@@ -3793,3 +3904,30 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         finally:
             config.read_only = original_read_only
             config.save()
+
+
+class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="view", DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download")
+    def test_handler_sets_default_groups_on_create(self):
+        resource = create_single_dataset("test_default_special_groups")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=True)
+
+        anonymous_group = Group.objects.get(name="anonymous")
+        registered_group, _ = Group.objects.get_or_create(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        expected_anonymous = _to_extended_perms("view", resource.resource_type, resource.subtype)
+        expected_registered = _to_extended_perms("download", resource.resource_type, resource.subtype)
+
+        self.assertSetEqual(set(updated["groups"][anonymous_group]), set(expected_anonymous))
+        self.assertSetEqual(set(updated["groups"][registered_group]), set(expected_registered))
+
+    def test_handler_skips_when_not_created(self):
+        resource = create_single_dataset("test_default_special_groups_skip")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=False)
+
+        self.assertDictEqual(perms_payload, updated)
