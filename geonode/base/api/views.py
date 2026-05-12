@@ -602,7 +602,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                 current_compact = PermSpecCompact(perms_spec.compact, resource)
                 proposed_compact = PermSpecCompact(request.data, resource)
                 perms_diff = current_compact.diff(proposed_compact)
-                perms_spec_compact_resource = patch_perms(perms_diff, perms_spec.compact, resource)
+                perms_spec_compact_resource = patch_perms(perms_spec.compact, perms_diff, resource)
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")

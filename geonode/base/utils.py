@@ -216,7 +216,7 @@ def remove_country_from_languagecode(language: str):
     return lang
 
 
-def patch_perms(perms_diff, current_perms_compact, resource):
+def patch_perms(current_perms_compact, perms_diff, resource):
     """
     Apply a permission diff to a current compact spec.
 

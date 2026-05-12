@@ -2131,11 +2131,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
 
         # Object form
-        result = patch_perms(diff, current_compact, dataset)
+        result = patch_perms(current_compact, diff, dataset)
         self.assertEqual({u.id: u.permissions for u in result.users}, {10: "manage", 12: "view"})
 
         # Dict form (back-compat)
-        result_from_dict = patch_perms(diff.to_dict(), current_compact, dataset)
+        result_from_dict = patch_perms(current_compact, diff.to_dict(), dataset)
         self.assertEqual({u.id: u.permissions for u in result_from_dict.users}, {10: "manage", 12: "view"})
 
     def test_admin_whitelisted_access_backend(self):
