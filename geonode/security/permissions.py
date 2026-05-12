@@ -899,12 +899,12 @@ class PermSpecCompactDiff:
                     if e.id in change_map:
                         e.permissions = change_map[e.id]
 
+            added_ids = {new.get("id") for new in bucket_diff["added"] if new.get("id") is not None}
+            if added_ids:
+                entries[:] = [e for e in entries if e.id not in added_ids]
             for new in bucket_diff["added"]:
-                new_id = new.get("id")
-                if new_id is None:
-                    continue
-                entries[:] = [e for e in entries if e.id != new_id]
-                entries.append(binding_cls(new, resource, parent=result))
+                if new.get("id") is not None:
+                    entries.append(binding_cls(new, resource, parent=result))
 
         return result
 
