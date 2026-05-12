@@ -109,7 +109,7 @@ from .serializers import (
 )
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
-from geonode.base.utils import validate_extra_metadata, patch_perms
+from geonode.base.utils import validate_extra_metadata
 from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
@@ -599,11 +599,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                         )
                     if excluded_ids:
                         request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
-                current_perms_compact = perms_spec.compact
-                current_compact = PermSpecCompact(current_perms_compact, resource)
-                proposed_compact = PermSpecCompact(request.data, resource)
-                perms_diff = current_compact.diff(proposed_compact)
-                perms_spec_compact_resource = patch_perms(current_perms_compact, perms_diff, resource)
+                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
+                perms_spec_compact_resource.merge(PermSpecCompact(request.data, resource))
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
