@@ -41,7 +41,6 @@ import warnings
 from deprecated import deprecated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema
 
 from dynamic_rest.fields.fields import DynamicComputedField
 
@@ -174,13 +173,6 @@ class DeprecatedExtraMetadataMixin:
        Use the sparse fields API instead.
     """
 
-    @extend_schema(
-        methods=["get", "put", "delete", "post"],
-        description=(
-            "[DEPRECATED] Get/Update/Delete/Add extra metadata for a resource. " "Use the sparse fields API instead."
-        ),
-        deprecated=True,
-    )
     @action(
         detail=True,
         methods=["get", "put", "delete", "post"],
