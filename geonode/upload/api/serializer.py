@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
@@ -23,6 +24,9 @@ from geonode.base.models import ResourceBase
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
+
+
+logger = logging.getLogger(__name__)
 
 
 class BaseImporterSerializer(DynamicModelSerializer):
@@ -48,8 +52,9 @@ class BaseImporterSerializer(DynamicModelSerializer):
         source = f.temporary_file_path() if hasattr(f, "temporary_file_path") else f
         try:
             validate_safe_zip(source)
-        except ZipValidationError as exc:
-            raise serializers.ValidationError(str(exc))
+        except ZipValidationError:
+            logger.warning("ZIP validation failed for uploaded file.", exc_info=True)
+            raise serializers.ValidationError("Invalid or unsafe ZIP archive.")
         finally:
             # Rewind any in-memory file-like we read so downstream code sees
             # the full stream.
