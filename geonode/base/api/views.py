@@ -55,7 +55,6 @@ from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.security.permissions import PermSpecCompact
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN, remove_thumb
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import (
@@ -78,7 +77,7 @@ from geonode.base.api.filters import (
 )
 from geonode.indexing.api.filters import ResourceIndexFilter
 from geonode.groups.models import GroupProfile, Group
-from geonode.security.permissions import get_compact_perms_list, PermSpec
+from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
