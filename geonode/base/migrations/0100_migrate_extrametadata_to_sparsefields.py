@@ -36,7 +36,7 @@ def migrate_extrametadata_to_sparsefields(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("base", "0097_alter_link_asset"),
+        ("base", "0099_resourcebase_auth_config"),
         ("metadata", "0001_initial"),
     ]
 
