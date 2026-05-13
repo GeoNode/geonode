@@ -55,6 +55,7 @@ from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.thumbs.exceptions import ThumbnailError
+from geonode.security.permissions import PermSpecCompact
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN, remove_thumb
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import (
@@ -583,23 +584,33 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                 )
             elif request.method in ["PUT", "PATCH"]:
                 user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
-                if request.data.get("groups"):
-                    excluded_ids = []
-                    if "can_manage_anonymous_permissions" not in user_perms:
-                        anonymous_group = Group.objects.get(name="anonymous")
-                        excluded_ids.append(anonymous_group.id)
-                        logger.info(
-                            f"User {request.user.username} cannot manage anonymous permissions on resource {resource.pk}"
-                        )
-                    if "can_manage_registered_member_permissions" not in user_perms:
-                        registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
-                        excluded_ids.append(registered_group.id)
-                        logger.info(
-                            f"User {request.user.username} cannot manage registered members permissions on resource {resource.pk}"
-                        )
-                    if excluded_ids:
-                        request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
-                perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
+                current_compact = PermSpecCompact(perms_spec.compact, resource)
+                if request.method == "PATCH":
+                    proposed_compact = PermSpecCompact(perms_spec.compact, resource)
+                    proposed_compact.merge(PermSpecCompact(request.data, resource))
+                else:
+                    proposed_compact = PermSpecCompact(request.data, resource)
+
+                perms_diff = current_compact.diff(proposed_compact)
+                excluded_group_ids = []
+                if "can_manage_anonymous_permissions" not in user_perms:
+                    anonymous_group = Group.objects.get(name="anonymous")
+                    excluded_group_ids.append(anonymous_group.id)
+                    logger.info(
+                        f"User {request.user.username} cannot manage anonymous permissions on resource {resource.pk}"
+                    )
+                if "can_manage_registered_member_permissions" not in user_perms:
+                    registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+                    excluded_group_ids.append(registered_group.id)
+                    logger.info(
+                        f"User {request.user.username} cannot manage registered members permissions on resource {resource.pk}"
+                    )
+                if excluded_group_ids:
+                    for diff_action in ("added", "removed", "changed"):
+                        perms_diff.groups[diff_action] = [
+                            item for item in perms_diff.groups[diff_action] if item.get("id") not in excluded_group_ids
+                        ]
+                perms_spec_compact_resource = patch_perms(perms_spec.compact, perms_diff, resource)
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
