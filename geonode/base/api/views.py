@@ -77,7 +77,7 @@ from geonode.base.api.filters import (
 )
 from geonode.indexing.api.filters import ResourceIndexFilter
 from geonode.groups.models import GroupProfile, Group
-from geonode.security.permissions import get_compact_perms_list, PermSpec
+from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
@@ -109,7 +109,7 @@ from .serializers import (
 )
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
-from geonode.base.utils import validate_extra_metadata, patch_perms
+from geonode.base.utils import validate_extra_metadata
 from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
@@ -599,7 +599,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
                         )
                     if excluded_ids:
                         request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
-                perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
+                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
+                perms_spec_compact_resource.merge(PermSpecCompact(request.data, resource))
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")
