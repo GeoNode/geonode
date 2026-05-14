@@ -45,7 +45,7 @@ ACTIONS = [ACTION_CREATE, ACTION_UPDATE, ACTION_APPEND, ACTION_PARSE]
 FAKE_BASE_URI = "http://automatically/added/uri/"
 
 
-def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE, default_lang: str = None, langs: List[str] = [], log_details=True):
+def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE, default_lang: str = None, langs: List[str] = None, log_details=True):
     g = Graph()
 
     # if the input_file is an UploadedFile object rather than a file path the Graph.parse()
@@ -53,7 +53,7 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE, def
     # name, which should include the extension, to guess_format manually...
 
     # explodes list of comma separated langs into single list of langs
-    langs = [lang.strip() for item in langs for lang in item.split(",") if lang.strip()]
+    langs = [lang.strip() for item in (langs or []) for lang in item.split(",") if lang.strip()]
 
     filename = input_file.name if isinstance(input_file, UploadedFile) else input_file
     rdf_format = guess_format(filename)
