@@ -41,3 +41,10 @@ def run_setup_hooks(*args, **kwargs):
     for item in _handlers:
         item.register()
     logger.info(f"The following handlers have been registered: {', '.join(available_handlers)}")
+
+    # Build the FileValidationUploadHandler registry. Providers run AFTER
+    # all importer handlers have registered, so DatasetFileValidationConfigProvider
+    # walks a fully-populated BaseHandler.REGISTRY.
+    from geonode.upload.validation import FileValidationConfigRegistry
+
+    FileValidationConfigRegistry.rebuild()

@@ -19,17 +19,132 @@
 import base64
 import binascii
 import html
+from pathlib import Path
 
+import magic
 from django.conf import settings
 from django.core.exceptions import RequestDataTooBig, TooManyFieldsSent
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.files.uploadhandler import FileUploadHandler
+from django.core.files.uploadhandler import FileUploadHandler, StopUpload
 from django.http import QueryDict
 from django.http.multipartparser import FIELD, FILE, ChunkIter, LazyStream, Parser, exhaust
 from django.utils.datastructures import MultiValueDict
 from django.utils.encoding import force_str
 from django.urls import reverse
+
 from geonode.upload.models import UploadSizeLimit
+from geonode.upload.validation import FileValidationConfigRegistry
+
+
+class FileValidationUploadHandler(FileUploadHandler):
+    """
+    Validate uploads early in the upload stream.
+
+    Per-URL config is supplied by ValidationConfigProvider classes listed in
+    settings.FILE_VALIDATION_CONFIGURATION_PROVIDERS. Their merged output is
+    installed into FileValidationConfigRegistry at app-ready time; this
+    handler just looks it up by URL name. Each config entry exposes at
+    least one of:
+
+    * magic_mimetype_map: extension -> set of MIME types accepted by libmagic
+      (magic.from_buffer(sample, mime=True)).
+    * magic_description_map: extension -> set of substrings that must appear in
+      the libmagic description (magic.from_buffer(sample)). Used for formats
+      whose MIME is too generic to be trustworthy (e.g. Shapefile / GeoPackage
+      detected as application/octet-stream).
+
+    When both maps list the same extension, both checks must pass.
+    """
+
+    sniff_bytes = 8192
+
+    def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
+        self.validation_config = None
+        self.activated = False
+
+        if self.request.resolver_match:
+            self.validation_config = FileValidationConfigRegistry.get(self.request.resolver_match.url_name)
+
+        self.activated = self.validation_config is not None
+
+    def new_file(self, *args, **kwargs):
+        super().new_file(*args, **kwargs)
+        self.extension = None
+        self.detected_mime = None
+        self.detected_description = None
+        self._buffer = bytearray()
+        self._checked = False
+
+        if not self.activated:
+            return
+
+        self.allowed_extensions = self.validation_config["allowed_extensions"]
+        self.magic_mimetype_map = self.validation_config.get("magic_mimetype_map", {})
+        self.magic_description_map = self.validation_config.get("magic_description_map", {})
+
+        self.extension = Path(self.file_name).suffix.replace(".", "").lower()
+        if self.extension not in self.allowed_extensions:
+            self._reject(f"File extension '.{self.extension}' is not allowed for this endpoint.")
+
+        if self.extension not in self.magic_mimetype_map and self.extension not in self.magic_description_map:
+            self._reject(f"File extension '.{self.extension}' has no content-type validation configured.")
+
+    def receive_data_chunk(self, raw_data, start):
+        if not self.activated or self._checked:
+            return raw_data
+
+        needed = self.sniff_bytes - len(self._buffer)
+        if needed > 0:
+            self._buffer.extend(raw_data[:needed])
+
+        content_complete = self.content_length is not None and start + len(raw_data) >= self.content_length
+        if len(self._buffer) >= self.sniff_bytes or content_complete:
+            self._validate_magic_mime()
+
+        return raw_data
+
+    def file_complete(self, file_size):
+        # Validate small files that finish before sniff_bytes is reached.
+        if self.activated and not self._checked:
+            self._validate_magic_mime()
+
+    def _validate_magic_mime(self):
+        sample = bytes(self._buffer)
+
+        if self.extension in self.magic_mimetype_map:
+            self.detected_mime = self._detect_mime(sample)
+            if self.detected_mime not in self.magic_mimetype_map[self.extension]:
+                self._reject(
+                    f"Detected content type '{self.detected_mime}' does not match extension '.{self.extension}'."
+                )
+
+        if self.extension in self.magic_description_map:
+            self.detected_description = self._detect_description(sample)
+            expected_substrings = self.magic_description_map[self.extension]
+            if not any(token in self.detected_description for token in expected_substrings):
+                self._reject(f"File content does not match expected signature for '.{self.extension}'.")
+
+        self._checked = True
+
+    def _reject(self, reason):
+        """
+        Record the validation failure on the request, then raise StopUpload
+        with connection_reset=False so Django drains the remaining request
+        body. That keeps the TCP connection alive and lets the downstream
+        view return a proper HTTP 400 response instead of an aborted
+        connection.
+        """
+        self.request.upload_validation_error = reason
+        # tell Django's MultiPartParser to stop parsing the multipart body
+        # and drain (exhaust) the remaining data, but not to reset the connection
+        # since we want to return a 400 response with the error message instead of dropping the connection.
+        raise StopUpload(connection_reset=False)
+
+    def _detect_mime(self, sample):
+        return magic.from_buffer(sample, mime=True)
+
+    def _detect_description(self, sample):
+        return magic.from_buffer(sample)
 
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):

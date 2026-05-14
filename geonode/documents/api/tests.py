@@ -25,10 +25,8 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
-from geonode import settings
 
 from geonode.base.populate_test_data import create_models
-from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
 
 logger = logging.getLogger(__name__)
@@ -46,9 +44,6 @@ class DocumentsApiTests(APITestCase):
     def setUp(self):
         self.admin = get_user_model().objects.get(username="admin")
         self.url = reverse("documents-list")
-        self.invalid_file_path = f"{settings.PROJECT_ROOT}/tests/data/thesaurus.rdf"
-        self.valid_file_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.no_title_file_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
 
     def test_documents(self):
         """
@@ -91,47 +86,22 @@ class DocumentsApiTests(APITestCase):
         response = self.client.get(url, format="json")
         self.assertNotIn("metadata", response.data["document"])
 
-    def test_creation_return_error_if_file_is_not_passed(self):
+    def test_post_not_allowed(self):
         """
-        If file_path is not available, should raise error
+        Document creation via the DRF endpoint is disabled; /documents/upload
+        is the only supported entry point.
         """
         self.client.force_login(self.admin)
         payload = {"document": {"title": "New document", "metadata_only": True}}
-        expected = {
-            "success": False,
-            "errors": ["A file, file path or URL must be speficied"],
-            "code": "document_exception",
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(400, actual.status_code)
-        self.assertDictEqual(expected, actual.json())
+        response = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(405, response.status_code)
 
-    def test_creation_return_error_if_file_is_none(self):
-        """
-        If file_path is not available, should raise error
-        """
+    def test_put_not_allowed(self):
+        document = Document.objects.first()
+        url = urljoin(f"{self.url}/", f"{document.id}")
         self.client.force_login(self.admin)
-        payload = {"document": {"title": "New document", "metadata_only": True, "file_path": None, "doc_file": None}}
-        expected = {
-            "success": False,
-            "errors": ["A file, file path or URL must be speficied"],
-            "code": "document_exception",
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(400, actual.status_code)
-        self.assertDictEqual(expected, actual.json())
-
-    def test_creation_should_rase_exec_for_unsupported_files(self):
-        self.client.force_login(self.admin)
-        payload = {"document": {"title": "New document", "metadata_only": True, "file_path": self.invalid_file_path}}
-        expected = {
-            "success": False,
-            "errors": ["The file provided is not in the supported extensions list"],
-            "code": "document_exception",
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(400, actual.status_code)
-        self.assertDictEqual(expected, actual.json())
+        response = self.client.put(url, data={"title": "x"}, format="json")
+        self.assertEqual(405, response.status_code)
 
     def test_document_listing_advertised(self):
         document = Document.objects.first()
@@ -165,32 +135,6 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual(new_count, prev_count + 1)
 
         Document.objects.update(advertised=True)
-
-    def test_creation_should_create_the_doc(self):
-        """
-        If file_path is not available, should raise error
-        """
-        self.client.force_login(self.admin)
-        payload = {
-            "document": {"title": "New document for testing", "metadata_only": True, "file_path": self.valid_file_path}
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(201, actual.status_code)
-        extension = actual.json().get("document", {}).get("extension", "")
-        self.assertEqual("xml", extension)
-        self.assertTrue(Document.objects.filter(title="New document for testing").exists())
-
-    def test_uploading_doc_without_title(self):
-        """
-        A document should be uploaded without specifying a title
-        """
-        self.client.force_login(self.admin)
-        payload = {"document": {"metadata_only": True, "file_path": self.no_title_file_path}}
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(201, actual.status_code)
-        extension = actual.json().get("document", {}).get("extension", "")
-        self.assertEqual("sld", extension)
-        self.assertTrue(Document.objects.filter(title="test_sld.sld").exists())
 
     def test_patch_point_of_contact(self):
         document = Document.objects.first()
@@ -494,34 +438,6 @@ class DocumentsApiTests(APITestCase):
             )
         )
 
-    def test_creation_should_create_the_doc_and_update_the_bbox(self):
-        """
-        If file_path is not available, should raise error
-        """
-        self.client.force_login(self.admin)
-        payload = {
-            "document": {
-                "title": "New document for testing",
-                "metadata_only": True,
-                "file_path": self.valid_file_path,
-                "extent": {"coords": [1123692.0, 5338214.0, 1339852.0, 5482615.0], "srid": "EPSG:3857"},
-            },
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(201, actual.status_code)
-        extension = actual.json().get("document", {}).get("extension", "")
-        self.assertEqual("xml", extension)
-        doc = Document.objects.filter(title="New document for testing").all()
-        self.assertTrue(doc.exists())
-        x = doc.first()
-        x.refresh_from_db()
-        self.assertEqual("EPSG:3857", x.srid)
-        self.assertEqual(actual.json()["document"].get("extent")["srid"], "EPSG:4326")
-        self.assertEqual(
-            actual.json()["document"].get("extent")["coords"],
-            [10.094296982428332, 43.1721654049465, 12.03609530058109, 44.11086592050112],
-        )
-
     def test_file_path_and_doc_path_are_not_returned(self):
         """
         If file_path and doc_path should not be visible
@@ -533,62 +449,28 @@ class DocumentsApiTests(APITestCase):
         self.assertFalse("file_path" in _doc_payload)
         self.assertFalse("doc_path" in _doc_payload)
 
-    def test_creation_from_url_should_create_the_doc(self):
+    def test_patch_cannot_mutate_file_location_fields(self):
         """
-        If file_path is not available, should raise error
+        PATCH must not let a caller rewrite the document's on-disk location.
+        name, extension and files are locked down by DocumentSerializer.update().
         """
-        self.client.force_login(self.admin)
-        doc_url = "https://example.com/image"
-        payload = {
-            "document": {
-                "title": "New document from URL for testing",
-                "metadata_only": False,
-                "doc_url": doc_url,
-                "extension": "jpeg",
-            }
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(201, actual.status_code)
-        created_doc_url = actual.json().get("document", {}).get("doc_url", "")
-        self.assertEqual(created_doc_url, doc_url)
+        document = Document.objects.first()
+        original_name = document.name
+        original_extension = document.extension
+        original_files = list(document.files or [])
 
-    def test_remote_document_is_marked_remote(self):
-        """Tests creating an external document set its sourcetype to REMOTE."""
+        url = urljoin(f"{self.url}/", f"{document.id}")
         self.client.force_login(self.admin)
-        doc_url = "https://example.com/image"
-        payload = {
-            "document": {
-                "title": "A remote document is remote",
-                "doc_url": doc_url,
-                "extension": "jpeg",
-            }
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(201, actual.status_code)
-        created_sourcetype = actual.json().get("document", {}).get("sourcetype", "")
-        self.assertEqual(created_sourcetype, SOURCE_TYPE_REMOTE)
 
-    def test_either_path_or_url_doc(self):
-        """
-        If file_path is not available, should raise error
-        """
-        self.client.force_login(self.admin)
-        doc_url = "https://example.com/image"
-        payload = {
-            "document": {
-                "title": "New document from URL for testing",
-                "metadata_only": False,
-                "doc_url": doc_url,
-                "file_path": self.valid_file_path,
-                "extension": "jpeg",
-            }
+        patch_data = {
+            "name": "pwned",
+            "extension": "exe",
+            "files": ["/etc/passwd"],
         }
-        actual = self.client.post(self.url, data=payload, format="json")
-        expected = {
-            "success": False,
-            "errors": ["Either a file or a URL must be specified, not both"],
-            "code": "document_exception",
-        }
-        actual = self.client.post(self.url, data=payload, format="json")
-        self.assertEqual(400, actual.status_code)
-        self.assertDictEqual(expected, actual.json())
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+
+        document.refresh_from_db()
+        self.assertEqual(document.name, original_name)
+        self.assertEqual(document.extension, original_extension)
+        self.assertEqual(list(document.files or []), original_files)

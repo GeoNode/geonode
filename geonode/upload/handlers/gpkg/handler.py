@@ -52,6 +52,15 @@ class GPKGFileHandler(BaseVectorFileHandler):
         }
 
     @property
+    def upload_validation_config(self):
+        # libmagic reports application/vnd.sqlite3 on modern builds but may
+        # fall back to application/octet-stream on older ones; validate via
+        # the description string for cross-version robustness.
+        return {
+            "gpkg": {"description_contains": {"SQLite", "GeoPackage"}},
+        }
+
+    @property
     def can_handle_xml_file(self) -> bool:
         """
         True or false if the handler is able to handle XML file
