@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.urls import reverse
+from django.test import override_settings
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
