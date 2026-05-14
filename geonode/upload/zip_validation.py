@@ -37,6 +37,11 @@ MAX_ENTRIES = 10_000
 MAX_TOTAL_UNCOMPRESSED = 2 * 1024 * 1024 * 1024  # 2 GiB
 MAX_COMPRESSION_RATIO = 100
 MIN_COMPRESSED_FOR_RATIO_CHECK = 1024  # bytes; ratios are meaningless below this
+# Cumulative ratio across the whole archive. Per-entry ratio is skipped for
+# entries below MIN_COMPRESSED_FOR_RATIO_CHECK, so a bomb made of many tiny
+# high-ratio entries would slip past unless the totals are also checked.
+MAX_TOTAL_COMPRESSION_RATIO = 100
+MIN_TOTAL_COMPRESSED_FOR_RATIO_CHECK = 8 * 1024  # 8 KiB
 
 
 class ZipValidationError(Exception):
@@ -62,13 +67,17 @@ def validate_safe_zip(source):
         raise ZipValidationError(f"Archive has {len(infos)} entries (max {MAX_ENTRIES}).")
 
     total_uncompressed = 0
+    total_compressed = 0
     for info in infos:
         _check_entry_name(info.filename)
         _check_not_symlink(info)
         total_uncompressed += info.file_size
+        total_compressed += info.compress_size
         if total_uncompressed > MAX_TOTAL_UNCOMPRESSED:
             raise ZipValidationError(f"Archive decompresses to more than {MAX_TOTAL_UNCOMPRESSED} bytes.")
         _check_compression_ratio(info)
+
+    _check_cumulative_ratio(total_compressed, total_uncompressed)
 
 
 def _check_entry_name(name):
@@ -106,6 +115,18 @@ def _check_compression_ratio(info):
     if ratio > MAX_COMPRESSION_RATIO:
         raise ZipValidationError(
             f"Entry {info.filename!r} has a suspicious compression ratio " f"({ratio:.0f}x); possible zip bomb."
+        )
+
+
+def _check_cumulative_ratio(total_compressed, total_uncompressed):
+    if total_compressed < MIN_TOTAL_COMPRESSED_FOR_RATIO_CHECK:
+        return
+    if total_uncompressed == 0:
+        return
+    ratio = total_uncompressed / max(total_compressed, 1)
+    if ratio > MAX_TOTAL_COMPRESSION_RATIO:
+        raise ZipValidationError(
+            f"Archive has a suspicious cumulative compression ratio " f"({ratio:.0f}x); possible zip bomb."
         )
 
 

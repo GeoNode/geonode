@@ -122,6 +122,17 @@ class ValidateSafeZipTests(SimpleTestCase):
             validate_safe_zip(buf)
         self.assertIn("compression ratio", str(ctx.exception))
 
+    def test_rejects_cumulative_bomb_of_tiny_high_ratio_entries(self):
+        # Each entry is small enough (compress_size < MIN_COMPRESSED_FOR_RATIO_CHECK)
+        # that the per-entry ratio check is skipped, but the aggregate is bomb-shaped.
+        # 100 entries of 100 KiB zeros each: ~10 MiB uncompressed, ~tens of KiB total
+        # compressed -- well past the cumulative ratio cap.
+        entries = [(f"chunk{i}.bin", b"\x00" * (100 * 1024)) for i in range(100)]
+        buf = _make_zip(entries)
+        with self.assertRaises(ZipValidationError) as ctx:
+            validate_safe_zip(buf)
+        self.assertIn("cumulative compression ratio", str(ctx.exception))
+
     def test_rejects_not_a_zip(self):
         with self.assertRaises(ZipValidationError) as ctx:
             validate_safe_zip(io.BytesIO(b"not a zip file"))
