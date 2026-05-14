@@ -168,7 +168,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.post(self.url, data=payload)
 
         self.assertEqual(400, response.status_code)
-        self.assertIn(b"traversal", response.content)
+        self.assertIn(b"Invalid or unsafe ZIP archive", response.content)
         self.assertFalse(Dataset.objects.filter(name="traversal").exists())
 
     def test_importer_upload_rejects_zip_bomb(self):
@@ -186,7 +186,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.post(self.url, data=payload)
 
         self.assertEqual(400, response.status_code)
-        self.assertIn(b"compression ratio", response.content)
+        self.assertIn(b"Invalid or unsafe ZIP archive", response.content)
         self.assertFalse(Dataset.objects.filter(name="bomb").exists())
 
     def test_gpkg_raise_error_with_invalid_payload(self):
