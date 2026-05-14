@@ -17,6 +17,8 @@
 #
 #########################################################################
 
+from drf_spectacular.utils import extend_schema
+from pathlib import Path
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -30,7 +32,6 @@ from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import base_linked_resources, ApiPresetsInitializer
 from geonode.documents.models import Document
-from geonode.metadata.multilang.views import MultiLangViewMixin
 
 from .serializers import DocumentSerializer
 from .permissions import DocumentPermissionsFilter
