@@ -68,7 +68,7 @@ from geonode.base.api.filters import (
     AdvertisedFilter,
 )
 from geonode.groups.models import GroupProfile, Group
-from geonode.security.permissions import get_compact_perms_list, PermSpec
+from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
@@ -636,7 +636,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                         )
                     if excluded_ids:
                         request.data["groups"] = [g for g in request.data["groups"] if g.get("id") not in excluded_ids]
-                perms_spec_compact_resource = patch_perms(request.data, perms_spec.compact, resource)
+                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
+                perms_spec_compact_resource.merge(PermSpecCompact(request.data, resource))
 
                 if resource.dirty_state:
                     raise Exception("Cannot update if the resource is in dirty state")

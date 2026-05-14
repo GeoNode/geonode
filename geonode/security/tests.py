@@ -1834,6 +1834,259 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _p.compact,
         )
 
+    def test_perm_spec_compact_diff(self):
+        """PermSpecCompact.diff reports added/removed/changed per bucket."""
+        standard_user = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(owner=standard_user).first()
+
+        def _user(uid, perm):
+            return {
+                "id": uid,
+                "username": f"u{uid}",
+                "first_name": "",
+                "last_name": "",
+                "avatar": "",
+                "permissions": perm,
+                "is_staff": False,
+                "is_superuser": False,
+            }
+
+        def _group(gid, perm, name="g"):
+            return {"id": gid, "title": name, "name": name, "permissions": perm}
+
+        empty_bucket = {"added": [], "removed": [], "changed": []}
+
+        # 1. Identical specs -> empty diff in every bucket.
+        current = PermSpecCompact(
+            {
+                "users": [_user(10, "view"), _user(11, "edit")],
+                "organizations": [_group(20, "view", "org")],
+                "groups": [_group(3, "view", "anonymous")],
+            },
+            dataset,
+        )
+        proposed = PermSpecCompact(
+            {
+                "users": [_user(10, "view"), _user(11, "edit")],
+                "organizations": [_group(20, "view", "org")],
+                "groups": [_group(3, "view", "anonymous")],
+            },
+            dataset,
+        )
+        diff = current.diff(proposed)
+        self.assertEqual(diff.users, empty_bucket)
+        self.assertEqual(diff.organizations, empty_bucket)
+        self.assertEqual(diff.groups, empty_bucket)
+
+        # 2. Mixed mutations across all buckets.
+        current = PermSpecCompact(
+            {
+                "users": [_user(10, "view"), _user(11, "edit")],
+                "organizations": [_group(20, "view", "org")],
+                "groups": [_group(3, "view", "anonymous")],
+            },
+            dataset,
+        )
+        proposed = PermSpecCompact(
+            {
+                # user 10 changed view -> manage, 11 removed, 12 added.
+                "users": [_user(10, "manage"), _user(12, "view")],
+                # org 21 added, 20 unchanged.
+                "organizations": [_group(20, "view", "org"), _group(21, "edit", "org2")],
+                # anonymous group view -> download.
+                "groups": [_group(3, "download", "anonymous")],
+            },
+            dataset,
+        )
+
+        diff = current.diff(proposed)
+
+        # users bucket
+        self.assertEqual([u["id"] for u in diff.users["added"]], [12])
+        self.assertEqual(diff.users["added"][0]["permissions"], "view")
+        self.assertEqual([u["id"] for u in diff.users["removed"]], [11])
+        self.assertEqual(diff.users["removed"][0]["permissions"], "edit")
+        self.assertEqual(len(diff.users["changed"]), 1)
+        changed_user = diff.users["changed"][0]
+        self.assertEqual(changed_user["id"], 10)
+        self.assertEqual(changed_user["from"], "view")
+        self.assertEqual(changed_user["to"], "manage")
+        # changed entries carry identifier fields but drop "permissions" in favor of from/to.
+        self.assertNotIn("permissions", changed_user)
+        self.assertEqual(changed_user["username"], "u10")
+
+        # organizations bucket
+        self.assertEqual([o["id"] for o in diff.organizations["added"]], [21])
+        self.assertEqual(diff.organizations["added"][0]["permissions"], "edit")
+        self.assertEqual(diff.organizations["removed"], [])
+        self.assertEqual(diff.organizations["changed"], [])
+
+        # groups bucket
+        self.assertEqual(diff.groups["added"], [])
+        self.assertEqual(diff.groups["removed"], [])
+        self.assertEqual(len(diff.groups["changed"]), 1)
+        self.assertEqual(diff.groups["changed"][0]["id"], 3)
+        self.assertEqual(diff.groups["changed"][0]["from"], "view")
+        self.assertEqual(diff.groups["changed"][0]["to"], "download")
+
+        # 3. "none" on both sides is a no-op (treated as a value, not absence).
+        current = PermSpecCompact({"users": [_user(10, "none")]}, dataset)
+        proposed = PermSpecCompact({"users": [_user(10, "none")]}, dataset)
+        self.assertEqual(current.diff(proposed).users, empty_bucket)
+
+        # 4. "none" -> value is reported as a transition, not as added.
+        proposed = PermSpecCompact({"users": [_user(10, "view")]}, dataset)
+        diff = current.diff(proposed)
+        self.assertEqual(diff.users["added"], [])
+        self.assertEqual(diff.users["removed"], [])
+        self.assertEqual(len(diff.users["changed"]), 1)
+        self.assertEqual(diff.users["changed"][0]["from"], "none")
+        self.assertEqual(diff.users["changed"][0]["to"], "view")
+
+        # 5. Missing buckets on either side do not blow up.
+        current = PermSpecCompact({"users": [_user(10, "view")]}, dataset)
+        proposed = PermSpecCompact({}, dataset)
+        diff = current.diff(proposed)
+        self.assertEqual([u["id"] for u in diff.users["removed"]], [10])
+        self.assertEqual(diff.users["added"], [])
+        self.assertEqual(diff.users["changed"], [])
+        self.assertEqual(diff.organizations, empty_bucket)
+        self.assertEqual(diff.groups, empty_bucket)
+
+        # 6. Duplicate ids in a bucket: first wins (consistent with merge()).
+        current = PermSpecCompact({"users": [_user(10, "view"), _user(10, "edit")]}, dataset)
+        proposed = PermSpecCompact({"users": [_user(10, "view")]}, dataset)
+        self.assertEqual(current.diff(proposed).users, empty_bucket)
+
+    def test_perm_spec_compact_diff_class(self):
+        """PermSpecCompactDiff supports is_empty / to_dict / from_dict."""
+        from geonode.security.permissions import PermSpecCompactDiff
+
+        empty = PermSpecCompactDiff()
+        self.assertTrue(empty.is_empty())
+        self.assertEqual(
+            empty.to_dict(),
+            {
+                "users": {"added": [], "removed": [], "changed": []},
+                "organizations": {"added": [], "removed": [], "changed": []},
+                "groups": {"added": [], "removed": [], "changed": []},
+            },
+        )
+
+        # Round-trip a populated diff.
+        payload = {
+            "users": {
+                "added": [{"id": 5, "username": "alice", "permissions": "view"}],
+                "removed": [],
+                "changed": [{"id": 3, "username": "carol", "from": "view", "to": "edit"}],
+            },
+            "organizations": {"added": [], "removed": [], "changed": []},
+            "groups": {"added": [], "removed": [], "changed": []},
+        }
+        diff = PermSpecCompactDiff.from_dict(payload)
+        self.assertFalse(diff.is_empty())
+        self.assertEqual(diff.to_dict(), payload)
+
+        # Missing/partial buckets normalize to empty lists.
+        partial = PermSpecCompactDiff.from_dict({"users": {"added": [{"id": 1, "permissions": "view"}]}})
+        self.assertEqual(partial.users["added"], [{"id": 1, "permissions": "view"}])
+        self.assertEqual(partial.users["removed"], [])
+        self.assertEqual(partial.users["changed"], [])
+        self.assertEqual(partial.organizations, {"added": [], "removed": [], "changed": []})
+        self.assertEqual(partial.groups, {"added": [], "removed": [], "changed": []})
+
+    def test_perm_spec_compact_diff_apply(self):
+        """PermSpecCompactDiff.apply materializes added/removed/changed onto a current spec."""
+        from geonode.security.permissions import PermSpecCompactDiff
+
+        standard_user = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(owner=standard_user).first()
+
+        def _user(uid, perm):
+            return {
+                "id": uid,
+                "username": f"u{uid}",
+                "first_name": "",
+                "last_name": "",
+                "avatar": "",
+                "permissions": perm,
+                "is_staff": False,
+                "is_superuser": False,
+            }
+
+        def _group(gid, perm, name="g"):
+            return {"id": gid, "title": name, "name": name, "permissions": perm}
+
+        current_compact = {
+            "users": [_user(10, "view"), _user(11, "edit")],
+            "organizations": [_group(20, "view", "org")],
+            "groups": [_group(3, "view", "anonymous")],
+        }
+        proposed_compact = {
+            "users": [_user(10, "manage"), _user(12, "view")],
+            "organizations": [_group(20, "view", "org"), _group(21, "edit", "org2")],
+            "groups": [_group(3, "download", "anonymous")],
+        }
+
+        current = PermSpecCompact(current_compact, dataset)
+        proposed = PermSpecCompact(proposed_compact, dataset)
+        diff = current.diff(proposed)
+
+        # Apply on a fresh copy and verify the result matches `proposed`.
+        applied = diff.apply(current_compact, dataset)
+
+        def _by_id(entries):
+            return {e.id: e.permissions for e in entries or []}
+
+        self.assertEqual(_by_id(applied.users), {10: "manage", 12: "view"})
+        self.assertEqual(_by_id(applied.organizations), {20: "view", 21: "edit"})
+        self.assertEqual(_by_id(applied.groups), {3: "download"})
+
+        # Applying an empty diff leaves the current state untouched.
+        unchanged = PermSpecCompactDiff().apply(current_compact, dataset)
+        self.assertEqual(_by_id(unchanged.users), {10: "view", 11: "edit"})
+        self.assertEqual(_by_id(unchanged.organizations), {20: "view"})
+        self.assertEqual(_by_id(unchanged.groups), {3: "view"})
+
+    def test_patch_perms_accepts_diff(self):
+        """patch_perms accepts both PermSpecCompactDiff and its dict form."""
+        from geonode.base.utils import patch_perms
+        from geonode.security.permissions import PermSpecCompactDiff
+
+        standard_user = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(owner=standard_user).first()
+
+        def _user(uid, perm):
+            return {
+                "id": uid,
+                "username": f"u{uid}",
+                "first_name": "",
+                "last_name": "",
+                "avatar": "",
+                "permissions": perm,
+                "is_staff": False,
+                "is_superuser": False,
+            }
+
+        current_compact = {"users": [_user(10, "view"), _user(11, "edit")]}
+        diff = PermSpecCompactDiff.from_dict(
+            {
+                "users": {
+                    "added": [_user(12, "view")],
+                    "removed": [_user(11, "edit")],
+                    "changed": [{"id": 10, "username": "u10", "from": "view", "to": "manage"}],
+                }
+            }
+        )
+
+        # Object form
+        result = patch_perms(current_compact, diff, dataset)
+        self.assertEqual({u.id: u.permissions for u in result.users}, {10: "manage", 12: "view"})
+
+        # Dict form (back-compat)
+        result_from_dict = patch_perms(current_compact, diff.to_dict(), dataset)
+        self.assertEqual({u.id: u.permissions for u in result_from_dict.users}, {10: "manage", 12: "view"})
+
     def test_admin_whitelisted_access_backend(self):
         from geonode.security.backends import AdminRestrictedAccessBackend
         from django.core.exceptions import PermissionDenied
