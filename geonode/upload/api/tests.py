@@ -22,6 +22,7 @@ import zipfile
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from geonode.layers.models import Dataset
+from django.test import override_settings
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
 
