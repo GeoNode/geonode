@@ -138,6 +138,9 @@ class ImporterViewSet(DynamicModelViewSet):
         It clone on the local repo the file that the user want to upload
         """
         _file = request.FILES.get("base_file") or request.data.get("base_file")
+        validation_error = getattr(request, "upload_validation_error", None)
+        if validation_error:
+            raise ValidationError(detail=validation_error, code="invalid_file_type")
         execution_id = None
         storage_manager = None
         serializer = self.get_serializer_class()

@@ -99,6 +99,15 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
             "type": "raster",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "tiff": {"mimes": {"image/tiff"}},
+            "tif": {"mimes": {"image/tiff"}},
+            "geotiff": {"mimes": {"image/tiff"}},
+            "geotif": {"mimes": {"image/tiff"}},
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """

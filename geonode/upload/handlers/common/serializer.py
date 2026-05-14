@@ -17,13 +17,13 @@
 #
 #########################################################################
 from rest_framework import serializers
-from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.upload.api.serializer import BaseImporterSerializer
 from geonode.utils import is_safe_url
 
 
-class RemoteResourceSerializer(DynamicModelSerializer):
+class RemoteResourceSerializer(BaseImporterSerializer):
     class Meta:
         ref_name = "RemoteResourceSerializer"
         model = ResourceBase

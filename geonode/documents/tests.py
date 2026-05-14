@@ -413,6 +413,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_document_upload_rejects_file_with_mismatched_content(self):
+        self.client.login(username="admin", password="admin")
+        pe_like_content = (
+            b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
+        )
+        f = SimpleUploadedFile("fake.pdf", pe_like_content, "application/pdf")
+
+        response = self.client.post(
+            f"{reverse('document_upload')}?no__redirect=true",
+            data={
+                "doc_file": f,
+                "title": "fake_pdf",
+                "permissions": '{"users":{"AnonymousUser": ["view_resourcebase"]}}',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Document.objects.filter(title="fake_pdf").exists())
+
     # Permissions Tests
 
     def test_set_document_permissions(self):
