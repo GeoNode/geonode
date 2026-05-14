@@ -65,6 +65,12 @@ class XMLFileHandler(MetadataFileHandler):
             "type": "metadata",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "xml": {"mimes": {"application/xml", "text/xml"}},
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """

@@ -31,6 +31,7 @@ from urllib.parse import urlparse, urljoin
 # General Django development settings
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
@@ -625,69 +626,12 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_DOCUMENT_TYPES = (
-        [
-            "txt",
-            "csv",
-            "log",
-            "doc",
-            "docx",
-            "ods",
-            "odt",
-            "sld",
-            "qml",
-            "xls",
-            "xlsx",
-            "xml",
-            "bm",
-            "bmp",
-            "dwg",
-            "dxf",
-            "fif",
-            "gif",
-            "jpg",
-            "jpe",
-            "jpeg",
-            "png",
-            "tif",
-            "tiff",
-            "pbm",
-            "odp",
-            "ppt",
-            "pptx",
-            "pdf",
-            "tar",
-            "tgz",
-            "rar",
-            "gz",
-            "7z",
-            "zip",
-            "aif",
-            "aifc",
-            "aiff",
-            "au",
-            "mp3",
-            "mpga",
-            "wav",
-            "afl",
-            "avi",
-            "avs",
-            "fli",
-            "mp2",
-            "mp4",
-            "mpg",
-            "ogg",
-            "webm",
-            "3gp",
-            "flv",
-            "vdo",
-            "glb",
-            "pcd",
-            "gltf",
-            "ifc",
-        ]
+        DOCUMENT_TYPE_MAP.keys()
         if os.getenv("ALLOWED_DOCUMENT_TYPES") is None
         else re.split(r" *[,|:;] *", os.getenv("ALLOWED_DOCUMENT_TYPES"))
     )
+
+ALLOWED_DOCUMENT_TYPES = [t for t in ALLOWED_DOCUMENT_TYPES if t in DOCUMENT_TYPE_MAP.keys()]
 
 MAX_DOCUMENT_SIZE = int(os.getenv("MAX_DOCUMENT_SIZE ", "2"))  # MB
 
@@ -2100,6 +2044,7 @@ METADATA_STORERS = [
 ]
 
 FILE_UPLOAD_HANDLERS = [
+    "geonode.upload.uploadhandler.FileValidationUploadHandler",
     "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
@@ -2131,6 +2076,15 @@ SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "document_upload",
     "base-resources-assets",
 )
+
+# FileValidationUploadHandler config providers, run once at app-ready time
+# (see geonode.upload.handlers.apps.run_setup_hooks). Each provider declares
+# the URL names it covers and returns the merged validation config dict.
+# To add per-endpoint validation, register a ValidationConfigProvider here.
+FILE_VALIDATION_CONFIGURATION_PROVIDERS = [
+    "geonode.documents.validation.DocumentFileValidationConfigProvider",
+    "geonode.upload.validation.datasets.DatasetFileValidationConfigProvider",
+]
 
 INSTALLED_APPS += (
     "dynamic_models",
