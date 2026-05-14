@@ -65,6 +65,12 @@ class SLDFileHandler(MetadataFileHandler):
             "type": "metadata",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "sld": {"mimes": {"text/plain", "application/xml", "text/xml"}},
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """

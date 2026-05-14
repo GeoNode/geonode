@@ -62,6 +62,12 @@ class CSVFileHandler(BaseVectorFileHandler):
             "type": "vector",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "csv": {"mimes": {"text/plain", "text/csv"}},
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """

@@ -55,6 +55,19 @@ class ShapeFileHandler(BaseVectorFileHandler):
             "type": "vector",
         }
 
+    @property
+    def upload_validation_config(self):
+        # libmagic reports application/octet-stream for shp/shx/dbf, so we
+        # match against the descriptive string libmagic emits instead.
+        return {
+            "shp": {"description_contains": {"ESRI Shapefile"}},
+            "shx": {"description_contains": {"ESRI Shapefile"}},
+            "dbf": {"description_contains": {"dBase", "FoxPro", "Xbase"}},
+            "prj": {"mimes": {"text/plain"}},
+            "cpg": {"mimes": {"text/plain"}},
+            "cst": {"mimes": {"text/plain"}},
+        }
+
     @staticmethod
     def can_do(action) -> bool:
         """

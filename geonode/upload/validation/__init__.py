@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2024 OSGeo
+# Copyright (C) 2026 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,21 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from rest_framework import serializers
-from geonode.resource.enumerator import ExecutionRequestAction as exa
 
-from geonode.base.models import ResourceBase
-from geonode.upload.api.serializer import BaseImporterSerializer
+from geonode.upload.validation.base import ValidationConfigProvider
+from geonode.upload.validation.registry import FileValidationConfigRegistry
 
 
-class MetadataFileSerializer(BaseImporterSerializer):
-    class Meta:
-        ref_name = "MetadataFileSerializer"
-        model = ResourceBase
-        view_name = "importer_upload"
-        fields = ("overwrite_existing_layer", "resource_pk", "base_file", "action")
-
-    base_file = serializers.FileField()
-    overwrite_existing_layer = serializers.BooleanField(required=False, default=True)
-    resource_pk = serializers.IntegerField(required=True)
-    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
+__all__ = [
+    "FileValidationConfigRegistry",
+    "ValidationConfigProvider",
+]
