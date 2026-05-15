@@ -73,6 +73,22 @@ class KMLFileHandler(BaseVectorFileHandler):
         }
 
     @property
+    def upload_validation_config(self):
+        return {
+            "kml": {
+                "mimes": {
+                    "application/xml",
+                    "text/xml",
+                    "application/vnd.google-earth.kml+xml",
+                    "text/plain",
+                },
+            },
+            "kmz": {
+                "mimes": {"application/zip", "application/vnd.google-earth.kmz"},
+            },
+        }
+
+    @property
     def can_handle_xml_file(self) -> bool:
         """
         True or false if the handler is able to handle XML file

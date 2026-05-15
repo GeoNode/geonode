@@ -17,13 +17,13 @@
 #
 #########################################################################
 from rest_framework import serializers
-from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 from geonode.base.models import ResourceBase
+from geonode.upload.api.serializer import BaseImporterSerializer
 
 
-class EmptyDatasetSerializer(DynamicModelSerializer):
+class EmptyDatasetSerializer(BaseImporterSerializer):
     class Meta:
         ref_name = "EmptyDatasetSerializer"
         model = ResourceBase

@@ -1,0 +1,35 @@
+// Custom overrides for mkdocs-with-pdf
+
+article {
+  h1 {
+    border-bottom: 2px solid #346f9c;
+  }
+
+  h2 {
+    border-bottom: 1px solid #a8c5d8;
+  }
+}
+
+// Cover logo: render with an explicit <img> (see cover.html.j2 override)
+// rather than the default background-image approach, because weasyprint
+// does not propagate `height: 100%` reliably from a flex parent to its
+// child, which makes the original logo div collapse to zero height.
+//
+// The image is capped at the source PNG's intrinsic dimensions (280x280px
+// @ 96 DPI) so the cover never upscales it.
+article#doc-cover {
+  > .wrapper.upper {
+    flex: 0 0 auto;
+    max-height: 30vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > img.logo {
+      width: auto;
+      height: auto;
+      max-width: 280px;
+      max-height: 280px;
+    }
+  }
+}

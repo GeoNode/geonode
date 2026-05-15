@@ -35,6 +35,7 @@ from pathlib import Path
 
 from django.urls import reverse
 from django.conf import settings
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.defaultfilters import filesizeformat
@@ -155,6 +156,45 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Remote document is mark as not safe."""
         d = create_single_doc("example_doc_name")
         self.assertTrue(d.download_is_ajax_safe)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_allowed_for_admin(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        title = "Remote doc allowed for admin user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_forbidden_for_regular_user(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc denied for regular user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Document.objects.filter(title=title).exists())
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_remote_document_add_allowed_for_regular_user_when_enabled(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc allowed for regular user"
+
+        form_data = {
+            "title": title,
+            "doc_url": "https://raw.githubusercontent.com/GeoNode/geonode/master/geonode/documents/tests/data/test.CSV",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Document.objects.filter(title=title).exists())
 
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
@@ -372,6 +412,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             },
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_document_upload_rejects_file_with_mismatched_content(self):
+        self.client.login(username="admin", password="admin")
+        pe_like_content = (
+            b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
+        )
+        f = SimpleUploadedFile("fake.pdf", pe_like_content, "application/pdf")
+
+        response = self.client.post(
+            f"{reverse('document_upload')}?no__redirect=true",
+            data={
+                "doc_file": f,
+                "title": "fake_pdf",
+                "permissions": '{"users":{"AnonymousUser": ["view_resourcebase"]}}',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Document.objects.filter(title="fake_pdf").exists())
 
     # Permissions Tests
 

@@ -154,7 +154,12 @@ class TestEmptyDatasetHandler(TestCase):
             expected_schema = [
                 {"name": "field_int", "class_name": "django.db.models.IntegerField", "null": False},
                 {"name": "field_str", "class_name": "django.db.models.CharField", "null": False},
-                {"name": "geom", "class_name": None, "dim": 2, "authority": "EPSG:4326"},
+                {
+                    "name": "geom",
+                    "class_name": "django.contrib.gis.db.models.fields.GeometryField",
+                    "dim": 2,
+                    "authority": "EPSG:4326",
+                },
                 {"name": "fid", "class_name": "django.db.models.BigAutoField", "null": False, "primary_key": True},
             ]
             output_schema = self.handler._define_dynamic_layer_schema(None, execution_id=str(exec_req.exec_id))
@@ -245,3 +250,13 @@ class TestEmptyDatasetHandler(TestCase):
         expected = b"<featureType><name>myname</name><nativeName>myname</nativeName><title>myname</title><srs>EPSG:4326</srs><nativeBoundingBox><minx>-180</minx><maxx>180</maxx><miny>-90</miny><maxy>90</maxy><crs>EPSG:4326</crs></nativeBoundingBox><latLonBoundingBox><minx>-180</minx><maxx>180</maxx><miny>-90</miny><maxy>90</maxy><crs>EPSG:4326</crs></latLonBoundingBox><attributes><attribute><name>field_str</name><binding>java.lang.String</binding><nillable>false</nillable></attribute><attribute><name>field_int</name><binding>java.lang.Integer</binding><nillable>false</nillable></attribute></attributes></featureType>"  # noqa
         actual_xml = add_attributes_to_xml(subset_attributes, base_xml.format(name="myname"))
         self.assertEqual(expected, actual_xml)
+
+    def test_utils_add_attributes_to_xml_supports_generic_geometry(self):
+        """
+        Generic Geometry should be mapped to the GeoServer JTS Geometry binding.
+        """
+        subset_attributes = {"geom": {"type": "Geometry"}}
+        actual_xml = add_attributes_to_xml(subset_attributes, base_xml.format(name="myname"))
+
+        self.assertIn(b"<name>geom</name>", actual_xml)
+        self.assertIn(b"<binding>org.locationtech.jts.geom.Geometry</binding>", actual_xml)
