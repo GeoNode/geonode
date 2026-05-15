@@ -30,5 +30,13 @@ class GeoNodeProxyAppConfig(AppConfig):
         super().ready()
         from geonode.base.models import Link
 
-        signals.post_save.connect(link_post_save, sender=Link)
-        signals.post_delete.connect(link_post_delete, sender=Link)
+        signals.post_save.connect(
+            link_post_save,
+            sender=Link,
+            dispatch_uid="geonode.proxy.link_post_save",
+        )
+        signals.post_delete.connect(
+            link_post_delete,
+            sender=Link,
+            dispatch_uid="geonode.proxy.link_post_delete",
+        )
