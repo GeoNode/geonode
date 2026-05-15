@@ -1,7 +1,6 @@
 from urllib.parse import urlsplit
 
 from django.conf import settings
-from django.db.models import signals
 from django.utils.timezone import now
 
 site_url = urlsplit(settings.SITEURL)
@@ -10,7 +9,6 @@ PROXIED_LINK_TYPES = ["OGC:WMS", "OGC:WFS", "data"]
 
 
 class ProxyUrlsRegistry:
-    _first_init = True
     _last_registry_load = None
     _registry_reload_threshold = getattr(settings, "PROXY_RELOAD_REGISTRY_THRESHOLD_DAYS", 1)
 
@@ -26,11 +24,6 @@ class ProxyUrlsRegistry:
         for link in Link.objects.filter(resource__sourcetype="REMOTE", link_type__in=PROXIED_LINK_TYPES):
             remote_host = urlsplit(link.url).hostname
             self.register_host(remote_host)
-
-        if self._first_init:
-            signals.post_save.connect(link_post_save, sender=Link)
-            signals.post_delete.connect(link_post_delete, sender=Link)
-            self._first_init = False
 
         self._last_registry_load = now()
 
