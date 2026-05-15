@@ -1310,7 +1310,7 @@ class BaseApiTests(APITestCase):
         admin = get_user_model().objects.get(username="admin")
         bobby = get_user_model().objects.get(username="bobby")
         norman = get_user_model().objects.get(username="norman")
-        resource = dataset_manager.create(
+        resource = resource_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_patch_merge", "owner": admin}
         )
         resource.set_permissions({"users": {bobby: ["base.view_resourcebase"]}})
@@ -1346,7 +1346,7 @@ class BaseApiTests(APITestCase):
         admin = get_user_model().objects.get(username="admin")
         bobby = get_user_model().objects.get(username="bobby")
         norman = get_user_model().objects.get(username="norman")
-        resource = dataset_manager.create(
+        resource = resource_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_put_replace", "owner": admin}
         )
         resource.set_permissions(
