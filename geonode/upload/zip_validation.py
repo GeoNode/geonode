@@ -131,8 +131,12 @@ def _check_cumulative_ratio(total_compressed, total_uncompressed):
 
 
 def is_zip_extension(filename):
-    """Return True if the filename suggests a zip-based upload we should inspect."""
+    """Return True if the filename suggests a zip-based upload we should inspect.
+
+    Covers plain zips, the geospatial KMZ used by the importer, and the
+    zip-based Office Open XML / OpenDocument formats accepted as documents.
+    """
     if not filename:
         return False
     ext = os.path.splitext(filename)[1].lower().lstrip(".")
-    return ext in {"zip", "kmz", "xlsx"}
+    return ext in {"zip", "kmz", "xlsx", "docx", "pptx", "ods", "odt", "odp"}

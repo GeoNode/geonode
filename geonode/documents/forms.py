@@ -30,6 +30,7 @@ from django.template.defaultfilters import filesizeformat
 from geonode.documents.models import Document
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.api.exceptions import FileUploadLimitException
+from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
 
 logger = logging.getLogger(__name__)
 
@@ -140,5 +141,23 @@ class DocumentCreateForm(forms.ModelForm):
         if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
             logger.debug("This file type is not allowed")
             raise forms.ValidationError(_("This file type is not allowed"))
+
+        # Mirror the importer's zip-safety gate: inspect the central directory
+        # of any zip-based document upload (.zip plus OOXML / ODF formats) to
+        # reject path-traversal entries, symlinks, oversized archives and zip
+        # bombs before the file is persisted.
+        if doc_file and is_zip_extension(doc_file.name):
+            source = doc_file.temporary_file_path() if hasattr(doc_file, "temporary_file_path") else doc_file
+            try:
+                validate_safe_zip(source)
+            except ZipValidationError:
+                logger.warning("ZIP validation failed for uploaded document.", exc_info=True)
+                raise forms.ValidationError(_("Invalid or unsafe ZIP archive."))
+            finally:
+                if hasattr(doc_file, "seek"):
+                    try:
+                        doc_file.seek(0)
+                    except (OSError, ValueError):
+                        pass
 
         return doc_file
