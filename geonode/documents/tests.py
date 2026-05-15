@@ -25,6 +25,7 @@ when you run "manage.py test".
 import os
 import io
 import json
+import zipfile
 import gisdata
 
 from PIL import Image
@@ -337,6 +338,38 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 f"Please try again with a smaller file."
             )
             self.assertEqual(form.errors, {"doc_file": [expected_error]})
+
+    def test_upload_document_form_rejects_unsafe_zip(self):
+        """A zip-based document carrying a path-traversal entry must be rejected by the form."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("../../etc/passwd", b"root:x:0:0")
+        buf.seek(0)
+
+        form_data = {
+            "title": "Malicious archive",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("evil.zip", buf.read(), "application/zip")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("doc_file", form.errors)
+        self.assertIn("Invalid or unsafe ZIP archive.", str(form.errors["doc_file"]))
+
+    def test_upload_document_form_accepts_clean_zip(self):
+        """A well-formed zip document must pass the safety check and validate."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("readme.txt", b"hello")
+        buf.seek(0)
+
+        form_data = {
+            "title": "Clean archive",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("clean.zip", buf.read(), "application/zip")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertTrue(form.is_valid(), msg=form.errors)
 
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""
