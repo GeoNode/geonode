@@ -686,7 +686,7 @@ An example of metadata that can be ingested is the follow:
 **DEFAULT_LAYER_FORMAT**
 
 
-- Default: ``image/png``
+- Default: ``image/vnd.jpeg-png``
 - Env: ``DEFAULT_LAYER_FORMAT``
 
 The default format for requested tile images.
