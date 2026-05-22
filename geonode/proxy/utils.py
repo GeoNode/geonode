@@ -12,6 +12,26 @@ class ProxyUrlsRegistry:
     _last_registry_load = None
     _registry_reload_threshold = getattr(settings, "PROXY_RELOAD_REGISTRY_THRESHOLD_DAYS", 1)
 
+    def __init__(self):
+        self._proxy_allowed_hosts = None
+
+    @property
+    def proxy_allowed_hosts(self):
+        # We register remote hosts from remote URLs at creation time, inside ImporterViewSet.create().
+        # If for some reason the creation fails we end up having stale or wrong URLs inside the registry.
+        # We check the last time the registry was updated, and after a certain delta we reinitialize the registry
+        # which removes any URLs that are not connected to remote datasets.
+        if self._proxy_allowed_hosts is None or (
+            self._last_registry_load is not None
+            and (now() - self._last_registry_load).days >= self._registry_reload_threshold
+        ):
+            self.initialize()
+        return self._proxy_allowed_hosts
+
+    @proxy_allowed_hosts.setter
+    def proxy_allowed_hosts(self, hosts):
+        self._proxy_allowed_hosts = set(hosts)
+
     def initialize(self):
         from geonode.base.models import Link
         from geonode.geoserver.helpers import ogc_server_settings
@@ -44,15 +64,6 @@ class ProxyUrlsRegistry:
         self.proxy_allowed_hosts.remove(host)
 
     def get_proxy_allowed_hosts(self):
-        # We register remote hosts from remote URLs at creation time, inside ImporterViewSet.create().
-        # If for some reason the creation fails we end up having stale or wrong URLs inside the registry.
-        # We check the last time the registry was updated, and after a certain delta we reinitialize the registry
-        # which removes any URLs that are not connected to remote datasets
-        if (
-            self._last_registry_load is None
-            or (now() - self._last_registry_load).days >= self._registry_reload_threshold
-        ):
-            self.initialize()
         return self.proxy_allowed_hosts
 
 

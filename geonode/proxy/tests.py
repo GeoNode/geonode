@@ -35,6 +35,7 @@ from geonode.assets.utils import create_asset_and_link
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.timezone import now
 from unittest.mock import patch
 
 try:
@@ -69,6 +70,20 @@ class ProxyTest(TestCase):
     def setUp(self):
         super().setUp()
         self.admin = get_user_model().objects.get(username="admin")
+
+    def test_register_host_lazy_initializes_registry(self):
+        registry = ProxyUrlsRegistry()
+
+        def initialize_registry():
+            registry.proxy_allowed_hosts = ["existing.test"]
+            registry._last_registry_load = now()
+
+        registry.initialize = MagicMock(side_effect=initialize_registry)
+
+        registry.register_host("remote.test")
+
+        registry.initialize.assert_called_once()
+        self.assertEqual({"existing.test", "remote.test"}, registry.proxy_allowed_hosts)
 
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([TEST_DOMAIN]))
     def test_proxy_allowed_host(self):
