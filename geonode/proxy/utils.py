@@ -36,15 +36,16 @@ class ProxyUrlsRegistry:
         from geonode.base.models import Link
         from geonode.geoserver.helpers import ogc_server_settings
 
-        self.proxy_allowed_hosts = set([site_url.hostname] + list(getattr(settings, "PROXY_ALLOWED_HOSTS", ())))
+        proxy_allowed_hosts = set([site_url.hostname] + list(getattr(settings, "PROXY_ALLOWED_HOSTS", ())))
 
         if ogc_server_settings:
-            self.register_host(ogc_server_settings.hostname)
+            proxy_allowed_hosts.add(ogc_server_settings.hostname)
 
         for link in Link.objects.filter(resource__sourcetype="REMOTE", link_type__in=PROXIED_LINK_TYPES):
             remote_host = urlsplit(link.url).hostname
-            self.register_host(remote_host)
+            proxy_allowed_hosts.add(remote_host)
 
+        self.proxy_allowed_hosts = proxy_allowed_hosts
         self._last_registry_load = now()
 
     def set(self, hosts):
