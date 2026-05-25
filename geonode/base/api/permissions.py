@@ -30,12 +30,12 @@ from geonode.security.permissions import (
     EDIT_PERMISSIONS,
     VIEW_PERMISSIONS,
 )
-from distutils.util import strtobool
 from geonode.security.utils import get_users_with_perms, get_visible_resources
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
 from geonode.security.registry import permissions_registry
+from geonode.utils import strtobool
 
 logger = logging.getLogger(__name__)
 

@@ -18,7 +18,7 @@
 #########################################################################
 import logging
 
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.sld.exceptions import InvalidSldException
 from owslib.etree import etree as dlxml
@@ -65,6 +65,12 @@ class SLDFileHandler(MetadataFileHandler):
             "type": "metadata",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "sld": {"mimes": {"text/plain", "application/xml", "text/xml"}},
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """
@@ -96,7 +102,7 @@ class SLDFileHandler(MetadataFileHandler):
             original_handler.handle_sld_file(dataset, _exec)
         else:
             _path = _exec.input_params.get("files", {}).get("sld_file", _exec.input_params.get("base_file", {}))
-            resource_manager.exec(
+            resource_manager_registry.get_for_instance(dataset).exec(
                 "set_style",
                 None,
                 instance=dataset,

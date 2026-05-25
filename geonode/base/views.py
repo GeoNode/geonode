@@ -43,7 +43,7 @@ from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
 from geonode.base.utils import OwnerRightsRequestViewUtils, remove_country_from_languagecode
@@ -374,13 +374,14 @@ def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
 
     r = resourcebase_obj
     if request.method in ("POST", "PATCH", "PUT"):
-        r = resource_manager.update(resourcebase_obj.uuid, instance=resourcebase_obj, notify=True)
+        resolved_resource_manager = resource_manager_registry.get_for_instance(resourcebase_obj)
+        r = resolved_resource_manager.update(resourcebase_obj.uuid, instance=resourcebase_obj, notify=True)
 
-        resource_manager.set_permissions(
+        resolved_resource_manager.set_permissions(
             resourcebase_obj.uuid, instance=resourcebase_obj, permissions=ast.literal_eval(permissions_json)
         )
 
-        resource_manager.set_thumbnail(resourcebase_obj.uuid, instance=resourcebase_obj, overwrite=False)
+        resolved_resource_manager.set_thumbnail(resourcebase_obj.uuid, instance=resourcebase_obj, overwrite=False)
 
     access_token = None
     if request and request.user:

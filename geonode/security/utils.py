@@ -22,14 +22,20 @@ import logging
 import collections
 from itertools import chain
 
+from osgeo import gdal
+
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.exceptions import PermissionDenied
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
 
 from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
 from geonode.security.registry import permissions_registry
 from geonode.security.permissions import (
+    get_default_anonymous_compact_permission,
+    VIEW_RIGHTS,
+    DOWNLOAD_RIGHTS,
     PermSpecCompact,
     EDIT_PERMISSIONS,
     VIEW_PERMISSIONS,
@@ -46,6 +52,11 @@ from geonode.security.permissions import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def init_gdal_security():
+    gdal.SetConfigOption("GDAL_HTTP_UNSAFE_REDIRECTS", "NO")
+    assert gdal.GetConfigOption("GDAL_HTTP_UNSAFE_REDIRECTS") == "NO"
 
 
 def get_visible_resources(
@@ -162,14 +173,22 @@ ResourceGroupsAndMembersSet = collections.namedtuple(
 )
 
 
+def check_add_remote_resource_perm(user):
+    """
+    Checks whether the given user has permission to add remote resources.
+    """
+    if not permissions_registry.user_has_perm(user, perm="add_remote_resource"):
+        raise PermissionDenied("You do not have permission to add remote resources.")
+
+
 class AdvancedSecurityWorkflowManager:
     @staticmethod
     def is_anonymous_can_view():
-        return settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+        return get_default_anonymous_compact_permission() in (VIEW_RIGHTS, DOWNLOAD_RIGHTS)
 
     @staticmethod
     def is_anonymous_can_download():
-        return settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+        return get_default_anonymous_compact_permission() == DOWNLOAD_RIGHTS
 
     @staticmethod
     def is_group_private_mode():

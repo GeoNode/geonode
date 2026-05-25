@@ -17,29 +17,18 @@
 #
 #########################################################################
 
-from drf_spectacular.utils import extend_schema
-from pathlib import Path
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from geonode import settings
 
-from geonode.assets.utils import create_asset_and_link
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
-from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import base_linked_resources, ApiPresetsInitializer
-from geonode.base import enumerations
-from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 from geonode.metadata.multilang.views import MultiLangViewMixin
-from geonode.metadata.manager import metadata_manager
-from geonode.resource.utils import resourcebase_post_save, infer_default_metadata
-from geonode.storage.manager import StorageManager
-from geonode.resource.manager import resource_manager
 
 from .serializers import DocumentSerializer
 from .permissions import DocumentPermissionsFilter
@@ -52,14 +41,19 @@ logger = logging.getLogger(__name__)
 
 class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
-    API endpoint that allows documents to be viewed or edited.
+    API endpoint that allows documents to be viewed or partially updated.
+
+    Document creation is intentionally not exposed here -- use the
+    /documents/upload/ endpoint (DocumentUploadView) so that uploads go
+    through the FileValidationUploadHandler magic-byte check. Full PUT
+    replacement is disabled; only PATCH metadata edits are allowed.
     """
 
-    http_method_names = ["get", "patch", "put", "post"]
-    permission_classes = [
-        IsAuthenticatedOrReadOnly,
-        UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
-    ]
+    http_method_names = ["get", "patch"]
+    # UserHasPerms enforces resource-level EDIT_PERMISSIONS on PATCH (its
+    # default perms_map maps PATCH -> EDIT_PERMISSIONS). Without it any
+    # authenticated user could PATCH any document.
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -72,92 +66,7 @@ class DocumentViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelVie
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 
-    def perform_create(self, serializer):
-        """
-        Function to create document via API v2.
-        file_path: path to the file
-        doc_file: the open file
-
-        The API expect this kind of JSON:
-        {
-            "document": {
-                "title": "New document",
-                "metadata_only": true,
-                "file_path": "/home/mattia/example.json"
-            }
-        }
-        File path rappresent the filepath where the file to upload is saved.
-
-        or can be also a form-data:
-        curl --location --request POST 'http://localhost:8000/api/v2/documents' \
-        --form 'title="Super Title2"' \
-        --form 'doc_file=@"/C:/Users/user/Pictures/BcMc-a6T9IM.jpg"' \
-        --form 'metadata_only="False"'
-        """
-        manager = None
-        serializer.is_valid(raise_exception=True)
-        file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
-        doc_url = serializer.validated_data.pop("doc_url", None)
-        extension = serializer.validated_data.pop("extension", None)
-
-        if not file and not doc_url:
-            raise DocumentException(detail="A file, file path or URL must be speficied")
-
-        if file and doc_url:
-            raise DocumentException(detail="Either a file or a URL must be specified, not both")
-
-        if not extension:
-            filename = file if isinstance(file, str) else file.name
-            extension = Path(filename).suffix.replace(".", "")
-
-        if extension not in settings.ALLOWED_DOCUMENT_TYPES:
-            raise DocumentException("The file provided is not in the supported extensions list")
-
-        try:
-            resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
-            payload = {
-                "owner": resolved_owner,
-                "extension": extension,
-                "resource_type": "document",
-            }
-            if doc_url:
-                payload["doc_url"] = doc_url
-                payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
-
-            resource = serializer.save(**payload)
-
-            if file:
-                manager = StorageManager(remote_files={"base_file": file})
-                manager.clone_remote_files()
-                create_asset_and_link(
-                    resource, self.request.user, [manager.get_retrieved_paths().get("base_file")], clone_files=True
-                )
-                manager.delete_retrieved_paths(force=True)
-
-            resource.set_missing_info()
-            metadata_manager.update_schema_instance_partial(
-                resource,
-                infer_default_metadata(resource.get_real_instance()),
-                user=self.request.user,
-            )
-            resourcebase_post_save(resource.get_real_instance())
-            resource_manager.finalize_creation_permissions(
-                resource, owner=resolved_owner, initial_user=self.request.user
-            )
-            resource.handle_moderated_uploads()
-            resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
-            return resource
-        except Exception as e:
-            logger.error(f"Error creating document {serializer.validated_data}", exc_info=e)
-            if manager:
-                manager.delete_retrieved_paths()
-            raise e
-
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve linked resources",
-    )
     @action(detail=True, methods=["get"])
     def linked_resources(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve linked resources"""
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)

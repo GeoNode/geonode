@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "pip >= 19.1", "wheel"]
+requires = ["setuptools>=61.0", "pip >= 26.1.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -24,31 +24,31 @@ classifiers = [
 
 # Core dependencies (consolidated from requirements.txt)
 dependencies = [
-    "Pillow==11.3.0",
-    "lxml==5.2.1",
-    "psycopg2==2.9.9",
-    "Django==5.2.11",
+    "Pillow==12.1.1",
+    "lxml==6.1.1",
+    "psycopg2==2.9.12",
+    "Django==5.2.14",
 
     # Other
     "beautifulsoup4==4.12.3",
     "hyperlink==21.0.0",
-    "urllib3==1.26.18",
+    "urllib3==2.7.0",
     "Paver==1.3.4",
     "python-slugify==8.0.4",
     "decorator==5.1.1",
-    "celery==5.4.0",
+    "celery==5.6.3",
     "tqdm==4.66.4",
     "Deprecated==1.2.14",
     "jsonschema==4.22.0",
     "schema==0.7.7",
     "rdflib==6.3.2",
     "smart_open==7.0.4",
-    "PyMuPDF==1.26.3",
+    "PyMuPDF==1.27.2.3",
     "defusedxml==0.7.1",
-    "zipstream-ng==1.8.0",
+    "zipstream-ng==1.9.2",
 
     # Django Apps
-    "django-allauth==0.63.6",
+    "django-allauth==65.17.0",
     "django-appconf==1.0.6",
     "django-filter==24.2",
     "django-imagekit==5.0.0",
@@ -65,14 +65,14 @@ dependencies = [
     "django-widget-tweaks==1.5.0",
     "django-sequences==3.0",
     "oauthlib==3.3.1",
-    "pyjwt==2.8.0",
+    "pyjwt==2.13.0",
     "redis==6.2.0",
 
     # geopython dependencies
     "pycsw @ git+https://github.com/geopython/pycsw.git@3.0.0-beta1",
     "pyproj<3.8.0",
     "OWSLib==0.34.1",
-    "SQLAlchemy==2.0.43",
+    "SQLAlchemy==2.0.50",
     "Shapely==2.1.2",
     "mercantile==1.2.1",
     "numpy==1.26.*",
@@ -90,12 +90,11 @@ dependencies = [
     "django-recaptcha==4.0.0",
 
     # REST
-    "djangorestframework==3.15.2",
-    "djangorestframework-gis==1.2.0",
+    "djangorestframework==3.17.1",
+    "djangorestframework-gis==1.2.1",
     "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
-    "drf-spectacular==0.27.2",
-    "geonode-dynamic-rest==2.3.0.1",
+    "geonode-dynamic-rest==2.3.0.2",
     "geonode-pinax-notifications==6.0.0.3",
 
     # GeoNode org maintained apps.
@@ -128,7 +127,7 @@ dependencies = [
     "mock<6.0.0",
     "python-dateutil==2.9.0.post0",
     "pytz==2024.1",
-    "requests==2.32.5",
+    "requests==2.34.2",
     "timeout-decorator==0.5.0",
     "pylibmc==1.6.3",
     "sherlock==0.4.1",
@@ -157,8 +156,11 @@ dependencies = [
     "selenium-requests==2.0.4",
     "webdriver_manager==4.0.1",
     # Security and audit
-    "cryptography==46.0.3",
-    "jwcrypto>=1.5.6",
+    "cryptography==48.0.0",
+    "jwcrypto>=1.5.7",
+    # dependency for XLSX handler
+    "python-calamine==0.6.2",
+    "python-magic==0.4.27",
 ]
 
 [project.optional-dependencies]

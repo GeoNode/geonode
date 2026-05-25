@@ -29,13 +29,14 @@ from django.template import loader
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect
 
+from geonode.security.utils import check_add_remote_resource_perm
 from geonode.base.api.exceptions import geonode_exception_handler
 from geonode.client.hooks import hookset
 from geonode.utils import mkdtemp
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.storage.manager import storage_manager
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import document_manager, resource_manager_registry
 from geonode.base import enumerations
 
 from pathlib import Path
@@ -94,6 +95,19 @@ class DocumentUploadView(CreateView):
 
     def post(self, request, *args, **kwargs):
         self.object = None
+        # Accessing request.FILES forces the multipart parser (and therefore
+        # FileValidationUploadHandler) to run. If validation rejected the
+        # upload, return a clean 400 with the reason instead of letting the
+        # form surface a generic "required field" error.
+        request.FILES  # noqa: B018
+        validation_error = getattr(request, "upload_validation_error", None)
+        if validation_error:
+            if request.GET.get("no__redirect", False):
+                out = {"success": False, "message": validation_error}
+                return HttpResponse(json.dumps(out), content_type="application/json", status=400)
+            form = self.get_form()
+            form.add_error(None, validation_error)
+            return self.form_invalid(form)
         try:
             return super().post(request, *args, **kwargs)
         except Exception as e:
@@ -114,7 +128,7 @@ class DocumentUploadView(CreateView):
         if self.request.GET.get("no__redirect", False):
             plaintext_errors = []
             for field in form.errors.values():
-                plaintext_errors.append(field.data[0].message)
+                plaintext_errors.append(str(field.data[0].message))
             out = {"success": False}
             out["message"] = ".".join(plaintext_errors)
             status_code = 400
@@ -131,7 +145,6 @@ class DocumentUploadView(CreateView):
         If the form is valid, save the associated model.
         """
         doc_form = form.cleaned_data
-        resolved_owner = resource_manager.resolve_creation_owner(self.request.user)
 
         file = doc_form.pop("doc_file", None)
         if file:
@@ -140,11 +153,11 @@ class DocumentUploadView(CreateView):
             name = Path(file.name)
             filepath = storage_manager.save(f"{dirname}/{name.stem}{name.suffix.lower()}", file)
             storage_path = storage_manager.path(filepath)
-            self.object = resource_manager.create(
+            self.object = document_manager.create(
                 None,
                 resource_type=Document,
                 defaults=dict(
-                    owner=resolved_owner,
+                    owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", file.name),
                     description=doc_form.pop("abstract", None),
@@ -163,22 +176,19 @@ class DocumentUploadView(CreateView):
             shutil.rmtree(tempdir, ignore_errors=True)
 
         else:
-            self.object = resource_manager.create(
+            check_add_remote_resource_perm(self.request.user)
+
+            self.object = document_manager.create(
                 None,
                 resource_type=Document,
                 defaults=dict(
-                    owner=resolved_owner,
+                    owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", None),
                     extension=doc_form.pop("extension", None),
                     sourcetype=enumerations.SOURCE_TYPE_REMOTE,
                 ),
             )
-
-        self.object.handle_moderated_uploads()
-        resource_manager.finalize_creation_permissions(
-            self.object, owner=resolved_owner, initial_user=self.request.user
-        )
 
         abstract = None
         date = None
@@ -203,7 +213,8 @@ class DocumentUploadView(CreateView):
                 logger.debug("Exif extraction failed.")
 
         bbox_poly = BBOXHelper.from_xy(bbox).as_polygon() if bbox else None
-        resource_manager.update(
+        resolved_resource_manager = resource_manager_registry.get_for_instance(self.object)
+        resolved_resource_manager.update(
             self.object.uuid,
             instance=self.object,
             keywords=keywords,
@@ -217,7 +228,6 @@ class DocumentUploadView(CreateView):
             ),
             notify=True,
         )
-        resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
 
         register_event(self.request, enumerations.EventType.EVENT_UPLOAD, self.object)
 

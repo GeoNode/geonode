@@ -52,7 +52,7 @@ from geonode.catalogue import get_catalogue
 from geonode.catalogue.models import catalogue_post_save
 from geonode.catalogue.views import csw_global_dispatch
 
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.assets.utils import create_asset_and_link
@@ -1301,6 +1301,87 @@ class BaseApiTests(APITestCase):
         response = self.client.put(set_perms_url, data=resource_perm_spec, format="json")
         self.assertEqual(response.status_code, 200)
 
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=True,
+    )
+    def test_resource_service_permissions_patch_merges_permissions(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        bobby = get_user_model().objects.get(username="bobby")
+        norman = get_user_model().objects.get(username="norman")
+        resource = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_patch_merge", "owner": admin}
+        )
+        resource.set_permissions({"users": {bobby: ["base.view_resourcebase"]}})
+
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
+        response = self.client.patch(
+            set_perms_url,
+            data={
+                "uuid": resource.uuid,
+                "users": [{"id": norman.id, "permissions": "edit"}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        resp_js = json.loads(response.content.decode("utf-8"))
+        resouce_service_dispatcher.apply((resp_js.get("execution_id"),))
+        response = self.client.get(resp_js.get("status_url"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json().get("status"), "finished")
+
+        response = self.client.get(set_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        user_permissions = {u["username"]: u["permissions"] for u in response.data.get("users", [])}
+        self.assertEqual(user_permissions.get("bobby"), "view")
+        self.assertEqual(user_permissions.get("norman"), "edit")
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=True,
+    )
+    def test_resource_service_permissions_put_replaces_permissions(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        bobby = get_user_model().objects.get(username="bobby")
+        norman = get_user_model().objects.get(username="norman")
+        resource = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_put_replace", "owner": admin}
+        )
+        resource.set_permissions(
+            {
+                "users": {
+                    bobby: ["base.view_resourcebase"],
+                    norman: ["base.view_resourcebase"],
+                }
+            }
+        )
+
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
+        response = self.client.put(
+            set_perms_url,
+            data={
+                "uuid": resource.uuid,
+                "users": [{"id": norman.id, "permissions": "edit"}],
+                "organizations": [],
+                "groups": [],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        resp_js = json.loads(response.content.decode("utf-8"))
+        resouce_service_dispatcher.apply((resp_js.get("execution_id"),))
+        response = self.client.get(resp_js.get("status_url"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json().get("status"), "finished")
+
+        response = self.client.get(set_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        user_permissions = {u["username"]: u["permissions"] for u in response.data.get("users", [])}
+        self.assertNotIn("bobby", user_permissions)
+        self.assertEqual(user_permissions.get("norman"), "edit")
+
     def test_featured_and_published_resources(self):
         """
         Ensure we can Get & Set Permissions across the Resource Base list.
@@ -2108,7 +2189,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(expected, response.json())
 
-    @patch("geonode.base.api.views.resource_manager.set_thumbnail")
+    @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail")
     def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_set_thumbnail):
         """
         Given a logged User and an existing dataset, should successfully trigger thumbnail generation.
@@ -2167,7 +2248,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 405)
         self.assertEqual(expected, response.json())
 
-    @patch("geonode.base.api.views.resource_manager.set_thumbnail", return_value=False)
+    @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail", return_value=False)
     def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_set_thumbnail):
         """
         Given a logged User and an existing dataset, should raise a ThumbnailException.
@@ -2358,6 +2439,62 @@ class BaseApiTests(APITestCase):
         )
 
     @override_settings(
+        DEFAULT_ANONYMOUS_PERMISSIONS="download",
+        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="edit",
+    )
+    def test_resource_service_permissions_default_groups_from_compact_settings(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        dataset = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_compact_default", "owner": admin}
+        )
+        url = reverse("base-resources-perms-spec", kwargs={"pk": dataset.pk})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        self.assertEqual(group_permissions.get("anonymous"), "download")
+        self.assertEqual(group_permissions.get("registered-members"), "edit")
+
+    @override_settings(
+        DEFAULT_ANONYMOUS_PERMISSIONS="view",
+        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download",
+        DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,  # conflicting legacy
+        DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,  # conflicting legacy
+    )
+    def test_resource_service_permissions_compact_wins_over_legacy_conflict(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        dataset = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_compact_precedence", "owner": admin}
+        )
+        url = reverse("base-resources-perms-spec", kwargs={"pk": dataset.pk})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        self.assertEqual(group_permissions.get("anonymous"), "view")  # compact wins
+        self.assertEqual(group_permissions.get("registered-members"), "download")
+
+    @override_settings(
+        DEFAULT_ANONYMOUS_PERMISSIONS="view",
+        DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="none",
+    )
+    def test_resource_service_permissions_default_groups_compact_view_none(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        dataset = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_perms_compact_view_none", "owner": admin}
+        )
+        url = reverse("base-resources-perms-spec", kwargs={"pk": dataset.pk})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        self.assertEqual(group_permissions.get("anonymous"), "view")
+        self.assertEqual(group_permissions.get("registered-members"), "none")
+
+    @override_settings(
         EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=False,
         EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
     )
@@ -2392,21 +2529,22 @@ class BaseApiTests(APITestCase):
 
         # Try to update permissions including anonymous and registered members groups
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
-        perm_spec = {
-            "uuid": resource.uuid,
-            "groups": [
-                {
-                    "id": anonymous_group.id,
-                    "name": "anonymous",
-                    "permissions": "view",
-                },
-                {
-                    "id": registered_group.id,
-                    "name": "registered-members",
-                    "permissions": "download",
-                },
-            ],
-        }
+        response = self.client.get(set_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        perm_spec = response.data
+        perm_spec["uuid"] = resource.uuid
+        perm_spec["groups"] = [
+            {
+                "id": anonymous_group.id,
+                "name": "anonymous",
+                "permissions": "view",
+            },
+            {
+                "id": registered_group.id,
+                "name": "registered-members",
+                "permissions": "download",
+            },
+        ]
 
         response = self.client.put(set_perms_url, data=perm_spec, format="json")
         self.assertEqual(response.status_code, 200)
@@ -2454,21 +2592,22 @@ class BaseApiTests(APITestCase):
         # login as admin (staff user) and verify admin can modify these permissions
         self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        perm_spec_admin = {
-            "uuid": resource.uuid,
-            "groups": [
-                {
-                    "id": anonymous_group.id,
-                    "name": "anonymous",
-                    "permissions": "view",
-                },
-                {
-                    "id": registered_group.id,
-                    "name": "registered-members",
-                    "permissions": "view",
-                },
-            ],
-        }
+        response = self.client.get(set_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        perm_spec_admin = response.data
+        perm_spec_admin["uuid"] = resource.uuid
+        perm_spec_admin["groups"] = [
+            {
+                "id": anonymous_group.id,
+                "name": "anonymous",
+                "permissions": "view",
+            },
+            {
+                "id": registered_group.id,
+                "name": "registered-members",
+                "permissions": "view",
+            },
+        ]
 
         response = self.client.put(set_perms_url, data=perm_spec_admin, format="json")
         self.assertEqual(response.status_code, 200)
@@ -2539,21 +2678,22 @@ class BaseApiTests(APITestCase):
         registered_group = Group.objects.get(name="registered-members")
 
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
-        perm_spec = {
-            "uuid": resource.uuid,
-            "groups": [
-                {
-                    "id": anonymous_group.id,
-                    "name": "anonymous",
-                    "permissions": "view",
-                },
-                {
-                    "id": registered_group.id,
-                    "name": "registered-members",
-                    "permissions": "download",
-                },
-            ],
-        }
+        response = self.client.get(set_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        perm_spec = response.data
+        perm_spec["uuid"] = resource.uuid
+        perm_spec["groups"] = [
+            {
+                "id": anonymous_group.id,
+                "name": "anonymous",
+                "permissions": "view",
+            },
+            {
+                "id": registered_group.id,
+                "name": "registered-members",
+                "permissions": "download",
+            },
+        ]
 
         response = self.client.put(set_perms_url, data=perm_spec, format="json")
         self.assertEqual(response.status_code, 200)
@@ -2599,10 +2739,83 @@ class BaseApiTests(APITestCase):
             "Bobby should not have been able to set registered-members to download",
         )
 
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=False,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
+    )
+    def test_resource_service_permissions_patch_with_restricted_settings(self):
+        resource = Dataset.objects.filter(owner__username="admin").first()
+        bobby = get_user_model().objects.get(username="bobby")
+        resource.set_permissions(
+            {
+                "users": {
+                    bobby: [
+                        "base.change_resourcebase",
+                        "base.change_resourcebase_metadata",
+                        "base.change_resourcebase_permissions",
+                    ]
+                }
+            }
+        )
+
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+
+        anonymous_group = Group.objects.get(name="anonymous")
+        registered_group = Group.objects.get(name="registered-members")
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", "permissions")
+
+        response = self.client.get(set_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        initial_group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        anonymous_target = "download" if initial_group_permissions.get("anonymous") != "download" else "view"
+        registered_target = "download" if initial_group_permissions.get("registered-members") != "download" else "view"
+
+        response = self.client.patch(
+            set_perms_url,
+            data={
+                "uuid": resource.uuid,
+                "groups": [
+                    {
+                        "id": anonymous_group.id,
+                        "name": "anonymous",
+                        "permissions": anonymous_target,
+                    },
+                    {
+                        "id": registered_group.id,
+                        "name": "registered-members",
+                        "permissions": registered_target,
+                    },
+                ],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+
+        resp_js = json.loads(response.content.decode("utf-8"))
+        execution_id = resp_js.get("execution_id", "")
+        status_url = resp_js.get("status_url", None)
+        for _cnt in range(0, 10):
+            response = self.client.get(f"{status_url}")
+            self.assertEqual(response.status_code, 200)
+            resp_js = json.loads(response.content.decode("utf-8"))
+            if resp_js.get("status", "") == "finished":
+                break
+            else:
+                resouce_service_dispatcher.apply((execution_id,))
+                sleep(3.0)
+
+        response = self.client.get(set_perms_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        group_permissions = {g["name"]: g["permissions"] for g in response.data.get("groups", [])}
+        self.assertEqual(group_permissions.get("anonymous"), initial_group_permissions.get("anonymous"))
+        self.assertEqual(
+            group_permissions.get("registered-members"), initial_group_permissions.get("registered-members")
+        )
+
     def test_resource_service_copy(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
-        resource = resource_manager.create(
+        resource = dataset_manager.create(
             str(uuid4()),
             Dataset,
             defaults={
@@ -2701,7 +2914,7 @@ class BaseApiTests(APITestCase):
         with self.settings(ASYNC_SIGNALS=False):
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
-            resource = resource_manager.create(
+            resource = dataset_manager.create(
                 None,
                 resource_type=Dataset,
                 defaults={
@@ -3140,10 +3353,12 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
         self.assertEqual([], response.json())
 
     def test_user_without_view_perms_cannot_see_the_endpoint(self):
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
         self.client.login(username="bobby", password="bob")
-        resource_manager.remove_permissions(self.layer.uuid, instance=self.layer.get_self_resource())
+        resource_manager_registry.get_for_instance(self.layer.get_self_resource()).remove_permissions(
+            self.layer.uuid, instance=self.layer.get_self_resource()
+        )
         url = reverse("base-resources-extra-metadata", args=[self.layer.id])
         response = self.client.get(url, content_type="application/json")
         self.assertTrue(401, response.status_code)
@@ -3753,7 +3968,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
     def test_simple_resourcebase_can_be_created_by_resourcemanager(self):
         self.maxDiff = None
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
 
@@ -3807,19 +4022,21 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
         self.assertEqual(record.identification[0].title, resource.title)
 
     def test_resource_index_created(self):
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
 
-        resource = resource_manager.update(resource.uuid, instance=resource, vals={})
+        resource = resource_manager_registry.get_for_instance(resource).update(
+            resource.uuid, instance=resource, vals={}
+        )
 
         self.assertTrue(ResourceIndex.objects.filter(resource=resource).exists())
 
     def test_csw_should_not_return_resourcebase_by_default(self):
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager.create(
+        dt = dataset_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 
@@ -3836,10 +4053,10 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
 
     @override_settings(PYCSW=pycsw_settings_all)
     def test_csw_should_return_resourcebase_if_defined_in_settings(self):
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(ResourceBase).create(
             str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
         )
-        dt = resource_manager.create(
+        dt = dataset_manager.create(
             str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
         )
 

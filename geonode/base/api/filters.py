@@ -18,7 +18,6 @@
 #########################################################################
 import ast
 import logging
-from distutils.util import strtobool
 from itertools import groupby
 
 from rest_framework.filters import SearchFilter, BaseFilterBackend
@@ -28,6 +27,7 @@ from django.db.models import Subquery
 from geonode.base.bbox_utils import filter_bbox
 from geonode.base.models import ThesaurusKeyword
 from geonode.favorite.models import Favorite
+from geonode.utils import strtobool
 
 logger = logging.getLogger(__name__)
 

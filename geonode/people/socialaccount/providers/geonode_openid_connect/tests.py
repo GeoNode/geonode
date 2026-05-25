@@ -39,8 +39,9 @@ from allauth.account.signals import user_signed_up
 
 # from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.apple.client import jwt_encode
-from allauth.socialaccount.tests import OAuth2TestsMixin
-from allauth.tests import TestCase, mocked_response
+from django.test import TestCase
+
+from .allauth_test_utils import OAuth2TestsMixin, mocked_response
 
 
 @pytest.fixture

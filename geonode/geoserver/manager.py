@@ -34,13 +34,14 @@ from geonode.base.models import ResourceBase
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.security.utils import skip_registered_members_common_group
+from geonode.security.registry import permissions_registry
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
     OWNER_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
     DATASET_ADMIN_PERMISSIONS,
 )
-from geonode.resource.manager import ResourceManager, ResourceManagerInterface
+from geonode.resource.manager import BaseResourceManager, ResourceManagerInterface
 from geonode.geoserver.signals import geofence_rule_assign
 from .geofence import AutoPriorityBatch
 from .tasks import geoserver_set_style, geoserver_delete_map, geoserver_create_style, geoserver_cascading_delete
@@ -136,7 +137,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        instance = instance or ResourceManager._get_instance(uuid)
+        instance = instance or BaseResourceManager._get_instance(uuid)
 
         try:
             if instance and isinstance(instance.get_real_instance(), Dataset):
@@ -164,7 +165,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
     ) -> bool:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
 
         try:
             if _resource:
@@ -244,13 +245,19 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                     if not skip_registered_members_common_group(user_group):
                                         create_geofence_rules(_resource, perms, None, user_group, batch)
                                         exist_geolimits = exist_geolimits or has_geolimits(_resource, None, user_group)
-
                                 # Anonymous
-                                if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+                                anonymous_perms = (
+                                    permissions_registry.get_perms(
+                                        instance=_resource, group=Group.objects.get(name="anonymous"), use_cache=True
+                                    )
+                                    or {}
+                                )
+
+                                if VIEW_PERMISSIONS[0] in anonymous_perms:
                                     create_geofence_rules(_resource, VIEW_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
-                                if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+                                if DOWNLOAD_PERMISSIONS[0] in anonymous_perms:
                                     create_geofence_rules(_resource, DOWNLOAD_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
@@ -320,7 +327,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         raise NotImplementedError
 
     def set_style(self, method: str, uuid: str, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        instance = instance or ResourceManager._get_instance(uuid)
+        instance = instance or BaseResourceManager._get_instance(uuid)
 
         if instance and isinstance(instance.get_real_instance(), Dataset):
             try:
@@ -339,7 +346,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def set_time_info(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        instance = instance or ResourceManager._get_instance(uuid)
+        instance = instance or BaseResourceManager._get_instance(uuid)
 
         if instance and isinstance(instance.get_real_instance(), Dataset):
             try:

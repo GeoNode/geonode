@@ -77,7 +77,7 @@ from geonode.utils import (
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
-from geonode.security.models import PermissionLevelMixin
+from geonode.security.models import PermissionLevelMixin, AuthConfig
 from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS
 
 from geonode.notifications_helper import send_notification, get_notification_recipients
@@ -225,7 +225,7 @@ class RestrictionCodeType(models.Model):
 
 
 class License(models.Model):
-    identifier = models.CharField(max_length=255, editable=False)
+    identifier = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -884,6 +884,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
 
     blob = JSONField(null=True, default=dict, blank=True)
+    auth_config = models.ForeignKey(
+        AuthConfig,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="authconfigresources",
+    )
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
 
@@ -955,23 +962,35 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_be_downloaded(self):
-        return self.subtype in {"vector", "raster", "vector_time"}
+        return self.subtype in {"vector", "raster", "vector_time", "tabular"}
 
     @property
     def can_have_wfs_links(self):
-        return self.subtype == "vector"
+        return self.subtype in {"vector", "tabular"}
 
     @property
     def can_have_wps_links(self):
-        return self.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}
+        return self.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time", "tabular"}
+
+    @property
+    def should_create_style(self):
+        return self.subtype != "tabular"
 
     @property
     def can_have_style(self):
-        return self.subtype not in {"tileStore", "remote"}
+        return self.subtype not in {"tabular", "tileStore", "remote", "tabular"}
 
-    @property
-    def can_have_thumbnail(self):
-        return self.subtype not in {"3dtiles", "cog", "flatgeobuf"}
+    def can_set_thumbnail(self, thumbnail_data=None):
+        """
+        Decide whether the resource allows setting a thumbnail.
+        Manual uploads are allowed; otherwise, only subtypes that
+        support auto-generated thumbnails are permitted.
+        """
+        if thumbnail_data:
+            return True
+
+        # No thumbnail data provided: allow only subtypes that support auto-generation.
+        return self.subtype not in {"tabular", "3dtiles", "cog", "flatgeobuf"}
 
     @property
     def raw_purpose(self):
@@ -992,6 +1011,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def detail_url(self):
         return self.get_absolute_url()
+
+    def fixup_store_type(self, keys, values):
+        from geonode.geoserver.helpers import get_dataset_storetype
+
+        if self.subtype == "tabular":
+            return self
+        for key in keys:
+            setattr(self, key, get_dataset_storetype(values[key]))
+        return self
 
     def clean(self):
         if self.title:
@@ -1085,9 +1113,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a layer, map or document is deleted
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
-        resource_manager.remove_permissions(self.uuid, instance=self.get_real_instance())
+        resource_manager_registry.get_for_instance(self).remove_permissions(
+            self.uuid, instance=self.get_real_instance()
+        )
 
         # delete assets. TODO: when standalone Assets will be allowed, only dependable Assets shall be removed
         links_with_assets = Link.objects.filter(resource=self, asset__isnull=False).prefetch_related("asset")
@@ -2117,6 +2147,15 @@ class Configuration(SingletonModel):
 
     read_only = models.BooleanField(default=False)
     maintenance = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        previous_read_only = Configuration.objects.filter(pk=self.pk).values_list("read_only", flat=True).first()
+        super().save(*args, **kwargs)
+
+        if previous_read_only != self.read_only:
+            from geonode.security.registry import permissions_registry
+
+            permissions_registry.clear_permissions_cache()
 
     class Meta:
         verbose_name_plural = "Configuration"

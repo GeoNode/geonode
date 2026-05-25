@@ -28,3 +28,10 @@ class GeoNodeResourceConfig(AppConfig):
         from geonode.urls import urlpatterns
 
         urlpatterns += [re_path(r"^api/v2/", include("geonode.resource.api.urls"))]
+        run_setup_hooks()
+
+
+def run_setup_hooks(*args, **kwargs):
+    from geonode.resource.registry import resource_manager_registry
+
+    resource_manager_registry.init_registry()

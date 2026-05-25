@@ -22,7 +22,7 @@ from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
 from geonode.layers.models import Dataset
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
 logger = get_task_logger(__name__)
 
@@ -50,4 +50,4 @@ def delete_dataset(self, dataset_id):
         logger.warning(f"Layers {dataset_id} does not exist!")
         return
     logger.debug(f"Deleting Dataset {layer}")
-    resource_manager.delete(uuid=layer.uuid, instance=layer)
+    resource_manager_registry.get_for_instance(layer).delete(uuid=layer.uuid, instance=layer)

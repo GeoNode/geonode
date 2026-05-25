@@ -55,6 +55,13 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
             "type": "vector",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "geojson": {"mimes": {"application/json", "text/plain", "text/json"}},
+            "json": {"mimes": {"application/json", "text/plain", "text/json"}},
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """
@@ -88,7 +95,8 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
 
                 return _file.get("type", None) in ["FeatureCollection", "Feature"]
 
-            except Exception:
+            except Exception as e:
+                logger.exception(e)
                 return False
         return False
 

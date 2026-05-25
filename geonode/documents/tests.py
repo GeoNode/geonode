@@ -25,6 +25,7 @@ when you run "manage.py test".
 import os
 import io
 import json
+import zipfile
 import gisdata
 
 from PIL import Image
@@ -35,6 +36,7 @@ from pathlib import Path
 
 from django.urls import reverse
 from django.conf import settings
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.defaultfilters import filesizeformat
@@ -46,7 +48,7 @@ from geonode.maps.models import Map
 from geonode.compat import ensure_string
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.apps import DocumentsAppConfig
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import document_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
@@ -156,11 +158,50 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d = create_single_doc("example_doc_name")
         self.assertTrue(d.download_is_ajax_safe)
 
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_allowed_for_admin(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        title = "Remote doc allowed for admin user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_forbidden_for_regular_user(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc denied for regular user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Document.objects.filter(title=title).exists())
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_remote_document_add_allowed_for_regular_user_when_enabled(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc allowed for regular user"
+
+        form_data = {
+            "title": title,
+            "doc_url": "https://raw.githubusercontent.com/GeoNode/geonode/master/geonode/documents/tests/data/test.CSV",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Document.objects.filter(title=title).exists())
+
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
 
         superuser = get_user_model().objects.get(pk=2)
-        c = resource_manager.create(
+        c = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -296,14 +337,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             with self.settings(THUMBNAIL_SIZE={"width": 400, "height": 200}):
                 self.client.post(reverse("document_upload"), data=data)
                 d = Document.objects.get(title="Remote img File Doc")
-                self.assertIsNotNone(d.thumbnail_url)
-                thumb_file = os.path.join(
-                    settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
-                )
-                file = Image.open(thumb_file)
-                self.assertEqual(file.size, (400, 200))
-                # check thumbnail qualty and extention
-                self.assertEqual(file.format, "JPEG")
+                self.assertIsNone(d.thumbnail_url, "Thumbnails are not allowed for remote documents.")
+
             # test pdf doc
             with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
                 data = {
@@ -344,6 +379,38 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             )
             self.assertEqual(form.errors, {"doc_file": [expected_error]})
 
+    def test_upload_document_form_rejects_unsafe_zip(self):
+        """A zip-based document carrying a path-traversal entry must be rejected by the form."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("../../etc/passwd", b"root:x:0:0")
+        buf.seek(0)
+
+        form_data = {
+            "title": "Malicious archive",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("evil.zip", buf.read(), "application/zip")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("doc_file", form.errors)
+        self.assertIn("Invalid or unsafe ZIP archive.", str(form.errors["doc_file"]))
+
+    def test_upload_document_form_accepts_clean_zip(self):
+        """A well-formed zip document must pass the safety check and validate."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("readme.txt", b"hello")
+        buf.seek(0)
+
+        form_data = {
+            "title": "Clean archive",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("clean.zip", buf.read(), "application/zip")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertTrue(form.is_valid(), msg=form.errors)
+
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""
         d = Document.objects.all().first()
@@ -379,6 +446,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_document_upload_rejects_file_with_mismatched_content(self):
+        self.client.login(username="admin", password="admin")
+        pe_like_content = (
+            b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
+        )
+        f = SimpleUploadedFile("fake.pdf", pe_like_content, "application/pdf")
+
+        response = self.client.post(
+            f"{reverse('document_upload')}?no__redirect=true",
+            data={
+                "doc_file": f,
+                "title": "fake_pdf",
+                "permissions": '{"users":{"AnonymousUser": ["view_resourcebase"]}}',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Document.objects.filter(title="fake_pdf").exists())
+
     # Permissions Tests
 
     def test_set_document_permissions(self):
@@ -409,7 +495,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         create_thumb.return_value = True
         # Setup some document names to work with
         superuser = get_user_model().objects.get(pk=2)
-        document = resource_manager.create(
+        document = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True),
@@ -596,7 +682,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         cls.not_admin.set_password("very-secret")
         cls.not_admin.save()  # Two database writes (create + save password) run only once!
 
-        cls.test_doc = resource_manager.create(
+        cls.test_doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=cls.not_admin, title="test", is_approved=True),
@@ -628,7 +714,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 200)
         # test document link with external url
-        doc = resource_manager.create(
+        doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
