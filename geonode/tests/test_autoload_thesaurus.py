@@ -66,7 +66,10 @@ class TestAutoloadThesauri(TestCase):
     def test_autoload_loads_rdf_files_from_thesauri_dirs(self):
         """autoload_thesauri should load .rdf files found in thesauri/ dirs of installed apps."""
         app_configs = [self._make_app_config("fake_app", self.tmp_dir)]
-        with patch("geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs", return_value=app_configs):
+        with patch(
+            "geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs",
+            return_value=app_configs,
+        ):
             autoload_thesauri()
 
         self.assertTrue(
@@ -77,7 +80,10 @@ class TestAutoloadThesauri(TestCase):
     def test_autoload_is_idempotent(self):
         """Calling autoload_thesauri twice should not create duplicate thesauri (uses update action)."""
         app_configs = [self._make_app_config("fake_app", self.tmp_dir)]
-        with patch("geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs", return_value=app_configs):
+        with patch(
+            "geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs",
+            return_value=app_configs,
+        ):
             autoload_thesauri()
             autoload_thesauri()
 
@@ -88,7 +94,10 @@ class TestAutoloadThesauri(TestCase):
         """autoload_thesauri should silently skip apps that have no thesauri/ directory."""
         app_without_thesauri = self._make_app_config("no_thesauri_app", self.tmp_dir.rstrip("/") + "_no_dir")
         app_configs = [app_without_thesauri]
-        with patch("geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs", return_value=app_configs):
+        with patch(
+            "geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs",
+            return_value=app_configs,
+        ):
             # Should not raise
             autoload_thesauri()
 
@@ -101,7 +110,10 @@ class TestAutoloadThesauri(TestCase):
             f.write("THIS IS NOT VALID RDF")
 
         app_configs = [self._make_app_config("fake_app", self.tmp_dir)]
-        with patch("geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs", return_value=app_configs):
+        with patch(
+            "geonode.base.management.commands.thesaurus_subcommands.autoload.apps.get_app_configs",
+            return_value=app_configs,
+        ):
             # Should not raise despite the bad file
             autoload_thesauri()
 
