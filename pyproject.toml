@@ -25,7 +25,7 @@ classifiers = [
 # Core dependencies (consolidated from requirements.txt)
 dependencies = [
     "Pillow==12.2.0",
-    "lxml==5.2.1",
+    "lxml==6.1.1",
     "psycopg2==2.9.12",
     "Django==5.2.14",
 
@@ -45,10 +45,10 @@ dependencies = [
     "smart_open==7.0.4",
     "PyMuPDF==1.27.2.3",
     "defusedxml==0.7.1",
-    "zipstream-ng==1.8.0",
+    "zipstream-ng==1.9.2",
 
     # Django Apps
-    "django-allauth==65.16.1",
+    "django-allauth==65.17.0",
     "django-appconf==1.0.6",
     "django-filter==24.2",
     "django-imagekit==5.0.0",
@@ -65,14 +65,14 @@ dependencies = [
     "django-widget-tweaks==1.5.0",
     "django-sequences==3.0",
     "oauthlib==3.3.1",
-    "pyjwt==2.8.0",
+    "pyjwt==2.13.0",
     "redis==6.2.0",
 
     # geopython dependencies
     "pycsw @ git+https://github.com/geopython/pycsw.git@3.0.0-beta1",
     "pyproj<3.8.0",
     "OWSLib==0.34.1",
-    "SQLAlchemy==2.0.43",
+    "SQLAlchemy==2.0.50",
     "Shapely==2.1.2",
     "mercantile==1.2.1",
     "numpy==1.26.*",
@@ -127,7 +127,7 @@ dependencies = [
     "mock<6.0.0",
     "python-dateutil==2.9.0.post0",
     "pytz==2024.1",
-    "requests==2.33.1",
+    "requests==2.34.2",
     "timeout-decorator==0.5.0",
     "pylibmc==1.6.3",
     "sherlock==0.4.1",
