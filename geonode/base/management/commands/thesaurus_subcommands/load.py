@@ -88,17 +88,16 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE, def
         log_details
     )
 
-    tl_cnt = tl_add = 0
+    tl_cnt = tl_add = tl_skp = 0
     tk_cnt = tk_add = 0
-    tkl_cnt = tkl_add = 0
-    tkl_skp = 0
+    tkl_cnt = tkl_add = tkl_skp = 0
 
     for lang in available_titles:
         if lang.language is not None:
             tl_cnt += 1
             if langs and lang.language not in langs:
-                logger.debug(f"Skipping label for language '{lang.language}' not in requested langs {langs}")
-                tkl_skp += 1
+                logger.debug(f"Skipping thesaurus label for language '{lang.language}' not in requested langs {langs}")
+                tl_skp += 1
                 continue
             thesaurus_label, c = _run_action(
                 action,
@@ -166,10 +165,10 @@ def load_thesaurus(input_file, identifier: str, action: str = ACTION_CREATE, def
             )
             tkl_add += 1 if c else 0
 
-    logger.warning(f"Thesaurus added:                {cr_t}")
-    logger.warning(f"ThesaurusLabel added:         {tl_add:3}/{tl_cnt:3}")
-    logger.warning(f"ThesaurusKeyword added:       {tk_add:3}/{tk_cnt:3}")
-    logger.warning(f"ThesaurusKeywordLabel added:  {tkl_add:3}/{tkl_cnt:3}")
+    logger.warning(f"Thesaurus added:       {cr_t}")
+    logger.warning(f"ThesaurusLabel:        found: {tl_cnt:3} - added: {tl_add:3} - skipped: {tl_skp:3}")
+    logger.warning(f"ThesaurusKeyword:      found: {tk_cnt:3} - added: {tk_add:3}")
+    logger.warning(f"ThesaurusKeywordLabel: found: {tkl_cnt:3} - added: {tkl_add:3} - skipped: {tkl_skp:3}")
 
 
 def _run_action(action: str, model: type[models.Model], pk_dict, upd_dict, create_dict, log_details) -> tuple[models.Model, bool]:
