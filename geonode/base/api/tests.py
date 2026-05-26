@@ -3298,7 +3298,7 @@ class BaseApiTests(APITestCase):
 
     def test_www_authenticate_header_is_removed_for_401_responses(self):
         """
-        Ensure only admins can delete profiles.
+        Ensure WWW-Authenticate header is removed for 401 responses to prevent browsers from showing a login prompt
         """
         try:
             user = get_user_model().objects.create_user(
