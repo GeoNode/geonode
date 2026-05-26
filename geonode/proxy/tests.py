@@ -26,6 +26,7 @@ Replace these with more appropriate tests for your application.
 import json
 import io
 import zipfile
+from threading import Event, Thread
 
 from urllib.parse import urljoin
 
@@ -78,12 +79,47 @@ class ProxyTest(TestCase):
             registry.proxy_allowed_hosts = ["existing.test"]
             registry._last_registry_load = now()
 
-        registry.initialize = MagicMock(side_effect=initialize_registry)
+        registry._initialize = MagicMock(side_effect=initialize_registry)
 
         registry.register_host("remote.test")
 
-        registry.initialize.assert_called_once()
+        registry._initialize.assert_called_once()
         self.assertEqual({"existing.test", "remote.test"}, registry.proxy_allowed_hosts)
+
+    def test_concurrent_lazy_initialization_runs_once(self):
+        registry = ProxyUrlsRegistry()
+        initialization_started = Event()
+        release_initialization = Event()
+        errors = []
+
+        def initialize_registry():
+            initialization_started.set()
+            release_initialization.wait(5)
+            registry.proxy_allowed_hosts = ["existing.test"]
+            registry._last_registry_load = now()
+
+        registry._initialize = MagicMock(side_effect=initialize_registry)
+
+        def read_registry():
+            try:
+                registry.proxy_allowed_hosts
+            except Exception as exc:
+                errors.append(exc)
+
+        first_thread = Thread(target=read_registry)
+        second_thread = Thread(target=read_registry)
+
+        first_thread.start()
+        initialization_started.wait(5)
+        second_thread.start()
+        release_initialization.set()
+        first_thread.join(5)
+        second_thread.join(5)
+
+        self.assertFalse(first_thread.is_alive())
+        self.assertFalse(second_thread.is_alive())
+        self.assertEqual([], errors)
+        registry._initialize.assert_called_once()
 
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([TEST_DOMAIN]))
     def test_proxy_allowed_host(self):
