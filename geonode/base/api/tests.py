@@ -3296,6 +3296,21 @@ class BaseApiTests(APITestCase):
         self.assertTrue(doc.metadata_uploaded_preserve)
         self.assertTrue(response.json()["resource"]["metadata_uploaded_preserve"])
 
+    def test_www_authenticate_header_is_removed_for_401_responses(self):
+        """
+        Ensure only admins can delete profiles.
+        """
+        try:
+            user = get_user_model().objects.create_user(
+                username="user_test_delete", email="user_test_delete@geonode.org", password="user"
+            )
+            url = reverse("users-detail", kwargs={"pk": user.pk})
+            # Anonymous can't read
+            response = self.client.get(url, format="json")
+            self.assertNotIn("WWW-Authenticate", response.headers)
+        finally:
+            user.delete()
+
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):

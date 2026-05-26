@@ -34,7 +34,7 @@ def geonode_exception_handler(exc, context):
 
     if response is not None:
         if response.status_code == 401:
-            response.headers.pop('WWW-Authenticate', None)
+            response.headers.pop("WWW-Authenticate", None)
 
         if isinstance(exc, APIException):
             # for the upload exception we need a custom response
