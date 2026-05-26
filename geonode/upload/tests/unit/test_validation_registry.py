@@ -27,7 +27,6 @@ from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.validation import FileValidationConfigRegistry
 from geonode.upload.validation.base import ValidationConfigProvider
 
-
 EMPTY_CONFIG = {
     "allowed_extensions": frozenset(),
     "magic_mimetype_map": {},

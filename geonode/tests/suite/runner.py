@@ -17,7 +17,6 @@ from django.test.runner import DiscoverRunner
 from django.db import connections, DEFAULT_DB_ALIAS
 from django.core.exceptions import ImproperlyConfigured
 
-
 # "auto" - one worker per Django application
 # "cpu" - one worker per process core
 WORKER_MAX = getattr(settings, "TEST_RUNNER_WORKER_MAX", 3)

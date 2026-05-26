@@ -25,7 +25,6 @@ from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -20,7 +20,6 @@ import logging
 from django.utils import timezone
 from geonode.harvesting.models import HarvestableResource, Harvester
 
-
 logger = logging.getLogger(__name__)
 
 

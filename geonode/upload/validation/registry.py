@@ -40,7 +40,6 @@ from typing import Iterable, Mapping, Optional
 
 from django.utils.module_loading import import_string
 
-
 logger = logging.getLogger(__name__)
 
 

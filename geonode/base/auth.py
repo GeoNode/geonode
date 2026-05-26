@@ -63,7 +63,7 @@ def create_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     try:
         Application = get_application_model()
         app = Application.objects.get(name=client)
-        (access_token, created) = AccessToken.objects.get_or_create(
+        access_token, created = AccessToken.objects.get_or_create(
             user=user, application=app, expires=expires, token=generate_token()
         )
         return access_token

@@ -39,7 +39,6 @@ from geonode.groups.models import GroupProfile
 from geonode.utils import get_dataset_workspace
 from geonode.security.registry import permissions_registry
 
-
 logger = logging.getLogger(__name__)
 
 

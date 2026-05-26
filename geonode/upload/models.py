@@ -29,7 +29,6 @@ from django.core.validators import MinLengthValidator
 from django.conf import settings
 from django.template.defaultfilters import filesizeformat
 
-
 logger = logging.getLogger("importer")
 
 

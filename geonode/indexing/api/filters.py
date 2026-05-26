@@ -11,7 +11,6 @@ from rest_framework.filters import BaseFilterBackend
 from geonode.indexing.models import ResourceIndex
 from geonode.metadata.multilang.utils import get_2letters_languages, get_pg_language, get_default_language
 
-
 logger = logging.getLogger(__name__)
 
 

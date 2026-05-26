@@ -120,7 +120,7 @@ def translate_polygons(
     ref.: https://towardsdatascience.com/around-the-world-in-80-lines-crossing-the-antimeridian-with-python-and-shapely-c87c9b6e1513
     """
     for polygon in [geometry_collection]:
-        (minx, _, maxx, _) = polygon.bounds
+        minx, _, maxx, _ = polygon.bounds
         if minx < -180:
             geo_polygon = affinity.translate(polygon, xoff=360)
         elif maxx > 180:
@@ -210,10 +210,8 @@ def split_polygon(
 
     n_splits = len(split_meridians)
     if n_splits > 1:
-        raise NotImplementedError(
-            """Splitting a Polygon by multiple meridians (MultiLineString)
-               not supported by Shapely"""
-        )
+        raise NotImplementedError("""Splitting a Polygon by multiple meridians (MultiLineString)
+               not supported by Shapely""")
     elif n_splits == 1:
         split_lon = next(iter(split_meridians))
         meridian = [[split_lon, -90.0], [split_lon, 90.0]]

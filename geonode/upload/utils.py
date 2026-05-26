@@ -37,7 +37,6 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from osgeo import ogr
 
-
 DEFAULT_PK_COLUMN_NAME = "fid"
 
 

@@ -21,7 +21,6 @@ from django.urls import include, re_path, path
 from geonode.management_commands_http.views import ManagementCommandView
 from geonode.management_commands_http.routers import router
 
-
 urlpatterns = [
     re_path(r"management/commands/$", ManagementCommandView.as_view()),
     re_path(r"management/commands/(?P<cmd_name>\w+)/$", ManagementCommandView.as_view()),

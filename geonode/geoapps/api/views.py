@@ -34,7 +34,6 @@ from .permissions import GeoAppPermissionsFilter
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

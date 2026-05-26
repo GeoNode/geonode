@@ -78,7 +78,6 @@ from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 from geonode.upload.registry import feature_validators_registry
 from django.core.exceptions import ValidationError
 
-
 logger = logging.getLogger("importer")
 
 

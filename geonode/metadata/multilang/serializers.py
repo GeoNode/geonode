@@ -5,7 +5,6 @@ from rest_framework import serializers
 
 from geonode.metadata.multilang import utils as multi
 
-
 logger = logging.getLogger(__name__)
 
 

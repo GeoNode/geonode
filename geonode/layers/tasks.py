@@ -18,6 +18,7 @@
 #########################################################################
 
 """celery tasks for geonode.layers."""
+
 from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 

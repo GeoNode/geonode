@@ -36,7 +36,6 @@ from geonode.resource.registry import resource_manager_registry
 from geonode.utils import resolve_object
 from geonode.security.registry import permissions_registry
 
-
 logger = logging.getLogger("geonode.geoapps.views")
 
 _PERMISSION_MSG_GENERIC = _("You do not have permissions for this app.")

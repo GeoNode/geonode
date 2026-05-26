@@ -39,7 +39,6 @@ from geonode.utils import build_absolute_uri
 
 from guardian.shortcuts import get_objects_for_group
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -310,10 +309,8 @@ def group_pre_delete(instance, sender, **kwargs):
 
     """Make sure that the anonymous group is not deleted"""
     if instance.name == "anonymous":
-        raise Exception(
-            "Deletion of the anonymous group is\
-         not permitted as will break the geonode permissions system"
-        )
+        raise Exception("Deletion of the anonymous group is\
+         not permitted as will break the geonode permissions system")
     permissions_registry.delete_resource_permissions_cache(instance=instance)
 
 

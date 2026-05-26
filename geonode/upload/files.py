@@ -22,12 +22,12 @@ scattered over the codebase
 
 @todo complete and use
 """
+
 import re
 import logging
 
 from collections import UserList
 from geoserver.resource import FeatureType, Coverage
-
 
 logger = logging.getLogger("importer")
 

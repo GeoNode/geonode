@@ -17,8 +17,7 @@
 #
 #########################################################################
 
-"""Utilities for managing GeoNode documents
-"""
+"""Utilities for managing GeoNode documents"""
 
 # Standard Modules
 import os

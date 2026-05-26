@@ -37,7 +37,6 @@ from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursiv
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
 
-
 logger = logging.getLogger("importer")
 
 

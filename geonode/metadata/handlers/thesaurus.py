@@ -27,7 +27,6 @@ from django.utils.translation import gettext as _
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.metadata.handlers.abstract import MetadataHandler
 
-
 logger = logging.getLogger(__name__)
 
 

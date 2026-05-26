@@ -29,7 +29,6 @@ from geoserver.support import build_url
 from geoserver.catalog import FailedRequestError
 from geonode.upload.api.exceptions import PublishResourceException
 
-
 logger = logging.getLogger("importer")
 
 

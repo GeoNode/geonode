@@ -23,6 +23,7 @@ These are used in order to extend the default authorization provided by
 django-allauth.
 
 """
+
 from django.conf import settings
 from django.utils.module_loading import import_string
 

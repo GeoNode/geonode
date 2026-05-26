@@ -25,7 +25,6 @@ from geonode.base.models import ResourceBase
 from geonode.resource.manager import BaseResourceManager
 from geonode.documents.models import Document
 
-
 logger = logging.getLogger(__name__)
 
 

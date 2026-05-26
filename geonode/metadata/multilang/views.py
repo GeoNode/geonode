@@ -5,7 +5,6 @@ from django.db.models import Prefetch
 from geonode.metadata.models import SparseField
 from geonode.metadata.multilang import utils as multi
 
-
 logger = logging.getLogger(__name__)
 
 

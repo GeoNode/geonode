@@ -44,10 +44,8 @@ CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
 
-METADATA_UPLOADED_PRESERVE_ERROR = _(
-    "Note: this dataset's orginal metadata was \
-populated and preserved by importing a metadata XML file. This metadata cannot be edited."
-)
+METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this dataset's orginal metadata was \
+populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this dataset")
 _PERMISSION_MSG_GENERIC = _("You do not have permissions for this dataset.")

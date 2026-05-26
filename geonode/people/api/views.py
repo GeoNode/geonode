@@ -40,7 +40,6 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from geonode.resource.registry import resource_manager_registry
 
-
 logger = logging.getLogger()
 
 

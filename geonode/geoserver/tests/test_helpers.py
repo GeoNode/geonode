@@ -47,7 +47,6 @@ from geonode.geoserver.helpers import (
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 from unittest.mock import patch, Mock
 
-
 logger = logging.getLogger(__name__)
 
 

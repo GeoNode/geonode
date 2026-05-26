@@ -17,8 +17,8 @@
 #
 #########################################################################
 
-"""Utilities for managing GeoNode resource metadata
-"""
+"""Utilities for managing GeoNode resource metadata"""
+
 # Standard Modules
 import logging
 import datetime
@@ -33,7 +33,6 @@ from django.conf import settings
 from django.utils import timezone
 
 from geonode import GeoNodeException
-
 
 LOGGER = logging.getLogger(__name__)
 

@@ -32,7 +32,6 @@ from geonode.layers.utils import get_valid_name
 from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.geoserver.helpers import gs_catalog, ogc_server_settings, create_geoserver_db_featurestore
 
-
 logger = logging.getLogger(__name__)
 
 BBOX = [-180, -90, 180, 90]

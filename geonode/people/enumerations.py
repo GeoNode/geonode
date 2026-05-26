@@ -24,10 +24,8 @@ ROLE_VALUES = (
     ("publisher", _("party who published the resource")),
     (
         "custodian",
-        _(
-            "party that accepts accountability and responsibility for the data and ensures \
-        appropriate care and maintenance of the resource"
-        ),
+        _("party that accepts accountability and responsibility for the data and ensures \
+        appropriate care and maintenance of the resource"),
     ),
     ("pointOfContact", _("party who can be contacted for acquiring knowledge about or acquisition of the resource")),
     ("distributor", _("party who distributes the resource")),

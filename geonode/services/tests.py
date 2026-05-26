@@ -232,7 +232,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
         phony_url = "http://fake"
         mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
-        (url, mock_parsed_arcgis) = mock.MagicMock(
+        url, mock_parsed_arcgis = mock.MagicMock(
             ArcMapService, return_value=(phony_url, mock_parsed_arcgis)
         ).return_value
         mock_parsed_arcgis.url = phony_url
@@ -425,7 +425,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
         phony_url = "http://sit.cittametropolitana.na.it/arcgis/rest/services/basemap_ortofoto_AGEA2011/MapServer"
         mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
-        (url, mock_parsed_arcgis) = mock.MagicMock(
+        url, mock_parsed_arcgis = mock.MagicMock(
             ArcMapService, return_value=(phony_url, mock_parsed_arcgis)
         ).return_value
         mock_parsed_arcgis.url = phony_url
@@ -479,7 +479,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.phony_dataset_name = "phony_name"
         self.phony_keywords = ["first", "second"]
         mock_parsed_wms = mock.MagicMock(OwsWebMapService).return_value
-        (url, mock_parsed_wms) = mock.MagicMock(
+        url, mock_parsed_wms = mock.MagicMock(
             WebMapService, return_value=(self.phony_url, mock_parsed_wms)
         ).return_value
         mock_parsed_wms.provider.url = self.phony_url

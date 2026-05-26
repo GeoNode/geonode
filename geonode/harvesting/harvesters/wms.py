@@ -199,7 +199,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                 "request": kind,
             }
         )
-        (wms_url, _service, _version, _request) = self._get_cleaned_url_params(self.remote_url)
+        wms_url, _service, _version, _request = self._get_cleaned_url_params(self.remote_url)
         if _service:
             params["service"] = _service
         if override_version or _version:
@@ -448,7 +448,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         except (IndexError, KeyError):
             legend_url = ""
         params = {}
-        (wms_url, _service, _version, _request) = self._get_cleaned_url_params(self.remote_url)
+        wms_url, _service, _version, _request = self._get_cleaned_url_params(self.remote_url)
         if _service:
             params["service"] = _service
         if _version:

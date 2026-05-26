@@ -17,6 +17,7 @@
 #
 #########################################################################
 """Utilities for enabling OGC WMS remote services in geonode."""
+
 import json
 import logging
 import requests

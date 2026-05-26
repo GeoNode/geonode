@@ -29,7 +29,6 @@ from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
 
-
 logger = logging.getLogger(__name__)
 
 

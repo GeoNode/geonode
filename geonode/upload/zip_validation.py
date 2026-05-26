@@ -32,7 +32,6 @@ import posixpath
 import stat
 import zipfile
 
-
 MAX_ENTRIES = 10_000
 MAX_TOTAL_UNCOMPRESSED = 2 * 1024 * 1024 * 1024  # 2 GiB
 MAX_COMPRESSION_RATIO = 100
