@@ -39,20 +39,23 @@ class GroupCategorySerializer(DynamicModelSerializer):
         return obj.get_absolute_url()
 
     def get_member_count(self, obj):
-        request = self.context["request"]
+        request = self.context.get("request")
+        if not request:
+            return 0
         user = request.user
         filtered = obj.groups.all()
 
         if not user.is_authenticated:
             filtered = filtered.exclude(access="private")
         elif not user.is_superuser:
-            category_ids = user.group_list_all().values("categories")
-            filtered = filtered.filter(Q(id__in=category_ids) | ~Q(access="private"))
+            filtered = filtered.filter(Q(id__in=user.group_list_all()) | ~Q(access="private"))
 
         return filtered.count()
 
     def get_resource_counts(self, obj):
-        request = self.context["request"]
+        request = self.context.get("request")
+        if not request:
+            return {}
         return _get_resource_counts(
             request,
             resourcebase_filter_kwargs={"group__groupprofile__categories": obj},
@@ -110,7 +113,10 @@ class GroupSerializer(DynamicModelSerializer):
         ]
 
     def get_resource_counts(self, obj):
+        request = self.context.get("request")
+        if not request:
+            return {}
         return _get_resource_counts(
-            self.context["request"],
+            request,
             resourcebase_filter_kwargs={"group": obj, "metadata_only": False},
         )

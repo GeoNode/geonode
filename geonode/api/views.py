@@ -112,7 +112,8 @@ class GroupCategoryViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
     ordering = ["name"]
 
     def get_queryset(self):
-        if settings.API_LOCKDOWN and not self.request.user.is_authenticated:
+        user = self.request.user if self.request else None
+        if settings.API_LOCKDOWN and (not user or not user.is_authenticated):
             return GroupCategory.objects.none()
         return GroupCategory.objects.all()
 
@@ -126,14 +127,14 @@ class GroupProfileViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
     ordering = ["title"]
 
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user if self.request else None
 
-        if settings.API_LOCKDOWN and not user.is_authenticated:
+        if settings.API_LOCKDOWN and (not user or not user.is_authenticated):
             return GroupProfile.objects.none()
 
         qs = GroupProfile.objects.all()
 
-        if not user.is_authenticated:
+        if not user or not user.is_authenticated:
             return qs.exclude(access="private")
 
         if not user.is_superuser:
@@ -151,14 +152,14 @@ class GroupViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
     ordering = ["name"]
 
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user if self.request else None
 
-        if settings.API_LOCKDOWN and not user.is_authenticated:
+        if settings.API_LOCKDOWN and (not user or not user.is_authenticated):
             return Group.objects.none()
 
         qs = Group.objects.exclude(groupprofile=None).exclude(name="anonymous")
 
-        if not user.is_authenticated:
+        if not user or not user.is_authenticated:
             return qs.exclude(groupprofile__access="private")
 
         if not user.is_superuser:
