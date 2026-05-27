@@ -942,6 +942,49 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = sum([x["count"] for x in resp.json()["objects"]])
         self.assertEqual(0, actual)
 
+    def test_group_autocomplete_anonymous(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        resp = self.client.get(group_autocomplete_url)
+        self.assertEqual(resp.status_code, 200)
+        results = resp.json()
+        self.assertTrue(all(r.get("access") != "private" for r in results))
+
+    def test_group_autocomplete_with_query(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(f"{group_autocomplete_url}?q=bar")
+        self.assertEqual(resp.status_code, 200)
+        results = resp.json()
+        self.assertEqual(len(results), 1)
+        self.assertIn("bar", results[0]["text"].lower())
+
+    def test_group_autocomplete_no_query(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(group_autocomplete_url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_group_autocomplete_no_match(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(f"{group_autocomplete_url}?q=nonexistent")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 0)
+
+    def test_category_autocomplete_with_query(self):
+        category_autocomplete_url = reverse("group-category-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(f"{category_autocomplete_url}?q=bar")
+        self.assertEqual(resp.status_code, 200)
+        results = resp.json()
+        self.assertTrue(all("bar" in r["text"].lower() for r in results))
+
+    def test_category_autocomplete_no_match(self):
+        category_autocomplete_url = reverse("group-category-autocomplete")
+        resp = self.client.get(f"{category_autocomplete_url}?q=nonexistent")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 0)
+
 
 class ThesauriApiTests(GeoNodeBaseTestSupport):
     @classmethod

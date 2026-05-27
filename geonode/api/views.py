@@ -39,6 +39,7 @@ from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from dynamic_rest.viewsets import WithDynamicViewSetMixin
+from rest_framework.decorators import action
 
 from django.conf import settings
 from django.db.models import Q
@@ -117,6 +118,15 @@ class GroupCategoryViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
             return GroupCategory.objects.none()
         return GroupCategory.objects.all()
 
+    @action(detail=False, methods=["get"], url_path="autocomplete")
+    def autocomplete(self, request):
+        q = request.GET.get("q", "")
+        qs = GroupCategory.objects.all()
+        if q:
+            qs = qs.filter(name__icontains=q)
+        results = [{"id": obj.pk, "text": obj.name} for obj in qs]
+        return Response(results)
+
 
 class GroupProfileViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
     serializer_class = GroupProfileSerializer
@@ -166,6 +176,23 @@ class GroupViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
             return qs.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access="private"))
 
         return qs
+
+    @action(detail=False, methods=["get"], url_path="autocomplete")
+    def autocomplete(self, request):
+        user = request.user
+        q = request.GET.get("q", "")
+        qs = GroupProfile.objects.all()
+
+        if q:
+            qs = qs.filter(title__icontains=q)
+
+        if not user.is_authenticated or user.is_anonymous:
+            qs = qs.exclude(access="private")
+        elif not user.is_superuser:
+            qs = qs.filter(Q(pk__in=user.group_list_all()) | ~Q(access="private"))
+
+        results = [{"id": obj.pk, "text": obj.title} for obj in qs]
+        return Response(results)
 
 
 @csrf_exempt
