@@ -433,9 +433,6 @@ class PermissionsHandlerRegistry:
             if codename in PERMISSIONS:
                 # return constant names defined by GeoNode
                 perms.add(PERMISSIONS[codename])
-            else:
-                # add custom permissions
-                perms.add(codename)
 
         # Create a synthetic permission for adding remote resources
         if user.is_superuser or user.is_staff or getattr(settings, "REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES", False):
