@@ -56,6 +56,7 @@ else
     fi
 
     invoke statics
+    invoke loadthesauri
 
     echo "Executing UWSGI server $cmd for Production"
 fi
