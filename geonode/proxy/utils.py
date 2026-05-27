@@ -1,3 +1,4 @@
+from threading import RLock
 from urllib.parse import urlsplit
 
 from django.conf import settings
@@ -9,50 +10,77 @@ PROXIED_LINK_TYPES = ["OGC:WMS", "OGC:WFS", "data"]
 
 
 class ProxyUrlsRegistry:
-    _last_registry_load = None
     _registry_reload_threshold = getattr(settings, "PROXY_RELOAD_REGISTRY_THRESHOLD_DAYS", 1)
 
-    def initialize(self):
-        from geonode.base.models import Link
-        from geonode.geoserver.helpers import ogc_server_settings
+    def __init__(self):
+        self._lock = RLock()
+        self._last_registry_load = None
+        self._proxy_allowed_hosts = None
 
-        self.proxy_allowed_hosts = set([site_url.hostname] + list(getattr(settings, "PROXY_ALLOWED_HOSTS", ())))
+    def _needs_initialization(self):
+        return (
+            self._last_registry_load is None
+            or (now() - self._last_registry_load).days >= self._registry_reload_threshold
+        )
 
-        if ogc_server_settings:
-            self.register_host(ogc_server_settings.hostname)
-
-        for link in Link.objects.filter(resource__sourcetype="REMOTE", link_type__in=PROXIED_LINK_TYPES):
-            remote_host = urlsplit(link.url).hostname
-            self.register_host(remote_host)
-
-        self._last_registry_load = now()
-
-    def set(self, hosts):
-        self.proxy_allowed_hosts = set(hosts)
-        self._last_registry_load = now()
-        return self
-
-    def clear(self):
-        self.proxy_allowed_hosts = set()
-        self._last_registry_load = now()
-        return self
-
-    def register_host(self, host):
-        self.proxy_allowed_hosts.add(host)
-
-    def unregister_host(self, host):
-        self.proxy_allowed_hosts.remove(host)
-
-    def get_proxy_allowed_hosts(self):
+    @property
+    def proxy_allowed_hosts(self):
         # We register remote hosts from remote URLs at creation time, inside ImporterViewSet.create().
         # If for some reason the creation fails we end up having stale or wrong URLs inside the registry.
         # We check the last time the registry was updated, and after a certain delta we reinitialize the registry
-        # which removes any URLs that are not connected to remote datasets
-        if (
-            self._last_registry_load is None
-            or (now() - self._last_registry_load).days >= self._registry_reload_threshold
-        ):
-            self.initialize()
+        # which removes any URLs that are not connected to remote datasets.
+        if self._needs_initialization():
+            with self._lock:
+                if self._needs_initialization():
+                    self._initialize()
+        return self._proxy_allowed_hosts
+
+    @proxy_allowed_hosts.setter
+    def proxy_allowed_hosts(self, hosts):
+        self._proxy_allowed_hosts = set(hosts)
+
+    def _initialize(self):
+        from geonode.base.models import Link
+        from geonode.geoserver.helpers import ogc_server_settings
+
+        proxy_allowed_hosts = set([site_url.hostname] + list(getattr(settings, "PROXY_ALLOWED_HOSTS", ())))
+
+        if ogc_server_settings:
+            proxy_allowed_hosts.add(ogc_server_settings.hostname)
+
+        for link in Link.objects.filter(resource__sourcetype="REMOTE", link_type__in=PROXIED_LINK_TYPES):
+            remote_host = urlsplit(link.url).hostname
+            proxy_allowed_hosts.add(remote_host)
+
+        self.proxy_allowed_hosts = proxy_allowed_hosts
+        self._last_registry_load = now()
+
+    def initialize(self):
+        """Rebuild the registry safely for direct callers."""
+        with self._lock:
+            self._initialize()
+
+    def set(self, hosts):
+        with self._lock:
+            self.proxy_allowed_hosts = set(hosts)
+            self._last_registry_load = now()
+        return self
+
+    def clear(self):
+        with self._lock:
+            self.proxy_allowed_hosts = set()
+            self._last_registry_load = now()
+        return self
+
+    def register_host(self, host):
+        with self._lock:
+            self.proxy_allowed_hosts.add(host)
+
+    def unregister_host(self, host):
+        with self._lock:
+            self.proxy_allowed_hosts.remove(host)
+
+    def get_proxy_allowed_hosts(self):
         return self.proxy_allowed_hosts
 
 
