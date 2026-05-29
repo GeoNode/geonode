@@ -64,7 +64,6 @@ from geonode.base.models import (
     TopicCategory,
     ThesaurusKeyword,
     Configuration,
-    ExtraMetadata,
     LinkedResource,
 )
 from geonode.base.api.filters import (
@@ -89,7 +88,6 @@ from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.resource.registry import resource_manager_registry
 
 from .permissions import (
-    IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
     UserHasPerms,
@@ -104,17 +102,16 @@ from .serializers import (
     TopicCategorySerializer,
     RegionSerializer,
     ThesaurusKeywordSerializer,
-    ExtraMetadataSerializer,
     LinkedResourceSerializer,
 )
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
-from geonode.base.utils import validate_extra_metadata, patch_perms
+from geonode.base.utils import patch_perms
+from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataMixin
 from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
-
 
 logger = logging.getLogger(__name__)
 
@@ -291,7 +288,7 @@ class ApiPresetsInitializer(APIView):
             request.GET._mutable = False
 
 
-class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
+class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedExtraMetadataMixin, DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
@@ -1221,81 +1218,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicMode
             )
             return Response({"thumbnail_url": resource.thumbnail_url})
         return Response("Unable to set thumbnail", status=status.HTTP_400_BAD_REQUEST)
-
-    @action(
-        detail=True,
-        methods=["get", "put", "delete", "post"],
-        permission_classes=[IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
-        url_path=r"extra_metadata",  # noqa
-        url_name="extra-metadata",
-    )
-    def extra_metadata(self, request, pk, *args, **kwargs):
-        """Get/Update/Delete/Add extra metadata for resource"""
-        _obj = get_object_or_404(ResourceBase, pk=pk)
-
-        if request.method == "GET":
-            # get list of available metadata
-            queryset = _obj.metadata.all()
-            _filters = [{f"metadata__{key}": value} for key, value in request.query_params.items()]
-            if _filters:
-                queryset = queryset.filter(**_filters[0])
-            return Response(ExtraMetadataSerializer().to_representation(queryset))
-        if not request.method == "DELETE":
-            try:
-                extra_metadata = validate_extra_metadata(request.data, _obj)
-            except Exception as e:
-                return Response(status=500, data=e.args[0])
-
-        if request.method == "PUT":
-            """
-            update specific metadata. The ID of the metadata is required to perform the update
-            [
-                {
-                        "id": 1,
-                        "name": "foo_name",
-                        "slug": "foo_sug",
-                        "help_text": "object",
-                        "field_type": "int",
-                        "value": "object",
-                        "category": "object"
-                }
-            ]
-            """
-            for _m in extra_metadata:
-                _id = _m.pop("id")
-                ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id=_id).update(metadata=_m)
-            logger.info("metadata updated for the selected resource")
-            _obj.refresh_from_db()
-            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
-        elif request.method == "DELETE":
-            # delete single metadata
-            """
-            Expect a payload with the IDs of the metadata that should be deleted. Payload be like:
-            [4, 3]
-            """
-            ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id__in=request.data).delete()
-            _obj.refresh_from_db()
-            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
-        elif request.method == "POST":
-            # add new metadata
-            """
-            [
-                {
-                        "name": "foo_name",
-                        "slug": "foo_sug",
-                        "help_text": "object",
-                        "field_type": "int",
-                        "value": "object",
-                        "category": "object"
-                }
-            ]
-            """
-            for _m in extra_metadata:
-                new_m = ExtraMetadata.objects.create(resource=_obj, metadata=_m)
-                new_m.save()
-                _obj.metadata.add(new_m)
-            _obj.refresh_from_db()
-            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()), status=201)
 
     @action(
         detail=True,
