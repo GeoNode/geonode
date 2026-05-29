@@ -1,11 +1,11 @@
 # OAuth2 Access Tokens
 
 This small section won't cover entirely the GeoNode OAuth2 security integration, this is explained in detail in other sections of the documentation
-(refer to :ref:`oauth2_fixtures_and_migration` and :ref:`oauth2_tokens_and_sessions`).
+(refer to the [Django OAuth Toolkit Admin Setup](../../setup/configuration/components/geonode_security_backend/geonode_security_backend.md#django-oauth-toolkit-admin-setup) and [GeoNode / GeoServer Authentication Mechanism](../../setup/configuration/components/geonode_security_backend/geonode_security_backend.md#geonode-geoserver-authentication-mechanism) sections).
 
-Here we will focus mainly on the :guilabel:`Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel items with a specific attention to the ``Access tokens`` management.
+Here we will focus mainly on the `Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel items with a specific attention to the ``Access tokens`` management.
 
-The :guilabel:`Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel (as shown in the figure below) allows an admin to manage everything related to
+The `Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel (as shown in the figure below) allows an admin to manage everything related to
 GeoNode OAuth2 grants and permissions.
 
 As better explained in other sections of the documentation, this is needed to correctly handle the communication between GeoNode and GeoServer.
@@ -14,24 +14,24 @@ As better explained in other sections of the documentation, this is needed to co
 
 Specifically from this panel an admin can create, delete or extend OAuth2 ``Access tokens``.
 
-The section :ref:`oauth2_tokens_and_sessions` better explains the concepts behind OAuth2 sessions; we want just to refresh the mind here
+The [GeoNode / GeoServer Authentication Mechanism](../../setup/configuration/components/geonode_security_backend/geonode_security_backend.md#geonode-geoserver-authentication-mechanism) section better explains the concepts behind OAuth2 sessions; we want just to refresh the mind here
 about the basic concepts:
 
-* If the `SESSION_EXPIRED_CONTROL_ENABLED <../../basic/settings/index.html#session-expired-control-enabled>`_ setting is set to `True` (by default it is set to `True`)
+* If the `SESSION_EXPIRED_CONTROL_ENABLED` setting is set to `True` (by default it is set to `True`)
   a registered user cannot login to neither GeoNode nor GeoServer without a valid ``Access token``.
 
 * When logging-in into GeoNode through the sign-up form, GeoNode checks if a valid ``Access token`` exists and it creates a new one if not, or extends
   the existing one if expired.
 
-* New ``Access tokens`` expire automatically after `ACCESS_TOKEN_EXPIRE_SECONDS <../../basic/settings/index.html#access-token-expire-seconds>`_ setting (by default 86400)
+* New ``Access tokens`` expire automatically after the [`ACCESS_TOKEN_EXPIRE_SECONDS`](../../setup/configuration/settings.md) setting (by default 86400)
 
 * When an ``Access token`` expires, the user will be kicked out from the session and forced to login again
 
 ## Create a new token or extend an existing one
 
-It is possible from the :guilabel:`Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel to create a new ``Access token`` for a user.
+It is possible from the `Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel to create a new ``Access token`` for a user.
 
-In order to do that, just click on the :guilabel:`Add` button beside ``Access tokens`` topic
+In order to do that, just click on the `Add` button beside ``Access tokens`` topic
 
 ![oauth2-tokens/admin-panel-tokens-0001](img/oauth2-tokens/admin-panel-tokens-0002.png)
 
@@ -58,7 +58,7 @@ select the followings:
 
     ![oauth2-tokens/admin-panel-tokens-0003b](img/oauth2-tokens/admin-panel-tokens-0003c.png)
 
-5. ``Expires``; select an expiration date by using the :guilabel:`date-time` widgets.
+5. ``Expires``; select an expiration date by using the `date-time` widgets.
 
     ![oauth2-tokens/admin-panel-tokens-0003b](img/oauth2-tokens/admin-panel-tokens-0003d.png)
 
@@ -67,7 +67,7 @@ select the followings:
     ![oauth2-tokens/admin-panel-tokens-0003b](img/oauth2-tokens/admin-panel-tokens-0003e.png)
 
 
-Do not forget to :guilabel:`Save`.
+Do not forget to `Save`.
 
 From now on, GeoNode will use this ``Access Token`` to control the user session (notice that the user need to login again if closing the browser session),
 and the user will be able to access the OWS Services by using the new ``Access Token``, e.g.:

@@ -63,12 +63,12 @@ nav:
         - Attributes Table: "user-guide/maps/maps_configuration/attribute_table.md"
         - Timeline: "user-guide/maps/maps_configuration/timeline.md"
         - Other Menu Tools: "user-guide/maps/maps_configuration/options_menu.md"
-    - Documents:
-      - Upload/Add Documents: "user-guide/documents/upload.md"
+    - Documents: "user-guide/documents/upload.md"
     - GeoStories: "user-guide/geostory/geostory.md"
     - Dashboards: "user-guide/dashboard/dashboard.md"
     - Styling: "user-guide/resource_styling.md"
     - Sharing: "user-guide/sharing.md"
+    - Default Language: "user-guide/default-language.md"
     - Metadata: "user-guide/metadata.md"
   - Administration:
     - GeoNode Admins Guide:
@@ -104,7 +104,6 @@ nav:
     - Customize the look and feel:
       - GeoNode Themes: "admin/gnode_theme/geonode_themes.md"
       - Theming your GeoNode Project: "admin/gnode_theme/theme_geonode_project.md"
-    - Changing the Default Language: "admin/default_lang.md"
     - Thesauri: "admin/thesauri/thesauri.md"
   - Developer Guide: 
     - API Usage: "development/api.md"
