@@ -93,13 +93,13 @@ docker-compose restart geoserver
 
   - **WMS**: `Raster Rendering Options` allows you to tune up the WMS output for better performance or quality. Best Performance: `Nearest Neighbour` - Best Quality: `Bicubic`.
 
-      !!! Warning
-          Raster images should always be optimized before being ingested into GeoNode. The general recommendation is to **never** upload a non-processed GeoTIFF image to GeoNode.
+    !!! warning
+        Raster images should always be optimized before being ingested into GeoNode. The general recommendation is to **never** upload a non-processed GeoTIFF image to GeoNode.
 
-          Further details:
+        Further details:
 
-          - [Enterprise raster training](https://geoserver.geo-solutions.it/edu/en/enterprise/raster.html)
-          - [Advanced GDAL raster data](https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/index.html)
+        - [Enterprise raster training](https://geoserver.geo-solutions.it/edu/en/enterprise/raster.html)
+        - [Advanced GDAL raster data](https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/index.html)
 
     ![](img/production_geoserver_006.png){ align=center width="350px" }
     /// caption
@@ -188,7 +188,7 @@ mv postgis-jdbc-1.3.3.jar /usr/local/tomcat/webapps/geoserver/WEB-INF/lib/
 
 The container is ready to be restarted now.
 
-!!! Warning
+!!! warning
     Remember to do a **soft restart** otherwise the `WEB-INF/lib` JARs will be reset to the original state.
 
 ```bash

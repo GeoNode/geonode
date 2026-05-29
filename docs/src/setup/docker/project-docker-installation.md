@@ -14,8 +14,11 @@ This will clone the `master` branch. You will have to checkout the desidered bra
 
 ```bash
 cd geonode-project
-git checkout -b 4.4.3
+git checkout -b 5.0.1
 ```
+
+!!! Note
+    You can replace the release number `5.0.1` with the latest one. You can find the releases [here](https://github.com/GeoNode/geonode-project/releases/)
 
 ### Generate a custom GeoNode project
 

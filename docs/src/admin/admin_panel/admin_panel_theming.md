@@ -30,14 +30,14 @@ Just below the `Description` field, you will find the `Enabled` checkbox, which 
 *Theme Name and Description*
 ///
 
-## Jumbotron and Get Started link
-
 !!! Note
     Remember, every time you want to apply some changes to the theme, you **must** save the theme and reload the GeoNode browser tab.
 
     In order to quickly switch back to the Home page, you can just click the `VIEW SITE` link in the top-right corner of the Admin dashboard.
 
     ![](img/theming/view_site.png){ align=center }
+
+## Jumbotron and Get Started link
 
 The next section allows you to define the first important theme properties. This part involves the GeoNode main page sections.
 
