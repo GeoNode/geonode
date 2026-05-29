@@ -115,7 +115,7 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
             try:
                 if not user.is_superuser and not user.has_perm("view_resourcebase", resource.get_self_resource()):
                     exclude_users_ids.append(user.id)
-                if user.pk == resource.owner.pk and not notice_type_label.split("_")[-1] in (
+                if user.pk == resource.owner.pk and notice_type_label.split("_")[-1] not in (
                     "updated",
                     "rated",
                     "approved",

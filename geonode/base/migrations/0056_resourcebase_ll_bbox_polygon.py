@@ -2,7 +2,6 @@
 import logging
 
 import django.contrib.gis.db.models.fields
-from django.contrib.gis.geos import Polygon
 
 from django.db import migrations
 

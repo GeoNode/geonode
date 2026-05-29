@@ -138,7 +138,7 @@ class DocumentCreateForm(forms.ModelForm):
         """
         doc_file = self.cleaned_data.get("doc_file")
 
-        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
+        if doc_file and os.path.splitext(doc_file.name)[1].lower()[1:] not in settings.ALLOWED_DOCUMENT_TYPES:
             logger.debug("This file type is not allowed")
             raise forms.ValidationError(_("This file type is not allowed"))
 

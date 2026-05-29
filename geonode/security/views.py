@@ -281,7 +281,7 @@ def attributes_sats_refresh(request):
         except Exception:
             logger.exception("Exception occurred while refreshing attributes/stats for resource uuid=%s", uuid)
             return HttpResponse(
-                json.dumps({"success": "false", "message": f'Exception occurred: "{str(e)}"'}),
+                json.dumps({"success": "false", "message": 'Exception occurred please see the logs"'}),
                 status=302,
                 content_type="text/plain",
             )

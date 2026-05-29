@@ -142,8 +142,6 @@ dependencies = [
     # tests
     "coverage==7.5.1",
     "requests-toolbelt==1.0.0",
-    "flake8==7.3.0",
-    "black==24.4.2",
     "pytest==8.4.2",
     "pytest-bdd==7.1.2",
     "splinter==0.21.0",
@@ -161,13 +159,12 @@ dependencies = [
     # dependency for XLSX handler
     "python-calamine==0.6.2",
     "python-magic==0.4.27",
+    "ruff==0.15.14",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest==8.4.2",
-    "flake8==7.3.0",
-    "black==24.4.2",
     "coverage==7.5.1",
 ]
 docs = [
@@ -191,18 +188,50 @@ include = ["geonode*"]
 [tool.setuptools.dynamic]
 version = {attr = "geonode.__version__"}
 
-[tool.black]
-line-length = 120
-target-version = ['py310', 'py311']
-exclude = '''
-/(
-    geonode/.*/migrations/.*
-  | geonode/.*/settings.py
-  | management
-  | scripts
-  | docs
-  | static
-  | migrations
-  | node_modules
-)/
-'''
+
+[tool.ruff]
+
+exclude = [
+    "geonode/*/migrations/*",
+    "geonode/**/settings.py",
+    "management",
+    "scripts",
+    "docs",
+    "static",
+    "migrations",
+    "node_modules",
+]
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+target-version = "py312"
+
+
+[tool.ruff.lint]
+# E and F are the standard Flake8 rules
+select = ["E4", "E7", "E9", "F"]
+ignore = ["E203", "E731"]
+fixable = ["ALL"]
+unfixable = []
+
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.isort]
+# This makes it behave like modern Black-compatible isort
+combine-as-imports = true
+lines-after-imports = 2
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"

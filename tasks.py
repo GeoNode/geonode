@@ -448,7 +448,7 @@ def _is_valid_ip(ip):
     try:
         ipaddress.IPv4Address(ip)
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 
