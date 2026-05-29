@@ -155,16 +155,16 @@ local   all             postgres                                trust
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 
 # "local" is for Unix domain socket connections only
-local   all             all                                     md5
+local   all             all                                     scram-sha-256
 # IPv4 local connections:
-host    all             all             127.0.0.1/32            md5
+host    all             all             127.0.0.1/32            scram-sha-256
 # IPv6 local connections:
-host    all             all             ::1/128                 md5
+host    all             all             ::1/128                 scram-sha-256
 # Allow replication connections from localhost, by a user with the
 # replication privilege.
 local   replication     all                                     peer
-host    replication     all             127.0.0.1/32            md5
-host    replication     all             ::1/128                 md5
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
 ```
 
 !!! Warning 
@@ -195,7 +195,9 @@ psql -U geonode geonode_data
 After the creation of the databases, you need to apply database migrations:
 
 ```bash
-cd /opt/geonode_projects/my_project
+cd /opt/geonode
+# Load the env file. Here we use .env_dev but you can replace it with yours
+set -a && source .env_dev && set +a
 # Run migrations for the my_geonode database
 python manage.py migrate
 # Run migrations for the my_geonode_data database
@@ -493,7 +495,7 @@ sudo vim /opt/data/geoserver_data/geofence/geofence-datasource-ovr.properties
 And paste the following code by replace the placehoders with the required files
 
 ```bash
-ggeofenceVendorAdapter.databasePlatform=org.hibernate.spatial.dialect.postgis.PostgisDialect
+geofenceVendorAdapter.databasePlatform=org.hibernate.spatial.dialect.postgis.PostgisDialect
 geofenceDataSource.driverClassName=org.postgresql.Driver
 geofenceDataSource.url=jdbc:postgresql://localhost:5432/geonode_data
 geofenceDataSource.username=geonode

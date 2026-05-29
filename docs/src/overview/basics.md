@@ -1,20 +1,9 @@
 # GeoNode Basics { #geonode_basics }
 
-![](img/geonode.png){ align=center }
-
-is a platform for the management and publication of geospatial data.
+GeoNode is a platform for the management and publication of geospatial data.
 It brings together mature open-source software projects under an easy to use interface.
 
-![](img/gn_simplified_architecture.png){ align=center }
-/// caption
-*GeoNode simplified architecture*
-///
-
-## *With GeoNode, non-specialized users can share data and create interactive maps.*
-
-![](img/gn_is_made_for.png){ align=center }
-![](img/gn_publication_data.png){ align=center }
-![](img/gn_publication_data_2.png){ align=center }
+*With GeoNode, non-specialized users can share data and create interactive maps.*
 
 ## Geospatial data storage
 

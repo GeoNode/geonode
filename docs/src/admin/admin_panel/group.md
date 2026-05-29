@@ -1,7 +1,7 @@
 ## Creating a Group
 
-| In GeoNode is possible to create new groups with set of permissions which will be inherited by all the group members.
-| The creation of a Group can be done both on the GeoNode UI and on the *Admin Panel*, we will explain how in this paragraph.
+In GeoNode is possible to create new groups with set of permissions which will be inherited by all the group members.
+The creation of a Group can be done both on the GeoNode UI and on the *Admin Panel*, we will explain how in this paragraph.
 
 The `Create Groups` link of *About* menu in the navigation bar allows administrators to reach the *Group Creation Page*.
 
@@ -26,9 +26,9 @@ The new created group will be searchable in the *Groups List Page*.
 !!! note "Important notes"
     The `Create a New Group` button on the *Groups List Page* allows to reach the *Group Creation Form*.
 
-| As already mentioned above, groups can also be created from the Django-based *Admin Interface* of GeoNode.
-| The *Groups* link of the *AUTHENTICATION AND AUTHORIZATION* section allows to manage basic Django groups which only care about permissions.
-| To create a GeoNode group you should take a look at the *GROUPS* section.
+As already mentioned above, groups can also be created from the Django-based *Admin Interface* of GeoNode.
+The *Groups* link of the *AUTHENTICATION AND AUTHORIZATION* section allows to manage basic Django groups which only care about permissions.
+To create a GeoNode group you should take a look at the *GROUPS* section.
 
 ![groups_admin_section](img/groups_admin_section.png)
 
@@ -143,8 +143,8 @@ On the *Group Profile Form* page you can insert a logo from your disk by click o
 ![editing_group_logo](img/editing_group_logo.png)
 
 
-| Click on `Update` to apply the changes.
-| Take a look at your group now, you should be able to see that logo.
+Click on `Update` to apply the changes.
+Take a look at your group now, you should be able to see that logo.
 
 ![group_logo](img/group_logo.png)
 
@@ -156,12 +156,12 @@ The `Manage Group Members` link opens the *Group Members Page* which shows *Grou
 **Managers** can edit group details, can delete the group, can see the group activities and can manage memberships.
 Other **Members** can only see the group activities.
 
-| In Public Groups, users can join the group without any approval.
-  Other types of groups require the user to be invited by the group managers.
-| Only group managers can *Add new members*.
-  In the picture below, you can see the manager can search for users by typing their names into the *User Identifiers* search bar.
-  Once found, he can add them to the group by clicking the `Add Group Members` button.
-  The *Assign manager role* flag implies that all the users found will become managers of the group.
+In Public Groups, users can join the group without any approval.
+Other types of groups require the user to be invited by the group managers.
+Only group managers can *Add new members*.
+In the picture below, you can see the manager can search for users by typing their names into the *User Identifiers* search bar.
+Once found, he can add them to the group by clicking the `Add Group Members` button.
+The *Assign manager role* flag implies that all the users found will become managers of the group.
 
 ![add_new_member](img/add_new_member.png)
 
