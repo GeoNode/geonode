@@ -28,8 +28,12 @@ class RemoteWMSSerializer(RemoteResourceSerializer):
             "identifier",
             "bbox",
             "parse_remote_metadata",
+            "username",
+            "password",
         )
 
     identifier = serializers.CharField(required=True)
     bbox = serializers.ListField(required=False)
     parse_remote_metadata = serializers.BooleanField(required=False, default=False)
+    username = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    password = serializers.CharField(required=False, allow_blank=True, allow_null=True)

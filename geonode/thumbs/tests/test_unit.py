@@ -32,6 +32,8 @@ from geonode.resource.registry import resource_manager_registry, document_manage
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
 from geonode.layers.models import Dataset
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
@@ -202,6 +204,16 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], None]])
+
+    def test_get_auth_should_use_remote_service_auth_config(self):
+        dataset = Dataset.objects.get(title="theaters_nyc")
+        auth_config = BasicAuthHandler.create_auth_config("service_user", "service_password")
+        dataset.remote_service.auth_config = auth_config
+        dataset.remote_service.save()
+
+        auth = thumbnails._get_auth(dataset)
+
+        self.assertEqual(auth_handler_registry.build(auth_config).get_request_auth(), auth)
 
     def test_datasets_locations_dataset_default_bbox(self):
         expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.0930337105, 4984363.884452854, "EPSG:3857"]

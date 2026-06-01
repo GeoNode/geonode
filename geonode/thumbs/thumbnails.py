@@ -265,10 +265,13 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp, Res
 def _get_auth(dataset: "Dataset"):
     """Gets an auth object for a dataset if it's a remote service requiring auth."""
     auth = None
-    if dataset.remote_service and dataset.remote_service.needs_authentication:
+    auth_config = dataset.auth_config
+    if auth_config is None and dataset.remote_service and dataset.remote_service.needs_authentication:
+        auth_config = dataset.remote_service.auth_config
+    if auth_config:
         from geonode.security.auth_registry import auth_handler_registry
 
-        auth = auth_handler_registry.build(dataset.remote_service.auth_config).get_request_auth()
+        auth = auth_handler_registry.build(auth_config).get_request_auth()
     return auth
 
 
