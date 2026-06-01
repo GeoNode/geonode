@@ -73,9 +73,10 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             password = original_data.pop("password", None)
             if username or password:
                 auth_payload = {"username": username, "password": password}
-                auth_config = AuthConfig(type=BasicAuthHandler.handled_type, payload=auth_payload)
+                auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
                 auth_handler_cls = auth_handler_registry.get_handler_class(auth_config.type)
                 auth_handler_cls.validate(auth_payload)
+                auth_config.payload = auth_payload
                 auth_config.save()
                 payload["auth_config_id"] = auth_config.pk
 
@@ -102,13 +103,16 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         auth = None
         auth_config_id = _exec.input_params.get("auth_config_id")
         if auth_config_id:
-            auth_config = AuthConfig.objects.get(pk=auth_config_id)
+            auth_config = AuthConfig.objects.filter(pk=auth_config_id).first()
         else:
-            service = (
-                Service.objects.filter(harvester__remote_url=ows_url, owner=_exec.user)
-                .select_related("auth_config")
-                .first()
-            )
+            user = _exec.user
+            service = None
+            if user and user.is_authenticated:
+                service = (
+                    Service.objects.filter(harvester__remote_url=ows_url, owner=user)
+                    .select_related("auth_config")
+                    .first()
+                )
             if service and service.auth_config:
                 auth_config = service.auth_config
                 to_update["auth_config_id"] = auth_config.pk
@@ -168,7 +172,13 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             resource_manager_registry.get_for_instance(resource).set_thumbnail(None, instance=resource)
 
         harvester_url = _exec.input_params.get("ows_url", None)
-        if harvester_url and Service.objects.filter(harvester__remote_url=harvester_url, owner=_exec.user).exists():
+        user = _exec.user
+        if (
+            harvester_url
+            and user
+            and user.is_authenticated
+            and Service.objects.filter(harvester__remote_url=harvester_url, owner=user).exists()
+        ):
             # call utils to connect harvester and resource
             create_harvestable_resource(resource, service_url=harvester_url)
 
