@@ -51,7 +51,7 @@ from geonode.metadata.models import SparseField
 
 logger = logging.getLogger(__name__)
 
-DEPRECATION_VERSION = "4.4.0"
+DEPRECATION_VERSION = "5.1.0"
 DEPRECATION_REASON = (
     "The extra_metadata API is deprecated and will be removed in a future "
     "version. Use the sparse fields API instead."

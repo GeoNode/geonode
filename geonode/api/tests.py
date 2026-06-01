@@ -51,6 +51,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_models, remove_models
 from geonode.security.registry import permissions_registry
+from geonode.metadata.models import SparseField
 from geonode.assets.models import Asset
 from django.core.files.uploadedfile import SimpleUploadedFile
 from geonode.base.models import Link
@@ -533,6 +534,27 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)["objects"]), 5)
+
+    def test_metadata_filters(self):
+        """Test metadata filtering against sparse fields."""
+        _r = Dataset.objects.first()
+        SparseField.objects.update_or_create(
+            resource=_r,
+            name="category",
+            defaults={"value": "category"},
+        )
+
+        list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "datasets"})
+
+        filter_url = f"{list_url}?metadata__category=category"
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)["objects"]), 1)
+
+        filter_url = f"{list_url}?metadata__category=not-existing-category"
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)["objects"]), 0)
 
     def test_tag_filters(self):
         """Test keywords filtering"""

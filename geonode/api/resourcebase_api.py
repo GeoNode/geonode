@@ -17,6 +17,7 @@
 #
 #########################################################################
 from geonode.base.enumerations import LAYER_TYPES
+import json
 import logging
 
 from django.db.models import Q
@@ -45,6 +46,7 @@ from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
+from geonode.metadata.models import SparseField
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
@@ -142,6 +144,11 @@ class CommonModelApi(ModelResource):
         if "app_type__in" in filters:
             orm_filters.update({"resource_type": filters["app_type__in"].lower()})
 
+        # Extract metadata__ filters for sparse field lookup
+        _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith("metadata__")}
+        if _metadata:
+            orm_filters.update({"metadata_filters": _metadata})
+
         if "extent" in filters:
             orm_filters.update({"extent": filters["extent"]})
         orm_filters["f_method"] = filters["f_method"] if "f_method" in filters else "and"
@@ -161,6 +168,7 @@ class CommonModelApi(ModelResource):
         keywords = applicable_filters.pop("keywords__slug__in", None)
         metadata_only = applicable_filters.pop("metadata_only", False)
         filtering_method = applicable_filters.pop("f_method", "and")
+        metadata_filters = applicable_filters.pop("metadata_filters", None)
         if filtering_method == "or":
             filters = Q()
             for f in applicable_filters.items():
@@ -202,6 +210,9 @@ class CommonModelApi(ModelResource):
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
+        if metadata_filters:
+            filtered = self.filter_sparse_fields(filtered, metadata_filters)
+
         # return filtered
         return get_visible_resources(
             filtered,
@@ -226,6 +237,62 @@ class CommonModelApi(ModelResource):
             filtered = queryset.filter(Q(keywords__in=treeqs))
         else:
             filtered = queryset
+        return filtered
+
+    def filter_sparse_fields(self, queryset, metadata_filters):
+        """
+        Filter queryset by sparse field values (metadata custom fields).
+
+        Queryset is filtered by interrogating SparseField entries that match
+        the given metadata filter specifications.
+
+        Args:
+            queryset: ResourceBase queryset to filter
+            metadata_filters: dict with keys like "metadata__key" and values to match
+
+        Returns:
+            Filtered queryset containing only resources with matching sparse fields
+        """
+        if not metadata_filters:
+            return queryset
+
+        filtered_pks = set()
+        found_any_match = False
+
+        for filter_key, filter_value in metadata_filters.items():
+            # Extract field name from "metadata__fieldname"
+            if not filter_key.startswith("metadata__"):
+                continue
+            field_name = filter_key[len("metadata__"):]
+
+            # Query SparseFields for this field name
+            sparse_fields = SparseField.objects.filter(name=field_name)
+            if not sparse_fields.exists():
+                continue
+
+            found_any_match = True
+            batch_pks = set()
+
+            for sf in sparse_fields:
+                try:
+                    # Try to parse as JSON if it looks like JSON
+                    stored_value = json.loads(sf.value) if sf.value and sf.value.startswith('{') else sf.value
+                except (json.JSONDecodeError, TypeError):
+                    stored_value = sf.value
+
+                # Compare values (convert to string for consistent comparison)
+                if str(stored_value) == str(filter_value):
+                    batch_pks.add(sf.resource_id)
+
+            filtered_pks.update(batch_pks)
+
+        # Filter by the collected PKs
+        if found_any_match and filtered_pks:
+            filtered = queryset.filter(pk__in=filtered_pks)
+        else:
+            # No matching sparse fields found
+            filtered = queryset.none() if found_any_match else queryset
+
         return filtered
 
     def get_list(self, request, **kwargs):
