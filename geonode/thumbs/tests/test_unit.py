@@ -34,6 +34,7 @@ from geonode.thumbs import thumbnails
 from geonode.layers.models import Dataset
 from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.auth_registry import auth_handler_registry
+from geonode.services.models import Service
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
@@ -208,6 +209,8 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
     def test_get_auth_should_use_remote_service_auth_config(self):
         dataset = Dataset.objects.get(title="theaters_nyc")
         auth_config = BasicAuthHandler.create_auth_config("service_user", "service_password")
+        dataset.remote_service = Service.objects.first()
+        dataset.save()
         dataset.remote_service.auth_config = auth_config
         dataset.remote_service.save()
 
