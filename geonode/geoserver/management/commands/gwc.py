@@ -54,15 +54,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         subcommand = options["subcommand"]
-        logger.info("GWC COMMAND INIT")
+        logger.info("Starting GWC command.")
 
         if not subcommand:
-            logger.warning("Missing GWC subcommand.")
+            logger.warning("No GWC subcommand provided.")
             self.print_help("manage.py", "gwc")
+            return
 
-        elif subcommand == COMMAND_TRUNCATE:
+        logger.info("Executing GWC subcommand '%s'.", subcommand)
+
+        if subcommand == COMMAND_TRUNCATE:
             layers = options.get("layers") or []
             truncate_all = options.get("truncate_all") or False
+
+            logger.info(
+                "Truncate command received. layers=%s, truncate_all=%s",
+                layers,
+                truncate_all,
+            )
 
             if not layers and not truncate_all:
                 raise CommandError("'truncate' command requires either the -l/--layer parameter(s) or the --all flag.")
@@ -73,6 +82,7 @@ class Command(BaseCommand):
             if truncate_all:
                 truncate_all_layers()
             else:
+                logger.info("Truncating %d layer(s).", len(layers))
                 truncate_layers(layers)
 
         else:

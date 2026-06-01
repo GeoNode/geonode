@@ -18,7 +18,7 @@
 #########################################################################
 
 from geonode.base.management.command_utils import setup_logger
-from geonode.geoserver.helpers import _invalidate_geowebcache_dataset, ogc_server_settings, _user, http_client
+from geonode.geoserver.gwc import GWCClient
 
 logger = setup_logger()
 
@@ -26,10 +26,11 @@ logger = setup_logger()
 def truncate_layers(layer_names):
     """Truncates one or more specified layers in GWC."""
     logger.info(f"Truncating layers in GWC: {', '.join(layer_names)}")
+    client = GWCClient()
     for layer_name in layer_names:
         try:
             logger.info(f"Truncating layer: {layer_name}")
-            _invalidate_geowebcache_dataset(layer_name)
+            client.truncate_layer(layer_name)
         except Exception as e:
             logger.error(f"Error invalidating cache for layer {layer_name}: {e}")
 
@@ -37,17 +38,9 @@ def truncate_layers(layer_names):
 def truncate_all_layers():
     """Truncates all layers in GWC."""
     logger.info("Truncating ALL layers in GWC")
-    headers = {
-        "Content-Type": "text/xml",
-    }
-    body = "<truncateAll></truncateAll>"
-    url = f"{ogc_server_settings.LOCATION}gwc/rest/masstruncate"
-
+    client = GWCClient()
     try:
-        req, content = http_client.post(url, data=body, headers=headers, user=_user)
-        if req.status_code != 200:
-            logger.error(f"Error {req.status_code} invalidating GeoWebCache at {url}: {content}")
-        else:
-            logger.info("Successfully truncated all layers in GWC.")
+        client.truncate_all()
+        logger.info("Successfully truncated all layers in GWC.")
     except Exception as e:
         logger.error(f"Error executing truncateAll on GeoWebCache: {e}")
