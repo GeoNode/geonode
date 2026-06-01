@@ -272,6 +272,8 @@ def update_resource(
             }
             if hasattr(instance, "remote_service"):
                 _to_update["remote_service"] = _s
+            if not instance.auth_config_id and _s.auth_config_id:
+                _to_update["auth_config_id"] = _s.auth_config_id
             instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**_to_update)
 
     # Refresh from DB
