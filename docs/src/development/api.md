@@ -366,6 +366,7 @@ Catalog resources can also be created for the following remote sources:
     - `type`: `"wms"`
     - `identifier`: The name of the layer to be published in GeoServer. In case of a WMS service this is mandatory and should be in format `workspace:layername`
     - `parse_remote_metadata`: if set to `true`, GeoNode will try to parse the metadata of the remote resource and set it on the GeoNode resource. This is only supported for WMS services at the moment.
+    - `authentication`: optional authentication configuration for private remote WMS services. The `type` field defines the authentication type, for example `basic`, and `payload` contains the authentication-specific credentials.
 
 Example for a WMS resource:
 
@@ -386,6 +387,35 @@ headers = {
 }
 response = requests.request("POST", url, headers=headers, data=payload)
 ```
+
+Example for a private WMS resource using Basic authentication:
+
+```python
+import requests
+
+url = "https://<domain-name>/api/v2/uploads/upload"
+payload = {
+    "title": "Private Remote Title",
+    "url": "https://<remote-wms-domain>/geoserver/wms",
+    "type": "wms",
+    "identifier": "workspace:layername",
+    "parse_remote_metadata": True,
+    "action": "upload",
+    "authentication": {
+        "type": "basic",
+        "payload": {
+            "username": "remote-user",
+            "password": "remote-password",
+        },
+    },
+}
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+response = requests.request("POST", url, headers=headers, json=payload)
+```
+
+If `authentication` is not provided and the WMS URL matches a registered Remote Service owned by the importing user, GeoNode can reuse the authentication configuration assigned to that service. Authentication provided in the upload payload takes precedence over service authentication.
 
 ### Documents
 
