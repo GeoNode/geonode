@@ -103,22 +103,28 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         auth = None
         auth_config_id = _exec.input_params.get("auth_config_id")
         if auth_config_id:
+            # The import already has an AuthConfig assigned, for example from
+            # credentials provided in the upload payload. Use it before looking
+            # for credentials on a matching remote service.
             auth_config = AuthConfig.objects.filter(pk=auth_config_id).first()
         else:
             user = _exec.user
             service = None
             if user and user.is_authenticated:
+                # Reuse credentials only from a matching service owned by the importing user.
                 service = (
                     Service.objects.filter(harvester__remote_url=ows_url, owner=user)
                     .select_related("auth_config")
                     .first()
                 )
             if service and service.auth_config:
+                # Assign the service AuthConfig on the new remote resource.
                 auth_config = service.auth_config
                 to_update["auth_config_id"] = auth_config.pk
             else:
                 auth_config = None
         if auth_config:
+            # Build runtime auth for the upstream WMS metadata request.
             auth = auth_handler_registry.build(auth_config).get_request_auth()
 
         if _exec.input_params.get("parse_remote_metadata", False):
