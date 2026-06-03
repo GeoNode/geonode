@@ -46,6 +46,7 @@ from dynamic_rest.fields.fields import DynamicComputedField
 
 from django.db import IntegrityError
 
+from geonode.base.api.permissions import IsOwnerOrAdmin, UserHasPerms
 from geonode.base.models import ResourceBase
 from geonode.metadata.models import SparseField
 
@@ -56,7 +57,7 @@ DEPRECATION_REASON = (
     "The extra_metadata API is deprecated and will be removed in a future "
     "version. Use the sparse fields API instead."
 )
-SPARSE_FIELD_PREFIX = "extra_metadata_"
+SPARSE_FIELD_PREFIX = "extra_"
 # SparseField.value is CharField(max_length=1024); entries exceeding this
 # limit cannot be stored and are silently skipped with a log warning.
 SPARSE_FIELD_VALUE_MAX_LENGTH = 1024
@@ -97,14 +98,17 @@ def _sparse_to_legacy(sparse_field):
         metadata = json.loads(sparse_field.value) if sparse_field.value else {}
     except (json.JSONDecodeError, TypeError):
         metadata = {}
+    if not isinstance(metadata, dict):
+        logger.warning(f"Skipping unexpected non-dict metadata in SparseField pk={sparse_field.pk}")
+        metadata = {}
     return {**{"id": sparse_field.pk}, **metadata}
 
 
 def _next_sparse_name(resource):
-    """Generate the next available ``extra_metadata_<N>`` name.
+    """Generate the next available ``extra_<N>`` name.
 
     Falls back to a UUID-based suffix if a name collision occurs (e.g. under
-    concurrent requests), keeping the ``extra_metadata_`` prefix intact.
+    concurrent requests), keeping the ``extra_`` prefix intact.
     The numeric part is still preferred for readability.
     """
     existing = (
@@ -138,7 +142,7 @@ class DeprecatedExtraMetadataField(DynamicComputedField):
     """Deferred computed field that reconstructs the legacy ``metadata``
     representation from :class:`SparseField` entries.
 
-    .. deprecated:: 4.4.0
+    .. deprecated:: 5.1.0
        Use the sparse fields API instead.
     """
 
@@ -148,7 +152,6 @@ class DeprecatedExtraMetadataField(DynamicComputedField):
     @deprecated(version=DEPRECATION_VERSION, reason=DEPRECATION_REASON)
     def get_attribute(self, instance):
         warnings.warn(DEPRECATION_REASON, DeprecationWarning, stacklevel=2)
-        logger.warning(DEPRECATION_REASON)
         try:
             qs = _sparse_fields_for_resource(instance)
             return [_sparse_to_legacy(sf) for sf in qs]
@@ -178,6 +181,7 @@ class DeprecatedExtraMetadataMixin:
         methods=["get", "put", "delete", "post"],
         url_path=r"extra_metadata",
         url_name="extra-metadata",
+        permission_classes=[IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
     def extra_metadata(self, request, pk, *args, **kwargs):
         """Deprecated endpoint – delegates to SparseField storage."""
@@ -212,7 +216,11 @@ class DeprecatedExtraMetadataMixin:
             for sf in qs:
                 try:
                     meta = json.loads(sf.value) if sf.value else {}
+                    if not isinstance(meta, dict):
+                        logger.warning(f"Skipping unexpected non-dict metadata in SparseField pk={sf.pk}")
+                        continue
                 except (json.JSONDecodeError, TypeError):
+                    logger.warning(f"Skipping unparsable json in SparseField pk={sf.pk}")
                     continue
                 if str(meta.get(key)) == str(value):
                     filtered.append(sf)
@@ -243,17 +251,21 @@ class DeprecatedExtraMetadataMixin:
                 status=400,
             )
 
+        cleaned = []
         for meta_dict in data:
             if not isinstance(meta_dict, dict):
+                logger.warning(f"Skipping non-dict metadata entry in POST payload: {meta_dict}")
                 continue
+            meta_dict = dict(meta_dict)  # avoid mutating caller input
             meta_dict.pop("id", None)
             value = json.dumps(meta_dict)
             if len(value) > SPARSE_FIELD_VALUE_MAX_LENGTH:
-                logger.warning(
-                    "extra_metadata entry skipped: serialized value exceeds "
-                    f"{SPARSE_FIELD_VALUE_MAX_LENGTH} characters"
+                return Response(
+                    {"detail": f"serialized value exceeds {SPARSE_FIELD_VALUE_MAX_LENGTH} characters"}, status=400
                 )
-                continue
+            cleaned.append(value)
+
+        for value in cleaned:
             name = _next_sparse_name(resource)
             try:
                 SparseField.objects.create(resource=resource, name=name, value=value)
@@ -285,19 +297,22 @@ class DeprecatedExtraMetadataMixin:
                 status=400,
             )
 
+        cleaned_updates = []
         for meta_dict in data:
             if not isinstance(meta_dict, dict):
                 continue
+            meta_dict = dict(meta_dict)  # avoid mutating caller input
             sf_id = meta_dict.pop("id", None)
             if sf_id is None:
                 continue
             value = json.dumps(meta_dict)
             if len(value) > SPARSE_FIELD_VALUE_MAX_LENGTH:
-                logger.warning(
-                    "extra_metadata entry skipped: serialized value exceeds "
-                    f"{SPARSE_FIELD_VALUE_MAX_LENGTH} characters"
+                return Response(
+                    {"detail": f"serialized value exceeds {SPARSE_FIELD_VALUE_MAX_LENGTH} characters"}, status=400
                 )
-                continue
+            cleaned_updates.append((sf_id, value))
+
+        for sf_id, value in cleaned_updates:
             SparseField.objects.filter(
                 pk=sf_id,
                 resource=resource,

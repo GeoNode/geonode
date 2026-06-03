@@ -4457,7 +4457,7 @@ class DeprecatedExtraMetadataApiTest(GeoNodeBaseTestSupport):
         # Verify SparseField entries were created
         sf_count = SparseField.objects.filter(
             resource=self.dataset.resourcebase_ptr,
-            name__startswith="extra_metadata_",
+            name__startswith="extra_",
         ).count()
         self.assertEqual(sf_count, 2)
 
@@ -4537,7 +4537,7 @@ class DeprecatedExtraMetadataApiTest(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         SparseField.objects.create(
             resource=self.dataset.resourcebase_ptr,
-            name="extra_metadata_1",
+            name="extra_1",
             value=json.dumps({"field_name": "test", "field_value": "val"}),
         )
         url = f"{reverse('base-resources-list')}/{self.dataset.pk}?include[]=metadata"

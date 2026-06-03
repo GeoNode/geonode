@@ -538,23 +538,47 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def test_metadata_filters(self):
         """Test metadata filtering against sparse fields."""
         _r = Dataset.objects.first()
+
+        # Create sparse field using migrated ExtraMetadata format.
         SparseField.objects.update_or_create(
             resource=_r,
-            name="category",
-            defaults={"value": "category"},
+            name="extra_1",
+            defaults={"value": json.dumps({"category": "category"})},
         )
+
+        # Verify sparse field was created
+        _sf_check = SparseField.objects.filter(resource=_r, name="extra_1")
+        self.assertTrue(_sf_check.exists(), "SparseField should have been created")
+        self.assertEqual(_sf_check.first().value, json.dumps({"category": "category"}))
 
         list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "datasets"})
 
+        # Test 1: Filter for existing category value
         filter_url = f"{list_url}?metadata__category=category"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)["objects"]), 1)
 
+        result = self.deserialize(resp)
+        result_count = len(result["objects"])
+        logger.debug(f"Test 1 - Filter metadata__category=category: Got {result_count} results (expected 1)")
+        logger.debug(f"Result PKs: {[obj['id'] for obj in result['objects']]}")
+        logger.debug(f"Created resource PK: {_r.pk}")
+
+        self.assertEqual(result_count, 1, f"Expected 1 result, got {result_count}")
+        self.assertEqual(result["objects"][0]["id"], _r.pk)
+
+        # Test 2: Filter for non-existing category value
         filter_url = f"{list_url}?metadata__category=not-existing-category"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)["objects"]), 0)
+
+        result = self.deserialize(resp)
+        result_count = len(result["objects"])
+        logger.debug(
+            f"Test 2 - Filter metadata__category=not-existing-category: Got {result_count} results (expected 0)"
+        )
+
+        self.assertEqual(result_count, 0, f"Expected 0 results, got {result_count}")
 
     def test_tag_filters(self):
         """Test keywords filtering"""
