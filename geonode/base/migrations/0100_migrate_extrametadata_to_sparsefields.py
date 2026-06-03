@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 
 def migrate_extrametadata_to_sparsefields(apps, schema_editor):
     """
-    Migrate ExtraMetadata entries to SparseField entries.
-
+    Migrate ExtraMetadata to SparseField.
     Each ExtraMetadata object (with its JSON dict) is stored as a single
     SparseField entry with name 'extra_metadata_<pk>' and value as JSON string.
     Entries whose serialized JSON exceeds 1024 characters are skipped with a warning.
@@ -22,7 +21,8 @@ def migrate_extrametadata_to_sparsefields(apps, schema_editor):
         value = json.dumps(extra_meta.metadata)
         if len(value) > 1024:
             logger.warning(
-                f"ExtraMetadata pk={extra_meta.pk} skipped during migration to SparseField: "
+                f"ExtraMetadata pk={extra_meta.pk} for resource {extra_meta.resource.id}:{extra_meta.resource.title} "
+                f"skipped during migration to SparseField: "
                 f"serialized value exceeds 1024 characters"
             )
             continue

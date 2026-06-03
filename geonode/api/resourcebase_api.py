@@ -263,7 +263,7 @@ class CommonModelApi(ModelResource):
             # Extract field name from "metadata__fieldname"
             if not filter_key.startswith("metadata__"):
                 continue
-            field_name = filter_key[len("metadata__"):]
+            field_name = filter_key[len("metadata__") :]
 
             # Query SparseFields for this field name
             sparse_fields = SparseField.objects.filter(name=field_name)
@@ -276,7 +276,7 @@ class CommonModelApi(ModelResource):
             for sf in sparse_fields:
                 try:
                     # Try to parse as JSON if it looks like JSON
-                    stored_value = json.loads(sf.value) if sf.value and sf.value.startswith('{') else sf.value
+                    stored_value = json.loads(sf.value) if sf.value and sf.value.startswith("{") else sf.value
                 except (json.JSONDecodeError, TypeError):
                     stored_value = sf.value
 

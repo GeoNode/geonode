@@ -25,7 +25,6 @@ import sys
 import logging
 import subprocess
 import dj_database_url
-from schema import Optional
 from urllib.parse import urlparse, urljoin
 
 #
@@ -2113,13 +2112,14 @@ CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/fu
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 for deprecated_env_key in (
-        "CUSTOM_METADATA_SCHEMA",
-        "MAP_EXTRA_METADATA_SCHEMA",
-        "DATASET_EXTRA_METADATA_SCHEMA",
-        "DOCUMENT_EXTRA_METADATA_SCHEMA",
-        "GEOAPP_EXTRA_METADATA_SCHEMA"):
+    "CUSTOM_METADATA_SCHEMA",
+    "MAP_EXTRA_METADATA_SCHEMA",
+    "DATASET_EXTRA_METADATA_SCHEMA",
+    "DOCUMENT_EXTRA_METADATA_SCHEMA",
+    "GEOAPP_EXTRA_METADATA_SCHEMA",
+):
     if os.getenv(deprecated_env_key) is not None:
-        logger.warning(f"Found deprecated environment variable '{deprecated_env_key}'. This variable is no longer used and will be removed in a future version. Please remove it from your environment variables.")
+        logger.warning(f"Found deprecated environment variable '{deprecated_env_key}'.")
 
 # DEPRECATED -- Declaration kept for backward compatibility
 DEFAULT_EXTRA_METADATA_SCHEMA = {}
