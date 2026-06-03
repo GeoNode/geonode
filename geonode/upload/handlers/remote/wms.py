@@ -27,7 +27,6 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.handlers.remote.serializers.wms import RemoteWMSSerializer
 from geonode.upload.orchestrator import orchestrator
 from geonode.harvesting.harvesters.wms import WebMapService
-from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 from geonode.services.models import Service
@@ -69,13 +68,17 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             payload["identifier"] = original_data.pop("identifier", None)
             payload["bbox"] = original_data.pop("bbox", None)
             payload["parse_remote_metadata"] = original_data.pop("parse_remote_metadata", None)
-            username = original_data.pop("username", None)
-            password = original_data.pop("password", None)
-            if username or password:
-                auth_payload = {"username": username, "password": password}
-                auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
-                auth_handler_cls = auth_handler_registry.get_handler_class(auth_config.type)
+            authentication = original_data.pop("authentication", None)
+            if authentication:
+                # Resolve the auth handler from the payload type, then let the handler
+                # validate the auth-specific payload before storing it.
+                auth_type = authentication.get("type")
+                auth_payload = authentication.get("payload") or {}
+                auth_handler_cls = auth_handler_registry.get_handler_class(auth_type)
+                if auth_handler_cls is None:
+                    raise ValueError(f"Unsupported authentication type '{auth_type}'")
                 auth_handler_cls.validate(auth_payload)
+                auth_config = AuthConfig(type=auth_type)
                 auth_config.payload = auth_payload
                 auth_config.save()
                 payload["auth_config_id"] = auth_config.pk

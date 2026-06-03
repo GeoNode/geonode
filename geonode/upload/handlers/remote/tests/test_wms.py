@@ -136,7 +136,14 @@ class TestRemoteWMSResourceHandler(TestCase):
 
     def test_extract_params_from_data_should_create_basic_auth_config(self):
         payload = self.valid_payload_with_parse_true.copy()
-        payload.update({"username": "test_user", "password": "test_password"})
+        payload.update(
+            {
+                "authentication": {
+                    "type": BasicAuthHandler.handled_type,
+                    "payload": {"username": "test_user", "password": "test_password"},
+                }
+            }
+        )
 
         actual, _data = self.handler.extract_params_from_data(_data=payload, action="upload")
 
