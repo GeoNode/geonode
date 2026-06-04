@@ -37,6 +37,8 @@ from django.db.models import Q
 from geonode.base.models import ResourceBase
 import logging
 from geonode.harvesting.harvesters.wms import WebMapService
+from geonode.services import enumerations
+from geonode.services.models import Service
 from django.forms.models import model_to_dict
 from unittest import skip
 
@@ -573,6 +575,15 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
             name="Test",
             default_owner=self.user,
             harvester_type="geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+        )
+        Service.objects.create(
+            owner=self.admin,
+            title="Test",
+            type=enumerations.WMS,
+            method=enumerations.HARVESTED,
+            base_url=f"http://localhost:8000/proxy/?url={geoserver}",
+            name="test-wms-import-service",
+            harvester=harvester,
         )
         payload = {
             "url": f"http://localhost:8000/proxy/?url={url}",

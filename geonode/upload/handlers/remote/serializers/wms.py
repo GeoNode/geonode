@@ -17,6 +17,7 @@
 #
 #########################################################################
 from rest_framework import serializers
+
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 
 
@@ -28,8 +29,28 @@ class RemoteWMSSerializer(RemoteResourceSerializer):
             "identifier",
             "bbox",
             "parse_remote_metadata",
+            "authentication",
         )
 
     identifier = serializers.CharField(required=True)
     bbox = serializers.ListField(required=False)
     parse_remote_metadata = serializers.BooleanField(required=False, default=False)
+    authentication = serializers.JSONField(required=False, allow_null=True)
+
+    def validate_authentication(self, value):
+        if value is None:
+            return value
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Authentication must be an object.")
+
+        auth_type = value.get("type")
+        if not auth_type:
+            raise serializers.ValidationError("Authentication type is required.")
+
+        auth_payload = value.get("payload")
+        if auth_payload is None:
+            raise serializers.ValidationError("Authentication payload is required.")
+        if not isinstance(auth_payload, dict):
+            raise serializers.ValidationError("Authentication payload must be an object.")
+
+        return value
