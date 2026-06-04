@@ -151,6 +151,33 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertEqual(BasicAuthHandler.handled_type, auth_config.type)
         self.assertEqual({"username": "test_user", "password": "test_password"}, auth_config.payload)
 
+    def test_create_geonode_resource_rollback_should_delete_created_auth_config(self):
+        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"auth_config_id": auth_config.pk},
+        )
+
+        self.handler._create_geonode_resource_rollback(exec_id, istance_name="missing-resource")
+
+        self.assertFalse(AuthConfig.objects.filter(pk=auth_config.pk).exists())
+
+    def test_create_geonode_resource_rollback_should_not_delete_attached_auth_config(self):
+        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        self._create_wms_service(self.valid_url, auth_config=auth_config)
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"auth_config_id": auth_config.pk},
+        )
+
+        self.handler._create_geonode_resource_rollback(exec_id, istance_name="missing-resource")
+
+        self.assertTrue(AuthConfig.objects.filter(pk=auth_config.pk).exists())
+
     def _create_wms_service(self, service_url, auth_config=None, owner=None):
         owner = owner or self.owner
         harvester = Harvester.objects.create(

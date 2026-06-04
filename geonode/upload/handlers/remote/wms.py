@@ -85,6 +85,18 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
 
         return payload, original_data
 
+    def _create_geonode_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
+        super()._create_geonode_resource_rollback(exec_id, istance_name=istance_name)
+
+        _exec = orchestrator.get_execution_object(exec_id)
+        auth_config_id = _exec.input_params.get("auth_config_id")
+        if auth_config_id:
+            AuthConfig.objects.filter(
+                pk=auth_config_id,
+                authconfigresources__isnull=True,
+                url_patterns__isnull=True,
+            ).delete()
+
     def prepare_import(self, files, execution_id, **kwargs):
         """
         If the title and bbox must be retrieved from the remote resource
