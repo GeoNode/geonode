@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Build all services (Docker Compose v2)
-        run: docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
+        run: docker compose -f docker-compose.yml -f docker-compose-test.yml build --progress plain
 
       - name: Save built Docker images
         run: |
