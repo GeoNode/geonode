@@ -16,6 +16,7 @@ CELERY__WORKER_CONCURRENCY=${CELERY__WORKER_CONCURRENCY:-"4"}
 
 # Celery beat settings
 CELERY__BEAT_SCHEDULE=${CELERY__BEAT_SCHEDULE:-"celery.beat:PersistentScheduler"}
+CELERY__BEAT_DB=${CELERY__BEAT_DB:-"/tmp/celerybeat-schedule"}
 CELERY__BEAT_LOG=${CELERY__BEAT_LOG:-"/var/log/celery_beat.log"}
 
 # Harvester settings
@@ -43,6 +44,7 @@ fi
 
 echo "Starting Celery Beat..."
 $CELERY_BIN -A $CELERY_APP beat --scheduler=$CELERY__BEAT_SCHEDULE \
+    --schedule=$CELERY__BEAT_DB \
     --loglevel=$CELERY__LOG_LEVEL -f $CELERY__BEAT_LOG --pidfile=/tmp/celerybeat.pid &
 
 echo "Starting Default Celery Worker..."
