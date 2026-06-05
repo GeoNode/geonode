@@ -90,7 +90,7 @@ class GWCClient:
         """
         Clear the entire GWC cache.
         """
-        url = f"{self.base_url}masstruncate/"
+        url = f"{self.base_url}masstruncate"
         body = "<truncateAll></truncateAll>"
 
         response, content = http_client.post(url, data=body, headers=self.headers, user=self.user)
