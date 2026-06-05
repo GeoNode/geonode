@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Build all services (Docker Compose v2)
-        run: APP_ENV=test docker compose build --progress plain
+        run: APP_ENV=_test docker compose build --progress plain
 
       - name: Save built Docker images
         run: |
