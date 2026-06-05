@@ -20,6 +20,8 @@
 from geonode.base.management.command_utils import setup_logger
 from geonode.geoserver.gwc import GWCClient
 
+from django.core.management.base import CommandError
+
 logger = setup_logger()
 
 
@@ -27,12 +29,16 @@ def truncate_layers(layer_names):
     """Truncates one or more specified layers in GWC."""
     logger.info(f"Truncating layers in GWC: {', '.join(layer_names)}")
     client = GWCClient()
+    failed_layers = []
     for layer_name in layer_names:
         try:
             logger.info(f"Truncating layer: {layer_name}")
             client.truncate_layer(layer_name)
         except Exception as e:
             logger.error(f"Error invalidating cache for layer {layer_name}: {e}")
+            failed_layers.append(layer_name)
+    if failed_layers:
+        raise CommandError(f"Failed to truncate the following layers: {', '.join(failed_layers)}")
 
 
 def truncate_all_layers():
@@ -44,3 +50,4 @@ def truncate_all_layers():
         logger.info("Successfully truncated all layers in GWC.")
     except Exception as e:
         logger.error(f"Error executing truncateAll on GeoWebCache: {e}")
+        raise CommandError(f"Error executing truncateAll on GeoWebCache: {e}")

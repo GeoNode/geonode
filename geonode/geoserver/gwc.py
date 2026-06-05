@@ -71,16 +71,17 @@ class GWCClient:
             user=self.user,
         )
 
-        if response.status_code != 200:
+        if not response or response.status_code != 200:
+            status_code = response.status_code if response else "N/A"
             logger.error(
                 "Failed to truncate GWC layer '%s'. Status: %s, Response: %s",
                 layer_name,
-                response.status_code,
+                status_code,
                 content,
             )
 
             raise FailedRequestError(
-                f"Failed to truncate layer '{layer_name}'. " f"Status: {response.status_code}, Response: {content}"
+                f"Failed to truncate layer '{layer_name}'. Status: {status_code}, Response: {content}"
             )
 
         logger.info("Successfully truncated GWC cache for layer '%s'.", layer_name)
@@ -92,7 +93,8 @@ class GWCClient:
         url = f"{self.base_url}masstruncate/"
         body = "<truncateAll></truncateAll>"
 
-        req, content = http_client.post(url, data=body, headers=self.headers, user=self.user)
+        response, content = http_client.post(url, data=body, headers=self.headers, user=self.user)
 
-        if req.status_code != 200:
-            raise FailedRequestError(f"Error {req.status_code} truncating all GWC layers: {content}")
+        if not response or response.status_code != 200:
+            status_code = response.status_code if response else "N/A"
+            raise FailedRequestError(f"Error {status_code} truncating all GWC layers: {content}")
