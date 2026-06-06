@@ -82,6 +82,17 @@ else:
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv("THEME_ACCOUNT_CONTACT_EMAIL", "admin@example.com")
 
+# Microsoft 365 email backend (optional). Sends mail through the Microsoft Graph
+# sendMail API. To use, set DJANGO_EMAIL_BACKEND to
+# geonode.email_backends.ms_graph_backend.MicrosoftGraphEmailBackend and populate
+# the variables below.
+MICROSOFT_GRAPH_API_CREDENTIALS = {
+    "tenant_id": os.getenv("EMAIL_MS_GRAPH_TENANT_ID", ""),
+    "client_id": os.getenv("EMAIL_MS_GRAPH_CLIENT_ID", ""),
+    "client_secret": os.getenv("EMAIL_MS_GRAPH_CLIENT_SECRET", ""),
+    "mail_from": os.getenv("EMAIL_MS_GRAPH_FROM", os.getenv("DEFAULT_FROM_EMAIL", "")),
+}
+
 # Make this unique, and don't share it with anybody.
 _DEFAULT_SECRET_KEY = "myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a"
 SECRET_KEY = os.getenv("SECRET_KEY", _DEFAULT_SECRET_KEY)
