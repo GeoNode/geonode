@@ -28,11 +28,11 @@ from geonode.geoserver.gwc import GWCClient
 
 class GWCClientTest(TestCase):
 
-    @patch("geonode.geoserver.gwc.http_client.post")
+    @patch("geonode.geoserver.gwc.requests.post")
     def test_truncate_layer_calls_api(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_post.return_value = (mock_response, "")
+        mock_post.return_value = mock_response
 
         client = GWCClient()
         client.truncate_layer("test_layer1")
@@ -45,12 +45,12 @@ class GWCClientTest(TestCase):
             "<truncateLayer><layerName>geonode:test_layer1</layerName></truncateLayer>",
         )
 
-    @patch("geonode.geoserver.gwc.http_client.post")
+    @patch("geonode.geoserver.gwc.requests.post")
     def test_truncate_layer_preserves_workspace(self, mock_post):
         """Layer already qualified should not get default workspace prepended."""
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_post.return_value = (mock_response, "")
+        mock_post.return_value = mock_response
 
         client = GWCClient()
         client.truncate_layer("workspace:test_layer")
@@ -61,12 +61,12 @@ class GWCClientTest(TestCase):
             "<truncateLayer><layerName>workspace:test_layer</layerName></truncateLayer>",
         )
 
-    @patch("geonode.geoserver.gwc.http_client.post")
+    @patch("geonode.geoserver.gwc.requests.post")
     def test_truncate_layer_escapes_xml(self, mock_post):
         """Ensure XML injection is prevented via escaping."""
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_post.return_value = (mock_response, "")
+        mock_post.return_value = mock_response
 
         client = GWCClient()
         client.truncate_layer("layer&<>name")
@@ -76,22 +76,23 @@ class GWCClientTest(TestCase):
         self.assertIn("layer&amp;&lt;&gt;name", call_kwargs)
         self.assertNotIn("<truncateAll>", call_kwargs)
 
-    @patch("geonode.geoserver.gwc.http_client.post")
+    @patch("geonode.geoserver.gwc.requests.post")
     def test_truncate_layer_raises_on_error(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 500
-        mock_post.return_value = (mock_response, "Internal Server Error")
+        mock_response.text = "Internal Server Error"
+        mock_post.return_value = mock_response
 
         client = GWCClient()
 
         with self.assertRaises(FailedRequestError):
             client.truncate_layer("test_layer")
 
-    @patch("geonode.geoserver.gwc.http_client.post")
+    @patch("geonode.geoserver.gwc.requests.post")
     def test_truncate_all_calls_api(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_post.return_value = (mock_response, "")
+        mock_post.return_value = mock_response
 
         client = GWCClient()
         client.truncate_all()
@@ -99,14 +100,15 @@ class GWCClientTest(TestCase):
         self.assertEqual(mock_post.call_count, 1)
         self.assertEqual(
             mock_post.call_args[1]["data"],
-            "<truncateAll></truncateAll>",
+            "<truncateAll/>",
         )
 
-    @patch("geonode.geoserver.gwc.http_client.post")
+    @patch("geonode.geoserver.gwc.requests.post")
     def test_truncate_all_raises_on_error(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 500
-        mock_post.return_value = (mock_response, "Internal Server Error")
+        mock_response.text = "Internal Server Error"
+        mock_post.return_value = mock_response
 
         client = GWCClient()
 

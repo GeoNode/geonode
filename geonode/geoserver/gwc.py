@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2026 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,12 +18,14 @@
 #########################################################################
 
 import logging
+import requests
+
 from xml.sax.saxutils import escape
 
 from geoserver.catalog import FailedRequestError
+from requests.auth import HTTPBasicAuth
 
-from geonode.utils import http_client
-from geonode.geoserver.helpers import ogc_server_settings, _user
+from geonode.geoserver.helpers import ogc_server_settings
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -34,24 +36,22 @@ class GWCClient:
     A GeoWebCache REST client for interacting with the GWC API.
     """
 
-    def __init__(self, base_url: str = None, user: str = None) -> None:
-        if not base_url:
-            base_url = f"{ogc_server_settings.LOCATION}gwc/rest"
-
-        if not base_url.endswith("/"):
-            base_url += "/"
-
-        self.base_url = base_url
-        self.user = user or _user
+    def __init__(self) -> None:
+        self.base_url = f"{ogc_server_settings.LOCATION}gwc/rest/"
         self.headers = {"Content-Type": "text/xml"}
 
-    def truncate_layer(self, layer_name: str, workspace: str | None = None) -> None:
-        """
-        Truncate all cached tiles for a GWC layer.
-        """
+    def _post(self, urlpath, data):
+        _user, _password = ogc_server_settings.credentials
+
+        url = f"{self.base_url}{urlpath}"
+        r = requests.post(url=url, data=data, auth=HTTPBasicAuth(_user, _password))
+        logger.debug(f'POST response: code:{r.status_code} --> "{r.text}"')
+        return r
+
+    @staticmethod
+    def _validate_layer_name(layer_name: str, workspace: str | None = None) -> str:
         if ":" not in layer_name:
             workspace = workspace or getattr(settings, "DEFAULT_WORKSPACE", "geonode")
-
             logger.info(
                 "Workspace not provided for layer '%s'. Using default workspace '%s'.",
                 layer_name,
@@ -59,30 +59,17 @@ class GWCClient:
             )
 
             layer_name = f"{workspace}:{layer_name}"
+        return layer_name
 
-        url = f"{self.base_url}masstruncate"
-
+    def truncate_layer(self, layer_name: str, workspace: str | None = None) -> None:
+        """
+        Truncate all cached tiles for a GWC layer.
+        """
+        layer_name = self._validate_layer_name(layer_name, workspace)
         body = f"<truncateLayer><layerName>{escape(layer_name)}</layerName></truncateLayer>"
-
-        response, content = http_client.post(
-            url,
-            data=body,
-            headers=self.headers,
-            user=self.user,
-        )
-
-        if not response or response.status_code != 200:
-            status_code = response.status_code if response else "N/A"
-            logger.error(
-                "Failed to truncate GWC layer '%s'. Status: %s, Response: %s",
-                layer_name,
-                status_code,
-                content,
-            )
-
-            raise FailedRequestError(
-                f"Failed to truncate layer '{layer_name}'. Status: {status_code}, Response: {content}"
-            )
+        r = self._post("masstruncate", body)
+        if r.status_code != 200:
+            raise FailedRequestError(f'Error truncating GWC layer: {r.status_code}: "{r.text}"')
 
         logger.info("Successfully truncated GWC cache for layer '%s'.", layer_name)
 
@@ -90,11 +77,9 @@ class GWCClient:
         """
         Clear the entire GWC cache.
         """
-        url = f"{self.base_url}masstruncate"
-        body = "<truncateAll></truncateAll>"
+        r = self._post("masstruncate", "<truncateAll/>")
 
-        response, content = http_client.post(url, data=body, headers=self.headers, user=self.user)
+        if r.status_code != 200:
+            raise FailedRequestError(f'Error truncating all GWC layers: {r.status_code}: "{r.text}"')
 
-        if not response or response.status_code != 200:
-            status_code = response.status_code if response else "N/A"
-            raise FailedRequestError(f"Error {status_code} truncating all GWC layers: {content}")
+        logger.info("Successfully truncated the whole GWC cache.")

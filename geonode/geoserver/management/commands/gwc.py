@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2021 OSGeo
+# Copyright (C) 2026 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ class Command(BaseCommand):
             if truncate_all:
                 truncate_all_layers()
             else:
-                logger.info("Truncating %d layer(s).", len(layers))
+                logger.info(f"Truncating {len(layers)} layer{'s' if len(layers) > 1 else ''}")
                 truncate_layers(layers)
 
         else:
