@@ -30,7 +30,7 @@ dependencies = [
     "Django==5.2.15",
 
     # Other
-    "beautifulsoup4==4.12.3",
+    "beautifulsoup4==4.15.0",
     "hyperlink==21.0.0",
     "urllib3==2.7.0",
     "Paver==1.3.4",
