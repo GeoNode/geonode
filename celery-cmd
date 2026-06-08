@@ -16,7 +16,7 @@ CELERY__WORKER_CONCURRENCY=${CELERY__WORKER_CONCURRENCY:-"4"}
 
 # Celery beat settings
 CELERY__BEAT_SCHEDULE=${CELERY__BEAT_SCHEDULE:-"celery.beat:PersistentScheduler"}
-CELERY__BEAT_DB=${CELERY__BEAT_DB:-"/tmp/celerybeat-schedule"}
+CELERY__BEAT_DB=${CELERY__BEAT_DB:-"/mnt/volumes/statics/celerybeat-schedule"}
 CELERY__BEAT_LOG=${CELERY__BEAT_LOG:-"/var/log/celery_beat.log"}
 
 # Harvester settings
