@@ -20,10 +20,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.management.command_utils import setup_logger
-from geonode.geoserver.management.commands.gwc_subcommands.truncate import (
-    truncate_layers,
-    truncate_all_layers,
-)
+from geonode.geoserver.management.commands.gwc_subcommands import truncate
 
 logger = setup_logger()
 
@@ -64,26 +61,7 @@ class Command(BaseCommand):
         logger.info("Executing GWC subcommand '%s'.", subcommand)
 
         if subcommand == COMMAND_TRUNCATE:
-            layers = options.get("layers") or []
-            truncate_all = options.get("truncate_all") or False
-
-            logger.info(
-                "Truncate command received. layers=%s, truncate_all=%s",
-                layers,
-                truncate_all,
-            )
-
-            if not layers and not truncate_all:
-                raise CommandError("'truncate' command requires either the -l/--layer parameter(s) or the --all flag.")
-
-            if layers and truncate_all:
-                raise CommandError("Cannot use both -l/--layer and --all at the same time.")
-
-            if truncate_all:
-                truncate_all_layers()
-            else:
-                logger.info(f"Truncating {len(layers)} layer{'s' if len(layers) > 1 else ''}")
-                truncate_layers(layers)
+            truncate.handle(options)
 
         else:
             raise CommandError(f"Unknown subcommand: {subcommand}")

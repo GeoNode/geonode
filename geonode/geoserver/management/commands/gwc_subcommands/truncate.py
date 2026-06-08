@@ -25,6 +25,29 @@ from django.core.management.base import CommandError
 logger = setup_logger()
 
 
+def handle(options: dict) -> None:
+    layers = options.get("layers") or []
+    truncate_all = options.get("truncate_all") or False
+
+    logger.info(
+        "Truncate command received. layers=%s, truncate_all=%s",
+        layers,
+        truncate_all,
+    )
+
+    if not layers and not truncate_all:
+        raise CommandError("'truncate' command requires either the -l/--layer parameter(s) or the --all flag.")
+
+    if layers and truncate_all:
+        raise CommandError("Cannot use both -l/--layer and --all at the same time.")
+
+    if truncate_all:
+        truncate_all_layers()
+    else:
+        logger.info(f"Truncating {len(layers)} layer{'s' if len(layers) > 1 else ''}")
+        truncate_layers(layers)
+
+
 def truncate_layers(layer_names):
     """Truncates one or more specified layers in GWC."""
     logger.info(f"Truncating layers in GWC: {', '.join(layer_names)}")

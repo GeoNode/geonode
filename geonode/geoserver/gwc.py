@@ -38,13 +38,12 @@ class GWCClient:
 
     def __init__(self) -> None:
         self.base_url = f"{ogc_server_settings.LOCATION}gwc/rest/"
-        self.headers = {"Content-Type": "text/xml"}
 
     def _post(self, urlpath, data):
         _user, _password = ogc_server_settings.credentials
 
         url = f"{self.base_url}{urlpath}"
-        r = requests.post(url=url, data=data, auth=HTTPBasicAuth(_user, _password))
+        r = requests.post(url=url, data=data, auth=HTTPBasicAuth(_user, _password), timeout=30)
         logger.debug(f'POST response: code:{r.status_code} --> "{r.text}"')
         return r
 
