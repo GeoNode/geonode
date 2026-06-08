@@ -154,7 +154,7 @@ dependencies = [
     "flaky==3.8.1",
     "selenium>=4.15.1,<5.0.0",
     "selenium-requests==2.0.4",
-    "webdriver_manager==4.0.1",
+    "webdriver_manager==4.1.2",
     # Security and audit
     "cryptography==48.0.0",
     "jwcrypto>=1.5.7",
