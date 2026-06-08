@@ -1,0 +1,67 @@
+#########################################################################
+#
+# Copyright (C) 2026 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
+from django.core.management.base import BaseCommand, CommandError
+
+from geonode.base.management.command_utils import setup_logger
+from geonode.geoserver.management.commands.gwc_subcommands import truncate
+
+logger = setup_logger()
+
+COMMAND_TRUNCATE = "truncate"
+COMMANDS = [COMMAND_TRUNCATE]
+
+
+class Command(BaseCommand):
+    help = f"Handles GWC commands {COMMANDS}"
+
+    def add_arguments(self, parser):
+        parser.add_argument("subcommand", nargs="?", choices=COMMANDS, help="GWC operation to run")
+
+        truncate_group = parser.add_argument_group('Params for "truncate" subcommand')
+        truncate_group.add_argument(
+            "-l",
+            "--layer",
+            dest="layers",
+            action="append",
+            help="Name of the layer(s) to truncate. Can be repeated.",
+        )
+        truncate_group.add_argument(
+            "--all",
+            dest="truncate_all",
+            action="store_true",
+            help="Truncate all cache in GWC",
+        )
+
+    def handle(self, *args, **options):
+        subcommand = options["subcommand"]
+        logger.info("Starting GWC command.")
+
+        if not subcommand:
+            logger.warning("No GWC subcommand provided.")
+            self.print_help("manage.py", "gwc")
+            return
+
+        logger.info("Executing GWC subcommand '%s'.", subcommand)
+
+        if subcommand == COMMAND_TRUNCATE:
+            truncate.handle(options)
+
+        else:
+            raise CommandError(f"Unknown subcommand: {subcommand}")
