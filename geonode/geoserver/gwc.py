@@ -36,15 +36,40 @@ class GWCClient:
     A GeoWebCache REST client for interacting with the GWC API.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         self.base_url = f"{ogc_server_settings.LOCATION}gwc/rest/"
+        self.debug = kwargs.get("debug", False)
+
+    def __log_response(self, r):
+        if self.debug:
+            logger.debug(f'{r.request.method} response: code:{r.status_code} --> "{r.text}"')
+        else:
+            logger.debug(f"{r.request.method} response: code:{r.status_code} --> {len(r.text)} bytes")
+
+    def _get(self, urlpath):
+        _user, _password = ogc_server_settings.credentials
+
+        url = f"{self.base_url}{urlpath}"
+        r = requests.get(url=url, auth=HTTPBasicAuth(_user, _password), timeout=30)
+        self.__log_response(r)
+        return r
 
     def _post(self, urlpath, data):
         _user, _password = ogc_server_settings.credentials
 
         url = f"{self.base_url}{urlpath}"
         r = requests.post(url=url, data=data, auth=HTTPBasicAuth(_user, _password), timeout=30)
-        logger.debug(f'POST response: code:{r.status_code} --> "{r.text}"')
+        self.__log_response(r)
+        return r
+
+    def _put(self, urlpath, data):
+        _user, _password = ogc_server_settings.credentials
+
+        url = f"{self.base_url}{urlpath}"
+        r = requests.put(
+            url=url, data=data, headers={"Content-Type": "text/xml"}, auth=HTTPBasicAuth(_user, _password), timeout=30
+        )
+        self.__log_response(r)
         return r
 
     @staticmethod
@@ -59,6 +84,17 @@ class GWCClient:
 
             layer_name = f"{workspace}:{layer_name}"
         return layer_name
+
+    def get_layer(self, layer_name: str, workspace: str | None = None) -> requests.Response:
+        """
+        Get GWC layer information. Returns the raw response from the GWC API.
+        """
+        layer_name = self._validate_layer_name(layer_name, workspace)
+        return self._get(f"layers/{layer_name}.xml")
+
+    def set_layer(self, layer_name: str, workspace: str | None = None, data=None) -> requests.Response:
+        layer_name = self._validate_layer_name(layer_name, workspace)
+        return self._put(f"layers/{layer_name}.xml", data=data)
 
     def truncate_layer(self, layer_name: str, workspace: str | None = None) -> None:
         """
