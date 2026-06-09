@@ -21,47 +21,53 @@ from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.management.command_utils import setup_logger
 from geonode.geoserver.management.commands.gwc_subcommands import truncate
+from geonode.geoserver.management.commands.gwc_subcommands.create import CreateTileLayers
 
 logger = setup_logger()
 
 COMMAND_TRUNCATE = "truncate"
-COMMANDS = [COMMAND_TRUNCATE]
+COMMAND_CREATE = "create"
+COMMANDS = [COMMAND_CREATE, COMMAND_TRUNCATE]
 
 
 class Command(BaseCommand):
     help = f"Handles GWC commands {COMMANDS}"
 
-    def add_arguments(self, parser):
-        parser.add_argument("subcommand", nargs="?", choices=COMMANDS, help="GWC operation to run")
+    def _add_common_arguments(self, parser):
+        parser.add_argument(
+            '-d',
+            '--dry-run',
+            dest="dry-run",
+            action='store_true',
+            help="Do not actually perform any change on GWC")
 
-        truncate_group = parser.add_argument_group('Params for "truncate" subcommand')
-        truncate_group.add_argument(
-            "-l",
-            "--layer",
-            dest="layers",
-            action="append",
-            help="Name of the layer(s) to truncate. Can be repeated.",
-        )
-        truncate_group.add_argument(
-            "--all",
-            dest="truncate_all",
-            action="store_true",
-            help="Truncate all cache in GWC",
-        )
+        parser.add_argument(
+            '--debug',
+            dest="debug",
+            action='store_true',
+            help="Show debug logging")
+
+    def add_arguments(self, parser):
+
+        subparsers = parser.add_subparsers(dest="subcommand", required=True)
+
+        parser_truncate = subparsers.add_parser(COMMAND_TRUNCATE, help="Truncate tile layers")
+        truncate.add_arguments(parser_truncate)
+        self._add_common_arguments(parser_truncate)
+
+        parser_create = subparsers.add_parser(COMMAND_CREATE, help="Create tile layers")
+        CreateTileLayers().add_arguments(parser_create)
+        self._add_common_arguments(parser_create)
 
     def handle(self, *args, **options):
         subcommand = options["subcommand"]
-        logger.info("Starting GWC command.")
-
-        if not subcommand:
-            logger.warning("No GWC subcommand provided.")
-            self.print_help("manage.py", "gwc")
-            return
-
-        logger.info("Executing GWC subcommand '%s'.", subcommand)
+        logger.info(f"Executing GWC subcommand '{subcommand}'...")
 
         if subcommand == COMMAND_TRUNCATE:
             truncate.handle(options)
-
+        elif subcommand == COMMAND_CREATE:
+            CreateTileLayers().handle(**options)
         else:
             raise CommandError(f"Unknown subcommand: {subcommand}")
+
+        logger.info(f"GWC subcommand {subcommand} completed.")
