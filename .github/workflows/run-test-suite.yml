@@ -28,7 +28,7 @@ jobs:
         run: docker load -i docker_images/django.tar
 
       - name: Start the stack
-        run: APP_ENV=_test docker compose up -d
+        run: APP_ENV=_test docker compose up -d --no-deps db geoserver django nginx
 
       - name: Setup test databases
         run: |

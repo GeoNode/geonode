@@ -364,3 +364,12 @@ def _prepare_admin_fixture(admin_password, admin_email):
     ]
     with open("/tmp/django_admin_docker.json", "w") as fixturefile:
         json.dump(default_fixture, fixturefile)
+
+
+@task
+def loadthesauri(ctx):
+    print("**************************thesauri*******************************")
+    ctx.run(
+        f"python manage.py thesaurus autoload --settings={_localsettings()}",
+        pty=True,
+    )
