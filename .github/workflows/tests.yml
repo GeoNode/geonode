@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Build all services (Docker Compose v2)
-        run: APP_ENV=_test docker compose build --no-deps db geoserver django nginx --progress plain
+        run: APP_ENV=_test docker compose build db geoserver django nginx --progress plain
 
       - name: Save built Docker images
         run: |
