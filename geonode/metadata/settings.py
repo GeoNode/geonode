@@ -13,6 +13,7 @@ MODEL_SCHEMA = {
 JSONSCHEMA_BASE = os.path.join(PROJECT_ROOT, "metadata/schemas/base.json")
 
 METADATA_HANDLERS = {
+    "metadata_cleaner": "geonode.metadata.handlers.meta.CleanupHandler",
     "base": "geonode.metadata.handlers.base.BaseHandler",
     "thesaurus": "geonode.metadata.handlers.thesaurus.TKeywordsHandler",
     "hkeyword": "geonode.metadata.handlers.hkeyword.HKeywordHandler",
