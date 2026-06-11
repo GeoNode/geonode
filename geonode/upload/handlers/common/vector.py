@@ -338,7 +338,20 @@ class BaseVectorFileHandler(BaseHandler):
             host = _datastore.get("HOST") or "localhost"
             port = str(_datastore.get("PORT") or 5432)
             env = {**os.environ, "PGPASSWORD": _datastore["PASSWORD"]}
-            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", host, "-p", port, "-U", _datastore["USER"], "-f", "-"]
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                host,
+                "-p",
+                port,
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
 
             p1 = Popen(command, stdout=PIPE, stderr=PIPE)
             p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
@@ -1686,7 +1699,18 @@ def import_with_ogr2ogr(
             # If using a pipe (ogr2ogr | psql), we must handle it via Python
             # because shell=False doesn't understand the "|" symbol.
             _datastore = settings.DATABASES["datastore"]
-            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", _datastore["HOST"], "-U", _datastore["USER"], "-f", "-"]
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                _datastore["HOST"],
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
 
             env = os.environ.copy()
             env["PGPASSWORD"] = _datastore["PASSWORD"]
