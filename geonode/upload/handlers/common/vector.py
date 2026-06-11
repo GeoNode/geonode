@@ -335,8 +335,10 @@ class BaseVectorFileHandler(BaseHandler):
                 db_connection_string,
             ] + base_args
 
+            host = _datastore.get("HOST") or "localhost"
+            port = str(_datastore.get("PORT") or 5432)
             env = {**os.environ, "PGPASSWORD": _datastore["PASSWORD"]}
-            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", _datastore["HOST"], "-U", _datastore["USER"], "-f", "-"]
+            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", host, "-p", port, "-U", _datastore["USER"], "-f", "-"]
 
             p1 = Popen(command, stdout=PIPE, stderr=PIPE)
             p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
