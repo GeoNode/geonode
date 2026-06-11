@@ -482,7 +482,35 @@ class TestBaseVectorFileHandler(TestCase):
 
         # 4. Verify the password is passed securely in 'env', not in the command list
         self.assertIn("PGPASSWORD", psql_kwargs["env"])
-        # Ensure the password is NOT in the actual command list (the security fix!)
+
+        self.assertFalse(any("PGPASSWORD" in str(arg) for arg in psql_args))
+
+    @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"})
+    @patch("geonode.upload.handlers.common.vector.Popen")
+    def test_copy_with_ogr2ogr_without_errors_should_call_the_right_command_if_dump_is_enabled(self, _open):
+        # We need the second process (psql) to return the communicate values
+        comm = MagicMock()
+        comm.communicate.return_value = b"", b""
+        _open.return_value = comm
+
+        BaseVectorFileHandler.copy_table_with_ogr2ogr("original_table", "new_table", "datastore")
+
+        self.assertEqual(_open.call_count, 2)
+
+        ogr_args = _open.mock_calls[0][1][0]
+        self.assertIn("-f", ogr_args)
+        self.assertIn("PGDump", ogr_args)
+        self.assertIn("/vsistdout/", ogr_args)
+        self.assertNotIn("PostgreSQL", ogr_args)
+
+        psql_args = _open.mock_calls[1][1][0]
+        psql_kwargs = _open.mock_calls[1][2]
+
+        self.assertIn("psql", psql_args)
+        self.assertIn("-d", psql_args)
+
+        self.assertIn("PGPASSWORD", psql_kwargs["env"])
+
         self.assertFalse(any("PGPASSWORD" in str(arg) for arg in psql_args))
 
     def test_select_valid_layers(self):
