@@ -84,7 +84,7 @@ class KMLFileHandler(BaseVectorFileHandler):
                 },
             },
             "kmz": {
-                "mimes": {"application/zip", "application/vnd.google-earth.kmz"},
+                "mimes": {"application/zip", "application/vnd.google-earth.kmz", "application/octet-stream"},
             },
         }
 

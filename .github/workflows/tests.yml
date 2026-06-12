@@ -24,7 +24,7 @@ jobs:
       - name: Save built Docker images
         run: |
           mkdir -p docker_images
-          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-24.04
+          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-26.04
 
       - name: Upload Docker images as artifact
         uses: actions/upload-artifact@v6
