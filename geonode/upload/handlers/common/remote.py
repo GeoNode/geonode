@@ -181,6 +181,8 @@ class BaseRemoteResourceHandler(BaseHandler):
 
         services = Service.objects.filter(owner=user, auth_config__isnull=False).select_related("auth_config")
         for service in services:
+            if not service.service_url:
+                continue
             service_url = service.service_url.rstrip("/")
             if url == service_url or url.startswith(f"{service_url}/") or url.startswith(f"{service_url}?"):
                 return service
@@ -188,6 +190,9 @@ class BaseRemoteResourceHandler(BaseHandler):
 
     @staticmethod
     def get_auth_config_for_import(_exec, service=None, to_update=None):
+        if not _exec or not _exec.input_params:
+            return None
+
         auth_config_id = _exec.input_params.get("auth_config_id")
         if auth_config_id:
             return AuthConfig.objects.filter(pk=auth_config_id).first()
@@ -203,6 +208,7 @@ class BaseRemoteResourceHandler(BaseHandler):
     def gdal_config_options(options):
         from osgeo import gdal
 
+        options = options or {}
         try:
             for option, value in options.items():
                 gdal.SetThreadLocalConfigOption(option, value)

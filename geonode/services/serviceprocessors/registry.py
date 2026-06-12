@@ -28,6 +28,7 @@ from geonode.services import enumerations
 class ServiceTypeRegistry:
     def __init__(self):
         self.registry = OrderedDict()
+        self._initialized = False
 
     def register(self, service_type, handler, label, OWS=False, **kwargs):
         self.registry[service_type] = {
@@ -41,9 +42,17 @@ class ServiceTypeRegistry:
         self.registry.pop(service_type, None)
 
     def init_registry(self):
+        if self._initialized:
+            return
+
         self.registry = OrderedDict()
         self._register_default_service_types()
         self._register_configured_service_types()
+        self._initialized = True
+
+    def reset(self):
+        self.registry = OrderedDict()
+        self._initialized = False
 
     def get_available_service_types(self):
         self.init_registry()
