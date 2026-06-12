@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GeoServerLayer>
+   <enabled>true</enabled>
+   <inMemoryCached>true</inMemoryCached>
+   <name>{}</name>
+   <metaWidthHeight>
+      <int>2</int>
+      <int>1</int>
+   </metaWidthHeight>
+   <mimeFormats>
+      <string>application/json;type=utfgrid</string>
+      <string>image/gif</string>
+      <string>image/jpeg</string>
+      <string>image/png</string>
+      <string>image/png8</string>
+      <string>image/vnd.jpeg-png</string>
+      <string>image/vnd.jpeg-png8</string>
+   </mimeFormats>
+   <gridSubsets>
+      <gridSubset>
+         <gridSetName>EPSG:3857</gridSetName>
+      </gridSubset>
+      <gridSubset>
+         <gridSetName>EPSG:3857x2</gridSetName>
+      </gridSubset>
+      <gridSubset>
+         <gridSetName>EPSG:4326</gridSetName>
+      </gridSubset>
+      <gridSubset>
+         <gridSetName>EPSG:4326x2</gridSetName>
+      </gridSubset>
+      <gridSubset>
+         <gridSetName>EPSG:900913</gridSetName>
+      </gridSubset>
+   </gridSubsets>
+   <expireCache>0</expireCache>
+   <expireClients>0</expireClients>
+   <autoCacheStyles>true</autoCacheStyles>
+   <gutter>0</gutter>
+   <cacheWarningSkips/>
+</GeoServerLayer>

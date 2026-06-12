@@ -651,31 +651,34 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d " "%(thread)d %(message)s"},
-        "simple": {
-            "format": "%(message)s",
+        "verbose": {
+            "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(module)-15s %(process)d:%(thread)x - %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S",
         },
-        "br": {"format": "%(levelname)-7s %(asctime)s %(message)s"},
+        "simple": {"format": "%(message)s"},
+        "br": {
+            "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
     },
-    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "filters": {},
     "handlers": {
-        "console": {"level": "ERROR", "class": "logging.StreamHandler", "formatter": "simple"},
-        "mail_admins": {
-            "level": "ERROR",
-            "filters": ["require_debug_false"],
-            "class": "django.utils.log.AdminEmailHandler",
-        },
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"},
         "br": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "br"},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
     },
     "loggers": {
         "django": {
-            "level": "WARN",
+            "level": "WARNING",
         },
         "geonode": {
-            "level": "WARN",
+            "level": "WARNING",
         },
         "importer": {
-            "level": "INFO",
+            "level": "WARNING",
         },
         "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {
@@ -688,13 +691,7 @@ LOGGING = {
             "level": "ERROR",
         },
         "celery": {
-            "level": "WARN",
-        },
-        "mapstore2_adapter.plugins.serializers": {
-            "level": "ERROR",
-        },
-        "geonode_logstash.logstash": {
-            "level": "ERROR",
+            "level": "WARNING",
         },
     },
 }

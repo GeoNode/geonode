@@ -319,19 +319,48 @@ class BaseVectorFileHandler(BaseHandler):
         if not ogr_exe:
             raise Exception("ogr2ogr executable not found.")
 
-        command = [
-            ogr_exe,
-            "-f",
-            "PostgreSQL",
-            db_connection_string,
-            db_connection_string,
-            "-nln",
-            new_table_name,
-            original_table_name,
-            "-overwrite",
-        ]
-        process = Popen(command, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
+        copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
+
+        base_args = ["-nln", new_table_name, original_table_name, "-overwrite"]
+
+        if copy_with_dump:
+            command = [
+                ogr_exe,
+                "--config",
+                "PG_USE_COPY",
+                "YES",
+                "-f",
+                "PGDump",
+                "/vsistdout/",
+                db_connection_string,
+            ] + base_args
+
+            host = _datastore.get("HOST") or "localhost"
+            port = str(_datastore.get("PORT") or 5432)
+            env = {**os.environ, "PGPASSWORD": _datastore["PASSWORD"]}
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                host,
+                "-p",
+                port,
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
+
+            p1 = Popen(command, stdout=PIPE, stderr=PIPE)
+            p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
+            p1.stdout.close()
+            stdout, stderr = p2.communicate()
+        else:
+            command = [ogr_exe, "-f", "PostgreSQL", db_connection_string, db_connection_string] + base_args
+            process = Popen(command, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
 
         if (
             stderr is not None
@@ -1670,7 +1699,18 @@ def import_with_ogr2ogr(
             # If using a pipe (ogr2ogr | psql), we must handle it via Python
             # because shell=False doesn't understand the "|" symbol.
             _datastore = settings.DATABASES["datastore"]
-            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", _datastore["HOST"], "-U", _datastore["USER"], "-f", "-"]
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                _datastore["HOST"],
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
 
             env = os.environ.copy()
             env["PGPASSWORD"] = _datastore["PASSWORD"]
