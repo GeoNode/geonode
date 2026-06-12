@@ -4248,6 +4248,13 @@ class AuthHandlerTests(TestCase):
         self.assertEqual(request.auth.auth.username, "test_user")
         self.assertEqual(request.auth.auth.password, "test_password")
 
+    def test_basic_auth_handler_get_gdal_config(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        expected_token = base64.b64encode(b"test_user:test_password").decode()
+        url, options = auth_handler.get_gdal_config("https://example.com/data.tif")
+        self.assertEqual("https://example.com/data.tif", url)
+        self.assertEqual({"GDAL_HTTP_HEADERS": f"Authorization: Basic {expected_token}"}, options)
+
 
 class AuthHandlerRegistryTests(TestCase):
     class SampleAuthHandler(AuthHandler):

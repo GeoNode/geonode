@@ -265,7 +265,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     @patch("geonode.upload.handlers.remote.wms.WmsServiceHandler")
     @patch("geonode.upload.handlers.remote.wms.WebMapService")
     def test_prepare_import_should_use_matching_owned_service_auth_config(self, web_map_service, remote_wms):
-        service_url = "http://fake/foo?bar"
+        service_url = self.valid_url
         fake_url = ParseResult(scheme="http", netloc="fake", path="/foo", params="", query="bar", fragment="")
         remote_wms.get_cleaned_url_params.return_value = fake_url, None, None, None
         auth_config = AuthConfig.objects.create(
@@ -295,7 +295,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     @patch("geonode.upload.handlers.remote.wms.WmsServiceHandler")
     @patch("geonode.upload.handlers.remote.wms.WebMapService")
     def test_prepare_import_should_not_use_service_auth_config_from_another_owner(self, web_map_service, remote_wms):
-        service_url = "http://fake/foo?bar"
+        service_url = self.valid_url
         fake_url = ParseResult(scheme="http", netloc="fake", path="/foo", params="", query="bar", fragment="")
         remote_wms.get_cleaned_url_params.return_value = fake_url, None, None, None
         auth_config = AuthConfig.objects.create(

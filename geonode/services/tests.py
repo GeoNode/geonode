@@ -51,6 +51,7 @@ from . import enumerations, forms
 from .models import Service
 from .serviceprocessors import base, wms, arcgis, get_service_handler, get_available_service_types
 from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
+from .serviceprocessors.registry import ServiceTypeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -96,16 +97,14 @@ class ModuleFunctionsTestCase(StandardTestCase):
             mock_settings.CASCADE_WORKSPACE, f"http://www.geonode.org/{mock_settings.CASCADE_WORKSPACE}"
         )
 
-    @mock.patch("geonode.services.serviceprocessors.get_available_service_types", autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.service_type_registry.get_handler_class", autospec=True)
     def test_get_service_handler_wms(self, mock_wms_handler):
         class PickableMagicMock(mock.MagicMock):
             def __reduce__(self):
                 return (mock.MagicMock, ())
 
         _handler = PickableMagicMock()
-        mock_wms_handler.return_value = {
-            enumerations.WMS: {"OWS": True, "handler": _handler, "label": "Web Map Service"}
-        }
+        mock_wms_handler.return_value = _handler
         phony_url = "http://fake"
         get_service_handler(phony_url, service_type=enumerations.WMS)
         _handler.assert_called_with(phony_url, None)
@@ -1058,6 +1057,46 @@ class TestServiceViews(GeoNodeBaseTestSupport):
         }
         self.assertDictEqual(expected, elems)
 
+    def test_service_type_registry_should_register_service_type(self):
+        registry = ServiceTypeRegistry()
+        registry.register(
+            "CUSTOM",
+            handler="path.to.CustomServiceHandler",
+            label="Custom Service",
+            OWS=False,
+            management_view="path.to.view",
+        )
+
+        self.assertEqual(
+            {
+                "OWS": False,
+                "handler": "path.to.CustomServiceHandler",
+                "label": "Custom Service",
+                "management_view": "path.to.view",
+            },
+            registry.registry["CUSTOM"],
+        )
+
+    def test_service_type_registry_should_unregister_service_type(self):
+        registry = ServiceTypeRegistry()
+        registry.register("CUSTOM", handler="path.to.CustomServiceHandler", label="Custom Service")
+
+        registry.unregister("CUSTOM")
+
+        self.assertNotIn("CUSTOM", registry.registry)
+
+    @override_settings(SERVICES_TYPE_MODULES=["geonode.services.tests.dummy_services_type_handler"])
+    def test_service_type_registry_should_load_configured_service_types(self):
+        registry = ServiceTypeRegistry()
+
+        self.assertIn("test_handler", registry.get_available_service_types())
+
+    @override_settings(SERVICES_TYPE_MODULES=["geonode.services.tests.dummy_services_type_handler"])
+    def test_service_type_registry_should_return_handler_class(self):
+        registry = ServiceTypeRegistry()
+
+        self.assertEqual(wms.WmsServiceHandler, registry.get_handler_class("test_handler"))
+
 
 """
 Just a dummy function required for the smoke test above
@@ -1084,5 +1123,15 @@ class dummy_services_type2:
             "handler": "TestHandler4",
             "label": "Test Number 4",
             "management_view": "path.to.view4",
+        },
+    }
+
+
+class dummy_services_type_handler:
+    services_type = {
+        "test_handler": {
+            "OWS": False,
+            "handler": "geonode.services.serviceprocessors.wms.WmsServiceHandler",
+            "label": "Test Handler",
         },
     }

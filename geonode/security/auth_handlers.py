@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import base64
 from abc import ABC, abstractmethod
 
 from django.core.exceptions import ValidationError
@@ -37,6 +38,9 @@ class AuthHandler(ABC):
         pass
 
     def get_request_auth(self) -> AuthBase:
+        raise NotImplementedError
+
+    def get_gdal_config(self, url):
         raise NotImplementedError
 
     def auth_request(self, request, **kwargs):
@@ -108,6 +112,11 @@ class BasicAuthHandler(AuthHandler):
 
     def get_request_auth(self) -> AuthBase:
         return HashableAuthBase(HTTPBasicAuth(self.username, self.password))
+
+    def get_gdal_config(self, url):
+        credentials = f"{self.username}:{self.password}".encode()
+        token = base64.b64encode(credentials).decode()
+        return url, {"GDAL_HTTP_HEADERS": f"Authorization: Basic {token}"}
 
     def auth_request(self, request, **kwargs):
         request.auth = self.get_request_auth()

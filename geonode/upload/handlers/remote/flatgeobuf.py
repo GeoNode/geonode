@@ -21,6 +21,7 @@ import requests
 from osgeo import gdal
 
 from geonode.security.utils import init_gdal_security
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
@@ -60,8 +61,14 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
         """
         logger.debug(f"Checking FlatGeobuf URL validity (HEAD): {url}")
         try:
+            auth = None
+            if kwargs.get("execution_id"):
+                _exec = orchestrator.get_execution_object(kwargs.get("execution_id"))
+                auth_config = BaseRemoteResourceHandler.get_auth_config_for_import(_exec)
+                if auth_config:
+                    auth = auth_handler_registry.build(auth_config).get_request_auth()
             # Reachability check using HEAD
-            head_res = requests.head(url, timeout=10, allow_redirects=True)
+            head_res = requests.head(url, timeout=10, allow_redirects=True, auth=auth)
             logger.debug(f"HTTP HEAD status: {head_res.status_code}")
             head_res.raise_for_status()
 
@@ -74,7 +81,7 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
 
             # Some servers might not return Accept-Ranges in HEAD, so we try a small range request
             logger.debug("Accept-Ranges header missing, trying a small Range GET...")
-            range_res = requests.get(url, headers={"Range": "bytes=0-1"}, timeout=10, stream=True)
+            range_res = requests.get(url, headers={"Range": "bytes=0-1"}, timeout=10, stream=True, auth=auth)
             logger.debug(f"Range GET status: {range_res.status_code}")
             try:
                 if range_res.status_code != 206:
@@ -107,59 +114,70 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
         logger.debug(f"Entering create_geonode_resource for {layer_name}")
         _exec = orchestrator.get_execution_object(execution_id)
         params = _exec.input_params.copy()
-        url = params.get("url")
+        original_url = params.get("url")
+        url = original_url
+        gdal_config_options = {
+            "GDAL_HTTP_TIMEOUT": "15",
+            "GDAL_HTTP_MAX_RETRY": "1",
+        }
+        auth_config = self.get_auth_config_for_import(_exec)
+        if auth_config:
+            auth_handler = auth_handler_registry.build(auth_config)
+            try:
+                url, auth_gdal_config_options = auth_handler.get_gdal_config(original_url)
+                gdal_config_options.update(auth_gdal_config_options)
+            except NotImplementedError:
+                pass
 
         # Extract metadata via GDAL VSICURL
         gdal.UseExceptions()
-        logger.debug(f"Attempting to open FlatGeobuf with GDAL: /vsicurl/{url}")
+        logger.debug(f"Attempting to open FlatGeobuf with GDAL: /vsicurl/{original_url}")
         try:
-            # Set GDAL config options for faster failure
-            gdal.SetThreadLocalConfigOption("GDAL_HTTP_TIMEOUT", "15")
-            gdal.SetThreadLocalConfigOption("GDAL_HTTP_MAX_RETRY", "1")
             init_gdal_security()
 
-            vsiurl = f"/vsicurl/{url}"
-            ds = gdal.OpenEx(
-                vsiurl,
-                allowed_drivers=["FlatGeobuf"],
-            )
-            if ds is None:
-                logger.debug(f"GDAL failed to open dataset: {vsiurl}")
-                raise ImportException(f"Could not open remote FlatGeobuf: {url}")
-
-            logger.debug("GDAL opened dataset. Extracting metadata...")
-
-            layer = ds.GetLayer(0)
-            if layer is None:
-                raise ImportException(f"No layers found in FlatGeobuf: {url}")
-
-            if not layer.GetSpatialRef():
-                raise ImportException(f"Could not extract spatial reference from Flatgeobuf: {url}")
-
-            srid = self.identify_authority(layer)
-
-            # Get BBox
-            try:
-                extent = layer.GetExtent()
-                bbox = [extent[0], extent[2], extent[1], extent[3]]
-                logger.debug(f"Extracted bounding box: {bbox}")
-            except Exception as e:
-                logger.error(f"Could not extract bounding box from FlatGeobuf: {url}. Error: {e}")
-                raise ImportException(
-                    "Could not extract bounding box from FlatGeobuf. " "The file may be empty or corrupted."
+            with self.gdal_config_options(gdal_config_options):
+                vsiurl = f"/vsicurl/{url}"
+                ds = gdal.OpenEx(
+                    vsiurl,
+                    allowed_drivers=["FlatGeobuf"],
                 )
+                if ds is None:
+                    logger.debug(f"GDAL failed to open dataset: /vsicurl/{original_url}")
+                    raise ImportException(f"Could not open remote FlatGeobuf: {original_url}")
 
-            # Get feature attributes
-            layer_defn = layer.GetLayerDefn()
-            attribute_map = []
-            for i in range(layer_defn.GetFieldCount()):
-                field_defn = layer_defn.GetFieldDefn(i)
-                attribute_map.append([field_defn.GetName(), field_defn.GetTypeName()])
+                logger.debug("GDAL opened dataset. Extracting metadata...")
 
-            logger.debug(f"Extracted schema with {len(attribute_map)} fields")
-            logger.debug("GDAL operations finished.")
+                layer = ds.GetLayer(0)
+                if layer is None:
+                    raise ImportException(f"No layers found in FlatGeobuf: {original_url}")
 
-            ds = None  # close dataset
+                if not layer.GetSpatialRef():
+                    raise ImportException(f"Could not extract spatial reference from Flatgeobuf: {original_url}")
+
+                srid = self.identify_authority(layer)
+
+                # Get BBox
+                try:
+                    extent = layer.GetExtent()
+                    bbox = [extent[0], extent[2], extent[1], extent[3]]
+                    logger.debug(f"Extracted bounding box: {bbox}")
+                except Exception as e:
+                    logger.error(f"Could not extract bounding box from FlatGeobuf: {original_url}. Error: {e}")
+                    raise ImportException(
+                        "Could not extract bounding box from FlatGeobuf. " "The file may be empty or corrupted."
+                    )
+
+                # Get feature attributes
+                layer_defn = layer.GetLayerDefn()
+                attribute_map = []
+                for i in range(layer_defn.GetFieldCount()):
+                    field_defn = layer_defn.GetFieldDefn(i)
+                    attribute_map.append([field_defn.GetName(), field_defn.GetTypeName()])
+
+                logger.debug(f"Extracted schema with {len(attribute_map)} fields")
+                logger.debug("GDAL operations finished.")
+
+                ds = None  # close dataset
         except ImportException as e:
             raise e
         except Exception as e:

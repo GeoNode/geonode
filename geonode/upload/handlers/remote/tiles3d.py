@@ -20,6 +20,7 @@ import logging
 
 import requests
 from geonode.layers.models import Dataset
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.handlers.tiles3d.handler import Tiles3DFileHandler
@@ -60,9 +61,15 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
 
     @staticmethod
     def is_valid_url(url, **kwargs):
-        BaseRemoteResourceHandler.is_valid_url(url)
+        BaseRemoteResourceHandler.is_valid_url(url, **kwargs)
         try:
-            payload = requests.get(url, timeout=10).json()
+            auth = None
+            if kwargs.get("execution_id"):
+                _exec = orchestrator.get_execution_object(kwargs.get("execution_id"))
+                auth_config = BaseRemoteResourceHandler.get_auth_config_for_import(_exec)
+                if auth_config:
+                    auth = auth_handler_registry.build(auth_config).get_request_auth()
+            payload = requests.get(url, timeout=10, auth=auth).json()
             # required key described in the specification of 3dtiles
             # https://docs.ogc.org/cs/22-025r4/22-025r4.html#toc92
             is_valid = all(key in payload.keys() for key in ("asset", "geometricError", "root"))
@@ -97,7 +104,11 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
             raise Invalid3DTilesException("Invalid URL Provided")
 
         try:
-            js_file = requests.get(url, timeout=10).json()
+            auth = None
+            auth_config = self.get_auth_config_for_import(_exec)
+            if auth_config:
+                auth = auth_handler_registry.build(auth_config).get_request_auth()
+            js_file = requests.get(url, timeout=10, auth=auth).json()
         except Exception as e:
             raise Invalid3DTilesException(e)
 
@@ -114,7 +125,7 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
         return resource
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
-        return dict(
+        payload = dict(
             resource_type="dataset",
             subtype=kwargs.get("type"),
             sourcetype=SOURCE_TYPE_REMOTE,
@@ -123,3 +134,6 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
             title=kwargs.get("title", layer_name),
             owner=_exec.user,
         )
+        if kwargs.get("auth_config_id"):
+            payload["auth_config_id"] = kwargs.get("auth_config_id")
+        return payload

@@ -46,7 +46,7 @@ class DataStoreManager:
         """
         url = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("url")
         if url:
-            return self.handler.is_valid_url(url)
+            return self.handler.is_valid_url(url, execution_id=self.execution_id)
         return self.handler.is_valid(self.files, self.user, execution_id=self.execution_id)
 
     def _import_and_register(self, execution_id, task_name, **kwargs):
