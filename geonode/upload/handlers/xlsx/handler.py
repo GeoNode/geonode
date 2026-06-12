@@ -91,7 +91,7 @@ class XLSXFileHandler(CSVFileHandler):
                     "application/vnd.ms-excel",
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "application/zip",
-                    "application/octet-stream"
+                    "application/octet-stream",
                 },
             },
             "xls": {
