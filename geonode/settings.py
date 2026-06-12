@@ -336,7 +336,7 @@ STATICFILES_FINDERS = (
 )
 
 MEMCACHED_ENABLED = ast.literal_eval(os.getenv("MEMCACHED_ENABLED", "False"))
-MEMCACHED_BACKEND = os.getenv("MEMCACHED_BACKEND", "django.core.cache.backends.memcached.PyMemcacheCache")
+MEMCACHED_BACKEND = "django.core.cache.backends.memcached.PyMemcacheCache"
 MEMCACHED_LOCATION = os.getenv("MEMCACHED_LOCATION", "127.0.0.1:11211")
 MEMCACHED_LOCK_EXPIRE = int(os.getenv("MEMCACHED_LOCK_EXPIRE", 3600))
 MEMCACHED_LOCK_TIMEOUT = int(os.getenv("MEMCACHED_LOCK_TIMEOUT", 10))
