@@ -51,7 +51,7 @@ from . import enumerations, forms
 from .models import Service
 from .serviceprocessors import base, wms, arcgis, get_service_handler, get_available_service_types
 from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
-from .serviceprocessors.registry import ServiceTypeRegistry
+from .serviceprocessors.registry import ServiceTypeRegistry, service_type_registry
 
 logger = logging.getLogger(__name__)
 
@@ -1024,38 +1024,42 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
     def test_will_use_multiple_service_types_defined_for_choices(self):
-        elems = get_available_service_types()
-        expected = {
-            "WMS": {"OWS": True, "handler": wms.WmsServiceHandler, "label": "Web Map Service"},
-            "GN_WMS": {"OWS": True, "handler": wms.GeoNodeServiceHandler, "label": "GeoNode (Web Map Service)"},
-            "REST_MAP": {"OWS": False, "handler": ArcMapServiceHandler, "label": "ArcGIS REST MapServer"},
-            "REST_IMG": {"OWS": False, "handler": ArcImageServiceHandler, "label": "ArcGIS REST ImageServer"},
-            "test": {
-                "OWS": True,
-                "handler": "TestHandler",
-                "label": "Test Number 1",
-                "management_view": "path.to.view1",
-            },
-            "test2": {
-                "OWS": False,
-                "handler": "TestHandler2",
-                "label": "Test Number 2",
-                "management_view": "path.to.view2",
-            },
-            "test3": {
-                "OWS": True,
-                "handler": "TestHandler3",
-                "label": "Test Number 3",
-                "management_view": "path.to.view3",
-            },
-            "test4": {
-                "OWS": False,
-                "handler": "TestHandler4",
-                "label": "Test Number 4",
-                "management_view": "path.to.view4",
-            },
-        }
-        self.assertDictEqual(expected, elems)
+        service_type_registry.reset()
+        try:
+            elems = get_available_service_types()
+            expected = {
+                "WMS": {"OWS": True, "handler": wms.WmsServiceHandler, "label": "Web Map Service"},
+                "GN_WMS": {"OWS": True, "handler": wms.GeoNodeServiceHandler, "label": "GeoNode (Web Map Service)"},
+                "REST_MAP": {"OWS": False, "handler": ArcMapServiceHandler, "label": "ArcGIS REST MapServer"},
+                "REST_IMG": {"OWS": False, "handler": ArcImageServiceHandler, "label": "ArcGIS REST ImageServer"},
+                "test": {
+                    "OWS": True,
+                    "handler": "TestHandler",
+                    "label": "Test Number 1",
+                    "management_view": "path.to.view1",
+                },
+                "test2": {
+                    "OWS": False,
+                    "handler": "TestHandler2",
+                    "label": "Test Number 2",
+                    "management_view": "path.to.view2",
+                },
+                "test3": {
+                    "OWS": True,
+                    "handler": "TestHandler3",
+                    "label": "Test Number 3",
+                    "management_view": "path.to.view3",
+                },
+                "test4": {
+                    "OWS": False,
+                    "handler": "TestHandler4",
+                    "label": "Test Number 4",
+                    "management_view": "path.to.view4",
+                },
+            }
+            self.assertDictEqual(expected, elems)
+        finally:
+            service_type_registry.reset()
 
     def test_service_type_registry_should_register_service_type(self):
         registry = ServiceTypeRegistry()
