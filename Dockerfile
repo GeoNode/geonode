@@ -1,4 +1,4 @@
-FROM geonode/geonode-base:latest-ubuntu-24.04
+FROM geonode-base:latest-ubuntu-26.04
 LABEL GeoNode development team
 
 RUN mkdir -p /usr/src/geonode

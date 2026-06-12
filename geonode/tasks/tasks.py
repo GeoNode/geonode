@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 import celery
 from celery.utils.log import get_task_logger
 
@@ -28,13 +29,26 @@ from geonode.celery_app import app
 from importlib import import_module
 
 try:
+    print("################ start ########################")
     import pylibmc
+    import os
     import sherlock
     from sherlock import MCLock as Lock
 
     sherlock.configure(expire=settings.MEMCACHED_LOCK_EXPIRE, timeout=settings.MEMCACHED_LOCK_TIMEOUT)
-    memcache_client = pylibmc.Client([settings.MEMCACHED_LOCATION], binary=True)
-    lock_type = "MEMCACHED"
+    raw_location = os.getenv("MEMCACHED_LOCATION", "127.0.0.1:11211")
+
+    # Extract 'memcached' and '11211' safely
+    if ":" in raw_location:
+        host, port = raw_location.split(":")
+        # Passing a tuple (str, int) bypasses the buggy string parser entirely!
+        server_list = [(host, int(port))]
+    else:
+        server_list = [raw_location]
+
+    memcache_client = pylibmc.Client(server_list, binary=True)
+    print("################ end ########################")
+
 except Exception:
     from django.core.cache import cache
     from contextlib import contextmanager

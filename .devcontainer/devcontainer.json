@@ -2,13 +2,13 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.194.0/containers/docker-existing-docker-compose
 // If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
 {
-	"name": "Debug Docker Compose",
+	"name": "Django Container",
 
 	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
 	"dockerComposeFile": [
 		"../docker-compose.yml",
-		"docker-compose.yml"
+		"./docker-compose.yml"
 	],
 
 	// The 'service' property is the name of the service for the container that VS Code should
@@ -17,37 +17,34 @@
 
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
-	"workspaceFolder": "/usr/src/geonode/",
+	"workspaceFolder": "/usr/src",
 
 	// Set *default* container specific settings.json values on container create.
-	"settings": {
-		"terminal.integrated.profiles.linux": {
-			"/bin/bash": {
-				"path": "/bin/bash",
-				"args": [
-					"-l"
-				]
-			}
-		},
-		"terminal.integrated.defaultProfile.linux": "/bin/bash"
-	},
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.profiles.linux": {
+                    "/bin/bash": {
+                        "path": "/bin/bash",
+                        "args": [
+                            "-l"
+                        ]
+                    }
+                },
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "python.defaultInterpreterPath": "/usr/src/venv/bin/python",
+                "python.terminal.activateEnvironment": true,
+                "python.formatting.provider": "black"
+            },
 
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"ms-python.python",
-		"batisteo.vscode-django",
-		"mrorz.language-gettext",
-		"eamodio.gitlens", // Note: User preference
-		"bigonesystems.django" // Note: User preference
-	],
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "ms-python.python"
+            ]
+        }
+    }
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [
-		8000,
-		8080,
-		5432,
-		5678
-	],
 
 	// Uncomment the next line if you want start specific services in your Docker Compose config.
 	// "runServices": [],
