@@ -348,7 +348,15 @@ CACHES = {
         "TIMEOUT": 600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
     },
-    "memcached": {"BACKEND": MEMCACHED_BACKEND, "LOCATION": MEMCACHED_LOCATION},
+    "memcached": {
+        "BACKEND": MEMCACHED_BACKEND,
+        "LOCATION": MEMCACHED_LOCATION,
+        "OPTIONS": {
+            "connect_timeout": 5,
+            "timeout": 5,
+            "no_delay": True,
+        },
+    },
     # MEMCACHED EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
