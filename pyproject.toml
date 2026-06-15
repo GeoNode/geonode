@@ -95,7 +95,7 @@ dependencies = [
     "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
     "geonode-dynamic-rest==2.3.0.2",
-    "geonode-pinax-notifications==6.0.0.3",
+    "geonode-pinax-notifications==6.0.0.4",
 
     # GeoNode org maintained apps.
     "django_geonode_mapstore_client @ git+https://github.com/GeoNode/geonode-mapstore-client.git@master",
