@@ -26,6 +26,7 @@ from django.utils.translation import gettext as _
 from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
+from geonode.metadata.handlers.meta import CleanupHandler
 from geonode.metadata.i18n import I18nCache
 from geonode.metadata.settings import MODEL_SCHEMA
 
@@ -50,7 +51,10 @@ class MetadataManager:
         self.handlers[handler_id] = handler()
 
     def _init_schema_context(self, lang):
-        return {"labels": self._i18n_cache.get_labels(lang)}
+        ret = {"labels": self._i18n_cache.get_labels(lang)}
+        if lang:
+            ret["lang"] = lang
+        return ret
 
     def build_schema(self, lang=None):
         logger.debug(f"build_schema {lang}")
@@ -133,6 +137,11 @@ class MetadataManager:
             handler.load_deserialization_context(resource, schema, context)
 
         errors = {}
+        context["errors"] = errors
+
+        # backported code: from 5.1.x onward pre_deserialization() is called on all Handlers
+        cleanup_handler = CleanupHandler()
+        cleanup_handler.pre_deserialization(resource, schema, json_instance, partial, context)
 
         for fieldname, subschema in schema["properties"].items():
             if partial:

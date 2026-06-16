@@ -24,7 +24,7 @@ from uuid import uuid4
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.test import RequestFactory
+from django.test import RequestFactory, TestCase, override_settings
 from rest_framework import status
 from django.utils.translation import gettext as _
 
@@ -32,6 +32,7 @@ from rest_framework.test import APITestCase
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.manager import metadata_manager
 from geonode.metadata.i18n import I18nCache
+from geonode.metadata.handlers.meta import CleanupHandler
 from geonode.metadata.api.views import (
     ProfileAutocomplete,
     MetadataLinkedResourcesAutocomplete,
@@ -915,8 +916,7 @@ class MetadataApiTests(APITestCase):
         mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
         mock_request.user = self.test_user_1
 
-        expected_context = {"labels": {}, "user": self.test_user_1}
-
+        expected_context = {"labels": {}, "user": self.test_user_1, "errors": {}}
         mock_get_schema.return_value = self.fake_schema
 
         with patch.dict(metadata_manager.handlers, self.fake_handlers, clear=True):
@@ -976,3 +976,45 @@ class MetadataApiTests(APITestCase):
             self.handler1.update_resource.assert_called()
             self.handler2.update_resource.assert_called()
             self.handler3.update_resource.assert_called()
+
+
+class CleanupHandlerTests(TestCase):
+    def setUp(self):
+        self.handler = CleanupHandler()
+        self.owner = get_user_model().objects.create_user(
+            "cleanup_owner", "cleanup_owner@fakemail.com", "cleanup_owner_password", is_active=True
+        )
+        self.resource = ResourceBase.objects.create(title="Cleanup Test Resource", uuid=str(uuid4()), owner=self.owner)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_pre_deserialization_sanitizes_nested_values_and_logs_warnings(self):
+        instance = {
+            "title": "<i>xss</i><img src=/ onerror=\"alert('XSS');\" />",
+            "details": {
+                "summary": "plain text",
+                "body": "<script>alert(1)</script>safe",
+            },
+            "items": ["ok", "<b>bad</b>"],
+            "count": 3,
+        }
+
+        with self.assertLogs("geonode.metadata.handlers.meta", level="WARNING") as cm:
+            context = {"errors": {}}
+            self.handler.pre_deserialization(self.resource, {}, instance, partial=set(), context=context)
+
+        self.assertEqual(instance["title"], "xss")
+        self.assertEqual(instance["details"]["body"], "safe")
+        self.assertEqual(instance["items"][1], "bad")
+        self.assertEqual(instance["count"], 3)
+
+        logs = "\n".join(cm.output)
+        self.assertIn("Sanitized potentially unsafe metadata field 'title'", logs)
+        self.assertIn("Sanitized potentially unsafe metadata field 'details.body'", logs)
+        self.assertIn("Sanitized potentially unsafe metadata field 'items.[1]'", logs)
+
+        self.assertIn("title", context["errors"])
+        self.assertIn("__errors", context["errors"]["title"])
+        self.assertTrue(
+            context["errors"]["title"]["__errors"][0].startswith("metadata_error_sanitized"),
+            f'Unexpected error {context["errors"]["title"]["__errors"]}',
+        )
