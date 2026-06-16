@@ -129,9 +129,13 @@ class KMLFileHandler(BaseVectorFileHandler):
         actual_upload = upload_validator._get_parallel_uploads_count()
         max_upload = upload_validator._get_max_parallel_uploads()
 
-        layers = KMLFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
+        try:
+            layers = KMLFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
 
-        if not layers:
+            if not layers:
+                raise InvalidKmlException("The kml provided is invalid")
+        except Exception as e:
+            logger.exception(e)
             raise InvalidKmlException("The kml provided is invalid")
 
         layers_count = len(layers)
