@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF xmlns="http://www.w3.org/2004/02/skos/core#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/">
+  <ConceptScheme rdf:about="https://i18n.geonode.org">
+    <dc:title>Localizzazione labels</dc:title>
+    <dc:title xml:lang="en">Labels localization</dc:title>
+    <dc:title xml:lang="it">Localizzazione labels</dc:title>
+    <dcterms:issued>2026-06-10T16:54:03</dcterms:issued>
+    <dcterms:modified>2026-06-10T16:54:03</dcterms:modified>
+  </ConceptScheme>
+  <Concept rdf:about="metadata_error_empty_field">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_empty_field fieldname:{fieldname}</altLabel>
+    <prefLabel xml:lang="en">Missing value</prefLabel>
+    <prefLabel xml:lang="it">Valore richiesto</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_error_indexing">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_indexing exc:{exc}</altLabel>
+    <prefLabel xml:lang="en">Error while indexing metadata: {exc}</prefLabel>
+    <prefLabel xml:lang="it">Errore nell'indicizzazione dei metadati: {exc}</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_error_post_save">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_post_save handler:{handler} exc:{exc}</altLabel>
+    <prefLabel xml:lang="en">Error in post-save procedure: {exc}</prefLabel>
+    <prefLabel xml:lang="it">Errore nella procedura di post-save: {exc}</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_error_pre_save">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_pre_save handler:{handler} exc:{exc}</altLabel>
+    <prefLabel xml:lang="en">Error in pre-save procedure: {exc}</prefLabel>
+    <prefLabel xml:lang="it">Errore nella procedura di pre-save: {exc}</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_error_sanitized">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_sanitized</altLabel>
+    <prefLabel xml:lang="en">WARNING: possible injection attempt, this field has been sanitized. Reload this page.</prefLabel>
+    <prefLabel xml:lang="it">ATTENZIONE: possibile injection, il campo è stato modificato. Ricaricare la pagina.</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_error_save">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_save: {exc}</altLabel>
+    <prefLabel xml:lang="en">Error while saving metadata: {exc}</prefLabel>
+    <prefLabel xml:lang="it">Errore nel salvataggio dei metadati: {exc}</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_error_store">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_store fieldname:{fieldname} exc:{exc}</altLabel>
+    <prefLabel xml:lang="en">Error while saving metadata: {exc}</prefLabel>
+    <prefLabel xml:lang="it">Errore nel salvataggio dei metadati: {exc}</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_error_update">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_error_update fieldname:{fieldname} handler:{handler} exc:{exc}</altLabel>
+    <prefLabel xml:lang="en">Error while updating metadata: {exc}</prefLabel>
+    <prefLabel xml:lang="it">Errore nell'aggiornamento dei metadati: {exc}</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_sparse_error_parse">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_sparse_error_parse fieldname:{fieldname} type:{type} value:{value}</altLabel>
+    <prefLabel xml:lang="en">Parsing error</prefLabel>
+    <prefLabel xml:lang="it">Errore nel parsing</prefLabel>
+  </Concept>
+  <Concept rdf:about="metadata_sparse_error_type">
+    <inScheme rdf:resource="https://i18n.geonode.org"/>
+    <altLabel>metadata_sparse_error_type fieldname:{fieldname} type:{type}</altLabel>
+    <prefLabel xml:lang="en">Unexpected field type: {type}</prefLabel>
+    <prefLabel xml:lang="it">Tipo inaspettato: {type}</prefLabel>
+  </Concept>
+</rdf:RDF>
