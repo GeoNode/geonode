@@ -1,5 +1,4 @@
 from django.db import migrations, models
-import datetime
 from django.conf import settings
 from django.utils.timezone import now
 import django.core.files.storage

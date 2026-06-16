@@ -73,7 +73,7 @@ class ResourceBaseMangler(DefaultMangler):
             obj['fields']['owner'] = [self.owner]
 
             if 'distribution_url' in obj['fields']:
-                if not obj['fields']['distribution_url'] is None and 'layers' in obj['fields']['distribution_url']:
+                if obj['fields']['distribution_url'] is not None and 'layers' in obj['fields']['distribution_url']:
                     try:
                         p = '(?P<protocol>http.*://)?(?P<host>[^:/ ]+).?(?P<port>[0-9]*)(?P<details_url>.*)'
                         m = re.search(p, obj['fields']['distribution_url'])

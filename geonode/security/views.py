@@ -278,10 +278,10 @@ def attributes_sats_refresh(request):
                     layer.srid = "EPSG:4326"
             layer.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
             layer.save()
-        except Exception as e:
-            # traceback.print_exc()
+        except Exception:
+            logger.exception("Exception occurred while refreshing attributes/stats for resource uuid=%s", uuid)
             return HttpResponse(
-                json.dumps({"success": "false", "message": f'Exception occurred: "{str(e)}"'}),
+                json.dumps({"success": "false", "message": 'Exception occurred please see the logs"'}),
                 status=302,
                 content_type="text/plain",
             )

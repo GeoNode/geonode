@@ -41,7 +41,7 @@ def dataset_migration(apps, _):
                 execution_id=None
             )   
         else:
-            logger.debug(f"resourcehandler info already exists for the resource")  
+            logger.debug("resourcehandler info already exists for the resource")  
 
 
 class Migration(migrations.Migration):

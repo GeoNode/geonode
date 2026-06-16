@@ -2,10 +2,10 @@ name: "Code formatting"
 
 on:
   push:
-    branches: [ master, 4.* ]
+    branches: [ master, 5.* ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ master, 4.* ]
+    branches: [ master, 5.* ]
 
 jobs:
   validate:
@@ -27,15 +27,10 @@ jobs:
       with:
         python-version: ${{matrix.python-version}}
 
-    - name: Install flake8 & black
-      run: pip install $(grep -E '"(flake8|black)==[^"]+"' pyproject.toml | sed -E 's/^[^"]*"//; s/".*$//; s/,//')
+    - name: Install ruff
+      run: pip install $(grep "ruff==" pyproject.toml | sed -E 's/^[^"]*"//; s/".*$//; s/,//')
 
-    - name: "Check: flake8"
+    - name: "Check: ruff"
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 geonode --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 geonode --count --statistics
-
-    - name: "Check: black"
-      run: black --check geonode
+        ruff check

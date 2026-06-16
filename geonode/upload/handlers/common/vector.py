@@ -1154,7 +1154,7 @@ class BaseVectorFileHandler(BaseHandler):
                             if "authority" in field and not skip_geom_eval:
                                 if db_value := target_field.model_schema.as_model().objects.first():
                                     skip_geom_eval = True
-                                    if not str(db_value.geom.srid) in field["authority"]:
+                                    if str(db_value.geom.srid) not in field["authority"]:
                                         errors.append(
                                             f"The file provided have a different authority ({field['authority']}) compared to the one in the DB: {db_value}"
                                         )

@@ -93,8 +93,9 @@ class XMLFileHandler(MetadataFileHandler):
         try:
             with open(files.get("base_file")) as _xml:
                 dlxml.fromstring(_xml.read().encode())
-        except Exception as err:
-            raise InvalidXmlException(f"Uploaded document is not XML or is invalid: {str(err)}")
+        except Exception:
+            logger.warning("Invalid XML upload validation error", exc_info=True)
+            raise InvalidXmlException("Uploaded document is not XML or is invalid.")
         return True
 
     def handle_metadata_resource(self, _exec, dataset, original_handler):

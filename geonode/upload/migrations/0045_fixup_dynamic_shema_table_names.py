@@ -1,7 +1,5 @@
 from django.db import migrations
 import logging
-from django.db import ProgrammingError
-from django.db import connections
 
 logger = logging.getLogger("importer")
 

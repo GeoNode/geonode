@@ -76,7 +76,7 @@ class ResourceBaseMangler(DefaultMangler):
             obj['fields']['thumbnail_url'] = ''
 
             if 'distribution_url' in obj['fields']:
-                if not obj['fields']['distribution_url'] is None and 'layers' in obj['fields']['distribution_url']:
+                if obj['fields']['distribution_url'] is not None and 'layers' in obj['fields']['distribution_url']:
 
                     obj['fields']['polymorphic_ctype'] = ["layers", "layer"]
 
