@@ -403,7 +403,6 @@ class BaseResourceManager(ResourceManagerInterface):
         keywords: list = [],
         custom: dict = {},
         notify: bool = True,
-        extra_metadata: list = [],
         *args,
         **kwargs,
     ) -> ResourceBase:
@@ -445,7 +444,6 @@ class BaseResourceManager(ResourceManagerInterface):
                         regions=regions,
                         keywords=keywords,
                         vals=vals,
-                        extra_metadata=extra_metadata,
                     )
 
                     ji = custom.get("jsoninstance", None)
