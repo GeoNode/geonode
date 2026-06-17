@@ -20,6 +20,8 @@ x-common-django:
   depends_on:
     db:
       condition: service_healthy
+    redis:
+      condition: service_healthy
 
 services:
 
@@ -120,6 +122,20 @@ services:
     #ports:
     #  - "5432:5432"
 
+  # Vanilla Redis service. This is needed by celery
+  redis:
+    image: redis:7-alpine
+    container_name: redis4${COMPOSE_PROJECT_NAME}
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
 volumes:
   statics:
     name: ${COMPOSE_PROJECT_NAME}-statics
@@ -139,3 +155,5 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-data
   tmp:
     name: ${COMPOSE_PROJECT_NAME}-tmp
+  redisdata:
+    name: ${COMPOSE_PROJECT_NAME}-redisdata
