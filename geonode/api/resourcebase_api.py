@@ -17,6 +17,7 @@
 #
 #########################################################################
 from geonode.base.enumerations import LAYER_TYPES
+import json
 import logging
 
 from django.db.models import Q
@@ -45,6 +46,7 @@ from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
+from geonode.metadata.models import SparseField
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
@@ -133,6 +135,11 @@ class CommonModelApi(ModelResource):
         "metadata_only",
     ]
 
+    @staticmethod
+    def _extract_deprecated_metadata_filters(filters):
+        """Extract legacy ``metadata__*`` query params for sparse-field lookup."""
+        return {key: value for key, value in filters.items() if key.startswith("metadata__")}
+
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
         if filters is None:
             filters = {}
@@ -142,7 +149,9 @@ class CommonModelApi(ModelResource):
         if "app_type__in" in filters:
             orm_filters.update({"resource_type": filters["app_type__in"].lower()})
 
-        _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith("metadata__")}
+        # Deprecated compatibility: keep supporting metadata__* filters
+        # by mapping them to SparseField lookups in apply_filters.
+        _metadata = self._extract_deprecated_metadata_filters(filters)
         if _metadata:
             orm_filters.update({"metadata_filters": _metadata})
 
@@ -208,7 +217,7 @@ class CommonModelApi(ModelResource):
             filtered = self.filter_h_keywords(filtered, keywords)
 
         if metadata_filters:
-            filtered = filtered.filter(**metadata_filters)
+            filtered = self.filter_sparse_fields(filtered, metadata_filters)
 
         # return filtered
         return get_visible_resources(
@@ -236,6 +245,75 @@ class CommonModelApi(ModelResource):
             filtered = queryset
         return filtered
 
+    def filter_sparse_fields(self, queryset, metadata_filters):
+        """
+        Filter queryset by sparse field values (metadata custom fields).
+
+        Queryset is filtered by interrogating SparseField entries that match
+        the given metadata filter specifications.
+
+        Args:
+            queryset: ResourceBase queryset to filter
+            metadata_filters: dict with keys like "metadata__key" and values to match
+
+        Returns:
+            Filtered queryset containing only resources with matching sparse fields
+        """
+        if not metadata_filters:
+            return queryset
+
+        filtered_pks = set()
+        found_metadata_filter = False
+
+        for filter_key, filter_value in metadata_filters.items():
+            # Extract field name from "metadata__fieldname"
+            if not filter_key.startswith("metadata__"):
+                continue
+
+            found_metadata_filter = True
+            field_name = filter_key[len("metadata__") :]
+
+            # Text prefilter to reduce the set to deserialize; the actual
+            # semantic match is performed after json.loads.
+            sparse_fields = (
+                SparseField.objects.filter(name__startswith="extra_")
+                .filter(value__icontains=field_name)
+                .filter(value__icontains=str(filter_value))
+            )
+
+            batch_pks = set()
+            for sf in sparse_fields:
+                try:
+                    # ExtraMetadata was a JSONfield
+                    stored_value = json.loads(sf.value) if sf.value and sf.value.startswith("{") else sf.value
+                except (json.JSONDecodeError, TypeError):
+                    logger.warning(
+                        f"Bad migrated ExtraMetadata into SparseField: {sf.name} for resource {sf.resource.id}:{sf.resource.title}"
+                    )
+                    continue
+
+                if not isinstance(stored_value, dict):
+                    logger.warning(
+                        f"Unexpected non-dict value in SparseField: {sf.name} for resource {sf.resource.id}:{sf.resource.title}"
+                    )
+                    continue
+
+                # Compare values in a type-agnostic way.
+                if str(stored_value.get(field_name, None)) == str(filter_value):
+                    batch_pks.add(sf.resource.pk)
+
+            filtered_pks.update(batch_pks)
+
+        # Filter by the collected PKs
+        # If we processed metadata filters, return only resources with matching values
+        if found_metadata_filter:
+            filtered = queryset.filter(pk__in=filtered_pks) if filtered_pks else queryset.none()
+        else:
+            # No metadata filters found, return queryset as-is
+            filtered = queryset
+
+        return filtered
+
     def get_list(self, request, **kwargs):
         """
         Returns a serialized list of resources.
@@ -249,6 +327,7 @@ class CommonModelApi(ModelResource):
         # impossible.
         base_bundle = self.build_bundle(request=request)
         objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
+
         sorted_objects = self.apply_sorting(objects, options=request.GET)
 
         paginator = self._meta.paginator_class(
