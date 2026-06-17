@@ -17,7 +17,7 @@ RUN apt-get update -y
 RUN apt-get install -y \
     libgdal-dev libpq-dev libxml2-dev \
     libxslt1-dev zlib1g-dev libjpeg-dev \
-    libmemcached-dev libldap2-dev libsasl2-dev libffi-dev git
+    libldap2-dev libsasl2-dev libffi-dev git
 
 RUN apt-get install -y --no-install-recommends \
     gcc vim zip gettext geoip-bin cron \
@@ -42,7 +42,7 @@ RUN pip install uwsgi \
 # Symlink for "invoke" so existing entrypoint.sh paths (/usr/local/bin/invoke) keep working
 RUN ln -s $(which invoke) /usr/local/bin/invoke
 
-# Install "sherlock" for use with "memcached"
+# Install "sherlock" for use with "redis cache"
 RUN pip install sherlock
 
 # Cleanup apt lists
