@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 service_cache = caches["services"]
 
+
 class Harvester(models.Model):
     STATUS_READY = "ready"
     STATUS_UPDATING_HARVESTABLE_RESOURCES = "updating-harvestable-resources"

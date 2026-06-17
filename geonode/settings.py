@@ -1688,7 +1688,7 @@ CACHES = {
         "TIMEOUT": 600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
     },
-    "services":  {
+    "services": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "TIMEOUT": 600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
@@ -1707,7 +1707,7 @@ if not TESTING:
         "TIMEOUT": 300,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
     CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
     CACHES["resources"] = CACHES["default"].copy()

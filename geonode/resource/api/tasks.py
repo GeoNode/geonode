@@ -116,7 +116,9 @@ def resouce_service_dispatcher(self, execution_id: str):
                                     for _param_name in _signature.parameters:
                                         if _request.input_params and _request.input_params.get(_param_name, None):
                                             _param = _signature.parameters.get(_param_name)
-                                            _param_value = _get_param_value(_param, _request.input_params.get(_param_name))
+                                            _param_value = _get_param_value(
+                                                _param, _request.input_params.get(_param_name)
+                                            )
                                             if _param.kind == Parameter.POSITIONAL_ONLY:
                                                 _args.append(_param_value)
                                             else:
@@ -164,7 +166,6 @@ def resouce_service_dispatcher(self, execution_id: str):
                 logger.debug(f"WARNING: The requested ExecutionRequest with 'exec_id'={execution_id} was not found!")
     except Exception as e:
         logger.exception(e)
-        ExecutionRequest.objects.filter(exec_id=execution_id)\
-            .update(status=ExecutionRequest.STATUS_FAILED, log=str(e))
-            
+        ExecutionRequest.objects.filter(exec_id=execution_id).update(status=ExecutionRequest.STATUS_FAILED, log=str(e))
+
         raise "Error durng the resource dispatcher run, please verify the log"
