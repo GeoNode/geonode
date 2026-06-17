@@ -183,6 +183,9 @@ Documentation = "https://docs.geonode.org/"
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.package-data]
+"geonode" = ["**/thesauri/*.rdf"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 exclude = ["tests*"]
