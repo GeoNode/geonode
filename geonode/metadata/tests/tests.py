@@ -25,13 +25,16 @@ from uuid import uuid4
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.test import RequestFactory
+from django.test import RequestFactory, TestCase, override_settings
 from rest_framework import status
 from django.utils.translation import gettext as _
 
 from rest_framework.test import APITestCase
+
+from geonode.metadata.handlers.multilang import MultiLangHandler
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.manager import metadata_manager, CACHE_KEY_SCHEMA
+from geonode.metadata.handlers.meta import CleanupHandler
 from geonode.metadata.api.views import (
     ProfileAutocomplete,
     MetadataLinkedResourcesAutocomplete,
@@ -94,8 +97,8 @@ class MetadataApiTests(APITestCase):
         # Setup the database
         TopicCategory.objects.create(identifier="cat1", gn_description="fake category 1")
         TopicCategory.objects.create(identifier="cat2", gn_description="fake category 2")
-        License.objects.create(identifier="license1", name="fake license 1")
-        License.objects.create(identifier="license2", name="fake license 2")
+        self.license1 = License.objects.create(identifier="license1", name="fake license 1")
+        self.license2 = License.objects.create(identifier="license2", name="fake license 2")
         Region.objects.create(code="fake_code_1", name="fake name 1")
         Region.objects.create(code="fake_code_2", name="fake name 2")
         HierarchicalKeyword.objects.create(name="fake_keyword_1", slug="fake keyword 1")
@@ -355,8 +358,8 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license1.id, "label": _("fake license 1")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query(self):
         """
@@ -369,8 +372,8 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license1.id, "label": _("fake license 1")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query_one_match(self):
         """
@@ -383,7 +386,7 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query_no_match(self):
         """
@@ -919,7 +922,7 @@ class MetadataApiTests(APITestCase):
         mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
         mock_request.user = self.test_user_1
 
-        expected_context = {"user": self.test_user_1}
+        expected_context = {"user": self.test_user_1, "errors": {}}
 
         mock_get_schema.return_value = self.fake_schema
 
@@ -1151,3 +1154,58 @@ class SparseFieldApiTests(APITestCase):
             url = self._url(self.resource.pk, "title")
             response = self.client.delete(url)
             self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+
+class CleanupHandlerTests(TestCase):
+    def setUp(self):
+        self.handler = CleanupHandler()
+        self.owner = get_user_model().objects.create_user(
+            "cleanup_owner", "cleanup_owner@fakemail.com", "cleanup_owner_password", is_active=True
+        )
+        self.resource = ResourceBase.objects.create(title="Cleanup Test Resource", uuid=str(uuid4()), owner=self.owner)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_pre_deserialization_sanitizes_nested_values_and_logs_warnings(self):
+        instance = {
+            "title": "<i>xss</i><img src=/ onerror=\"alert('XSS');\" />",
+            "details": {
+                "summary": "plain text",
+                "body": "<script>alert(1)</script>safe",
+            },
+            "items": ["ok", "<b>bad</b>"],
+            "count": 3,
+        }
+
+        with self.assertLogs("geonode.metadata.handlers.meta", level="WARNING") as cm:
+            context = {"errors": {}}
+            self.handler.pre_deserialization(self.resource, {}, instance, partial=set(), context=context)
+
+        self.assertEqual(instance["title"], "xss")
+        self.assertEqual(instance["details"]["body"], "safe")
+        self.assertEqual(instance["items"][1], "bad")
+        self.assertEqual(instance["count"], 3)
+
+        logs = "\n".join(cm.output)
+        self.assertIn("Sanitized potentially unsafe metadata field 'title'", logs)
+        self.assertIn("Sanitized potentially unsafe metadata field 'details.body'", logs)
+        self.assertIn("Sanitized potentially unsafe metadata field 'items.[1]'", logs)
+
+        self.assertIn("title", context["errors"])
+        self.assertIn("__errors", context["errors"]["title"])
+        self.assertIn("metadata_error_sanitized", context["errors"]["title"]["__errors"])
+
+    @override_settings(LANGUAGE_CODE="en", MULTILANG_FIELDS=["title"])
+    def test_pre_deserialization_copies_sanitized_default_lang_value(self):
+        instance = {
+            "title_multilang_en": '<span>Hello</span><img src=x onerror="alert(1)" />',
+        }
+        context = {"errors": {}}
+
+        ml_handler = MultiLangHandler()
+        with self.assertLogs("geonode.metadata.handlers.meta", level="WARNING") as cm:
+            self.handler.pre_deserialization(self.resource, {}, instance, partial=set(), context=context)
+            ml_handler.pre_deserialization(self.resource, {}, instance, partial=set(), context=context)
+
+        self.assertEqual(instance["title_multilang_en"], "Hello")
+        self.assertEqual(instance["title"], "Hello")
+        self.assertIn("Sanitized potentially unsafe metadata field 'title_multilang_en'", "\n".join(cm.output))

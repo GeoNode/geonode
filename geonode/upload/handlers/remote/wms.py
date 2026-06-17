@@ -27,6 +27,9 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.handlers.remote.serializers.wms import RemoteWMSSerializer
 from geonode.upload.orchestrator import orchestrator
 from geonode.harvesting.harvesters.wms import WebMapService
+from geonode.security.auth_registry import auth_handler_registry
+from geonode.security.models import AuthConfig
+from geonode.services.models import Service
 from geonode.services.serviceprocessors.wms import WmsServiceHandler
 from geonode.resource.registry import resource_manager_registry
 
@@ -65,8 +68,34 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             payload["identifier"] = original_data.pop("identifier", None)
             payload["bbox"] = original_data.pop("bbox", None)
             payload["parse_remote_metadata"] = original_data.pop("parse_remote_metadata", None)
+            authentication = original_data.pop("authentication", None)
+            if authentication:
+                # Resolve the auth handler from the payload type, then let the handler
+                # validate the auth-specific payload before storing it.
+                auth_type = authentication.get("type")
+                auth_payload = authentication.get("payload") or {}
+                auth_handler_cls = auth_handler_registry.get_handler_class(auth_type)
+                if auth_handler_cls is None:
+                    raise ValueError(f"Unsupported authentication type '{auth_type}'")
+                auth_handler_cls.validate(auth_payload)
+                auth_config = AuthConfig(type=auth_type)
+                auth_config.payload = auth_payload
+                auth_config.save()
+                payload["auth_config_id"] = auth_config.pk
 
         return payload, original_data
+
+    def _create_geonode_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
+        super()._create_geonode_resource_rollback(exec_id, istance_name=istance_name)
+
+        _exec = orchestrator.get_execution_object(exec_id)
+        auth_config_id = _exec.input_params.get("auth_config_id")
+        if auth_config_id:
+            AuthConfig.objects.filter(
+                pk=auth_config_id,
+                authconfigresources__isnull=True,
+                url_patterns__isnull=True,
+            ).delete()
 
     def prepare_import(self, files, execution_id, **kwargs):
         """
@@ -85,9 +114,37 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             "parsed_url": parsed_url,
             "remote_resource_id": _exec.input_params.get("identifier", None),
         }
+
+        auth = None
+        auth_config_id = _exec.input_params.get("auth_config_id")
+        if auth_config_id:
+            # The import already has an AuthConfig assigned, for example from
+            # credentials provided in the upload payload. Use it before looking
+            # for credentials on a matching remote service.
+            auth_config = AuthConfig.objects.filter(pk=auth_config_id).first()
+        else:
+            user = _exec.user
+            service = None
+            if user and user.is_authenticated:
+                # Reuse credentials only from a matching service owned by the importing user.
+                service = (
+                    Service.objects.filter(harvester__remote_url=ows_url, owner=user)
+                    .select_related("auth_config")
+                    .first()
+                )
+            if service and service.auth_config:
+                # Assign the service AuthConfig on the new remote resource.
+                auth_config = service.auth_config
+                to_update["auth_config_id"] = auth_config.pk
+            else:
+                auth_config = None
+        if auth_config:
+            # Build runtime auth for the upstream WMS metadata request.
+            auth = auth_handler_registry.build(auth_config).get_request_auth()
+
         if _exec.input_params.get("parse_remote_metadata", False):
             try:
-                wms_resource = self.get_wms_resource(_exec)
+                wms_resource = self.get_wms_resource(_exec, auth=auth)
                 to_update.update(
                     {
                         "title": wms_resource.title,
@@ -101,8 +158,8 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         _exec.input_params.update(to_update)
         _exec.save()
 
-    def get_wms_resource(self, _exec):
-        _, wms = WebMapService(_exec.input_params.get("url"))
+    def get_wms_resource(self, _exec, auth=None):
+        _, wms = WebMapService(_exec.input_params.get("url"), auth=auth)
         wms_resource = wms[_exec.input_params.get("identifier")]
         return wms_resource
 
@@ -136,7 +193,13 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             resource_manager_registry.get_for_instance(resource).set_thumbnail(None, instance=resource)
 
         harvester_url = _exec.input_params.get("ows_url", None)
-        if harvester_url:
+        user = _exec.user
+        if (
+            harvester_url
+            and user
+            and user.is_authenticated
+            and Service.objects.filter(harvester__remote_url=harvester_url, owner=user).exists()
+        ):
             # call utils to connect harvester and resource
             create_harvestable_resource(resource, service_url=harvester_url)
 
@@ -147,7 +210,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
         Here are returned all the information required to generate the geonode resource
         inclusing the OWS url
         """
-        return dict(
+        payload = dict(
             resource_type="dataset",
             subtype="remote",
             sourcetype=SOURCE_TYPE_REMOTE,
@@ -166,3 +229,6 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             ptype="gxp_wmscsource",
             ows_url=_exec.input_params.get("ows_url"),
         )
+        if _exec.input_params.get("auth_config_id"):
+            payload["auth_config_id"] = _exec.input_params.get("auth_config_id")
+        return payload

@@ -50,6 +50,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from geonode.proxy.utils import proxy_urls_registry
 from geonode.storage.manager import FileSystemStorageManager
+from geonode.security.utils import check_add_remote_resource_perm
 
 from geonode.upload.api.serializer import (
     UploadParallelismLimitSerializer,
@@ -137,6 +138,9 @@ class ImporterViewSet(DynamicModelViewSet):
         It clone on the local repo the file that the user want to upload
         """
         _file = request.FILES.get("base_file") or request.data.get("base_file")
+        validation_error = getattr(request, "upload_validation_error", None)
+        if validation_error:
+            raise ValidationError(detail=validation_error, code="invalid_file_type")
         execution_id = None
         storage_manager = None
         serializer = self.get_serializer_class()
@@ -147,6 +151,9 @@ class ImporterViewSet(DynamicModelViewSet):
             **data.data.copy(),
             **{key: value[0] if isinstance(value, list) else value for key, value in request.FILES.items()},
         }
+
+        if "url" in _data:
+            check_add_remote_resource_perm(request.user)
 
         # clone the memory files into local file system
         if "url" not in _data and not _data.get("is_empty", False):

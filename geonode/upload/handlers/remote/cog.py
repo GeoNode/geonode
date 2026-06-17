@@ -20,6 +20,7 @@ import logging
 import requests
 from osgeo import gdal
 
+from geonode.security.utils import init_gdal_security
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
@@ -113,6 +114,7 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
             # Set GDAL config options for faster failure
             gdal.SetThreadLocalConfigOption("GDAL_HTTP_TIMEOUT", "15")
             gdal.SetThreadLocalConfigOption("GDAL_HTTP_MAX_RETRY", "1")
+            init_gdal_security()
 
             vsiurl = f"/vsicurl/{url}"
             ds = gdal.OpenEx(vsiurl)

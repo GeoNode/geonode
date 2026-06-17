@@ -37,7 +37,6 @@ from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
 from ..base.models import (
-    ExtraMetadata,
     Link,
     License,
     ResourceBase,
@@ -142,7 +141,6 @@ def update_resource(
     regions: list = [],
     keywords: list = [],
     vals: dict = {},
-    extra_metadata: list = [],
 ):
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
@@ -260,28 +258,30 @@ def update_resource(
         raise
 
     # Check for "remote services" availability
-    from ..services.models import Service
-    from ..harvesting.models import HarvestableResource
+    if instance.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+        from ..services.models import Service
+        from ..harvesting.models import HarvestableResource
 
-    if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
-        _h = HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).get().harvester
-        if Service.objects.filter(harvester=_h).exists():
-            _s = Service.objects.filter(harvester=_h).get()
-            _to_update = {
-                "remote_typename": _s.name,
-            }
-            if hasattr(instance, "remote_service"):
-                _to_update["remote_service"] = _s
-            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**_to_update)
+        if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
+            _h = (
+                HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid)
+                .select_related("harvester")
+                .get()
+                .harvester
+            )
+            if Service.objects.filter(harvester=_h).exists():
+                _s = Service.objects.filter(harvester=_h).select_related("auth_config").get()
+                _to_update = {
+                    "remote_typename": _s.name,
+                }
+                if hasattr(instance, "remote_service"):
+                    _to_update["remote_service"] = _s
+                if not instance.auth_config_id and _s.auth_config:
+                    _to_update["auth_config"] = _s.auth_config
+                instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**_to_update)
 
     # Refresh from DB
     instance.refresh_from_db()
-
-    if extra_metadata:
-        instance.metadata.all().delete()
-        for _m in extra_metadata:
-            new_m = ExtraMetadata.objects.create(resource=instance, metadata=_m)
-            instance.metadata.add(new_m)
 
     return instance
 

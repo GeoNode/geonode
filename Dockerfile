@@ -1,37 +1,31 @@
 FROM geonode/geonode-base:latest-ubuntu-24.04
-LABEL GeoNode development team
 
-RUN mkdir -p /usr/src/geonode
-# copy local geonode src inside container
-COPY . /usr/src/geonode/
+ENV LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8
 WORKDIR /usr/src/geonode
 
-COPY wait-for-databases.sh /usr/bin/wait-for-databases
-RUN chmod +x /usr/bin/wait-for-databases
-RUN chmod +x /usr/src/geonode/tasks.py \
-    && chmod +x /usr/src/geonode/entrypoint.sh
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    curl \
+    wget \
+    unzip \
+    gnupg2 \
+    locales \
+    netcat-openbsd \
+    && sed -i -e 's/# C.UTF-8 UTF-8/C.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen \
+    && apt-get autoremove --purge -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY celery.sh /usr/bin/celery-commands
-RUN chmod +x /usr/bin/celery-commands
+RUN python -m pip install --no-cache-dir -U pip setuptools wheel
 
 COPY celery-cmd /usr/bin/celery-cmd
 RUN chmod +x /usr/bin/celery-cmd
 
-# # Install "geonode-contribs" apps
-# RUN cd /usr/src; git clone https://github.com/GeoNode/geonode-contribs.git -b master
-# # Install logstash and centralized dashboard dependencies
-# RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade  -e . \
-#     cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
+COPY . /usr/src/geonode/
 
-RUN yes w | pip install -e .
+RUN chmod +x /usr/src/geonode/tasks.py /usr/src/geonode/entrypoint.sh
 
-# Cleanup apt update lists
-RUN apt-get autoremove --purge &&\
-    apt-get clean &&\
-    rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir -e .
 
-# Export ports
 EXPOSE 8000
-
-# We provide no command or entrypoint as this image can be used to serve the django project or run celery tasks
-# ENTRYPOINT /usr/src/geonode/entrypoint.sh

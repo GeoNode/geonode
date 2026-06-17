@@ -79,6 +79,29 @@ class XLSXFileHandler(CSVFileHandler):
             "type": "vector",
         }
 
+    @property
+    def upload_validation_config(self):
+        # Mirror is_xlsx_enabled gating from supported_file_extension_config
+        # so a disabled handler doesn't widen the allowed-upload set.
+        if not self.is_xlsx_enabled():
+            return {}
+        return {
+            "xlsx": {
+                "mimes": {
+                    "application/vnd.ms-excel",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "application/zip",
+                },
+            },
+            "xls": {
+                "mimes": {
+                    "application/excel",
+                    "application/vnd.ms-excel",
+                    "application/x-ole-storage",
+                },
+            },
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """

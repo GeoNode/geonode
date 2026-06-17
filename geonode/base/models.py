@@ -77,7 +77,7 @@ from geonode.utils import (
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
-from geonode.security.models import PermissionLevelMixin
+from geonode.security.models import PermissionLevelMixin, AuthConfig
 from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS
 
 from geonode.notifications_helper import send_notification, get_notification_recipients
@@ -225,7 +225,7 @@ class RestrictionCodeType(models.Model):
 
 
 class License(models.Model):
-    identifier = models.CharField(max_length=255, editable=False)
+    identifier = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -679,9 +679,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement_help_text = _(
         "general explanation of the data producer's knowledge about the lineage of a" " dataset"
     )
-    extra_metadata_help_text = _(
-        'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]'
-    )
     # internal fields
     uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
     title = models.CharField(_("title"), max_length=255, help_text=_("name by which the cited resource is known"))
@@ -884,12 +881,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
 
     blob = JSONField(null=True, default=dict, blank=True)
+    auth_config = models.ForeignKey(
+        AuthConfig,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="authconfigresources",
+    )
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
-
-    metadata = models.ManyToManyField(
-        "ExtraMetadata", verbose_name=_("Extra Metadata"), null=True, blank=True, help_text=extra_metadata_help_text
-    )
 
     objects = ResourceBaseManager()
 
@@ -959,7 +959,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def can_have_wfs_links(self):
-        return self.subtype == "vector"
+        return self.subtype in {"vector", "tabular"}
 
     @property
     def can_have_wps_links(self):
@@ -2167,8 +2167,3 @@ class GroupGeoLimit(models.Model):
     group = models.ForeignKey(GroupProfile, null=False, blank=False, on_delete=models.CASCADE)
     resource = models.ForeignKey(ResourceBase, null=False, blank=False, on_delete=models.CASCADE)
     wkt = models.TextField(db_column="wkt", blank=True)
-
-
-class ExtraMetadata(models.Model):
-    resource = models.ForeignKey(ResourceBase, null=False, blank=False, on_delete=models.CASCADE)
-    metadata = JSONField(null=True, default=dict, blank=True)

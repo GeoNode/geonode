@@ -19,8 +19,6 @@
 import json
 import logging
 from unittest.mock import MagicMock
-from urllib.parse import urljoin
-
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import override_settings
@@ -113,17 +111,6 @@ class GeoAppsApiTests(APITestCase):
         self.assertEqual(new_count, prev_count + 1)
 
         GeoApp.objects.update(advertised=True)
-
-    def test_extra_metadata_included_with_param(self):
-        _app = GeoApp.objects.first()
-        url = urljoin(f"{reverse('geoapps-list')}/", f"{_app.pk}")
-        data = {"include[]": "metadata"}
-
-        response = self.client.get(url, format="json", data=data)
-        self.assertIsNotNone(response.data["geoapp"].get("metadata"))
-
-        response = self.client.get(url, format="json")
-        self.assertNotIn("metadata", response.data["geoapp"])
 
     def test_geoapps_crud(self):
         """

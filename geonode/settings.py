@@ -25,13 +25,13 @@ import sys
 import logging
 import subprocess
 import dj_database_url
-from schema import Optional
 from urllib.parse import urlparse, urljoin
 
 #
 # General Django development settings
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
@@ -45,8 +45,6 @@ SILENCED_SYSTEM_CHECKS = [
     "fields.W340",
     "auth.W004",
     "urls.W002",
-    "drf_spectacular.W001",
-    "drf_spectacular.W002",
 ]
 
 # GeoNode Version
@@ -497,7 +495,6 @@ INSTALLED_APPS = (
     "rest_framework",
     "rest_framework_gis",
     "dynamic_rest",
-    "drf_spectacular",
     # Theme
     "django_select2",
     "django_forms_bootstrap",
@@ -553,7 +550,6 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "dynamic_rest.renderers.DynamicBrowsableAPIRenderer",
     ],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "geonode.base.api.exceptions.geonode_exception_handler",
 }
 REST_FRAMEWORK_EXTENSIONS = {
@@ -627,65 +623,12 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_DOCUMENT_TYPES = (
-        [
-            "txt",
-            "csv",
-            "log",
-            "doc",
-            "docx",
-            "ods",
-            "odt",
-            "sld",
-            "qml",
-            "xls",
-            "xlsx",
-            "xml",
-            "dwg",
-            "dxf",
-            "gif",
-            "jpg",
-            "jpeg",
-            "png",
-            "tif",
-            "tiff",
-            "pbm",
-            "odp",
-            "ppt",
-            "pptx",
-            "pdf",
-            "tar",
-            "tgz",
-            "rar",
-            "gz",
-            "7z",
-            "zip",
-            "aif",
-            "aifc",
-            "aiff",
-            "au",
-            "mp3",
-            "mpga",
-            "wav",
-            "afl",
-            "avi",
-            "avs",
-            "fli",
-            "mp2",
-            "mp4",
-            "mpg",
-            "ogg",
-            "webm",
-            "3gp",
-            "flv",
-            "vdo",
-            "glb",
-            "pcd",
-            "gltf",
-            "ifc",
-        ]
+        DOCUMENT_TYPE_MAP.keys()
         if os.getenv("ALLOWED_DOCUMENT_TYPES") is None
         else re.split(r" *[,|:;] *", os.getenv("ALLOWED_DOCUMENT_TYPES"))
     )
+
+ALLOWED_DOCUMENT_TYPES = [t for t in ALLOWED_DOCUMENT_TYPES if t in DOCUMENT_TYPE_MAP.keys()]
 
 MAX_DOCUMENT_SIZE = int(os.getenv("MAX_DOCUMENT_SIZE ", "2"))  # MB
 
@@ -707,31 +650,34 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d " "%(thread)d %(message)s"},
-        "simple": {
-            "format": "%(message)s",
+        "verbose": {
+            "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(module)-15s %(process)d:%(thread)x - %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S",
         },
-        "br": {"format": "%(levelname)-7s %(asctime)s %(message)s"},
+        "simple": {"format": "%(message)s"},
+        "br": {
+            "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
     },
-    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "filters": {},
     "handlers": {
-        "console": {"level": "ERROR", "class": "logging.StreamHandler", "formatter": "simple"},
-        "mail_admins": {
-            "level": "ERROR",
-            "filters": ["require_debug_false"],
-            "class": "django.utils.log.AdminEmailHandler",
-        },
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"},
         "br": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "br"},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
     },
     "loggers": {
         "django": {
-            "level": "WARN",
+            "level": "WARNING",
         },
         "geonode": {
-            "level": "WARN",
+            "level": "WARNING",
         },
         "importer": {
-            "level": "INFO",
+            "level": "WARNING",
         },
         "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {
@@ -744,13 +690,7 @@ LOGGING = {
             "level": "ERROR",
         },
         "celery": {
-            "level": "WARN",
-        },
-        "mapstore2_adapter.plugins.serializers": {
-            "level": "ERROR",
-        },
-        "geonode_logstash.logstash": {
-            "level": "ERROR",
+            "level": "WARNING",
         },
     },
 }
@@ -851,6 +791,7 @@ MIDDLEWARE = (
     "django_user_agents.middleware.UserAgentMiddleware",
     "geonode.base.middleware.MaintenanceMiddleware",
     "geonode.base.middleware.ReadOnlyMiddleware",  # a Middleware enabling Read Only mode of Geonode
+    "geonode.base.middleware.ProfileLanguageMiddleware",
 )
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
@@ -1063,6 +1004,7 @@ PROXY_ALLOWED_PATH_NEEDLES = ast.literal_eval(os.getenv("PROXY_ALLOWED_PATH_NEED
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
+SAFE_URL_CHECK_ENABLED = ast.literal_eval(os.getenv("SAFE_URL_CHECK_ENABLED", "True"))
 
 # Avoid permissions prefiltering
 SKIP_PERMS_FILTER = ast.literal_eval(os.getenv("SKIP_PERMS_FILTER", "False"))
@@ -1368,7 +1310,7 @@ GEONODE_CATALOGUE_METADATA_XSL = ast.literal_eval(os.getenv("GEONODE_CATALOGUE_M
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
 DEFAULT_MAP_CRS = os.environ.get("DEFAULT_MAP_CRS", "EPSG:3857")
 
-DEFAULT_LAYER_FORMAT = os.environ.get("DEFAULT_LAYER_FORMAT", "image/png")
+DEFAULT_LAYER_FORMAT = os.environ.get("DEFAULT_LAYER_FORMAT", "image/vnd.jpeg-png")
 DEFAULT_TILE_SIZE = os.environ.get("DEFAULT_TILE_SIZE", 512)
 
 # Where should newly created maps be focused?
@@ -1493,6 +1435,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         )
     else:
         LANGUAGES = MAPSTORE_DEFAULT_LANGUAGES
+
+    # This setting includes supported Maptstore language choices in a DB-based format
+    PROFILE_LANGUAGE_CHOICES = tuple((code.split("-")[0].lower(), label) for code, label in LANGUAGES)
 
     # The default mapstore client compiles the translations json files in the /static/mapstore directory
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
@@ -1824,6 +1769,10 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # START SECURITY SETTINGS
 # ########################################################################### #
 
+AUTH_HANDLERS = [
+    "geonode.security.auth_handlers.BasicAuthHandler",
+]
+
 ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))
 
 # ######################################################## #
@@ -1851,7 +1800,10 @@ GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get("GROUP_MANDATORY_RES
 AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
-
+AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", "False")
+)
+RESOURCE_CREATOR_GROUPS_PERMISSIONS = os.getenv("RESOURCE_CREATOR_GROUPS_PERMISSIONS", "view")
 AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", "False")
 )
@@ -1863,10 +1815,48 @@ if AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN and not _resource_ownership_admin_use
     )
 RESOURCE_OWNERSHIP_ADMIN_USERNAME = (_resource_ownership_admin_username or "admin").strip() or "admin"
 
-# Whether the uplaoded resources should be public and downloadable by default
-# or not
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "True"))
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "True"))
+# Whether the uploaded resources should be public and downloadable by default
+# DEPRECATED: use DEFAULT_ANONYMOUS_PERMISSIONS (compact permissions)
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION", "None"))
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION", "None"))
+
+# Resolve anonymous compact fallback from deprecated settings for cases where the new setting is not provided
+_anonymous_compact_fallback = "download"
+if (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is True:
+        _anonymous_compact_fallback = "download"
+    elif DEFAULT_ANONYMOUS_VIEW_PERMISSION is True:
+        _anonymous_compact_fallback = "view"
+    else:
+        _anonymous_compact_fallback = "none"
+
+# Compact permissions for default groups
+# Valid values:
+#  - DEFAULT_ANONYMOUS_PERMISSIONS: view | download | none
+#  - DEFAULT_REGISTERED_MEMBERS_PERMISSIONS: view | download | edit | manage | none
+DEFAULT_ANONYMOUS_PERMISSIONS = os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS", _anonymous_compact_fallback)
+DEFAULT_REGISTERED_MEMBERS_PERMISSIONS = os.getenv("DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", "download")
+
+if os.getenv("DEFAULT_ANONYMOUS_PERMISSIONS") is not None and (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    logger.warning(
+        "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated and ignored "
+        "because DEFAULT_ANONYMOUS_PERMISSIONS is set."
+    )
+elif (
+    os.getenv("DEFAULT_ANONYMOUS_VIEW_PERMISSION") is not None
+    or os.getenv("DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION") is not None
+):
+    logger.warning(
+        "DEFAULT_ANONYMOUS_VIEW_PERMISSION and DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION are deprecated. "
+        "Please use DEFAULT_ANONYMOUS_PERMISSIONS instead."
+    )
+
 
 EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", "True")
@@ -1875,10 +1865,15 @@ EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS = ast.literal_eval(
     os.getenv("EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", "True")
 )
 
+REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES = ast.literal_eval(
+    os.getenv("REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES", "False")
+)
+
 PERMISSIONS_HANDLERS = [
     "geonode.security.handlers.GroupManagersPermissionsHandler",
     "geonode.security.handlers.SpecialGroupsPermissionsHandler",
     "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+    "geonode.security.handlers.ResourceCreatorGroupsPermissionsHandler",
     "geonode.security.handlers.AutoAssignResourceOwnershipHandler",
 ]
 
@@ -1922,10 +1917,47 @@ ACCOUNT_OPEN_SIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SIGNUP", "Tr
 ACCOUNT_OPEN_SOCIALSIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SOCIALSIGNUP", "True"))
 ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(os.getenv("ACCOUNT_APPROVAL_REQUIRED", "False"))
 ACCOUNT_ADAPTER = "geonode.people.adapters.LocalAccountAdapter"
-ACCOUNT_AUTHENTICATION_METHOD = os.environ.get("ACCOUNT_AUTHENTICATION_METHOD", "username_email")
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get("ACCOUNT_CONFIRM_EMAIL_ON_GET", "True"))
-ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get("ACCOUNT_EMAIL_REQUIRED", "True"))
 ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "none")
+
+# Deprecated django-allauth settings for backward compatibility.
+# New deployments should use ACCOUNT_LOGIN_METHODS and ACCOUNT_SIGNUP_FIELDS instead.
+_account_authentication_method = os.environ.get("ACCOUNT_AUTHENTICATION_METHOD")
+_account_email_required = os.environ.get("ACCOUNT_EMAIL_REQUIRED")
+if _account_authentication_method is not None:
+    logger.warning(
+        "settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: "
+        "settings.ACCOUNT_LOGIN_METHODS = {'email', 'username'}"
+    )
+else:
+    _account_authentication_method = "username_email"
+
+_default_login_methods = {
+    "username": {"username"},
+    "email": {"email"},
+    "username_email": {"username", "email"},
+}.get(_account_authentication_method, {"username", "email"})
+
+ACCOUNT_LOGIN_METHODS = ast.literal_eval(os.environ.get("ACCOUNT_LOGIN_METHODS", repr(_default_login_methods)))
+
+if _account_email_required is not None:
+    logger.warning(
+        "settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: "
+        "settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']"
+    )
+
+    _account_email_required = ast.literal_eval(_account_email_required)
+else:
+    _account_email_required = True
+
+_default_signup_fields = [
+    "email*" if _account_email_required else "email",
+    "username*",
+    "password1*",
+    "password2*",
+]
+
+ACCOUNT_SIGNUP_FIELDS = ast.literal_eval(os.environ.get("ACCOUNT_SIGNUP_FIELDS", repr(_default_signup_fields)))
 
 # Invitation Adapter
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
@@ -2012,6 +2044,13 @@ SOCIALACCOUNT_PROVIDERS = {
     SOCIALACCOUNT_OIDC_PROVIDER: SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
 
+# Strategy for synchronizing user group memberships from Social Providers (e.g., Azure, Google).
+# - FULL_SYNC: (Default) Strict mirroring. Wipes all local groups and joins only those in the provider token.
+# - SAFE_SYNC: Skips sync if the provider response is missing group/role keys (e.g., Azure overage).
+#              Protects existing local memberships from accidental wipes.
+# - NO_SYNC:   Ignores provider group data entirely. Groups are managed manually within GeoNode.
+SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN = os.getenv("SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")
+
 DISPLAY_RATINGS = ast.literal_eval(os.getenv("DISPLAY_RATINGS", "True"))
 DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv("DISPLAY_WMS_LINKS", "True"))
 
@@ -2069,38 +2108,24 @@ CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/fu
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-"""
-Default schema used to store extra and dynamic metadata for the resource
-"""
+for deprecated_env_key in (
+    "CUSTOM_METADATA_SCHEMA",
+    "MAP_EXTRA_METADATA_SCHEMA",
+    "DATASET_EXTRA_METADATA_SCHEMA",
+    "DOCUMENT_EXTRA_METADATA_SCHEMA",
+    "GEOAPP_EXTRA_METADATA_SCHEMA",
+):
+    if os.getenv(deprecated_env_key) is not None:
+        logger.warning(f"Found deprecated environment variable '{deprecated_env_key}'.")
 
-DEFAULT_EXTRA_METADATA_SCHEMA = {
-    Optional("id"): int,
-    "filter_header": object,
-    "field_name": object,
-    "field_label": object,
-    "field_value": object,
-}
+# DEPRECATED -- Declaration kept for backward compatibility
+DEFAULT_EXTRA_METADATA_SCHEMA = {}
 
-"""
-If present, will extend the available metadata schema used for store
-new value for each resource. By default overrided the existing one.
-The expected schema is the same as the default
-"""
-CUSTOM_METADATA_SCHEMA = os.getenv("CUSTOM_METADATA_SCHEMA ", {})
+# DEPRECATED -- Declaration kept for backward compatibility
+CUSTOM_METADATA_SCHEMA = {}
 
-"""
-Variable used to actually get the expected metadata schema for each resource_type.
-In this way, each resource type can have a different metadata schema
-"""
-EXTRA_METADATA_SCHEMA = {
-    **{
-        "map": os.getenv("MAP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "dataset": os.getenv("DATASET_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "document": os.getenv("DOCUMENT_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "geoapp": os.getenv("GEOAPP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-    },
-    **CUSTOM_METADATA_SCHEMA,
-}
+# DEPRECATED -- Declaration kept for backward compatibility
+EXTRA_METADATA_SCHEMA = {}
 
 """
 List of modules that implement custom metadata storers that will be called when the metadata of a resource is saved
@@ -2157,12 +2182,19 @@ MULTILANG_POSTGRES_LANGS = {
 }
 
 FILE_UPLOAD_HANDLERS = [
+    "geonode.upload.uploadhandler.FileValidationUploadHandler",
     "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
 ]
 
-DEFAULT_MAX_UPLOAD_SIZE = 104857600  # 100 MB
+# This setting is used only once during installation.
+# Further adjustments need to be done using the admin WebUI:
+#
+#   https://docs.geonode.org/en/5.0.x/admin/upload-size-limits/index.html#upload-size-limits
+#
+# 100MB
+DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv("DEFAULT_MAX_UPLOAD_SIZE") or 100 * 1024 * 1024)
 DEFAULT_BUFFER_CHUNK_SIZE = int(os.getenv("DEFAULT_BUFFER_CHUNK_SIZE", 64 * 1024))
 DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER = int(os.getenv("DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5))
 
@@ -2188,6 +2220,15 @@ SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "document_upload",
     "base-resources-assets",
 )
+
+# FileValidationUploadHandler config providers, run once at app-ready time
+# (see geonode.upload.handlers.apps.run_setup_hooks). Each provider declares
+# the URL names it covers and returns the merged validation config dict.
+# To add per-endpoint validation, register a ValidationConfigProvider here.
+FILE_VALIDATION_CONFIGURATION_PROVIDERS = [
+    "geonode.documents.validation.DocumentFileValidationConfigProvider",
+    "geonode.upload.validation.datasets.DatasetFileValidationConfigProvider",
+]
 
 INSTALLED_APPS += (
     "dynamic_models",

@@ -46,6 +46,7 @@ from geonode.utils import (
     http_client,
     json_response,
     extract_ip_or_domain,
+    is_safe_url,
 )
 from geonode.base.enumerations import LINK_TYPES as _LT
 
@@ -92,6 +93,14 @@ def proxy(
 
     raw_url = url or request.GET["url"]
     raw_url = urljoin(settings.SITEURL, raw_url) if raw_url.startswith("/") else raw_url
+
+    if not kwargs.get("safe_url", False) and not is_safe_url(raw_url):
+        return HttpResponse(
+            "Invalid URL provided.",
+            status=403,
+            content_type="text/plain",
+        )
+
     url = urlsplit(raw_url)
     scheme = str(url.scheme)
     locator = str(url.path)
@@ -158,7 +167,9 @@ def proxy(
         _url, method=request.method, data=_data.encode("utf-8"), headers=headers, timeout=timeout, user=user
     )
     if response is None:
-        return HttpResponse(content=content, reason=content, status=500)
+        logger.error(f"Proxy request failed: {content}")
+        return HttpResponse(content="Proxy request failed.", status=500, content_type="text/plain")
+
     content = response.content or response.reason
     status = response.status_code
     response_headers = response.headers

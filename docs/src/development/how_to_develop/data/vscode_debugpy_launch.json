@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Django Attach to Container",
+            "type": "python",
+            "request": "attach",
+            "port": 5678,
+            "host": "localhost",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/usr/src/geonode"
+                }
+            ],
+            "django": true,
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.devcontainer/.env"
+        }
+
+    ]
+}

@@ -29,6 +29,7 @@ from django.template import loader
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect
 
+from geonode.security.utils import check_add_remote_resource_perm
 from geonode.base.api.exceptions import geonode_exception_handler
 from geonode.client.hooks import hookset
 from geonode.utils import mkdtemp
@@ -94,6 +95,19 @@ class DocumentUploadView(CreateView):
 
     def post(self, request, *args, **kwargs):
         self.object = None
+        # Accessing request.FILES forces the multipart parser (and therefore
+        # FileValidationUploadHandler) to run. If validation rejected the
+        # upload, return a clean 400 with the reason instead of letting the
+        # form surface a generic "required field" error.
+        request.FILES  # noqa: B018
+        validation_error = getattr(request, "upload_validation_error", None)
+        if validation_error:
+            if request.GET.get("no__redirect", False):
+                out = {"success": False, "message": validation_error}
+                return HttpResponse(json.dumps(out), content_type="application/json", status=400)
+            form = self.get_form()
+            form.add_error(None, validation_error)
+            return self.form_invalid(form)
         try:
             return super().post(request, *args, **kwargs)
         except Exception as e:
@@ -114,7 +128,7 @@ class DocumentUploadView(CreateView):
         if self.request.GET.get("no__redirect", False):
             plaintext_errors = []
             for field in form.errors.values():
-                plaintext_errors.append(field.data[0].message)
+                plaintext_errors.append(str(field.data[0].message))
             out = {"success": False}
             out["message"] = ".".join(plaintext_errors)
             status_code = 400
@@ -162,6 +176,8 @@ class DocumentUploadView(CreateView):
             shutil.rmtree(tempdir, ignore_errors=True)
 
         else:
+            check_add_remote_resource_perm(self.request.user)
+
             self.object = document_manager.create(
                 None,
                 resource_type=Document,

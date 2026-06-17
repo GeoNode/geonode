@@ -33,7 +33,7 @@ import json
 import logging
 import os
 from subprocess import PIPE, Popen
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 import shlex
 from celery import chord, group
 from django.db import transaction
@@ -77,6 +77,7 @@ from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 from geonode.upload.registry import feature_validators_registry
 from django.core.exceptions import ValidationError
+
 
 logger = logging.getLogger("importer")
 
@@ -318,19 +319,48 @@ class BaseVectorFileHandler(BaseHandler):
         if not ogr_exe:
             raise Exception("ogr2ogr executable not found.")
 
-        command = [
-            ogr_exe,
-            "-f",
-            "PostgreSQL",
-            db_connection_string,
-            db_connection_string,
-            "-nln",
-            new_table_name,
-            original_table_name,
-            "-overwrite",
-        ]
-        process = Popen(command, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
+        copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
+
+        base_args = ["-nln", new_table_name, original_table_name, "-overwrite"]
+
+        if copy_with_dump:
+            command = [
+                ogr_exe,
+                "--config",
+                "PG_USE_COPY",
+                "YES",
+                "-f",
+                "PGDump",
+                "/vsistdout/",
+                db_connection_string,
+            ] + base_args
+
+            host = _datastore.get("HOST") or "localhost"
+            port = str(_datastore.get("PORT") or 5432)
+            env = {**os.environ, "PGPASSWORD": _datastore["PASSWORD"]}
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                host,
+                "-p",
+                port,
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
+
+            p1 = Popen(command, stdout=PIPE, stderr=PIPE)
+            p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
+            p1.stdout.close()
+            stdout, stderr = p2.communicate()
+        else:
+            command = [ogr_exe, "-f", "PostgreSQL", db_connection_string, db_connection_string] + base_args
+            process = Popen(command, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
 
         if (
             stderr is not None
@@ -605,7 +635,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def setup_dynamic_model(
         self,
-        layer: ogr.Layer,
+        layer: Union[ogr.Layer, str],
         execution_id: str,
         should_be_overwritten: bool,
         username: str,
@@ -619,7 +649,7 @@ class BaseVectorFileHandler(BaseHandler):
             - celery_group -> the celery group of the field creation
         """
 
-        layer_name = self.fixup_name(self._extract_layer(layer).GetName())
+        layer_name = self.fixup_name(layer if isinstance(layer, str) else self._extract_layer(layer).GetName())
         _exec_obj = orchestrator.get_execution_object(execution_id)
 
         is_dynamic_model_managed = _exec_obj.input_params.get("is_dynamic_model_managed", False)
@@ -768,7 +798,7 @@ class BaseVectorFileHandler(BaseHandler):
             "Multi" not in geometry_name
             and "Point" not in geometry_name
             and "3D" not in geometry_name
-            and geometry_name != "Unknown (any)"
+            and geometry_name not in ("Unknown (any)", "Geometry")
         ):
             return f"Multi {geometry_name.title()}"
         return geometry_name
@@ -1669,7 +1699,18 @@ def import_with_ogr2ogr(
             # If using a pipe (ogr2ogr | psql), we must handle it via Python
             # because shell=False doesn't understand the "|" symbol.
             _datastore = settings.DATABASES["datastore"]
-            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", _datastore["HOST"], "-U", _datastore["USER"], "-f", "-"]
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                _datastore["HOST"],
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
 
             env = os.environ.copy()
             env["PGPASSWORD"] = _datastore["PASSWORD"]

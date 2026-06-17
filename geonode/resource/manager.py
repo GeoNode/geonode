@@ -246,17 +246,13 @@ class BaseResourceManager(ResourceManagerInterface):
         self,
         instance: ResourceBase,
         owner: settings.AUTH_USER_MODEL = None,
-        initial_user: settings.AUTH_USER_MODEL = None,
     ) -> bool:
         """
         Finalize default permissions for newly created resources,
-        including optional creation-time ownership handling.
         """
         if not instance:
             return False
-        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
-            return False
-        instance.set_default_permissions(owner=owner or instance.owner, created=True, initial_user=initial_user)
+        instance.set_default_permissions(owner=owner or instance.owner, created=True)
         return True
 
     def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
@@ -345,8 +341,8 @@ class BaseResourceManager(ResourceManagerInterface):
         if resource_type.objects.filter(uuid=uuid).exists():
             return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid4())
-        initial_user = defaults.get("owner", None)
-        resolved_owner = self.resolve_creation_owner(initial_user)
+        originator = defaults.get("owner", None)
+        resolved_owner = self.resolve_creation_owner(originator)
         resource_dict = {  # TODO: cleanup params and dicts
             k: v
             for k, v in defaults.items()
@@ -373,13 +369,20 @@ class BaseResourceManager(ResourceManagerInterface):
                         uuid, resource_type=resource_type, defaults=resource_dict
                     )
                 _resource.save()
+                metadata_dict = infer_default_metadata(_resource.get_real_instance())
+                # Store the resource creator as metadata Originator contact
+                if originator:
+                    metadata_dict.setdefault("contacts", {}).setdefault(
+                        "originator",
+                        [{"id": str(originator.id), "label": originator.username}],
+                    )
                 metadata_manager.update_schema_instance_partial(
                     _resource,
-                    infer_default_metadata(_resource.get_real_instance()),
+                    metadata_dict,
                     user=None,
                 )
                 resourcebase_post_save(_resource.get_real_instance())
-                self.finalize_creation_permissions(_resource, owner=resolved_owner, initial_user=initial_user)
+                self.finalize_creation_permissions(_resource, owner=resolved_owner)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
@@ -400,7 +403,6 @@ class BaseResourceManager(ResourceManagerInterface):
         keywords: list = [],
         custom: dict = {},
         notify: bool = True,
-        extra_metadata: list = [],
         *args,
         **kwargs,
     ) -> ResourceBase:
@@ -442,7 +444,6 @@ class BaseResourceManager(ResourceManagerInterface):
                         regions=regions,
                         keywords=keywords,
                         vals=vals,
-                        extra_metadata=extra_metadata,
                     )
 
                     ji = custom.get("jsoninstance", None)

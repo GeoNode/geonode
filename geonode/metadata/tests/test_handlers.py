@@ -457,12 +457,12 @@ class HandlersTests(GeoNodeBaseTestSupport):
         # Test the case where the db_value is a model instance
         serialized_value = LicenseSubHandler.serialize(self.license)
 
-        expected_value = {"id": self.license.identifier, "label": _(self.license.name)}
+        expected_value = {"id": self.license.id, "label": _(self.license.name)}
 
         self.assertEqual(serialized_value, expected_value)
 
-        # Assert that the serialize method returns the identifier
-        self.assertEqual(serialized_value["id"], self.license.identifier)
+        # Assert that the serialize method returns the id
+        self.assertEqual(serialized_value["id"], self.license.id)
 
     def test_license_subhandler_serialize_invalid_data(self):
         """
@@ -486,14 +486,14 @@ class HandlersTests(GeoNodeBaseTestSupport):
         An instance of this model has been created initial setup
         """
 
-        field_value = {"id": "fake_license"}
+        field_value = {"id": self.license.id}
 
         # Call the method using the "fake_category" identifier from the created instance
         deserialized_value = LicenseSubHandler.deserialize(field_value)
 
         # Assert that the deserialized value is the correct model instance
         self.assertEqual(deserialized_value, self.license)
-        self.assertEqual(deserialized_value.identifier, field_value["id"])
+        self.assertEqual(deserialized_value.id, field_value["id"])
 
     def test_license_subhandler_deserialize_with_invalid_data(self):
         """
