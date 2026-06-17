@@ -54,8 +54,12 @@ class AuthHandler(ABC):
         raise NotImplementedError
 
     @classmethod
-    def create_auth_config(cls, **kwargs):
-        raise NotImplementedError
+    def create_auth_config(cls, payload):
+        cls.validate(payload)
+        auth_config = AuthConfig(type=cls.handled_type)
+        auth_config.payload = payload
+        auth_config.save()
+        return auth_config
 
 
 class HashableAuthBase(AuthBase):
@@ -93,17 +97,6 @@ class BasicAuthHandler(AuthHandler):
         if not payload.get("password") and not getattr(instance, "pk", None):
             raise ValidationError("Password is required for basic authentication.")
         return payload
-
-    @classmethod
-    def create_auth_config(cls, username, password):
-        if username is None and password is None:
-            return None
-        payload = {"username": username, "password": password}
-        cls.validate(payload)
-        auth_config = AuthConfig(type=cls.handled_type)
-        auth_config.payload = payload
-        auth_config.save()
-        return auth_config
 
     def _init_from_config(self):
         payload = self.config.payload

@@ -132,7 +132,7 @@ class TestBaseRemoteResourceHandler(TestCase):
         self.assertEqual({"username": "test_user", "password": "test_password"}, auth_config.payload)
 
     def test_create_geonode_resource_rollback_should_delete_created_auth_config(self):
-        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
         exec_id = orchestrator.create_execution_request(
             user=self.owner,
             func_name="funct1",

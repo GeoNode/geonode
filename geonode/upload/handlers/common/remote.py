@@ -94,12 +94,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         and if the url is valid
         """
         try:
-            auth = None
-            if kwargs.get("execution_id"):
-                _exec = orchestrator.get_execution_object(kwargs.get("execution_id"))
-                auth_config = BaseRemoteResourceHandler.get_auth_config_for_import(_exec)
-                if auth_config:
-                    auth = auth_handler_registry.build(auth_config).get_request_auth()
+            auth = BaseRemoteResourceHandler.get_request_auth_for_import(kwargs.get("execution_id"))
             r = requests.get(url, timeout=10, auth=auth)
             r.raise_for_status()
         except requests.exceptions.Timeout:
@@ -137,10 +132,7 @@ class BaseRemoteResourceHandler(BaseHandler):
             auth_handler_cls = auth_handler_registry.get_handler_class(auth_type)
             if auth_handler_cls is None:
                 raise ValueError(f"Unsupported authentication type '{auth_type}'")
-            auth_handler_cls.validate(auth_payload)
-            auth_config = AuthConfig(type=auth_type)
-            auth_config.payload = auth_payload
-            auth_config.save()
+            auth_config = auth_handler_cls.create_auth_config(auth_payload)
             payload["auth_config_id"] = auth_config.pk
 
     def _create_geonode_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
@@ -202,6 +194,18 @@ class BaseRemoteResourceHandler(BaseHandler):
                 to_update["auth_config_id"] = service.auth_config_id
             return service.auth_config
         return None
+
+    @staticmethod
+    def get_request_auth_for_import(execution_id):
+        if not execution_id:
+            return None
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        auth_config = BaseRemoteResourceHandler.get_auth_config_for_import(_exec)
+        if not auth_config:
+            return None
+
+        return auth_handler_registry.build(auth_config).get_request_auth()
 
     @staticmethod
     @contextmanager

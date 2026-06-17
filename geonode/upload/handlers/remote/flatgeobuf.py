@@ -61,12 +61,7 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
         """
         logger.debug(f"Checking FlatGeobuf URL validity (HEAD): {url}")
         try:
-            auth = None
-            if kwargs.get("execution_id"):
-                _exec = orchestrator.get_execution_object(kwargs.get("execution_id"))
-                auth_config = BaseRemoteResourceHandler.get_auth_config_for_import(_exec)
-                if auth_config:
-                    auth = auth_handler_registry.build(auth_config).get_request_auth()
+            auth = BaseRemoteResourceHandler.get_request_auth_for_import(kwargs.get("execution_id"))
             # Reachability check using HEAD
             head_res = requests.head(url, timeout=10, allow_redirects=True, auth=auth)
             logger.debug(f"HTTP HEAD status: {head_res.status_code}")

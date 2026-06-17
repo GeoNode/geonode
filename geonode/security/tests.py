@@ -4204,7 +4204,7 @@ class AuthConfigTests(TestCase):
         self.assertEqual(str(url_pattern_auth_config), "https://example.com/*")
 
     def test_basic_auth_payload_round_trip(self):
-        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
 
         self.assertEqual(auth_config.type, "basic")
         self.assertNotIn("test_user", auth_config._payload)

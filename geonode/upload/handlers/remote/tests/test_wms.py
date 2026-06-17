@@ -152,7 +152,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertEqual({"username": "test_user", "password": "test_password"}, auth_config.payload)
 
     def test_create_geonode_resource_rollback_should_delete_created_auth_config(self):
-        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
         exec_id = orchestrator.create_execution_request(
             user=self.user,
             func_name="funct1",
@@ -165,7 +165,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertFalse(AuthConfig.objects.filter(pk=auth_config.pk).exists())
 
     def test_create_geonode_resource_rollback_should_not_delete_attached_auth_config(self):
-        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
         self._create_wms_service(self.valid_url, auth_config=auth_config)
         exec_id = orchestrator.create_execution_request(
             user=self.user,
