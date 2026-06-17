@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Build all services (Docker Compose v2)
-        run: docker compose --env-file .env_test -f docker-compose-test.yml build --progress plain
+        run: ENVIRONMENT=test docker compose build db geoserver django nginx data-dir-conf --progress plain
 
       - name: Save built Docker images
         run: |
@@ -42,8 +42,8 @@ jobs:
     with:
       suite_name: "Smoke Tests"
       test_command: >
-        ./tests/test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search
-        geonode.tests.test_utils geonode.tests.test_headers --duration=30 
+        ./test.sh geonode.tests.smoke geonode.tests.test_rest_api geonode.tests.test_search
+        geonode.tests.test_utils geonode.tests.test_headers --duration=30 --failfast
 
   main:
     uses: ./.github/workflows/run-test-suite.yml
@@ -53,7 +53,7 @@ jobs:
       test_command: >
         TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
         for a in settings.GEONODE_APPS if "security" not in a and "geoserver" not in a and "upload" not in a]))') &&
-        ./tests/test.sh $TESTS geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests --duration=30 
+        ./test.sh $TESTS geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests --duration=30 --failfast
 
   security:
     uses: ./.github/workflows/run-test-suite.yml
@@ -63,7 +63,7 @@ jobs:
       test_command: >
         TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
         for a in settings.GEONODE_APPS if "security" in a]))') &&
-        ./tests/test.sh $TESTS --duration=30 
+        ./test.sh $TESTS --duration=30 --failfast
 
   gis_backend:
     uses: ./.github/workflows/run-test-suite.yml
@@ -73,7 +73,7 @@ jobs:
       test_command: >
         TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
         for a in settings.GEONODE_APPS if "geoserver" in a]))') &&
-        ./tests/test.sh $TESTS --duration=30 
+        ./test.sh $TESTS --duration=30 --failfast
 
   rest_apis:
     uses: ./.github/workflows/run-test-suite.yml
@@ -81,8 +81,8 @@ jobs:
     with:
       suite_name: "REST API Tests"
       test_command: >
-        ./tests/test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests
-        geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 
+        ./test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests
+        geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
 
   csw:
     uses: ./.github/workflows/run-test-suite.yml
@@ -90,7 +90,7 @@ jobs:
     with:
       suite_name: "CSW Tests"
       test_command: >
-        ./tests/test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 
+        ./test.sh geonode.tests.csw geonode.catalogue.backends.tests --duration=30 --failfast
 
   upload:
     uses: ./.github/workflows/run-test-suite.yml
@@ -98,7 +98,7 @@ jobs:
     with:
       suite_name: "Upload Tests"
       test_command: >
-        ./tests/test.sh geonode.upload --duration=30 
+        ./test.sh geonode.upload --duration=30 --failfast
 
   # -------------------------------------------------
   # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END

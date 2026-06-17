@@ -14,7 +14,7 @@ invoke () {
     echo "$@ tasks done"
 }
 
-# Start cron && memcached services
+# Start cron service
 service cron restart
 
 echo $"\n\n\n"
@@ -26,16 +26,6 @@ invoke update
 
 source $HOME/.bashrc
 source $HOME/.override_env
-
-echo POSTGRES_USER=$POSTGRES_USER
-echo POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-echo DATABASE_URL=$DATABASE_URL
-echo GEODATABASE_URL=$GEODATABASE_URL
-echo SITEURL=$SITEURL
-echo ALLOWED_HOSTS=$ALLOWED_HOSTS
-echo GEOSERVER_PUBLIC_LOCATION=$GEOSERVER_PUBLIC_LOCATION
-
-# invoke waitfordbs
 
 cmd="$@"
 
@@ -65,6 +55,6 @@ echo "-----------------------------------------------------"
 echo "FINISHED DJANGO ENTRYPOINT --------------------------"
 echo "-----------------------------------------------------"
 
-# Run the CMD 
+# Run the CMD
 echo "got command $cmd"
 exec $cmd
