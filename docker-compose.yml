@@ -1,6 +1,3 @@
-version: '3.9'
-
-# Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
   image: geonode/geonode:latest-ubuntu-24.04
@@ -9,9 +6,9 @@ x-common-django:
       dockerfile: Dockerfile
   restart: unless-stopped
   env_file:
-    - .env
+    - .env${ENVIRONMENT:+_${ENVIRONMENT}}
   volumes:
-    - .:/usr/src/geonode/
+    # - './src:/usr/src/geonode'  # Uncomment for local development
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
@@ -20,15 +17,22 @@ x-common-django:
   depends_on:
     db:
       condition: service_healthy
+    redis:
+      condition: service_healthy
+    memcached:
+      condition: service_healthy
 
 services:
 
   # Our custom django application. It includes Geonode.
   django:
     << : *default-common-django
+    build:
+      context: ./
+      dockerfile: Dockerfile
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
-      test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
+      test: "curl -m 10 --fail --silent --output /dev/null http://django:8000/"
       start_period: 60s
       interval: 60s
       timeout: 10s
@@ -42,33 +46,23 @@ services:
   celery:
     << : *default-common-django
     container_name: celery4${COMPOSE_PROJECT_NAME}
-    depends_on:
-      django:
-        condition: service_healthy
     environment:
       - IS_CELERY=True
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
     command: "celery-cmd"
-
-  # memcached service
-  memcached:
-    image: memcached:alpine
-    container_name: memcached4${COMPOSE_PROJECT_NAME}
-    command: memcached ${MEMCACHED_OPTIONS}
-    restart: unless-stopped
     healthcheck:
-      test: nc -z 127.0.0.1 11211
-      interval: 30s
-      timeout: 30s
-      retries: 5
+      test: "celery -b ${BROKER_URL} inspect ping"
       start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 2
 
   # Nginx is serving django static and media files and proxies to django and geonode
-  geonode:
+  nginx:
     image: geonode/nginx:1.31.0-latest
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
-      - .env
+      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
     environment:
       - RESOLVER=127.0.0.11
     ports:
@@ -79,29 +73,51 @@ services:
       - nginx-certificates:/geonode-certificates
       - statics:/mnt/volumes/statics
     restart: unless-stopped
+    healthcheck:
+      test: "if ps -o pid | grep -w 1 > /dev/null; then echo 'nginx running'; else exit 1;fi"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # memcached service
+  memcached:
+    image: memcached:alpine
+    container_name: memcached4${COMPOSE_PROJECT_NAME}
+    command: memcached ${MEMCACHED_OPTIONS}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "11211"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   # Gets and installs letsencrypt certificates
   letsencrypt:
     image: geonode/letsencrypt:2.6.0-latest
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
     env_file:
-      - .env
+      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
     volumes:
       - nginx-certificates:/geonode-certificates
     restart: unless-stopped
+    depends_on:
+      nginx:
+        condition: service_healthy
 
   # Geoserver backend
   geoserver:
     image: geonode/geoserver:2.28.x-latest
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
-      test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
-      start_period: 60s
-      interval: 60s
+      test: ["CMD", "curl", "-f", "http://geoserver:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png"]
+      start_period: 30s
+      interval: 30s
       timeout: 10s
-      retries: 2
+      retries: 3
     env_file:
-      - .env
+      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
     ports:
       - "8080:8080"
     volumes:
@@ -125,25 +141,31 @@ services:
       - geoserver-data-dir:/geoserver_data/data
     restart: unless-stopped
     healthcheck:
-      test: "ls -A '/geoserver_data/data' | wc -l"
+      test: ["CMD-SHELL", "[ $$(ls -A /geoserver_data/data | wc -l) -gt 0 ] || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   # PostGIS database.
   db:
     # use geonode official postgis 15 image
     image: geonode/postgis:15-3.5-latest
-    command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS}"
+    command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS:-200}"
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
-      - .env
+      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
     restart: unless-stopped
     healthcheck:
-      test: "pg_isready -d postgres -U postgres"
-    # uncomment to enable remote connections to postgres
-    #ports:
-    #  - "5432:5432"
+      test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      # uncomment to enable remote connections to postgres
+      #ports:
+      #  - "5432:5432"
 
   # Vanilla Redis service. This is needed by celery
   redis:
@@ -152,6 +174,12 @@ services:
     volumes:
       - redisdata:/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 
 volumes:
   statics:
