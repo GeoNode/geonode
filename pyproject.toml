@@ -57,8 +57,8 @@ dependencies = [
     "django-mptt==0.16.0",
     "django-treebeard==4.7.1",
     "django-guardian<2.4.1",
-    "django-downloadview==2.3.0",
-    "django-polymorphic==3.1.0",
+    "django-downloadview==2.4.0",
+    "django-polymorphic==4.0.0",
     "django-tastypie<0.15.0",
     "django-tinymce==3.7.1",
     "django-uuid-upload-path==1.0.0",
@@ -95,12 +95,12 @@ dependencies = [
     "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
     "geonode-dynamic-rest==2.3.0.2",
-    "geonode-pinax-notifications==6.0.0.3",
+    "geonode-pinax-notifications==6.0.0.4",
 
     # GeoNode org maintained apps.
     "django_geonode_mapstore_client @ git+https://github.com/GeoNode/geonode-mapstore-client.git@5.1.x",
     "django-avatar==8.0.1",
-    "geonode-oauth-toolkit==2.2.2.2",
+    "geonode-oauth-toolkit==2.2.3.1",
     "geonode-announcements==2.0.2.2",
     "django-activity-stream==2.0.0",
     "gn-arcrest==10.5.6",
@@ -109,7 +109,7 @@ dependencies = [
     "gisdata==0.5.4",
     # importer dependencies
     # blocked to <80 to avoid warning during the runtime for with py312 related to the polymorphic model
-    "setuptools>=59,<80",
+    "setuptools<83",
     "pdok-geopackage-validator==0.14.4",
     "geonode-django-dynamic-model==0.4.0",
     # datetimepicker widget
