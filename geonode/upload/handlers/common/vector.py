@@ -443,7 +443,7 @@ class BaseVectorFileHandler(BaseHandler):
                 }
             ]
 
-        layers = self.open_source_file(files)
+        layers = self._select_valid_layers(self.open_source_file(files), filter_layer=layer_name)
         if not layers:
             return []
         return [
@@ -589,18 +589,40 @@ class BaseVectorFileHandler(BaseHandler):
         return [gdal_proxy]
 
     def _select_valid_layers(self, all_layers, **kwargs):
+        """
+        Select valid layers from GDAL datasource objects.
+        If more than one layer is found, it loop over all the possibility
+        to extract all the layers.
+        Is possible to pass a filter_layer argument with the name of the layer
+        to retrieve only the needed one
+        """
+        filter_layer = kwargs.get("filter_layer", None)
         layers = []
-        for layer in all_layers:
+
+        for ds in all_layers:
             try:
-                layer = self._extract_layer(layer)
-                self.identify_authority(layer)
-                layers.append(layer)
+                if ds.GetLayerCount() > 0:
+                    candidates_layers = [ds.GetLayerByIndex(i) for i in range(ds.GetLayerCount())]
+                else:
+                    candidates_layers = [ds]
+
+                for layer in candidates_layers:
+                    lry = self._extract_layer(layer)
+                    lry._parent_ds = ds
+                    self.identify_authority(lry)
+                    if filter_layer and self.fixup_name(lry.GetName()) == filter_layer:
+                        return [lry]
+                    layers.append(lry)
+
             except Exception as e:
-                logger.error(e)
-                logger.error(
-                    f"The following layer {layer.GetName()} does not have a Coordinate Reference System (CRS) and will be skipped."
-                )
-                pass
+                import logging
+
+                logger = logging.getLogger(__name__)
+                logger.error(f"Layer skipped due to error: {e}")
+
+        if filter_layer and not layers:
+            logger.warning(f"No layer matching filter '{filter_layer}' was found.")
+
         return layers
 
     def can_overwrite(self, _exec_obj, dataset):
