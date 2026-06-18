@@ -488,5 +488,7 @@ class BaseHandler(ABC):
                     or spatial_ref.GetAttrValue("AUTHORITY", 1)
                 )
             except Exception:
-                logger.error(f"The following layer {layer.GetName()} does not have a Coordinate Reference System (CRS) and will be skipped.")
+                logger.error(
+                    f"The following layer {layer.GetName()} does not have a Coordinate Reference System (CRS) and will be skipped."
+                )
         return f"{_name}:{_code}"
