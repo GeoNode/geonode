@@ -94,7 +94,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         and if the url is valid
         """
         try:
-            auth = BaseRemoteResourceHandler.get_request_auth_for_import(kwargs.get("execution_id"))
+            auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
             r = requests.get(url, timeout=10, auth=auth)
             r.raise_for_status()
         except requests.exceptions.Timeout:
@@ -158,7 +158,10 @@ class BaseRemoteResourceHandler(BaseHandler):
 
         to_update = {}
         service = self.find_matching_service(_exec.input_params["url"], _exec.user)
-        auth_config = self.get_auth_config_for_import(_exec, service=service, to_update=to_update)
+        auth_config = self.get_auth_config_from_execution(_exec)
+        if not auth_config and service and service.auth_config:
+            auth_config = service.auth_config
+            to_update["auth_config_id"] = service.auth_config_id
         if service and auth_config:
             to_update["remote_service_id"] = service.id
             _exec.input_params.update(to_update)
@@ -181,27 +184,22 @@ class BaseRemoteResourceHandler(BaseHandler):
         return None
 
     @staticmethod
-    def get_auth_config_for_import(_exec, service=None, to_update=None):
+    def get_auth_config_from_execution(_exec):
         if not _exec or not _exec.input_params:
             return None
 
         auth_config_id = _exec.input_params.get("auth_config_id")
         if auth_config_id:
             return AuthConfig.objects.filter(pk=auth_config_id).first()
-
-        if service and service.auth_config:
-            if to_update is not None:
-                to_update["auth_config_id"] = service.auth_config_id
-            return service.auth_config
         return None
 
     @staticmethod
-    def get_request_auth_for_import(execution_id):
+    def get_request_auth_from_execution(execution_id):
         if not execution_id:
             return None
 
         _exec = orchestrator.get_execution_object(execution_id)
-        auth_config = BaseRemoteResourceHandler.get_auth_config_for_import(_exec)
+        auth_config = BaseRemoteResourceHandler.get_auth_config_from_execution(_exec)
         if not auth_config:
             return None
 

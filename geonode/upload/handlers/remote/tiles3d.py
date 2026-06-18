@@ -62,7 +62,7 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
     def is_valid_url(url, **kwargs):
         BaseRemoteResourceHandler.is_valid_url(url, **kwargs)
         try:
-            auth = BaseRemoteResourceHandler.get_request_auth_for_import(kwargs.get("execution_id"))
+            auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
             payload = requests.get(url, timeout=10, auth=auth).json()
             # required key described in the specification of 3dtiles
             # https://docs.ogc.org/cs/22-025r4/22-025r4.html#toc92
@@ -98,7 +98,7 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
             raise Invalid3DTilesException("Invalid URL Provided")
 
         try:
-            auth = self.get_request_auth_for_import(execution_id)
+            auth = self.get_request_auth_from_execution(execution_id)
             js_file = requests.get(url, timeout=10, auth=auth).json()
         except Exception as e:
             raise Invalid3DTilesException(e)
