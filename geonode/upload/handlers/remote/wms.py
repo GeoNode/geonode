@@ -88,11 +88,7 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             "remote_resource_id": _exec.input_params.get("identifier", None),
         }
 
-        service = self.find_matching_service(_exec.input_params.get("url"), _exec.user)
         auth_config = self.get_auth_config_from_execution(_exec)
-        if not auth_config and service and service.auth_config:
-            auth_config = service.auth_config
-            to_update["auth_config_id"] = service.auth_config_id
         auth = auth_handler_registry.build(auth_config).get_request_auth() if auth_config else None
 
         if _exec.input_params.get("parse_remote_metadata", False):
