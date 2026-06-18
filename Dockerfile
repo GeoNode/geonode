@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 FROM geonode/geonode-base:latest-ubuntu-26.04
 LABEL GeoNode development team
-=======
-FROM geonode/geonode-base:latest-ubuntu-24.04
->>>>>>> a9ade4357dd3aaecd37654627c6d694a283679a1
 
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8

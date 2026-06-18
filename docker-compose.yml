@@ -19,11 +19,6 @@ x-common-django:
       condition: service_healthy
     redis:
       condition: service_healthy
-<<<<<<< HEAD
-=======
-    memcached:
-      condition: service_healthy
->>>>>>> a9ade4357dd3aaecd37654627c6d694a283679a1
 
 services:
 
@@ -53,15 +48,12 @@ services:
       - IS_CELERY=True
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
     command: "celery-cmd"
-<<<<<<< HEAD
-=======
     healthcheck:
       test: "celery -b ${BROKER_URL} inspect ping"
       start_period: 30s
       interval: 30s
       timeout: 10s
       retries: 2
->>>>>>> a9ade4357dd3aaecd37654627c6d694a283679a1
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:

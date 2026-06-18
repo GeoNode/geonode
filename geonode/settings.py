@@ -1700,7 +1700,7 @@ PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TI
 # define service cache timeout
 SERVICE_CACHE_EXPIRATION_TIME = int(os.getenv("SERVICE_CACHE_EXPIRATION_TIME", 600))
 
-if not TESTING:
+if ASYNC_SIGNALS:
     CACHES["default"] = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": REDIS_CACHE_URL,
