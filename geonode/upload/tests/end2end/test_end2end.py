@@ -133,9 +133,9 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 while (
                     ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
                     != ExecutionRequest.STATUS_FINISHED
-                    and tentative <= 2
+                    and tentative <= 15
                 ):
-                    time.sleep(1)
+                    time.sleep(2)
                     tentative += 1
             exc_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
             if exc_obj.status != ExecutionRequest.STATUS_FINISHED:

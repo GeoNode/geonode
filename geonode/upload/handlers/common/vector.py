@@ -600,25 +600,24 @@ class BaseVectorFileHandler(BaseHandler):
         layers = []
 
         for ds in all_layers:
-            try:
-                if ds.GetLayerCount() > 0:
-                    candidates_layers = [ds.GetLayerByIndex(i) for i in range(ds.GetLayerCount())]
-                else:
-                    candidates_layers = [ds]
-
-                for layer in candidates_layers:
+            if not ds:
+                continue
+            if ds.GetLayerCount() > 0:
+                candidates_layers = [ds.GetLayerByIndex(i) for i in range(ds.GetLayerCount())]
+            else:
+                candidates_layers = [ds]
+            for layer in candidates_layers:
+                try:
                     lry = self._extract_layer(layer)
+                    if not lry:
+                        continue
                     lry._parent_ds = ds
                     self.identify_authority(lry)
                     if filter_layer and self.fixup_name(lry.GetName()) == filter_layer:
                         return [lry]
                     layers.append(lry)
-
-            except Exception as e:
-                import logging
-
-                logger = logging.getLogger(__name__)
-                logger.error(f"Layer skipped due to error: {e}")
+                except Exception as e:
+                    logger.error(f"Layer skipped due to error: {e}")
 
         if filter_layer and not layers:
             logger.warning(f"No layer matching filter '{filter_layer}' was found.")
