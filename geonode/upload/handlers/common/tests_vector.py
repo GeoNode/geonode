@@ -518,7 +518,7 @@ class TestBaseVectorFileHandler(TestCase):
         The function should return only the datasets with a geometry
         The other one are discarded
         """
-        all_layers = GPKGFileHandler().get_ogr2ogr_driver().Open(self.no_crs_gpkg)
+        all_layers = GPKGFileHandler().open_source_file({"base_file": self.no_crs_gpkg})
 
         with self.assertLogs(level="ERROR") as _log:
             valid_layer = GPKGFileHandler()._select_valid_layers(all_layers)
