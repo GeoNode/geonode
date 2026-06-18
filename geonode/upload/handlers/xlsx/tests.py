@@ -80,7 +80,6 @@ class TestXLSXHandler(TestCase):
         ):
             with self.assertRaises(InvalidInputFileException) as context:
                 self.handler.pre_processing(files, exec_id)
-
             self.assertIn("geometry headers", str(context.exception))
 
     @patch("geonode.upload.orchestrator.orchestrator.get_execution_object")
@@ -158,7 +157,7 @@ class TestXLSXHandler(TestCase):
                 with self.assertRaises(InvalidInputFileException) as context:
                     self.handler.pre_processing(files, exec_id)
 
-                self.assertIn("Failed to securely parse Excel", str(context.exception))
+                self.assertIn("Failed to parse Excel", str(context.exception))
         finally:
             if os.path.exists(malicious_path):
                 os.remove(malicious_path)
