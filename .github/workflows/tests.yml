@@ -98,7 +98,7 @@ jobs:
     with:
       suite_name: "Upload Tests"
       test_command: >
-        ./test.sh geonode.upload --duration=30 --failfast
+        ./test.sh geonode.upload --duration=30
 
   # -------------------------------------------------
   # CLEANUP JOB: REMOVE ALL ARTIFACTS AT THE END

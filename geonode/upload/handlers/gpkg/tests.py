@@ -188,7 +188,7 @@ class TestGPKGHandler(TestCase):
             },
         )
 
-        all_layers = GPKGFileHandler().get_ogr2ogr_driver().Open("/tmp/multiple_layers.gpkg")
+        all_layers = GPKGFileHandler().open_source_file({"base_file": ("/tmp/multiple_layers.gpkg")})
 
         with self.assertRaises(Exception) as exp:
             GPKGFileHandler()._select_valid_layers(all_layers, execution_id=str(exec_id))
