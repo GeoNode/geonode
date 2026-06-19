@@ -107,12 +107,12 @@ class GPKGFileHandler(BaseVectorFileHandler):
         actual_upload = upload_validator._get_parallel_uploads_count()
         max_upload = upload_validator._get_max_parallel_uploads()
 
-        layers = GPKGFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
+        layers = GPKGFileHandler().open_source_file(files)
 
         if not layers:
             raise InvalidGeopackageException("The geopackage provided is invalid")
 
-        layers_count = len(layers)
+        layers_count = layers[0].GetLayerCount()
 
         if layers_count >= max_upload:
             raise UploadParallelismLimitException(
@@ -152,7 +152,7 @@ class GPKGFileHandler(BaseVectorFileHandler):
         pass
 
     def _select_valid_layers(self, all_layers, **kwargs):
-        layers = super()._select_valid_layers(all_layers=all_layers)
+        layers = super()._select_valid_layers(all_layers=all_layers, **kwargs)
         if execution_id := kwargs.get("execution_id", None):
             exec_obj = orchestrator.get_execution_object(execution_id)
             if exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
