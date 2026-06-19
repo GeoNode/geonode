@@ -968,8 +968,7 @@ if len(ADMIN_IP_WHITELIST) > 0:
     MIDDLEWARE += ("geonode.security.middleware.AdminAllowedMiddleware",)
 
 # LOCKDOWN API endpoints to prevent unauthenticated access.
-# If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
-API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "False"))
+API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "True"))
 
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = ast.literal_eval(os.getenv("LOCKDOWN_GEONODE", "False"))
