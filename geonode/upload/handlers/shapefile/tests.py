@@ -115,7 +115,7 @@ class TestShapeFileFileHandler(TestCase):
         with self.assertRaises(InvalidShapeFileException) as _exp:
             self.handler.is_valid(files=files, user=self.user)
         self.assertIn(
-            "Some files are missing. The files needs to have the same name with with all extensions: shp, prj, dbf, shx",
+            "Some files are missing. The files need to have the same name with all extensions: shp, prj, dbf, shx",
             str(_exp.exception),
             "error message is not the expected one",
         )
