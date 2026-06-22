@@ -1,8 +1,0 @@
-# To run the integration tests, do:
-paver test_integration
-
-# To run the csw tests, do:
-paver test_integration -n geonode.tests.csw
-
-# To run the bdd tests, do:
-paver test_bdd --local true

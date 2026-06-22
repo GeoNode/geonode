@@ -55,6 +55,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         super().setUpClass()
         cls.user = get_user_model().objects.exclude(username="Anonymous").first()
         cls.valid_gkpg = f"{project_dir}/tests/fixture/valid.gpkg"
+        cls.valid_multiple_layers_gkpg = f"{project_dir}/tests/fixture/multiple_layers.gpkg"
         cls.valid_geojson = f"{project_dir}/tests/fixture/valid.geojson"
         cls.no_crs_gpkg = f"{project_dir}/tests/fixture/noCrsTable.gpkg"
         file_path = gisdata.PROJECT_ROOT
@@ -132,9 +133,9 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 while (
                     ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
                     != ExecutionRequest.STATUS_FINISHED
-                    and tentative <= 10
+                    and tentative <= 15
                 ):
-                    time.sleep(10)
+                    time.sleep(2)
                     tentative += 1
             exc_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
             if exc_obj.status != ExecutionRequest.STATUS_FINISHED:
@@ -226,6 +227,27 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         self._assertimport(payload, initial_name)
 
         self._cleanup_layers(name="stazioni_metropolitana")
+
+
+class ImporterMultupleGeoPackageImportTest(BaseImporterEndToEndTest):
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    def test_import_multiple_layers_from_geopackage(self):
+        self._cleanup_layers(name="area")
+        self._cleanup_layers(name="example")
+        try:
+            resource = None
+            payload = {"base_file": open(self.valid_multiple_layers_gkpg, "rb"), "action": "upload"}
+            self._assertimport(payload, "area")
+            resource = ResourceBase.objects.filter(
+                Q(alternate__icontains="geonode:example") | Q(alternate__icontains="example")
+            )
+            self.assertTrue(resource.exists())
+        finally:
+            if resource.first():
+                resource.first().delete()
+            self._cleanup_layers(name="area")
+            self._cleanup_layers(name="example")
 
 
 class ImporterNoCRSImportTest(BaseImporterEndToEndTest):

@@ -319,19 +319,48 @@ class BaseVectorFileHandler(BaseHandler):
         if not ogr_exe:
             raise Exception("ogr2ogr executable not found.")
 
-        command = [
-            ogr_exe,
-            "-f",
-            "PostgreSQL",
-            db_connection_string,
-            db_connection_string,
-            "-nln",
-            new_table_name,
-            original_table_name,
-            "-overwrite",
-        ]
-        process = Popen(command, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
+        copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
+
+        base_args = ["-nln", new_table_name, original_table_name, "-overwrite"]
+
+        if copy_with_dump:
+            command = [
+                ogr_exe,
+                "--config",
+                "PG_USE_COPY",
+                "YES",
+                "-f",
+                "PGDump",
+                "/vsistdout/",
+                db_connection_string,
+            ] + base_args
+
+            host = _datastore.get("HOST") or "localhost"
+            port = str(_datastore.get("PORT") or 5432)
+            env = {**os.environ, "PGPASSWORD": _datastore["PASSWORD"]}
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                host,
+                "-p",
+                port,
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
+
+            p1 = Popen(command, stdout=PIPE, stderr=PIPE)
+            p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
+            p1.stdout.close()
+            stdout, stderr = p2.communicate()
+        else:
+            command = [ogr_exe, "-f", "PostgreSQL", db_connection_string, db_connection_string] + base_args
+            process = Popen(command, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
 
         if (
             stderr is not None
@@ -391,6 +420,12 @@ class BaseVectorFileHandler(BaseHandler):
             for asset in assets:
                 asset.delete()
 
+        BaseVectorFileHandler.__remove_temporary_file(_exec)
+
+    @staticmethod
+    def __remove_temporary_file(_exec):
+        if not _exec:
+            return
         tmp_data = _exec.input_params.get("temporary_files")
         if tmp_data:
             # Delete at the end of the operations, the temporary files created at the beginning
@@ -414,7 +449,7 @@ class BaseVectorFileHandler(BaseHandler):
                 }
             ]
 
-        layers = self.open_source_file(files)
+        layers = self._select_valid_layers(self.open_source_file(files), filter_layer=layer_name)
         if not layers:
             return []
         return [
@@ -560,18 +595,39 @@ class BaseVectorFileHandler(BaseHandler):
         return [gdal_proxy]
 
     def _select_valid_layers(self, all_layers, **kwargs):
+        """
+        Select valid layers from GDAL datasource objects.
+        If more than one layer is found, it loop over all the possibility
+        to extract all the layers.
+        Is possible to pass a filter_layer argument with the name of the layer
+        to retrieve only the needed one
+        """
+        filter_layer = kwargs.get("filter_layer", None)
         layers = []
-        for layer in all_layers:
-            try:
-                layer = self._extract_layer(layer)
-                self.identify_authority(layer)
-                layers.append(layer)
-            except Exception as e:
-                logger.error(e)
-                logger.error(
-                    f"The following layer {layer.GetName()} does not have a Coordinate Reference System (CRS) and will be skipped."
-                )
-                pass
+
+        for ds in all_layers:
+            if not ds:
+                continue
+            if ds.GetLayerCount() > 0:
+                candidates_layers = [ds.GetLayerByIndex(i) for i in range(ds.GetLayerCount())]
+            else:
+                candidates_layers = [ds]
+            for layer in candidates_layers:
+                try:
+                    lry = self._extract_layer(layer)
+                    if not lry:
+                        continue
+                    lry._parent_ds = ds
+                    self.identify_authority(lry)
+                    if filter_layer and self.fixup_name(lry.GetName()) == filter_layer:
+                        return [lry]
+                    layers.append(lry)
+                except Exception as e:
+                    logger.error(f"Layer skipped due to error: {e}")
+
+        if filter_layer and not layers:
+            logger.warning(f"No layer matching filter '{filter_layer}' was found.")
+
         return layers
 
     def can_overwrite(self, _exec_obj, dataset):
@@ -1041,6 +1097,12 @@ class BaseVectorFileHandler(BaseHandler):
         We use the schema editor directly, because the model itself is not managed
         on creation, but for the delete since we are going to handle, we can use it
         """
+        logger.info(f"Rollback temporary file uploaded for execid: {exec_id} resource published was: {instance_name}")
+        try:
+            BaseVectorFileHandler.__remove_temporary_file(orchestrator.get_execution_object(exec_id=exec_id))
+        except Exception as e:
+            logger.warning(f"Failed to remove temporary files during rollback: {e}")
+
         logger.info(
             f"Rollback dynamic model & ogr2ogr step in progress for execid: {exec_id} resource published was: {instance_name}"
         )
@@ -1670,7 +1732,18 @@ def import_with_ogr2ogr(
             # If using a pipe (ogr2ogr | psql), we must handle it via Python
             # because shell=False doesn't understand the "|" symbol.
             _datastore = settings.DATABASES["datastore"]
-            psql_cmd = ["psql", "-d", _datastore["NAME"], "-h", _datastore["HOST"], "-U", _datastore["USER"], "-f", "-"]
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                _datastore["HOST"],
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
 
             env = os.environ.copy()
             env["PGPASSWORD"] = _datastore["PASSWORD"]

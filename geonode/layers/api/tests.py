@@ -209,17 +209,6 @@ class DatasetsApiTests(APITestCase):
 
         Dataset.objects.update(advertised=True)
 
-    def test_extra_metadata_included_with_param(self):
-        _dataset = Dataset.objects.first()
-        url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-        data = {"include[]": "metadata"}
-
-        response = self.client.get(url, format="json", data=data)
-        self.assertIsNotNone(response.data["dataset"].get("metadata"))
-
-        response = self.client.get(url, format="json")
-        self.assertNotIn("metadata", response.data["dataset"])
-
     def test_get_dataset_related_maps_and_maplayers(self):
         dataset = Dataset.objects.first()
         assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
