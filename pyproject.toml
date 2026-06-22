@@ -70,7 +70,7 @@ dependencies = [
     "pycsw @ https://github.com/geopython/pycsw/archive/refs/tags/3.0.0-beta1.zip",
     "pyproj<3.8.0",
     "OWSLib==0.34.1",
-    "SQLAlchemy==2.0.50",
+    "SQLAlchemy==2.0.51",
     "Shapely==2.1.2",
     "mercantile==1.2.1",
     "numpy==1.26.*",
