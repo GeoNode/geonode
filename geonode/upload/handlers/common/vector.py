@@ -424,6 +424,8 @@ class BaseVectorFileHandler(BaseHandler):
 
     @staticmethod
     def __remove_temporary_file(_exec):
+        if not _exec:
+            return
         tmp_data = _exec.input_params.get("temporary_files")
         if tmp_data:
             # Delete at the end of the operations, the temporary files created at the beginning
@@ -1095,10 +1097,11 @@ class BaseVectorFileHandler(BaseHandler):
         We use the schema editor directly, because the model itself is not managed
         on creation, but for the delete since we are going to handle, we can use it
         """
-        logger.info(
-            f"Rollback temporary file uploaded for execid: {exec_id} resource published was: {instance_name}"
-        )
-        BaseVectorFileHandler.__remove_temporary_file(orchestrator.get_execution_object(exec_id=exec_id))
+        logger.info(f"Rollback temporary file uploaded for execid: {exec_id} resource published was: {instance_name}")
+        try:
+            BaseVectorFileHandler.__remove_temporary_file(orchestrator.get_execution_object(exec_id=exec_id))
+        except Exception as e:
+            logger.warning(f"Failed to remove temporary files during rollback: {e}")
 
         logger.info(
             f"Rollback dynamic model & ogr2ogr step in progress for execid: {exec_id} resource published was: {instance_name}"
