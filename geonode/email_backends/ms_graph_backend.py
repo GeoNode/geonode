@@ -26,12 +26,13 @@ the ``Mail.Send`` application permission. The mailbox named by
 the display name shown to recipients comes from that mailbox's Azure AD
 configuration.
 
-Known limitations: ``EmailMultiAlternatives`` (HTML + plain-text bodies) is sent
-as a single body using ``content_subtype``; attachments and ``extra_headers``
-are not forwarded to Graph.
+``EmailMultiAlternatives`` (HTML + plain-text bodies), attachments and
+``extra_headers`` are forwarded to Graph.
 """
 
+import base64
 import logging
+from email.utils import parseaddr
 
 import msal
 import requests
@@ -63,6 +64,15 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
         missing = [k for k in ("tenant_id", "client_id", "client_secret", "mail_from") if not creds.get(k)]
         if missing:
             raise ImproperlyConfigured(f"MICROSOFT_GRAPH_API_CREDENTIALS is missing required keys: {missing}")
+
+        # mail_from often defaults to DEFAULT_FROM_EMAIL, which carries a display name
+        # (e.g. "GeoNode <no-reply@geonode.org>"). The Graph {mailbox} URL needs a bare address.
+        mail_from = parseaddr(creds["mail_from"])[1]
+        if not mail_from:
+            raise ImproperlyConfigured(
+                f"MICROSOFT_GRAPH_API_CREDENTIALS['mail_from'] is not a valid email address: {creds['mail_from']}"
+            )
+        creds = {**creds, "mail_from": mail_from}
 
         if self._msal_app is None:
             self._msal_app = msal.ConfidentialClientApplication(
@@ -96,35 +106,54 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
             return 0
 
         sent = 0
-        for message in email_messages:
-            try:
-                self._send(message, token, creds)
-                sent += 1
-            except Exception:
-                if not self.fail_silently:
-                    raise
-                logger.exception("Microsoft Graph sendMail failed for %s", message.to)
+        # Reuse a single connection across the batch instead of reconnecting per message.
+        with requests.Session() as session:
+            for message in email_messages:
+                try:
+                    self._send(message, token, creds, session)
+                    sent += 1
+                except Exception:
+                    if not self.fail_silently:
+                        raise
+                    logger.exception("Microsoft Graph sendMail failed for %s", message.to)
         return sent
 
-    def _send(self, message, token, creds):
+    def _send(self, message, token, creds, session):
         """
         Send a single email using Microsoft Graph API.
         """
         content_type = "HTML" if getattr(message, "content_subtype", "plain") == "html" else "Text"
+        body_content = message.body
+
+        # EmailMultiAlternatives keeps a plain-text body plus alternatives; forward the HTML one.
+        if content_type == "Text":
+            for alternative in getattr(message, "alternatives", None) or []:
+                if len(alternative) >= 2 and alternative[1] == "text/html":
+                    body_content = alternative[0]
+                    content_type = "HTML"
+                    break
+
         payload = {
             "message": {
                 "subject": message.subject,
-                "body": {"contentType": content_type, "content": message.body},
+                "body": {"contentType": content_type, "content": body_content},
                 "toRecipients": [{"emailAddress": {"address": addr}} for addr in message.to],
                 "ccRecipients": [{"emailAddress": {"address": addr}} for addr in message.cc],
                 "bccRecipients": [{"emailAddress": {"address": addr}} for addr in message.bcc],
             },
-            "saveToSentItems": "true",
+            "saveToSentItems": True,
         }
         if message.reply_to:
             payload["message"]["replyTo"] = [{"emailAddress": {"address": addr}} for addr in message.reply_to]
+        if getattr(message, "extra_headers", None):
+            payload["message"]["internetMessageHeaders"] = [
+                {"name": name, "value": str(value)} for name, value in message.extra_headers.items()
+            ]
+        attachments = self._build_attachments(message)
+        if attachments:
+            payload["message"]["attachments"] = attachments
 
-        response = requests.post(
+        response = session.post(
             GRAPH_SENDMAIL_ENDPOINT.format(mailbox=creds["mail_from"]),
             headers={"Authorization": f"Bearer {token}"},
             json=payload,
@@ -133,3 +162,30 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
         if not response.ok:
             raise RuntimeError(f"Microsoft Graph sendMail returned HTTP {response.status_code}: {response.text}")
         logger.info("Microsoft Graph email sent to %s", message.to)
+
+    @staticmethod
+    def _build_attachments(message):
+        """
+        Convert Django attachments to Graph ``fileAttachment`` objects.
+        """
+        attachments = []
+        for attachment in getattr(message, "attachments", None) or []:
+            if isinstance(attachment, tuple):
+                filename, content, mimetype = attachment
+            else:  # MIMEBase instance
+                filename = attachment.get_filename() or "attachment"
+                content = attachment.get_payload(decode=True)
+                mimetype = attachment.get_content_type()
+            if content is None:
+                continue
+            if isinstance(content, str):
+                content = content.encode("utf-8")
+            attachments.append(
+                {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    "name": filename,
+                    "contentType": mimetype or "application/octet-stream",
+                    "contentBytes": base64.b64encode(content).decode("ascii"),
+                }
+            )
+        return attachments

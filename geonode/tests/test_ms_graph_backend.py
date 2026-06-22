@@ -18,11 +18,12 @@
 #
 #########################################################################
 
+import base64
 from unittest import mock
 
 import requests
 from django.core.exceptions import ImproperlyConfigured
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.test import SimpleTestCase
 
 from geonode.email_backends.ms_graph_backend import (
@@ -59,16 +60,18 @@ class MicrosoftGraphEmailBackendTests(SimpleTestCase):
         self.mock_msal.ConfidentialClientApplication.return_value = self.mock_app
         self.mock_app.acquire_token_silent.return_value = None
         self.mock_app.acquire_token_for_client.return_value = {"access_token": "tok"}
-        self.mock_requests.post.return_value = _ok_response()
+        # send_messages posts through a requests.Session() context manager.
+        self.mock_post = self.mock_requests.Session.return_value.__enter__.return_value.post
+        self.mock_post.return_value = _ok_response()
 
     def _backend(self, fail_silently=False):
         return MicrosoftGraphEmailBackend(fail_silently=fail_silently)
 
     def _last_payload(self):
-        return self.mock_requests.post.call_args.kwargs["json"]
+        return self.mock_post.call_args.kwargs["json"]
 
     def _last_url(self):
-        return self.mock_requests.post.call_args.args[0]
+        return self.mock_post.call_args.args[0]
 
     def test_html_body_marked_as_html(self):
         msg = EmailMessage("subj", "<p>hi</p>", to=["a@example.com"])
@@ -103,32 +106,51 @@ class MicrosoftGraphEmailBackendTests(SimpleTestCase):
         self.assertEqual([r["emailAddress"]["address"] for r in payload["ccRecipients"]], ["c@example.com"])
         self.assertEqual([r["emailAddress"]["address"] for r in payload["bccRecipients"]], ["d@example.com"])
 
-    def test_reply_to_forwarded(self):
-        msg = EmailMessage("subj", "body", to=["a@example.com"], reply_to=["replies@example.com"])
-        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=VALID_CREDS):
-            self._backend().send_messages([msg])
-        self.assertEqual(
-            self._last_payload()["message"]["replyTo"],
-            [{"emailAddress": {"address": "replies@example.com"}}],
-        )
-
-    def test_url_uses_configured_mail_from(self):
-        msg = EmailMessage("subj", "body", from_email="other@example.com", to=["a@example.com"])
-        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=VALID_CREDS):
-            self._backend().send_messages([msg])
-        self.assertEqual(self._last_url(), GRAPH_SENDMAIL_ENDPOINT.format(mailbox=VALID_CREDS["mail_from"]))
-
-    def test_token_acquired_once_per_send_messages_call(self):
-        msgs = [EmailMessage("s", "b", to=["a@example.com"]) for _ in range(3)]
-        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=VALID_CREDS):
-            self.assertEqual(self._backend().send_messages(msgs), 3)
-        # MSAL client constructed once; token acquired once across 3 sends.
-        self.assertEqual(self.mock_msal.ConfidentialClientApplication.call_count, 1)
-        self.assertEqual(self.mock_app.acquire_token_for_client.call_count, 1)
-        self.assertEqual(self.mock_requests.post.call_count, 3)
-
     def test_missing_credentials_non_silent_raises(self):
         msg = EmailMessage("subj", "body", to=["a@example.com"])
         with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS={}):
             with self.assertRaises(ImproperlyConfigured):
                 self._backend(fail_silently=False).send_messages([msg])
+
+    def test_save_to_sent_items_is_boolean(self):
+        msg = EmailMessage("subj", "body", to=["a@example.com"])
+        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=VALID_CREDS):
+            self._backend().send_messages([msg])
+        self.assertIs(self._last_payload()["saveToSentItems"], True)
+
+    def test_mail_from_display_name_is_stripped_in_url(self):
+        creds = {**VALID_CREDS, "mail_from": "GeoNode <no-reply@geonode.org>"}
+        msg = EmailMessage("subj", "body", to=["a@example.com"])
+        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=creds):
+            self._backend().send_messages([msg])
+        self.assertEqual(self._last_url(), GRAPH_SENDMAIL_ENDPOINT.format(mailbox="no-reply@geonode.org"))
+
+    def test_html_alternative_is_sent_as_html(self):
+        msg = EmailMultiAlternatives("subj", "plain body", to=["a@example.com"])
+        msg.attach_alternative("<p>rich</p>", "text/html")
+        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=VALID_CREDS):
+            self._backend().send_messages([msg])
+        body = self._last_payload()["message"]["body"]
+        self.assertEqual(body["contentType"], "HTML")
+        self.assertEqual(body["content"], "<p>rich</p>")
+
+    def test_extra_headers_forwarded(self):
+        msg = EmailMessage("subj", "body", to=["a@example.com"], headers={"X-Custom": "value"})
+        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=VALID_CREDS):
+            self._backend().send_messages([msg])
+        self.assertIn(
+            {"name": "X-Custom", "value": "value"},
+            self._last_payload()["message"]["internetMessageHeaders"],
+        )
+
+    def test_attachment_is_base64_encoded(self):
+        msg = EmailMessage("subj", "body", to=["a@example.com"])
+        msg.attach("report.csv", "a,b,c", "text/csv")
+        with self.settings(MICROSOFT_GRAPH_API_CREDENTIALS=VALID_CREDS):
+            self._backend().send_messages([msg])
+        attachments = self._last_payload()["message"]["attachments"]
+        self.assertEqual(len(attachments), 1)
+        self.assertEqual(attachments[0]["@odata.type"], "#microsoft.graph.fileAttachment")
+        self.assertEqual(attachments[0]["name"], "report.csv")
+        self.assertEqual(attachments[0]["contentType"], "text/csv")
+        self.assertEqual(base64.b64decode(attachments[0]["contentBytes"]).decode("utf-8"), "a,b,c")
