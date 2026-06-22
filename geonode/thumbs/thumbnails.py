@@ -346,7 +346,7 @@ def _datasets_locations(
                 else:
                     locations.append(
                         [
-                            dataset.remote_service.service_url if dataset.remote_service else dataset.ows_url,
+                            dataset.dataset_ows_url,
                             [dataset.alternate],
                             [map_dataset_style] if map_dataset_style else [],
                             auth,
