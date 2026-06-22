@@ -156,7 +156,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         )
         if not is_valid:
             raise InvalidShapeFileException(
-                detail=f"Some files are missing. The files needs to have the same name with with all extensions: {', '.join(ShapeFileHandler._get_ext_needed())}"
+                detail=f"Some files are missing. The files need to have the same name with all extensions: {', '.join(ShapeFileHandler._get_ext_needed())}"
             )
 
         return True
