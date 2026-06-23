@@ -337,7 +337,7 @@ def _datasets_locations(
                 # Check if remote service requires authentication
                 auth = _get_auth(dataset)
                 # limit number of locations, ensuring dataset order
-                if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
+                if len(locations) and locations[-1][0] == dataset.dataset_ows_url:
                     # if previous dataset's location is the same as the current one - append current dataset there
                     locations[-1][1].append(dataset.alternate)
                     # update the styles too
@@ -346,7 +346,7 @@ def _datasets_locations(
                 else:
                     locations.append(
                         [
-                            dataset.remote_service.service_url,
+                            dataset.dataset_ows_url,
                             [dataset.alternate],
                             [map_dataset_style] if map_dataset_style else [],
                             auth,

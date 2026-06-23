@@ -283,6 +283,11 @@ class Dataset(ResourceBase):
 
     @property
     def dataset_ows_url(self):
+        if self.remote_service:
+            return self.remote_service.service_url
+        elif self.subtype == "remote" and self.ows_url:
+            return self.ows_url
+
         from geonode.geoserver.helpers import get_layer_ows_url
 
         return get_layer_ows_url(self)
