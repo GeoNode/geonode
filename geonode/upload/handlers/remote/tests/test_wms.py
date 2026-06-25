@@ -285,7 +285,7 @@ class TestRemoteWMSResourceHandler(TestCase):
             input_params=self.valid_payload_with_parse_true,
         )
 
-        self.handler.pre_validation(files=[], execution_id=str(exec_id))
+        self.handler.pre_processing(files=[], execution_id=str(exec_id))
         self.handler.prepare_import(files=[], execution_id=str(exec_id))
 
         expected_auth = auth_handler_registry.build(auth_config).get_request_auth()
@@ -317,7 +317,7 @@ class TestRemoteWMSResourceHandler(TestCase):
             input_params=self.valid_payload_with_parse_true,
         )
 
-        self.handler.pre_validation(files=[], execution_id=str(exec_id))
+        self.handler.pre_processing(files=[], execution_id=str(exec_id))
         self.handler.prepare_import(files=[], execution_id=str(exec_id))
 
         web_map_service.assert_called_once_with(self.valid_url, auth=None)

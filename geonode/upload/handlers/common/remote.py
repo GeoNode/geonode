@@ -152,6 +152,12 @@ class BaseRemoteResourceHandler(BaseHandler):
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
+
+    def pre_processing(self, files, execution_id, **kwargs):
+        """
+        Hook for let the handler prepare the data before the validation.
+        Maybe a file rename, assign the resource to the execution_id
+        """
         _exec = orchestrator.get_execution_object(execution_id)
         if _exec.input_params.get("auth_config_id") or not _exec.input_params.get("url"):
             return
