@@ -25,7 +25,6 @@ import sys
 import logging
 import subprocess
 import dj_database_url
-from schema import Optional
 from urllib.parse import urlparse, urljoin
 
 #
@@ -969,8 +968,7 @@ if len(ADMIN_IP_WHITELIST) > 0:
     MIDDLEWARE += ("geonode.security.middleware.AdminAllowedMiddleware",)
 
 # LOCKDOWN API endpoints to prevent unauthenticated access.
-# If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
-API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "False"))
+API_LOCKDOWN = ast.literal_eval(os.getenv("API_LOCKDOWN", "True"))
 
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = ast.literal_eval(os.getenv("LOCKDOWN_GEONODE", "False"))
@@ -2109,38 +2107,24 @@ CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/fu
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-"""
-Default schema used to store extra and dynamic metadata for the resource
-"""
+for deprecated_env_key in (
+    "CUSTOM_METADATA_SCHEMA",
+    "MAP_EXTRA_METADATA_SCHEMA",
+    "DATASET_EXTRA_METADATA_SCHEMA",
+    "DOCUMENT_EXTRA_METADATA_SCHEMA",
+    "GEOAPP_EXTRA_METADATA_SCHEMA",
+):
+    if os.getenv(deprecated_env_key) is not None:
+        logger.warning(f"Found deprecated environment variable '{deprecated_env_key}'.")
 
-DEFAULT_EXTRA_METADATA_SCHEMA = {
-    Optional("id"): int,
-    "filter_header": object,
-    "field_name": object,
-    "field_label": object,
-    "field_value": object,
-}
+# DEPRECATED -- Declaration kept for backward compatibility
+DEFAULT_EXTRA_METADATA_SCHEMA = {}
 
-"""
-If present, will extend the available metadata schema used for store
-new value for each resource. By default overrided the existing one.
-The expected schema is the same as the default
-"""
-CUSTOM_METADATA_SCHEMA = os.getenv("CUSTOM_METADATA_SCHEMA ", {})
+# DEPRECATED -- Declaration kept for backward compatibility
+CUSTOM_METADATA_SCHEMA = {}
 
-"""
-Variable used to actually get the expected metadata schema for each resource_type.
-In this way, each resource type can have a different metadata schema
-"""
-EXTRA_METADATA_SCHEMA = {
-    **{
-        "map": os.getenv("MAP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "dataset": os.getenv("DATASET_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "document": os.getenv("DOCUMENT_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-        "geoapp": os.getenv("GEOAPP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
-    },
-    **CUSTOM_METADATA_SCHEMA,
-}
+# DEPRECATED -- Declaration kept for backward compatibility
+EXTRA_METADATA_SCHEMA = {}
 
 """
 List of modules that implement custom metadata storers that will be called when the metadata of a resource is saved

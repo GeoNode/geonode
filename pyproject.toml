@@ -33,11 +33,9 @@ dependencies = [
     "beautifulsoup4==4.12.3",
     "hyperlink==21.0.0",
     "urllib3==2.7.0",
-    "Paver==1.3.4",
     "python-slugify==8.0.4",
     "decorator==5.1.1",
     "celery==5.6.3",
-    "tqdm==4.66.4",
     "Deprecated==1.2.14",
     "jsonschema==4.22.0",
     "schema==0.7.7",
@@ -57,8 +55,8 @@ dependencies = [
     "django-mptt==0.16.0",
     "django-treebeard==4.7.1",
     "django-guardian<2.4.1",
-    "django-downloadview==2.3.0",
-    "django-polymorphic==3.1.0",
+    "django-downloadview==2.4.0",
+    "django-polymorphic==4.0.0",
     "django-tastypie<0.15.0",
     "django-tinymce==3.7.1",
     "django-uuid-upload-path==1.0.0",
@@ -69,7 +67,7 @@ dependencies = [
     "redis==6.2.0",
 
     # geopython dependencies
-    "pycsw @ git+https://github.com/geopython/pycsw.git@3.0.0-beta1",
+    "pycsw @ https://github.com/geopython/pycsw/archive/refs/tags/3.0.0-beta1.zip",
     "pyproj<3.8.0",
     "OWSLib==0.34.1",
     "SQLAlchemy==2.0.50",
@@ -95,12 +93,12 @@ dependencies = [
     "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
     "geonode-dynamic-rest==2.3.0.2",
-    "geonode-pinax-notifications==6.0.0.3",
+    "geonode-pinax-notifications==6.0.0.4",
 
     # GeoNode org maintained apps.
-    "django_geonode_mapstore_client @ git+https://github.com/GeoNode/geonode-mapstore-client.git@master",
+    "django_geonode_mapstore_client @ https://github.com/GeoNode/geonode-mapstore-client/archive/refs/heads/master.zip",
     "django-avatar==8.0.1",
-    "geonode-oauth-toolkit==2.2.2.2",
+    "geonode-oauth-toolkit==2.2.3.1",
     "geonode-announcements==2.0.2.2",
     "django-activity-stream==2.0.0",
     "gn-arcrest==10.5.6",
@@ -109,14 +107,13 @@ dependencies = [
     "gisdata==0.5.4",
     # importer dependencies
     # blocked to <80 to avoid warning during the runtime for with py312 related to the polymorphic model
-    "setuptools>=59,<80",
+    "setuptools<83",
     "pdok-geopackage-validator==0.14.4",
     "geonode-django-dynamic-model==0.4.0",
     # datetimepicker widget
     "django-bootstrap3-datetimepicker-2==2.8.3",
     # storage manager dependencies
     "django-storages==1.14.3",
-    "dropbox==11.36.2",
     "google-cloud-storage==2.16.0",
     "boto3==1.39.3",
     # Django Caches
@@ -156,10 +153,10 @@ dependencies = [
     "selenium-requests==2.0.4",
     "webdriver_manager==4.0.1",
     # Security and audit
-    "cryptography==48.0.0",
+    "cryptography==49.0.0",
     "jwcrypto>=1.5.7",
     # dependency for XLSX handler
-    "python-calamine==0.6.2",
+    "python-calamine==0.7.0",
     "python-magic==0.4.27",
 ]
 
@@ -182,6 +179,9 @@ Documentation = "https://docs.geonode.org/"
 
 [tool.setuptools]
 include-package-data = true
+
+[tool.setuptools.package-data]
+"geonode" = ["**/thesauri/*.rdf"]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -206,3 +206,9 @@ exclude = '''
   | node_modules
 )/
 '''
+
+
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "geonode.settings"
+python_files = "tests.py test_*.py *_tests.py"

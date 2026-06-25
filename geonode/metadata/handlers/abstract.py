@@ -160,7 +160,7 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def localize_message(context: dict, msg_code: str, msg_info: dict):
-        msg_loc: str = labelResolver.gettext(msg_code)
+        msg_loc: str = labelResolver.gettext(msg_code, lang=context.get("lang", None))
         if msg_loc:
             tokens = defaultdict(lambda: "N/A", msg_info or {})
             return msg_loc.format_map(tokens)
