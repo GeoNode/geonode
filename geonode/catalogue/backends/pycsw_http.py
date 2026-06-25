@@ -19,6 +19,7 @@
 
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend, METADATA_FORMATS
 
+
 class CatalogueBackend(GenericCatalogueBackend):
     """pycsw HTTP CSW backend"""
 

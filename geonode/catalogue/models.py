@@ -95,10 +95,10 @@ def catalogue_post_save(instance, sender, **kwargs):
         csw_anytext = ""
 
     resources.update(
-        csw_typename=catalogue.default_root_node, 
+        csw_typename=catalogue.default_root_node,
         csw_schema=catalogue.default_schema,
-        metadata_xml=md_doc, 
-        csw_wkt_geometry=instance.geographic_bounding_box, 
+        metadata_xml=md_doc,
+        csw_wkt_geometry=instance.geographic_bounding_box,
         csw_anytext=csw_anytext
     )
 

@@ -54,7 +54,7 @@ class DefaultMetadataFormatMixin:
     @property
     def default_root_node(self):
         return METADATA_FORMATS[settings.CATALOGUE_DEFAULT_FORMAT][0]
-    
+
     @property
     def default_schema(self):
         return METADATA_FORMATS[settings.CATALOGUE_DEFAULT_FORMAT][1]
