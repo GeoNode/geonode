@@ -99,7 +99,7 @@ def catalogue_post_save(instance, sender, **kwargs):
         csw_schema=catalogue.default_schema,
         metadata_xml=md_doc,
         csw_wkt_geometry=instance.geographic_bounding_box,
-        csw_anytext=csw_anytext
+        csw_anytext=csw_anytext,
     )
 
 

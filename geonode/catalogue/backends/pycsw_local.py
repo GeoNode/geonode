@@ -110,9 +110,7 @@ class CatalogueBackend(GenericCatalogueBackend):
             # serialize XML
             e = dlxml.fromstring(lresults)
 
-            self.catalogue.records = [
-                MD_Metadata(x) for x in e.findall("//{%s}MD_Metadata" % self.default_schema)
-            ]
+            self.catalogue.records = [MD_Metadata(x) for x in e.findall("//{%s}MD_Metadata" % self.default_schema)]
 
             # build results into JSON for API
             results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.items()]

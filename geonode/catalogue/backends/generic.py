@@ -42,7 +42,7 @@ METADATA_FORMATS = {
     "ebRIM": ("rim:RegistryObject", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"),
     "FGDC": ("fgdc:metadata", "http://www.opengis.net/cat/csw/csdgm"),
     "ISO": ("gmd:MD_Metadata", "http://www.isotc211.org/2005/gmd"),
-    "ISO19115-3_2018": ("mdb:MD_Metadata", "http://standards.iso.org/iso/19115/-3/mdb/2.0")
+    "ISO19115-3_2018": ("mdb:MD_Metadata", "http://standards.iso.org/iso/19115/-3/mdb/2.0"),
 }
 
 
