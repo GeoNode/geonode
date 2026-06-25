@@ -7,12 +7,12 @@ from django.test.client import RequestFactory
 from geonode.catalogue.views import csw_global_dispatch
 from django.test import TestCase
 from django.conf import settings
-from urllib.parse import urlencode
+from urllib.parse import quote_plus
 
 from .generic import METADATA_FORMATS
 
 
-SCHEMA = urlencode(METADATA_FORMATS[settings.CATALOGUE_DEFAULT_FORMAT][1])
+SCHEMA = quote_plus(METADATA_FORMATS[settings.CATALOGUE_DEFAULT_FORMAT][1])
 
 pycsw_settings = settings.PYCSW.copy()
 pycsw_settings_all = settings.PYCSW.copy()
