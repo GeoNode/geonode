@@ -478,12 +478,17 @@ class BaseHandler(ABC):
                 if _code is None:
                     raise Exception("CRS authority code not found, fallback to default behaviour")
         except Exception:
-            spatial_ref = layer.GetSpatialRef()
-            spatial_ref.AutoIdentifyEPSG()
-            _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
-            _code = (
-                spatial_ref.GetAuthorityCode("PROJCS")
-                or spatial_ref.GetAuthorityCode("GEOGCS")
-                or spatial_ref.GetAttrValue("AUTHORITY", 1)
-            )
+            try:
+                spatial_ref = layer.GetSpatialRef()
+                spatial_ref.AutoIdentifyEPSG()
+                _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
+                _code = (
+                    spatial_ref.GetAuthorityCode("PROJCS")
+                    or spatial_ref.GetAuthorityCode("GEOGCS")
+                    or spatial_ref.GetAttrValue("AUTHORITY", 1)
+                )
+            except Exception:
+                logger.error(
+                    f"The following layer {layer.GetName()} does not have a Coordinate Reference System (CRS) and will be skipped."
+                )
         return f"{_name}:{_code}"

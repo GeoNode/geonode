@@ -5,7 +5,7 @@
    <name>{}</name>
    <metaWidthHeight>
       <int>2</int>
-      <int>1</int>
+      <int>2</int>
    </metaWidthHeight>
    <mimeFormats>
       <string>application/json;type=utfgrid</string>
@@ -32,10 +32,10 @@
       <gridSubset>
          <gridSetName>EPSG:900913</gridSetName>
       </gridSubset>
+      <gridSubset>
+         <gridSetName>EPSG:900913x2</gridSetName>
+      </gridSubset>
    </gridSubsets>
-   <expireCache>0</expireCache>
-   <expireClients>0</expireClients>
    <autoCacheStyles>true</autoCacheStyles>
    <gutter>0</gutter>
-   <cacheWarningSkips/>
 </GeoServerLayer>
