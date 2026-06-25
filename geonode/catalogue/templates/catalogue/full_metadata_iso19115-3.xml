@@ -254,7 +254,7 @@
         <gco:CharacterString>{{ layer.raw_abstract }}</gco:CharacterString>
       </mri:abstract>
       <mri:purpose>
-        <gco:CharacterString {% if not layer.raw_purpose %}gco:nilReason="missing">{% else %}>{{ layer.raw_purpose }}</gco:CharacterString>{% endif %}
+        <gco:CharacterString{% if not layer.raw_purpose %} gco:nilReason="missing">{% else %}>{{ layer.raw_purpose }}{% endif %}</gco:CharacterString>
       </mri:purpose>
       <mri:status>
         <mcc:MD_ProgressCode codeSpace="http://standards.iso.org/iso/19115" codeListValue="completed"
