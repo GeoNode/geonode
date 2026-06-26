@@ -434,12 +434,12 @@ class BaseRasterFileHandler(BaseHandler):
             resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
             dataset.refresh_from_db()
             return dataset
-        elif not dataset.exists() and _overwrite:
+        elif not dataset and _overwrite:
             logger.warning(
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
             return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
-        elif not dataset.exists() and not _overwrite:
+        elif not dataset and not _overwrite:
             logger.warning("The resource does not exists, please use 'create_geonode_resource' to create one")
         return
 

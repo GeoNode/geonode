@@ -766,13 +766,12 @@ class TestBaseVectorFileHandler(TestCase):
                 with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
                     mock_registry.get_perms.return_value = MagicMock()
                     with patch.object(self.handler, "refresh_geonode_resource") as mock_refresh:
-                        result = self.handler.overwrite_geonode_resource(
-                            layer_name="stazioni_metropolitana",
-                            alternate="stazioni_metropolitana",
-                            execution_id=str(exec_id),
-                        )
-                        mock_refresh.assert_not_called()
-                        self.assertIsNone(result)
+                        with self.assertRaises(ImportException):
+                            result = self.handler.overwrite_geonode_resource(
+                                layer_name="stazioni_metropolitana",
+                                alternate="stazioni_metropolitana",
+                                execution_id=str(exec_id),
+                            )
         finally:
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()

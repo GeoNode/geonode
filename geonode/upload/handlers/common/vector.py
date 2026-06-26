@@ -1149,7 +1149,7 @@ class BaseVectorFileHandler(BaseHandler):
             # predates this execution references it. If so, this execution did not
             # create the schema and must not delete it.
             pre_existing_dataset = (
-                Dataset.objects.filter(alternate__iexact=f"{schema.db_name}:{instance_name}")
+                Dataset.objects.filter(alternate__iexact=f"{instance_name.alternate}")
                 .exclude(resourcehandlerinfo__execution_request__exec_id=exec_id)
                 .exists()
             )
