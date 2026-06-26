@@ -25,7 +25,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from mock import MagicMock, patch
-from geonode.upload.api.exceptions import UpsertException
+from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_with_ogr2ogr
 from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
@@ -38,8 +38,8 @@ from geonode.resource.models import ExecutionRequest
 from dynamic_models.models import ModelSchema
 from osgeo import ogr
 from django.test.utils import override_settings
+from geonode.upload.utils import ImporterRequestAction as ira
 from geoserver.catalog import Catalog
-
 from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
 from geonode.utils import OGC_Servers_Handler
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
@@ -597,6 +597,185 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertIn("-nln", call_args)
         self.assertIn("new_table", call_args)
         self.assertIn("original_table", call_args)
+
+    def test_setup_dynamic_model_non_owner_with_edit_permission_can_replace(self):
+        """
+        A non-owner user with 'edit' permission should be allowed to replace
+        the dataset. The dataset lookup must not be scoped by owner.
+        """
+        exec_id = None
+        try:
+            non_owner, _ = get_user_model().objects.get_or_create(username="non_owner_editor")
+            exec_id = orchestrator.create_execution_request(
+                user=non_owner,
+                func_name="funct1",
+                step="step",
+                input_params={"files": self.valid_files, "skip_existing_layer": False},
+            )
+            resource = self.handler.create_geonode_resource(
+                "stazioni_metropolitana",
+                "stazioni_metropolitana",
+                str(exec_id),
+            )
+            ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                input_params={"files": self.valid_files, "skip_existing_layer": False, "resource_pk": resource.pk}
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["edit"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    layers = ogr.Open(self.valid_gpkg)
+                    dynamic_model, layer_name, celery_group = self.handler.setup_dynamic_model(
+                        layer=[x for x in layers][0],
+                        execution_id=str(exec_id),
+                        should_be_overwritten=True,
+                        username=non_owner,
+                    )
+                    self.assertIsNotNone(dynamic_model)
+                    self.assertIsNotNone(layer_name)
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    def test_setup_dynamic_model_user_without_permission_cannot_replace(self):
+        """
+        A user without 'edit' or 'manage' permission should get an ImportException
+        when trying to replace a dataset they don't own.
+        """
+        exec_id = None
+        try:
+            stranger, _ = get_user_model().objects.get_or_create(username="stranger_user")
+            exec_id = orchestrator.create_execution_request(
+                user=stranger,
+                func_name="funct1",
+                step="step",
+                input_params={"files": self.valid_files, "skip_existing_layer": False},
+            )
+            resource = self.handler.create_geonode_resource(
+                "stazioni_metropolitana",
+                "stazioni_metropolitana",
+                str(exec_id),
+            )
+            ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                input_params={"files": self.valid_files, "skip_existing_layer": False, "resource_pk": resource.pk}
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["view"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    layers = ogr.Open(self.valid_gpkg)
+                    with self.assertRaises(ImportException):
+                        self.handler.setup_dynamic_model(
+                            layer=[x for x in layers][0],
+                            execution_id=str(exec_id),
+                            should_be_overwritten=True,
+                            username=stranger,
+                        )
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    def test_setup_dynamic_model_get_or_create_prevents_unique_constraint_crash(self):
+        """
+        If a ModelSchema already exists but is not found by the iexact lookup
+        (e.g. name normalization mismatch between .shp and .zip), the second
+        branch must not crash with a unique constraint violation.
+        """
+        exec_id = None
+        schema = None
+        try:
+            exec_id = orchestrator.create_execution_request(
+                user=self.user,
+                func_name="funct1",
+                step="step",
+                input_params={"files": self.valid_files, "skip_existing_layer": False},
+            )
+            # Pre-create the schema to simulate a stale/orphaned entry
+            schema, _ = ModelSchema.objects.get_or_create(name="stazioni_metropolitana", db_name="datastore")
+            layers = ogr.Open(self.valid_gpkg)
+            # Should not raise IntegrityError — get_or_create absorbs the collision
+            dynamic_model, layer_name, celery_group = self.handler.setup_dynamic_model(
+                layer=[x for x in layers][0],
+                execution_id=str(exec_id),
+                should_be_overwritten=False,
+                username=self.user,
+            )
+            self.assertIsNotNone(dynamic_model)
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+            if schema:
+                schema.delete()
+
+    def test_overwrite_geonode_resource_non_owner_with_manage_permission_can_overwrite(self):
+        """
+        A non-owner with 'manage' permission should be able to overwrite
+        a dataset via overwrite_geonode_resource.
+        """
+        exec_id = None
+        try:
+            non_owner, _ = get_user_model().objects.get_or_create(username="non_owner_manager")
+            exec_id = orchestrator.create_execution_request(
+                user=non_owner,
+                func_name="funct1",
+                step="step",
+                action=ira.REPLACE.value,
+                input_params={
+                    "files": self.valid_files,
+                    "resource_pk": self.layer.pk,
+                },
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["manage"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    with patch.object(
+                        self.handler, "refresh_geonode_resource", return_value=self.layer
+                    ) as mock_refresh:
+                        result = self.handler.overwrite_geonode_resource(
+                            layer_name="stazioni_metropolitana",
+                            alternate="stazioni_metropolitana",
+                            execution_id=str(exec_id),
+                        )
+                        mock_refresh.assert_called_once()
+                        self.assertIsNotNone(result)
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    def test_overwrite_geonode_resource_user_without_permission_returns_none(self):
+        """
+        A user without 'edit' or 'manage' permission should get None returned
+        from overwrite_geonode_resource without touching the dataset.
+        """
+        exec_id = None
+        try:
+            stranger, _ = get_user_model().objects.get_or_create(username="stranger_overwrite")
+            exec_id = orchestrator.create_execution_request(
+                user=stranger,
+                func_name="funct1",
+                step="step",
+                action=ira.REPLACE.value,
+                input_params={
+                    "files": self.valid_files,
+                    "resource_pk": self.layer.pk,
+                },
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["view"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    with patch.object(self.handler, "refresh_geonode_resource") as mock_refresh:
+                        result = self.handler.overwrite_geonode_resource(
+                            layer_name="stazioni_metropolitana",
+                            alternate="stazioni_metropolitana",
+                            execution_id=str(exec_id),
+                        )
+                        mock_refresh.assert_not_called()
+                        self.assertIsNone(result)
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
 
 
 class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):

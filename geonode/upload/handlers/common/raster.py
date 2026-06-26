@@ -37,6 +37,8 @@ from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
+from geonode.security.permissions import _to_compact_perms
+from geonode.security.registry import permissions_registry
 from geonode.upload.utils import find_key_recursively, ImporterRequestAction as ira
 from osgeo import gdal
 from geonode.upload.celery_app import importer_app
@@ -181,9 +183,22 @@ class BaseRasterFileHandler(BaseHandler):
         response.raise_for_status()
 
     def overwrite_geoserver_resource(self, resource: List[str], catalog, store, workspace):
-        # we need to delete the resource before recreating it
-        self._delete_resource(resource, catalog, workspace)
-        self._delete_store(resource, catalog, workspace)
+        try:
+            self._delete_resource(resource, catalog, workspace)
+        except Exception as e:
+            logger.warning(
+                f"Could not delete existing resource '{resource.get('name')}' from GeoServer "
+                f"before replace. GeoServer returned: {e}. "
+                f"Proceeding — the resource will be overwritten by publish."
+            )
+        try:
+            self._delete_store(resource, catalog, workspace)
+        except Exception as e:
+            logger.warning(
+                f"Could not delete existing store '{resource.get('name')}' from GeoServer "
+                f"before replace. GeoServer returned: {e}. "
+                f"Proceeding — the store will be overwritten by publish."
+            )
         return self.publish_resources([resource], catalog, store, workspace)
 
     def _delete_store(self, resource, catalog, workspace):
@@ -380,14 +395,23 @@ class BaseRasterFileHandler(BaseHandler):
 
         _exec = self._get_execution_request_object(execution_id)
 
-        dataset = resource_type.objects.filter(alternate__icontains=alternate, owner=_exec.user)
+        dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk")).first()
 
         _overwrite = _exec.action == ira.REPLACE.value
-        # if the layer exists, we just update the information of the dataset by
-        # let it recreate the catalogue
 
-        if dataset.exists() and _overwrite:
-            dataset = dataset.first()
+        if dataset and _overwrite:
+            perms = _to_compact_perms(
+                permissions_registry.get_perms(
+                    instance=dataset,
+                    user=_exec.user,
+                )
+            )
+            if not any(p in perms for p in ("manage", "edit")):
+                raise ImportException(
+                    f"User does not have permission to replace dataset '{layer_name}'. "
+                    f"'edit' or 'manage' permission is required."
+                )
+
             resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
             dataset = resolved_resource_manager.update(
                 dataset.uuid,
