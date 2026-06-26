@@ -63,7 +63,7 @@ class AssetViewSet(DynamicModelViewSet):
         queryset = self.filter_queryset(self.get_queryset())
 
         user = request.user
-        is_admin = user.is_superuser if user and user.is_authenticated else False
+        is_admin = user and user.is_authenticated and user.is_superuser
 
         if is_admin:
             pass
@@ -104,5 +104,5 @@ class AssetViewSet(DynamicModelViewSet):
         methods=["get"],
     )
     def link(self, request, pk=None, path=None, *args, **kwargs):
-        logger.warning(f"REQUESTED ASSET LINK FOR PK:{pk} PATH:{path}")
+        logger.debug(f"REQUESTED ASSET LINK FOR PK:{pk} PATH:{path}")
         return self._get_file(request, pk, attachment=False, path=path)
