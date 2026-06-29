@@ -64,7 +64,7 @@ dependencies = [
     "django-sequences==3.0",
     "oauthlib==3.3.1",
     "pyjwt==2.13.0",
-    "redis==6.2.0",
+    "redis==8.0.1",
 
     # geopython dependencies
     "pycsw @ https://github.com/geopython/pycsw/archive/refs/tags/3.0.0-beta1.zip",
