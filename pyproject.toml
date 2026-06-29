@@ -156,7 +156,7 @@ dependencies = [
     "webdriver_manager==4.0.1",
     # Security and audit
     "cryptography==49.0.0",
-    "jwcrypto>=1.5.7",
+    "jwcrypto>=1.5.8",
     # dependency for XLSX handler
     "python-calamine==0.6.2",
     "python-magic==0.4.27",
