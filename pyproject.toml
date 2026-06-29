@@ -191,7 +191,7 @@ exclude = ["tests*"]
 include = ["geonode*"]
 
 [tool.setuptools.dynamic]
-version = {attr = "geonode.__version__"}
+version = {attr = "geonode.__version_str__"}
 
 [tool.black]
 line-length = 120
