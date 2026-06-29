@@ -1148,8 +1148,10 @@ class BaseVectorFileHandler(BaseHandler):
             # before destroying the schema, check whether a dataset that
             # predates this execution references it. If so, this execution did not
             # create the schema and must not delete it.
+            workspace = DataPublisher(None).workspace.name
+            dataset_alternate = f"{workspace}:{instance_name.split(':')[-1]}"
             pre_existing_dataset = (
-                Dataset.objects.filter(alternate__iexact=f"{instance_name.alternate}")
+                Dataset.objects.filter(alternate__iexact=dataset_alternate)
                 .exclude(resourcehandlerinfo__execution_request__exec_id=exec_id)
                 .exists()
             )
