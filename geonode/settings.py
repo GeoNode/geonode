@@ -334,68 +334,6 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-MEMCACHED_ENABLED = ast.literal_eval(os.getenv("MEMCACHED_ENABLED", "False"))
-MEMCACHED_BACKEND = os.getenv("MEMCACHED_BACKEND", "django.core.cache.backends.memcached.PyLibMCCache")
-MEMCACHED_LOCATION = os.getenv("MEMCACHED_LOCATION", "127.0.0.1:11211")
-MEMCACHED_LOCK_EXPIRE = int(os.getenv("MEMCACHED_LOCK_EXPIRE", 3600))
-MEMCACHED_LOCK_TIMEOUT = int(os.getenv("MEMCACHED_LOCK_TIMEOUT", 10))
-
-CACHES = {
-    # Local Memory CACHE FOR DEVELOPMENT
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "TIMEOUT": 600,
-        "OPTIONS": {"MAX_ENTRIES": 10000},
-    },
-    "memcached": {"BACKEND": MEMCACHED_BACKEND, "LOCATION": MEMCACHED_LOCATION},
-    # MEMCACHED EXAMPLE
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-    #     'LOCATION': '127.0.0.1:11211',
-    # },
-    # FILECACHE EXAMPLE
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-    #     'LOCATION': '/tmp/django_cache',
-    # },
-    # DATABASE EXAMPLE -> python manage.py createcachetable
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-    #     'LOCATION': 'my_cache_table',
-    # },
-    # LOCAL-MEMORY CACHING
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    #     'LOCATION': 'geonode-cache',
-    #     'TIMEOUT': 10,
-    #     'OPTIONS': {
-    #         'MAX_ENTRIES': 10000
-    #     }
-    # },
-    "resources": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "TIMEOUT": 600,
-        "OPTIONS": {"MAX_ENTRIES": 10000},
-    },
-    "services": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "TIMEOUT": 600,
-        "OPTIONS": {"MAX_ENTRIES": 10000},
-    },
-}
-
-PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
-
-# define service cache timeout
-SERVICE_CACHE_EXPIRATION_TIME = int(os.getenv("SERVICE_CACHE_EXPIRATION_TIME", 600))
-
-if MEMCACHED_ENABLED:
-    CACHES["default"] = {
-        "BACKEND": MEMCACHED_BACKEND,
-        "LOCATION": MEMCACHED_LOCATION,
-    }
-    CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
-
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
 WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv("WHITENOISE_MANIFEST_STRICT", "False"))
 COMPRESS_STATIC_FILES = ast.literal_eval(os.getenv("COMPRESS_STATIC_FILES", "False"))
@@ -800,7 +738,7 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
 SESSION_ENGINE = os.environ.get("SESSION_ENGINE", "django.contrib.sessions.backends.db")
 if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.contrib.sessions.backends.cache"):
-    SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested
+    SESSION_CACHE_ALIAS = "default"  # use redis cache if a cached backend is requested
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
@@ -1725,6 +1663,53 @@ CELERY_SEND_TASK_SENT_EVENT = ast.literal_eval(os.environ.get("CELERY_SEND_TASK_
 
 # Disabled by default and I like it, because we use Sentry for this.
 CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get("CELERY_SEND_TASK_ERROR_EMAILS", "False"))
+
+
+# ########################################################################### #
+# REDIS CACHE SETTINGS
+# ########################################################################### #
+
+
+REDIS_LOCK_EXPIRE = int(os.getenv("REDIS_LOCK_EXPIRE", 3600))
+REDIS_LOCK_TIMEOUT = int(os.getenv("REDIS_LOCK_TIMEOUT", 10))
+
+REDIS_CACHE_URL = REDIS_SIGNALS_BROKER_URL.replace("/0", "/3")
+
+CACHES = {
+    # Local Memory CACHE FOR DEVELOPMENT
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
+    "resources": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
+    "services": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
+}
+
+PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
+
+# define service cache timeout
+SERVICE_CACHE_EXPIRATION_TIME = int(os.getenv("SERVICE_CACHE_EXPIRATION_TIME", 600))
+
+if ASYNC_SIGNALS:
+    CACHES["default"] = {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "TIMEOUT": 300,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+    CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
+    CACHES["resources"] = CACHES["default"].copy()
 
 # ########################################################################### #
 # NOTIFICATIONS SETTINGS

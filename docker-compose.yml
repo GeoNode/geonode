@@ -1,6 +1,6 @@
 x-common-django:
   &default-common-django
-  image: geonode/geonode:latest-ubuntu-24.04
+  image: geonode/geonode:latest-ubuntu-26.04
   build:
       context: ./
       dockerfile: Dockerfile
@@ -18,8 +18,6 @@ x-common-django:
     db:
       condition: service_healthy
     redis:
-      condition: service_healthy
-    memcached:
       condition: service_healthy
 
 services:

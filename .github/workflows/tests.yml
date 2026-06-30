@@ -19,12 +19,12 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Build all services (Docker Compose v2)
-        run: ENVIRONMENT=test docker compose build db geoserver django nginx data-dir-conf --progress plain
+        run: ENVIRONMENT=test docker compose build db geoserver django nginx data-dir-conf
 
       - name: Save built Docker images
         run: |
           mkdir -p docker_images
-          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-24.04
+          docker save -o docker_images/django.tar geonode/geonode:latest-ubuntu-26.04
 
       - name: Upload Docker images as artifact
         uses: actions/upload-artifact@v6
