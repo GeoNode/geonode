@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import base64
 from abc import ABC, abstractmethod
 
 from django.core.exceptions import ValidationError
@@ -39,6 +40,9 @@ class AuthHandler(ABC):
     def get_request_auth(self) -> AuthBase:
         raise NotImplementedError
 
+    def get_gdal_config(self, url):
+        raise NotImplementedError
+
     def auth_request(self, request, **kwargs):
         raise NotImplementedError
 
@@ -50,8 +54,12 @@ class AuthHandler(ABC):
         raise NotImplementedError
 
     @classmethod
-    def create_auth_config(cls, **kwargs):
-        raise NotImplementedError
+    def create_auth_config(cls, payload):
+        cls.validate(payload)
+        auth_config = AuthConfig(type=cls.handled_type)
+        auth_config.payload = payload
+        auth_config.save()
+        return auth_config
 
 
 class HashableAuthBase(AuthBase):
@@ -90,17 +98,6 @@ class BasicAuthHandler(AuthHandler):
             raise ValidationError("Password is required for basic authentication.")
         return payload
 
-    @classmethod
-    def create_auth_config(cls, username, password):
-        if username is None and password is None:
-            return None
-        payload = {"username": username, "password": password}
-        cls.validate(payload)
-        auth_config = AuthConfig(type=cls.handled_type)
-        auth_config.payload = payload
-        auth_config.save()
-        return auth_config
-
     def _init_from_config(self):
         payload = self.config.payload
         self.username = payload.get("username")
@@ -108,6 +105,11 @@ class BasicAuthHandler(AuthHandler):
 
     def get_request_auth(self) -> AuthBase:
         return HashableAuthBase(HTTPBasicAuth(self.username, self.password))
+
+    def get_gdal_config(self, url):
+        credentials = f"{self.username}:{self.password}".encode()
+        token = base64.b64encode(credentials).decode()
+        return url, {"GDAL_HTTP_HEADERS": f"Authorization: Basic {token}"}
 
     def auth_request(self, request, **kwargs):
         request.auth = self.get_request_auth()

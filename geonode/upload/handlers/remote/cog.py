@@ -21,6 +21,7 @@ import requests
 from osgeo import gdal
 
 from geonode.security.utils import init_gdal_security
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
@@ -59,8 +60,9 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
         """
         logger.debug(f"Checking COG URL validity (HEAD): {url}")
         try:
+            auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
             # Reachability check using HEAD
-            head_res = requests.head(url, timeout=10, allow_redirects=True)
+            head_res = requests.head(url, timeout=10, allow_redirects=True, auth=auth)
             logger.debug(f"HTTP HEAD status: {head_res.status_code}")
             head_res.raise_for_status()
 
@@ -73,7 +75,7 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
 
             # Some servers might not return Accept-Ranges in HEAD, so we try a small range request
             logger.debug("Accept-Ranges header missing, trying a small Range GET...")
-            range_res = requests.get(url, headers={"Range": "bytes=0-1"}, timeout=10, stream=True)
+            range_res = requests.get(url, headers={"Range": "bytes=0-1"}, timeout=10, stream=True, auth=auth)
             logger.debug(f"Range GET status: {range_res.status_code}")
             try:
                 if range_res.status_code != 206:
@@ -105,64 +107,69 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
         logger.debug(f"Entering create_geonode_resource for {layer_name}")
         _exec = orchestrator.get_execution_object(execution_id)
         params = _exec.input_params.copy()
-        url = params.get("url")
+        original_url = params.get("url")
+        url = original_url
+        gdal_config_options = {
+            "GDAL_HTTP_TIMEOUT": "15",
+            "GDAL_HTTP_MAX_RETRY": "1",
+        }
+        auth_config = self.get_auth_config_from_execution(_exec)
+        if auth_config:
+            auth_handler = auth_handler_registry.build(auth_config)
+            try:
+                url, auth_gdal_config_options = auth_handler.get_gdal_config(original_url)
+                gdal_config_options.update(auth_gdal_config_options)
+            except NotImplementedError:
+                pass
 
         # Extract metadata via GDAL VSICURL
         gdal.UseExceptions()
-        logger.debug(f"Attempting to open COG with GDAL: /vsicurl/{url}")
+        logger.debug(f"Attempting to open COG with GDAL: /vsicurl/{original_url}")
         try:
-            # Set GDAL config options for faster failure
-            gdal.SetThreadLocalConfigOption("GDAL_HTTP_TIMEOUT", "15")
-            gdal.SetThreadLocalConfigOption("GDAL_HTTP_MAX_RETRY", "1")
             init_gdal_security()
 
-            vsiurl = f"/vsicurl/{url}"
-            ds = gdal.OpenEx(vsiurl)
-            if ds is None:
-                logger.debug(f"GDAL failed to open dataset: {vsiurl}")
-                raise ImportException(f"Could not open remote COG: {url}")
-
-            if not ds.GetSpatialRef():
-                raise ImportException(f"Could not extract spatial reference from COG: {url}")
-
-            srid = self.identify_authority(ds)
-
-            # Get BBox
-            gt = ds.GetGeoTransform()
-            width = ds.RasterXSize
-            height = ds.RasterYSize
-
-            # Check for rotation
-            is_rotated = gt[2] != 0 or gt[4] != 0
-
-            if is_rotated:
-                logger.info("COG has rotation/skew - calculating envelope bbox")
-                # Calculate all four corners
-                corners = [
-                    (gt[0], gt[3]),
-                    (gt[0] + width * gt[1], gt[3] + width * gt[4]),
-                    (gt[0] + width * gt[1] + height * gt[2], gt[3] + width * gt[4] + height * gt[5]),
-                    (gt[0] + height * gt[2], gt[3] + height * gt[5]),
-                ]
-                xs = [x for x, y in corners]
-                ys = [y for x, y in corners]
-                bbox = [min(xs), min(ys), max(xs), max(ys)]
-            else:
-                # Simple calculation for north-up images
-                minx = gt[0]
-                maxy = gt[3]
-                maxx = gt[0] + width * gt[1]
-                miny = gt[3] + height * gt[5]
-                bbox = [minx, miny, maxx, maxy]
-
-            ds = None  # close dataset
+            with self.gdal_config_options(gdal_config_options):
+                vsiurl = f"/vsicurl/{url}"
+                ds = gdal.OpenEx(vsiurl)
+                if ds is None:
+                    logger.debug(f"GDAL failed to open dataset: {vsiurl}")
+                    raise ImportException(f"Could not open remote COG: {url}")
+                if not ds.GetSpatialRef():
+                    raise ImportException(f"Could not extract spatial reference from COG: {url}")
+                srid = self.identify_authority(ds)
+                # Get BBox
+                gt = ds.GetGeoTransform()
+                width = ds.RasterXSize
+                height = ds.RasterYSize
+                # Check for rotation
+                is_rotated = gt[2] != 0 or gt[4] != 0
+                if is_rotated:
+                    logger.info("COG has rotation/skew - calculating envelope bbox")
+                    # Calculate all four corners
+                    corners = [
+                        (gt[0], gt[3]),
+                        (gt[0] + width * gt[1], gt[3] + width * gt[4]),
+                        (gt[0] + width * gt[1] + height * gt[2], gt[3] + width * gt[4] + height * gt[5]),
+                        (gt[0] + height * gt[2], gt[3] + height * gt[5]),
+                    ]
+                    xs = [x for x, y in corners]
+                    ys = [y for x, y in corners]
+                    bbox = [min(xs), min(ys), max(xs), max(ys)]
+                else:
+                    # Simple calculation for north-up images
+                    minx = gt[0]
+                    maxy = gt[3]
+                    maxx = gt[0] + width * gt[1]
+                    miny = gt[3] + height * gt[5]
+                    bbox = [minx, miny, maxx, maxy]
+                ds = None  # close dataset
             logger.debug("GDAL operations finished.")
         except Exception as e:
             logger.debug(f"GDAL ERROR: {str(e)}")
             logger.exception(e)
             if isinstance(e, ImportException):
                 raise e
-            raise ImportException(f"Failed to extract metadata from COG: {url}")
+            raise ImportException(f"Failed to extract metadata from COG: {original_url}")
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
         resource.set_bbox_polygon(bbox, srid)
         return resource

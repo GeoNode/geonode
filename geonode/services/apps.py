@@ -63,6 +63,9 @@ class ServicesAppConfig(NotificationsAppConfigBase):
         super().ready()
         # Let's make sure the signals are connected to the App
         from . import signals  # noqa
+        from geonode.services.serviceprocessors.registry import service_type_registry
+
+        service_type_registry.init_registry()
 
         post_migrate.connect(run_setup_hooks, sender=self)
         # settings.CELERY_BEAT_SCHEDULE['probe_services'] = {

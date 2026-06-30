@@ -29,9 +29,8 @@ from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 
 from . import enumerations
-from .models import Service
+from .models import Service, get_service_type_choices
 from .serviceprocessors import get_service_handler
-from geonode.services.serviceprocessors import get_available_service_types
 from geonode.utils import is_safe_url
 
 logger = logging.getLogger(__name__)
@@ -48,7 +47,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=[(k, v["label"]) for k, v in get_available_service_types().items()],  # from dictionary to tuple
+        choices=get_service_type_choices,
         initial="AUTO",
     )
 
