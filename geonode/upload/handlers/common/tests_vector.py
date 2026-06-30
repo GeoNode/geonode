@@ -668,6 +668,7 @@ class TestBaseVectorFileHandler(TestCase):
                 input_params={
                     "files": self.valid_files,
                     "resource_pk": self.layer.pk,
+                    "overwrite_existing_layer": True
                 },
             )
 
@@ -704,6 +705,7 @@ class TestBaseVectorFileHandler(TestCase):
                 input_params={
                     "files": self.valid_files,
                     "resource_pk": self.layer.pk,
+                    "overwrite_existing_layer": True
                 },
             )
 
