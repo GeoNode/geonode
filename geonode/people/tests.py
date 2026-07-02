@@ -1361,10 +1361,6 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             ("en-us", "English"),
             ("it-it", "Italiano"),
         ),
-        PROFILE_LANGUAGE_CHOICES=(
-            ("en", "English"),
-            ("it", "Italiano"),
-        ),
     )
     def test_authenticated_user_language_switch_stores_profile_code_from_runtime_code(self):
         user = get_user_model().objects.get(username="bobby")
