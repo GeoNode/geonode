@@ -18,7 +18,6 @@
 #########################################################################
 import logging
 import hashlib
-import json
 
 from collections import OrderedDict
 from django.utils.translation import gettext_lazy as _
@@ -32,31 +31,33 @@ logger = logging.getLogger(__name__)
 
 
 def _build_auth_cache_fingerprint(auth=None, auth_config=None):
+    """Build a non-sensitive auth discriminator for service-handler cache keys."""
     if auth_config is not None:
-        auth_identity = {
-            "type": getattr(auth_config, "type", None),
-            "payload": getattr(auth_config, "payload", None),
-        }
-    elif auth is not None:
-        if isinstance(auth, tuple) and len(auth) == 2:
-            auth_identity = {"type": "basic", "payload": {"username": auth[0], "password": auth[1]}}
-        elif hasattr(auth, "username") and hasattr(auth, "password"):
-            auth_identity = {
-                "type": auth.__class__.__name__,
-                "payload": {"username": auth.username, "password": auth.password},
-            }
-        else:
-            auth_identity = repr(auth)
-    else:
-        return "-"
+        auth_config_id = getattr(auth_config, "id", None) or getattr(auth_config, "pk", None)
+        if auth_config_id is not None:
+            return f"authcfg:{auth_config_id}"
+        auth_type = getattr(auth_config, "type", None)
+        auth_username = (getattr(auth_config, "payload", None) or {}).get("username")
+        return f"authcfg:unsaved:{auth_type or '-'}:{auth_username or '-'}"
 
-    encoded = json.dumps(auth_identity, sort_keys=True, default=str)
-    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]
+    if auth is not None:
+        if isinstance(auth, tuple) and len(auth) == 2:
+            return f"auth:basic:{auth[0]}"
+        if hasattr(auth, "username"):
+            return f"auth:{auth.__class__.__name__}:{getattr(auth, 'username', '-') or '-'}"
+        return f"auth:{auth.__class__.__name__}"
+
+    return "-"
+
+
+def _build_url_cache_fingerprint(base_url):
+    return hashlib.sha256((base_url or "").encode("utf-8")).hexdigest()
 
 
 def get_service_cache_key(base_url, service_type=enumerations.AUTO, service_id=None, auth=None, auth_config=None):
     auth_fingerprint = _build_auth_cache_fingerprint(auth=auth, auth_config=auth_config)
-    return f"{service_type}|{service_id or '-'}|{auth_fingerprint}|{base_url}"
+    url_fingerprint = _build_url_cache_fingerprint(base_url)
+    return f"{service_type}|{service_id or '-'}|{auth_fingerprint}|{url_fingerprint}"
 
 
 def get_available_service_types():

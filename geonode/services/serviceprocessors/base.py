@@ -53,6 +53,7 @@ def get_geoserver_cascading_workspace(create=True):
 
 def build_unique_resource_name(name, max_length=255):
     """Return a Service/Harvester name that is unique in both models."""
+    max_length = max(1, int(max_length))
     candidate = (name or "service")[:max_length]
     base_name = candidate
     idx = 1
@@ -61,7 +62,12 @@ def build_unique_resource_name(name, max_length=255):
         or models.Harvester.objects.filter(name=candidate).exists()
     ):
         suffix = f"-{idx}"
-        candidate = f"{base_name[: max_length - len(suffix)]}{suffix}"
+        if len(suffix) >= max_length:
+            # When max_length is tiny, keep the most specific part of the suffix.
+            candidate = suffix[-max_length:]
+        else:
+            prefix_len = max_length - len(suffix)
+            candidate = f"{base_name[:prefix_len]}{suffix}"
         idx += 1
     return candidate
 

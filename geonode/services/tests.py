@@ -74,11 +74,16 @@ class ModuleFunctionsTestCase(StandardTestCase):
         auth_1 = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_1.payload = {"username": "alice", "password": "pw1"}
         auth_2 = AuthConfig(type=BasicAuthHandler.handled_type)
-        auth_2.payload = {"username": "alice", "password": "pw2"}
+        auth_2.payload = {"username": "bob", "password": "pw1"}
 
         key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_1)
         key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_2)
         self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_has_bounded_length(self):
+        very_long_url = "http://example.com/" + ("a" * 2000)
+        key = get_service_cache_key(very_long_url, service_type=enumerations.WMS, service_id=1)
+        self.assertLess(len(key), 200)
 
     @mock.patch("geonode.services.serviceprocessors.base.catalog", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.base.settings", autospec=True)
