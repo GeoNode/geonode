@@ -40,7 +40,7 @@ from django.core.exceptions import PermissionDenied
 
 from .models import Service
 from . import forms, enumerations
-from .serviceprocessors import get_service_handler
+from .serviceprocessors import get_service_cache_key, get_service_handler
 from geonode.security.registry import permissions_registry
 from geonode.views import err403
 
@@ -86,7 +86,16 @@ def register_service(request):
             if service_handler.indexing_method == enumerations.CASCADED:
                 service_handler.create_cascaded_store(service)
             service_handler.geonode_service_id = service.id
-            service_cache.set(service_handler.url, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
+            service_cache.set(
+                get_service_cache_key(
+                    service_handler.url,
+                    service_type=service.type,
+                    service_id=service.id,
+                    auth_config=service.auth_config,
+                ),
+                service_handler,
+                settings.SERVICE_CACHE_EXPIRATION_TIME,
+            )
             # commented out due to jsonserializer error, will be replaced with cache
             # request.session[service_handler.url] = service_handler
             # logger.debug("Added handler to the session")
@@ -337,7 +346,14 @@ def remove_service(request, service_id):
     elif request.method == "POST":
         service.dataset_set.all().delete()
         # by deleting the harvester we delete also the service
-        service_cache.delete(service.base_url)
+        service_cache.delete(
+            get_service_cache_key(
+                service.service_url,
+                service_type=service.type,
+                service_id=service.id,
+                auth_config=service.auth_config,
+            )
+        )
         service.harvester.delete()
         messages.add_message(request, messages.INFO, _(f"Service {service.title} has been deleted"))
         return HttpResponseRedirect(reverse("services"))

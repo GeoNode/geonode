@@ -52,8 +52,9 @@ class Service(ResourceBase):
             (enumerations.OPENGEOPORTAL, _("OpenGeoPortal")),
         ),
     )
-    # with service, version and request etc stripped off
-    base_url = models.URLField(unique=True, db_index=True)
+    # URL with service, version and request etc stripped off
+    # Intentionally non-unique: the same endpoint can be registered by different owners/use-cases.
+    base_url = models.URLField(db_index=True)
     version = models.CharField(max_length=100, null=True, blank=True)
     # Should force to slug?
     name = models.CharField(max_length=255, unique=True, db_index=True)

@@ -51,6 +51,27 @@ def get_geoserver_cascading_workspace(create=True):
     return workspace
 
 
+def build_unique_resource_name(name, max_length=255):
+    """Return a Service/Harvester name that is unique in both models."""
+    max_length = max(1, int(max_length))
+    candidate = (name or "service")[:max_length]
+    base_name = candidate
+    idx = 1
+    while (
+        models.Service.objects.filter(name=candidate).exists()
+        or models.Harvester.objects.filter(name=candidate).exists()
+    ):
+        suffix = f"-{idx}"
+        if len(suffix) >= max_length:
+            # When max_length is tiny, keep the most specific part of the suffix.
+            candidate = suffix[-max_length:]
+        else:
+            prefix_len = max_length - len(suffix)
+            candidate = f"{base_name[:prefix_len]}{suffix}"
+        idx += 1
+    return candidate
+
+
 class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style classes
     """Base class for remote service handlers
 

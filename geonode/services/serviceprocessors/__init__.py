@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+import hashlib
 
 from collections import OrderedDict
 from django.utils.translation import gettext_lazy as _
@@ -27,6 +28,36 @@ from django.core.cache import caches
 
 service_cache = caches["services"]
 logger = logging.getLogger(__name__)
+
+
+def _build_auth_cache_fingerprint(auth=None, auth_config=None):
+    """Build a non-sensitive auth discriminator for service-handler cache keys."""
+    if auth_config is not None:
+        auth_config_id = getattr(auth_config, "id", None) or getattr(auth_config, "pk", None)
+        if auth_config_id is not None:
+            return f"authcfg:{auth_config_id}"
+        auth_type = getattr(auth_config, "type", None)
+        auth_username = (getattr(auth_config, "payload", None) or {}).get("username")
+        return f"authcfg:unsaved:{auth_type or '-'}:{auth_username or '-'}"
+
+    if auth is not None:
+        if isinstance(auth, tuple) and len(auth) == 2:
+            return f"auth:basic:{auth[0]}"
+        if hasattr(auth, "username"):
+            return f"auth:{auth.__class__.__name__}:{getattr(auth, 'username', '-') or '-'}"
+        return f"auth:{auth.__class__.__name__}"
+
+    return "-"
+
+
+def _build_url_cache_fingerprint(base_url):
+    return hashlib.sha256((base_url or "").encode("utf-8")).hexdigest()
+
+
+def get_service_cache_key(base_url, service_type=enumerations.AUTO, service_id=None, auth=None, auth_config=None):
+    auth_fingerprint = _build_auth_cache_fingerprint(auth=auth, auth_config=auth_config)
+    url_fingerprint = _build_url_cache_fingerprint(base_url)
+    return f"{service_type}|{service_id or '-'}|{auth_fingerprint}|{url_fingerprint}"
 
 
 def get_available_service_types():
@@ -42,8 +73,8 @@ def get_available_service_types():
                 "handler": GeoNodeServiceHandler,
                 "label": _("GeoNode (Web Map Service)"),
             },
-            # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
-            # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+            # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'),
+            # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'),
             enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler, "label": _("ArcGIS REST MapServer")},
             enumerations.REST_IMG: {
                 "OWS": False,
@@ -64,7 +95,15 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
     If the service type is not explicitly passed in it will be guessed from
     """
 
-    if entry := service_cache.get(base_url):
+    cache_key = get_service_cache_key(
+        base_url,
+        service_type=service_type,
+        service_id=service_id,
+        auth=kwargs.get("auth"),
+        auth_config=kwargs.get("auth_config"),
+    )
+
+    if entry := service_cache.get(cache_key):
         return entry
 
     handlers = get_available_service_types()
@@ -72,7 +111,7 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
     handler = handlers.get(service_type, {}).get("handler")
     try:
         service_handler = handler(base_url, service_id, *args, **kwargs)
-        service_cache.set(service_handler.url, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
+        service_cache.set(cache_key, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
     except Exception as e:
         logger.exception(e)
         logger.exception(msg=f"Could not parse service {base_url}")

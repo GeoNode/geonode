@@ -49,13 +49,42 @@ from geonode.services.utils import parse_services_types, test_resource_table_sta
 
 from . import enumerations, forms
 from .models import Service
-from .serviceprocessors import base, wms, arcgis, get_service_handler, get_available_service_types
+from .serviceprocessors import (
+    base,
+    wms,
+    arcgis,
+    get_service_cache_key,
+    get_service_handler,
+    get_available_service_types,
+)
 from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
 
 logger = logging.getLogger(__name__)
 
 
 class ModuleFunctionsTestCase(StandardTestCase):
+    def test_get_service_cache_key_is_service_specific(self):
+        phony_url = "http://fake"
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1)
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=2)
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_is_auth_specific(self):
+        phony_url = "http://fake"
+        auth_1 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_1.payload = {"username": "alice", "password": "pw1"}
+        auth_2 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_2.payload = {"username": "bob", "password": "pw1"}
+
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_1)
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_2)
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_has_bounded_length(self):
+        very_long_url = "http://example.com/" + ("a" * 2000)
+        key = get_service_cache_key(very_long_url, service_type=enumerations.WMS, service_id=1)
+        self.assertLess(len(key), 200)
+
     @mock.patch("geonode.services.serviceprocessors.base.catalog", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.base.settings", autospec=True)
     def test_get_cascading_workspace_returns_existing(self, mock_settings, mock_catalog):
@@ -450,7 +479,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             test_user.save()
         try:
             result = handler.create_geonode_service(test_user)
-            geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
+            geonode_service = Service.objects.get(id=result.id)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
                 resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
@@ -706,7 +735,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             test_user.save()
         result = handler.create_geonode_service(test_user)
         try:
-            geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
+            geonode_service = Service.objects.get(id=result.id)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
                 resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
@@ -852,13 +881,12 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             self.client.post(reverse("register_service"), data=form_data)
             self.assertEqual(Service.objects.count(), 1)
 
-            # Try adding the same URL again
+            # Adding the same URL again should now create a second Service
             form = forms.CreateServiceForm(form_data)
             self.assertEqual(Service.objects.count(), 1)
             response = self.client.post(reverse("register_service"), data=form_data)
-            # The service is None since there is already a created service from the first call
-            self.assertEqual(response.status_code, 404)
-            self.assertEqual(Service.objects.count(), 1)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(Service.objects.count(), 2)
 
 
 class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
