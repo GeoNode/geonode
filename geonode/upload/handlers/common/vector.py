@@ -1072,7 +1072,7 @@ class BaseVectorFileHandler(BaseHandler):
             # predates this execution references it. If so, this execution did not
             # create the schema and must not delete it.
             dataset_alternate = instance_name
-            if ":" not in dataset_alternate:
+            if dataset_alternate and ":" not in dataset_alternate:
                 workspace = DataPublisher(None).workspace.name
                 dataset_alternate = f"{workspace}:{dataset_alternate}"
             pre_existing_dataset = (
