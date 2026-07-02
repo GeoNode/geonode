@@ -139,6 +139,8 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
             auth_config = self.kwargs.get("auth_config")
             if auth_config is not None and auth_config.pk is None:
                 auth_config.save()
+            unique_name = base.build_unique_resource_name(self.name)
+            self.name = unique_name
 
             with transaction.atomic():
                 service = models.Service.objects.create(
@@ -152,7 +154,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
                     owner=owner,
                     metadata_only=True,
                     version=str(self.parsed_service.identification.version).encode("utf-8", "ignore").decode("utf-8"),
-                    name=self.name,
+                    name=unique_name,
                     title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode("utf-8")
                     or self.name,
                     abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode("utf-8")
@@ -161,7 +163,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
                     auth_config=auth_config,
                 )
                 service_harvester = Harvester.objects.create(
-                    name=self.name,
+                    name=unique_name,
                     default_owner=owner,
                     scheduling_enabled=False,
                     remote_url=service.service_url,

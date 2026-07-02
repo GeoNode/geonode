@@ -17,6 +17,8 @@
 #
 #########################################################################
 import logging
+import hashlib
+import json
 
 from collections import OrderedDict
 from django.utils.translation import gettext_lazy as _
@@ -27,6 +29,34 @@ from django.core.cache import caches
 
 service_cache = caches["services"]
 logger = logging.getLogger(__name__)
+
+
+def _build_auth_cache_fingerprint(auth=None, auth_config=None):
+    if auth_config is not None:
+        auth_identity = {
+            "type": getattr(auth_config, "type", None),
+            "payload": getattr(auth_config, "payload", None),
+        }
+    elif auth is not None:
+        if isinstance(auth, tuple) and len(auth) == 2:
+            auth_identity = {"type": "basic", "payload": {"username": auth[0], "password": auth[1]}}
+        elif hasattr(auth, "username") and hasattr(auth, "password"):
+            auth_identity = {
+                "type": auth.__class__.__name__,
+                "payload": {"username": auth.username, "password": auth.password},
+            }
+        else:
+            auth_identity = repr(auth)
+    else:
+        return "-"
+
+    encoded = json.dumps(auth_identity, sort_keys=True, default=str)
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]
+
+
+def get_service_cache_key(base_url, service_type=enumerations.AUTO, service_id=None, auth=None, auth_config=None):
+    auth_fingerprint = _build_auth_cache_fingerprint(auth=auth, auth_config=auth_config)
+    return f"{service_type}|{service_id or '-'}|{auth_fingerprint}|{base_url}"
 
 
 def get_available_service_types():
@@ -42,8 +72,8 @@ def get_available_service_types():
                 "handler": GeoNodeServiceHandler,
                 "label": _("GeoNode (Web Map Service)"),
             },
-            # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
-            # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+            # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'),
+            # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'),
             enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler, "label": _("ArcGIS REST MapServer")},
             enumerations.REST_IMG: {
                 "OWS": False,
@@ -64,7 +94,15 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
     If the service type is not explicitly passed in it will be guessed from
     """
 
-    if entry := service_cache.get(base_url):
+    cache_key = get_service_cache_key(
+        base_url,
+        service_type=service_type,
+        service_id=service_id,
+        auth=kwargs.get("auth"),
+        auth_config=kwargs.get("auth_config"),
+    )
+
+    if entry := service_cache.get(cache_key):
         return entry
 
     handlers = get_available_service_types()
@@ -72,7 +110,7 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
     handler = handlers.get(service_type, {}).get("handler")
     try:
         service_handler = handler(base_url, service_id, *args, **kwargs)
-        service_cache.set(service_handler.url, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
+        service_cache.set(cache_key, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)
     except Exception as e:
         logger.exception(e)
         logger.exception(msg=f"Could not parse service {base_url}")

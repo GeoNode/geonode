@@ -110,6 +110,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         :type owner: geonode.people.models.Profile
 
         """
+        unique_name = base.build_unique_resource_name(self.name)
+        self.name = unique_name
         with transaction.atomic():
             instance = models.Service.objects.create(
                 uuid=str(uuid4()),
@@ -121,7 +123,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 version=str(self.parsed_service._json_struct.get("currentVersion", 0.0))
                 .encode("utf-8", "ignore")
                 .decode("utf-8"),
-                name=self.name,
+                name=unique_name,
                 title=self.title,
                 abstract=str(self.parsed_service._json_struct.get("serviceDescription"))
                 .encode("utf-8", "ignore")
@@ -129,7 +131,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 or _("Not provided"),
             )
             service_harvester = Harvester.objects.create(
-                name=self.name,
+                name=unique_name,
                 default_owner=owner,
                 scheduling_enabled=False,
                 remote_url=instance.service_url,

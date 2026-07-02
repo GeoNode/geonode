@@ -28,10 +28,9 @@ from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 
-from . import enumerations
-from .models import Service
-from .serviceprocessors import get_service_handler
-from geonode.services.serviceprocessors import get_available_service_types
+from geonode.services.models import Service
+from geonode.services import enumerations
+from geonode.services.serviceprocessors import get_service_handler, get_available_service_types
 from geonode.utils import is_safe_url
 
 logger = logging.getLogger(__name__)
@@ -73,10 +72,6 @@ class CreateServiceForm(forms.Form):
 
         if not is_safe_url(proposed_url):
             raise ValidationError(_("Invalid URL provided"))
-
-        existing = Service.objects.filter(base_url=proposed_url).exists()
-        if existing:
-            raise ValidationError(_("Service %(url)s is already registered"), params={"url": proposed_url})
         return proposed_url
 
     def clean(self):
