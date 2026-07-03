@@ -116,11 +116,9 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
         auth_config = self.get_auth_config_from_execution(_exec)
         if auth_config:
             auth_handler = auth_handler_registry.build(auth_config)
-            try:
-                url, auth_gdal_config_options = auth_handler.get_gdal_config(original_url)
-                gdal_config_options.update(auth_gdal_config_options)
-            except NotImplementedError:
-                pass
+            auth_config_options = auth_handler.get_extra_config(url=original_url)
+            url = auth_config_options.get("url", original_url)
+            gdal_config_options.update(auth_config_options.get("gdal", {}))
 
         # Extract metadata via GDAL VSICURL
         gdal.UseExceptions()
@@ -132,10 +130,10 @@ class RemoteCOGResourceHandler(BaseRemoteResourceHandler):
                 vsiurl = f"/vsicurl/{url}"
                 ds = gdal.OpenEx(vsiurl)
                 if ds is None:
-                    logger.debug(f"GDAL failed to open dataset: {vsiurl}")
-                    raise ImportException(f"Could not open remote COG: {url}")
+                    logger.debug(f"GDAL failed to open dataset: /vsicurl/{original_url}")
+                    raise ImportException(f"Could not open remote COG: {original_url}")
                 if not ds.GetSpatialRef():
-                    raise ImportException(f"Could not extract spatial reference from COG: {url}")
+                    raise ImportException(f"Could not extract spatial reference from COG: {original_url}")
                 srid = self.identify_authority(ds)
                 # Get BBox
                 gt = ds.GetGeoTransform()

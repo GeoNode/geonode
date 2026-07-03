@@ -40,8 +40,12 @@ class AuthHandler(ABC):
     def get_request_auth(self) -> AuthBase:
         raise NotImplementedError
 
-    def get_gdal_config(self, url):
-        raise NotImplementedError
+    def get_extra_config(self, **kwargs):
+        """
+        Return optional runtime configuration for consumers that need auth-specific settings.
+        example: gdal headers
+        """
+        return {}
 
     def auth_request(self, request, **kwargs):
         raise NotImplementedError
@@ -106,10 +110,11 @@ class BasicAuthHandler(AuthHandler):
     def get_request_auth(self) -> AuthBase:
         return HashableAuthBase(HTTPBasicAuth(self.username, self.password))
 
-    def get_gdal_config(self, url):
+    def get_extra_config(self, **kwargs):
+        url = kwargs.get("url")
         credentials = f"{self.username}:{self.password}".encode()
         token = base64.b64encode(credentials).decode()
-        return url, {"GDAL_HTTP_HEADERS": f"Authorization: Basic {token}"}
+        return {"url": url, "gdal": {"GDAL_HTTP_HEADERS": f"Authorization: Basic {token}"}}
 
     def auth_request(self, request, **kwargs):
         request.auth = self.get_request_auth()

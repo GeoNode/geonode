@@ -1085,6 +1085,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
         registry = ServiceTypeRegistry()
         registry.register("CUSTOM", handler="path.to.CustomServiceHandler", label="Custom Service")
 
+        self.assertIn("CUSTOM", registry.registry)
         registry.unregister("CUSTOM")
 
         self.assertNotIn("CUSTOM", registry.registry)

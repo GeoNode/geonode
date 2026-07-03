@@ -23,6 +23,7 @@ from urllib.parse import urlparse, ParseResult
 from django.db import models
 from django.conf import settings
 
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from geonode.base.models import ResourceBase
@@ -116,7 +117,7 @@ class Service(ResourceBase):
         return self.type
 
     def get_absolute_url(self):
-        return "/services/%i" % self.id
+        return reverse("service_detail", kwargs={"service_id": self.id})
 
     class Meta:
         # custom permissions,
