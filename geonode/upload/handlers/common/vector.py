@@ -619,47 +619,72 @@ class BaseVectorFileHandler(BaseHandler):
 
         is_dynamic_model_managed = _exec_obj.input_params.get("is_dynamic_model_managed", False)
         workspace = DataPublisher(None).workspace
+
         if resource_pk := _exec_obj.input_params.get("resource_pk", None):
-            user_datasets = Dataset.objects.filter(owner=username, pk=resource_pk)
-            user_dataset = user_datasets.first()
+            available_dataset = Dataset.objects.filter(pk=resource_pk)
+            user_dataset = available_dataset.first()
             if user_dataset:
                 dynamic_schema = ModelSchema.objects.filter(name__iexact=user_dataset.name)
             else:
                 dynamic_schema = ModelSchema.objects.none()
         else:
-            user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
+            available_dataset = Dataset.objects.filter(alternate__iexact=f"{workspace.name}:{layer_name}")
             dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
 
         dynamic_schema_exists = dynamic_schema.exists()
-        dataset_exists = user_datasets.exists()
+        dataset_exists = available_dataset.exists()
+
+        # evaluate if the user has the correct permissions for the resource.
+        # if can "edit" / manage the resource, it should be able to replace it
+        if should_be_overwritten and dataset_exists:
+            perms = _to_compact_perms(
+                permissions_registry.get_perms(
+                    instance=available_dataset.first(),
+                    user=username,
+                )
+            )
+            if not any(p in perms for p in ("manage", "edit")):
+                raise ImportException(
+                    f"User '{username}' does not have permission to replace dataset '{layer_name}'. "
+                    f"'edit' or 'manage' permission is required."
+                )
 
         if dataset_exists and dynamic_schema_exists and should_be_overwritten:
             """
-            If the user have a dataset, the dynamic model has already been created and is in overwrite mode,
+            If the user has a dataset, the dynamic model has already been created and is in overwrite mode,
             we just take the dynamic_model to overwrite the existing one
             """
             dynamic_schema = dynamic_schema.get()
-            layer_name = user_datasets.first().alternate.split(":")[-1]
+            layer_name = available_dataset.first().alternate.split(":")[-1]
+
         elif not dataset_exists and not dynamic_schema_exists:
             """
-            cames here when is a new brand upload or when (for any reasons) the dataset exists but the
-            dynamic model has not been created before
+            Comes here when is a brand new upload or when (for any reasons) the dataset exists but the
+            dynamic model has not been created before.
             """
-            #  layer_name = create_alternate(layer_name, execution_id)
-            dynamic_schema = ModelSchema.objects.create(
+            dynamic_schema, created = ModelSchema.objects.get_or_create(
                 name=layer_name,
-                db_name="datastore",
-                managed=is_dynamic_model_managed,
-                db_table_name=layer_name,
+                defaults={
+                    "db_name": "datastore",
+                    "managed": is_dynamic_model_managed,
+                    "db_table_name": layer_name,
+                },
             )
+            if not created:
+                logger.warning(
+                    f"ModelSchema for '{layer_name}' already exists but was not found by the "
+                    f"iexact lookup — possible name normalization mismatch between file formats "
+                    f"(e.g. .shp vs .zip). Reusing the existing schema for execution {execution_id}."
+                )
+
         elif (
             (not dataset_exists and dynamic_schema_exists)
             or (dataset_exists and dynamic_schema_exists and not should_be_overwritten)
             or (dataset_exists and not dynamic_schema_exists)
         ):
             """
-            it comes here when the layer should not be overrided so we append the UUID
-            to the layer to let it proceed to the next steps
+            The layer should not be overwritten so we append the UUID
+            to the layer name to let it proceed to the next steps
             """
             layer_name = create_alternate(layer_name, execution_id)
             dynamic_schema, _ = ModelSchema.objects.get_or_create(
@@ -857,22 +882,31 @@ class BaseVectorFileHandler(BaseHandler):
     ):
         _exec = self._get_execution_request_object(execution_id)
 
-        dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk"), owner=_exec.user)
+        dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk")).first()
 
         _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
-        if dataset.exists() and _overwrite:
-            dataset = dataset.first()
+        if dataset and _overwrite:
+            perms = _to_compact_perms(
+                permissions_registry.get_perms(
+                    instance=dataset,
+                    user=_exec.user,
+                )
+            )
+            if not any(p in perms for p in ("manage", "edit")):
+                logger.error(
+                    f"User '{_exec.user}' does not have permission to overwrite dataset "
+                    f"'{dataset.alternate}'. 'edit' or 'manage' permission is required."
+                )
+                raise ImportException(
+                    f"User does not have permission to replace dataset '{layer_name}'. "
+                    f"'edit' or 'manage' permission is required."
+                )
 
             dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset, create_asset=False)
             return dataset
-        elif not dataset.exists() and _overwrite:
-            logger.warning(
-                f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
-            )
-            return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
-        elif not dataset.exists() and not _overwrite:
+        elif not dataset and not _overwrite:
             logger.warning("The resource does not exists, please use 'create_geonode_resource' to create one")
         return
 
@@ -1032,10 +1066,32 @@ class BaseVectorFileHandler(BaseHandler):
         schema = None
         if settings.IMPORTER_ENABLE_DYN_MODELS:
             schema = ModelSchema.objects.filter(name=instance_name).first()
+
         if schema is not None:
-            _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
-            _model_editor.drop_table(schema.as_model())
-            ModelSchema.objects.filter(name=instance_name).delete()
+            # before destroying the schema, check whether a dataset that
+            # predates this execution references it. If so, this execution did not
+            # create the schema and must not delete it.
+            dataset_alternate = instance_name
+            if dataset_alternate and ":" not in dataset_alternate:
+                workspace = DataPublisher(None).workspace.name
+                dataset_alternate = f"{workspace}:{dataset_alternate}"
+            pre_existing_dataset = (
+                Dataset.objects.filter(alternate__iexact=dataset_alternate)
+                .exclude(resourcehandlerinfo__execution_request__exec_id=exec_id)
+                .exists()
+            )
+
+            if pre_existing_dataset:
+                logger.warning(
+                    f"Rollback skipping schema deletion for '{instance_name}': "
+                    f"a dataset not created by execution {exec_id} references this schema. "
+                    f"The schema will be preserved to avoid data loss."
+                )
+            else:
+                _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
+                _model_editor.drop_table(schema.as_model())
+                ModelSchema.objects.filter(name=instance_name).delete()
+
         elif schema is None:
             try:
                 logger.warning("Dynamic model does not exists, removing ogr2ogr table in progress")
@@ -1044,7 +1100,7 @@ class BaseVectorFileHandler(BaseHandler):
                     return
                 db_name = os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
                 with connections[db_name].cursor() as cursor:
-                    cursor.execute(f"DROP TABLE {instance_name}")
+                    cursor.execute(f"DROP TABLE IF EXISTS {instance_name}")
             except Exception as e:
                 logger.warning(e)
                 pass
