@@ -1817,7 +1817,10 @@ def is_safe_url(url: str) -> bool:
         return False
     if not parsed.hostname:
         return False
-    if parsed.port and f"{parsed.hostname}:{parsed.port}" in getattr(settings, "SAFE_URL_TRUSTED_HOSTS", []):
+    _default_ports = {"http": 80, "https": 443}
+    _port = parsed.port or _default_ports.get(parsed.scheme)
+    _trusted_hosts = [h.lower() for h in getattr(settings, "SAFE_URL_TRUSTED_HOSTS", [])]
+    if _port and f"{parsed.hostname}:{_port}" in _trusted_hosts:
         return True
     ips = _resolve_hostname(parsed.hostname)
     if not ips:

@@ -401,3 +401,17 @@ class TestIsSafeURL(djangoTestCase):
         with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
             self.assertFalse(is_safe_url("https://internal.private.host/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:443"])
+    def test_trusted_host_implicit_default_port_is_matched(self):
+        """A URL without an explicit port should match a trusted host entry with the default port."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["INTERNAL.PRIVATE.HOST:9090"])
+    def test_trusted_host_case_insensitive(self):
+        """Trusted host matching should be case-insensitive."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host:9090/geoserver/ows"))
