@@ -253,4 +253,4 @@ def get_profile_language_choices():
     Build the list of DB-based (2-char) language choices from the currently
     configured settings.LANGUAGES
     """
-    return tuple((code.split("-")[0].lower(), label) for code, label in settings.LANGUAGES)
+    return tuple({code.split("-")[0].lower(): label for code, label in settings.LANGUAGES}.items())
