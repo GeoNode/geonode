@@ -147,12 +147,6 @@ class BaseRemoteResourceHandler(BaseHandler):
                 url_patterns__isnull=True,
             ).delete()
 
-    def pre_validation(self, files, execution_id, **kwargs):
-        """
-        Hook for let the handler prepare the data before the validation.
-        Maybe a file rename, assign the resource to the execution_id
-        """
-
     def pre_processing(self, files, execution_id, **kwargs):
         """
         Hook for let the handler prepare the data before the validation.
