@@ -207,7 +207,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
     def test_get_auth_should_use_dataset_auth_config(self):
         dataset = Dataset.objects.get(title="theaters_nyc")
-        auth_config = BasicAuthHandler.create_auth_config("dataset_user", "dataset_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "dataset_user", "password": "dataset_password"})
         dataset.auth_config = auth_config
         dataset.save()
 

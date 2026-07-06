@@ -222,12 +222,6 @@ class BaseVectorFileHandler(BaseHandler):
                 raise e
         return True
 
-    def pre_validation(self, files, execution_id, **kwargs):
-        """
-        Hook for let the handler prepare the data before the validation.
-        Maybe a file rename, assign the resource to the execution_id
-        """
-
     def evaluate_exec_prev_status(self, action, resource_pk):
         if not resource_pk:
             return True, None

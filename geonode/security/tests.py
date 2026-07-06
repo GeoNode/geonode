@@ -4204,7 +4204,7 @@ class AuthConfigTests(TestCase):
         self.assertEqual(str(url_pattern_auth_config), "https://example.com/*")
 
     def test_basic_auth_payload_round_trip(self):
-        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
 
         self.assertEqual(auth_config.type, "basic")
         self.assertNotIn("test_user", auth_config._payload)
@@ -4247,6 +4247,13 @@ class AuthHandlerTests(TestCase):
         self.assertIsInstance(request.auth, HashableAuthBase)
         self.assertEqual(request.auth.auth.username, "test_user")
         self.assertEqual(request.auth.auth.password, "test_password")
+
+    def test_basic_auth_handler_get_extra_config(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        expected_token = base64.b64encode(b"test_user:test_password").decode()
+        config = auth_handler.get_extra_config(url="https://example.com/data.tif")
+        self.assertEqual("https://example.com/data.tif", config["url"])
+        self.assertEqual({"GDAL_HTTP_HEADERS": f"Authorization: Basic {expected_token}"}, config["gdal"])
 
 
 class AuthHandlerRegistryTests(TestCase):
