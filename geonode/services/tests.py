@@ -47,9 +47,9 @@ from geonode.base import enumerations as base_enumerations
 from geonode.harvesting.harvesters.wms import WebMapService
 from geonode.services.utils import parse_services_types, test_resource_table_status
 
-from . import enumerations, forms
-from .models import Service
-from .serviceprocessors import (
+from geonode.services import enumerations, forms
+from geonode.services.models import Service
+from geonode.services.serviceprocessors import (
     base,
     wms,
     arcgis,
@@ -57,8 +57,8 @@ from .serviceprocessors import (
     get_service_handler,
     get_available_service_types,
 )
-from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
-from .serviceprocessors.registry import ServiceTypeRegistry, service_type_registry
+from geonode.services.serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
+from geonode.services.serviceprocessors.registry import ServiceTypeRegistry, service_type_registry
 
 logger = logging.getLogger(__name__)
 

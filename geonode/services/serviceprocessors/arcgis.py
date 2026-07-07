@@ -20,8 +20,10 @@
 import os
 import logging
 import traceback
-
+from collections import namedtuple
 from uuid import uuid4
+
+from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
 from django.conf import settings
 from django.db import transaction
@@ -31,16 +33,9 @@ from django.template.defaultfilters import slugify, safe
 from geonode import GeoNodeException
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
+from geonode.services import enumerations, models, utils
+from geonode.services.serviceprocessors import base
 
-from arcrest import MapService as ArcMapService, ImageService as ArcImageService
-
-from .. import enumerations
-from ..enumerations import INDEXED
-from .. import models
-from .. import utils
-from . import base
-
-from collections import namedtuple
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +81,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         #     extent['ymax']
         # ])
 
-        self.indexing_method = INDEXED
+        self.indexing_method = enumerations.INDEXED
         self.name = slugify(self.url)[:255]
         self.title = str(_title).encode("utf-8", "ignore").decode("utf-8")
 
@@ -220,6 +215,8 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         self.url = url
         self.args = args
         self.kwargs = kwargs
+        self.args = args
+        self.kwargs = kwargs
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
@@ -237,7 +234,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         #     extent['ymax']
         # ])
 
-        self.indexing_method = INDEXED
+        self.indexing_method = enumerations.INDEXED
         self.name = slugify(self.url)[:255]
         self.title = _title
 

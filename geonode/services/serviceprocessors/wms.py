@@ -41,13 +41,8 @@ from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
 from geonode.harvesting.harvesters.wms import OgcWmsHarvester, WebMapService
 from geonode.security.auth_registry import auth_handler_registry
-
-from .. import enumerations
-from ..enumerations import CASCADED
-from ..enumerations import INDEXED
-from .. import models
-from .. import utils
-from . import base, get_service_handler
+from geonode.services import models, utils, enumerations
+from geonode.services.serviceprocessors import base, get_service_handler
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +57,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         self.args = args
         self.kwargs = kwargs
         self._parsed_service = None
-        self.indexing_method = INDEXED if self._offers_geonode_projection() else CASCADED
+        self.indexing_method = enumerations.INDEXED if self._offers_geonode_projection() else enumerations.CASCADED
         self.name = slugify(self.url)[:255]
 
     @staticmethod
@@ -291,7 +286,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         self.args = args
         self.kwargs = kwargs
 
-        self.indexing_method = INDEXED
+        self.indexing_method = enumerations.INDEXED
         self.name = slugify(self.url)[:255]
 
     @property

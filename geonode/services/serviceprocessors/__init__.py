@@ -16,15 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import logging
 import hashlib
+import logging
 
-from collections import OrderedDict
-from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from geonode.services import enumerations
-from geonode.services.utils import parse_services_types
 from django.core.cache import caches
+from geonode.services.serviceprocessors.registry import service_type_registry
 
 service_cache = caches["services"]
 logger = logging.getLogger(__name__)
@@ -61,33 +59,7 @@ def get_service_cache_key(base_url, service_type=enumerations.AUTO, service_id=N
 
 
 def get_available_service_types():
-    # LGTM: Fixes - Module uses member of cyclically imported module, which can lead to failure at import time.
-    from geonode.services.serviceprocessors.wms import GeoNodeServiceHandler, WmsServiceHandler
-    from geonode.services.serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler
-
-    default = OrderedDict(
-        {
-            enumerations.WMS: {"OWS": True, "handler": WmsServiceHandler, "label": _("Web Map Service")},
-            enumerations.GN_WMS: {
-                "OWS": True,
-                "handler": GeoNodeServiceHandler,
-                "label": _("GeoNode (Web Map Service)"),
-            },
-            # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'),
-            # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'),
-            enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler, "label": _("ArcGIS REST MapServer")},
-            enumerations.REST_IMG: {
-                "OWS": False,
-                "handler": ArcImageServiceHandler,
-                "label": _("ArcGIS REST ImageServer"),
-            },
-            # enumerations.CSW: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Catalogue Service')},
-            # enumerations.OGP: {"OWS": True, "handler": ServiceHandlerBase, "label": _('OpenGeoPortal')},  # TODO: verify this
-            # enumerations.HGL: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Harvard Geospatial Library')},  # TODO: verify this
-        }
-    )
-
-    return OrderedDict({**default, **parse_services_types()})
+    return service_type_registry.get_available_service_types()
 
 
 def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=None, *args, **kwargs):
@@ -106,9 +78,7 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
     if entry := service_cache.get(cache_key):
         return entry
 
-    handlers = get_available_service_types()
-
-    handler = handlers.get(service_type, {}).get("handler")
+    handler = service_type_registry.get_handler_class(service_type)
     try:
         service_handler = handler(base_url, service_id, *args, **kwargs)
         service_cache.set(cache_key, service_handler, settings.SERVICE_CACHE_EXPIRATION_TIME)

@@ -38,9 +38,9 @@ from geonode.security.utils import get_visible_resources, check_add_remote_resou
 from django.core.cache import caches
 from django.core.exceptions import PermissionDenied
 
-from .models import Service
-from . import forms, enumerations
-from .serviceprocessors import get_service_cache_key, get_service_handler
+from geonode.services.models import Service
+from geonode.services import forms, enumerations
+from geonode.services.serviceprocessors import get_service_cache_key, get_service_handler
 from geonode.security.registry import permissions_registry
 from geonode.views import err403
 

@@ -22,15 +22,15 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-import taggit
+from taggit.forms import TagField
 
 from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 
-from geonode.services.models import Service
 from geonode.services import enumerations
-from geonode.services.serviceprocessors import get_service_handler, get_available_service_types
+from geonode.services.models import Service, get_service_type_choices
+from geonode.services.serviceprocessors import get_service_handler
 from geonode.utils import is_safe_url
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=[(k, v["label"]) for k, v in get_available_service_types().items()],  # from dictionary to tuple
+        choices=get_service_type_choices,
         initial="AUTO",
     )
 
@@ -125,7 +125,7 @@ class ServiceForm(forms.ModelForm):
     )
     description = forms.CharField(label=_("Description"), widget=forms.Textarea(attrs={"cols": 60}))
     abstract = forms.CharField(label=_("Abstract"), widget=forms.Textarea(attrs={"cols": 60}))
-    keywords = taggit.forms.TagField(required=False)
+    keywords = TagField(required=False)
 
     class Meta:
         model = Service

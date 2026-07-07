@@ -23,6 +23,7 @@ from urllib.parse import urlparse, ParseResult
 from django.db import models
 from django.conf import settings
 
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from geonode.base.models import ResourceBase
@@ -30,9 +31,12 @@ from geonode.harvesting.models import Harvester
 from geonode.layers.enumerations import GXP_PTYPES
 from geonode.people.enumerations import ROLE_VALUES
 from geonode.services.serviceprocessors import get_available_service_types
-from . import enumerations
+from geonode.services import enumerations
 
-service_type_as_tuple = [(k, v["label"]) for k, v in get_available_service_types().items()]
+
+def get_service_type_choices():
+    return [(k, v["label"]) for k, v in get_available_service_types().items()]
+
 
 logger = logging.getLogger("geonode.services")
 
@@ -40,7 +44,7 @@ logger = logging.getLogger("geonode.services")
 class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
-    type = models.CharField(max_length=10, choices=service_type_as_tuple)
+    type = models.CharField(max_length=10, choices=get_service_type_choices)
     method = models.CharField(
         max_length=1,
         choices=(
@@ -103,15 +107,18 @@ class Service(ResourceBase):
     @property
     def ptype(self):
         # Return the gxp ptype that should be used to display layers
-        return GXP_PTYPES[self.type] if self.type else None
+        return GXP_PTYPES.get(self.type) if self.type else None
 
     @property
     def service_type(self):
         # Return the gxp ptype that should be used to display layers
-        return [x for x in service_type_as_tuple if x[0] == self.type][0][1]
+        service_type = get_available_service_types().get(self.type)
+        if service_type:
+            return service_type["label"]
+        return self.type
 
     def get_absolute_url(self):
-        return "/services/%i" % self.id
+        return reverse("service_detail", kwargs={"service_id": self.id})
 
     class Meta:
         # custom permissions,

@@ -28,8 +28,7 @@ from geonode import GeoNodeException, geoserver
 from geonode.harvesting.tasks import harvest_resources
 from geonode.harvesting.models import AsynchronousHarvestingSession
 
-from .. import models
-from .. import enumerations
+from geonode.services import models, enumerations
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog as catalog

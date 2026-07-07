@@ -34,8 +34,8 @@ from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.layers.models import Dataset
 from geonode.services.enumerations import CASCADED
 
-from . import BACKEND_PACKAGE
-from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
+from geonode.geoserver import BACKEND_PACKAGE
+from geonode.geoserver.tasks import geoserver_cascading_delete, geoserver_post_save_datasets
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
@@ -104,7 +104,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     # Set dataset
     if instance.dataset is None:
         dataset_queryset = Dataset.objects.filter(Q(alternate=instance.name) | Q(name=instance.name))
-        if instance.store:
+        if instance.local and instance.store:
             dataset_queryset = dataset_queryset.filter(store=instance.store)
         elif instance.ows_url:
             dataset_queryset = dataset_queryset.filter(remote_service__base_url=instance.ows_url)
