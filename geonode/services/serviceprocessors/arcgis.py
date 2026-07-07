@@ -215,8 +215,6 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         self.url = url
         self.args = args
         self.kwargs = kwargs
-        self.args = args
-        self.kwargs = kwargs
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
