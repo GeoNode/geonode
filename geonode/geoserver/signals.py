@@ -104,7 +104,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     # Set dataset
     if instance.dataset is None:
         dataset_queryset = Dataset.objects.filter(Q(alternate=instance.name) | Q(name=instance.name))
-        if instance.local and instance.store:
+        if instance.store:
             dataset_queryset = dataset_queryset.filter(store=instance.store)
         elif instance.ows_url:
             dataset_queryset = dataset_queryset.filter(remote_service__base_url=instance.ows_url)

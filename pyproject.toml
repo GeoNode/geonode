@@ -24,7 +24,7 @@ classifiers = [
 
 # Core dependencies (consolidated from requirements.txt)
 dependencies = [
-    "Pillow==12.2.0",
+    "Pillow==12.3.0",
     "lxml==6.1.1",
     "psycopg2==2.9.12",
     "Django==5.2.15",
@@ -41,7 +41,7 @@ dependencies = [
     "schema==0.7.7",
     "rdflib==6.3.2",
     "smart_open==7.0.4",
-    "PyMuPDF==1.27.2.3",
+    "PyMuPDF==1.28.0",
     "defusedxml==0.7.1",
     "zipstream-ng==1.9.2",
 
@@ -137,7 +137,7 @@ dependencies = [
     "docker==7.0.0",
     "invoke==2.2.0",
     # tests
-    "coverage==7.5.1",
+    "coverage==7.15.0",
     "requests-toolbelt==1.0.0",
     "flake8==7.3.0",
     "black==24.4.2",
@@ -165,7 +165,7 @@ dev = [
     "pytest==8.4.2",
     "flake8==7.3.0",
     "black==24.4.2",
-    "coverage==7.5.1",
+    "coverage==7.15.0",
 ]
 docs = [
     "Sphinx",

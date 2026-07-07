@@ -25,6 +25,8 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.models import AuthConfig
 
 
 class TestBaseRemoteResourceHandler(TestCase):
@@ -110,6 +112,37 @@ class TestBaseRemoteResourceHandler(TestCase):
         self.assertTrue("title" in actual)
         self.assertTrue("url" in actual)
         self.assertTrue("type" in actual)
+
+    def test_extract_params_from_data_should_create_auth_config(self):
+        actual, _data = self.handler.extract_params_from_data(
+            _data={
+                "url": "http://abc123defsadsa.org",
+                "title": "Remote Title",
+                "type": "3dtiles",
+                "authentication": {
+                    "type": BasicAuthHandler.handled_type,
+                    "payload": {"username": "test_user", "password": "test_password"},
+                },
+            },
+            action="upload",
+        )
+
+        auth_config = AuthConfig.objects.get(pk=actual["auth_config_id"])
+        self.assertEqual(BasicAuthHandler.handled_type, auth_config.type)
+        self.assertEqual({"username": "test_user", "password": "test_password"}, auth_config.payload)
+
+    def test_create_geonode_resource_rollback_should_delete_created_auth_config(self):
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
+        exec_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="funct1",
+            step="step",
+            input_params={"auth_config_id": auth_config.pk},
+        )
+
+        self.handler._create_geonode_resource_rollback(exec_id, istance_name="missing-resource")
+
+        self.assertFalse(AuthConfig.objects.filter(pk=auth_config.pk).exists())
 
     @patch("geonode.upload.handlers.common.remote.import_orchestrator")
     def test_import_resource_should_work(self, patch_upload):
