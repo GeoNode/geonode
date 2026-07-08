@@ -4706,8 +4706,6 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
 msgstr "ชุดข้อมูล"
 

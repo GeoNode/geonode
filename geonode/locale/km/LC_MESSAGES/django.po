@@ -4726,8 +4726,6 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
 msgstr "ទិន្នន័យ"
 
