@@ -575,7 +575,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         # HashableAuthBase-wrapped requests.auth object) to get_service_handler,
         # without `auth_config=`, so the service cache key could not properly
         # discriminate between different credentials for the same remote
-        # service (see get_service_cache_key / _build_auth_cache_fingerprint).
+        # service (see get_service_cache_key / ServiceHandlerCache._build_auth_fingerprint).
         mock_ows_endpoint.return_value = self.phony_url
 
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
@@ -1051,7 +1051,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
         # HashableAuthBase-wrapped requests.auth object), which the service
         # cache key fingerprint could not properly discriminate on. It must
         # also pass `auth_config=` so the cache key changes when credentials
-        # change (see get_service_cache_key / _build_auth_cache_fingerprint).
+        # change (see get_service_cache_key / ServiceHandlerCache._build_auth_fingerprint).
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config.payload = {"username": "test_user", "password": "test_password"}
         auth_config.save()

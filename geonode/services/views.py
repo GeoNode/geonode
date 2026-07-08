@@ -35,16 +35,14 @@ from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources, check_add_remote_resource_perm
-from django.core.cache import caches
 from django.core.exceptions import PermissionDenied
 
 from geonode.services.models import Service
 from geonode.services import forms, enumerations
 from geonode.services.serviceprocessors import get_service_cache_key, get_service_handler
+from geonode.services.serviceprocessors.cache import service_handler_cache
 from geonode.security.registry import permissions_registry
 from geonode.views import err403
-
-service_cache = caches["services"]
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +84,7 @@ def register_service(request):
             if service_handler.indexing_method == enumerations.CASCADED:
                 service_handler.create_cascaded_store(service)
             service_handler.geonode_service_id = service.id
-            service_cache.set(
+            service_handler_cache.set(
                 get_service_cache_key(
                     service_handler.url,
                     service_type=service.type,
@@ -94,7 +92,6 @@ def register_service(request):
                     auth_config=service.auth_config,
                 ),
                 service_handler,
-                settings.SERVICE_CACHE_EXPIRATION_TIME,
             )
             # commented out due to jsonserializer error, will be replaced with cache
             # request.session[service_handler.url] = service_handler
@@ -348,7 +345,7 @@ def remove_service(request, service_id):
     elif request.method == "POST":
         service.dataset_set.all().delete()
         # by deleting the harvester we delete also the service
-        service_cache.delete(
+        service_handler_cache.delete(
             get_service_cache_key(
                 service.service_url,
                 service_type=service.type,
