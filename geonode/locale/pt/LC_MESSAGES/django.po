@@ -4696,7 +4696,7 @@ msgid "Toggle navigation"
 msgstr "Alternar a navegação"
 
 msgid "Datasets"
-msgstr "Conjunto de dados"
+msgstr "Conjuntos de dados"
 
 msgid "People"
 msgstr "Utilizadores"
