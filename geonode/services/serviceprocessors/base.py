@@ -26,7 +26,7 @@ from django.conf import settings
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.harvesting.tasks import harvest_resources
-from geonode.harvesting.models import AsynchronousHarvestingSession
+from geonode.harvesting.models import AsynchronousHarvestingSession, Harvester
 
 from geonode.services import models, enumerations
 
@@ -56,10 +56,7 @@ def build_unique_resource_name(name, max_length=255):
     candidate = (name or "service")[:max_length]
     base_name = candidate
     idx = 1
-    while (
-        models.Service.objects.filter(name=candidate).exists()
-        or models.Harvester.objects.filter(name=candidate).exists()
-    ):
+    while models.Service.objects.filter(name=candidate).exists() or Harvester.objects.filter(name=candidate).exists():
         suffix = f"-{idx}"
         if len(suffix) >= max_length:
             # When max_length is tiny, keep the most specific part of the suffix.

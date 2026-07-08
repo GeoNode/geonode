@@ -81,6 +81,28 @@ class ModuleFunctionsTestCase(StandardTestCase):
         key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_2)
         self.assertNotEqual(key_1, key_2)
 
+    def test_get_service_cache_key_changes_when_saved_auth_config_payload_changes(self):
+        # Regression test: the fingerprint for a *saved* AuthConfig used to be
+        # just `authcfg:<id>`, so editing the payload of an existing AuthConfig
+        # in place (e.g. rotating a password) would not bust the service
+        # handler cache key, and a stale handler could keep being served.
+        phony_url = "http://fake"
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "alice", "password": "pw1"}
+        auth_config.save()
+
+        key_before = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+
+        auth_config.payload = {"username": "alice", "password": "pw2"}
+        auth_config.save()
+
+        key_after = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+        self.assertNotEqual(key_before, key_after)
+
     def test_get_service_cache_key_is_auth_specific_for_hashable_auth_base(self):
         # get_request_auth() (used by views._get_service_handler and
         # GeoNodeServiceHandler.parsed_service) wraps the real requests.auth
@@ -571,31 +593,31 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     def test_geonode_service_handler_parsed_service_passes_auth_config(
         self, mock_ows_endpoint, mock_get_cleaned_url_params, mock_get_service_handler
     ):
-        # Regression test: parsed_service used to only pass `auth=` (a
-        # HashableAuthBase-wrapped requests.auth object) to get_service_handler,
-        # without `auth_config=`, so the service cache key could not properly
-        # discriminate between different credentials for the same remote
-        # service (see get_service_cache_key / ServiceHandlerCache._build_auth_fingerprint).
+        # Regression test: parsed_service used to read auth off the local `service`
+        # variable returned by get_cleaned_url_params, which is just the raw
+        # `service=` query-string value (or None), not a Service model instance -
+        # so `.needs_authentication`/`.auth_config` would raise AttributeError as
+        # soon as this property actually ran. Auth must come from self.kwargs,
+        # same as WmsServiceHandler.parsed_service, and the recursive
+        # get_service_handler call must resolve the underlying OWS endpoint as
+        # plain WMS (not GN_WMS again) using this handler's own geonode_service_id.
         mock_ows_endpoint.return_value = self.phony_url
 
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config.payload = {"username": "test_user", "password": "test_password"}
         auth_config.save()
 
-        remote_service = mock.MagicMock()
-        remote_service.needs_authentication = True
-        remote_service.auth_config = auth_config
-        remote_service.type = enumerations.GN_WMS
-        remote_service.id = 1
-
         cleaned_url = mock.MagicMock()
         cleaned_url.geturl.return_value = self.phony_url
-        mock_get_cleaned_url_params.return_value = (cleaned_url, remote_service, self.phony_version, None)
+        mock_get_cleaned_url_params.return_value = (cleaned_url, None, self.phony_version, None)
 
-        handler = wms.GeoNodeServiceHandler(self.phony_url)
+        handler = wms.GeoNodeServiceHandler(self.phony_url, geonode_service_id=42, auth_config=auth_config)
         handler.parsed_service
 
-        _, kwargs = mock_get_service_handler.call_args
+        args, kwargs = mock_get_service_handler.call_args
+        self.assertEqual(args[0], self.phony_url)
+        self.assertEqual(args[1], enumerations.WMS)
+        self.assertEqual(args[2], 42)
         self.assertEqual(kwargs.get("auth_config"), auth_config)
 
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")

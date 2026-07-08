@@ -291,16 +291,21 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     @property
     def parsed_service(self):
-        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
-        auth = None
-        if service.needs_authentication:
-            auth = auth_handler_registry.build(service.auth_config).get_request_auth()
+        # get_cleaned_url_params's 2nd return value is the raw `service=` query-param
+        # string (or None), not a Service model instance. This handler's own auth,
+        # like WmsServiceHandler.parsed_service above, comes from self.kwargs, since
+        # no Service row may exist yet (e.g. during create_geonode_service).
+        cleaned_url, _, version, _request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
+        auth = self.kwargs.get("auth")
+        auth_config = self.kwargs.get("auth_config")
+        if auth is None and auth_config is not None:
+            auth = auth_handler_registry.build(auth_config).get_request_auth()
         _parsed_service = get_service_handler(
             cleaned_url.geturl(),
-            service.type,
-            service.id,
+            enumerations.WMS,
+            self.geonode_service_id,
             auth=auth,
-            auth_config=service.auth_config,
+            auth_config=auth_config,
         )
         return _parsed_service
 

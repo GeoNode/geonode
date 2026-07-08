@@ -86,7 +86,7 @@ def register_service(request):
             service_handler.geonode_service_id = service.id
             service_handler_cache.set(
                 get_service_cache_key(
-                    service_handler.url,
+                    service.service_url,
                     service_type=service.type,
                     service_id=service.id,
                     auth_config=service.auth_config,
