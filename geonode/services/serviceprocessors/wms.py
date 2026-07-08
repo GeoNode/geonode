@@ -134,45 +134,51 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
             auth_config = self.kwargs.get("auth_config")
             if auth_config is not None and auth_config.pk is None:
                 auth_config.save()
-            unique_name = base.build_unique_resource_name(self.name)
-            self.name = unique_name
 
-            with transaction.atomic():
-                service = models.Service.objects.create(
-                    uuid=str(uuid4()),
-                    base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode(
-                        "utf-8", "ignore"
-                    ).decode("utf-8"),
-                    extra_queryparams=cleaned_url.query,
-                    type=self.service_type,
-                    method=self.indexing_method,
-                    owner=owner,
-                    metadata_only=True,
-                    version=str(self.parsed_service.identification.version).encode("utf-8", "ignore").decode("utf-8"),
-                    name=unique_name,
-                    title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode("utf-8")
-                    or self.name,
-                    abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode("utf-8")
-                    or _("Not provided"),
-                    operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version),
-                    auth_config=auth_config,
-                )
-                service_harvester = Harvester.objects.create(
-                    name=unique_name,
-                    default_owner=owner,
-                    scheduling_enabled=False,
-                    remote_url=service.service_url,
-                    delete_orphan_resources_automatically=True,
-                    harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
-                    harvester_type_specific_configuration=self.get_harvester_configuration_options(),
-                )
-                service.harvester = service_harvester
-                service.save()
-                if service_harvester.update_availability():
-                    service_harvester.initiate_update_harvestable_resources()
-                else:
-                    logger.exception(GeoNodeException("Could not reach remote endpoint."))
+            def _create(unique_name):
+                with transaction.atomic():
+                    new_service = models.Service.objects.create(
+                        uuid=str(uuid4()),
+                        base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode(
+                            "utf-8", "ignore"
+                        ).decode("utf-8"),
+                        extra_queryparams=cleaned_url.query,
+                        type=self.service_type,
+                        method=self.indexing_method,
+                        owner=owner,
+                        metadata_only=True,
+                        version=str(self.parsed_service.identification.version)
+                        .encode("utf-8", "ignore")
+                        .decode("utf-8"),
+                        name=unique_name,
+                        title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode("utf-8")
+                        or unique_name,
+                        abstract=str(self.parsed_service.identification.abstract)
+                        .encode("utf-8", "ignore")
+                        .decode("utf-8")
+                        or _("Not provided"),
+                        operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version),
+                        auth_config=auth_config,
+                    )
+                    new_harvester = Harvester.objects.create(
+                        name=unique_name,
+                        default_owner=owner,
+                        scheduling_enabled=False,
+                        remote_url=new_service.service_url,
+                        delete_orphan_resources_automatically=True,
+                        harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
+                        harvester_type_specific_configuration=self.get_harvester_configuration_options(),
+                    )
+                    new_service.harvester = new_harvester
+                    new_service.save()
+                    if new_harvester.update_availability():
+                        new_harvester.initiate_update_harvestable_resources()
+                    else:
+                        logger.exception(GeoNodeException("Could not reach remote endpoint."))
+                    return new_service
 
+            service = base.create_with_unique_name(self.name, _create)
+            self.name = service.name
             self.geonode_service_id = service.id
         except Exception as e:
             logger.exception(e)

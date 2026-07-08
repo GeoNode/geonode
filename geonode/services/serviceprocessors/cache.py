@@ -17,6 +17,7 @@
 #
 #########################################################################
 import hashlib
+import hmac
 
 from django.conf import settings
 from django.core.cache import caches
@@ -32,23 +33,29 @@ class ServiceHandlerCache:
 
     @staticmethod
     def _digest(items):
-        """Short, one-way digest of a credential-bearing mapping's items."""
-        return hashlib.sha256(repr(sorted(items)).encode("utf-8")).hexdigest()[:16]
+        """Keyed, one-way digest of a credential-bearing mapping's items.
+
+        HMAC-keyed with SECRET_KEY rather than a bare hash: cache keys may be
+        visible via cache-backend introspection (e.g. Redis SCAN/keyspace
+        notifications), and a bare digest of low-entropy credentials would let
+        anyone who can see the key guess the credentials offline.
+        """
+        message = repr(sorted(items)).encode("utf-8")
+        return hmac.new(settings.SECRET_KEY.encode("utf-8"), message, hashlib.sha256).hexdigest()[:16]
 
     @classmethod
     def _build_auth_fingerprint(cls, auth=None, auth_config=None):
         """Build a non-sensitive auth discriminator for service-handler cache keys."""
         if auth_config is not None:
-            # Digest the decrypted payload (not the encrypted `_payload` column): AuthConfig
-            # uses Fernet, which embeds a random nonce, so the ciphertext changes on every save
-            # even when the credentials don't. Digesting the plaintext content means the
-            # fingerprint only changes when the actual credentials change.
+            # The overall cache key already includes service_id, and each Service has
+            # at most one AuthConfig, so the AuthConfig's own identity doesn't need to
+            # be part of this fingerprint - only its content does. This also keeps the
+            # fingerprint stable across the AuthConfig's unsaved -> saved transition
+            # (e.g. during handler.create_geonode_service), instead of leaving behind
+            # an orphaned cache entry under a stale "unsaved" key on every registration.
             payload_digest = cls._digest((getattr(auth_config, "payload", None) or {}).items())
-            auth_config_id = getattr(auth_config, "id", None) or getattr(auth_config, "pk", None)
-            if auth_config_id is not None:
-                return f"authcfg:{auth_config_id}:{payload_digest}"
             auth_type = getattr(auth_config, "type", None)
-            return f"authcfg:unsaved:{auth_type or '-'}:{payload_digest}"
+            return f"authcfg:{auth_type or '-'}:{payload_digest}"
 
         if auth is not None:
             # HashableAuthBase (see geonode.security.auth_handlers) wraps the actual
@@ -56,9 +63,12 @@ class ServiceHandlerCache:
             # so the fingerprint reflects the real credentials, not just the wrapper class.
             wrapped_auth = getattr(auth, "auth", auth)
             if isinstance(wrapped_auth, tuple) and len(wrapped_auth) == 2:
-                return f"auth:basic:{wrapped_auth[0]}"
+                # Digest both username and password (not just the username) so that a
+                # password rotation for the same username busts the cache key too.
+                digest = cls._digest({"username": wrapped_auth[0], "password": wrapped_auth[1]}.items())
+                return f"auth:basic:{digest}"
             if hasattr(wrapped_auth, "__dict__") and wrapped_auth.__dict__:
-                # Hash the full credential set (not just the username) so that e.g. a
+                # Digest the full credential set (not just the username) so that e.g. a
                 # password change on an otherwise-identical auth object busts the cache key.
                 digest = cls._digest(wrapped_auth.__dict__.items())
                 return f"auth:{wrapped_auth.__class__.__name__}:{digest}"

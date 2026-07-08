@@ -28,6 +28,7 @@ from collections import namedtuple
 from arcrest import MapService as ArcMapService
 from unittest import TestCase as StandardTestCase, skip
 from owslib.wms import WebMapService as OwsWebMapService
+from django.db import IntegrityError
 from django.test import Client, override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -123,6 +124,48 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertNotEqual(key_1, key_2)
         self.assertNotIn("HashableAuthBase", key_1)
 
+    def test_get_service_cache_key_is_auth_specific_for_tuple_auth(self):
+        # Regression test: the tuple `(username, password)` auth branch used
+        # to only fingerprint the username, so a password rotation for the
+        # same username would not bust the cache key.
+        phony_url = "http://fake"
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=("bob", "pw1"))
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=("bob", "pw2"))
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_does_not_embed_plaintext_credentials(self):
+        # The auth fingerprint must not leak the raw credentials into the
+        # cache key, since cache keys can be visible via cache-backend
+        # introspection (e.g. Redis SCAN) even when values are opaque.
+        phony_url = "http://fake"
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "alice", "password": "super-secret-password"}
+
+        key = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config)
+        self.assertNotIn("super-secret-password", key)
+        self.assertNotIn("alice", key)
+
+    def test_get_service_cache_key_is_stable_across_auth_config_save(self):
+        # Regression test: the auth fingerprint used to switch from
+        # "authcfg:unsaved:..." to "authcfg:<id>:..." the moment an AuthConfig
+        # was saved (e.g. inside handler.create_geonode_service), leaving an
+        # orphaned, unreachable cache entry behind on every registration. The
+        # fingerprint must depend only on the payload content, not on whether
+        # (or under which id) the AuthConfig has been saved - service_id
+        # already scopes the overall cache key to a single Service.
+        phony_url = "http://fake"
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "alice", "password": "pw1"}
+
+        key_before_save = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+        auth_config.save()
+        key_after_save = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+        self.assertEqual(key_before_save, key_after_save)
+
     def test_get_service_cache_key_has_bounded_length(self):
         very_long_url = "http://example.com/" + ("a" * 2000)
         key = get_service_cache_key(very_long_url, service_type=enumerations.WMS, service_id=1)
@@ -167,6 +210,36 @@ class ModuleFunctionsTestCase(StandardTestCase):
         cat.create_workspace.assert_called_with(
             mock_settings.CASCADE_WORKSPACE, f"http://www.geonode.org/{mock_settings.CASCADE_WORKSPACE}"
         )
+
+    @mock.patch("geonode.services.serviceprocessors.base.build_unique_resource_name")
+    def test_create_with_unique_name_retries_on_integrity_error(self, mock_build_unique_resource_name):
+        # Regression test: build_unique_resource_name's existence check isn't
+        # atomic with the caller's actual create(), so two concurrent
+        # registrations can land on the same candidate name and trip the DB's
+        # uniqueness constraint. create_with_unique_name must retry with a
+        # freshly generated candidate instead of surfacing the IntegrityError.
+        mock_build_unique_resource_name.side_effect = ["candidate-1", "candidate-2"]
+        calls = []
+
+        def flaky_create(name):
+            calls.append(name)
+            if len(calls) < 2:
+                raise IntegrityError("simulated race")
+            return name
+
+        result = base.create_with_unique_name("svc", flaky_create)
+        self.assertEqual(result, "candidate-2")
+        self.assertEqual(calls, ["candidate-1", "candidate-2"])
+
+    @mock.patch("geonode.services.serviceprocessors.base.build_unique_resource_name")
+    def test_create_with_unique_name_gives_up_after_max_attempts(self, mock_build_unique_resource_name):
+        mock_build_unique_resource_name.side_effect = ["c1", "c2", "c3"]
+
+        def always_fails(name):
+            raise IntegrityError("simulated race")
+
+        with self.assertRaises(IntegrityError):
+            base.create_with_unique_name("svc", always_fails, max_attempts=3)
 
     @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
     def test_get_service_handler_wms(self, mock_get_handler_class):
