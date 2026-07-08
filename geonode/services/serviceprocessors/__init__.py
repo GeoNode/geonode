@@ -39,10 +39,19 @@ def _build_auth_cache_fingerprint(auth=None, auth_config=None):
         return f"authcfg:unsaved:{auth_type or '-'}:{auth_username or '-'}"
 
     if auth is not None:
-        if isinstance(auth, tuple) and len(auth) == 2:
-            return f"auth:basic:{auth[0]}"
-        if hasattr(auth, "username"):
-            return f"auth:{auth.__class__.__name__}:{getattr(auth, 'username', '-') or '-'}"
+        # HashableAuthBase (see geonode.security.auth_handlers) wraps the actual
+        # requests.auth.AuthBase instance in `.auth` to make it hashable; unwrap it
+        # so the fingerprint reflects the real credentials, not just the wrapper class.
+        wrapped_auth = getattr(auth, "auth", auth)
+        if isinstance(wrapped_auth, tuple) and len(wrapped_auth) == 2:
+            return f"auth:basic:{wrapped_auth[0]}"
+        if hasattr(wrapped_auth, "__dict__") and wrapped_auth.__dict__:
+            # Hash the full credential set (not just the username) so that e.g. a
+            # password change on an otherwise-identical auth object busts the cache key.
+            digest = hashlib.sha256(repr(sorted(wrapped_auth.__dict__.items())).encode("utf-8")).hexdigest()[:16]
+            return f"auth:{wrapped_auth.__class__.__name__}:{digest}"
+        if hasattr(wrapped_auth, "username"):
+            return f"auth:{wrapped_auth.__class__.__name__}:{getattr(wrapped_auth, 'username', '-') or '-'}"
         return f"auth:{auth.__class__.__name__}"
 
     return "-"

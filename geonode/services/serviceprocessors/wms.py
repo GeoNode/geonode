@@ -300,6 +300,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
             service.type,
             service.id,
             auth=auth,
+            auth_config=service.auth_config,
         )
         return _parsed_service
 

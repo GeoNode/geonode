@@ -47,7 +47,7 @@ from geonode.base import enumerations as base_enumerations
 from geonode.harvesting.harvesters.wms import WebMapService
 from geonode.services.utils import parse_services_types, test_resource_table_status
 
-from geonode.services import enumerations, forms
+from geonode.services import enumerations, forms, views
 from geonode.services.models import Service
 from geonode.services.serviceprocessors import (
     base,
@@ -80,6 +80,26 @@ class ModuleFunctionsTestCase(StandardTestCase):
         key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_1)
         key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_2)
         self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_is_auth_specific_for_hashable_auth_base(self):
+        # get_request_auth() (used by views._get_service_handler and
+        # GeoNodeServiceHandler.parsed_service) wraps the real requests.auth
+        # object in a HashableAuthBase, not a plain object with a `.username`
+        # attribute. The fingerprint must unwrap it rather than falling back
+        # to a fingerprint that is constant for every HashableAuthBase.
+        phony_url = "http://fake"
+        auth_config_1 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_1.payload = {"username": "alice", "password": "pw1"}
+        auth_config_2 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_2.payload = {"username": "alice", "password": "pw2"}
+
+        auth_1 = auth_handler_registry.build(auth_config_1).get_request_auth()
+        auth_2 = auth_handler_registry.build(auth_config_2).get_request_auth()
+
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=auth_1)
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=auth_2)
+        self.assertNotEqual(key_1, key_2)
+        self.assertNotIn("HashableAuthBase", key_1)
 
     def test_get_service_cache_key_has_bounded_length(self):
         very_long_url = "http://example.com/" + ("a" * 2000)
@@ -545,6 +565,36 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             self.local_user.set_password("somepassword")
             self.local_user.save()
 
+    @mock.patch("geonode.services.serviceprocessors.wms.get_service_handler")
+    @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_cleaned_url_params")
+    def test_geonode_service_handler_parsed_service_passes_auth_config(
+        self, mock_get_cleaned_url_params, mock_get_service_handler
+    ):
+        # Regression test: parsed_service used to only pass `auth=` (a
+        # HashableAuthBase-wrapped requests.auth object) to get_service_handler,
+        # without `auth_config=`, so the service cache key could not properly
+        # discriminate between different credentials for the same remote
+        # service (see get_service_cache_key / _build_auth_cache_fingerprint).
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        auth_config.save()
+
+        remote_service = mock.MagicMock()
+        remote_service.needs_authentication = True
+        remote_service.auth_config = auth_config
+        remote_service.type = enumerations.GN_WMS
+        remote_service.id = 1
+
+        cleaned_url = mock.MagicMock()
+        cleaned_url.geturl.return_value = self.phony_url
+        mock_get_cleaned_url_params.return_value = (cleaned_url, remote_service, self.phony_version, None)
+
+        handler = wms.GeoNodeServiceHandler(self.phony_url)
+        handler.parsed_service
+
+        _, kwargs = mock_get_service_handler.call_args
+        self.assertEqual(kwargs.get("auth_config"), auth_config)
+
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     def test_has_correct_url(self, mock_wms_parsed_service, mock_wms):
@@ -991,6 +1041,26 @@ class TestServiceViews(GeoNodeBaseTestSupport):
             username="test_user12", email="testuser@example.com", password="testpass123"
         )
         self.sut.clear_dirty_state()
+
+    @mock.patch("geonode.services.views.get_service_handler")
+    def test_get_service_handler_view_passes_auth_config_for_cache_key(self, mock_get_service_handler):
+        # Regression test: _get_service_handler used to only pass `auth=` (a
+        # HashableAuthBase-wrapped requests.auth object), which the service
+        # cache key fingerprint could not properly discriminate on. It must
+        # also pass `auth_config=` so the cache key changes when credentials
+        # change (see get_service_cache_key / _build_auth_cache_fingerprint).
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        auth_config.save()
+        self.sut.auth_config = auth_config
+        self.sut.save()
+
+        mock_get_service_handler.return_value = mock.MagicMock(geonode_service_id=self.sut.id)
+
+        views._get_service_handler(None, self.sut)
+
+        _, kwargs = mock_get_service_handler.call_args
+        self.assertEqual(kwargs.get("auth_config"), auth_config)
 
     def test_user_admin_can_access_to_page(self):
         self.client.login(username="admin", password="admin")

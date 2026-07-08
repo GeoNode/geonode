@@ -123,7 +123,9 @@ def _get_service_handler(request, service):
 
         auth = auth_handler_registry.build(service.auth_config).get_request_auth()
 
-    service_handler = get_service_handler(service.service_url, service.type, service.id, auth=auth)
+    service_handler = get_service_handler(
+        service.service_url, service.type, service.id, auth=auth, auth_config=service.auth_config
+    )
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
     # commented out due to jsonserializer error, will be replaced with cache
