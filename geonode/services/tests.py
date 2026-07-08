@@ -567,14 +567,17 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
 
     @mock.patch("geonode.services.serviceprocessors.wms.get_service_handler")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_cleaned_url_params")
+    @mock.patch.object(wms.GeoNodeServiceHandler, "ows_endpoint")
     def test_geonode_service_handler_parsed_service_passes_auth_config(
-        self, mock_get_cleaned_url_params, mock_get_service_handler
+        self, mock_ows_endpoint, mock_get_cleaned_url_params, mock_get_service_handler
     ):
         # Regression test: parsed_service used to only pass `auth=` (a
         # HashableAuthBase-wrapped requests.auth object) to get_service_handler,
         # without `auth_config=`, so the service cache key could not properly
         # discriminate between different credentials for the same remote
         # service (see get_service_cache_key / _build_auth_cache_fingerprint).
+        mock_ows_endpoint.return_value = self.phony_url
+
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config.payload = {"username": "test_user", "password": "test_password"}
         auth_config.save()
