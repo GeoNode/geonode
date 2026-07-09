@@ -2276,3 +2276,6 @@ FILE_UPLOAD_PERMISSIONS = 0o777
 
 # Enable or not the XLSX / XLS upload
 XLSX_UPLOAD_ENABLED = ast.literal_eval(os.getenv("XLSX_UPLOAD_ENABLED", "False"))
+
+# Trusted hosts for bypassing the URL validation e.g internal networks. Use the format <domain>:<port>
+SAFE_URL_TRUSTED_HOSTS = ast.literal_eval(os.getenv("SAFE_URL_TRUSTED_HOSTS", "[]"))
