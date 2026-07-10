@@ -2144,6 +2144,41 @@ METADATA_INDEXES = {
     "all": ["title", "abstract", "supplemental_information"],
 }
 
+# Maps ISO 639-1 (2-letter) codes to ISO 639-2 (3-letter) code(s)
+LANGUAGE_MAPPINGS = (
+    ("af", "afr"),
+    ("sq", "alb"),
+    ("am", "amh"),
+    ("ar", "ara"),
+    ("id", "ind"),
+    ("bn", "ben"),
+    ("de", ["ger", "deu"]),
+    ("en", "eng"),
+    ("es", "spa"),
+    ("fr", ["fre", "fra"]),
+    ("it", "ita"),
+    ("km", "khm"),
+    ("nl", ["dut", "nld"]),
+    ("ne", "nep"),
+    ("fa", ["per", "fas"]),
+    ("pl", "pol"),
+    ("pt", "por"),
+    ("ru", "rus"),
+    ("si", "sin"),
+    ("sw", "swa"),
+    ("sv", "swe"),
+    ("tl", "tgl"),
+    ("ta", "tam"),
+    ("uk", "ukr"),
+    ("vi", "vie"),
+    ("el", ["gre", "ell"]),
+    ("th", "tha"),
+    ("zh", ["chi", "zho"]),
+    ("ja", "jpn"),
+    ("ko", "kor"),
+    ("sk", ["slo", "slk"]),
+)
+
 # you can get the language names in psql using "\dF"
 MULTILANG_POSTGRES_LANGS = {
     None: "simple",

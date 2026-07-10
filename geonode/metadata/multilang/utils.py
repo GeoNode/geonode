@@ -59,3 +59,22 @@ def get_all_multilang_fields():
         for field in settings.MULTILANG_FIELDS
         for lang in get_2letters_languages()
     }
+
+
+def get_3_from_2(lang_2):
+    """
+    Return the preferred ISO 639-2 (3-letter) code for an ISO 639-1 code.
+    """
+    code = dict(getattr(settings, "LANGUAGE_MAPPINGS", ())).get(lang_2)
+    return code[0] if isinstance(code, (list, tuple)) else code
+
+
+def get_2_from_3(lang_3):
+    """
+    Return the ISO 639-1 (2-letter) code for a given ISO 639-2 (3-letter) code.
+    """
+    for lang_2, lang_3_codes in getattr(settings, "LANGUAGE_MAPPINGS", ()):
+        codes = lang_3_codes if isinstance(lang_3_codes, (list, tuple)) else (lang_3_codes,)
+        if lang_3 in codes:
+            return lang_2
+    return None
