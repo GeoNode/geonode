@@ -89,15 +89,18 @@ def multilang_values(field_name, metadata):
     Return all translations for a multilingual field except the default
     language.
     """
-    if not metadata or not _is_multilang_field(field_name):
+    if not isinstance(metadata, dict) or not _is_multilang_field(field_name):
         return []
 
     default_language = get_default_language()
     translations = []
+    included_languages = set()
 
     for language_code in get_2letters_languages():
-        if language_code == default_language:
+        if language_code == default_language or language_code in included_languages:
             continue
+
+        included_languages.add(language_code)
 
         translated_text = _translation_value(
             metadata,
@@ -140,17 +143,20 @@ def languages_info(metadata, fields=None):
     """
     Return descriptors for all translated languages present in the metadata.
     """
-    if not metadata:
+    if not isinstance(metadata, dict):
         return []
 
     multilingual_fields = fields if fields is not None else getattr(settings, "MULTILANG_FIELDS", ())
 
     default_language = get_default_language()
     descriptors = []
+    included_languages = set()
 
     for language_code in get_2letters_languages():
-        if language_code == default_language:
+        if language_code == default_language or language_code in included_languages:
             continue
+
+        included_languages.add(language_code)
 
         if not any(
             _has_translation(metadata, field_name, language_code)
