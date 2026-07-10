@@ -881,11 +881,12 @@ OAUTH2_PROVIDER = {
         "write": "Write scope",
         "groups": "Access to your groups",
     },
+    "OAUTH2_VALIDATOR_CLASS": "geonode.base.oauth2_validators.GeoNodeOAuth2Validator",
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
     # OpenID Connect
     "OIDC_ENABLED": True,
     "OIDC_ISS_ENDPOINT": SITEURL,
-    "OIDC_USERINFO_ENDPOINT": f"{SITEURL}api/o/v4/tokeninfo/",
+    "OIDC_USERINFO_ENDPOINT": f"{SITEURL}o/userinfo/",
     "OIDC_RSA_PRIVATE_KEY": """-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQCIThjbTwpYu4Lwqp8oA7PqD6Ij/GwpLFJuPbWVaeCDaX6T7mh8
 mJMIEgl/VIZasLH8SwU5mZ4sPeiqk7NgJq1XDo97q5mlFoNVHMCH38KQzSIBWtbq

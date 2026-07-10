@@ -136,7 +136,6 @@ def proxy(
             access_token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
     user = get_auth_user(access_token)
 
-    # Inject access_token if necessary
     parsed = urlparse(raw_url)
     parsed._replace(path=locator.encode("utf8"))
     if parsed.netloc == site_url.netloc and scheme != site_url.scheme:
@@ -151,9 +150,8 @@ def proxy(
     # to proxy the request.
     _url = URL.from_text(_url).normalize().to_text()
 
-    if request.method == "GET" and access_token and "access_token" not in _url:
-        query_separator = "&" if "?" in _url else "?"
-        _url = f"{_url}{query_separator}access_token={access_token}"
+    if access_token and "Authorization" not in headers:
+        headers["Authorization"] = f"Bearer {access_token}"
 
     _data = request.body.decode("utf-8")
 

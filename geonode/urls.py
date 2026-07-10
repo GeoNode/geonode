@@ -44,6 +44,7 @@ from geonode.utils import check_ogc_backend
 from geonode.base import register_url_event
 from .people.views import CustomSignupView, CustomLoginView, set_session_language
 from oauth2_provider.urls import app_name as oauth2_app_name, base_urlpatterns, oidc_urlpatterns
+from geonode.base.oauth2_introspect import GeoNodeIntrospectTokenView
 
 admin.autodiscover()
 
@@ -115,6 +116,9 @@ urlpatterns += [
         name="moderator_needed",
     ),
     # OAuth2/OIDC Provider
+    # Overrides the stock introspect endpoint with one that also returns `groups`,
+    # needed by GeoServer's opaque-token role resolution. 
+    re_path(r"^o/introspect/$", GeoNodeIntrospectTokenView.as_view(), name="introspect"),
     re_path(r"^o/", include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace="oauth2_provider")),
     re_path(r"^api/o/v4/tokeninfo", verify_token, name="tokeninfo"),
     # Api Views

@@ -201,7 +201,7 @@ def get_map(
             encoded_credentials = base64.b64encode(f"{_user}:{_pwd}".encode("UTF-8")).decode("ascii")
             headers["Authorization"] = f"Basic {encoded_credentials}"
         else:
-            headers["Authorization"] = f"Bearer {additional_kwargs['access_token']}"
+            headers["Authorization"] = f"Bearer {additional_kwargs.pop('access_token')}"
 
     image = None
     for retry in range(max_retries):
