@@ -1440,7 +1440,7 @@ class BaseVectorFileHandler(BaseHandler):
                     )
                     chunk_index += 1
         except Exception as e:
-            logger.exception("Error occurred during feature save in Batch %s", chunk_index)
+            logger.exception(f"Error occurred during feature save in Batch {chunk_index} ({str(e)})")
             msg = f"Error occurred during feature save in Batch {chunk_index}"
             if exec_obj and layers:
                 self._create_error_log(exec_obj, layers, [{"error": msg}])
