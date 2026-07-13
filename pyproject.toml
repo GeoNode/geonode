@@ -27,7 +27,7 @@ dependencies = [
     "Pillow==12.3.0",
     "lxml==6.1.1",
     "psycopg2==2.9.12",
-    "Django==5.2.15",
+    "Django==5.2.16",
 
     # Other
     "beautifulsoup4==4.12.3",
