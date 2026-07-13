@@ -24,10 +24,10 @@ classifiers = [
 
 # Core dependencies (consolidated from requirements.txt)
 dependencies = [
-    "Pillow==12.2.0",
+    "Pillow==12.3.0",
     "lxml==6.1.1",
     "psycopg2==2.9.12",
-    "Django==5.2.15",
+    "Django==5.2.16",
 
     # Other
     "beautifulsoup4==4.12.3",
@@ -41,7 +41,7 @@ dependencies = [
     "schema==0.7.7",
     "rdflib==6.3.2",
     "smart_open==7.0.4",
-    "PyMuPDF==1.27.2.3",
+    "PyMuPDF==1.28.0",
     "defusedxml==0.7.1",
     "zipstream-ng==1.9.2",
 
@@ -114,7 +114,7 @@ dependencies = [
     "django-bootstrap3-datetimepicker-2==2.8.3",
     # storage manager dependencies
     "django-storages==1.14.3",
-    "boto3==1.39.3",
+    "boto3==1.43.46",
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
@@ -136,7 +136,7 @@ dependencies = [
     "docker==7.0.0",
     "invoke==2.2.0",
     # tests
-    "coverage==7.5.1",
+    "coverage==7.15.1",
     "requests-toolbelt==1.0.0",
     "flake8==7.3.0",
     "black==24.4.2",
@@ -164,7 +164,7 @@ dev = [
     "pytest==8.4.2",
     "flake8==7.3.0",
     "black==24.4.2",
-    "coverage==7.5.1",
+    "coverage==7.15.1",
 ]
 docs = [
     "Sphinx",
