@@ -38,7 +38,7 @@ server {
 
 # Verify and secure credentials
 
-Credential review applies to every deployment method. For production deployments, complete this check before exposing the instance publicly. If `.env` was generated with `create-envfile.py`, double check that the generated random admin passwords and OAuth2 client credentials are the values you intend to use. If `.env` was created manually or copied from a sample, replace any default passwords and OAuth2 keys.
+Credential review applies to every deployment method. For production deployments, complete this check before exposing the instance publicly. If `.env` was generated with `create-envfile.py`, double check that the generated random admin passwords, OAuth2 client credentials, and OAuth2 API key are the values you intend to use. If `.env` was created manually or copied from a sample, replace any default passwords, OAuth2 keys, and API keys.
 
 ## Verify admin passwords
 
@@ -49,14 +49,21 @@ Credential review applies to every deployment method. For production deployments
     - Log into GeoServer at `https://my_geonode.geonode.org/geoserver`
     - Go to `Security` > `Users, Groups, and Roles` > `Users/Groups`
     - Change the admin user password
+    - Update `GEOSERVER_ADMIN_PASSWORD` in `.env` to match the new password
+    - Recreate the Django container so GeoNode reloads the updated GeoServer password:
+
+        ```bash
+        docker compose up -d django
+        ```
 
 ## Verify or update OAuth2 keys
 
-Confirm that the OAuth2 client credentials are not default or sample values. Generate new OAuth2 client credentials when the values were copied from a sample file or when you need to rotate them:
+Confirm that the OAuth2 client credentials and `OAUTH2_API_KEY` are not empty, default, or sample values. The API key strengthens the endpoints involved in GeoServer and GeoNode authentication, so it should be treated as a secret. Generate new OAuth2 values when they were copied from a sample file or when you need to rotate them:
 
-1. **Generate new OAuth2 credentials** in your `.env` file:
+1. **Generate new OAuth2 values** in your `.env` file:
 
     ```bash
+    OAUTH2_API_KEY=your_new_api_key
     OAUTH2_CLIENT_ID=your_new_client_id
     OAUTH2_CLIENT_SECRET=your_new_client_secret
     ```
@@ -77,9 +84,8 @@ Confirm that the OAuth2 client credentials are not default or sample values. Gen
     - Update `Client ID` and `Client Secret` to match your new `.env` values
     - Save the changes
 
-4. **Restart the containers**:
+4. **Recreate the containers**:
 
     ```bash
-    docker compose restart django
-    docker compose restart geoserver
+    docker compose up -d django geoserver
     ```
