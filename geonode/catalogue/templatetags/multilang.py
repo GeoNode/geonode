@@ -124,16 +124,23 @@ def language_info(lang_3):
     """
     Return information about a single ISO639-2 language.
     """
-    lang_2 = get_2_from_3(lang_3)
+    if not lang_3:
+        lang_2 = get_default_language()
+        lang_3 = get_3_from_2(lang_2) or "eng"
+    elif len(lang_3) == 2:
+        lang_2 = lang_3
+        lang_3 = get_3_from_2(lang_2) or "eng"
+    else:
+        lang_2 = get_2_from_3(lang_3)
 
-    if lang_2 is None:
-        logger.warning(
-            "No ISO639-1 language found for '%s'; using the ISO639-2 code as the label.",
-            lang_3,
-        )
+        if lang_2 is None:
+            logger.warning(
+                "No ISO639-1 language found for '%s'; using the ISO639-2 code as the label.",
+                lang_3,
+            )
 
     return _language_descriptor(
-        lang_2 or lang_3,
+        lang_2,
         lang_3,
     )
 
