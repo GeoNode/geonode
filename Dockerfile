@@ -1,5 +1,4 @@
 FROM geonode/geonode-base:latest-ubuntu-26.04
-LABEL GeoNode development team
 
 LABEL maintainer="GeoNode development team"
 
