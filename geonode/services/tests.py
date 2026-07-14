@@ -83,10 +83,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertNotEqual(key_1, key_2)
 
     def test_get_service_cache_key_changes_when_saved_auth_config_payload_changes(self):
-        # Regression test: the fingerprint for a *saved* AuthConfig used to be
-        # just `authcfg:<id>`, so editing the payload of an existing AuthConfig
-        # in place (e.g. rotating a password) would not bust the service
-        # handler cache key, and a stale handler could keep being served.
+        # A password change on a saved AuthConfig must bust the cache key.
         phony_url = "http://fake"
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config.payload = {"username": "alice", "password": "pw1"}
@@ -105,11 +102,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertNotEqual(key_before, key_after)
 
     def test_get_service_cache_key_is_auth_specific_for_hashable_auth_base(self):
-        # get_request_auth() (used by views._get_service_handler and
-        # GeoNodeServiceHandler.parsed_service) wraps the real requests.auth
-        # object in a HashableAuthBase, not a plain object with a `.username`
-        # attribute. The fingerprint must unwrap it rather than falling back
-        # to a fingerprint that is constant for every HashableAuthBase.
+        # get_request_auth() wraps the real auth object in a HashableAuthBase;
+        # the fingerprint must unwrap it instead of treating every instance alike.
         phony_url = "http://fake"
         auth_config_1 = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config_1.payload = {"username": "alice", "password": "pw1"}
@@ -125,18 +119,14 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertNotIn("HashableAuthBase", key_1)
 
     def test_get_service_cache_key_is_auth_specific_for_tuple_auth(self):
-        # Regression test: the tuple `(username, password)` auth branch used
-        # to only fingerprint the username, so a password rotation for the
-        # same username would not bust the cache key.
+        # A password change must bust the key even with the same username.
         phony_url = "http://fake"
         key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=("bob", "pw1"))
         key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=("bob", "pw2"))
         self.assertNotEqual(key_1, key_2)
 
     def test_get_service_cache_key_does_not_embed_plaintext_credentials(self):
-        # The auth fingerprint must not leak the raw credentials into the
-        # cache key, since cache keys can be visible via cache-backend
-        # introspection (e.g. Redis SCAN) even when values are opaque.
+        # Cache keys can leak via backend introspection, so no raw credentials.
         phony_url = "http://fake"
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config.payload = {"username": "alice", "password": "super-secret-password"}
@@ -146,13 +136,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertNotIn("alice", key)
 
     def test_get_service_cache_key_is_stable_across_auth_config_save(self):
-        # Regression test: the auth fingerprint used to switch from
-        # "authcfg:unsaved:..." to "authcfg:<id>:..." the moment an AuthConfig
-        # was saved (e.g. inside handler.create_geonode_service), leaving an
-        # orphaned, unreachable cache entry behind on every registration. The
-        # fingerprint must depend only on the payload content, not on whether
-        # (or under which id) the AuthConfig has been saved - service_id
-        # already scopes the overall cache key to a single Service.
+        # Saving an AuthConfig must not change its fingerprint (avoids an
+        # orphaned cache entry from before create_geonode_service saves it).
         phony_url = "http://fake"
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config.payload = {"username": "alice", "password": "pw1"}
@@ -213,11 +198,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
     @mock.patch("geonode.services.serviceprocessors.base.build_unique_resource_name")
     def test_create_with_unique_name_retries_on_integrity_error(self, mock_build_unique_resource_name):
-        # Regression test: build_unique_resource_name's existence check isn't
-        # atomic with the caller's actual create(), so two concurrent
-        # registrations can land on the same candidate name and trip the DB's
-        # uniqueness constraint. create_with_unique_name must retry with a
-        # freshly generated candidate instead of surfacing the IntegrityError.
+        # Must retry with a fresh candidate instead of surfacing IntegrityError.
         mock_build_unique_resource_name.side_effect = ["candidate-1", "candidate-2"]
         calls = []
 
@@ -240,6 +221,32 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
         with self.assertRaises(IntegrityError):
             base.create_with_unique_name("svc", always_fails, max_attempts=3)
+
+    @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
+    def test_get_service_handler_does_not_cache_without_service_id(self, mock_get_handler_class):
+        # Without a service_id, two unrelated calls must not share a cached handler.
+        handler_class = mock.MagicMock(side_effect=lambda *a, **k: mock.MagicMock())
+        mock_get_handler_class.return_value = handler_class
+        phony_url = "http://fake"
+
+        handler_1 = get_service_handler(phony_url, service_type=enumerations.WMS)
+        handler_2 = get_service_handler(phony_url, service_type=enumerations.WMS)
+
+        self.assertEqual(handler_class.call_count, 2)
+        self.assertIsNot(handler_1, handler_2)
+
+    @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
+    def test_get_service_handler_caches_when_service_id_present(self, mock_get_handler_class):
+        handler_class = mock.MagicMock(side_effect=lambda *a, **k: mock.MagicMock())
+        mock_get_handler_class.return_value = handler_class
+        # Unique URL: LocMemCache isn't reset between test runs.
+        phony_url = f"http://fake/{uuid4()}"
+
+        handler_1 = get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
+        handler_2 = get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
+
+        self.assertEqual(handler_class.call_count, 1)
+        self.assertIs(handler_1, handler_2)
 
     @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
     def test_get_service_handler_wms(self, mock_get_handler_class):
@@ -666,14 +673,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     def test_geonode_service_handler_parsed_service_passes_auth_config(
         self, mock_ows_endpoint, mock_get_cleaned_url_params, mock_get_service_handler
     ):
-        # Regression test: parsed_service used to read auth off the local `service`
-        # variable returned by get_cleaned_url_params, which is just the raw
-        # `service=` query-string value (or None), not a Service model instance -
-        # so `.needs_authentication`/`.auth_config` would raise AttributeError as
-        # soon as this property actually ran. Auth must come from self.kwargs,
-        # same as WmsServiceHandler.parsed_service, and the recursive
-        # get_service_handler call must resolve the underlying OWS endpoint as
-        # plain WMS (not GN_WMS again) using this handler's own geonode_service_id.
+        # `service` from get_cleaned_url_params is a query-string value, not a
+        # Service model; auth must come from self.kwargs instead.
         mock_ows_endpoint.return_value = self.phony_url
 
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
@@ -1142,11 +1143,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     @mock.patch("geonode.services.views.get_service_handler")
     def test_get_service_handler_view_passes_auth_config_for_cache_key(self, mock_get_service_handler):
-        # Regression test: _get_service_handler used to only pass `auth=` (a
-        # HashableAuthBase-wrapped requests.auth object), which the service
-        # cache key fingerprint could not properly discriminate on. It must
-        # also pass `auth_config=` so the cache key changes when credentials
-        # change (see get_service_cache_key / ServiceHandlerCache._build_auth_fingerprint).
+        # Must pass auth_config= too, not just auth=, so the cache key varies by credentials.
         auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
         auth_config.payload = {"username": "test_user", "password": "test_password"}
         auth_config.save()

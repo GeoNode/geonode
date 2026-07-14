@@ -91,7 +91,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def probe(self):
         try:
-            return True if len(self.parsed_service._json_struct) > 0 else False
+            return len(self.parsed_service._json_struct) > 0
         except Exception:
             return False
 

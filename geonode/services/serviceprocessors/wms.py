@@ -70,7 +70,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         get_args = parsed_url.query
         # Converting URL arguments to dict
         parsed_get_args = dict(parse_qsl(get_args))
-        # Strip out redoundant args
+        # Strip out redundant args
         _version = parsed_get_args.pop("version", "1.3.0") if "version" in parsed_get_args else "1.3.0"
         _service = parsed_get_args.pop("service") if "service" in parsed_get_args else None
         _request = parsed_get_args.pop("request") if "request" in parsed_get_args else None
@@ -104,7 +104,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
 
     def probe(self):
         try:
-            return True if len(self.parsed_service.contents) > 0 else False
+            return len(self.parsed_service.contents) > 0
         except Exception:
             return False
 
@@ -297,10 +297,8 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     @property
     def parsed_service(self):
-        # get_cleaned_url_params's 2nd return value is the raw `service=` query-param
-        # string (or None), not a Service model instance. This handler's own auth,
-        # like WmsServiceHandler.parsed_service above, comes from self.kwargs, since
-        # no Service row may exist yet (e.g. during create_geonode_service).
+        # 2nd return value is the raw `service=` query param, not a Service model;
+        # auth comes from self.kwargs, as no Service row may exist yet.
         cleaned_url, _, version, _request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
         auth = self.kwargs.get("auth")
         auth_config = self.kwargs.get("auth_config")

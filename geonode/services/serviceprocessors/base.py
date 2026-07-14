@@ -70,18 +70,13 @@ def build_unique_resource_name(name, max_length=255):
 
 
 def create_with_unique_name(name, create_fn, max_length=255, max_attempts=3):
-    """Call create_fn(unique_name) with a freshly generated unique candidate name,
-    retrying under a new candidate if a concurrent registration raced us to the
-    same name and tripped the DB's uniqueness constraint on Service.name.
+    """Call create_fn(unique_name), retrying with a fresh candidate on IntegrityError.
 
-    build_unique_resource_name's own existence check is not atomic with the
-    caller's actual create(), so two concurrent registrations can still land
-    on the same candidate; this retries the whole attempt with a fresh name
-    instead of surfacing the resulting IntegrityError to the caller.
+    build_unique_resource_name's check isn't atomic with the caller's create(),
+    so two concurrent registrations can still race for the same name.
 
-    :arg create_fn: callable invoked with the candidate name; must perform the
-        actual object creation(s) and raise IntegrityError if the name turned
-        out to already be taken.
+    :arg create_fn: creates the object(s); must raise IntegrityError if the
+        name turned out to already be taken.
     """
     for attempt in range(max_attempts):
         candidate = build_unique_resource_name(name, max_length=max_length)
