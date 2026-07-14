@@ -131,6 +131,7 @@ services:
   db:
     # use geonode official postgis 15 image
     image: geonode/postgis:15-3.5-latest
+    entrypoint: ["/usr/local/bin/geonode-postgres-entrypoint.sh"]
     command:
       - postgres
       - -c
@@ -141,9 +142,9 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
+      - ./docker/postgresql/docker-entrypoint-wrapper.sh:/usr/local/bin/geonode-postgres-entrypoint.sh:ro
       - ./docker/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ./docker/postgresql/conf.d:/etc/postgresql/conf.d:ro
-      - ./docker/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
     restart: unless-stopped
     healthcheck:
       test: "pg_isready -d postgres -U postgres"
