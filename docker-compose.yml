@@ -126,23 +126,9 @@ services:
       - tmp:/tmp
     restart: unless-stopped
     depends_on:
-      data-dir-conf:
-        condition: service_healthy
       django:
         condition: service_healthy
 
-  data-dir-conf:
-    image: geonode/geoserver_data:2.28.x-latest
-    container_name: gsconf4${COMPOSE_PROJECT_NAME}
-    entrypoint: sleep infinity
-    volumes:
-      - geoserver-data-dir:/geoserver_data/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "[ $$(ls -A /geoserver_data/data | wc -l) -gt 0 ] || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
   # PostGIS database.
   db:

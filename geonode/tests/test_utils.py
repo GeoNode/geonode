@@ -380,3 +380,38 @@ class TestIsSafeURL(djangoTestCase):
 
         self.assertTrue(result)
         self.assertIsNone(blocked_url)
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:9090"])
+    def test_trusted_host_with_private_ip_is_allowed(self):
+        """Hosts in SAFE_URL_TRUSTED_HOSTS should bypass IP validation even if they resolve to a private IP."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host:9090/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:9090"])
+    def test_non_trusted_host_with_private_ip_is_rejected(self):
+        """Hosts not in SAFE_URL_TRUSTED_HOSTS should still be rejected when resolving to a private IP."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertFalse(is_safe_url("https://other.private.host:9090/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:9090"])
+    def test_trusted_host_without_port_is_not_matched(self):
+        """A trusted host entry with port should not match the same host without a port."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertFalse(is_safe_url("https://internal.private.host/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:443"])
+    def test_trusted_host_implicit_default_port_is_matched(self):
+        """A URL without an explicit port should match a trusted host entry with the default port."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["INTERNAL.PRIVATE.HOST:9090"])
+    def test_trusted_host_case_insensitive(self):
+        """Trusted host matching should be case-insensitive."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host:9090/geoserver/ows"))

@@ -256,7 +256,7 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
             return HttpResponse("Asset does not contain any data", status=500)
 
         if len(asset.location) > 1:
-            logger.warning("TODO: Asset contains more than one file. Download needs to be implemented")
+            logger.warning("TODO: Asset contains more than one file. Only first file will be returned")
 
         file0 = asset.location[0]
         if not path:  # use the file definition
@@ -266,10 +266,6 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
             localfile = file0
 
         else:  # a specific file is requested
-            if "/../" in path:  # we may want to improve fraudolent request detection
-                logger.warning(f"Tentative path traversal for asset {asset.id}")
-                return HttpResponse(f"File not found for asset {asset.id}", status=400)
-
             if os.path.isfile(file0):
                 dir0 = os.path.dirname(file0)
             elif os.path.isdir(file0):
@@ -279,6 +275,13 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
 
             localfile = os.path.join(dir0, path)
             logger.debug(f"Requested path {dir0} + {path}")
+
+            # check the requested file is within the asset's directory
+            localfile = os.path.realpath(localfile)
+            realassetpath = os.path.realpath(dir0)
+            if os.path.commonpath([realassetpath, localfile]) != realassetpath:
+                logger.error(f"Tentative path traversal for asset {asset.id} on path [{path}]")
+                return HttpResponse(f"File not found for asset {asset.id}", status=400)
 
         if os.path.isfile(localfile):
             filename = os.path.basename(localfile)

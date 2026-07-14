@@ -34,6 +34,9 @@ python create-envfile.py
 - `--clientid`: Client id of Geoserver's GeoNode Oauth2 client. A random value is set if left empty
 - `--clientsecret`: Client secret of Geoserver's GeoNode Oauth2 client. A random value is set if left empty
 
+!!! note
+    When password or OAuth2 arguments are omitted, `create-envfile.py` writes random values to `.env`. Review the generated values before starting the containers and keep the admin passwords available for the first login.
+
 ### Build and run
 
 Finally, to build and run GeoNode run the following:
@@ -47,12 +50,16 @@ If the build is successful, you will be able to navigate on GeoNode project at `
 
 ### Login as an administrator on GeoNode
 
-To connect on the GeoNode project as administrator, use the credentials from the `.env` file:
+The admin credentials depend on how `.env` was created. If you used `create-envfile.py` without passing explicit `--geonodepwd` or `--geoserverpwd` values, check the generated `.env` file for the random passwords.
+
+To connect on the GeoNode project as administrator, use the GeoNode credentials from the `.env` file:
 
 ```bash
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD={geonodepwd}
 ```
+
+For production deployments, also verify the generated or configured admin passwords and OAuth2 client credentials before exposing the instance publicly. See [Verify and secure credentials](../configuration/hardening.md#verify-and-secure-credentials).
 
 ### Test the instance and follow the logs
 
@@ -88,7 +95,7 @@ The container performs these initialization steps before starting the applicatio
 3. **Static files** – collects static assets.
 4. **Thesauri autoload** – scans all installed apps for a ``thesauri/`` directory and loads (or updates) any ``.rdf`` files found there. This makes sure thesauri shipped by GeoNode apps are always up-to-date.
 
-See [Thesauri – Initialization at boot](../../../admin/thesauri/thesauri.md#initialization-at-boot) for more details on the thesaurus autoload step.
+See [Thesauri - Initialization at boot](../../admin/thesauri/thesauri.md#initialization-at-boot) for more details on the thesaurus autoload step.
 
 To exit just hit `CTRL+C`.
 
@@ -146,5 +153,3 @@ cd ~/geonode
 # stop containers and remove volumes
 docker-compose down -v
 ```
-
-

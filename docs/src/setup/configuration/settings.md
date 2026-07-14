@@ -1377,6 +1377,25 @@ If ``RESOURCE_OWNERSHIP_ADMIN_USERNAME`` is not set, GeoNode defaults to ``admin
 
 ## S
 
+**SAFE_URL_TRUSTED_HOSTS**
+
+
+:   - Default: ``[]``
+    - Env: ``SAFE_URL_TRUSTED_HOSTS``
+
+A list of trusted hosts that bypass GeoNode's URL safety validation. The most common use case is allowing connections to remote services hosted on private networks (e.g. corporate intranet, VPN). Hosts resolving to loopback, link-local, multicast or reserved IP addresses, as well as hosts not resolvable via public DNS, are also blocked by default and can be allowed through this setting.
+
+Hosts must be specified in ``domain:port`` format. Standard ports (``80`` for HTTP, ``443`` for HTTPS) are inferred automatically from the URL scheme, so they must still be listed explicitly in this setting.
+
+Example:
+
+```python
+SAFE_URL_TRUSTED_HOSTS = ['internal.geoserver.example.com:8443', 'internal.geoserver.example.com:443']
+```
+
+!!! warning
+    Only add hosts you fully trust.
+
 **SEARCH_FILTERS**
 
 
