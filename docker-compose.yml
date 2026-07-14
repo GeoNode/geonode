@@ -6,7 +6,7 @@ x-common-django:
       dockerfile: Dockerfile
   restart: unless-stopped
   env_file:
-    - .env${ENVIRONMENT:+_${ENVIRONMENT}}
+    - .env${ENVIRONMENT:+_}${ENVIRONMENT:-}
   volumes:
     - '.:/usr/src/geonode'
     - statics:/mnt/volumes/statics
@@ -60,7 +60,7 @@ services:
     image: geonode/nginx:1.31.2-latest
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
-      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
+      - .env${ENVIRONMENT:+_}${ENVIRONMENT:-}
     environment:
       - RESOLVER=127.0.0.11
     ports:
@@ -96,7 +96,7 @@ services:
     image: geonode/letsencrypt:2.6.0-latest
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
     env_file:
-      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
+      - .env${ENVIRONMENT:+_}${ENVIRONMENT:-}
     volumes:
       - nginx-certificates:/geonode-certificates
     restart: unless-stopped
@@ -115,7 +115,7 @@ services:
       timeout: 10s
       retries: 3
     env_file:
-      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
+      - .env${ENVIRONMENT:+_}${ENVIRONMENT:-}
     ports:
       - "8080:8080"
     volumes:
@@ -137,7 +137,7 @@ services:
     command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS:-200}"
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
-      - .env${ENVIRONMENT:+_${ENVIRONMENT}}
+      - .env${ENVIRONMENT:+_}${ENVIRONMENT:-}
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
