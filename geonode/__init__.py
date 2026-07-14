@@ -19,13 +19,19 @@
 
 import os
 
-__version__ = (5, 0, 0, "dev", 0)
+__version__ = (5, 1, 0, "dev", 0)
 
 
 def get_version():
     import geonode.version
 
     return geonode.version.get_version(__version__)
+
+
+# PEP 440 compliant version string, referenced by pyproject.toml's dynamic
+# version (a plain string attribute, so setuptools doesn't have to stringify the
+# __version__ tuple, which would produce an invalid version like "5.1.0.final.0").
+__version_str__ = get_version()
 
 
 def main(_, **settings):

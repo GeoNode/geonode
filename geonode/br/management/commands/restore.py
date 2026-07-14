@@ -33,7 +33,6 @@ from datetime import datetime
 
 from .utils import utils
 
-from distutils import dir_util
 from requests.auth import HTTPBasicAuth
 from urllib.parse import urlparse, urljoin
 
@@ -425,6 +424,9 @@ class Command(BaseCommand):
                 logger.info("*** Sync layers with GeoServer...")
                 call_command("sync_geonode_datasets", updatepermissions=True, ignore_errors=True)
 
+                logger.info("*** Running reindex to populate search indexes...")
+                call_command("reindex")
+
                 if notify:
                     restore_notification.apply_async(args=(admin_emails, backup_file, backup_md5), expiration=30)
 
@@ -748,4 +750,4 @@ class Command(BaseCommand):
         logger.info("*** Restoring GeoServer external resources...")
         external_folder = os.path.join(target_folder, utils.EXTERNAL_ROOT)
         if os.path.exists(external_folder):
-            dir_util.copy_tree(external_folder, "/")
+            shutil.copytree(external_folder, "/", dirs_exist_ok=True)

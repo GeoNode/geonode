@@ -1034,7 +1034,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.assertIn("version=1.3.0", wms)
 
         # Test OWS Download Links
-        from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
+        from geonode.geoserver.ows import wcs_links, wfs_links
 
         instance = create_single_dataset("san_andres_y_providencia_water")
         instance.name = "san_andres_y_providencia_water"
@@ -1097,7 +1097,9 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(instance.default_style.name)
 
         # WMS Links
-        wms_links = wms_links(f"{ogc_settings.public_url}wms?", instance.alternate, bbox, srid, height, width)
+        wms_links = instance.prepare_wms_links(
+            f"{ogc_settings.public_url}wms?", instance.alternate, bbox, srid, height, width
+        )
         self.assertIsNotNone(wms_links)
         self.assertEqual(len(wms_links), 3)
         wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, "wms")

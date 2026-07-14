@@ -26,6 +26,7 @@ Replace these with more appropriate tests for your application.
 import json
 import io
 import zipfile
+from threading import Event, Thread
 
 from urllib.parse import urljoin
 
@@ -35,6 +36,7 @@ from geonode.assets.utils import create_asset_and_link
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.timezone import now
 from unittest.mock import patch
 
 try:
@@ -70,6 +72,55 @@ class ProxyTest(TestCase):
         super().setUp()
         self.admin = get_user_model().objects.get(username="admin")
 
+    def test_register_host_lazy_initializes_registry(self):
+        registry = ProxyUrlsRegistry()
+
+        def initialize_registry():
+            registry.proxy_allowed_hosts = ["existing.test"]
+            registry._last_registry_load = now()
+
+        registry._initialize = MagicMock(side_effect=initialize_registry)
+
+        registry.register_host("remote.test")
+
+        registry._initialize.assert_called_once()
+        self.assertEqual({"existing.test", "remote.test"}, registry.proxy_allowed_hosts)
+
+    def test_concurrent_lazy_initialization_runs_once(self):
+        registry = ProxyUrlsRegistry()
+        initialization_started = Event()
+        release_initialization = Event()
+        errors = []
+
+        def initialize_registry():
+            initialization_started.set()
+            release_initialization.wait(5)
+            registry.proxy_allowed_hosts = ["existing.test"]
+            registry._last_registry_load = now()
+
+        registry._initialize = MagicMock(side_effect=initialize_registry)
+
+        def read_registry():
+            try:
+                registry.proxy_allowed_hosts
+            except Exception as exc:
+                errors.append(exc)
+
+        first_thread = Thread(target=read_registry)
+        second_thread = Thread(target=read_registry)
+
+        first_thread.start()
+        initialization_started.wait(5)
+        second_thread.start()
+        release_initialization.set()
+        first_thread.join(5)
+        second_thread.join(5)
+
+        self.assertFalse(first_thread.is_alive())
+        self.assertFalse(second_thread.is_alive())
+        self.assertEqual([], errors)
+        registry._initialize.assert_called_once()
+
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([TEST_DOMAIN]))
     def test_proxy_allowed_host(self):
         """If PROXY_ALLOWED_HOSTS is not empty and DEBUG is False requests should return no error."""
@@ -103,7 +154,8 @@ class ProxyTest(TestCase):
 
     @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=(), PROXY_ALLOWED_PATH_NEEDLES=())
     # @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
-    def test_validate_remote_links_hosts(self):
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    def test_validate_remote_links_hosts(self, _mock_is_safe_url):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 200
         for Remote Services hosts."""
         from geonode.base.models import Link
@@ -198,7 +250,8 @@ class ProxyTest(TestCase):
         }
         self.assertTrue(expected_subset.items() <= dict(response.headers.copy()).items())
 
-    def test_proxy_url_forgery(self):
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    def test_proxy_url_forgery(self, _mock_is_safe_url):
         import geonode.proxy.views
         from urllib.parse import urlsplit
 
@@ -252,6 +305,31 @@ class ProxyTest(TestCase):
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 200)
+
+    def test_rejects_unsafe_schemes(self):
+        """Proxy should reject non-http(s) and script-based schemes."""
+        urls = [
+            "ftp://example.com/file.txt",  # Unsupported scheme
+            "file:///etc/passwd",  # Local file access
+            "javascript:alert(1)",  # JS execution vector
+            "javascript://example.com/%0aalert(1)",  # Obfuscated JS payload
+            "data:text/html,<script>alert(1)</script>",  # Inline script payload
+        ]
+
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.client.get(f"{self.proxy_url}?url={url}")
+                self.assertEqual(response.status_code, 403)
+
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_rejects_dns_resolution_to_private_ip(self, mock_dns):
+        """Even valid domains should be rejected if they resolve to private IPs."""
+        mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
+
+        url = "http://example.com"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
 
 
 class DownloadResourceTestCase(TestCase):

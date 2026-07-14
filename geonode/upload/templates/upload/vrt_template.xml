@@ -2,6 +2,11 @@
   <OGRVRTLayer name="{{ layer_name|escape }}">
     <SrcDataSource>{{ source_filepath|escape }}</SrcDataSource>
     <SrcLayer>{{ original_layer_name|escape }}</SrcLayer>
+    {% if geometry_wkt_field %}
+    <GeometryField encoding="WKT" field="{{ geometry_wkt_field|escape }}" />
+    {% elif geometry_from_columns %}
+    <GeometryField encoding="PointFromColumns" x="{{ geometry_from_columns.x|escape }}" y="{{ geometry_from_columns.y|escape }}" />
+    {% endif %}
     {% for field in fields %}
     <Field name="{{ field.name|escape }}" src="{{ field.src|escape }}" type="{{ field.type|escape }}" />
     {% endfor %}

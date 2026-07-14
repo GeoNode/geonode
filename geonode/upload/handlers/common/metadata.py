@@ -55,7 +55,6 @@ class MetadataFileHandler(BaseHandler):
         return {
             "dataset_title": _data.pop("dataset_title", None),
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action"),
@@ -65,15 +64,17 @@ class MetadataFileHandler(BaseHandler):
     def perform_last_step(execution_id):
         BaseHandler.perform_last_step(execution_id=execution_id)
 
-    def pre_validation(self, files, execution_id, **kwargs):
+    def pre_processing(self, files, execution_id, **kwargs):
         """
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
+        _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
         _exec = orchestrator.get_execution_object(exec_id=execution_id)
         dataset = MetadataFileHandler()._get_resource(_exec)
         # assign the resource to the execution_obj
         orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
+        return _data, execution_id
 
     def import_resource(self, files: dict, execution_id: str, **kwargs):
         _exec = orchestrator.get_execution_object(execution_id)

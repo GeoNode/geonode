@@ -18,7 +18,6 @@
 #########################################################################
 import logging
 
-from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.upload.utils import UploadLimitValidator
 from geopackage_validator.validate import validate
@@ -27,6 +26,7 @@ from osgeo import ogr
 
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.utils import ImporterRequestAction as ira
+from geonode.upload.orchestrator import orchestrator
 
 logger = logging.getLogger("importer")
 
@@ -36,26 +36,6 @@ class GPKGFileHandler(BaseVectorFileHandler):
     Handler to import GPK files into GeoNode data db
     It must provide the task_lists required to comple the upload
     """
-
-    TASKS = {
-        exa.UPLOAD.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
-        exa.COPY.value: (
-            "start_copy",
-            "geonode.upload.copy_dynamic_model",
-            "geonode.upload.copy_geonode_data_table",
-            "geonode.upload.publish_resource",
-            "geonode.upload.copy_geonode_resource",
-        ),
-        ira.ROLLBACK.value: (
-            "start_rollback",
-            "geonode.upload.rollback",
-        ),
-    }
 
     @property
     def supported_file_extension_config(self):
@@ -69,6 +49,15 @@ class GPKGFileHandler(BaseVectorFileHandler):
             ],
             "actions": list(self.TASKS.keys()),
             "type": "vector",
+        }
+
+    @property
+    def upload_validation_config(self):
+        # libmagic reports application/vnd.sqlite3 on modern builds but may
+        # fall back to application/octet-stream on older ones; validate via
+        # the description string for cross-version robustness.
+        return {
+            "gpkg": {"description_contains": {"SQLite", "GeoPackage"}},
         }
 
     @property
@@ -118,12 +107,12 @@ class GPKGFileHandler(BaseVectorFileHandler):
         actual_upload = upload_validator._get_parallel_uploads_count()
         max_upload = upload_validator._get_max_parallel_uploads()
 
-        layers = GPKGFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
+        layers = GPKGFileHandler().open_source_file(files)
 
         if not layers:
             raise InvalidGeopackageException("The geopackage provided is invalid")
 
-        layers_count = len(layers)
+        layers_count = layers[0].GetLayerCount()
 
         if layers_count >= max_upload:
             raise UploadParallelismLimitException(
@@ -161,3 +150,12 @@ class GPKGFileHandler(BaseVectorFileHandler):
         Not implemented for GPKG, skipping
         """
         pass
+
+    def _select_valid_layers(self, all_layers, **kwargs):
+        layers = super()._select_valid_layers(all_layers=all_layers, **kwargs)
+        if execution_id := kwargs.get("execution_id", None):
+            exec_obj = orchestrator.get_execution_object(execution_id)
+            if exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
+                if len(layers) > 1:
+                    raise InvalidGeopackageException("For Upsert and Replace, only one layer is allowed in the GPKG")
+        return layers

@@ -133,6 +133,12 @@ class Profile(AbstractUser):
         choices=TIMEZONES,
         blank=True,
     )
+    extra_data = models.JSONField(
+        _("Extra Data"),
+        blank=True,
+        default=dict,
+        help_text=_("additional profile-related attributes"),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -202,7 +208,7 @@ class Profile(AbstractUser):
 
     @property
     def perms(self):
-        return permissions_registry.get_db_perms_by_user(self)
+        return permissions_registry.get_perms(user=self)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

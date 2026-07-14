@@ -24,10 +24,14 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import taggit
 
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.auth_registry import auth_handler_registry
+from geonode.security.models import AuthConfig
+
 from . import enumerations
-from .models import Service
+from .models import Service, get_service_type_choices
 from .serviceprocessors import get_service_handler
-from geonode.services.serviceprocessors import get_available_service_types
+from geonode.utils import is_safe_url
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +47,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=[(k, v["label"]) for k, v in get_available_service_types().items()],  # from dictionary to tuple
+        choices=get_service_type_choices,
         initial="AUTO",
     )
 
@@ -65,6 +69,10 @@ class CreateServiceForm(forms.Form):
 
     def clean_url(self):
         proposed_url = self.cleaned_data["url"]
+
+        if not is_safe_url(proposed_url):
+            raise ValidationError(_("Invalid URL provided"))
+
         existing = Service.objects.filter(base_url=proposed_url).exists()
         if existing:
             raise ValidationError(_("Service %(url)s is already registered"), params={"url": proposed_url})
@@ -75,13 +83,22 @@ class CreateServiceForm(forms.Form):
         super().clean()
         url = self.cleaned_data.get("url")
         service_type = self.cleaned_data.get("type")
+        username = self.cleaned_data.get("username", None)
+        password = self.cleaned_data.get("password", None)
         if url is not None and service_type is not None:
             try:
+                auth_config = None
+                if username is not None or password is not None:
+                    payload = {"username": username, "password": password}
+                    auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+                    auth_handler_cls = auth_handler_registry.get_handler_class(auth_config.type)
+                    auth_handler_cls.validate(payload)
+                    auth_config.payload = payload
+
                 service_handler = get_service_handler(
                     base_url=url,
                     service_type=service_type,
-                    username=self.cleaned_data.get("username", None),
-                    password=self.cleaned_data.get("password", None),
+                    auth_config=auth_config,
                 )
             except Exception as e:
                 logger.error(f"CreateServiceForm cleaning error: {e}")

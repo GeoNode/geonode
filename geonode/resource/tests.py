@@ -23,21 +23,35 @@ from uuid import uuid4
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import ResourceManager
+from geonode.resource.manager import BaseResourceManager
 from geonode.base.models import LinkedResource, ResourceBase
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.maps.models import Map, MapLayer
+from geonode.geoapps.models import GeoApp
 from geonode.resource import settings as rm_settings
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import create_single_doc, create_single_map, create_single_dataset
 from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.security.registry import permissions_registry
+from geonode.resource.registry import (
+    resource_manager_registry,
+    document_manager,
+    dataset_manager,
+    map_manager,
+    geoapp_manager,
+)
+from geonode.layers.manager import DatasetResourceManager
+from geonode.geoapps.manager import GeoAppResourceManager
+from geonode.maps.manager import MapResourceManager
+from geonode.documents.manager import DocumentResourceManager
+from geonode.resource.registry import ResourceManagerRegistry
 
 from gisdata import GOOD_DATA
 
@@ -67,13 +81,13 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             email="test@test.com",
         )
 
-        self.rm = ResourceManager()
+        self.rm = BaseResourceManager()
 
     def test_get_concrete_manager(self):
         original_r_m_c_c = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS
         # mock class
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = "geonode.resource.tests.ResourceManagerClassTest"
-        rm = ResourceManager()
+        rm = BaseResourceManager()
         self.assertEqual(rm._concrete_resource_manager.__class__.__name__, "ResourceManagerClassTest")
         # re assign class to original
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = original_r_m_c_c
@@ -122,6 +136,100 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         new_uuid = str(uuid4())
         res = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
         self.assertEqual(res, Dataset.objects.get(uuid=new_uuid))
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=False,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_keeps_uploader_as_owner_when_auto_assign_disabled(self):
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_parity_feature_off"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, self.user)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_assigns_admin_owner_and_grants_uploader_manage(self):
+        admin = get_user_model().objects.get(username="admin")
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_auto_assign_admin"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, admin)
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "delete_resourcebase",
+                include_virtual=True,
+            )
+        )
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="resource_owner_not_admin",
+    )
+    def test_create_fallbacks_to_first_superuser_when_configured_owner_not_superuser(self):
+        non_admin = get_user_model().objects.create_user(
+            username="resource_owner_not_admin",
+            email="resource_owner_not_admin@test.com",
+        )
+        new_uuid = str(uuid4())
+        map_defaults = {"owner": self.user, "title": "create_owner_fallback_not_admin"}
+        resource = self.rm.create(new_uuid, resource_type=Map, defaults=map_defaults)
+        self.assertNotEqual(resource.owner, non_admin)
+        self.assertTrue(resource.owner.is_superuser)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="   ",
+    )
+    def test_create_fallbacks_to_admin_when_username_setting_blank(self):
+        admin = get_user_model().objects.get(username="admin")
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_blank_username"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, admin)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_handler_applies_only_on_creation_flag(self):
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_creation_only_handler"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner.username, "admin")
+        self.assertNotEqual(resource.owner, self.user)
+
+        # On non-creation updates, uploader perms should follow the explicit payload and not be auto-forced to manage.
+        perm_spec = {"users": {self.user.username: ["view_resourcebase"]}, "groups": {}}
+        self.assertTrue(self.rm.set_permissions(resource.uuid, instance=resource, permissions=perm_spec, created=False))
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "delete_resourcebase",
+                include_virtual=True,
+            )
+        )
 
     def test_update(self):
         dt = create_single_dataset("test_update_dataset")
@@ -277,7 +385,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         )
 
     def test_remove_permissions(self):
-        with self.settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
+        with self.settings(DEFAULT_ANONYMOUS_PERMISSIONS="view"):
             dt = create_single_dataset("test_dataset")
             map = create_single_map("test_exec_map")
             self.assertFalse(self.rm.remove_permissions("invalid", instance=None))
@@ -315,7 +423,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         # Test with no specified permissions
         with patch("geonode.security.utils.skip_registered_members_common_group") as mock_v:
             mock_v.return_value = True
-            with self.settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False, DEFAULT_ANONYMOUS_VIEW_PERMISSION=False):
+            with self.settings(DEFAULT_ANONYMOUS_PERMISSIONS="none"):
                 self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
                 self.assertFalse(anonymous.has_perm("view_resourcebase", dt.get_self_resource()))
                 self.assertFalse(anonymous.has_perm("download_resourcebase", dt.get_self_resource()))
@@ -363,3 +471,71 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             ),
             "Error in using SCALE image algo",
         )
+
+
+class DummyDocumentManager(BaseResourceManager):
+    handled_model = Document
+
+
+class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(b"dataset")
+        create_models(b"map")
+        create_models(b"document")
+
+    def setUp(self):
+        super().setUp()
+        self.registry = ResourceManagerRegistry()
+        self.registry.reset()
+        resource_manager_registry.init_registry()
+
+    def tearDown(self):
+        self.registry.reset()
+        super().tearDown()
+
+    def test_get_for_model_real_managers(self):
+        self.assertIsInstance(resource_manager_registry.get_for_model(Document), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Map), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Dataset), DatasetResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(GeoApp), GeoAppResourceManager)
+
+    def test_lazy_loader_real_managers(self):
+        self.assertIsInstance(document_manager.get_instance(), DocumentResourceManager)
+        self.assertIsInstance(map_manager.get_instance(), MapResourceManager)
+        self.assertIsInstance(dataset_manager.get_instance(), DatasetResourceManager)
+        self.assertIsInstance(geoapp_manager.get_instance(), GeoAppResourceManager)
+
+    def test_get_for_instance_from_objects(self):
+        doc = Document.objects.first()
+        map_obj = Map.objects.first()
+        ds = Dataset.objects.first()
+        self.assertIsInstance(resource_manager_registry.get_for_instance(doc), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(map_obj), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(ds), DatasetResourceManager)
+
+    def test_add_and_get_for_instance(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_model(Document), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_instance(doc), mgr)
+
+    def test_remove_missing_manager_raises(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.registry.remove(Document)
+        with self.assertRaises(ValueError):
+            self.registry.get_for_model(Document)
+
+    def test_get_for_type_and_uuid(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_type("document"), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_uuid(doc.uuid), mgr)
+
+    def test_get_for_instance_none_raises(self):
+        with self.assertRaises(ValueError):
+            self.registry.get_for_instance(None)

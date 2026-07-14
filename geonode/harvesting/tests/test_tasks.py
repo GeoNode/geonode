@@ -251,6 +251,45 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         # Assert chord was called with expiration
         mock_chord.return_value.apply_async.assert_called_once_with(args=(), expires=123)
 
+    @mock.patch("geonode.harvesting.models.Harvester.get_harvester_worker")
+    def test_update_batch_corrects_title_mismatch(self, mock_get_worker):
+        """
+        Verify that if a remote resource title changes, the existing
+        HarvestableResource is updated instead of causing an IntegrityError.
+        """
+        # Setup the session to be "ON_GOING" so the task doesn't skip it
+        self.harvesting_session.status = models.AsynchronousHarvestingSession.STATUS_ON_GOING
+        self.harvesting_session.save()
+
+        # Pick one of the resources created in setUpTestData
+        # Let's say we target 'fake-identifier-0' which currently has 'fake-title-0'
+        target_uid = "fake-identifier-0"
+        new_remote_title = "COMPLETELY_NEW_TITLE_FROM_WMS"
+
+        # Mock the worker to return the resource with the new title
+        mock_remote_resource = mock.MagicMock()
+        mock_remote_resource.unique_identifier = target_uid
+        mock_remote_resource.title = new_remote_title
+        mock_remote_resource.resource_type = "fake-remote-resource-type"
+
+        mock_worker = mock.MagicMock()
+        mock_worker.list_resources.return_value = [mock_remote_resource]
+        mock_get_worker.return_value = mock_worker
+
+        # Run the batch task using the session ID from setUpTestData
+        # We process page 0 with page_size 1 to just handle our mocked resource
+        tasks._update_harvestable_resources_batch(self.harvesting_session.pk, page=0, page_size=1)
+
+        # ASSERTIONS
+        # Fetch the resource from the DB to see if it updated
+        resource = models.HarvestableResource.objects.get(unique_identifier=target_uid)
+
+        # Verify the title was updated correctly
+        self.assertEqual(resource.title, new_remote_title)
+
+        # Verify no new records were created (count should still be 3 from setUpTestData)
+        self.assertEqual(models.HarvestableResource.objects.count(), 3)
+
     def test_harvesting_scheduler(self):
         mock_harvester = mock.MagicMock(spec=models.Harvester).return_value
         mock_harvester.scheduling_enabled = True

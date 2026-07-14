@@ -171,7 +171,6 @@ class DatasetSerializer(ResourceBaseSerializer):
                 + (
                     "uuid",
                     "name",
-                    "metadata",
                     "attribute_set",
                     "charset",
                     "is_mosaic",
@@ -189,6 +188,7 @@ class DatasetSerializer(ResourceBaseSerializer):
                     "store",
                     "subtype",
                     "ptype",
+                    "is_tabular",
                 )
             )
         )

@@ -17,15 +17,24 @@ class MultiLangViewMixin:
 
     def get_queryset(self):
         """Adds a Prefetch to include localized fields in one query."""
-        lang = multi.get_language(getattr(self, "request", None))
-        field_names = multi.get_multilang_fields_for_lang(lang)
+
+        request = getattr(self, "request", None)
+        params = getattr(request, "query_params", None) or getattr(request, "GET", {})
+        include_i18n = params.get("include_i18n", "false").lower() == "true" if request else False
+        lang = multi.get_language(request)
+
+        if include_i18n:
+            field_map = multi.get_all_multilang_fields()
+            field_names = list(field_map.values())
+        else:
+            field_names = multi.get_multilang_fields_for_lang(lang)
 
         qs = super().get_queryset()
 
         if not field_names:
             return qs
 
-        # Prefetch all localized rows for this language
+        # Prefetch the localized rows
         prefetch = Prefetch(
             "sparsefield_set",  # this must match related_name on FK
             queryset=SparseField.objects.filter(name__in=field_names),

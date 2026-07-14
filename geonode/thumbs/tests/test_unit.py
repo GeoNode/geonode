@@ -27,11 +27,13 @@ from django.contrib.gis.geos import Polygon
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, document_manager, geoapp_manager
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
 from geonode.layers.models import Dataset
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
@@ -131,7 +133,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_resourcebase(self):
-        base_resource = resource_manager.create(
+        base_resource = resource_manager_registry.get_for_model(ResourceBase).create(
             None, ResourceBase, defaults={"owner": get_user_model().objects.get(username="admin")}
         )
         thumbnail_name = thumbnails._generate_thumbnail_name(base_resource)
@@ -166,7 +168,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_document(self):
-        doc = resource_manager.create(
+        doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -181,7 +183,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_geoapp(self):
-        geo_app = resource_manager.create(
+        geo_app = geoapp_manager.create(
             None,
             resource_type=GeoApp,
             defaults=dict(
@@ -201,7 +203,17 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         locations, bbox = thumbnails._datasets_locations(dataset)
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], {}]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], None]])
+
+    def test_get_auth_should_use_dataset_auth_config(self):
+        dataset = Dataset.objects.get(title="theaters_nyc")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "dataset_user", "password": "dataset_password"})
+        dataset.auth_config = auth_config
+        dataset.save()
+
+        auth = thumbnails._get_auth(dataset)
+
+        self.assertEqual(auth_handler_registry.build(auth_config).get_request_auth(), auth)
 
     def test_datasets_locations_dataset_default_bbox(self):
         expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.0930337105, 4984363.884452854, "EPSG:3857"]
@@ -211,7 +223,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], {}]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], None]])
 
     def test_datasets_locations_dataset_bbox(self):
         dataset = Dataset.objects.get(title="theaters_nyc")
@@ -222,7 +234,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(
             bbox[-1].lower(), dataset.bbox[-1].lower(), "Expected calculated BBOX's CRS to match dataset's"
         )
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], {}]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], None]])
 
     def test_datasets_locations_simple_map(self):
         dataset = Dataset.objects.get(title="theaters_nyc")
@@ -243,7 +255,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
                     settings.OGC_SERVER["default"]["LOCATION"],
                     [dataset.alternate, "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1"],
                     ["theaters_nyc", "test_style"],
-                    {},
+                    None,
                 ]
             ],
         )
@@ -259,7 +271,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
         self.assertEqual(
-            locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"], {}]]
+            locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"], None]]
         )
 
     def test_datasets_locations_composition_map_default_bbox(self):
@@ -272,7 +284,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
                     "rt_geologia.dbg_risorse_minerarie",
                 ],
                 [],
-                {},
+                None,
             ]
         ]
 

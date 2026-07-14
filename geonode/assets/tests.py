@@ -381,7 +381,7 @@ class AssetsDownloadTests(APITestCase):
         any user without download permissions
         cannot download the asset
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry, dataset_manager
         from geonode.layers.models import Dataset
         from guardian.shortcuts import get_anonymous_user
 
@@ -393,7 +393,7 @@ class AssetsDownloadTests(APITestCase):
             resource = None
             try:
                 # creating resoruce
-                resource = resource_manager.create(
+                resource = dataset_manager.create(
                     None, resource_type=Dataset, defaults={"owner": bobby, "asset": asset}
                 )
                 # getting perms
@@ -403,7 +403,9 @@ class AssetsDownloadTests(APITestCase):
                 # and anonymous just to be sure
                 resource_perms["groups"][get_anonymous_user().groups.first()] = ["view_resourcebase"]
                 # resetting the permissions for the resource
-                resource_manager.set_permissions(resource.uuid, instance=resource, permissions=resource_perms)
+                resource_manager_registry.get_for_instance(resource).set_permissions(
+                    resource.uuid, instance=resource, permissions=resource_perms
+                )
                 url = reverse("assets-download", kwargs={"pk": asset.pk})
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 403)
@@ -412,6 +414,49 @@ class AssetsDownloadTests(APITestCase):
             finally:
                 if resource:
                     resource.delete()
+
+    def test_cross_download(self):
+
+        admin, _ = get_user_model().objects.get_or_create(username="admin")
+        user1, _ = get_user_model().objects.get_or_create(username="user1")
+        user2, _ = get_user_model().objects.get_or_create(username="user2")
+
+        asset_handler = asset_handler_registry.get_default_handler()
+
+        assets = []
+        for user, file in ((user1, ONE_JSON), (user2, TWO_JSON)):
+            asset1 = asset_handler.create(
+                title="Test Asset1",
+                description="Description of test asset",
+                type="NeverMind",
+                owner=user1,
+                files=[file],
+                clone_files=True,
+            )
+            asset1.save()
+            self.assertIsInstance(asset1, LocalAsset)
+            assets.append(asset1)
+
+        # check that user1 can access file1
+        self.client.force_login(user1)
+
+        args = {"pk": assets[0].pk, "path": "one.json"}
+        url = reverse("assets-link", kwargs=args)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # check that user1 can NOT access file2 using asset1 link/download
+        a2path = assets[1].location[0]
+        logger.debug(f"Asset path {a2path}")
+        a2dir = a2path.split("/")[-2]
+        logger.debug(f"Asset dir  {a2dir}")
+        forged_path = f"../{a2dir}/two.json"  # path will be automatically urlencoded into "%2e%2e%2f{a2dir}%2ftwo.json"
+
+        args = {"pk": assets[0].pk, "path": forged_path}
+        url = reverse("assets-link", kwargs=args)
+        logger.debug(f"Reverse link URL is {url}")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 400)
 
     def _setup_test(self, u, _file=ONE_JSON):
         asset_handler = asset_handler_registry.get_default_handler()

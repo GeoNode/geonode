@@ -38,8 +38,11 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.harvesting.models import Harvester
 from geonode.layers.models import Dataset
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.models import AuthConfig
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.base import enumerations as base_enumerations
 from geonode.harvesting.harvesters.wms import WebMapService
 from geonode.services.utils import parse_services_types, test_resource_table_status
@@ -48,6 +51,7 @@ from . import enumerations, forms
 from .models import Service
 from .serviceprocessors import base, wms, arcgis, get_service_handler, get_available_service_types
 from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
+from .serviceprocessors.registry import ServiceTypeRegistry, service_type_registry
 
 logger = logging.getLogger(__name__)
 
@@ -93,16 +97,14 @@ class ModuleFunctionsTestCase(StandardTestCase):
             mock_settings.CASCADE_WORKSPACE, f"http://www.geonode.org/{mock_settings.CASCADE_WORKSPACE}"
         )
 
-    @mock.patch("geonode.services.serviceprocessors.get_available_service_types", autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.service_type_registry.get_handler_class", autospec=True)
     def test_get_service_handler_wms(self, mock_wms_handler):
         class PickableMagicMock(mock.MagicMock):
             def __reduce__(self):
                 return (mock.MagicMock, ())
 
         _handler = PickableMagicMock()
-        mock_wms_handler.return_value = {
-            enumerations.WMS: {"OWS": True, "handler": _handler, "label": "Web Map Service"}
-        }
+        mock_wms_handler.return_value = _handler
         phony_url = "http://fake"
         get_service_handler(phony_url, service_type=enumerations.WMS)
         _handler.assert_called_with(phony_url, None)
@@ -340,6 +342,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
     @skip("test to be revisioned")
     @mock.patch("arcrest.MapService", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_arcgis_alternative_structure(self, mock_map_service):
         LayerESRIExtent = namedtuple("LayerESRIExtent", "spatialReference xmin ymin ymax xmax")
         LayerESRIExtentSpatialReference = namedtuple("LayerESRIExtentSpatialReference", "wkid latestWkid")
@@ -448,7 +451,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             result = handler.create_geonode_service(test_user)
             geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
             handler._harvest_resource(dataset_meta, geonode_service)
             geonode_dataset = Dataset.objects.filter(remote_service=geonode_service).get()
@@ -459,7 +462,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             response = self.client.get(reverse("dataset_embed", args=(geonode_dataset.name,)))
             self.assertEqual(response.status_code, 200)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
         except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
             logger.error(e)
@@ -595,6 +598,26 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertTrue(result.metadata_only)
 
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
+    @mock.patch.object(wms.WmsServiceHandler, "parsed_service")
+    def test_create_geonode_service_with_basic_auth_config(self, mock_wms_parsed_service, mock_wms):
+        mock_wms.return_value = (self.phony_url, self.parsed_wms)
+        mock_wms_parsed_service.return_value = self.parsed_wms
+        mock_wms_parsed_service.provider.url = self.phony_url
+        mock_wms_parsed_service.identification.title = self.phony_title
+        mock_wms_parsed_service.identification.version = self.phony_version
+
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        handler = wms.WmsServiceHandler(self.phony_url, auth_config=auth_config)
+        result = handler.create_geonode_service(self.test_user)
+
+        self.assertIsNotNone(result.auth_config)
+        self.assertEqual(result.auth_config.type, "basic")
+
+        auth_handler = auth_handler_registry.build(result.auth_config)
+        self.assertEqual(auth_handler.get_credentials(), ("test_user", "test_password"))
+
+    @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     def test_geonode_service_uses_given_getmap_params(self, mock_wms_parsed_service, mock_wms):
         phony_url = (
@@ -664,6 +687,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resources", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resource", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_resources(self, mock_wms_get_resource, mock_wms_get_resources, mock_wms_parsed_service, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
@@ -683,7 +707,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         try:
             geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
             result = list(handler.get_resources())
             dataset_meta = handler.get_resource(result[0].name)
@@ -735,6 +759,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         )
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse("register_service"))
@@ -805,6 +830,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertFalse(Harvester.objects.filter(id=harvester.id).exists())
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_add_duplicate_remote_service_url(self):
         form_data = {
             "url": "https://gs-stable.geo-solutions.it/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities",
@@ -933,6 +959,9 @@ class TestServiceViews(GeoNodeBaseTestSupport):
             metadata_only=True,
             base_url="http://bogus.pocus.com/ows",
         )
+        self.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
         self.sut.clear_dirty_state()
 
     def test_user_admin_can_access_to_page(self):
@@ -942,6 +971,24 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     def test_anonymous_user_can_see_the_services(self):
         response = self.client.get(reverse("services"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_allowed_for_admin(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_denied_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 401)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_register_service_allowed_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
         self.assertEqual(response.status_code, 200)
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
@@ -977,38 +1024,83 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
     def test_will_use_multiple_service_types_defined_for_choices(self):
-        elems = get_available_service_types()
-        expected = {
-            "WMS": {"OWS": True, "handler": wms.WmsServiceHandler, "label": "Web Map Service"},
-            "GN_WMS": {"OWS": True, "handler": wms.GeoNodeServiceHandler, "label": "GeoNode (Web Map Service)"},
-            "REST_MAP": {"OWS": False, "handler": ArcMapServiceHandler, "label": "ArcGIS REST MapServer"},
-            "REST_IMG": {"OWS": False, "handler": ArcImageServiceHandler, "label": "ArcGIS REST ImageServer"},
-            "test": {
-                "OWS": True,
-                "handler": "TestHandler",
-                "label": "Test Number 1",
-                "management_view": "path.to.view1",
-            },
-            "test2": {
+        service_type_registry.reset()
+        try:
+            elems = get_available_service_types()
+            expected = {
+                "WMS": {"OWS": True, "handler": wms.WmsServiceHandler, "label": "Web Map Service"},
+                "GN_WMS": {"OWS": True, "handler": wms.GeoNodeServiceHandler, "label": "GeoNode (Web Map Service)"},
+                "REST_MAP": {"OWS": False, "handler": ArcMapServiceHandler, "label": "ArcGIS REST MapServer"},
+                "REST_IMG": {"OWS": False, "handler": ArcImageServiceHandler, "label": "ArcGIS REST ImageServer"},
+                "test": {
+                    "OWS": True,
+                    "handler": "TestHandler",
+                    "label": "Test Number 1",
+                    "management_view": "path.to.view1",
+                },
+                "test2": {
+                    "OWS": False,
+                    "handler": "TestHandler2",
+                    "label": "Test Number 2",
+                    "management_view": "path.to.view2",
+                },
+                "test3": {
+                    "OWS": True,
+                    "handler": "TestHandler3",
+                    "label": "Test Number 3",
+                    "management_view": "path.to.view3",
+                },
+                "test4": {
+                    "OWS": False,
+                    "handler": "TestHandler4",
+                    "label": "Test Number 4",
+                    "management_view": "path.to.view4",
+                },
+            }
+            self.assertDictEqual(expected, elems)
+        finally:
+            service_type_registry.reset()
+
+    def test_service_type_registry_should_register_service_type(self):
+        registry = ServiceTypeRegistry()
+        registry.register(
+            "CUSTOM",
+            handler="path.to.CustomServiceHandler",
+            label="Custom Service",
+            OWS=False,
+            management_view="path.to.view",
+        )
+
+        self.assertEqual(
+            {
                 "OWS": False,
-                "handler": "TestHandler2",
-                "label": "Test Number 2",
-                "management_view": "path.to.view2",
+                "handler": "path.to.CustomServiceHandler",
+                "label": "Custom Service",
+                "management_view": "path.to.view",
             },
-            "test3": {
-                "OWS": True,
-                "handler": "TestHandler3",
-                "label": "Test Number 3",
-                "management_view": "path.to.view3",
-            },
-            "test4": {
-                "OWS": False,
-                "handler": "TestHandler4",
-                "label": "Test Number 4",
-                "management_view": "path.to.view4",
-            },
-        }
-        self.assertDictEqual(expected, elems)
+            registry.registry["CUSTOM"],
+        )
+
+    def test_service_type_registry_should_unregister_service_type(self):
+        registry = ServiceTypeRegistry()
+        registry.register("CUSTOM", handler="path.to.CustomServiceHandler", label="Custom Service")
+
+        self.assertIn("CUSTOM", registry.registry)
+        registry.unregister("CUSTOM")
+
+        self.assertNotIn("CUSTOM", registry.registry)
+
+    @override_settings(SERVICES_TYPE_MODULES=["geonode.services.tests.dummy_services_type_handler"])
+    def test_service_type_registry_should_load_configured_service_types(self):
+        registry = ServiceTypeRegistry()
+
+        self.assertIn("test_handler", registry.get_available_service_types())
+
+    @override_settings(SERVICES_TYPE_MODULES=["geonode.services.tests.dummy_services_type_handler"])
+    def test_service_type_registry_should_return_handler_class(self):
+        registry = ServiceTypeRegistry()
+
+        self.assertEqual(wms.WmsServiceHandler, registry.get_handler_class("test_handler"))
 
 
 """
@@ -1036,5 +1128,15 @@ class dummy_services_type2:
             "handler": "TestHandler4",
             "label": "Test Number 4",
             "management_view": "path.to.view4",
+        },
+    }
+
+
+class dummy_services_type_handler:
+    services_type = {
+        "test_handler": {
+            "OWS": False,
+            "handler": "geonode.services.serviceprocessors.wms.WmsServiceHandler",
+            "label": "Test Handler",
         },
     }

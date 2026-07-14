@@ -17,20 +17,19 @@
 #
 #########################################################################
 from rest_framework import serializers
-from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 from geonode.base.models import ResourceBase
+from geonode.upload.api.serializer import BaseImporterSerializer
 
 
-class MetadataFileSerializer(DynamicModelSerializer):
+class MetadataFileSerializer(BaseImporterSerializer):
     class Meta:
         ref_name = "MetadataFileSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ("overwrite_existing_layer", "resource_pk", "base_file", "action")
+        fields = ("resource_pk", "base_file", "action")
 
     base_file = serializers.FileField()
-    overwrite_existing_layer = serializers.BooleanField(required=False, default=True)
     resource_pk = serializers.IntegerField(required=True)
     action = serializers.CharField(required=False, default=exa.UPLOAD.value)

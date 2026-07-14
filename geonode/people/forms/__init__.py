@@ -24,6 +24,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
 
+from geonode.people.utils import get_profile_language_choices
+
 # Ported in from django-registration
 attrs_dict = {"class": "required"}
 
@@ -49,18 +51,29 @@ class ProfileForm(forms.ModelForm):
         label=_("Keywords"), required=False, help_text=_("A space or comma-separated list of keywords")
     )
 
+    language = forms.ChoiceField(
+        label=_("Language"),
+        choices=get_profile_language_choices,
+    )
+
     class Meta:
         model = get_user_model()
-        exclude = (
-            "user",
-            "password",
-            "last_login",
-            "groups",
-            "user_permissions",
-            "username",
-            "is_staff",
-            "is_superuser",
-            "is_active",
-            "date_joined",
+        # Explicitly listing fields instead of exclude them
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "organization",
+            "profile",
+            "position",
+            "voice",
+            "fax",
+            "delivery",
+            "city",
+            "area",
+            "zipcode",
+            "country",
             "language",
+            "keywords",
+            "timezone",
         )

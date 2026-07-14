@@ -19,6 +19,7 @@
 
 import copy
 import json
+import logging
 import pprint
 import jsonschema
 import collections
@@ -31,6 +32,9 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from geonode.utils import build_absolute_uri
 from geonode.groups.conf import settings as groups_settings
+
+logger = logging.getLogger(__name__)
+
 
 """
 Permissions will be managed according to a "compact" set:
@@ -113,14 +117,6 @@ DATASET_ADMIN_PERMISSIONS = DATASET_EDIT_DATA_PERMISSIONS + DATASET_EDIT_STYLE_P
 
 SERVICE_PERMISSIONS = ["add_service", "delete_service", "change_resourcebase_metadata", "add_resourcebase_from_service"]
 
-DEFAULT_PERMISSIONS = []
-if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
-    DEFAULT_PERMISSIONS += VIEW_PERMISSIONS
-if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
-    DEFAULT_PERMISSIONS += DOWNLOAD_PERMISSIONS
-
-DEFAULT_PERMS_SPEC = json.dumps({"users": {"AnonymousUser": DEFAULT_PERMISSIONS}, "groups": {}})
-
 NONE_RIGHTS = "none"
 VIEW_RIGHTS = "view"
 DOWNLOAD_RIGHTS = "download"
@@ -136,6 +132,79 @@ COMPACT_RIGHT_MODES = (
     (OWNER_RIGHTS, "owner"),
 )
 
+VALID_ANONYMOUS_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, NONE_RIGHTS}
+VALID_REGISTERED_MEMBERS_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS, NONE_RIGHTS}
+
+
+def _normalize_compact_permission(raw_value, valid_values, setting_name):
+    """
+    Normalize a compact permission value against the allowed set.
+
+    `valid_values` is caller-provided and defines which compact values are
+    accepted for the specific setting (e.g. anonymous vs registered-members).
+    Returns normalized lowercase value when valid, otherwise None.
+    """
+    if raw_value is None:
+        return None
+    normalized_value = str(raw_value).strip().lower()
+    if normalized_value in ("", NONE_RIGHTS):
+        return None
+    if normalized_value not in valid_values:
+        logger.warning(
+            "%s contains unsupported value '%s'. Defaulting to 'none'.",
+            setting_name,
+            normalized_value,
+        )
+        return None
+    return normalized_value
+
+
+def get_default_anonymous_compact_permission():
+    """
+    Resolve the default anonymous compact permission from settings.
+
+    Reads DEFAULT_ANONYMOUS_PERMISSIONS and returns a normalized compact
+    value (e.g. "view", "download") or None when unset/none/invalid.
+    """
+    raw_value = getattr(settings, "DEFAULT_ANONYMOUS_PERMISSIONS", None)
+    if raw_value is None:
+        return None
+    return _normalize_compact_permission(
+        raw_value,
+        VALID_ANONYMOUS_COMPACT_PERMISSIONS,
+        "DEFAULT_ANONYMOUS_PERMISSIONS",
+    )
+
+
+def get_default_registered_members_compact_permission():
+    """
+    Resolve the default registered-members compact permission from settings.
+
+    Reads DEFAULT_REGISTERED_MEMBERS_PERMISSIONS and returns a normalized
+    compact value (e.g. "view", "download", "edit", "manage") or None
+    when unset/none/invalid.
+    """
+    raw_value = getattr(settings, "DEFAULT_REGISTERED_MEMBERS_PERMISSIONS", None)
+    if raw_value is None:
+        return None
+    return _normalize_compact_permission(
+        raw_value,
+        VALID_REGISTERED_MEMBERS_COMPACT_PERMISSIONS,
+        "DEFAULT_REGISTERED_MEMBERS_PERMISSIONS",
+    )
+
+
+def get_default_anonymous_permissions_list():
+    compact_perm = get_default_anonymous_compact_permission()
+    if compact_perm == VIEW_RIGHTS:
+        return VIEW_PERMISSIONS
+    if compact_perm == DOWNLOAD_RIGHTS:
+        return VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+    return []
+
+
+DEFAULT_PERMISSIONS = get_default_anonymous_permissions_list()
+DEFAULT_PERMS_SPEC = json.dumps({"users": {"AnonymousUser": DEFAULT_PERMISSIONS}, "groups": {}})
 
 PERM_SPEC_COMPACT_SCHEMA = {
     "$schema": "http://json-schema.org/draft-04/schema#",
@@ -342,6 +411,11 @@ class PermSpecConverterBase(object):
         # if possible
         if not isinstance(json, dict):
             self._binding_failed("expected dict, got %s", type(json))
+        # ``pop`` below mutates this dict; copy so callers (and any
+        # caller-owned references via shared list items) stay intact. Each
+        # recursive ``_bind_json`` call does the same for its own input, so a
+        # shallow copy at every level is sufficient.
+        json = dict(json)
         for binding in self._bindings:
             val = json.pop(binding.name, None)
             if binding.expected and val is None:
@@ -670,6 +744,75 @@ class PermSpecCompact(PermSpecConverterBase):
                 )
         return json.copy()
 
+    def diff(self, other: "PermSpecCompact") -> "PermSpecCompactDiff":
+        """Compute the differences between ``self`` and ``other``.
+
+        ``self`` is treated as the current state and ``other`` as the proposed
+        one. Returns a :class:`PermSpecCompactDiff` describing the mutations
+        needed to move from ``self`` to ``other``, bucketed by
+        ``users`` / ``organizations`` / ``groups``:
+
+        - ``added``   — entries present in ``other`` but not in ``self``.
+        - ``removed`` — entries present in ``self`` but not in ``other``.
+        - ``changed`` — entries present in both with a different ``permissions``
+          value; each item carries ``from`` and ``to`` to describe the
+          transition.
+
+        Entities are matched by ``id``. ``"none"`` is treated as a permission
+        value, not as absence — callers wanting to collapse it to a removal
+        can post-process the result.
+        """
+
+        # Index each bucket's entries by id so membership/lookup is O(1).
+        # Duplicate ids in the same bucket are first-wins (matches merge()).
+        def _index(entries):
+            indexed = {}
+            for entry in entries or []:
+                entry_id = getattr(entry, "id", None)
+                if entry_id is None or entry_id in indexed:
+                    continue
+                indexed[entry_id] = entry
+            return indexed
+
+        # Serialize an indexed entry back to its dict form for the diff payload.
+        def _payload(entry):
+            return entry._to_json_object(top_level=False)
+
+        buckets = {}
+        # Iterate the same buckets the compact spec already defines
+        # (users / organizations / groups), driven by _bindings so the diff
+        # stays in lockstep with the schema.
+        for bucket in (b.name for b in self._bindings):
+            current = _index(getattr(self, bucket, None))
+            proposed = _index(getattr(other, bucket, None))
+
+            # Set algebra over ids gives us the three mutation kinds in one shot:
+            #   added   = proposed \ current   (ids only in other)
+            #   removed = current  \ proposed  (ids only in self)
+            #   changed = proposed ∩ current   (ids in both, filtered by perm)
+            # "none" is a legal permission value, not absence — equal perms on
+            # both sides (including "none" == "none") yield no entry at all.
+            added = [_payload(proposed[i]) for i in proposed.keys() - current.keys()]
+            removed = [_payload(current[i]) for i in current.keys() - proposed.keys()]
+            changed = []
+            for entry_id in current.keys() & proposed.keys():
+                before = current[entry_id].permissions
+                after = proposed[entry_id].permissions
+                if before == after:
+                    continue
+                # Build the changed entry from the proposed side (so identifier
+                # fields reflect the latest values), then replace the single
+                # "permissions" key with the explicit from/to transition —
+                # validators downstream need direction, not just the new value.
+                payload = _payload(proposed[entry_id])
+                payload.pop("permissions", None)
+                payload["from"] = before
+                payload["to"] = after
+                changed.append(payload)
+
+            buckets[bucket] = {"added": added, "removed": removed, "changed": changed}
+        return PermSpecCompactDiff(**buckets)
+
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):
         """Merges 'perm_spec_compact_patch' to the current one.
 
@@ -691,6 +834,98 @@ class PermSpecCompact(PermSpecConverterBase):
                         getattr(self, _elem).append(_up)
                     else:
                         getattr(self, _elem).add(_up)
+
+
+class PermSpecCompactDiff:
+    """Structured result of diffing two ``PermSpecCompact`` instances.
+
+    The diff is bucketed (``users`` / ``organizations`` / ``groups``); each
+    bucket carries ``added`` / ``removed`` / ``changed`` lists describing the
+    mutations needed to move from a current to a proposed state. ``added`` and
+    ``removed`` items are full compact entries (with ``permissions``);
+    ``changed`` items carry identifying fields plus ``from`` / ``to`` to
+    describe the permission transition.
+
+    See :meth:`PermSpecCompact.diff` for how an instance is produced and
+    :meth:`apply` for how to materialize the result onto a current compact
+    spec.
+    """
+
+    _BUCKETS = ("users", "organizations", "groups")
+
+    def __init__(self, users=None, organizations=None, groups=None):
+        self.users = self._normalize_bucket(users)
+        self.organizations = self._normalize_bucket(organizations)
+        self.groups = self._normalize_bucket(groups)
+
+    @staticmethod
+    def _normalize_bucket(bucket):
+        bucket = bucket or {}
+        return {
+            "added": list(bucket.get("added", []) or []),
+            "removed": list(bucket.get("removed", []) or []),
+            "changed": list(bucket.get("changed", []) or []),
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        data = data or {}
+        return cls(
+            users=data.get("users"),
+            organizations=data.get("organizations"),
+            groups=data.get("groups"),
+        )
+
+    def to_dict(self):
+        return {bucket: dict(getattr(self, bucket)) for bucket in self._BUCKETS}
+
+    def is_empty(self):
+        for bucket in self._BUCKETS:
+            entries = getattr(self, bucket)
+            if entries["added"] or entries["removed"] or entries["changed"]:
+                return False
+        return True
+
+    def apply(self, current_perms_compact, resource) -> "PermSpecCompact":
+        """Materialize the diff on top of a current compact spec.
+
+        ``current_perms_compact`` is the dict-shaped compact spec to start
+        from; ``resource`` is the target resource (used by the underlying
+        ``PermSpecCompact`` constructor). Within each bucket: ``removed``
+        entries are dropped by id, ``changed`` entries update the
+        ``permissions`` of existing entries (matched by id), and ``added``
+        entries are appended (replacing any pre-existing entry with the same
+        id so the operation is idempotent against stale diffs).
+        """
+        result = PermSpecCompact(current_perms_compact, resource)
+        binding_cls_by_bucket = {b.name: b.binding for b in result._bindings}
+
+        for bucket, binding_cls in binding_cls_by_bucket.items():
+            bucket_diff = getattr(self, bucket)
+            entries = getattr(result, bucket, None) or []
+            setattr(result, bucket, entries)
+
+            removed_ids = {e["id"] for e in bucket_diff["removed"] if e.get("id") is not None}
+            if removed_ids:
+                entries[:] = [e for e in entries if e.id not in removed_ids]
+
+            change_map = {e["id"]: e["to"] for e in bucket_diff["changed"] if e.get("id") is not None}
+            if change_map:
+                for e in entries:
+                    if e.id in change_map:
+                        e.permissions = change_map[e.id]
+
+            added_ids = {new.get("id") for new in bucket_diff["added"] if new.get("id") is not None}
+            if added_ids:
+                entries[:] = [e for e in entries if e.id not in added_ids]
+            for new in bucket_diff["added"]:
+                if new.get("id") is not None:
+                    entries.append(binding_cls(new, resource, parent=result))
+
+        return result
+
+    def __repr__(self):
+        return f"PermSpecCompactDiff({self.to_dict()!r})"
 
 
 def get_compact_perms_list(

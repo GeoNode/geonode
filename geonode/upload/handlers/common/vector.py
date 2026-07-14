@@ -33,7 +33,8 @@ import json
 import logging
 import os
 from subprocess import PIPE, Popen
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
+import shlex
 from celery import chord, group
 from django.db import transaction
 
@@ -56,9 +57,9 @@ from geonode.upload.handlers.utils import (
     drop_dynamic_model_schema,
     create_layer_key,
 )
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
-from osgeo import ogr
+from osgeo import ogr, gdal
 from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.celery_app import importer_app
 from geonode.assets.utils import copy_assets_and_links, get_default_asset
@@ -68,7 +69,6 @@ from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
 
-import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
@@ -193,7 +193,6 @@ class BaseVectorFileHandler(BaseHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -223,11 +222,16 @@ class BaseVectorFileHandler(BaseHandler):
                 raise e
         return True
 
-    def pre_validation(self, files, execution_id, **kwargs):
-        """
-        Hook for let the handler prepare the data before the validation.
-        Maybe a file rename, assign the resource to the execution_id
-        """
+    def evaluate_exec_prev_status(self, action, resource_pk):
+        if not resource_pk:
+            return True, None
+        res = ResourceBase.objects.filter(pk=resource_pk).first()
+        if not res:
+            return True, None
+        if res.subtype in ["3dtiles"] and action in (ira.REPLACE.value, ira.UPSERT.value):
+            reason = "Replace or Upsert are not possible on an existing 3Dtile"
+            return False, reason
+        return True, None
 
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
@@ -279,9 +283,10 @@ class BaseVectorFileHandler(BaseHandler):
         # vrt file is aready created in import_resource and vrt will be auto detected by ogr2ogr
         # and also the base_file will work so can be used as alternative for fallback which will also be autodeteced by ogr2ogr.
         input_file = files.get("temp_vrt_file") or files.get("base_file")
-        options += f'"{input_file}"' + f" -lco FID={DEFAULT_PK_COLUMN_NAME} "
 
-        options += f'-nln {alternate} "{original_name}"'
+        options += f" {shlex.quote(input_file)} -lco FID={DEFAULT_PK_COLUMN_NAME} "
+
+        options += f" -nln {shlex.quote(alternate)} {shlex.quote(original_name)}"
 
         if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
             options += " -nlt PROMOTE_TO_MULTI"
@@ -308,19 +313,48 @@ class BaseVectorFileHandler(BaseHandler):
         if not ogr_exe:
             raise Exception("ogr2ogr executable not found.")
 
-        command = [
-            ogr_exe,
-            "-f",
-            "PostgreSQL",
-            db_connection_string,
-            db_connection_string,
-            "-nln",
-            new_table_name,
-            original_table_name,
-            "-overwrite",
-        ]
-        process = Popen(command, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
+        copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
+
+        base_args = ["-nln", new_table_name, original_table_name, "-overwrite"]
+
+        if copy_with_dump:
+            command = [
+                ogr_exe,
+                "--config",
+                "PG_USE_COPY",
+                "YES",
+                "-f",
+                "PGDump",
+                "/vsistdout/",
+                db_connection_string,
+            ] + base_args
+
+            host = _datastore.get("HOST") or "localhost"
+            port = str(_datastore.get("PORT") or 5432)
+            env = {**os.environ, "PGPASSWORD": _datastore["PASSWORD"]}
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                host,
+                "-p",
+                port,
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
+
+            p1 = Popen(command, stdout=PIPE, stderr=PIPE)
+            p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
+            p1.stdout.close()
+            stdout, stderr = p2.communicate()
+        else:
+            command = [ogr_exe, "-f", "PostgreSQL", db_connection_string, db_connection_string] + base_args
+            process = Popen(command, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
 
         if (
             stderr is not None
@@ -380,6 +414,12 @@ class BaseVectorFileHandler(BaseHandler):
             for asset in assets:
                 asset.delete()
 
+        BaseVectorFileHandler.__remove_temporary_file(_exec)
+
+    @staticmethod
+    def __remove_temporary_file(_exec):
+        if not _exec:
+            return
         tmp_data = _exec.input_params.get("temporary_files")
         if tmp_data:
             # Delete at the end of the operations, the temporary files created at the beginning
@@ -399,15 +439,11 @@ class BaseVectorFileHandler(BaseHandler):
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(
-                        Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
-                    )
-                    .first()
-                    .srid,
+                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid,
                 }
             ]
 
-        layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
+        layers = self._select_valid_layers(self.open_source_file(files), filter_layer=layer_name)
         if not layers:
             return []
         return [
@@ -415,30 +451,9 @@ class BaseVectorFileHandler(BaseHandler):
                 "name": alternate or layer_name,
                 "crs": self.identify_authority(_l) if _l.GetSpatialRef() else None,
             }
-            for _l in layers
+            for _l in (self._extract_layer(_l) for _l in layers)
             if self.fixup_name(_l.GetName()) == layer_name
         ]
-
-    def identify_authority(self, layer):
-        try:
-            layer_wkt = layer.GetSpatialRef().ExportToWkt()
-            _name = "EPSG"
-            _code = pyproj.CRS(layer_wkt).to_epsg(min_confidence=20)
-            if _code is None:
-                layer_proj4 = layer.GetSpatialRef().ExportToProj4()
-                _code = pyproj.CRS(layer_proj4).to_epsg(min_confidence=20)
-                if _code is None:
-                    raise Exception("CRS authority code not found, fallback to default behaviour")
-        except Exception:
-            spatial_ref = layer.GetSpatialRef()
-            spatial_ref.AutoIdentifyEPSG()
-            _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
-            _code = (
-                spatial_ref.GetAuthorityCode("PROJCS")
-                or spatial_ref.GetAuthorityCode("GEOGCS")
-                or spatial_ref.GetAttrValue("AUTHORITY", 1)
-            )
-        return f"{_name}:{_code}"
 
     def get_ogr2ogr_driver(self):
         """
@@ -446,14 +461,17 @@ class BaseVectorFileHandler(BaseHandler):
         """
         return None
 
+    def _gdal_open_options(self):
+        return {}
+
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
         """
         Main function to import the resource.
         Internally will call the steps required to import the
         data inside the geonode_data database
         """
-        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        layers = self._select_valid_layers(all_layers)
+        gdal_proxy = self.open_source_file(files)
+        layers = self._select_valid_layers(gdal_proxy, execution_id=execution_id)
         # for the moment we skip the dyanamic model creation
         layer_count = len(layers)
         logger.info(f"Total number of layers available: {layer_count}")
@@ -473,10 +491,11 @@ class BaseVectorFileHandler(BaseHandler):
 
             # start looping on the layers available
 
-            for index, layer in enumerate(layers, start=1):
+            for index, gdal_layer in enumerate(layers, start=1):
+                layer = self._extract_layer(gdal_layer)
                 layer_name = self.fixup_name(layer.GetName())
 
-                should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+                should_be_overwritten = _exec.action == ira.REPLACE.value
                 # should_be_imported check if the user+layername already exists or not
                 if (
                     should_be_imported(
@@ -554,28 +573,68 @@ class BaseVectorFileHandler(BaseHandler):
             raise e
         return layer_names, alternates, execution_id
 
-    def _select_valid_layers(self, all_layers):
+    def open_source_file(self, files):
+        """
+        The importer switched from ogr to gdal library
+        This is required so we can rely on the options in GDAL,
+        while the ogr library does not allow that.
+        For example we can call the AUTODETECT_TYPE even in python
+        """
+        gdal_proxy = gdal.OpenEx(
+            files.get("base_file"),
+            nOpenFlags=gdal.OF_VECTOR,
+            allowed_drivers=[self.get_ogr2ogr_driver().name],
+            **self._gdal_open_options(),
+        )
+        return [gdal_proxy]
+
+    def _select_valid_layers(self, all_layers, **kwargs):
+        """
+        Select valid layers from GDAL datasource objects.
+        If more than one layer is found, it loop over all the possibility
+        to extract all the layers.
+        Is possible to pass a filter_layer argument with the name of the layer
+        to retrieve only the needed one
+        """
+        filter_layer = kwargs.get("filter_layer", None)
         layers = []
-        for layer in all_layers:
-            try:
-                self.identify_authority(layer)
-                layers.append(layer)
-            except Exception as e:
-                logger.error(e)
-                logger.error(
-                    f"The following layer {layer.GetName()} does not have a Coordinate Reference System (CRS) and will be skipped."
-                )
-                pass
+
+        for ds in all_layers:
+            if not ds:
+                continue
+            if ds.GetLayerCount() > 0:
+                candidates_layers = [ds.GetLayerByIndex(i) for i in range(ds.GetLayerCount())]
+            else:
+                candidates_layers = [ds]
+            for layer in candidates_layers:
+                try:
+                    lry = self._extract_layer(layer)
+                    if not lry:
+                        continue
+                    lry._parent_ds = ds
+                    self.identify_authority(lry)
+                    if filter_layer and self.fixup_name(lry.GetName()) == filter_layer:
+                        return [lry]
+                    layers.append(lry)
+                except Exception as e:
+                    logger.error(f"Layer skipped due to error: {e}")
+
+        if filter_layer and not layers:
+            logger.warning(f"No layer matching filter '{filter_layer}' was found.")
+
         return layers
+
+    def can_overwrite(self, _exec_obj, dataset):
+        is_tabular = _exec_obj.input_params.get("is_tabular", None)
+        return dataset.is_vector() if not is_tabular else is_tabular
 
     def find_alternate_by_dataset(self, _exec_obj, layer_name, should_be_overwritten):
         if _exec_obj.input_params.get("resource_pk"):
             dataset = Dataset.objects.filter(pk=_exec_obj.input_params.get("resource_pk")).first()
             if not dataset:
                 raise ImportException("The dataset selected for the ovewrite does not exists")
-            if should_be_overwritten:
-                if not dataset.is_vector():
-                    raise Exception("Cannot override a raster dataset with a vector one")
+            if should_be_overwritten and not self.can_overwrite(_exec_obj, dataset):
+                raise Exception("Cannot override a raster dataset with a vector one")
             alternate = dataset.alternate.split(":")
             return alternate[-1]
 
@@ -583,9 +642,8 @@ class BaseVectorFileHandler(BaseHandler):
         dataset_available = Dataset.objects.filter(alternate__iexact=f"{workspace.name}:{layer_name}")
 
         dataset_exists = dataset_available.exists()
-        if should_be_overwritten:
-            if not dataset_available.is_vector():
-                raise Exception("Cannot override a raster dataset with a vector one")
+        if should_be_overwritten and not self.can_overwrite(_exec_obj, dataset):
+            raise Exception("Cannot override a raster dataset with a vector one")
 
         if dataset_exists and should_be_overwritten:
             alternate = dataset_available.first().alternate.split(":")[-1]
@@ -598,7 +656,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def setup_dynamic_model(
         self,
-        layer: ogr.Layer,
+        layer: Union[ogr.Layer, str],
         execution_id: str,
         should_be_overwritten: bool,
         username: str,
@@ -612,52 +670,77 @@ class BaseVectorFileHandler(BaseHandler):
             - celery_group -> the celery group of the field creation
         """
 
-        layer_name = self.fixup_name(layer.GetName() if isinstance(layer, ogr.Layer) else layer)
+        layer_name = self.fixup_name(layer if isinstance(layer, str) else self._extract_layer(layer).GetName())
         _exec_obj = orchestrator.get_execution_object(execution_id)
 
         is_dynamic_model_managed = _exec_obj.input_params.get("is_dynamic_model_managed", False)
         workspace = DataPublisher(None).workspace
+
         if resource_pk := _exec_obj.input_params.get("resource_pk", None):
-            user_datasets = Dataset.objects.filter(owner=username, pk=resource_pk)
-            user_dataset = user_datasets.first()
+            available_dataset = Dataset.objects.filter(pk=resource_pk)
+            user_dataset = available_dataset.first()
             if user_dataset:
                 dynamic_schema = ModelSchema.objects.filter(name__iexact=user_dataset.name)
             else:
                 dynamic_schema = ModelSchema.objects.none()
         else:
-            user_datasets = Dataset.objects.filter(owner=username, alternate__iexact=f"{workspace.name}:{layer_name}")
+            available_dataset = Dataset.objects.filter(alternate__iexact=f"{workspace.name}:{layer_name}")
             dynamic_schema = ModelSchema.objects.filter(name__iexact=layer_name)
 
         dynamic_schema_exists = dynamic_schema.exists()
-        dataset_exists = user_datasets.exists()
+        dataset_exists = available_dataset.exists()
+
+        # evaluate if the user has the correct permissions for the resource.
+        # if can "edit" / manage the resource, it should be able to replace it
+        if should_be_overwritten and dataset_exists:
+            perms = _to_compact_perms(
+                permissions_registry.get_perms(
+                    instance=available_dataset.first(),
+                    user=username,
+                )
+            )
+            if not any(p in perms for p in ("manage", "edit")):
+                raise ImportException(
+                    f"User '{username}' does not have permission to replace dataset '{layer_name}'. "
+                    f"'edit' or 'manage' permission is required."
+                )
 
         if dataset_exists and dynamic_schema_exists and should_be_overwritten:
             """
-            If the user have a dataset, the dynamic model has already been created and is in overwrite mode,
+            If the user has a dataset, the dynamic model has already been created and is in overwrite mode,
             we just take the dynamic_model to overwrite the existing one
             """
             dynamic_schema = dynamic_schema.get()
-            layer_name = user_datasets.first().alternate.split(":")[-1]
+            layer_name = available_dataset.first().alternate.split(":")[-1]
+
         elif not dataset_exists and not dynamic_schema_exists:
             """
-            cames here when is a new brand upload or when (for any reasons) the dataset exists but the
-            dynamic model has not been created before
+            Comes here when is a brand new upload or when (for any reasons) the dataset exists but the
+            dynamic model has not been created before.
             """
-            #  layer_name = create_alternate(layer_name, execution_id)
-            dynamic_schema = ModelSchema.objects.create(
+            dynamic_schema, created = ModelSchema.objects.get_or_create(
                 name=layer_name,
-                db_name="datastore",
-                managed=is_dynamic_model_managed,
-                db_table_name=layer_name,
+                defaults={
+                    "db_name": "datastore",
+                    "managed": is_dynamic_model_managed,
+                    "db_table_name": layer_name,
+                },
             )
+            if not created:
+                logger.warning(
+                    f"ModelSchema for '{layer_name}' already exists but was not found by the "
+                    f"iexact lookup — possible name normalization mismatch between file formats "
+                    f"(e.g. .shp vs .zip). Reusing the existing schema for execution {execution_id}."
+                )
+
         elif (
             (not dataset_exists and dynamic_schema_exists)
             or (dataset_exists and dynamic_schema_exists and not should_be_overwritten)
             or (dataset_exists and not dynamic_schema_exists)
         ):
             """
-            it comes here when the layer should not be overrided so we append the UUID
-            to the layer to let it proceed to the next steps
+            The layer should not be overwritten so we append the UUID
+            to the layer name to let it proceed to the next steps
             """
             layer_name = create_alternate(layer_name, execution_id)
             dynamic_schema, _ = ModelSchema.objects.get_or_create(
@@ -737,6 +820,17 @@ class BaseVectorFileHandler(BaseHandler):
                 }
             ]
 
+        # if the layer comes from a DB, the fid column is not included in the schema, but we need to add it as primary key for the dynamic model
+        fid_in_schema = any(x["name"] == DEFAULT_PK_COLUMN_NAME for x in layer_schema)
+        if not fid_in_schema and layer.GetFIDColumn():
+            layer_schema += [
+                {
+                    "name": layer.GetFIDColumn(),
+                    "class_name": "django.db.models.BigAutoField",
+                    "null": False,
+                    "primary_key": True,
+                }
+            ]
         return layer_schema
 
     def promote_to_multi(self, geometry_name):
@@ -750,7 +844,7 @@ class BaseVectorFileHandler(BaseHandler):
             "Multi" not in geometry_name
             and "Point" not in geometry_name
             and "3D" not in geometry_name
-            and geometry_name != "Unknown (any)"
+            and geometry_name not in ("Unknown (any)", "Geometry")
         ):
             return f"Multi {geometry_name.title()}"
         return geometry_name
@@ -778,12 +872,7 @@ class BaseVectorFileHandler(BaseHandler):
                 return geom
 
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = Dataset,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
         """
         Base function to create the resource into geonode. Each handler can specify
@@ -799,7 +888,7 @@ class BaseVectorFileHandler(BaseHandler):
             getattr(settings, "CASCADE_WORKSPACE", "geonode"),
         )
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if not saved_dataset.exists() and _overwrite:
@@ -807,10 +896,10 @@ class BaseVectorFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager.create(
+        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
-            defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace),
+            defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace, **kwargs),
         )
 
         saved_dataset.refresh_from_db()
@@ -827,12 +916,12 @@ class BaseVectorFileHandler(BaseHandler):
 
         return saved_dataset
 
-    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
+    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
         return dict(
             name=alternate,
             workspace=workspace,
             store=os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
-            subtype="vector",
+            subtype=kwargs.pop("subtype", None) or "vector",
             alternate=f"{workspace}:{alternate}",
             dirty_state=True,
             title=layer_name,
@@ -850,28 +939,39 @@ class BaseVectorFileHandler(BaseHandler):
     ):
         _exec = self._get_execution_request_object(execution_id)
 
-        dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk"), owner=_exec.user)
+        dataset = resource_type.objects.filter(pk=_exec.input_params.get("resource_pk")).first()
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
-        if dataset.exists() and _overwrite:
-            dataset = dataset.first()
-
-            dataset = self.refresh_geonode_resource(str(_exec.exec_id), asset, dataset, create_asset=False)
-            return dataset
-        elif not dataset.exists() and _overwrite:
-            logger.warning(
-                f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
+        if dataset and _overwrite:
+            perms = _to_compact_perms(
+                permissions_registry.get_perms(
+                    instance=dataset,
+                    user=_exec.user,
+                )
             )
-            return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
-        elif not dataset.exists() and not _overwrite:
+            if not any(p in perms for p in ("manage", "edit")):
+                logger.error(
+                    f"User '{_exec.user}' does not have permission to overwrite dataset "
+                    f"'{dataset.alternate}'. 'edit' or 'manage' permission is required."
+                )
+                raise ImportException(
+                    f"User does not have permission to replace dataset '{layer_name}'. "
+                    f"'edit' or 'manage' permission is required."
+                )
+
+            dataset = self.refresh_geonode_resource(
+                str(_exec.exec_id), asset, dataset, create_asset=False, layer_name=layer_name
+            )
+            return dataset
+        elif not dataset and not _overwrite:
             logger.warning("The resource does not exists, please use 'create_geonode_resource' to create one")
         return
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("xml_file", "")
-        resource_manager.update(
+        resource_manager_registry.get_for_instance(saved_dataset).update(
             None,
             instance=saved_dataset,
             xml_file=_path,
@@ -881,7 +981,7 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_sld_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("sld_file", "")
-        resource_manager.exec(
+        resource_manager_registry.get_for_instance(saved_dataset).exec(
             "set_style",
             None,
             instance=saved_dataset,
@@ -891,7 +991,7 @@ class BaseVectorFileHandler(BaseHandler):
         )
 
     def handle_thumbnail(self, saved_dataset: Dataset, _exec: ExecutionRequest):
-        resource_manager.set_thumbnail(None, instance=saved_dataset)
+        resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
     def create_resourcehandlerinfo(
         self,
@@ -940,11 +1040,17 @@ class BaseVectorFileHandler(BaseHandler):
         new_alternate: str,
         **kwargs,
     ):
-
+        subtype = None
+        previous_resource = ResourceBase.objects.filter(
+            alternate__contains=kwargs.get("kwargs", {}).get("original_dataset_alternate")
+        ).first()
+        if previous_resource:
+            subtype = previous_resource.subtype
         new_resource = self.create_geonode_resource(
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
+            subtype=subtype,
         )
 
         copy_assets_and_links(resource, target=new_resource)
@@ -971,7 +1077,7 @@ class BaseVectorFileHandler(BaseHandler):
                 else None
             )
 
-            resource_manager.exec(
+            resource_manager_registry.get_for_instance(new_resource).exec(
                 "set_time_info",
                 None,
                 instance=new_resource,
@@ -1019,16 +1125,44 @@ class BaseVectorFileHandler(BaseHandler):
         We use the schema editor directly, because the model itself is not managed
         on creation, but for the delete since we are going to handle, we can use it
         """
+        logger.info(f"Rollback temporary file uploaded for execid: {exec_id} resource published was: {instance_name}")
+        try:
+            BaseVectorFileHandler.__remove_temporary_file(orchestrator.get_execution_object(exec_id=exec_id))
+        except Exception as e:
+            logger.warning(f"Failed to remove temporary files during rollback: {e}")
+
         logger.info(
             f"Rollback dynamic model & ogr2ogr step in progress for execid: {exec_id} resource published was: {instance_name}"
         )
         schema = None
         if settings.IMPORTER_ENABLE_DYN_MODELS:
             schema = ModelSchema.objects.filter(name=instance_name).first()
+
         if schema is not None:
-            _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
-            _model_editor.drop_table(schema.as_model())
-            ModelSchema.objects.filter(name=instance_name).delete()
+            # before destroying the schema, check whether a dataset that
+            # predates this execution references it. If so, this execution did not
+            # create the schema and must not delete it.
+            dataset_alternate = instance_name
+            if ":" not in dataset_alternate:
+                workspace = DataPublisher(None).workspace.name
+                dataset_alternate = f"{workspace}:{dataset_alternate}"
+            pre_existing_dataset = (
+                Dataset.objects.filter(alternate__iexact=dataset_alternate)
+                .exclude(resourcehandlerinfo__execution_request__exec_id=exec_id)
+                .exists()
+            )
+
+            if pre_existing_dataset:
+                logger.warning(
+                    f"Rollback skipping schema deletion for '{instance_name}': "
+                    f"a dataset not created by execution {exec_id} references this schema. "
+                    f"The schema will be preserved to avoid data loss."
+                )
+            else:
+                _model_editor = ModelSchemaEditor(initial_model=instance_name, db_name=schema.db_name)
+                _model_editor.drop_table(schema.as_model())
+                ModelSchema.objects.filter(name=instance_name).delete()
+
         elif schema is None:
             try:
                 logger.warning("Dynamic model does not exists, removing ogr2ogr table in progress")
@@ -1037,7 +1171,7 @@ class BaseVectorFileHandler(BaseHandler):
                     return
                 db_name = os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
                 with connections[db_name].cursor() as cursor:
-                    cursor.execute(f"DROP TABLE {instance_name}")
+                    cursor.execute(f"DROP TABLE IF EXISTS {instance_name}")
             except Exception as e:
                 logger.warning(e)
                 pass
@@ -1121,8 +1255,8 @@ class BaseVectorFileHandler(BaseHandler):
 
                 return True, None
             except Exception as e:
-                all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-                if layers := self._select_valid_layers(all_layers):
+                all_layers = self.open_source_file(files)
+                if layers := self._select_valid_layers(all_layers, execution_id=execution_id):
                     _errors = e.args[0] if isinstance(e, UpsertException) else [str(e)]
                     if isinstance(_errors, str):
                         _errors = [_errors]
@@ -1132,6 +1266,11 @@ class BaseVectorFileHandler(BaseHandler):
             raise UpsertException(
                 "User does not have enough permissions to perform this action on the selected resource"
             )
+
+    def _extract_layer(self, layer):
+        if not isinstance(layer, ogr.Layer):
+            layer = layer.GetLayer()
+        return layer
 
     def __get_new_and_original_schema(self, files, execution_id):
         # check if the execution_id is passed and if the geonode resource exists
@@ -1145,27 +1284,31 @@ class BaseVectorFileHandler(BaseHandler):
         target_schema_fields = FieldSchema.objects.filter(model_schema__name=target_resource.alternate.split(":")[-1])
 
         # use ogr2ogr to read the uploaded files for the upsert
-        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        layers = self._select_valid_layers(all_layers)
+        all_layers = self.open_source_file(files)
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
         if not layers:
             raise UpsertException("No valid layers found in the provided file for upsert.")
 
-        layer = layers[0]
+        layer = self._extract_layer(layers[0])
         # evaluate if some of the fid entry is null. if is null we stop the workflow
         # the user should provide the completed list with the fid set
-        sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "{DEFAULT_PK_COLUMN_NAME}" IS NULL'
+        if exec_id.action == ira.UPSERT.value:
+            sql_query = f'SELECT * FROM "{layer.GetName()}" WHERE "{DEFAULT_PK_COLUMN_NAME.lower()}" IS NULL'
 
-        # Execute the SQL query to the layer
-        result = all_layers.ExecuteSQL(sql_query)
-        if not result or (result and result.GetFeatureCount() > 0):
-            raise UpsertException(
-                f"All the feature in the file must have the fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
-            )
+            # Execute the SQL query to the layer via the gdal proxy object
+            result = all_layers[0].ExecuteSQL(sql_query)
+            if (
+                not (result and DEFAULT_PK_COLUMN_NAME in (x.name.lower() for x in result.schema))
+                or (result and result.GetFeatureCount() > 0)
+                or not result
+            ):
+                raise UpsertException(
+                    f"All the feature in the file must have the fid field correctly populated. Number of None value: {result.GetFeatureCount() if result else 'all'}"
+                )
 
         # Will generate the same schema as the target_resource_schema
         new_file_schema_fields = self.create_dynamic_model_fields(
-            layer,
-            return_celery_group=False,
+            layer, return_celery_group=False, execution_id=execution_id
         )
 
         return target_schema_fields, new_file_schema_fields
@@ -1182,10 +1325,14 @@ class BaseVectorFileHandler(BaseHandler):
             table_name = saved_dataset.alternate.split(":")[1]
 
             schema = ModelSchema.objects.filter(name=table_name).first()
-            if schema:
-                schema.managed = False
-                schema.save()
-
+            if not schema:
+                logger.warning(
+                    "No ModelSchema for %s.",
+                    table_name,
+                )
+                return
+            schema.managed = False
+            schema.save()
             with connection.cursor() as cursor:
                 column = connection.introspection.get_primary_key_columns(cursor, table_name)
             if column:
@@ -1230,19 +1377,18 @@ class BaseVectorFileHandler(BaseHandler):
         # get the rows that match the upsert key
         OriginalResource = model.as_model()
 
-        # retrieve the upsert key.
-        upsert_key = self.extract_upsert_key(exec_obj, dynamic_model_instance=model)
+        # use ogr2ogr to read the uploaded files values for the upsert
+        all_layers = self.open_source_file(files)
+        valid_create = 0
+        valid_update = 0
+        layers = self._select_valid_layers(all_layers, execution_id=execution_id)
+        if not layers:
+            raise UpsertException("No valid layers were found in the file provided")
+
+        upsert_key = self.extract_upsert_key(layers[0])
         if not upsert_key:
             # if for any reason the key is not present, better to raise an error
             raise UpsertException("Was not possible to find the upsert key, upsert is aborted")
-        # use ogr2ogr to read the uploaded files values for the upsert
-        all_layers = self.get_ogr2ogr_driver().Open(files.get("base_file"))
-        valid_create = 0
-        valid_update = 0
-        layers = self._select_valid_layers(all_layers)
-        if not layers:
-            raise UpsertException("No valid layers were found in the file provided")
-        # we can upsert just 1 layer at time
 
         self._validate_single_feature(exec_obj, OriginalResource, upsert_key, layers, iter(layers[0]))
 
@@ -1341,8 +1487,8 @@ class BaseVectorFileHandler(BaseHandler):
             "Error found during the upsert process, no update/create will be perfomed. The error log is going to be created..."
         )
         errors_to_print = errors[: settings.UPSERT_LIMIT_ERROR_LOG]
-
-        log_name = f'error_{layers[0].GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+        layer = self._extract_layer(layers[0])
+        log_name = f'error_{layer.GetName()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
 
         with tempfile.TemporaryDirectory() as temp_dir_str:
             temp_dir = Path(temp_dir_str)
@@ -1401,14 +1547,21 @@ class BaseVectorFileHandler(BaseHandler):
     def _save_feature(self, data_chunk, model_obj, model_instance, upsert_key, valid_update, valid_create):
         # getting all the upsert_key value from the data chunk
         # retrieving the data from the DB
-        value_in_db = model_instance.objects.filter(
-            **{f"{upsert_key}__in": (getattr(feature, upsert_key) for feature in data_chunk)}
-        ).in_bulk(field_name=upsert_key)
+        use_get_fid = False  # flag to understand if we need to use the GetFID as upsert key, this is needed for DB drivers with FID columns that hide the FID field from the schema
+        filters = []
+        for feature in data_chunk:
+            # DB drivers with FID columns hide the FID field from the schema, so we need to check if the FID is present and use it as upsert key if the upsert key is the default one
+            if not getattr(feature, upsert_key, None) and feature.GetFID() != ogr.NullFID:
+                filters.append(feature.GetFID())
+                use_get_fid = True
+            else:
+                filters.append(getattr(feature, upsert_key))
+        value_in_db = model_instance.objects.filter(**{f"{upsert_key}__in": filters}).in_bulk(field_name=upsert_key)
         # looping over the chunk data
         to_process = []
         feature_to_save = []
         for feature in data_chunk:
-            feature_as_dict = feature.items()
+            feature_as_dict = {self.fixup_name(key): value for key, value in feature.items().items()}
             # evaluate if there is any date in the schema of the feature
             schema = feature.DumpReadableAsString().split("\n")
             if any(date_fields := [f for f in schema if ("(Date)" in f or "(DateTime)" in f) and "(null)" not in f]):
@@ -1422,10 +1575,13 @@ class BaseVectorFileHandler(BaseHandler):
             # need to simulate the "promote to multi" used by the upload process.
             # here we cannot rely on ogr2ogr so we need to do it manually
             geom = feature.GetGeometryRef()
-            code = geom.GetSpatialReference().GetAuthorityCode(None)
-            feature_as_dict.update(
-                {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
-            )
+            if geom:
+                code = geom.GetSpatialReference().GetAuthorityCode(None)
+                feature_as_dict.update(
+                    {self.default_geometry_column_name: f"SRID={code};{self.promote_geom_to_multi(geom).ExportToWkt()}"}
+                )
+            if use_get_fid:
+                feature_as_dict[upsert_key] = feature.GetFID()
             to_process.append(feature_as_dict)
 
         for feature_as_dict in to_process:
@@ -1462,18 +1618,13 @@ class BaseVectorFileHandler(BaseHandler):
             feature["error"] = " | ".join(errors)
             return feature, False
 
-    def extract_upsert_key(self, exec_obj, dynamic_model_instance):
-        # first we check if the upsert key is passed by the call
-        key = exec_obj.input_params.get("upsert_key", DEFAULT_PK_COLUMN_NAME)
-        if not key:
-            # if the upsert key is not passed, we use the primary key as upsert key
-            # the primary key is defined in the Fields of the dynamic model
-            # dynamic models raise error if we filter the json with ORM
-            key = [x.name for x in dynamic_model_instance.fields.all() if x.kwargs.get("primary_key")]
-            if key:
-                return key[0]
+    def extract_upsert_key(self, layer):
 
-        return key
+        fid_in_schema = any(x.name == DEFAULT_PK_COLUMN_NAME for x in layer.schema)
+        if not fid_in_schema and layer.GetFIDColumn():
+            return layer.GetFIDColumn()
+
+        return DEFAULT_PK_COLUMN_NAME
 
     def refresh_geonode_resource(self, execution_id, asset=None, dataset=None, create_asset=True, **kwargs):
         # getting execution_id information
@@ -1503,20 +1654,32 @@ class BaseVectorFileHandler(BaseHandler):
         set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
         logging.debug(f"set_geowebcache_invalidate_cache DONE {datetime.now() - start}")
 
-        dataset = resource_manager.update(dataset.uuid, instance=dataset)
+        payload = self.generate_resource_payload(
+            kwargs.get("layer_name", dataset.alternate),
+            dataset.alternate.split(":")[-1],
+            asset,
+            exec_obj,
+            dataset.workspace,
+        )
+        payload.pop("asset")
+        resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
+        dataset = resolved_resource_manager.update(
+            dataset.uuid,
+            instance=dataset,
+            vals=payload,
+        )
 
         self.handle_xml_file(dataset, exec_obj)
         self.handle_sld_file(dataset, exec_obj)
 
-        resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+        resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
         dataset.refresh_from_db()
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
 
-        self.__fixup_primary_key(dataset)
         return dataset
 
-    def fixup_dynamic_model_fields(self, _exec, files):
+    def fixup_dynamic_model_fields(self, _exec, files, **kwargs):
         """
         Utility needed during the replace workflow,
         it will sync all the FieldSchema along with the current resource uploaded.
@@ -1524,6 +1687,8 @@ class BaseVectorFileHandler(BaseHandler):
         """
         fields_schema, needed_field_schema = self.__get_new_and_original_schema(files, str(_exec.exec_id))
         fields_schema.filter(~Q(name__in=(x["name"] for x in needed_field_schema))).delete()
+        if dataset := kwargs.get("resource", None):
+            self.__fixup_primary_key(dataset)
 
 
 @importer_app.task(
@@ -1601,21 +1766,47 @@ def import_with_ogr2ogr(
     If the layer should be overwritten, the option is appended dynamically
     """
     try:
-        ogr_exe = shutil.which("ogr2ogr")
 
-        options = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
+        ogr_exe = shutil.which("ogr2ogr") or "ogr2ogr"  # Fallback to string if not found
+
+        options_str = orchestrator.load_handler(handler_module_path).create_ogr2ogr_command(
             files, original_name, ovverwrite_layer, alternate, execution_id=execution_id
         )
-        _datastore = settings.DATABASES["datastore"]
+
+        # shlex.split understands that 'quoted strings' are single arguments
+        cmd_list = [ogr_exe] + shlex.split(options_str)
 
         copy_with_dump = ast.literal_eval(os.getenv("OGR2OGR_COPY_WITH_DUMP", "False"))
 
         if copy_with_dump:
-            options += f" | PGPASSWORD={_datastore['PASSWORD']} psql -d {_datastore['NAME']} -h {_datastore['HOST']} -p {_datastore.get('PORT', 5432)} -U {_datastore['USER']} -f -"
+            # If using a pipe (ogr2ogr | psql), we must handle it via Python
+            # because shell=False doesn't understand the "|" symbol.
+            _datastore = settings.DATABASES["datastore"]
+            psql_cmd = [
+                "psql",
+                "-v ON_ERROR_STOP=1",
+                "-d",
+                _datastore["NAME"],
+                "-h",
+                _datastore["HOST"],
+                "-U",
+                _datastore["USER"],
+                "-f",
+                "-",
+            ]
 
-        commands = [ogr_exe] + options.split(" ")
-        process = Popen(" ".join(commands), stdout=PIPE, stderr=PIPE, shell=True)
-        stdout, stderr = process.communicate()
+            env = os.environ.copy()
+            env["PGPASSWORD"] = _datastore["PASSWORD"]
+
+            p1 = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
+            p2 = Popen(psql_cmd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env=env)
+
+            p1.stdout.close()
+            stdout, stderr = p2.communicate()
+        else:
+            # Standard execution with shell=False
+            process = Popen(cmd_list, stdout=PIPE, stderr=PIPE, shell=False)
+            stdout, stderr = process.communicate()
 
         if files.get("temp_vrt_file") and os.path.exists(files["temp_vrt_file"]):
             os.remove(files["temp_vrt_file"])

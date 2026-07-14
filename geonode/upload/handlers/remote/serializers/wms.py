@@ -17,6 +17,7 @@
 #
 #########################################################################
 from rest_framework import serializers
+
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 
 

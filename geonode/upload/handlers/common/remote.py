@@ -19,13 +19,13 @@
 import json
 import logging
 import os
+from contextlib import contextmanager
 
 import requests
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.api.exceptions import ImportException
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.celery_tasks import import_orchestrator
@@ -34,8 +34,10 @@ from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.base.models import ResourceBase, Link
 from urllib.parse import urlparse
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
+from geonode.security.auth_registry import auth_handler_registry
+from geonode.security.models import AuthConfig
 
 logger = logging.getLogger("importer")
 
@@ -65,9 +67,11 @@ class BaseRemoteResourceHandler(BaseHandler):
 
     @staticmethod
     def has_serializer(data) -> bool:
-        if "url" in data:
-            return RemoteResourceSerializer
-        return False
+        """
+        This method should be implemented by subclasses to determine if a serializer is available
+        for the given data.
+        """
+        raise NotImplementedError("Subclasses must implement the 'has_serializer' method.")
 
     @property
     def have_table(self):
@@ -90,7 +94,8 @@ class BaseRemoteResourceHandler(BaseHandler):
         and if the url is valid
         """
         try:
-            r = requests.get(url, timeout=10)
+            auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
+            r = requests.get(url, timeout=10, auth=auth)
             r.raise_for_status()
         except requests.exceptions.Timeout:
             raise ImportException("Timed out")
@@ -109,19 +114,112 @@ class BaseRemoteResourceHandler(BaseHandler):
             title = json.loads(_data.get("defaults"))
             return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
-        return {
+        payload = {
             "action": _data.pop("action", "upload"),
             "title": _data.pop("title", None),
             "url": _data.pop("url", None),
             "type": _data.pop("type", None),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
-        }, _data
+        }
+        BaseRemoteResourceHandler.extract_auth_config_from_data(_data, payload)
+        return payload, _data
 
-    def pre_validation(self, files, execution_id, **kwargs):
+    @staticmethod
+    def extract_auth_config_from_data(_data, payload):
+        authentication = _data.pop("authentication", None)
+        if authentication:
+            auth_type = authentication.get("type")
+            auth_payload = authentication.get("payload") or {}
+            auth_handler_cls = auth_handler_registry.get_handler_class(auth_type)
+            if auth_handler_cls is None:
+                raise ValueError(f"Unsupported authentication type '{auth_type}'")
+            auth_config = auth_handler_cls.create_auth_config(auth_payload)
+            payload["auth_config_id"] = auth_config.pk
+
+    def _create_geonode_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
+        super()._create_geonode_resource_rollback(exec_id, istance_name=istance_name)
+
+        _exec = orchestrator.get_execution_object(exec_id)
+        auth_config_id = _exec.input_params.get("auth_config_id")
+        if auth_config_id:
+            AuthConfig.objects.filter(
+                pk=auth_config_id,
+                authconfigresources__isnull=True,
+                url_patterns__isnull=True,
+            ).delete()
+
+    def pre_processing(self, files, execution_id, **kwargs):
         """
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id
         """
+        _exec = orchestrator.get_execution_object(execution_id)
+        if _exec.input_params.get("auth_config_id") or not _exec.input_params.get("url"):
+            return
+
+        to_update = {}
+        service = self.find_matching_service(_exec.input_params["url"], _exec.user)
+        auth_config = self.get_auth_config_from_execution(_exec)
+        if not auth_config and service and service.auth_config:
+            auth_config = service.auth_config
+            to_update["auth_config_id"] = service.auth_config_id
+        if service and auth_config:
+            to_update["remote_service_id"] = service.id
+            _exec.input_params.update(to_update)
+            _exec.save()
+
+    @staticmethod
+    def find_matching_service(url, user):
+        if not user or not user.is_authenticated:
+            return None
+
+        from geonode.services.models import Service
+
+        services = Service.objects.filter(owner=user, auth_config__isnull=False).select_related("auth_config")
+        for service in services:
+            if not service.service_url:
+                continue
+            service_url = service.service_url.rstrip("/")
+            if url == service_url or url.startswith(f"{service_url}/") or url.startswith(f"{service_url}?"):
+                return service
+        return None
+
+    @staticmethod
+    def get_auth_config_from_execution(_exec):
+        if not _exec or not _exec.input_params:
+            return None
+
+        auth_config_id = _exec.input_params.get("auth_config_id")
+        if auth_config_id:
+            return AuthConfig.objects.filter(pk=auth_config_id).first()
+        return None
+
+    @staticmethod
+    def get_request_auth_from_execution(execution_id):
+        if not execution_id:
+            return None
+
+        _exec = orchestrator.get_execution_object(execution_id)
+        auth_config = BaseRemoteResourceHandler.get_auth_config_from_execution(_exec)
+        if not auth_config:
+            return None
+
+        return auth_handler_registry.build(auth_config).get_request_auth()
+
+    @staticmethod
+    @contextmanager
+    def gdal_config_options(options):
+        from osgeo import gdal
+
+        options = options or {}
+        try:
+            for option, value in options.items():
+                gdal.SetThreadLocalConfigOption(option, value)
+            yield
+        finally:
+            for option in options:
+                gdal.SetThreadLocalConfigOption(option, None)
+            if hasattr(gdal, "VSICurlClearCache"):
+                gdal.VSICurlClearCache()
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
         """
@@ -143,7 +241,7 @@ class BaseRemoteResourceHandler(BaseHandler):
             # start looping on the layers available
             layer_name = self.fixup_name(title)
 
-            should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+            should_be_overwritten = _exec.action == ira.REPLACE.value
 
             payload_alternate = params.get("remote_resource_id", None)
 
@@ -204,6 +302,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         execution_id: str,
         resource_type: ResourceBase = ResourceBase,
         asset=None,
+        **kwargs,
     ):
         """
         Creating geonode base resource
@@ -214,12 +313,14 @@ class BaseRemoteResourceHandler(BaseHandler):
         _exec = orchestrator.get_execution_object(execution_id)
         params = _exec.input_params.copy()
 
-        resource = resource_manager.create(
+        resource = resource_manager_registry.get_for_model(resource_type).create(
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, None, **params),
         )
-        resource_manager.set_thumbnail(None, instance=resource)
+        # The thumbnail is not created for the following data types: "3dtiles", "cog", "flatgeobuf"
+        # because of the can_set_thumbnail method
+        resource_manager_registry.get_for_instance(resource).set_thumbnail(None, instance=resource)
 
         resource = self.create_link(resource, params, alternate)
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
@@ -257,7 +358,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         )
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
-        return dict(
+        payload = dict(
             subtype=kwargs.get("type"),
             sourcetype=SOURCE_TYPE_REMOTE,
             alternate=alternate,
@@ -265,6 +366,9 @@ class BaseRemoteResourceHandler(BaseHandler):
             title=kwargs.get("title", layer_name),
             owner=_exec.user,
         )
+        if kwargs.get("auth_config_id"):
+            payload["auth_config_id"] = kwargs.get("auth_config_id")
+        return payload
 
     def overwrite_geonode_resource(
         self,
@@ -277,14 +381,15 @@ class BaseRemoteResourceHandler(BaseHandler):
         _exec = self._get_execution_request_object(execution_id)
         resource = resource_type.objects.filter(alternate__icontains=alternate, owner=_exec.user)
 
-        _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
+        _overwrite = _exec.action == ira.REPLACE.value
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if resource.exists() and _overwrite:
             resource = resource.first()
 
-            resource = resource_manager.update(resource.uuid, instance=resource)
-            resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=True)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(resource)
+            resource = resolved_resource_manager.update(resource.uuid, instance=resource)
+            resolved_resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=True)
             resource.refresh_from_db()
             return resource
         elif not resource.exists() and _overwrite:

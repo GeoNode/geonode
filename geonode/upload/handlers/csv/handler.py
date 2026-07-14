@@ -17,7 +17,10 @@
 #
 #########################################################################
 import logging
+import os
 
+from geonode.geoserver.createlayer.utils import BBOX
+from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.upload.utils import UploadLimitValidator
@@ -29,6 +32,10 @@ from geonode.base.models import ResourceBase
 from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
+from geonode.upload.orchestrator import orchestrator
+from django.db.models import Q
+from geonode.resource.models import ExecutionRequest
+from geonode.security.utils import get_visible_resources
 
 logger = logging.getLogger("importer")
 
@@ -57,6 +64,12 @@ class CSVFileHandler(BaseVectorFileHandler):
             ],
             "actions": list(self.TASKS.keys()),
             "type": "vector",
+        }
+
+    @property
+    def upload_validation_config(self):
+        return {
+            "csv": {"mimes": {"text/plain", "text/csv"}},
         }
 
     @staticmethod
@@ -104,7 +117,6 @@ class CSVFileHandler(BaseVectorFileHandler):
         has_lat = any(x in CSVFileHandler().possible_lat_column for x in schema_keys)
         has_long = any(x in CSVFileHandler().possible_long_column for x in schema_keys)
 
-        fields = CSVFileHandler().possible_geometry_column_name + CSVFileHandler().possible_latlong_column
         if has_lat and not has_long:
             raise InvalidCSVException(
                 f"Longitude is missing. Supported names: {', '.join(CSVFileHandler().possible_long_column)}"
@@ -116,12 +128,18 @@ class CSVFileHandler(BaseVectorFileHandler):
             )
 
         if not geom_is_in_schema and not has_lat and not has_long:
-            raise InvalidCSVException(f"Not enough geometry field are set. The possibilities are: {','.join(fields)}")
+            exec_obj = orchestrator.get_execution_object(kwargs.get("execution_id"))
+            exec_obj.input_params.update({"is_tabular": True})
+            exec_obj.save()
+            return True
 
         return True
 
     def get_ogr2ogr_driver(self):
         return ogr.GetDriverByName("CSV")
+
+    def _gdal_open_options(self):
+        return {"open_options": ["AUTODETECT_TYPE=YES"]}
 
     @staticmethod
     def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
@@ -134,6 +152,7 @@ class CSVFileHandler(BaseVectorFileHandler):
         return (
             f"{base_command} -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
             + additional_option
+            + " -oo AUTODETECT_TYPE=YES"
         )
 
     def create_dynamic_model_fields(
@@ -146,11 +165,17 @@ class CSVFileHandler(BaseVectorFileHandler):
         return_celery_group: bool = True,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
-        layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
+        layer_schema = [
+            {"name": self.fixup_name(x.name.lower()), "class_name": self._get_type(x), "null": True}
+            for x in layer.schema
+        ]
+        exec_obj = orchestrator.get_execution_object(execution_id)
+
         if (
             layer.GetGeometryColumn()
             or self.default_geometry_column_name
             and ogr.GeometryTypeToName(layer.GetGeomType()) not in ["Geometry Collection", "Unknown (any)"]
+            and not exec_obj.input_params.get("is_tabular")
         ):
             # the geometry colum is not returned rom the layer.schema, so we need to extract it manually
             # checking if the geometry has been wrogly read as string
@@ -193,14 +218,28 @@ class CSVFileHandler(BaseVectorFileHandler):
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
-            return [
-                {
-                    "name": alternate,
-                    "crs": ResourceBase.objects.filter(alternate__istartswith=layer_name).first().srid,
-                }
-            ]
+            params = kwargs.get("kwargs", kwargs) if kwargs else {}
+            original_dataset_alternate = params.get("original_dataset_alternate")
+            exec_id = params.get("exec_id") or params.get("execution_id")
+            execution = ExecutionRequest.objects.filter(exec_id=exec_id).first() if exec_id else None
+            user = execution.user if execution else None
+            visible_resources = (
+                get_visible_resources(queryset=ResourceBase.objects.all(), user=user)
+                if user
+                else ResourceBase.objects.none()
+            )
+            original_resource = None
+            if original_dataset_alternate:
+                original_resource = visible_resources.filter(alternate=original_dataset_alternate).first()
+            if not original_resource:
+                original_resource = visible_resources.filter(
+                    Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
+                ).first()
+            if not original_resource:
+                raise ValueError("Unable to resolve resource for copy action.")
+            return [{"name": alternate, "crs": original_resource.srid}]
 
-        layers = self.get_ogr2ogr_driver().Open(files.get("base_file"), 0)
+        layers = self.open_source_file(files)
         if not layers:
             return []
         return [
@@ -209,12 +248,36 @@ class CSVFileHandler(BaseVectorFileHandler):
                 "crs": (self.identify_authority(_l)),
             }
             for _l in layers
-            if self.fixup_name(_l.GetName()) == layer_name
+            if self.fixup_name(self._extract_layer(_l).GetName()) == layer_name
         ]
 
     def identify_authority(self, layer):
+        layer = self._extract_layer(layer)
         try:
             authority_code = super().identify_authority(layer=layer)
+            if authority_code == ogr.wkbNone:
+                logger.warning("For tabular CSV, we set by default EPSG:4326")
             return authority_code
         except Exception:
             return "EPSG:4326"
+
+    def create_geonode_resource(
+        self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, asset=None, **kwargs
+    ):
+        res = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, **kwargs)
+        res.set_bbox_polygon(BBOX, res.srid)
+        return res
+
+    def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
+        subtype = kwargs.pop("subtype", None)
+        return dict(
+            name=alternate,
+            workspace=workspace,
+            store=os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
+            subtype=subtype or ("tabular" if _exec.input_params.get("is_tabular") else "vector"),
+            alternate=f"{workspace}:{alternate}",
+            dirty_state=True,
+            title=layer_name,
+            owner=_exec.user,
+            asset=asset,
+        )

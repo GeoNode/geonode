@@ -23,7 +23,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.metadata.handlers.sparse import SparseHandler, SparseFieldRegistry
 from geonode.metadata.manager import MetadataManager
 
-from geonode.base.i18n import I18N_THESAURUS_IDENTIFIER, i18nCache
+from geonode.base.i18n import I18N_THESAURUS_IDENTIFIER, i18nCache, labelResolver
 from geonode.base.models import (
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
@@ -147,3 +147,39 @@ class MetadataI18NTests(GeoNodeBaseTestSupport):
         self._add_label("field1__ovr", "en", "f1_ovr_en")
         schema = self.mm.build_schema(lang="en")
         self.assertEqual("f1_ovr_en", schema["properties"]["field1"]["title"])
+
+    def test_stale_cache_invalidated_on_thesaurus_update(self):
+        """
+        Ensure that all language caches (en and it) are invalidated when the Thesaurus date
+        changes, so that stale values are never served after a thesaurus update.
+        """
+        # Populate labels for two languages and warm up the cache
+        self._add_label("key1", "en", "key1_en_v1")
+        self._add_label("key1", "it", "key1_it_v1")
+
+        labels_en = labelResolver.get_labels("en")
+        labels_it = labelResolver.get_labels("it")
+
+        self.assertEqual("key1_en_v1", labels_en.get("key1"))
+        self.assertEqual("key1_it_v1", labels_it.get("key1"))
+
+        # Update label values in the DB to simulate a thesaurus edit
+        ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=self.tid, keyword__about="key1", lang="en").update(
+            label="key1_en_v2"
+        )
+        ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=self.tid, keyword__about="key1", lang="it").update(
+            label="key1_it_v2"
+        )
+
+        # Simulate a thesaurus date bump (what happens when the thesaurus is updated)
+        Thesaurus.objects.filter(id=self.tid).update(date="2024-01-01")
+
+        # Force cache freshness check to bypass CHECK_INTERVAL
+        i18nCache.force_check()
+
+        # Both language caches must be rebuilt with the new values
+        labels_en = labelResolver.get_labels("en")
+        labels_it = labelResolver.get_labels("it")
+
+        self.assertEqual("key1_en_v2", labels_en.get("key1"))
+        self.assertEqual("key1_it_v2", labels_it.get("key1"))

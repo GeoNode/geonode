@@ -214,3 +214,43 @@ def check_user_deletion_rules(profile) -> None:
     if error_list:
         return False, ", ".join(error_list)
     return True, None
+
+
+def profile_to_runtime_lang(profile_lang):
+    """
+    Convert the DB profile language to a code supported by settings.LANGUAGES.
+    For example: en -> en-us.
+    """
+    if not profile_lang:
+        return None
+
+    profile_lang = profile_lang.lower()
+    valid_codes = [code for code, _label in settings.LANGUAGES]
+
+    if profile_lang in valid_codes:
+        return profile_lang
+
+    for code in valid_codes:
+        if code.lower().split("-")[0] == profile_lang:
+            return code
+
+    return None
+
+
+def runtime_to_profile_lang(lang):
+    """
+    Convert a runtime language code to the DB profile language.
+    For example: en-us -> en.
+    """
+    if not lang:
+        return None
+
+    return lang.lower().split("-")[0]
+
+
+def get_profile_language_choices():
+    """
+    Build the list of DB-based (2-char) language choices from the currently
+    configured settings.LANGUAGES
+    """
+    return tuple({code.split("-")[0].lower(): label for code, label in settings.LANGUAGES}.items())

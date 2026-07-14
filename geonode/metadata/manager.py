@@ -59,7 +59,7 @@ class MetadataManager:
             handler.post_init()
 
     def _init_schema_context(self, lang):
-        return {}
+        return {"lang": lang} if lang else {}
 
     def build_schema(self, lang=None):
         logger.debug(f"build_schema {lang}")
@@ -144,6 +144,7 @@ class MetadataManager:
             handler.load_deserialization_context(resource, schema, context)
 
         errors = {}
+        context["errors"] = errors
 
         for handler in self.handlers.values():
             handler.pre_deserialization(resource, schema, json_instance, partial, context)

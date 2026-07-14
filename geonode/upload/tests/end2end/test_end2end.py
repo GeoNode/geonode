@@ -37,6 +37,8 @@ from django.db.models import Q
 from geonode.base.models import ResourceBase
 import logging
 from geonode.harvesting.harvesters.wms import WebMapService
+from geonode.services import enumerations
+from geonode.services.models import Service
 from django.forms.models import model_to_dict
 from unittest import skip
 
@@ -53,6 +55,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         super().setUpClass()
         cls.user = get_user_model().objects.exclude(username="Anonymous").first()
         cls.valid_gkpg = f"{project_dir}/tests/fixture/valid.gpkg"
+        cls.valid_multiple_layers_gkpg = f"{project_dir}/tests/fixture/multiple_layers.gpkg"
         cls.valid_geojson = f"{project_dir}/tests/fixture/valid.geojson"
         cls.no_crs_gpkg = f"{project_dir}/tests/fixture/noCrsTable.gpkg"
         file_path = gisdata.PROJECT_ROOT
@@ -67,6 +70,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         cls.valid_tif = f"{project_dir}/tests/fixture/test_raster.tif"
         cls.valid_csv = f"{project_dir}/tests/fixture/valid.csv"
 
+        cls.missing_geom_csv = f"{project_dir}/tests/fixture/missing_geom.csv"
         cls.url = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
@@ -109,12 +113,19 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         skip_geoserver=False,
         assert_payload=None,
         keep_resource=False,
+        assert_failure=False,
+        message="No handlers found for this dataset type/action",
     ):
         try:
             self.client.force_login(self.admin)
 
             response = self.client.post(self.url, data=payload)
-            self.assertEqual(201, response.status_code, response.json())
+            if assert_failure:
+                self.assertEqual(500, response.status_code, response.json())
+                self.assertListEqual([message], response.json()["errors"], response.json())
+                return
+            else:
+                self.assertEqual(201, response.status_code, response.json())
 
             # if is async, we must wait. It will wait for 1 min before raise exception
             if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
@@ -122,9 +133,9 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 while (
                     ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
                     != ExecutionRequest.STATUS_FINISHED
-                    and tentative <= 10
+                    and tentative <= 15
                 ):
-                    time.sleep(10)
+                    time.sleep(2)
                     tentative += 1
             exc_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
             if exc_obj.status != ExecutionRequest.STATUS_FINISHED:
@@ -192,8 +203,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
-        payload["overwrite_existing_layer"] = True
+        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "replace"}
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="stazioni_metropolitana")
@@ -217,6 +227,27 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         self._assertimport(payload, initial_name)
 
         self._cleanup_layers(name="stazioni_metropolitana")
+
+
+class ImporterMultupleGeoPackageImportTest(BaseImporterEndToEndTest):
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    def test_import_multiple_layers_from_geopackage(self):
+        self._cleanup_layers(name="area")
+        self._cleanup_layers(name="example")
+        try:
+            resource = None
+            payload = {"base_file": open(self.valid_multiple_layers_gkpg, "rb"), "action": "upload"}
+            self._assertimport(payload, "area")
+            resource = ResourceBase.objects.filter(
+                Q(alternate__icontains="geonode:example") | Q(alternate__icontains="example")
+            )
+            self.assertTrue(resource.exists())
+        finally:
+            if resource.first():
+                resource.first().delete()
+            self._cleanup_layers(name="area")
+            self._cleanup_layers(name="example")
 
 
 class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
@@ -286,8 +317,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_geojson, "rb"), "action": "upload"}
         initial_name = "valid"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
-        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "upload"}
-        payload["overwrite_existing_layer"] = True
+        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "replace"}
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
 
@@ -297,7 +327,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
 class ImporterGCSVImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
-    def test_import_geojson(self):
+    def test_import_csv(self):
         self._cleanup_layers(name="valid")
 
         payload = {"base_file": open(self.valid_csv, "rb"), "action": "upload"}
@@ -313,12 +343,52 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
         initial_name = "valid"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_csv, "rb"), "action": "upload"}
+        payload = {"base_file": open(self.valid_csv, "rb"), "action": "replace"}
         initial_name = "valid"
-        payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="valid")
+
+
+class ImporterGCSVTabularImportTest(BaseImporterEndToEndTest):
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    def test_import_tabular_csv(self):
+        self._cleanup_layers(name="missing_geom")
+
+        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "upload"}
+        initial_name = "missing_geom"
+        self._assertimport(
+            payload,
+            initial_name,
+            assert_payload={
+                "subtype": "tabular",
+                "resource_type": "dataset",
+            },
+        )
+        self._cleanup_layers(name="missing_geom")
+
+    @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    def test_import_tabular_csv_overwrite(self):
+        self._cleanup_layers(name="missing_geom")
+        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "upload"}
+        initial_name = "missing_geom"
+        prev_dataset = self._assertimport(
+            payload,
+            initial_name,
+            keep_resource=True,
+            assert_payload={
+                "subtype": "tabular",
+                "resource_type": "dataset",
+            },
+        )
+
+        payload = {"base_file": open(self.missing_geom_csv, "rb"), "action": "replace"}
+        initial_name = "missing_geom"
+        payload["resource_pk"] = prev_dataset.pk
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
+        self._cleanup_layers(name="missing_geom")
 
 
 class ImporterKMLImportTest(BaseImporterEndToEndTest):
@@ -340,10 +410,16 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_kml, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_kml, "rb"), "action": "upload"}
-        payload["overwrite_existing_layer"] = True
+        payload = {"base_file": open(self.valid_kml, "rb"), "action": "replace"}
         payload["resource_pk"] = prev_dataset.pk
-        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
+        self._assertimport(
+            payload,
+            initial_name,
+            overwrite=True,
+            last_update=prev_dataset.last_updated,
+            assert_failure=True,
+            message="The requested action is not implemented yet",
+        )
         self._cleanup_layers(name="sample_point_dataset")
 
 
@@ -368,9 +444,8 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
         initial_name = "air_Runways"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
-        payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
-        payload["action"] = "upload"
+        payload["action"] = "replace"
         self._assertimport(
             payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True
         )
@@ -397,9 +472,8 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
         payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
+        payload = {"base_file": open(self.valid_tif, "rb"), "action": "replace"}
         initial_name = "test_raster"
-        payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="test_raster")
@@ -452,7 +526,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             "subtype": "3dtiles",
             "resource_type": "dataset",
         }
-        payload["overwrite_existing_layer"] = True
+        payload["action"] = "replace"
         self._assertimport(
             payload,
             initial_name,
@@ -460,6 +534,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             overwrite=True,
             assert_payload=assert_payload,
             last_update=prev_timestamp,
+            assert_failure=True,
         )
 
 
@@ -522,6 +597,15 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
             name="Test",
             default_owner=self.user,
             harvester_type="geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+        )
+        Service.objects.create(
+            owner=self.admin,
+            title="Test",
+            type=enumerations.WMS,
+            method=enumerations.HARVESTED,
+            base_url=f"http://localhost:8000/proxy/?url={geoserver}",
+            name="test-wms-import-service",
+            harvester=harvester,
         )
         payload = {
             "url": f"http://localhost:8000/proxy/?url={url}",

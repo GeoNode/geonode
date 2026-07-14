@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download built Docker images
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: docker-images
           path: docker_images
@@ -28,20 +28,20 @@ jobs:
         run: docker load -i docker_images/django.tar
 
       - name: Start the stack
-        run: docker compose --env-file .env_test -f docker-compose-test.yml up -d
+        run: ENVIRONMENT=test docker compose up -d --no-deps db geoserver django nginx data-dir-conf
 
       - name: Setup test databases
         run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();"
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c "CREATE EXTENSION IF NOT EXISTS postgis;"
-          docker compose --env-file .env_test -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+          ENVIRONMENT=test docker compose exec db psql -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();"
+          ENVIRONMENT=test docker compose exec db createdb -U postgres -T postgres test_postgres
+          ENVIRONMENT=test docker compose exec db createdb -U postgres -T postgres test_geonode
+          ENVIRONMENT=test docker compose exec db createdb -U postgres -T postgres test_geonode_data
+          ENVIRONMENT=test docker compose exec db psql -U postgres -d test_geonode -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+          ENVIRONMENT=test docker compose exec db psql -U postgres -d test_geonode_data -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 
       - name: Run ${{ inputs.suite_name }}
         run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec -T django bash -s <<'BASH'
+          ENVIRONMENT=test docker compose exec -T django bash -s <<'BASH'
           set -euo pipefail
           ${{ inputs.test_command }}
           BASH
@@ -52,8 +52,8 @@ jobs:
 
       - name: Codecov
         run: |
-          docker compose --env-file .env_test -f docker-compose-test.yml exec django bash -c "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8"
+          ENVIRONMENT=test docker compose exec django bash -c "bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8"
 
       - name: Stop the stack
         if: always()
-        run: docker compose --env-file .env_test -f docker-compose-test.yml down -v
+        run: ENVIRONMENT=test docker compose down -v

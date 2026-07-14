@@ -66,6 +66,7 @@ from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.resource.utils import KeywordHandler
 from geonode.resource.utils import is_remote_resource
 
 from geonode.utils import (
@@ -74,6 +75,7 @@ from geonode.utils import (
     get_legend_url,
     is_monochromatic_image,
     set_resource_default_links,
+    normalize_bbox_to_float_list,
 )
 
 from .geofence import GeoFenceClient, GeoFenceUtils
@@ -99,9 +101,19 @@ WPS_ACCEPTABLE_FORMATS = [
     ("application/wfs-collection-1.1", "vector"),
     ("application/zip", "vector"),
     ("text/csv", "vector"),
+    ("text/csv", "tabular"),
 ]
 
 DEFAULT_STYLE_NAME = ["generic", "line", "point", "polygon", "raster"]
+
+
+def _sync_geoserver_keywords_to_instance(instance, keywords):
+    if not keywords:
+        return
+    try:
+        KeywordHandler(instance=instance, keywords=list(keywords)).set_keywords()
+    except Exception:
+        logger.exception(f"Error while importing keywords from GeoServer for dataset {instance.name}")
 
 
 if not hasattr(settings, "OGC_SERVER"):
@@ -601,7 +613,7 @@ def gs_slurp(
     It returns a list of dictionaries with the name of the layer,
     the result of the operation and the errors and traceback if it failed.
     """
-    from geonode.resource.manager import resource_manager
+    from geonode.resource.registry import resource_manager_registry, dataset_manager
 
     if console is None:
         console = open(os.devnull, "w")
@@ -714,7 +726,7 @@ def gs_slurp(
             created = False
             layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = resource_manager.create(
+                layer = dataset_manager.create(
                     str(uuid.uuid4()),
                     resource_type=Dataset,
                     defaults=dict(
@@ -745,17 +757,18 @@ def gs_slurp(
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
-            resource_manager.set_permissions(layer.uuid, permissions=perm_spec)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+            resolved_resource_manager.set_permissions(layer.uuid, instance=layer, permissions=perm_spec)
 
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
 
             # in some cases we need to explicitily save the resource to execute the signals
             # (for sure when running updatelayers)
-            resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
+            resolved_resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
 
             # Creating the Thumbnail
-            resource_manager.set_thumbnail(layer.uuid, overwrite=True, check_bbox=False)
+            resolved_resource_manager.set_thumbnail(layer.uuid, instance=layer, overwrite=True, check_bbox=False)
 
         except Exception as e:
             # Hide the resource until finished
@@ -1010,7 +1023,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'", exc_info=True
             )
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
+    elif layer.can_have_wps_links:
         typename = layer.alternate if layer.alternate else layer.typename
         logger.info(f"Getting WFS info for {layer.subtype} '{typename}'")
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
@@ -1890,9 +1903,27 @@ _esri_types = {
 
 # main entry point to create a thumbnail - will use implementation
 # defined in settings.THUMBNAIL_GENERATOR (see settings.py)
-def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
+def create_gs_thumbnail(
+    instance,
+    overwrite=False,
+    check_bbox=False,
+    bbox=None,
+    forced_crs=None,
+    styles=None,
+    background_zoom=None,
+    map_thumb_from_bbox=False,
+):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
-    return implementation(instance, overwrite, check_bbox)
+    return implementation(
+        instance,
+        overwrite,
+        check_bbox,
+        bbox=bbox,
+        forced_crs=forced_crs,
+        styles=styles,
+        background_zoom=background_zoom,
+        map_thumb_from_bbox=map_thumb_from_bbox,
+    )
 
 
 def sync_instance_with_geoserver(instance_id, *args, **kwargs):
@@ -1945,12 +1976,11 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                 instance.gs_resource = gs_resource
 
                 # Iterate over values from geoserver.
-                for key in ["alternate", "store", "subtype"]:
-                    # attr_name = key if 'typename' not in key else 'alternate'
-                    # print attr_name
-                    setattr(instance, key, get_dataset_storetype(values[key]))
+                instance = instance.fixup_store_type(["alternate", "store", "subtype"], values)
 
                 if updatemetadata:
+                    _sync_geoserver_keywords_to_instance(instance, gs_resource.keywords)
+
                     # Get metadata links
                     metadata_links = []
                     for link in instance.link_set.metadata():
@@ -2008,18 +2038,9 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     # are bypassed by custom create/updates we need to ensure the
                     # bbox is calculated properly.
                     srid = gs_resource.projection
-                    bbox = gs_resource.native_bbox
-                    ll_bbox = gs_resource.latlon_bbox
-                    try:
-                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-                    except GeoNodeException as e:
-                        if not ll_bbox:
-                            raise
-                        else:
-                            logger.exception(e)
-                            instance.srid = "EPSG:4326"
-                            Dataset.objects.filter(id=instance.id).update(srid=instance.srid)
-                    instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
+                    bbox = normalize_bbox_to_float_list(gs_resource.native_bbox)
+                    ll_bbox = normalize_bbox_to_float_list(gs_resource.latlon_bbox)
+                    instance.set_bbox_and_srid(bbox=bbox, ll_bbox=ll_bbox, srid=srid)
 
                     if instance.srid:
                         instance.srid_url = (
@@ -2055,7 +2076,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     # Refresh from DB
                     instance.refresh_from_db()
 
-                if updatemetadata:
+                if updatemetadata and instance.should_create_style:
                     # Save dataset styles
                     logger.debug(f"... Refresh Legend links for Dataset {instance.title}")
                     try:

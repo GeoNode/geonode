@@ -250,3 +250,15 @@ class EmptyDatasetHandler(BaseVectorFileHandler):
         req = catalog.http_request(url, data=xml, method="PUT", headers={"Content-Type": "application/xml"})
         req.raise_for_status()
         return True
+
+    def rollback(self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs):
+        """
+        Override the base rollback method to completely disable deletion of resources for empty datasets.
+        If something happens to an empty dataset while writing to the database,
+        the rollback function must not delete the dataset.
+        """
+        logger.warning(
+            f"Rollback triggered for execution {exec_id} from step {rollback_from_step}. "
+            f"Skipping all deletion steps for EmptyDatasetHandler"
+        )
+        return

@@ -694,3 +694,45 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertEqual(200, response.status_code, response.json())
 
         self.assertEqual(0, response.json().get("topics", {}).get("total", 0))
+
+    def test_anonymous_user_behaviour_with_no_filter_and_advertised_false(self):
+        # make sure the user authorization pre-filters the visible resources,
+        # including the advertised default behavior for anonymous users.
+        self.client.logout()
+        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {}}
+
+        hidden_adv = ResourceBase.objects.create(
+            title="dataset_hidden_advertised",
+            uuid=str(uuid4()),
+            owner=self.user,
+            abstract="Should not be counted for anonymous default listing",
+            subtype="vector",
+            category=self.cats["C0"],
+            advertised=False,  # advertised false
+            is_approved=True,
+            is_published=True,
+        )
+        hidden_adv.set_permissions(public_perm_spec)
+
+        # Category facet without extra filters (dropdown use-case)
+        facet_url = f"{reverse('get_facet', args=['category'])}"
+        facet_response = self.client.get(facet_url)
+        self.assertEqual(200, facet_response.status_code, facet_response.json())
+
+        facet_items = facet_response.json()["topics"]["items"]
+        c0_item = next((item for item in facet_items if item["key"] == "C0"), None)
+        self.assertIsNotNone(c0_item, f"C0 not found in facet payload: {facet_items}")
+
+        # Resources API is the source of truth for visible resources list.
+        resources_url = (
+            f"{reverse('base-resources-list')}?filter{{category.identifier.in}}=C0&filter{{metadata_only}}=false"
+        )
+        resources_response = self.client.get(resources_url)
+        self.assertEqual(200, resources_response.status_code, resources_response.json())
+        resources_total = resources_response.json()["total"]
+
+        self.assertEqual(
+            resources_total,
+            c0_item["count"],
+            "Facet count must match resources list count for anonymous users when no facet filters are applied.",
+        )

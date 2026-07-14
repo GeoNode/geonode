@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import List
 import zipfile
 import re
+import pyproj
 from datetime import datetime
 
 import slugify
@@ -53,6 +54,16 @@ class BaseHandler(ABC):
 
     REGISTRY = []
 
+    # Merged FileValidationUploadHandler config across all registered handlers.
+    # Populated incrementally by ``register()`` from each handler's
+    # ``upload_validation_config`` property. Read by
+    # geonode.upload.validation.datasets.DatasetFileValidationConfigProvider.
+    UPLOAD_VALIDATION_CONFIG = {
+        "allowed_extensions": frozenset(),
+        "magic_mimetype_map": {},
+        "magic_description_map": {},
+    }
+
     TASKS = {
         exa.UPLOAD.value: (),
         exa.COPY.value: (),
@@ -70,10 +81,49 @@ class BaseHandler(ABC):
     @classmethod
     def register(cls):
         BaseHandler.REGISTRY.append(cls)
+        cls.merge_upload_validation_config()
 
     @classmethod
     def get_registry(cls):
         return BaseHandler.REGISTRY
+
+    @classmethod
+    def merge_upload_validation_config(cls):
+        """
+        Fold this handler's ``upload_validation_config`` into
+        ``BaseHandler.UPLOAD_VALIDATION_CONFIG``. Handlers that do not
+        declare the property contribute nothing. Idempotent: re-registering
+        a handler unions the same set values without duplicating anything.
+
+        Resulting dict shape::
+
+            {
+                "allowed_extensions": frozenset[str],
+                "magic_mimetype_map": dict[str, frozenset[str]],
+                "magic_description_map": dict[str, frozenset[str]],
+            }
+        """
+        # cls() is needed because handlers declare upload_validation_config
+        # as @property (mirroring supported_file_extension_config); reading
+        # the property requires an instance.
+        new_cfg = getattr(cls(), "upload_validation_config", {})
+        if not new_cfg:
+            return
+        current = BaseHandler.UPLOAD_VALIDATION_CONFIG
+        allowed = set(current["allowed_extensions"])
+        mimes = {ext: set(s) for ext, s in current["magic_mimetype_map"].items()}
+        descs = {ext: set(s) for ext, s in current["magic_description_map"].items()}
+        for ext, rules in new_cfg.items():
+            allowed.add(ext)
+            for m in rules.get("mimes", ()):
+                mimes.setdefault(ext, set()).add(m)
+            for d in rules.get("description_contains", ()):
+                descs.setdefault(ext, set()).add(d)
+        BaseHandler.UPLOAD_VALIDATION_CONFIG = {
+            "allowed_extensions": frozenset(allowed),
+            "magic_mimetype_map": {ext: frozenset(s) for ext, s in mimes.items() if s},
+            "magic_description_map": {ext: frozenset(s) for ext, s in descs.items() if s},
+        }
 
     @classmethod
     def get_task_list(cls, action) -> tuple:
@@ -183,11 +233,25 @@ class BaseHandler(ABC):
 
         return _exec
 
+    def evaluate_exec_prev_status(self, action, resource_pk=None):
+        """
+        Required to evaluate if the resource can be replaced/upsert
+        based on it's previous status. this is required for 3dtiles for example
+        but the handler can deny some operations on some resources
+        """
+        return True, None
+
     def pre_processing(self, files, execution_id, **kwargs):
         from geonode.upload.orchestrator import orchestrator
 
         _exec_obj = orchestrator.get_execution_object(execution_id)
         _data = _exec_obj.input_params.copy()
+
+        if _exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
+            if resource_pk := _data.get("resource_pk"):
+                can_proceed, reason = self.evaluate_exec_prev_status(_exec_obj.action, resource_pk)
+                if not can_proceed:
+                    raise ImportException(reason)
         # unzipping the file
         if "zip_file" in files or "kmz_file" in files:
             # if a zipfile is provided, we need to unzip it before searching for an handler
@@ -402,3 +466,29 @@ class BaseHandler(ABC):
 
     def _copy_geonode_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
         self._create_geonode_resource_rollback(exec_id, istance_name=istance_name)
+
+    def identify_authority(self, layer):
+        try:
+            layer_wkt = layer.GetSpatialRef().ExportToWkt()
+            _name = "EPSG"
+            _code = pyproj.CRS(layer_wkt).to_epsg(min_confidence=20)
+            if _code is None:
+                layer_proj4 = layer.GetSpatialRef().ExportToProj4()
+                _code = pyproj.CRS(layer_proj4).to_epsg(min_confidence=20)
+                if _code is None:
+                    raise Exception("CRS authority code not found, fallback to default behaviour")
+        except Exception:
+            try:
+                spatial_ref = layer.GetSpatialRef()
+                spatial_ref.AutoIdentifyEPSG()
+                _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
+                _code = (
+                    spatial_ref.GetAuthorityCode("PROJCS")
+                    or spatial_ref.GetAuthorityCode("GEOGCS")
+                    or spatial_ref.GetAttrValue("AUTHORITY", 1)
+                )
+            except Exception:
+                logger.error(
+                    f"The following layer {layer.GetName()} does not have a Coordinate Reference System (CRS) and will be skipped."
+                )
+        return f"{_name}:{_code}"

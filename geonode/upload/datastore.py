@@ -16,10 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
+
 from django.utils.module_loading import import_string
 from django.contrib.auth import get_user_model
 
 from geonode.upload.orchestrator import orchestrator
+
+logger = logging.getLogger("importer")
 
 
 class DataStoreManager:
@@ -46,7 +50,7 @@ class DataStoreManager:
         """
         url = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("url")
         if url:
-            return self.handler.is_valid_url(url)
+            return self.handler.is_valid_url(url, execution_id=self.execution_id)
         return self.handler.is_valid(self.files, self.user, execution_id=self.execution_id)
 
     def _import_and_register(self, execution_id, task_name, **kwargs):
@@ -63,10 +67,16 @@ class DataStoreManager:
 
     def pre_validation(self, **kwargs):
         """
-        Hook for let the handler prepare the data before the validation.
-        Maybe a file rename, assign the resource to the execution_id
+        Deprecated compatibility hook.
+
+        The pre_validation hook is deprecated. Handlers should use
+        pre_processing() instead. This fallback is kept temporarily for custom
+        handlers that still implement pre_validation().
         """
-        return self.handler().pre_validation(self.files, self.execution_id, **kwargs)
+        handler = self.handler()
+        if getattr(handler, "pre_validation", None):
+            logger.warning("Calling deprecated handler method pre_validation()", exc_info=True)
+            return handler.pre_validation(self.files, self.execution_id, **kwargs)
 
     def prepare_import(self, **kwargs):
         """

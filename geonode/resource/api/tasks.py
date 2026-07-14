@@ -29,7 +29,7 @@ from django.utils.translation import gettext_lazy as _
 
 from geonode.celery_app import app
 from geonode.base.models import ResourceBase
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.tasks.tasks import AcquireLock, FaultTolerantTask
 
 from .utils import resolve_type_serializer
@@ -101,9 +101,14 @@ def resouce_service_dispatcher(self, execution_id: str):
                     if _request.status == ExecutionRequest.STATUS_READY:
                         _exec_request.update(status=ExecutionRequest.STATUS_RUNNING)
                         _request.refresh_from_db()
-                        if hasattr(resource_manager, _request.func_name):
+                        if _request.geonode_resource:
+                            _manager = resource_manager_registry.get_for_instance(_request.geonode_resource)
+                        else:
+                            resource_type = _request.input_params.get("resource_type")
+                            _manager = resource_manager_registry.get_for_type(resource_type)
+                        if hasattr(_manager, _request.func_name):
                             try:
-                                _signature = signature(getattr(resource_manager, _request.func_name))
+                                _signature = signature(getattr(_manager, _request.func_name))
                                 _args = []
                                 _kwargs = {}
                                 for _param_name in _signature.parameters:
@@ -118,9 +123,7 @@ def resouce_service_dispatcher(self, execution_id: str):
                                 _bindings = _signature.bind(*_args, **_kwargs)
                                 _bindings.apply_defaults()
 
-                                _output = getattr(resource_manager, _request.func_name)(
-                                    *_bindings.args, **_bindings.kwargs
-                                )
+                                _output = getattr(_manager, _request.func_name)(*_bindings.args, **_bindings.kwargs)
                                 _output_params = {}
                                 if _output is not None and _signature.return_annotation != Signature.empty:
                                     if _signature.return_annotation.__module__ == "builtins":

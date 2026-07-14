@@ -18,12 +18,14 @@
 #########################################################################
 import os
 import uuid
+import shutil
 
 from django.conf import settings
 import gisdata
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from geonode.upload.api.exceptions import UploadParallelismLimitException
+from geonode.upload.handlers.shapefile.exceptions import InvalidShapeFileException
 from geonode.upload.models import UploadParallelismLimit
 from mock import MagicMock, patch, mock_open
 from geonode.upload import project_dir
@@ -107,6 +109,17 @@ class TestShapeFileFileHandler(TestCase):
     def test_is_valid_should_pass_with_valid_shp(self):
         self.handler.is_valid(files=self.valid_shp, user=self.user)
 
+    def test_is_valid_should_not_pass_if_file_is_missing(self):
+        files = self.valid_shp.copy()
+        files.pop("dbf_file")
+        with self.assertRaises(InvalidShapeFileException) as _exp:
+            self.handler.is_valid(files=files, user=self.user)
+        self.assertIn(
+            "Some files are missing. The files need to have the same name with all extensions: shp, prj, dbf, shx",
+            str(_exp.exception),
+            "error message is not the expected one",
+        )
+
     def test_get_ogr2ogr_driver_should_return_the_expected_driver(self):
         expected = ogr.GetDriverByName("ESRI Shapefile")
         actual = self.handler.get_ogr2ogr_driver()
@@ -161,19 +174,27 @@ class TestShapeFileFileHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
+
+        # Build the expected list to match your list-based secure implementation
+        expected_cmd_list = [
+            shutil.which("ogr2ogr") or "ogr2ogr",
+            "--config",
+            "PG_USE_COPY",
+            "YES",
+            "-f",
+            "PostgreSQL",
+            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
+            self.valid_shp.get("base_file"),
+            "-lco",
+            "FID=fid",
+            "-nln",
+            "alternate",
+            "dataset",
+            "-lco",
+            "precision=no",
+            "-lco",
+            "GEOMETRY_NAME=geom",
+        ]
+
         _open.assert_called_once()
-        _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_shp.get("base_file")
-            + '" -lco FID=fid'
-            + ' -nln alternate "dataset" -lco precision=no -lco GEOMETRY_NAME=geom ',
-            stdout=-1,
-            stderr=-1,
-            shell=True,  # noqa
-        )
+        _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)

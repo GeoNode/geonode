@@ -36,11 +36,14 @@ def get_default_language():
 
 def get_language(request):
     if request:
-        language = request.query_params.get("lang", None)  # explicit query param
+        params = getattr(request, "query_params", None) or getattr(request, "GET", {})
+        language = params.get("lang", None)
+
         if not language:
             language = getattr(request, "LANGUAGE_CODE", None)  # LocaleMiddleware
         if not language:
-            language = request.headers.get("Accept-Language", "").split(",")[0]
+            headers = getattr(request, "headers", {})
+            language = headers.get("Accept-Language", "").split(",")[0]
     else:
         language = get_default_language()
 
@@ -48,3 +51,11 @@ def get_language(request):
         language = language.split("-")[0]  # normalize
 
     return language
+
+
+def get_all_multilang_fields():
+    return {
+        (field, lang): get_multilang_field_name(field, lang)
+        for field in settings.MULTILANG_FIELDS
+        for lang in get_2letters_languages()
+    }
