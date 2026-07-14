@@ -78,19 +78,6 @@ services:
       retries: 3
       start_period: 10s
 
-  # memcached service
-  memcached:
-    image: memcached:alpine
-    container_name: memcached4${COMPOSE_PROJECT_NAME}
-    command: memcached ${MEMCACHED_OPTIONS}
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "nc", "-z", "127.0.0.1", "11211"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
   # Gets and installs letsencrypt certificates
   letsencrypt:
     image: geonode/letsencrypt:2.6.0-latest
