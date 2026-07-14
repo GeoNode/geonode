@@ -111,7 +111,8 @@ def _sync_geoserver_keywords_to_instance(instance, keywords):
     if not keywords:
         return
     try:
-        KeywordHandler(instance=instance, keywords=list(keywords)).set_keywords()
+        merged_keywords = set(keywords) | set(instance.keyword_list())
+        KeywordHandler(instance=instance, keywords=list(merged_keywords)).set_keywords()
     except Exception:
         logger.exception(f"Error while importing keywords from GeoServer for dataset {instance.name}")
 
@@ -605,6 +606,7 @@ def gs_slurp(
     filter=None,
     skip_unadvertised=False,
     skip_geonode_registered=False,
+    skip_keywords=False,
     remove_deleted=False,
     permissions=None,
     execute_signals=False,
@@ -762,6 +764,10 @@ def gs_slurp(
 
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
+
+            if not skip_keywords:
+                # import the keywords from GeoServer, merging them with the existing ones
+                _sync_geoserver_keywords_to_instance(layer, resource.keywords)
 
             # in some cases we need to explicitily save the resource to execute the signals
             # (for sure when running updatelayers)
@@ -1932,6 +1938,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
     """
     updatebbox = kwargs.get("updatebbox", True)
     updatemetadata = kwargs.get("updatemetadata", True)
+    importgskeywords = kwargs.get("importgskeywords", False)
 
     instance = None
     try:
@@ -1979,7 +1986,8 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                 instance = instance.fixup_store_type(["alternate", "store", "subtype"], values)
 
                 if updatemetadata:
-                    _sync_geoserver_keywords_to_instance(instance, gs_resource.keywords)
+                    if importgskeywords:
+                        _sync_geoserver_keywords_to_instance(instance, gs_resource.keywords)
 
                     # Get metadata links
                     metadata_links = []
