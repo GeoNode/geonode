@@ -23,20 +23,15 @@ from django import template
 from django.conf import settings
 
 from geonode.metadata.multilang.utils import (
-    get_2letters_languages,
     get_default_language,
     get_3_from_2,
     get_2_from_3,
-    get_multilang_field_name,
+    get_multilang_field_names,
+    get_all_multilang_fields,
 )
 
 register = template.Library()
 logger = logging.getLogger(__name__)
-
-
-def _is_multilang_field(field_name):
-    """Return whether a field is configured as multilingual."""
-    return field_name in getattr(settings, "MULTILANG_FIELDS", ())
 
 
 def _language_label(language_code_2, fallback):
@@ -46,25 +41,6 @@ def _language_label(language_code_2, fallback):
     language_labels = {code.split("-")[0]: label for code, label in settings.LANGUAGES}
 
     return language_labels.get(language_code_2, fallback)
-
-
-def _translation_value(metadata, field_name, language_code):
-    """Return the translated value for a multilingual field."""
-    if not metadata:
-        return None
-
-    return metadata.get(get_multilang_field_name(field_name, language_code))
-
-
-def _has_translation(metadata, field_name, language_code):
-    """Return whether the field has a translation for the given language."""
-    return bool(
-        _translation_value(
-            metadata,
-            field_name,
-            language_code,
-        )
-    )
 
 
 def _language_descriptor(lang_2, lang_3):
@@ -80,7 +56,7 @@ def _language_descriptor(lang_2, lang_3):
 @register.filter(name="is_multilang")
 def is_multilang(field_name):
     """Return whether the field is configured as multilingual."""
-    return _is_multilang_field(field_name)
+    return field_name in getattr(settings, "MULTILANG_FIELDS", ())
 
 
 @register.simple_tag(name="multilang_values")
@@ -89,34 +65,17 @@ def multilang_values(field_name, metadata):
     Return all translations for a multilingual field except the default
     language.
     """
-    if not isinstance(metadata, dict) or not _is_multilang_field(field_name):
+    if not isinstance(metadata, dict) or not is_multilang(field_name):
         return []
 
-    default_language = get_default_language()
-    translations = []
-    included_languages = set()
-
-    for language_code in get_2letters_languages():
-        if language_code == default_language or language_code in included_languages:
-            continue
-
-        included_languages.add(language_code)
-
-        translated_text = _translation_value(
-            metadata,
-            field_name,
-            language_code,
-        )
-
-        if translated_text:
-            translations.append(
-                {
-                    "locale": language_code,
-                    "text": translated_text,
-                }
-            )
-
-    return translations
+    return [
+        {
+            "locale": language_code,
+            "text": metadata[translated_field],
+        }
+        for language_code, translated_field in get_multilang_field_names(field_name)
+        if metadata.get(translated_field)
+    ]
 
 
 @register.simple_tag(name="language_info")
@@ -126,10 +85,16 @@ def language_info(lang_3):
     """
     if not lang_3:
         lang_2 = get_default_language()
-        lang_3 = get_3_from_2(lang_2) or "eng"
+        lang_3 = get_3_from_2(lang_2)
+        if lang_3 is None:
+            logger.warning(
+                "No ISO639-2 language found for '%s'; using 'eng' as the default.",
+                lang_2,
+            )
+            lang_3 = "und"
     elif len(lang_3) == 2:
         lang_2 = lang_3
-        lang_3 = get_3_from_2(lang_2) or "eng"
+        lang_3 = get_3_from_2(lang_2) or "und"
     else:
         lang_2 = get_2_from_3(lang_3)
 
@@ -153,39 +118,27 @@ def languages_info(metadata, fields=None):
     if not isinstance(metadata, dict):
         return []
 
-    multilingual_fields = fields if fields is not None else getattr(settings, "MULTILANG_FIELDS", ())
+    multilingual_fields = set(fields or settings.MULTILANG_FIELDS)
 
-    default_language = get_default_language()
+    languages = set()
+
+    for (field_name, language_code), multilang_field_name in get_all_multilang_fields().items():
+        if field_name not in multilingual_fields or not metadata.get(multilang_field_name):
+            continue
+
+        languages.add(language_code)
+
     descriptors = []
-    included_languages = set()
-
-    for language_code in get_2letters_languages():
-        if language_code == default_language or language_code in included_languages:
-            continue
-
-        included_languages.add(language_code)
-
-        if not any(
-            _has_translation(metadata, field_name, language_code)
-            for field_name in multilingual_fields
-            if _is_multilang_field(field_name)
-        ):
-            continue
-
+    for language_code in sorted(languages):
         lang_3 = get_3_from_2(language_code)
 
         if lang_3 is None:
             logger.warning(
-                "No entry in settings.LANGUAGE_MAPPINGS for language '%s'; " "skipping this entry.",
+                "No entry in settings.LANGUAGE_MAPPINGS for language '%s'; skipping this entry.",
                 language_code,
             )
             continue
 
-        descriptors.append(
-            _language_descriptor(
-                language_code,
-                lang_3,
-            )
-        )
+        descriptors.append(_language_descriptor(language_code, lang_3))
 
     return descriptors
