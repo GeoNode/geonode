@@ -340,7 +340,8 @@ class BaseVectorFileHandler(BaseHandler):
             env = {**os.environ, "PGPASSWORD": _datastore["PASSWORD"]}
             psql_cmd = [
                 "psql",
-                "-v ON_ERROR_STOP=1",
+                "-v",
+                "ON_ERROR_STOP=1",
                 "-d",
                 _datastore["NAME"],
                 "-h",
@@ -1790,7 +1791,8 @@ def import_with_ogr2ogr(
             _datastore = settings.DATABASES["datastore"]
             psql_cmd = [
                 "psql",
-                "-v ON_ERROR_STOP=1",
+                "-v",
+                "ON_ERROR_STOP=1",
                 "-d",
                 _datastore["NAME"],
                 "-h",
