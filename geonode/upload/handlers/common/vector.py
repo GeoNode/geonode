@@ -1446,10 +1446,11 @@ class BaseVectorFileHandler(BaseHandler):
                     )
                     chunk_index += 1
         except Exception as e:
-            msg = f"Error occurred during feature save in Batch {chunk_index} with error: {str(e)}"
+            logger.exception(f"Error occurred during feature save in Batch {chunk_index} ({str(e)})")
+            msg = f"Error occurred during feature save in Batch {chunk_index}"
             if exec_obj and layers:
                 self._create_error_log(exec_obj, layers, [{"error": msg}])
-            raise UpsertException(msg)
+            raise UpsertException("An internal error occurred while processing the upsert operation.")
 
         return valid_create, valid_update
 
