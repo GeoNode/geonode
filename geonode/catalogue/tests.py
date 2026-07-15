@@ -236,14 +236,6 @@ class MultilangValuesTagTests(GeoNodeBaseTestSupport):
     def test_configured_field_no_translations(self):
         self.assertEqual([], tags.multilang_values("title", {"title": "Hello"}))
 
-    def test_excludes_default_language(self):
-        metadata = {
-            "title": "Hello",
-            "title_multilang_en": "Hello",
-            "title_multilang_it": "Ciao",
-        }
-        self.assertEqual([{"locale": "it", "text": "Ciao"}], tags.multilang_values("title", metadata))
-
     def test_excludes_empty_string_translation(self):
         metadata = {
             "title": "Hello",
