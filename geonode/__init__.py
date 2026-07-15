@@ -19,7 +19,7 @@
 
 import os
 
-__version__ = (5, 1, 0, 'final', 0)
+__version__ = (5, 1, 0, 'post', 1)
 
 
 def get_version():
