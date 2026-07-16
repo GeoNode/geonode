@@ -76,7 +76,7 @@ def multilang_values(field_name, metadata):
 
         if get_3_from_2(language_code) is None:
             logger.warning(
-                "No entry in LANGUAGE_MAPPINGS for language '%s'; " "skipping localized value for field '%s'.",
+                "No entry in LANGUAGE_MAPPINGS for language '%s'; skipping localized value for field '%s'.",
                 language_code,
                 field_name,
             )
