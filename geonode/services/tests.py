@@ -256,6 +256,24 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(handler_class.call_count, 1)
 
     @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
+    def test_get_service_handler_separates_cache_by_auth(self, mock_get_handler_class):
+        # Same url/type/service_id but different credentials must not collide,
+        # since relaxed base_url uniqueness allows distinct Services to share a URL.
+        handler_class = mock.MagicMock(side_effect=lambda *a, **k: PickableMagicMock())
+        mock_get_handler_class.return_value = handler_class
+        phony_url = f"http://fake/{uuid4()}"
+
+        auth_config_1 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_1.payload = {"username": "alice", "password": "pw1"}
+        auth_config_2 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_2.payload = {"username": "bob", "password": "pw2"}
+
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config_1)
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config_2)
+
+        self.assertEqual(handler_class.call_count, 2)
+
+    @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
     def test_get_service_handler_wms(self, mock_get_handler_class):
         _handler = PickableMagicMock()
         mock_get_handler_class.return_value = _handler

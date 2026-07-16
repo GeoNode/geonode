@@ -296,7 +296,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         except UnicodeEncodeError:
             self.fail("str of the Style model throws a UnicodeEncodeError with special characters.")
 
-    def test_dataset_links(self):
+    def test_vector_links(self):
         lyr = Dataset.objects.filter(subtype="vector").first()
         self.assertEqual(lyr.subtype, "vector")
 
@@ -324,6 +324,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
+    def test_raster_links(self):
         lyr = Dataset.objects.filter(subtype="raster").first()
         self.assertEqual(lyr.subtype, "raster")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -349,6 +350,42 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
+
+    def test_set_resource_default_links_passes_auth_config_to_service_handler(self):
+        remote_auth_config = object()
+        instance = MagicMock()
+        instance.resourcebase_ptr = MagicMock()
+        instance.srid = "EPSG:4326"
+        instance.bbox_polygon = True
+        instance.bbox_string = "0,0,1,1"
+        instance.ows_url = "http://example.com/ows"
+        instance.alternate = "remote:layer"
+        instance.can_have_wfs_links = False
+        instance.subtype = "vector"
+        instance.can_have_style = False
+        instance.prepare_wms_links.return_value = []
+        instance.get_thumbnail_url.return_value = None
+        instance.get_real_instance.return_value = MagicMock(ptype="NOT_WMS")
+        instance.remote_service = MagicMock(
+            service_url="http://example.com/ows?service=WMS",
+            type="WMS",
+            id=42,
+            auth_config=remote_auth_config,
+        )
+
+        with (
+            patch("geonode.utils.check_ogc_backend", return_value=True),
+            patch("geonode.resource.utils.is_remote_resource", return_value=False),
+            patch("geonode.base.models.Link.objects") as mock_link_objects,
+            patch("geonode.services.serviceprocessors.get_service_handler") as mock_get_service_handler,
+        ):
+            mock_link_objects.filter.return_value.count.return_value = 0
+            mock_get_service_handler.return_value = MagicMock(_create_dataset_legend_link=MagicMock())
+
+            set_resource_default_links(instance, instance)
+
+            _, kwargs = mock_get_service_handler.call_args
+            self.assertIs(kwargs.get("auth_config"), remote_auth_config)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
