@@ -64,6 +64,12 @@ from geonode.services.serviceprocessors.registry import ServiceTypeRegistry, ser
 logger = logging.getLogger(__name__)
 
 
+class PickableMagicMock(mock.MagicMock):
+    # Plain MagicMocks aren't picklable, which LocMemCache.set() requires.
+    def __reduce__(self):
+        return (mock.MagicMock, ())
+
+
 class ModuleFunctionsTestCase(StandardTestCase):
     def test_get_service_cache_key_is_service_specific(self):
         phony_url = "http://fake"
@@ -237,23 +243,20 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
     @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
     def test_get_service_handler_caches_when_service_id_present(self, mock_get_handler_class):
-        handler_class = mock.MagicMock(side_effect=lambda *a, **k: mock.MagicMock())
+        # Cached values are pickled (LocMemCache), so the constructed handler must be too.
+        handler_class = mock.MagicMock(side_effect=lambda *a, **k: PickableMagicMock())
         mock_get_handler_class.return_value = handler_class
         # Unique URL: LocMemCache isn't reset between test runs.
         phony_url = f"http://fake/{uuid4()}"
 
-        handler_1 = get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
-        handler_2 = get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
 
+        # Second call must be a cache hit, not a second construction.
         self.assertEqual(handler_class.call_count, 1)
-        self.assertIs(handler_1, handler_2)
 
     @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
     def test_get_service_handler_wms(self, mock_get_handler_class):
-        class PickableMagicMock(mock.MagicMock):
-            def __reduce__(self):
-                return (mock.MagicMock, ())
-
         _handler = PickableMagicMock()
         mock_get_handler_class.return_value = _handler
         phony_url = "http://fake"
