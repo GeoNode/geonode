@@ -62,20 +62,34 @@ def is_multilang(field_name):
 @register.simple_tag(name="multilang_values")
 def multilang_values(field_name, metadata):
     """
-    Return all translations for a multilingual field except the default
-    language.
+    Return all localized values for a multilingual field.
     """
     if not isinstance(metadata, dict) or not is_multilang(field_name):
         return []
 
-    return [
-        {
-            "locale": language_code,
-            "text": metadata[translated_field],
-        }
-        for language_code, translated_field in get_multilang_field_names(field_name)
-        if metadata.get(translated_field)
-    ]
+    values = []
+
+    for language_code, translated_field in get_multilang_field_names(field_name):
+        translated_text = metadata.get(translated_field)
+        if not translated_text:
+            continue
+
+        if get_3_from_2(language_code) is None:
+            logger.warning(
+                "No entry in LANGUAGE_MAPPINGS for language '%s'; " "skipping localized value for field '%s'.",
+                language_code,
+                field_name,
+            )
+            continue
+
+        values.append(
+            {
+                "locale": language_code,
+                "text": translated_text,
+            }
+        )
+
+    return values
 
 
 @register.simple_tag(name="language_info")
@@ -134,7 +148,7 @@ def languages_info(metadata, fields=None):
 
         if lang_3 is None:
             logger.warning(
-                "No entry in settings.LANGUAGE_MAPPINGS for language '%s'; skipping this entry.",
+                "No entry in LANGUAGE_MAPPINGS for language '%s'; skipping this entry.",
                 language_code,
             )
             continue
