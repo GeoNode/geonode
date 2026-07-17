@@ -132,7 +132,7 @@ These variables are automatically set by the `create-envfile.py` script if the `
 !!! warning 
     When `LETSENCRYPT_MODE` is set to production a valid email and email SMPT server are required to make the system generate a valid certificate.
 
-Whenever you change someting on .env file, you will need to rebuild the containers:
+Whenever you change something on .env file, you will need to rebuild the containers:
 
 ```bash
 docker-compose up -d
@@ -140,6 +140,75 @@ docker-compose up -d
 
 !!! Note 
     This command drops any change you might have done manually inside the containers, except for the static volumes.
+
+### Troubleshoot HTTPS configuration
+
+If the server is not reachable through HTTPS, inspect the Nginx configuration in the `nginx` container:
+
+```bash
+docker-compose exec nginx sh
+cd /etc/nginx
+```
+
+Check that the `nginx.https.enabled.conf` symlink exists and points to `nginx.https.available.conf`:
+
+```bash
+ls -lah
+rm -f nginx.https.enabled.conf
+ln -s nginx.https.available.conf nginx.https.enabled.conf
+```
+
+Inspect the actual HTTPS configuration file:
+
+```bash
+vim nginx.https.available.conf
+```
+
+!!! warning
+    Always edit `nginx.https.available.conf`, not `nginx.https.enabled.conf`. The `nginx.https.enabled.conf` file is a symlink, while `nginx.https.available.conf` is the real configuration file where SSL-related changes should be made.
+
+After saving any changes, reload Nginx:
+
+```bash
+nginx -s reload
+exit
+```
+
+### Configure custom SSL certificates
+
+In production deployment mode, GeoNode uses Let's Encrypt certificates by default. To provide your own certificates, copy them into the Nginx certificate volume and update the HTTPS configuration:
+
+```bash
+docker-compose exec nginx sh -c 'mkdir -p /geonode-certificates/my_geonode'
+
+wget --no-check-certificate 'http://<url_to_your_chain.crt>' \
+    -O chain.crt
+wget --no-check-certificate 'http://<url_to_your_key.key>' \
+    -O my_geonode.key
+
+docker-compose cp chain.crt nginx:/geonode-certificates/my_geonode
+docker-compose cp my_geonode.key nginx:/geonode-certificates/my_geonode
+
+docker-compose exec nginx sh
+cd /etc/nginx
+vim nginx.https.available.conf
+```
+
+Update the certificate paths:
+
+```diff
+-ssl_certificate     /certificate_symlink/fullchain.pem;
+-ssl_certificate_key /certificate_symlink/privkey.pem;
++ssl_certificate       /geonode-certificates/my_geonode/chain.crt;
++ssl_certificate_key   /geonode-certificates/my_geonode/my_geonode.key;
+```
+
+Reload Nginx when the changes are saved:
+
+```bash
+nginx -s reload
+exit
+```
 
 ### Remove all data and bring your running GeoNode deployment to the initial stage
 
