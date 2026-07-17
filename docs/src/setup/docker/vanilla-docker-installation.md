@@ -176,23 +176,23 @@ exit
 
 ### Configure custom SSL certificates
 
-In production deployment mode, GeoNode uses Let's Encrypt certificates by default. To provide your own certificates, copy them into the Nginx certificate volume and update the HTTPS configuration:
+In production deployment mode, GeoNode uses Let's Encrypt certificates by default. To provide your own certificates, copy your local certificate files into the Nginx certificate volume and update the HTTPS configuration.
+
+Assuming your certificate chain and private key are already available on the host as `chain.crt` and `my_geonode.key`, run:
 
 ```bash
 docker-compose exec nginx sh -c 'mkdir -p /geonode-certificates/my_geonode'
 
-wget --no-check-certificate 'http://<url_to_your_chain.crt>' \
-    -O chain.crt
-wget --no-check-certificate 'http://<url_to_your_key.key>' \
-    -O my_geonode.key
-
-docker-compose cp chain.crt nginx:/geonode-certificates/my_geonode
-docker-compose cp my_geonode.key nginx:/geonode-certificates/my_geonode
+docker compose cp chain.crt nginx:/geonode-certificates/my_geonode/chain.crt
+docker compose cp my_geonode.key nginx:/geonode-certificates/my_geonode/my_geonode.key
 
 docker-compose exec nginx sh
 cd /etc/nginx
 vim nginx.https.available.conf
 ```
+
+!!! note
+    The `docker compose cp` command requires Docker Compose V2. The legacy `docker-compose` command does not support `cp`.
 
 Update the certificate paths:
 
