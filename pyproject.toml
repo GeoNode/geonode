@@ -155,7 +155,7 @@ dependencies = [
     "cryptography==49.0.0",
     "jwcrypto>=1.5.8",
     # dependency for XLSX handler
-    "python-calamine==0.7.0",
+    "python-calamine==0.8.2",
     "python-magic==0.4.27",
 ]
 
