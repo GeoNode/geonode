@@ -46,9 +46,9 @@ urlpatterns = [
         name="autocomplete_region",
     ),
     re_path(
-        r"^autocomplete_hierachical_keyword/$",
+        r"^autocomplete_hierarchical_keyword/$",
         HierarchicalKeywordAutocomplete.as_view(),
-        name="autocomplete_hierachical_keyword",
+        name="autocomplete_hierarchical_keyword",
     ),
     re_path(
         r"^thesaurus_available",
