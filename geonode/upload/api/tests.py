@@ -350,22 +350,22 @@ class TestImporterViewSet(ImporterBaseTestSupport):
                 response = self.client.post(self.url, data=payload)
                 self.assertEqual(400, response.status_code)
 
-    @patch("geonode.utils.socket.getaddrinfo")
     @override_settings(SAFE_URL_CHECK_ENABLED=True)
-    def test_remote_upload_rejects_dns_resolving_to_private_ip(self, mock_dns):
+    def test_remote_upload_rejects_dns_resolving_to_private_ip(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
-        mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
 
-        payload = {
-            "url": "http://example.com/tileset.json",
-            "title": "Remote Title",
-            "type": "3dtiles",
-            "action": "upload",
-        }
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
+            payload = {
+                "url": "http://example.com/tileset.json",
+                "title": "Remote Title",
+                "type": "3dtiles",
+                "action": "upload",
+            }
 
-        response = self.client.post(self.url, data=payload)
+            response = self.client.post(self.url, data=payload)
 
-        self.assertEqual(400, response.status_code)
+            self.assertEqual(400, response.status_code)
 
     def test_copy_method_not_allowed(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))

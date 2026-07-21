@@ -1,4 +1,4 @@
-FROM geonode/geonode-base:latest-ubuntu-24.04
+FROM geonode/geonode-base:latest-ubuntu-26.04
 
 LABEL maintainer="GeoNode development team"
 

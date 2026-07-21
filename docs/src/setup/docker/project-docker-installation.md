@@ -51,9 +51,9 @@ python create-envfile.py
 
 Depending on the project's requirements, align the `.env` varialbes accordingly.
 !!! Note
-    For more information about the accepted arguments please see the section [Prepare the .env file](../vanilla-docker-installation) from the Vanilla GeoNode installation.
+    For more information about the accepted arguments please see the section [Prepare the .env file](vanilla-docker-installation.md#prepare-the-env-file) from the Vanilla GeoNode installation.
 
-Before building the project, check the created `.env` variable and align the arguments according to your requirements.
+When password or OAuth2 arguments are omitted, `create-envfile.py` writes random values to `.env`. Before building the project, review the generated values, keep the admin passwords available for the first login, and align the arguments according to your requirements.
 
 ### Build and run
 
@@ -86,9 +86,13 @@ docker-compose logs -f geonode
 
 ### Login as an administrator on GeoNode
 
-To connect on the GeoNode project as administrator, use the credentials from the `.env` file:
+The admin credentials depend on how `.env` was created. If you used `create-envfile.py` without passing explicit `--geonodepwd` or `--geoserverpwd` values, check the generated `.env` file for the random passwords.
+
+To connect on the GeoNode project as administrator, use the GeoNode credentials from the `.env` file:
 
 ```bash
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD={geonodepwd}
 ```
+
+For production deployments, also verify the generated or configured admin passwords and OAuth2 client credentials before exposing the instance publicly. See [Verify and secure credentials](../configuration/hardening.md#verify-and-secure-credentials).

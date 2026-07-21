@@ -1196,20 +1196,6 @@ For more information, please rely to `TestMetadataStorers` which contain a smoke
 The path to an image used as thumbnail placeholder.
 
 
-**MEMCACHED_BACKEND**
-
-:   Default:  ``django.core.cache.backends.memcached.PyMemcacheCache``
-
-Define which backend of memcached will be used
-
-
-**MEMCACHED_ENABLED**
-
-:   Default:  ``False``
-
-If True, will use MEMCACHED_BACKEND as default backend in CACHES
-
-
 **MODIFY_TOPICCATEGORY**
 
 
