@@ -22,6 +22,9 @@ _asset_storage_manager = StorageManager(
     concrete_storage_manager=FileSystemStorageManager(location=os.path.dirname(settings.ASSETS_ROOT))
 )
 
+# extensions served as an attachment (download) instead of rendered inline
+FORCE_DOWNLOAD_EXTENSIONS = {"xml", "sld"}
+
 
 class DefaultLocalLinkUrlHandler:
     def get_link_url(self, asset: LocalAsset):
@@ -303,9 +306,15 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
                     )
                 case False:
                     logger.info(f"Returning file '{localfile}' with name '{outname}'")
-                    return DownloadResponse(
-                        _asset_storage_manager.open(localfile).file, basename=f"{outname}", attachment=False
+                    force_download = ext.lower().lstrip(".") in FORCE_DOWNLOAD_EXTENSIONS
+                    response = DownloadResponse(
+                        _asset_storage_manager.open(localfile).file,
+                        basename=f"{outname}",
+                        attachment=force_download,
                     )
+                    response.headers["X-Content-Type-Options"] = "nosniff"
+                    response.headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+                    return response
         else:
             logger.warning(f"Internal file {localfile} not found for asset {asset.id}")
             return HttpResponse(f"Internal file not found for asset {asset.id}", status=404 if path else 500)

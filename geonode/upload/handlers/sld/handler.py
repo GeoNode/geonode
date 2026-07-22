@@ -89,10 +89,17 @@ class SLDFileHandler(MetadataFileHandler):
         """
         Define basic validation steps
         """
+        from geonode.utils import assert_safe_xml, UnsafeXMLError
+
         # calling base validation checks
         try:
             with open(files.get("base_file")) as _xml:
-                dlxml.fromstring(_xml.read().encode())
+                content = _xml.read()
+                dlxml.fromstring(content.encode())
+                assert_safe_xml(content)
+        except UnsafeXMLError as err:
+            logger.warning("Unsafe SLD content rejected: %s", err)
+            raise InvalidSldException("Uploaded document contains unsafe content")
         except Exception as err:
             raise InvalidSldException(f"Uploaded document is not SLD or is invalid: {str(err)}")
         return True

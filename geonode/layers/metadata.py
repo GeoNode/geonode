@@ -40,10 +40,15 @@ LOGGER = logging.getLogger(__name__)
 
 def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}):
     """Generate dict of model properties based on XML metadata"""
+    from geonode.utils import assert_safe_xml, UnsafeXMLError
 
     # check if document is XML
     try:
+        assert_safe_xml(xml)
         exml = dlxml.fromstring(xml.encode())
+    except UnsafeXMLError as err:
+        LOGGER.warning("Unsafe XML content rejected in metadata: %s", err)
+        raise GeoNodeException("Uploaded XML document contains unsafe content")
     except Exception as err:
         raise GeoNodeException(f"Uploaded XML document is not XML: {str(err)}")
 
