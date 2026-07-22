@@ -219,6 +219,13 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         """
 
         layer = get_object_or_404(Dataset, id=pk)
+        access = _to_compact_perms(permissions_registry.get_perms(instance=layer, user=request.user))
+        if request.method == "GET":
+            if access not in ("owner", "edit", "manage", "view", "download"):
+                raise PermissionDenied("You do not have permission to view this dataset")
+        else:  # PUT
+            if access not in ("owner", "edit", "manage"):
+                raise PermissionDenied("You do not have permission to edit this dataset")
 
         if layer.supports_time is False:
             return JsonResponse({"message": "The time dimension is not supported for this dataset."}, status=200)
