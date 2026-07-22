@@ -23,6 +23,7 @@ from django.conf import settings
 from django.db.models import signals
 from lxml import etree
 from owslib.etree import etree as dlxml
+from polymorphic.models import PolymorphicTypeInvalid
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.catalogue import get_catalogue
@@ -92,8 +93,11 @@ def update_csw_metadata(instance, catalogue=None):
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
         md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
     else:
+        try:
+            instance = instance.get_real_instance()  # get as many attrs as possible from the instance
+        except PolymorphicTypeInvalid as e:
+            LOGGER.warning(f"Could not resolve real instance for {instance.title}, using it as-is: {e}")
         # generate an XML document (GeoNode's default is ISO)
-        instance = instance.get_real_instance()  # get as many attrs as possible from the instance
         raw_xml = catalogue.catalogue.csw_gen_xml(instance, settings.CATALOG_METADATA_TEMPLATE)
         md_obj = dlxml.fromstring(raw_xml, parser=etree.XMLParser(remove_blank_text=True))
         md_doc = etree.tostring(md_obj, pretty_print=True, encoding="unicode")
