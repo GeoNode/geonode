@@ -651,6 +651,20 @@ class DatasetsApiTests(APITestCase):
         response = self.client.put(url, data=put_data)
         self.assertEqual(200, response.status_code)
 
+    def test_timeseries_update_blocked_for_view_only_user(self):
+        """A user with only view rights must not be able to edit the time configuration."""
+        view_only_user = get_user_model().objects.create_user(
+            username="timeseries_viewer",
+            password="timeseries_viewer_password",
+        )
+        layer = Dataset.objects.first()
+        assign_perm("view_resourcebase", view_only_user, layer.get_self_resource())
+        url = reverse("datasets-timeseries", args=(layer.id,))
+        self.client.login(username="timeseries_viewer", password="timeseries_viewer_password")
+
+        response = self.client.put(url, data={"has_time": False}, format="json")
+        self.assertEqual(403, response.status_code)
+
     def test_valid_metadata_file(self):
         layer = Dataset.objects.first()
         url = reverse("datasets-replace-metadata", args=(layer.id,))
