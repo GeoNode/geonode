@@ -33,6 +33,7 @@ from django.http import HttpResponse, QueryDict
 
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.tests.utils import ImporterBaseTestSupport
+from geonode.upload.utils import UploadLimitValidator
 
 
 def _build_gpkg_header():
@@ -328,6 +329,29 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.post(self.url, data=payload)
 
         self.assertEqual(201, response.status_code)
+
+    def test_total_upload_size_counts_zip_file_of_different_size(self):
+        validator = UploadLimitValidator(user=None)
+        files = {"base_file": MagicMock(size=10), "zip_file": MagicMock(size=1000)}
+        self.assertEqual(1010, validator._get_uploaded_files_total_size(files))
+
+    def test_total_upload_size_ignores_zip_file_matching_base_file(self):
+        validator = UploadLimitValidator(user=None)
+        files = {"base_file": MagicMock(size=500), "zip_file": MagicMock(size=500)}
+        self.assertEqual(500, validator._get_uploaded_files_total_size(files))
+
+    @patch("geonode.storage.manager.StorageManager.delete_retrieved_paths")
+    def test_cloned_files_removed_when_no_handler_is_found(self, mock_delete):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": open(f"{project_dir}/tests/fixture/valid.zip", "rb"),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertNotEqual(201, response.status_code)
+        mock_delete.assert_called_with(force=True)
 
     @override_settings(SAFE_URL_CHECK_ENABLED=True)
     def test_remote_upload_rejects_unsafe_url(self):

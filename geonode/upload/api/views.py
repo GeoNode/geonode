@@ -163,7 +163,11 @@ class ImporterViewSet(DynamicModelViewSet):
             )
             storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
             # validate the upload
-            self.validate_upload(request, storage_manager)
+            try:
+                self.validate_upload(request, storage_manager)
+            except Exception:
+                self._cleanup_cloned_files(storage_manager)
+                raise
             # merging the new local path with the input payload
             _data = _data | storage_manager.get_retrieved_paths()
         # checking the correct handler for the uploaded files
@@ -201,17 +205,22 @@ class ImporterViewSet(DynamicModelViewSet):
             except Exception as e:
                 # in case of any exception, is better to delete the
                 # cloned files to keep the storage under control
-                if storage_manager:
-                    try:
-                        storage_manager.delete_retrieved_paths(force=True)
-                    except Exception as _exc:
-                        logger.warning(_exc)
+                self._cleanup_cloned_files(storage_manager)
                 if execution_id:
                     orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
                 logger.exception(e)
                 raise ImportException(detail=e.args[0] if len(e.args) > 0 else e)
 
+        self._cleanup_cloned_files(storage_manager)
         raise ImportException(detail="No handlers found for this dataset type/action")
+
+    def _cleanup_cloned_files(self, storage_manager):
+        """Remove the locally cloned upload files"""
+        if storage_manager:
+            try:
+                storage_manager.delete_retrieved_paths(force=True)
+            except Exception as _exc:
+                logger.warning(_exc)
 
     def validate_upload(self, request, storage_manager):
         upload_validator = UploadLimitValidator(request.user)
