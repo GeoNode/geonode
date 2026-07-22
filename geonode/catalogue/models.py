@@ -41,7 +41,6 @@ def catalogue_pre_delete(instance, sender, **kwargs):
 def catalogue_post_save(instance, sender, **kwargs):
     """Get information from catalogue"""
     _id = instance.resourcebase_ptr.id if hasattr(instance, "resourcebase_ptr") else instance.id
-    resources = ResourceBase.objects.filter(id=_id)
 
     # Update the Catalog
     try:
@@ -49,41 +48,52 @@ def catalogue_post_save(instance, sender, **kwargs):
         catalogue.create_record(instance)
         record = catalogue.get_record(instance.uuid)
     except OSError as err:
-        msg = f'Could not connect to catalogue to save information for layer "{instance.name}"'
         if err.errno == errno.ECONNREFUSED:
-            LOGGER.warn(msg, err)
+            LOGGER.warning(
+                f'Could not connect to catalogue to save information for layer "{instance.name}": {err}', exc_info=err
+            )
             return
         else:
-            raise err
+            raise
 
-    if not record:
-        msg = f"Metadata record for {instance.title} does not exist, check the catalogue signals."
-        LOGGER.warning(msg)
-        return
+    if record:
+        _recreate_links(instance, record)
+    else:
+        LOGGER.warning(f"Metadata record for {instance.title} does not exist, check the catalogue signals.")
 
+    ResourceBase.objects.filter(id=_id).update(csw_wkt_geometry=instance.geographic_bounding_box)
+    update_csw_metadata(instance, catalogue)
+
+
+def _recreate_links(instance, record):
     if not hasattr(record, "links"):
         msg = f"Metadata record for {instance.title} should contain links."
         raise Exception(msg)
 
     # Create the different metadata links with the available formats
-    if resources.exists():
-        for mime, name, metadata_url in record.links["metadata"]:
-            try:
-                Link.objects.get_or_create(
-                    resource=resources.get(),
-                    url=metadata_url,
-                    defaults=dict(name=name, extension="xml", mime=mime, link_type="metadata"),
-                )
-            except Exception:
-                _d = dict(name=name, extension="xml", mime=mime, link_type="metadata")
-                Link.objects.filter(
-                    resource=resources.get(), url=metadata_url, extension="xml", link_type="metadata"
-                ).update(**_d)
+    for mime, name, metadata_url in record.links["metadata"]:
+        try:
+            Link.objects.get_or_create(
+                resource_id=instance.id,
+                url=metadata_url,
+                defaults=dict(name=name, extension="xml", mime=mime, link_type="metadata"),
+            )
+        except Exception:
+            _d = dict(name=name, extension="xml", mime=mime, link_type="metadata")
+            Link.objects.filter(
+                resource_id=instance.id, url=metadata_url, extension="xml", link_type="metadata"
+            ).update(**_d)
+
+
+def update_csw_metadata(instance, catalogue=None):
+    if not catalogue:
+        catalogue = get_catalogue()
 
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
         md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
     else:
         # generate an XML document (GeoNode's default is ISO)
+        instance = instance.get_real_instance()  # get as many attrs as possible from the instance
         raw_xml = catalogue.catalogue.csw_gen_xml(instance, settings.CATALOG_METADATA_TEMPLATE)
         md_obj = dlxml.fromstring(raw_xml, parser=etree.XMLParser(remove_blank_text=True))
         md_doc = etree.tostring(md_obj, pretty_print=True, encoding="unicode")
@@ -91,10 +101,10 @@ def catalogue_post_save(instance, sender, **kwargs):
     try:
         csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
     except Exception as e:
-        LOGGER.exception(e)
+        LOGGER.exception(f"Error while generating ANYTEXT: {e}", exc_info=e)
         csw_anytext = ""
 
-    resources.update(metadata_xml=md_doc, csw_wkt_geometry=instance.geographic_bounding_box, csw_anytext=csw_anytext)
+    ResourceBase.objects.filter(pk=instance.id).update(metadata_xml=md_doc, csw_anytext=csw_anytext)
 
 
 if "geonode.catalogue" in settings.INSTALLED_APPS:
