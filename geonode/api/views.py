@@ -61,7 +61,7 @@ class UserInfoView(APIView):
 
     def get(self, request):
         user = request.user
-    
+
         if not user or user.is_anonymous:
             out = {"success": False, "status": "error", "errors": {"user": ["User is not authenticated"]}}
             return json_response(out, status=401)
@@ -70,7 +70,7 @@ class UserInfoView(APIView):
         groups = [group.name for group in user.groups.all()]
         if user.is_superuser:
             groups.append("admin")
-        
+
         user_info = {
             "sub": str(user.id),
             "name": " ".join([user_field(user, "first_name"), user_field(user, "last_name")]),
@@ -80,7 +80,7 @@ class UserInfoView(APIView):
             "preferred_username": user_username(user),
             "groups": groups,
             "access_token": str(access_token),
-            "perms": permissions_registry.get_perms(user=user, use_cache=True, include_user_add_resource=True)
+            "perms": permissions_registry.get_perms(user=user, use_cache=True),
         }
 
         response = Response(user_info)
