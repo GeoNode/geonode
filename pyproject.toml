@@ -133,7 +133,7 @@ dependencies = [
     "django-user-agents==0.4.0",
     # production
     "uWSGI==2.0.30",
-    "docker==7.0.0",
+    "docker==7.2.0",
     "invoke==2.2.0",
     # tests
     "coverage==7.15.1",
