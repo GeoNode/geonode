@@ -1745,8 +1745,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             Optional[List[settings.AUTH_USER_MODEL]]: returns the requested contact role from the database
         """
         try:
-            contact_role = ContactRole.objects.filter(role=role, resource=self)
-            contacts = [cr.contact for cr in contact_role]
+            # single reverse-set read + python filter, instead of one query per role
+            contacts = [cr.contact for cr in self.contactrole_set.all() if cr.role == role]
         except ContactRole.DoesNotExist:
             contacts = None
         return contacts

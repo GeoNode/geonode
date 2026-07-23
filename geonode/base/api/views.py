@@ -305,7 +305,13 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         ResourceBasePermissionsFilter,
         FavoriteFilter,
     ]
-    queryset = ResourceBase.objects.select_related("owner").order_by("-created")
+    queryset = (
+        ResourceBase.objects.select_related(
+            "owner", "category", "license", "group", "restriction_code_type", "spatial_representation_type"
+        )
+        # keywords/tkeywords/regions are prefetched by dynamic-rest; contactrole is a custom field, prefetch it here
+        .prefetch_related("contactrole_set__contact").order_by("-created")
+    )
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 

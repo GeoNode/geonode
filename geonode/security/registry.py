@@ -70,7 +70,7 @@ class PermissionsHandlerRegistry:
         for item in self.REGISTRY:
             self.__check_item(item)
 
-    def user_has_perm(self, user, instance=None, perm="", include_virtual=False):
+    def user_has_perm(self, user, instance=None, perm="", include_virtual=False, use_cache=False):
         """
         Returns True if the user has the defined perm (permission)
         """
@@ -78,7 +78,7 @@ class PermissionsHandlerRegistry:
             return False
 
         resolved_perms = self.get_perms(
-            instance=instance, user=user, include_virtual=True, include_user_add_resource=True
+            instance=instance, user=user, include_virtual=True, include_user_add_resource=True, use_cache=use_cache
         )
 
         if isinstance(perm, list):

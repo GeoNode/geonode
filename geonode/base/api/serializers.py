@@ -258,13 +258,20 @@ class AvatarUrlField(DynamicComputedField):
         return build_absolute_uri(avatar_url(instance, self.avatar_size))
 
 
+def _real_instance(instance):
+    # memoize the polymorphic downcast: three fields call it per row
+    if not hasattr(instance, "_real_instance_cache"):
+        instance._real_instance_cache = instance.get_real_instance()
+    return instance._real_instance_cache
+
+
 class EmbedUrlField(DynamicComputedField):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         try:
-            _instance = instance.get_real_instance()
+            _instance = _real_instance(instance)
         except Exception as e:
             logger.exception(e)
             _instance = None
@@ -302,7 +309,7 @@ class DownloadLinkField(DynamicComputedField):
             logger.info(
                 f"Field {self.field_name} is deprecated and will be removed in the future GeoNode version. Please refer to download_urls"
             )
-            _instance = instance.get_real_instance()
+            _instance = _real_instance(instance)
             return _instance.download_url if hasattr(_instance, "download_url") else None
         except Exception as e:
             logger.exception(e)
@@ -315,7 +322,7 @@ class DownloadArrayLinkField(DynamicComputedField):
 
     def get_attribute(self, instance):
         try:
-            _instance = instance.get_real_instance()
+            _instance = _real_instance(instance)
         except Exception as e:
             logger.exception(e)
             raise e
@@ -339,14 +346,24 @@ class DownloadArrayLinkField(DynamicComputedField):
 
         elif _instance.resource_type in ["dataset"]:
             download_urls = []
+            request = self.context.get("request")
+            # reuse the already-resolved instance instead of re-resolving the alternate per handler
+            # (_resolve_dataset); gate on the cached download perm to keep the same visibility
+            _can_download = bool(request) and permissions_registry.user_has_perm(
+                request.user, _instance, "download_resourcebase", include_virtual=True, use_cache=True
+            )
             # lets get only the default one first to set it
             default_handler = get_default_dataset_download_handler()
-            obj = default_handler(self.context.get("request"), _instance.alternate)
+            obj = default_handler(request, _instance.alternate)
+            if _can_download:
+                obj._resource = _instance
             if obj.download_url:
                 download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
             # then let's prepare the payload with everything
             for handler in get_download_handlers():
-                obj = handler(self.context.get("request"), _instance.alternate)
+                obj = handler(request, _instance.alternate)
+                if _can_download:
+                    obj._resource = _instance
                 if obj.download_url:
                     download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
 
@@ -365,7 +382,12 @@ class FavoriteField(DynamicComputedField):
     def get_attribute(self, instance):
         _user = self.context.get("request")
         if _user and not _user.user.is_anonymous:
-            return Favorite.objects.filter(object_id=instance.pk, user=_user.user).exists()
+            # fetch the user favorites once per request, then membership check in python
+            fav_ids = self.context.get("_favorite_ids")
+            if fav_ids is None:
+                fav_ids = set(Favorite.objects.filter(user=_user.user).values_list("object_id", flat=True))
+                self.context["_favorite_ids"] = fav_ids
+            return instance.pk in fav_ids
         return False
 
 
@@ -556,9 +578,8 @@ class LinksSerializer(DynamicModelSerializer):
     def to_representation(self, instance):
         ret = []
         link_fields = ["extension", "link_type", "name", "mime", "url"]
-        links = Link.objects.filter(
-            resource_id=instance,  # link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS", "image", "metadata"]
-        )
+        # select_related asset/resource so the per-link asset + resource lookups below don't each hit the db
+        links = Link.objects.filter(resource_id=instance).select_related("asset", "resource")
         request = self.context.get("request", None)
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
@@ -571,7 +592,11 @@ class LinksSerializer(DynamicModelSerializer):
                     "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
                 }
                 if request and permissions_registry.user_has_perm(
-                    request.user, lnk.resource.get_self_resource(), "download_resourcebase", include_virtual=True
+                    request.user,
+                    lnk.resource.get_self_resource(),
+                    "download_resourcebase",
+                    include_virtual=True,
+                    use_cache=True,
                 ):
                     extras["content"]["download_url"] = asset_handler_registry.get_handler(
                         lnk.asset
@@ -845,8 +870,14 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
         data = super().to_representation(instance)
         if not isinstance(data, int):
             try:
+                # the permission-filtered base queryset is identical for every facet row of the
+                # request, so build it once instead of re-running the whole pipeline per row
+                base_qs = self.context.get("_count_base_qs")
+                if base_qs is None:
+                    base_qs = get_resources_with_perms(request.user, filter_options)
+                    self.context["_count_base_qs"] = base_qs
                 count_filter = {self.Meta.count_type: instance}
-                data["count"] = get_resources_with_perms(request.user, filter_options).filter(**count_filter).count()
+                data["count"] = base_qs.filter(**count_filter).count()
             except (TypeError, NoReverseMatch) as e:
                 logger.exception(e)
         return data
