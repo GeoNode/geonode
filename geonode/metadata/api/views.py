@@ -35,6 +35,7 @@ from geonode.base.api.permissions import UserHasPerms
 from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory, License
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
+from geonode.catalogue.models import update_csw_metadata
 from geonode.groups.models import GroupProfile
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.i18n import get_localized_label
@@ -124,7 +125,9 @@ class MetadataViewSet(ViewSet):
                         else metadata_manager.update_schema_instance_partial(resource, request.data, request.user, lang)
                     )
                     resource.refresh_from_db()
-                    resource.save()  # we want to trigger all the post_save signals
+                    resource.save()  # this is a ResourceBase and won't trigger the catalogue post_save
+                    update_csw_metadata(resource)
+
                 except Exception as e:
                     logger.warning(f"Error while updating schema instance: {e}")
                     MetadataHandler._set_error(
