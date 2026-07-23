@@ -36,6 +36,22 @@ from ..base.auth import get_token_object_from_session, get_auth_token
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.filters import OrderingFilter
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from dynamic_rest.viewsets import WithDynamicViewSetMixin
+from rest_framework.decorators import action
+
+from django.conf import settings
+from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
+from geonode.groups.models import GroupCategory, GroupProfile
+from geonode.base.api.pagination import GeoNodeApiPagination
+from .serializers import (
+    GroupCategorySerializer,
+    GroupProfileSerializer,
+    GroupSerializer,
+)
+from .filters import GroupCategoryFilter, GroupProfileFilter, GroupFilter
 
 
 def verify_access_token(request, key):
@@ -86,6 +102,97 @@ class UserInfoView(APIView):
         response["Cache-Control"] = "no-store"
         response["Pragma"] = "no-cache"
         return response
+
+
+class GroupCategoryViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
+    serializer_class = GroupCategorySerializer
+    pagination_class = GeoNodeApiPagination
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = GroupCategoryFilter
+    ordering_fields = ["name"]
+    ordering = ["name"]
+
+    def get_queryset(self):
+        user = self.request.user if self.request else None
+        if settings.API_LOCKDOWN and (not user or not user.is_authenticated):
+            return GroupCategory.objects.none()
+        return GroupCategory.objects.all()
+
+    @action(detail=False, methods=["get"], url_path="autocomplete")
+    def autocomplete(self, request):
+        q = request.GET.get("q", "")
+        qs = GroupCategory.objects.all()
+        if q:
+            qs = qs.filter(name__icontains=q)
+        results = [{"id": obj.pk, "text": obj.name} for obj in qs]
+        return Response(results)
+
+
+class GroupProfileViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
+    serializer_class = GroupProfileSerializer
+    pagination_class = GeoNodeApiPagination
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = GroupProfileFilter
+    ordering_fields = ["title", "last_modified"]
+    ordering = ["title"]
+
+    def get_queryset(self):
+        user = self.request.user if self.request else None
+
+        if settings.API_LOCKDOWN and (not user or not user.is_authenticated):
+            return GroupProfile.objects.none()
+
+        qs = GroupProfile.objects.all()
+
+        if not user or not user.is_authenticated:
+            return qs.exclude(access="private")
+
+        if not user.is_superuser:
+            return qs.filter(Q(pk__in=user.group_list_all()) | ~Q(access="private"))
+
+        return qs
+
+
+class GroupViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
+    serializer_class = GroupSerializer
+    pagination_class = GeoNodeApiPagination
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = GroupFilter
+    ordering_fields = ["name", "groupprofile__last_modified"]
+    ordering = ["name"]
+
+    def get_queryset(self):
+        user = self.request.user if self.request else None
+
+        if settings.API_LOCKDOWN and (not user or not user.is_authenticated):
+            return Group.objects.none()
+
+        qs = Group.objects.exclude(groupprofile=None).exclude(name="anonymous")
+
+        if not user or not user.is_authenticated:
+            return qs.exclude(groupprofile__access="private")
+
+        if not user.is_superuser:
+            return qs.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access="private"))
+
+        return qs
+
+    @action(detail=False, methods=["get"], url_path="autocomplete")
+    def autocomplete(self, request):
+        user = request.user
+        q = request.GET.get("q", "")
+        qs = GroupProfile.objects.all()
+
+        if q:
+            qs = qs.filter(title__icontains=q)
+
+        if not user.is_authenticated or user.is_anonymous:
+            qs = qs.exclude(access="private")
+        elif not user.is_superuser:
+            qs = qs.filter(Q(pk__in=user.group_list_all()) | ~Q(access="private"))
+
+        results = [{"id": obj.pk, "text": obj.title} for obj in qs]
+        return Response(results)
 
 
 @csrf_exempt
