@@ -4730,10 +4730,8 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
-msgstr "دیتاست"
+msgstr "مجموعه‌داده‌ها"
 
 msgid "People"
 msgstr "کاربران"
