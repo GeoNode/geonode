@@ -8,30 +8,24 @@
 
 {% block body_outer %}
   <div class="page-header">
-    <h2>{% trans "Log in to an existing account" %}</h2>
+    <h2 style="text-align: center">{% trans "Log in to account" %}</h2>
   </div>
 
 <div class="row">
+  <div class="col-md-2"></div>
   <div class="col-md-8">
 
     {% get_providers as socialaccount_providers %}
 
     {% if socialaccount_providers %}
-      <p>{% blocktrans with site.name as site_name %}Please sign in with one
-      of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
-      for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
       <div class="socialaccount_ballot">
-        <ul class="socialaccount_providers">
           {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-        </ul>
-
-        <div class="login-or">{% trans 'or' %}</div>
       </div>
-
+      <div class="login-or" style="text-align: center; font-size:large;">{% trans 'or' %}</div>
       {% include "socialaccount/snippets/login_extra.html" %}
 
     {% else %}
-      <p>{% blocktrans %}If you have not created an account yet, then please
+      <p style="text-align:center">{% blocktrans %}If you have not created an account yet, then please
       <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
     {% endif %}
     <form role="form" method="POST" action="{% url 'account_login' %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
@@ -40,8 +34,9 @@
       {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
       {% endif %}
-      <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button>
+      <button class="btn btn-primary btn-lg btn-block" type="submit">{% trans "Sign In" %}</button>
     </form>
   </div>
+  <div class="col-md-2"></div>
 </div>
 {% endblock body_outer %}
