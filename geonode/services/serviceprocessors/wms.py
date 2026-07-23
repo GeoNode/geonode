@@ -41,13 +41,8 @@ from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
 from geonode.harvesting.harvesters.wms import OgcWmsHarvester, WebMapService
 from geonode.security.auth_registry import auth_handler_registry
-
-from .. import enumerations
-from ..enumerations import CASCADED
-from ..enumerations import INDEXED
-from .. import models
-from .. import utils
-from . import base, get_service_handler
+from geonode.services import models, utils, enumerations
+from geonode.services.serviceprocessors import base, get_service_handler
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +57,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         self.args = args
         self.kwargs = kwargs
         self._parsed_service = None
-        self.indexing_method = INDEXED if self._offers_geonode_projection() else CASCADED
+        self.indexing_method = enumerations.INDEXED if self._offers_geonode_projection() else enumerations.CASCADED
         self.name = slugify(self.url)[:255]
 
     @staticmethod
@@ -75,7 +70,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         get_args = parsed_url.query
         # Converting URL arguments to dict
         parsed_get_args = dict(parse_qsl(get_args))
-        # Strip out redoundant args
+        # Strip out redundant args
         _version = parsed_get_args.pop("version", "1.3.0") if "version" in parsed_get_args else "1.3.0"
         _service = parsed_get_args.pop("service") if "service" in parsed_get_args else None
         _request = parsed_get_args.pop("request") if "request" in parsed_get_args else None
@@ -109,7 +104,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
 
     def probe(self):
         try:
-            return True if len(self.parsed_service.contents) > 0 else False
+            return len(self.parsed_service.contents) > 0
         except Exception:
             return False
 
@@ -140,42 +135,50 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
             if auth_config is not None and auth_config.pk is None:
                 auth_config.save()
 
-            with transaction.atomic():
-                service = models.Service.objects.create(
-                    uuid=str(uuid4()),
-                    base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode(
-                        "utf-8", "ignore"
-                    ).decode("utf-8"),
-                    extra_queryparams=cleaned_url.query,
-                    type=self.service_type,
-                    method=self.indexing_method,
-                    owner=owner,
-                    metadata_only=True,
-                    version=str(self.parsed_service.identification.version).encode("utf-8", "ignore").decode("utf-8"),
-                    name=self.name,
-                    title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode("utf-8")
-                    or self.name,
-                    abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode("utf-8")
-                    or _("Not provided"),
-                    operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version),
-                    auth_config=auth_config,
-                )
-                service_harvester = Harvester.objects.create(
-                    name=self.name,
-                    default_owner=owner,
-                    scheduling_enabled=False,
-                    remote_url=service.service_url,
-                    delete_orphan_resources_automatically=True,
-                    harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
-                    harvester_type_specific_configuration=self.get_harvester_configuration_options(),
-                )
-                service.harvester = service_harvester
-                service.save()
-                if service_harvester.update_availability():
-                    service_harvester.initiate_update_harvestable_resources()
-                else:
-                    logger.exception(GeoNodeException("Could not reach remote endpoint."))
+            def _create(unique_name):
+                with transaction.atomic():
+                    new_service = models.Service.objects.create(
+                        uuid=str(uuid4()),
+                        base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode(
+                            "utf-8", "ignore"
+                        ).decode("utf-8"),
+                        extra_queryparams=cleaned_url.query,
+                        type=self.service_type,
+                        method=self.indexing_method,
+                        owner=owner,
+                        metadata_only=True,
+                        version=str(self.parsed_service.identification.version)
+                        .encode("utf-8", "ignore")
+                        .decode("utf-8"),
+                        name=unique_name,
+                        title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode("utf-8")
+                        or unique_name,
+                        abstract=str(self.parsed_service.identification.abstract)
+                        .encode("utf-8", "ignore")
+                        .decode("utf-8")
+                        or _("Not provided"),
+                        operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version),
+                        auth_config=auth_config,
+                    )
+                    new_harvester = Harvester.objects.create(
+                        name=unique_name,
+                        default_owner=owner,
+                        scheduling_enabled=False,
+                        remote_url=new_service.service_url,
+                        delete_orphan_resources_automatically=True,
+                        harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
+                        harvester_type_specific_configuration=self.get_harvester_configuration_options(),
+                    )
+                    new_service.harvester = new_harvester
+                    new_service.save()
+                    if new_harvester.update_availability():
+                        new_harvester.initiate_update_harvestable_resources()
+                    else:
+                        logger.exception(GeoNodeException("Could not reach remote endpoint."))
+                    return new_service
 
+            service = base.create_with_unique_name(self.name, _create)
+            self.name = service.name
             self.geonode_service_id = service.id
         except Exception as e:
             logger.exception(e)
@@ -289,20 +292,24 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         self.args = args
         self.kwargs = kwargs
 
-        self.indexing_method = INDEXED
+        self.indexing_method = enumerations.INDEXED
         self.name = slugify(self.url)[:255]
 
     @property
     def parsed_service(self):
-        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
-        auth = None
-        if service.needs_authentication:
-            auth = auth_handler_registry.build(service.auth_config).get_request_auth()
+        # 2nd return value is the raw `service=` query param, not a Service model;
+        # auth comes from self.kwargs, as no Service row may exist yet.
+        cleaned_url, _, version, _request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
+        auth = self.kwargs.get("auth")
+        auth_config = self.kwargs.get("auth_config")
+        if auth is None and auth_config is not None:
+            auth = auth_handler_registry.build(auth_config).get_request_auth()
         _parsed_service = get_service_handler(
             cleaned_url.geturl(),
-            service.type,
-            service.id,
+            enumerations.WMS,
+            self.geonode_service_id,
             auth=auth,
+            auth_config=auth_config,
         )
         return _parsed_service
 
