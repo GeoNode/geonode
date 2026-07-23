@@ -1935,3 +1935,24 @@ def is_safe_url_with_redirects(url: str, max_redirects: int = 3):
             return False, current_url
 
     return False, current_url
+
+
+class SafeSession(requests.Session):
+    """requests Session that validates the target host of every request it
+    dispatches, including each redirect hop, before the socket is opened.
+    """
+
+    def send(self, request, **kwargs):
+        # request.url is the fully-resolved absolute URL of this hop.
+        if not is_safe_url(request.url):
+            # Keep the raised message generic: the URL may carry tokens or credentials.
+            logger.debug("Rejected request to disallowed host: %s", urlparse(request.url).hostname)
+            raise requests.exceptions.InvalidURL("The requested URL is not allowed.")
+        return super().send(request, **kwargs)
+
+
+def safe_request_url(method, url, max_redirects=3, **kwargs):
+    kwargs.setdefault("timeout", 10)
+    with SafeSession() as session:
+        session.max_redirects = max_redirects
+        return session.request(method, url, **kwargs)

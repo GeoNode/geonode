@@ -17,6 +17,8 @@
 #
 #########################################################################
 import copy
+import requests
+from requests.models import Response
 from unittest import TestCase
 
 from unittest.mock import patch
@@ -40,6 +42,7 @@ from geonode.utils import (
     assert_safe_xml,
     UnsafeXMLError,
 )
+from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects, safe_request_url
 from unittest.mock import MagicMock
 
 
@@ -441,3 +444,40 @@ class TestIsSafeURL(djangoTestCase):
         with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
             self.assertTrue(is_safe_url("https://internal.private.host:9090/geoserver/ows"))
+
+
+def _fake_response(status_code, url, location=None):
+    """Build a minimal requests.Response usable by resolve_redirects without a socket."""
+    response = Response()
+    response.status_code = status_code
+    response.url = url
+    response.raw = None
+    response._content = b""
+    response._content_consumed = True
+    response.history = []
+    if location is not None:
+        response.headers["Location"] = location
+    return response
+
+
+@override_settings(SAFE_URL_CHECK_ENABLED=True)
+class TestSafeRequestUrl(djangoTestCase):
+    """safe_request_url must validate the initial URL and every redirect hop."""
+
+    @patch("geonode.utils.is_safe_url")
+    def test_rejects_disallowed_initial_url(self, mock_is_safe_url):
+        """An initial URL that is not allowed is rejected before any request is sent."""
+        mock_is_safe_url.return_value = False
+        with self.assertRaises(requests.exceptions.InvalidURL):
+            safe_request_url("GET", "http://first.invalid/resource")
+
+    @patch("requests.adapters.HTTPAdapter.send")
+    @patch("geonode.utils.is_safe_url")
+    def test_rejects_disallowed_redirect_target(self, mock_is_safe_url, mock_adapter_send):
+        """A redirect whose target is not allowed is rejected on the redirect hop."""
+        mock_is_safe_url.side_effect = lambda candidate: "allowed.invalid" in candidate
+        mock_adapter_send.return_value = _fake_response(
+            302, "http://allowed.invalid/resource", location="http://other.invalid/resource"
+        )
+        with self.assertRaises(requests.exceptions.InvalidURL):
+            safe_request_url("GET", "http://allowed.invalid/resource")
