@@ -21,11 +21,12 @@ import xml.etree.ElementTree as ET
 
 from django.db.models import Q
 from django.template.loader import get_template
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 from django.http.response import Http404
 from django.core.exceptions import PermissionDenied
 from geonode.layers.models import Dataset
 from geonode.catalogue import get_catalogue
+from geonode.catalogue.templatetags import multilang as tags
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
@@ -208,3 +209,123 @@ class CatalogueMetadataTemplateTest(GeoNodeBaseTestSupport):
         rendered_xml = template.render(context)
         self.assertIn(self.keyword_label.label, rendered_xml)
         self.assertNotIn(self.keyword.alt_label, rendered_xml)
+
+
+@override_settings(MULTILANG_FIELDS=["title", "abstract"])
+class IsMultilangFilterTest(GeoNodeBaseTestSupport):
+
+    def test_configured_field(self):
+        self.assertTrue(tags.is_multilang("title"))
+        self.assertTrue(tags.is_multilang("abstract"))
+
+    def test_unconfigured_field(self):
+        self.assertFalse(tags.is_multilang("purpose"))
+
+    @override_settings(MULTILANG_FIELDS=())
+    def test_feature_off(self):
+        self.assertFalse(tags.is_multilang("title"))
+
+
+@override_settings(MULTILANG_FIELDS=["title", "abstract"])
+class MultilangValuesTagTests(GeoNodeBaseTestSupport):
+
+    def test_field_not_configured(self):
+        metadata = {"purpose": "x", "purpose_multilang_it": "scopo"}
+        self.assertEqual([], tags.multilang_values("purpose", metadata))
+
+    def test_configured_field_no_translations(self):
+        self.assertEqual([], tags.multilang_values("title", {"title": "Hello"}))
+
+    def test_excludes_empty_string_translation(self):
+        metadata = {
+            "title": "Hello",
+            "title_multilang_de": "",
+            "title_multilang_it": "Ciao",
+        }
+        self.assertEqual([{"locale": "it", "text": "Ciao"}], tags.multilang_values("title", metadata))
+
+    def test_multiple_translations(self):
+        metadata = {
+            "title": "Hello",
+            "title_multilang_de": "Hallo",
+            "title_multilang_es": "Hola",
+            "title_multilang_fr": "Bonjour",
+            "title_multilang_it": "Ciao",
+        }
+        result = {t["locale"]: t["text"] for t in tags.multilang_values("title", metadata)}
+        self.assertEqual({"de": "Hallo", "es": "Hola", "fr": "Bonjour", "it": "Ciao"}, result)
+
+    def test_empty_or_missing_metadata(self):
+        self.assertEqual([], tags.multilang_values("title", {}))
+        self.assertEqual([], tags.multilang_values("title", None))
+
+
+@override_settings(MULTILANG_FIELDS=["title", "abstract"])
+class LanguageTemplateTagTests(GeoNodeBaseTestSupport):
+
+    def test_language_info_known_code(self):
+        result = tags.language_info("ita")
+        self.assertEqual(
+            {
+                "id": "locale-it",
+                "iso639_2": "ita",
+                "label": "Italiano",
+                "encoding": "utf8",
+            },
+            result,
+        )
+
+    def test_language_info_code_with_bibliographic_terminological_variant(self):
+        result = tags.language_info("fra")
+        self.assertEqual("locale-fr", result["id"])
+        self.assertEqual("fra", result["iso639_2"])
+        self.assertEqual("Français", result["label"])
+
+    def test_languages_info_empty_or_missing_metadata(self):
+        self.assertEqual([], tags.languages_info({}))
+        self.assertEqual([], tags.languages_info(None))
+
+    def test_languages_info_no_translations(self):
+        metadata = {"title": "Hello", "abstract": "An abstract"}
+        self.assertEqual([], tags.languages_info(metadata))
+
+    def test_languages_info_across_fields(self):
+        metadata = {
+            "title": "Hello",
+            "title_multilang_it": "Ciao",
+            "title_multilang_de": "Hallo",
+            "abstract": "An abstract",
+            "abstract_multilang_fr": "Un résumé",
+            "abstract_multilang_de": "Eine Zusammenfassung",
+        }
+        result = {d["id"]: d for d in tags.languages_info(metadata)}
+        self.assertEqual({"locale-it", "locale-de", "locale-fr"}, set(result.keys()))
+        self.assertEqual(
+            {
+                "id": "locale-it",
+                "iso639_2": "ita",
+                "label": "Italiano",
+                "encoding": "utf8",
+            },
+            result["locale-it"],
+        )
+
+    def test_languages_info_respects_explicit_fields_argument(self):
+        metadata = {
+            "title": "Hello",
+            "title_multilang_it": "Ciao",
+            "abstract": "x",
+            "abstract_multilang_fr": "Un résumé",
+        }
+        result = tags.languages_info(metadata, fields=["title"])
+        self.assertEqual(["locale-it"], [d["id"] for d in result])
+
+    @override_settings(LANGUAGE_MAPPINGS=(("en", "eng"), ("it", "ita")))
+    def test_languages_info_missing_iso_mapping_is_skipped_and_warns(self):
+        metadata = {
+            "title": "Hello",
+            "title_multilang_it": "Ciao",
+            "title_multilang_de": "Hallo",
+        }
+        result = tags.languages_info(metadata)
+        self.assertEqual(["locale-it"], [d["id"] for d in result])
