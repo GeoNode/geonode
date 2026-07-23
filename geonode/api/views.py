@@ -30,6 +30,7 @@ from oauth2_provider.models import AccessToken
 from oauth2_provider.exceptions import OAuthToolkitError, FatalClientError
 from allauth.account.utils import user_field, user_email, user_username
 
+from geonode.security.registry import permissions_registry
 from ..utils import json_response
 from ..decorators import superuser_or_apiauth
 from ..base.auth import get_token_object_from_session, get_auth_token
@@ -66,7 +67,6 @@ class UserInfoView(APIView):
             return json_response(out, status=401)
 
         access_token = get_auth_token(user)
-
         groups = [group.name for group in user.groups.all()]
         if user.is_superuser:
             groups.append("admin")
@@ -80,6 +80,7 @@ class UserInfoView(APIView):
             "preferred_username": user_username(user),
             "groups": groups,
             "access_token": str(access_token),
+            "perms": permissions_registry.get_perms(user=user, use_cache=True),
         }
 
         response = Response(user_info)

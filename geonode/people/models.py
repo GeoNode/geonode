@@ -51,6 +51,8 @@ from .signals import (
     update_user_email_addresses,
     notify_admins_new_signup,
     clear_user_resource_permissions_cache_on_delete,
+    clear_user_global_permissions_cache_on_save,
+    clear_user_global_permissions_cache_on_perm_change,
 )
 from .languages import LANGUAGES
 from .timezones import TIMEZONES
@@ -286,3 +288,6 @@ social_account_added.connect(update_user_email_addresses, dispatch_uid=str(uuid4
 user_signed_up.connect(notify_admins_new_signup, dispatch_uid=str(uuid4()), weak=False)
 signals.post_save.connect(profile_post_save, sender=settings.AUTH_USER_MODEL)
 signals.pre_delete.connect(clear_user_resource_permissions_cache_on_delete, sender=settings.AUTH_USER_MODEL)
+signals.post_save.connect(clear_user_global_permissions_cache_on_save, sender=settings.AUTH_USER_MODEL)
+signals.m2m_changed.connect(clear_user_global_permissions_cache_on_perm_change, sender=Profile.user_permissions.through)
+signals.m2m_changed.connect(clear_user_global_permissions_cache_on_perm_change, sender=Profile.groups.through)
