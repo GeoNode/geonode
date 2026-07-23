@@ -75,6 +75,7 @@ from geonode.base.models import (
     License,
     Group,
     LinkedResource,
+    Link,
 )
 
 from geonode.layers.models import Dataset
@@ -111,6 +112,36 @@ class BaseApiTests(APITestCase):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
+
+    def test_download_urls_visibility_follows_download_permission(self):
+        """download_urls exposes the download link only to users allowed to download the dataset."""
+        bobby = get_user_model().objects.get(username="bobby")
+        norman = get_user_model().objects.get(username="norman")
+        dataset = create_single_dataset("perm_download_ds", owner=bobby)
+        download = "http://example.org/perm_download_ds.zip"
+        try:
+            Link.objects.create(
+                resource=dataset.get_self_resource(),
+                link_type="original",
+                name="original",
+                extension="zip",
+                mime="application/zip",
+                url=download,
+            )
+            dataset.set_permissions({"users": {norman: ["base.view_resourcebase"]}})
+            url = f"{reverse('base-resources-list')}/{dataset.id}?filter{{metadata_only}}=false"
+            # owner can download: the link is present
+            self.assertTrue(self.client.login(username="bobby", password="bob"))
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(download, [_d["url"] for _d in response.data["resource"]["download_urls"]])
+            # user with view but not download: the link is hidden
+            self.assertTrue(self.client.login(username="norman", password="norman"))
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn(download, [_d["url"] for _d in response.data["resource"]["download_urls"]])
+        finally:
+            dataset.delete()
 
     def test_groups_list(self):
         """
