@@ -594,6 +594,8 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
                 response = web_client.post(reverse("admin:login"))
             elif url_name == "logout":
                 response = web_client.post(reverse("admin:logout"))
+            elif url_name == "token":
+                response = web_client.post(reverse("oauth2_provider:token"))
             else:
                 response = web_client.post(reverse(url_name))
 
