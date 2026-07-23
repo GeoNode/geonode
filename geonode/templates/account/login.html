@@ -25,7 +25,7 @@
       {% include "socialaccount/snippets/login_extra.html" %}
 
     {% else %}
-      <p>{% blocktrans %}If you have not created an account yet, then please
+      <p style="text-align:center">{% blocktrans %}If you have not created an account yet, then please
       <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
     {% endif %}
     <form role="form" method="POST" action="{% url 'account_login' %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
