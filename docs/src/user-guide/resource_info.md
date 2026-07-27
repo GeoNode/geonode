@@ -30,6 +30,27 @@ By clicking the copy icons, you can copy the current *Bounding Box* or the *Cent
 *Bounding Box and Center*
 ///
 
+- The *Relations* tab lets you see which other resources are linked to this one.
+
+![](img/map_relations.png){ align=center }
+/// caption
+*Relations tab of a map, listing the datasets it uses as layers*
+///
+
+!!! Note
+    The *Relations* tab is only displayed when the resource actually has something to list. When a resource has no relations at all, the tab is hidden rather than shown empty.
+
+The tab lists the related resources you have permission to view. Relations themselves come from two different sources.
+
+**Automatic relations** are derived by GeoNode from the way resources are actually used. They are kept up to date on their own:
+
+- a *Map* lists the *Datasets* it uses as layers;
+- a *Dataset* lists the *Maps* that use it as a layer.
+
+**Manual relations** are links you create yourself, through the *Related resources* field of the metadata editor. Any resource can be linked to any other resource. These links appear in the *Relations* tab alongside the automatic ones. See [Metadata](metadata.md) for how to create them.
+
+Because *GeoStories* and *Dashboards* have no automatic relations, their *Relations* tab appears only once manual links have been added.
+
 - The *Assets* tab presents the current resource download link. Moreover, the user can add additional assets related to this resource.
 
 ![](img/resource_assets.png){ align=center }
@@ -90,13 +111,4 @@ Beyond the general tabs, there are a few tabs for specific resources:
 ![](img/dataset_attributes_tab.png){ align=center }
 /// caption
 *Dataset Attributes tab*
-///
-
-### Map resource
-
-- The *Relations* tab shows resources linked to the map, such as *Documents*, *Datasets*, *GeoStories*, and *Dashboards*.
-
-![](img/map_relations.png){ align=center }
-/// caption
-*Map Relations tab*
 ///
