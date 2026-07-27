@@ -137,3 +137,48 @@ def clear_user_resource_permissions_cache_on_delete(sender, instance, **kwargs):
         instance=instance,
         group_clear_cache=False,
     )
+
+
+def clear_user_global_permissions_cache_on_save(instance, sender, **kwargs):
+    """
+    Clear the global perms cache when is_superuser/is_staff change, so cached
+    global perms (e.g. userinfo endpoint) don't go stale until expiration.
+    """
+    from django.core.cache import cache
+
+    update_fields = kwargs.get("update_fields")
+    if update_fields is not None and not {"is_superuser", "is_staff"} & set(update_fields):
+        return
+
+    cache.delete(permissions_registry._get_global_cache_key(instance))
+
+
+def clear_user_global_permissions_cache_on_perm_change(sender, instance, action, reverse, model, pk_set, **kwargs):
+    """
+    Clear the global perms cache when a user's `user_permissions` m2m changes.
+    """
+    from django.core.cache import cache
+
+    if action not in ("post_add", "post_remove", "post_clear"):
+        return
+
+    if not reverse:
+        cache.delete(permissions_registry._get_global_cache_key(instance))
+        return
+
+    for user in model.objects.filter(pk__in=pk_set or []):
+        cache.delete(permissions_registry._get_global_cache_key(user))
+
+
+def clear_group_global_permissions_cache_on_perm_change(sender, instance, action, reverse, model, pk_set, **kwargs):
+    """
+    Clear the global perms cache for all the users belonging to a Group whose `permissions`
+    changed.
+    """
+    from django.core.cache import cache
+
+    if action not in ("post_add", "post_remove", "post_clear"):
+        return
+    groups = [instance] if not reverse else model.objects.filter(pk__in=pk_set or [])
+    users = get_user_model().objects.filter(groups__in=groups).only("pk", "username").distinct()
+    cache.delete_many([permissions_registry._get_global_cache_key(user) for user in users])
