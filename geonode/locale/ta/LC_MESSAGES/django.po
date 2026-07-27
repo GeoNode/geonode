@@ -4761,10 +4761,8 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
-msgstr "தரவு தொகுதி"
+msgstr "தரவுத் தொகுப்புகள்"
 
 msgid "People"
 msgstr "மக்கள் "
