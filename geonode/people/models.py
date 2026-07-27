@@ -30,7 +30,7 @@ from django.db.models.deletion import ProtectedError
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, UserManager, Group
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 from taggit.managers import TaggableManager
@@ -53,6 +53,7 @@ from .signals import (
     clear_user_resource_permissions_cache_on_delete,
     clear_user_global_permissions_cache_on_save,
     clear_user_global_permissions_cache_on_perm_change,
+    clear_group_global_permissions_cache_on_perm_change,
 )
 from .languages import LANGUAGES
 from .timezones import TIMEZONES
@@ -291,3 +292,4 @@ signals.pre_delete.connect(clear_user_resource_permissions_cache_on_delete, send
 signals.post_save.connect(clear_user_global_permissions_cache_on_save, sender=settings.AUTH_USER_MODEL)
 signals.m2m_changed.connect(clear_user_global_permissions_cache_on_perm_change, sender=Profile.user_permissions.through)
 signals.m2m_changed.connect(clear_user_global_permissions_cache_on_perm_change, sender=Profile.groups.through)
+signals.m2m_changed.connect(clear_group_global_permissions_cache_on_perm_change, sender=Group.permissions.through)

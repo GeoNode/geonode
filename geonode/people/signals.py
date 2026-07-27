@@ -168,3 +168,17 @@ def clear_user_global_permissions_cache_on_perm_change(sender, instance, action,
 
     for user in model.objects.filter(pk__in=pk_set or []):
         cache.delete(permissions_registry._get_global_cache_key(user))
+
+
+def clear_group_global_permissions_cache_on_perm_change(sender, instance, action, reverse, model, pk_set, **kwargs):
+    """
+    Clear the global perms cache for all the users belonging to a Group whose `permissions`
+    changed.
+    """
+    from django.core.cache import cache
+
+    if action not in ("post_add", "post_remove", "post_clear"):
+        return
+    groups = [instance] if not reverse else model.objects.filter(pk__in=pk_set or [])
+    users = get_user_model().objects.filter(groups__in=groups).only("pk", "username").distinct()
+    cache.delete_many([permissions_registry._get_global_cache_key(user) for user in users])

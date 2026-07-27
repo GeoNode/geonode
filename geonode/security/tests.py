@@ -4234,6 +4234,27 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         finally:
             user.delete()
 
+    def test_global_perms_cache_cleared_on_group_permissions_change(self):
+        """Changing a Group's permissions invalidates the cached global perms of its members."""
+        group, _ = Group.objects.get_or_create(name=f"perm_group_{uuid4()}")
+        user = get_user_model().objects.create_user(username=f"group_perm_user_{uuid4()}", password="testpass123")
+        user.groups.add(group)
+        try:
+            cache_key = permissions_registry._get_global_cache_key(user)
+            permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertIsNotNone(cache.get(cache_key))
+
+            perm = Permission.objects.first()
+            group.permissions.add(perm)
+            self.assertIsNone(cache.get(cache_key))
+
+            permissions_registry.get_perms(user=user, use_cache=True)
+            group.permissions.remove(perm)
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            user.delete()
+            group.delete()
+
 
 class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
     @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="view", DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download")
