@@ -1262,12 +1262,36 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={})
-        # response should be 404
-        self.assertEqual(response.status_code, 404)
+        # a missing newOwner is a bad request, not a missing object
+        self.assertEqual(response.status_code, 400)
         # check that bobby still owns the resources
         self.assertTrue(bobby_resources.exists())
         later_bobby_resources = ResourceBase.objects.filter(owner=bobby).all()
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
+
+    def test_transfer_resources_without_current_owner(self):
+        """
+        currentOwner is optional: it defaults to the user the resources are read from.
+        Sent as JSON, so `resources` is absent rather than an empty list.
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        norman = get_user_model().objects.get(username="norman")
+
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        bobby_resources = ResourceBase.objects.filter(owner=bobby)
+        prior_bobby_resources = set(bobby_resources.all())
+        self.assertTrue(bobby_resources.exists())
+
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"newOwner": norman.id},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(bobby_resources.exists())
+        self.assertTrue(prior_bobby_resources.issubset(set(ResourceBase.objects.filter(owner=norman).all())))
 
     def test_transfer_resource_subset(self):
         """
