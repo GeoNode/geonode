@@ -23,7 +23,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
+
+from geonode.people.utils import get_profile_language_choices
 
 # Ported in from django-registration
 attrs_dict = {"class": "required"}
@@ -52,7 +53,7 @@ class ProfileForm(forms.ModelForm):
 
     language = forms.ChoiceField(
         label=_("Language"),
-        choices=settings.PROFILE_LANGUAGE_CHOICES,
+        choices=get_profile_language_choices,
     )
 
     class Meta:
