@@ -103,6 +103,8 @@ services:
       retries: 3
     env_file:
       - ${COMPOSE_ENV_FILES:-.env}
+    ports:
+      - "8080:8080"
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
