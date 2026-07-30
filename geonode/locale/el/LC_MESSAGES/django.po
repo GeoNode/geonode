@@ -5060,7 +5060,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Σύνδεση"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Συνδεθείτε σε έναν υπάρχοντα λογαριασμό"
 
 #, python-format

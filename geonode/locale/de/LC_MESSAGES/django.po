@@ -5035,7 +5035,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Anmelden"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Melden Sie sich bei einem bestehenden Konto an"
 
 #, python-format

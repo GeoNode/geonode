@@ -4674,7 +4674,7 @@ msgstr ""
 msgid "Log in"
 msgstr "ログイン"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "既存のアカウントでログイン"
 
 #, python-format

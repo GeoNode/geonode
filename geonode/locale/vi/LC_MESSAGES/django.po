@@ -5242,7 +5242,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Đăng nhập"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Đăng nhập vào tài khoản hiện có"
 
 #, python-format

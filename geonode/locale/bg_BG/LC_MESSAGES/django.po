@@ -5279,7 +5279,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Регистрирай се"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Вход във съществуващ профил "
 
 #, python-format

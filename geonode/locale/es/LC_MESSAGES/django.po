@@ -5244,7 +5244,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Iniciar Sesión"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Iniciar sesión en una cuenta"
 
 #, python-format

@@ -5239,7 +5239,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Masuk"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Masuk menggunakan akun yang telah ada"
 
 #, python-format

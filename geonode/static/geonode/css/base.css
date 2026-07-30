@@ -8553,3 +8553,8 @@ form-inline {
     -webkit-transform: rotate(360deg);
   }
 }
+
+.socialaccount_ballot a.btn {
+  font-weight: bold !important;
+  font-size: large !important;
+}

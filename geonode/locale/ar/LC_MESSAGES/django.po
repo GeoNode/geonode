@@ -4491,7 +4491,7 @@ msgstr ""
 msgid "Log in"
 msgstr "تسجيل الدخول"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "تسجيل الدخول إلى حساب موجود"
 
 #, python-format

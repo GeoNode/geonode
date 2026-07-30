@@ -3813,7 +3813,7 @@ msgid "Log in"
 msgstr "Giriş yap"
 
 #: geonode/templates/account/login.html:11
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Mevcut bir hesaba giriş yap"
 
 #: geonode/templates/account/login.html:20

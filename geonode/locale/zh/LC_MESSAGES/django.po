@@ -5160,7 +5160,7 @@ msgstr ""
 msgid "Log in"
 msgstr "登录"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "登录到现有帐户"
 
 #, fuzzy, python-format

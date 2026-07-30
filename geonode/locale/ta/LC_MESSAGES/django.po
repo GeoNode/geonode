@@ -5265,7 +5265,7 @@ msgstr ""
 msgid "Log in"
 msgstr "உள்நுழைய"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "ஏற்கனவே கணக்கு உள்நுழைய"
 
 #, python-format

@@ -4787,7 +4787,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Entra"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Effettua il login con un account esistente"
 
 #, python-format
@@ -4809,8 +4809,7 @@ msgid ""
 "If you have not created an account yet, then please\n"
 "      <a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
-"Se non hai ancora creato un account, allora si prega di\n"
-"      <a href=\"%(signup_url)s\">prima iscriviti</a>."
+"Se non hai ancora creato un account, <a href=\"%(signup_url)s\">iscriviti</a>."
 
 msgid "Forgot Password?"
 msgstr "Password dimenticata?"

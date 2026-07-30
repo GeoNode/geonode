@@ -5280,7 +5280,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Войти"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Войдите под существующей учетной записи"
 
 #, python-format
