@@ -23,7 +23,9 @@ import html
 import math
 import uuid
 import logging
+import tempfile
 import traceback
+from io import BytesIO
 from typing import List, Optional, Union, Tuple
 from sequences.models import Sequence
 from sequences import get_next_value
@@ -37,7 +39,7 @@ from django.utils.timezone import now
 from django.db.models import Q, signals
 from django.db.utils import IntegrityError, OperationalError
 from django.contrib.auth.models import Group
-from django.core.files.base import ContentFile
+from django.core.files import File
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.db.models.fields.json import JSONField
@@ -1593,28 +1595,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     image = None
 
             if image:
-                actual_name = storage_manager.save(upload_path, ContentFile(image))
-                actual_file_name = os.path.basename(actual_name)
-
-                if filename != actual_file_name:
-                    upload_path = upload_path.replace(filename, actual_file_name)
                 url = storage_manager.url(upload_path)
                 try:
-                    # Optimize the Thumbnail size and resolution
-                    im = Image.open(storage_manager.open(actual_name))
+                    im = Image.open(BytesIO(image))
                     im = thumbnail_algorithm(im, **kwargs)
 
-                    # Saving the thumb into a temporary directory on file system
-                    tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
-                    im.save(tmp_location, quality="high")
-
-                    with open(tmp_location, "rb+") as img:
-                        # Saving the img via storage manager
-                        storage_manager.save(upload_path, img)
-
-                    # If we use a remote storage, the local img is deleted
-                    if tmp_location != storage_manager.path(upload_path):
-                        os.remove(tmp_location)
+                    with tempfile.NamedTemporaryFile(suffix=".jpg") as optimized_tmp:
+                        im.save(optimized_tmp, format="JPEG", quality="high")
+                        optimized_tmp.seek(0)
+                        storage_manager.save(upload_path, File(optimized_tmp))
                 except Exception as e:
                     logger.exception(e)
 
