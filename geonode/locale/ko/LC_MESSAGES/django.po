@@ -5259,7 +5259,7 @@ msgstr ""
 msgid "Log in"
 msgstr "로그인"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "기존 계정에 로그인"
 
 #, python-format

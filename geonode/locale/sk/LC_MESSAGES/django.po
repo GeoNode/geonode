@@ -6604,7 +6604,7 @@ msgid "Log in"
 msgstr "Prihlásiť sa"
 
 #: geonode/templates/account/login.html:11
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Prihláste sa do existujúceho účtu"
 
 #: geonode/templates/account/login.html:20

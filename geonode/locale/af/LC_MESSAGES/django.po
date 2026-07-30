@@ -5259,7 +5259,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Teken in"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Teken in om 'n bestaande rekening"
 
 #, python-format

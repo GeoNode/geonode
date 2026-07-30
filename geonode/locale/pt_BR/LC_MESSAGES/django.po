@@ -4710,7 +4710,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Entrar"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Realizar login em uma conta existente"
 
 #, python-format

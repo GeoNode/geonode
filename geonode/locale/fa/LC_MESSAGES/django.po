@@ -5215,7 +5215,7 @@ msgstr ""
 msgid "Log in"
 msgstr "ورود به سیستم"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "ورود به حساب های موجود"
 
 #, python-format

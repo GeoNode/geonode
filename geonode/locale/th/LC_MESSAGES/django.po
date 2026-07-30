@@ -5208,7 +5208,7 @@ msgstr ""
 msgid "Log in"
 msgstr "เข้าสู่ระบบ"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "เข้าสู่ระบบด้วยบัญชีที่มีอยู่แล้ว"
 
 #, python-format

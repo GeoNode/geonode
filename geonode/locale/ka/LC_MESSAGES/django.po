@@ -5165,7 +5165,7 @@ msgstr ""
 msgid "Log in"
 msgstr "შესვლა"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "არსებული მომხმარებლით, სისტემაში შესვლა"
 
 #, python-format

@@ -5198,7 +5198,7 @@ msgstr ""
 msgid "Log in"
 msgstr "লগিন করো"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "একটি বিদ্যমান অ্যাকাউন্টে লগ ইন করুন"
 
 #, python-format

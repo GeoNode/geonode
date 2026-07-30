@@ -5128,7 +5128,7 @@ msgstr ""
 msgid "Log in"
 msgstr ""
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Meld aan met een bestaande account"
 
 #, python-format

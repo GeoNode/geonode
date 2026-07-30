@@ -5120,7 +5120,7 @@ msgstr ""
 msgid "Log in"
 msgstr "S'identifier"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "S'identifier avec un compte existant"
 
 #, python-format
