@@ -4735,10 +4735,8 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
-msgstr "مجموعه داده"
+msgstr "مجموعه‌داده‌ها"
 
 msgid "People"
 msgstr "مردم"

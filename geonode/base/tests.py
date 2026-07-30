@@ -147,6 +147,35 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         thumb_utils.remove_thumbs(filename)
         self.assertFalse(thumb_utils.thumb_exists(filename))
 
+    def test_save_thumbnail_creates_a_single_file(self):
+        """
+        A single save_thumbnail call must create exactly one thumbnail file
+        """
+        image = Image.new("RGB", (100, 100))
+        for x in range(100):
+            image.putpixel((x, x), (x + 1, (x * 2) % 256, (x * 3) % 256))
+        with BytesIO() as output:
+            image.save(output, format="PNG")
+            content = output.getvalue()
+
+        name_prefix = f"dataset-{self.rb.uuid}-thumb"
+        thumbs_before = set(thumb_utils.get_thumbs())
+
+        self.rb.save_thumbnail(f"{name_prefix}-{uuid4()}.png", image=content)
+
+        new_thumbs = set(thumb_utils.get_thumbs()) - thumbs_before
+        try:
+            # exactly one file must have been created (no suffixed duplicate) ...
+            self.assertEqual(
+                len(new_thumbs),
+                1,
+                msg=f"Expected a single thumbnail file, found: {sorted(new_thumbs)}",
+            )
+            # ... and it must be the one referenced by the resource
+            self.assertIn(os.path.basename(self.rb.thumbnail_path), new_thumbs)
+        finally:
+            thumb_utils.remove_thumbs(name_prefix)
+
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
     def setUp(self):
@@ -594,6 +623,8 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
                 response = web_client.post(reverse("admin:login"))
             elif url_name == "logout":
                 response = web_client.post(reverse("admin:logout"))
+            elif url_name == "token":
+                response = web_client.post(reverse("oauth2_provider:token"))
             else:
                 response = web_client.post(reverse(url_name))
 
