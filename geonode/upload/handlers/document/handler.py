@@ -36,7 +36,7 @@ class DocumentFileHandler(BaseDocumentFileHandler):
     @property
     def supported_file_extension_config(self):
         # a document is not a dataset file type, nothing to expose to the client
-        return {}
+        return {"id": "doc", "type": "document", "exclude_from_config": True}
 
     @property
     def upload_validation_config(self):

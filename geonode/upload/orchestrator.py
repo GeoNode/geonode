@@ -107,7 +107,7 @@ class ImportOrchestrator:
 
     def load_handler_by_id(self, handler_id):
         for handler in self.get_handler_registry():
-            if handler().id == handler_id:
+            if handler().id and handler().id == handler_id:
                 return handler
         logger.error("Handler not found")
         return None
