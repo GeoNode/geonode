@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+import json
 from urllib.parse import urljoin, urlsplit
 from django.conf import settings
 from django.http import Http404, HttpResponse
@@ -42,7 +43,7 @@ from geonode.upload.api.permissions import UploadPermissionsFilter
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.api.exceptions import HandlerException, ImportException
-from geonode.upload.api.serializer import ImporterSerializer
+from geonode.upload.api.serializer import CopyImporterSerializer, ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
 from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
@@ -185,17 +186,21 @@ class ImporterViewSet(DynamicModelViewSet):
                 }
 
                 action = input_params.get("action")
+                first_step = next(iter(handler.get_task_list(action=action)))
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
-                    func_name=next(iter(handler.get_task_list(action=action))),
-                    step=_(next(iter(handler.get_task_list(action=action)))),
+                    func_name=first_step,
+                    step=_(first_step),
                     input_params=input_params,
                     resource=extracted_params.get("resource_pk", None),
                     action=action,
                     name=_file.name if _file else extracted_params.get("title", None),
                 )
 
-                sig = import_orchestrator.s(_data, str(execution_id), handler=str(handler), action=action)
+                # the first step of the action is not always the start_import, a clone starts with the copy
+                sig = import_orchestrator.s(
+                    _data, str(execution_id), handler=str(handler), action=action, step=first_step
+                )
                 sig.apply_async()
                 return Response(data={"execution_id": execution_id}, status=201)
             except Exception as e:
@@ -245,7 +250,7 @@ class ResourceImporter(DynamicModelViewSet):
         FavoriteFilter,
     ]
     queryset = ResourceBase.objects.all().order_by("-last_updated")
-    serializer_class = ResourceBaseSerializer
+    serializer_class = CopyImporterSerializer
     pagination_class = GeoNodeApiPagination
 
     def copy(self, request, *args, **kwargs):
@@ -254,7 +259,7 @@ class ResourceImporter(DynamicModelViewSet):
             if resource.resourcehandlerinfo_set.exists():
                 handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path
 
-                action = ExecutionRequestAction.COPY.value
+                action = request.data.get("action", ExecutionRequestAction.COPY.value)
 
                 handler = orchestrator.load_handler(handler_module_path)
 
@@ -272,6 +277,7 @@ class ResourceImporter(DynamicModelViewSet):
                     func_name=step,
                     step=step,
                     action=action,
+                    resource=resource.pk,
                     input_params={
                         **{"handler_module_path": handler_module_path},
                         **extracted_params,

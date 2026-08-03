@@ -28,6 +28,8 @@ from datetime import datetime
 
 import slugify
 
+from django.conf import settings
+
 from geonode.assets.utils import create_asset_and_link
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
@@ -233,6 +235,26 @@ class BaseHandler(ABC):
 
         return _exec
 
+    @staticmethod
+    def remove_temporary_file(_exec):
+        from geonode.storage.manager import FileSystemStorageManager, StorageManager
+
+        if not _exec:
+            return
+        tmp_data = _exec.input_params.get("temporary_files")
+        if tmp_data:
+            # Delete at the end of the operations, the temporary files created at the beginning
+            # to cleanup disk space
+            storage_manager = StorageManager(
+                remote_files={},
+                concrete_storage_manager=FileSystemStorageManager(),
+            )
+            base_file_path = tmp_data.get("base_file")
+            if base_file_path:
+                directory = os.path.dirname(base_file_path)
+                if settings.ASSETS_ROOT not in directory:
+                    storage_manager.rmtree(directory, ignore_errors=True)
+
     def evaluate_exec_prev_status(self, action, resource_pk=None):
         """
         Required to evaluate if the resource can be replaced/upsert
@@ -420,7 +442,7 @@ class BaseHandler(ABC):
         return self.create_resourcehandlerinfo(handler_module_path, resource, execution_id, **kwargs)
 
     def rollback(self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs):
-        steps = self.TASKS.get(action_to_rollback)
+        steps = self.get_task_list(action_to_rollback)
 
         if rollback_from_step not in steps:
             logger.info(f"Step not found {rollback_from_step}, skipping")

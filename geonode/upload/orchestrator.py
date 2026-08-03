@@ -31,12 +31,14 @@ from rest_framework import serializers
 
 from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
+from geonode.upload.api.serializer import (CopyImporterSerializer, ImporterSerializer,
+    OverwriteImporterSerializer, UpsertImporterSerializer)
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import create_layer_key
 from geonode.upload.utils import error_handler
 from geonode.upload.utils import ImporterRequestAction as ira
+from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 logger = logging.getLogger("importer")
 
@@ -84,10 +86,13 @@ class ImportOrchestrator:
             if _serializer:
                 return _serializer
         logger.info("specific serializer not found, fallback on the default one")
-        if _data.get("action") == ira.UPSERT.value:
-            return UpsertImporterSerializer
-        elif _data.get("action") == ira.REPLACE.value:
-            return OverwriteImporterSerializer
+        match _data.get("action"):
+            case ira.UPSERT.value:
+                return UpsertImporterSerializer
+            case ira.REPLACE.value:
+                return OverwriteImporterSerializer
+            case exa.COPY.value:
+                return CopyImporterSerializer
         return ImporterSerializer
 
     def load_handler(self, module_path):
