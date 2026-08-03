@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-import json
 from urllib.parse import urljoin, urlsplit
 from django.conf import settings
 from django.http import Http404, HttpResponse
@@ -35,14 +34,13 @@ from geonode.base.api.permissions import (
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
-from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import StorageManager
 from geonode.upload.api.permissions import UploadPermissionsFilter
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.upload.utils import UploadLimitValidator
-from geonode.upload.api.exceptions import HandlerException, ImportException
+from geonode.upload.api.exceptions import CopyResourceException, HandlerException, ImportException
 from geonode.upload.api.serializer import CopyImporterSerializer, ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
@@ -256,6 +254,7 @@ class ResourceImporter(DynamicModelViewSet):
     def copy(self, request, *args, **kwargs):
         try:
             resource = self.get_object()
+            execution_id = None
             if resource.resourcehandlerinfo_set.exists():
                 handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path
 
@@ -271,6 +270,11 @@ class ResourceImporter(DynamicModelViewSet):
                 step = next(iter(handler.get_task_list(action=action)))
 
                 extracted_params, _data = handler.extract_params_from_data(request.data, action=action)
+                extracted_params["resource_pk"] = resource.pk
+                serializer = self.get_serializer_class()
+                data = serializer(data=extracted_params)
+                data.is_valid(raise_exception=True)
+                resource = self.get_object()
 
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
@@ -307,6 +311,11 @@ class ResourceImporter(DynamicModelViewSet):
                     },
                     status=200,
                 )
+        except ValidationError as e:
+            if execution_id:
+                orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
+            logger.exception(e)
+            raise CopyResourceException(detail=e.args[0] if len(e.args) > 0 else e)
         except (Exception, Http404) as e:
             logger.error(e)
             return HttpResponse(status=404, content=e)

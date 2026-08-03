@@ -23,7 +23,6 @@ from django.conf import settings
 from geonode.documents.enumerations import DOCUMENT_MAGIC_MIMETYPE_MAP
 from geonode.upload.handlers.common.document import BaseDocumentFileHandler
 from geonode.upload.handlers.document.serializer import DocumentImporterSerializer
-from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 

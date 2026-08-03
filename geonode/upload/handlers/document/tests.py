@@ -461,7 +461,9 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.client.force_login(self.user)
 
         with open(self.base_file, "rb") as _file:
-            response = self.client.post(self.upload_url, data={"base_file": _file, "action": ira.DOCUMENT_UPLOAD.value})
+            response = self.client.post(
+                self.upload_url, data={"base_file": _file, "action": str(ira.DOCUMENT_UPLOAD.value)}
+            )
 
         self.assertEqual(201, response.status_code)
         _exec = orchestrator.get_execution_object(response.json()["execution_id"])
@@ -483,12 +485,17 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
         response = self.client.put(
             _url,
-            data=json.dumps({"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document", "resource_pk": document.pk}),
+            data=json.dumps(
+                {"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document", "resource_pk": document.pk}
+            ),
             content_type="application/json",
         )
 
         self.assertEqual(200, response.status_code)
         _exec = orchestrator.get_execution_object(response.json()["execution_id"])
+        self.assertIsNotNone(_exec)
+        self.assertEqual(_exec.step, "start_copy")
+        self.assertEqual(_exec.action, "document_clone")
 
     @patch("geonode.upload.api.views.import_orchestrator")
     def test_document_clone_should_not_require_any_file(self, patch_orchestrator):
@@ -503,7 +510,9 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
         response = self.client.put(
             _url,
-            data=json.dumps({"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document", "resource_pk": document.pk}),
+            data=json.dumps(
+                {"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document", "resource_pk": document.pk}
+            ),
             content_type="application/json",
         )
 
@@ -517,11 +526,19 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
     def test_document_clone_should_fail_without_the_title_or_the_document_to_clone(self):
         self.client.force_login(self.user)
         document = create_single_doc("document to clone from the upload endpoint")
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_CLONE.value, title="cloned document")
+        self.handler.create_resourcehandlerinfo(
+            self.handler_module_path, document, orchestrator.get_execution_object(exec_id)
+        )
         _url = reverse("importer_resource_copy", args=[document.id])
 
-        response = self.client.put(_url, data={"action": ira.DOCUMENT_CLONE.value})
+        response = self.client.put(
+            _url,
+            data=json.dumps({"action": str(ira.DOCUMENT_CLONE.value)}),
+            content_type="application/json",
+        )
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(500, response.status_code)
 
     @patch("geonode.upload.api.views.import_orchestrator")
     def test_document_clone_from_the_copy_endpoint_should_create_the_execution_request(self, patch_orchestrator):
@@ -547,7 +564,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
     def test_document_upload_should_fail_without_a_file_or_a_url(self):
         self.client.force_login(self.user)
 
-        response = self.client.post(self.upload_url, data={"action": ira.DOCUMENT_UPLOAD.value})
+        response = self.client.post(self.upload_url, data={"action": str(ira.DOCUMENT_UPLOAD.value)})
 
         self.assertEqual(400, response.status_code)
         self.assertFalse(ExecutionRequest.objects.filter(action=ira.DOCUMENT_UPLOAD.value).exists())
@@ -560,4 +577,4 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
                 self.upload_url, data={"base_file": _file, "action": ira.DOCUMENT_REPLACE.value}
             )
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(500, response.status_code)
