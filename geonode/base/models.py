@@ -1338,7 +1338,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 if not location:
                     return False
                 storage = asset_handler_registry.get_handler(asset).get_storage_manager(asset)
-                return all(storage.exists(_file) for _file in location)
+                try:
+                    return all(storage.exists(_file) for _file in location)
+                except Exception as e:
+                    logger.warning(f"Cannot check the files of asset {asset.pk} for resource {self.pk}: {e}")
+                    return False
 
             # this is fallback
             from geonode.assets.models import Asset
