@@ -251,6 +251,8 @@ class ResourceImporter(DynamicModelViewSet):
     def copy(self, request, *args, **kwargs):
         try:
             resource = self.get_object()
+            if not resource.is_copyable_by(request.user):
+                return Response({"message": "Resource can not be cloned."}, status=400)
             if resource.resourcehandlerinfo_set.exists():
                 handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path
 

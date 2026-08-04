@@ -2907,6 +2907,47 @@ class BaseApiTests(APITestCase):
         )
         self._assertCloningWithPerms(resource)
 
+    def test_is_copyable_by_remote_dataset(self):
+        from geonode.base import enumerations
+        from geonode.security.models import AuthConfig
+
+        owner = get_user_model().objects.get(username="bobby")
+        other = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        resource = Dataset.objects.create(
+            owner=owner,
+            name="test_remote_copy",
+            store="geonode_data",
+            subtype="remote",
+            alternate="geonode:test_remote_copy",
+            resource_type="dataset",
+            sourcetype=enumerations.SOURCE_TYPE_REMOTE,
+            uuid=str(uuid4()),
+        )
+        try:
+            # no AuthConfig: owner and administrators may clone, nobody else
+            self.assertTrue(resource.is_copyable_by(owner))
+            self.assertFalse(resource.is_copyable_by(other))
+            self.assertTrue(resource.is_copyable_by(admin))
+
+            # an AuthConfig restricts cloning to the owner, admins included
+            resource.auth_config = AuthConfig.objects.create(type="basic")
+            resource.save()
+            resource.refresh_from_db()
+            self.assertTrue(resource.is_copyable_by(owner))
+            self.assertFalse(resource.is_copyable_by(other))
+            self.assertFalse(resource.is_copyable_by(admin))
+
+            # attaching an arbitrary file must not make it copyable
+            create_asset_and_link(resource, other, [os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")])
+            self.assertFalse(resource.is_copyable_by(other))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
+
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
     @override_settings(ASYNC_SIGNALS=False)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):

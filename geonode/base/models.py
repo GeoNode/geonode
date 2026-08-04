@@ -1309,14 +1309,45 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except Exception:
             return False
 
-    @property
-    def is_copyable(self):
+    def is_copyable_by(self, user):
+        """
+        Whether ``user`` is allowed to clone this resource.
+        """
         if self.resource_type == "dataset":
-            from geonode.assets.utils import get_default_asset
+            instance = self.get_real_instance()
+            if self.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+                if user is None:
+                    return False
+                if user == self.owner:
+                    return True
+                remote_service = getattr(instance, "remote_service", None)
+                has_auth_config = self.auth_config_id or (remote_service and remote_service.auth_config_id)
+                if not has_auth_config and user.is_superuser:
+                    return True
+                else:
+                    return False
+            if instance.is_vector():
+                return True
+            if instance.is_raster:
+                from geonode.assets.handlers import asset_handler_registry
+                from geonode.assets.models import Asset
+
+                asset = Asset.objects.filter(link__resource=self, title="Original").last()
+                asset = asset.get_real_instance() if asset else None
+                location = getattr(asset, "location", None)
+                if not location:
+                    return False
+                storage = asset_handler_registry.get_handler(asset).get_storage_manager(asset)
+                return all(storage.exists(_file) for _file in location)
+
+            # this is fallback
+            from geonode.assets.models import Asset
             from geonode.geoserver.helpers import select_relevant_files
 
-            asset = get_default_asset(self)  # TODO: maybe we need to filter by original files
-            allowed_file = select_relevant_files(get_allowed_extensions(), asset.location) if asset else []
+            asset = Asset.objects.filter(link__resource=self, title="Original").last()
+            asset = asset.get_real_instance() if asset else None
+            location = getattr(asset, "location", None)
+            allowed_file = select_relevant_files(get_allowed_extensions(), location) if location else []
             return len(allowed_file) != 0
         return True
 
