@@ -2875,6 +2875,32 @@ class BaseApiTests(APITestCase):
         except Exception as e:
             logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
+    def test_is_copyable_by_document(self):
+        owner = get_user_model().objects.get(username="admin")
+        raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
+        resource = Document.objects.create(
+            owner=get_user_model().objects.get(username="admin"),
+            subtype="image",
+            alternate="geonode:test_copy",
+            resource_type="document",
+            uuid=str(uuid4()),
+        )
+        try:
+            asset, _ = create_asset_and_link(resource, owner, [raster_file])
+            self.assertTrue(resource.is_copyable_by(owner))
+
+            asset.location = ["/path/invalid_file.wrong"]
+            asset.save()
+            self.assertFalse(resource.is_copyable_by(owner))
+
+            asset.delete()
+            self.assertFalse(resource.is_copyable_by(owner))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
+
     def test_is_copyable_by_raster_dataset(self):
         owner = get_user_model().objects.get(username="admin")
         raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
