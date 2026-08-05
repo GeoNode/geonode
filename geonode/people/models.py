@@ -48,6 +48,7 @@ from .signals import (
     do_login,
     do_logout,
     profile_post_save,
+    sync_group_members,
     update_user_email_addresses,
     notify_admins_new_signup,
     clear_user_resource_permissions_cache_on_delete,
@@ -293,3 +294,4 @@ signals.post_save.connect(clear_user_global_permissions_cache_on_save, sender=se
 signals.m2m_changed.connect(clear_user_global_permissions_cache_on_perm_change, sender=Profile.user_permissions.through)
 signals.m2m_changed.connect(clear_user_global_permissions_cache_on_perm_change, sender=Profile.groups.through)
 signals.m2m_changed.connect(clear_group_global_permissions_cache_on_perm_change, sender=Group.permissions.through)
+signals.m2m_changed.connect(sync_group_members, sender=Profile.groups.through)

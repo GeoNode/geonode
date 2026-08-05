@@ -182,3 +182,24 @@ def clear_group_global_permissions_cache_on_perm_change(sender, instance, action
     groups = [instance] if not reverse else model.objects.filter(pk__in=pk_set or [])
     users = get_user_model().objects.filter(groups__in=groups).only("pk", "username").distinct()
     cache.delete_many([permissions_registry._get_global_cache_key(user) for user in users])
+
+
+def sync_group_members(sender, instance, action, reverse, **kwargs):
+    if reverse or action not in ("post_add", "post_remove", "post_clear"):
+        return
+
+    from geonode.groups.models import GroupProfile, GroupMember
+
+    user_groups_ids = set(instance.groups.values_list("id", flat=True))
+    group_profiles = GroupProfile.objects.filter(group_id__in=user_groups_ids)
+
+    for group_profile in group_profiles:
+        GroupMember.objects.get_or_create(
+            group=group_profile,
+            user=instance,
+            defaults={"role": GroupMember.MEMBER},
+        )
+
+    stale_members = GroupMember.objects.filter(user=instance).exclude(group__group_id__in=user_groups_ids)
+    for member in stale_members:
+        member.delete()
