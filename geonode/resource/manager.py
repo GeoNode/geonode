@@ -993,9 +993,7 @@ class BaseResourceManager(ResourceManagerInterface):
         if original_title:
             filters["title"] = "Original"
 
-        asset = Asset.objects.filter(**filters).order_by("created").first()
-        asset = asset.get_real_instance() if asset else None
-        return bool(getattr(asset, "location", None))
+        return Asset.objects.filter(**filters).exists()
 
     def _is_local_resource_copyable(self, instance: ResourceBase, user=None) -> bool:
         return self._has_asset(instance)
