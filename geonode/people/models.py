@@ -48,6 +48,7 @@ from .signals import (
     do_login,
     do_logout,
     profile_post_save,
+    sync_group_members,
     update_user_email_addresses,
     notify_admins_new_signup,
     clear_user_resource_permissions_cache_on_delete,
@@ -286,3 +287,4 @@ social_account_added.connect(update_user_email_addresses, dispatch_uid=str(uuid4
 user_signed_up.connect(notify_admins_new_signup, dispatch_uid=str(uuid4()), weak=False)
 signals.post_save.connect(profile_post_save, sender=settings.AUTH_USER_MODEL)
 signals.pre_delete.connect(clear_user_resource_permissions_cache_on_delete, sender=settings.AUTH_USER_MODEL)
+signals.m2m_changed.connect(sync_group_members, sender=Profile.groups.through)

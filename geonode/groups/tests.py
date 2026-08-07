@@ -807,6 +807,44 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(q.count(), 1)
         self.assertTrue(q.get().slug)
 
+    def test_adding_user_to_auth_group_creates_member(self):
+
+        # Ensure they are not a member initially
+        self.assertFalse(self.bar.user_is_member(self.test_user))
+
+        # Add via the standard Django auth.Group
+        self.test_user.groups.add(self.bar.group)
+
+        member_exists = GroupMember.objects.filter(user=self.test_user, group=self.bar).exists()
+        self.assertTrue(member_exists)
+
+    def test_removing_user_from_auth_group_deletes_member(self):
+        self.test_user.groups.add(self.bar.group)
+        self.assertTrue(self.bar.user_is_member(self.test_user))
+
+        # Remove via the standard Django auth.Group
+        self.test_user.groups.remove(self.bar.group)
+        member_exists = GroupMember.objects.filter(user=self.test_user, group=self.bar).exists()
+        self.assertFalse(member_exists)
+
+    def test_join_syncs_to_auth_group(self):
+        self.bar.join(self.test_user, role=GroupMember.MEMBER)
+
+        # Verify the user was added to standard Django auth.Group
+        in_auth_group = self.test_user.groups.filter(id=self.bar.group.id).exists()
+        self.assertTrue(in_auth_group)
+
+    def test_leave_syncs_to_auth_group(self):
+
+        self.bar.join(self.test_user, role=GroupMember.MEMBER)
+        self.assertTrue(self.test_user.groups.filter(id=self.bar.group.id).exists())
+
+        self.bar.leave(self.test_user)
+
+        # Verify the user was removed from standard Django auth.Group
+        in_auth_group = self.test_user.groups.filter(id=self.bar.group.id).exists()
+        self.assertFalse(in_auth_group)
+
 
 class UserAutocompleteTest(GeoNodeBaseTestSupport):
     def setUp(self):
