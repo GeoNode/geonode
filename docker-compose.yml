@@ -103,8 +103,8 @@ services:
       retries: 3
     env_file:
       - ${COMPOSE_ENV_FILES:-.env}
-    ports:
-      - "8080:8080"
+    #ports:
+    #  - "8080:8080"
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
@@ -147,8 +147,9 @@ services:
 
   # Vanilla Redis service. This is needed by celery
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: redis4${COMPOSE_PROJECT_NAME}
+    command: redis-server --maxmemory 512mb --maxmemory-policy noeviction --appendonly yes
     volumes:
       - redisdata:/data
     restart: unless-stopped
