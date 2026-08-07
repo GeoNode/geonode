@@ -28,3 +28,10 @@ class DatasetResourceManager(BaseResourceManager):
     """
 
     handled_model = Dataset
+
+    def _is_local_resource_copyable(self, instance: Dataset, user=None) -> bool:
+        if instance.subtype in ("vector", "vector_time"):
+            return True
+        if instance.subtype == "raster":
+            return self._has_actual_asset(instance, original_title=True)
+        return super()._is_local_resource_copyable(instance, user=user)

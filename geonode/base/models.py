@@ -1308,58 +1308,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except Exception:
             return False
 
-    def has_actual_asset(self, original_title=False):
-        from geonode.assets.handlers import asset_handler_registry
-        from geonode.assets.models import Asset
-
-        filters = {"link__resource": self}
-        if original_title:
-            filters["title"] = "Original"
-
-        asset = Asset.objects.filter(**filters).order_by("created").first()
-        asset = asset.get_real_instance() if asset else None
-        location = getattr(asset, "location", None)
-        if not location:
-            return False
-        try:
-            handler = asset_handler_registry.get_handler(asset)
-            if handler is None:
-                return False
-            storage = handler.get_storage_manager(asset)
-            return all(storage.exists(_file) for _file in location)
-        except Exception as e:
-            logger.warning(f"Cannot check the files of asset {asset.pk} for resource {self.pk}: {e}")
-            return False
-
-    def is_copyable_by(self, user):
-        """
-        Whether ``user`` is allowed to clone this resource.
-        """
-        if self.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
-            if user is None:
-                return False
-            if user == self.owner:
-                return True
-            remote_service = getattr(self.get_real_instance(), "remote_service", None)
-            has_auth_config = self.auth_config_id or (remote_service and remote_service.auth_config_id)
-            if not has_auth_config and user.is_superuser:
-                return True
-            else:
-                return False
-        if self.resource_type == "dataset":
-            if self.subtype in ["vector", "vector_time"]:
-                return True
-            if self.subtype == "raster":
-                return self.has_actual_asset(original_title=True)
-            # for tabular/local 3dtiles etc.
-            return self.has_actual_asset()
-
-        if self.resource_type == "document":
-            return self.has_actual_asset()
-
-        # maps/geostory/dashboard goes here
-        return True
-
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 

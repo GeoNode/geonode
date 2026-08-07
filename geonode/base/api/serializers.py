@@ -792,8 +792,16 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
         return permissions
 
     def get_is_copyable(self, instance):
+        from geonode.resource.registry import resource_manager_registry
+
         request = self.context.get("request")
-        return instance.is_copyable_by(request.user if request else None)
+        try:
+            return resource_manager_registry.get_for_instance(instance).is_copyable(
+                instance, user=request.user if request else None
+            )
+        except Exception as e:
+            logger.warning(f"Cannot evaluate is_copyable for resource {instance.pk}: {e}")
+            return False
 
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)

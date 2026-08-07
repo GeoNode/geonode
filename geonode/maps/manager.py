@@ -101,3 +101,6 @@ class MapResourceManager(BaseResourceManager):
             notify=notify,
         )
         return instance
+
+    def _is_local_resource_copyable(self, instance: Map, user=None) -> bool:
+        return True

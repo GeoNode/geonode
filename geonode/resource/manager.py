@@ -986,6 +986,50 @@ class BaseResourceManager(ResourceManagerInterface):
                 logger.exception(e)
         return False
 
+    def _has_actual_asset(self, instance: ResourceBase, original_title=False) -> bool:
+        from geonode.assets.handlers import asset_handler_registry
+        from geonode.assets.models import Asset
+
+        filters = {"link__resource": instance}
+        if original_title:
+            filters["title"] = "Original"
+
+        asset = Asset.objects.filter(**filters).order_by("created").first()
+        asset = asset.get_real_instance() if asset else None
+        location = getattr(asset, "location", None)
+        if not location:
+            return False
+        try:
+            handler = asset_handler_registry.get_handler(asset)
+            if handler is None:
+                return False
+            storage = handler.get_storage_manager(asset)
+            return all(storage.exists(_file) for _file in location)
+        except Exception as e:
+            logger.warning(f"Cannot check the files of asset {asset.pk} for resource {instance.pk}: {e}")
+            return False
+
+    def _is_local_resource_copyable(self, instance: ResourceBase, user=None) -> bool:
+        return self._has_actual_asset(instance)
+
+    def is_copyable(self, instance: ResourceBase, /, user=None) -> bool:
+        """
+        Whether ``user`` is allowed to clone ``instance``.
+        """
+        _resource = instance.get_real_instance()
+        if _resource.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+            if user is None:
+                return False
+            if user == _resource.owner:
+                return True
+            remote_service = getattr(_resource, "remote_service", None)
+            has_auth_config = _resource.auth_config_id or (remote_service and remote_service.auth_config_id)
+            if not has_auth_config and user.is_superuser:
+                return True
+            else:
+                return False
+        return self._is_local_resource_copyable(_resource, user=user)
+
     def _apply_extent_and_role_defaults(
         self, instance: ResourceBase, extent: dict = None, user: settings.AUTH_USER_MODEL = None
     ) -> None:

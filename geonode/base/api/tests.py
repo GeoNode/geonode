@@ -2875,7 +2875,7 @@ class BaseApiTests(APITestCase):
         except Exception as e:
             logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
-    def test_is_copyable_by_document(self):
+    def test_is_copyable_document(self):
         owner = get_user_model().objects.get(username="admin")
         raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
         resource = Document.objects.create(
@@ -2887,21 +2887,21 @@ class BaseApiTests(APITestCase):
         )
         try:
             asset, _ = create_asset_and_link(resource, owner, [raster_file])
-            self.assertTrue(resource.is_copyable_by(owner))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
 
             asset.location = ["/path/invalid_file.wrong"]
             asset.save()
-            self.assertFalse(resource.is_copyable_by(owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
 
             asset.delete()
-            self.assertFalse(resource.is_copyable_by(owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
         finally:
             try:
                 resource.delete()
             except Exception as e:
                 logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
-    def test_is_copyable_by_raster_dataset(self):
+    def test_is_copyable_raster_dataset(self):
         owner = get_user_model().objects.get(username="admin")
         raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
         resource = Dataset.objects.create(
@@ -2915,20 +2915,20 @@ class BaseApiTests(APITestCase):
         )
         try:
             asset, _ = create_asset_and_link(resource, owner, [raster_file], title="Original")
-            self.assertTrue(resource.is_copyable_by(owner))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
 
             location = asset.location
             asset.location = ["/path/invalid_file.wrong"]
             asset.save()
-            self.assertFalse(resource.is_copyable_by(owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
 
             asset.location = location
             asset.title = "not_the_original"
             asset.save()
-            self.assertFalse(resource.is_copyable_by(owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
 
             asset.delete()
-            self.assertFalse(resource.is_copyable_by(owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
         finally:
             try:
                 resource.delete()
@@ -2952,7 +2952,7 @@ class BaseApiTests(APITestCase):
         )
         self._assertCloningWithPerms(resource)
 
-    def test_is_copyable_by_remote_dataset(self):
+    def test_is_copyable_remote_dataset(self):
         from geonode.base import enumerations
         from geonode.security.models import AuthConfig
 
@@ -2972,21 +2972,21 @@ class BaseApiTests(APITestCase):
         )
         try:
             # no AuthConfig: owner and administrators may clone, nobody else
-            self.assertTrue(resource.is_copyable_by(owner))
-            self.assertFalse(resource.is_copyable_by(other))
-            self.assertTrue(resource.is_copyable_by(admin))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=other))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=admin))
 
             # an AuthConfig restricts cloning to the owner, admins included
             resource.auth_config = AuthConfig.objects.create(type="basic")
             resource.save()
             resource.refresh_from_db()
-            self.assertTrue(resource.is_copyable_by(owner))
-            self.assertFalse(resource.is_copyable_by(other))
-            self.assertFalse(resource.is_copyable_by(admin))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=other))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=admin))
 
             # attaching an arbitrary file must not make it copyable
             create_asset_and_link(resource, other, [os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")])
-            self.assertFalse(resource.is_copyable_by(other))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=other))
         finally:
             try:
                 resource.delete()
