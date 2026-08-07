@@ -986,8 +986,7 @@ class BaseResourceManager(ResourceManagerInterface):
                 logger.exception(e)
         return False
 
-    def _has_actual_asset(self, instance: ResourceBase, original_title=False) -> bool:
-        from geonode.assets.handlers import asset_handler_registry
+    def _has_asset(self, instance: ResourceBase, original_title=False) -> bool:
         from geonode.assets.models import Asset
 
         filters = {"link__resource": instance}
@@ -996,21 +995,10 @@ class BaseResourceManager(ResourceManagerInterface):
 
         asset = Asset.objects.filter(**filters).order_by("created").first()
         asset = asset.get_real_instance() if asset else None
-        location = getattr(asset, "location", None)
-        if not location:
-            return False
-        try:
-            handler = asset_handler_registry.get_handler(asset)
-            if handler is None:
-                return False
-            storage = handler.get_storage_manager(asset)
-            return all(storage.exists(_file) for _file in location)
-        except Exception as e:
-            logger.warning(f"Cannot check the files of asset {asset.pk} for resource {instance.pk}: {e}")
-            return False
+        return bool(getattr(asset, "location", None))
 
     def _is_local_resource_copyable(self, instance: ResourceBase, user=None) -> bool:
-        return self._has_actual_asset(instance)
+        return self._has_asset(instance)
 
     def is_copyable(self, instance: ResourceBase, /, user=None) -> bool:
         """

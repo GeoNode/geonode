@@ -2889,10 +2889,6 @@ class BaseApiTests(APITestCase):
             asset, _ = create_asset_and_link(resource, owner, [raster_file])
             self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
 
-            asset.location = ["/path/invalid_file.wrong"]
-            asset.save()
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
-
             asset.delete()
             self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
         finally:
@@ -2917,12 +2913,6 @@ class BaseApiTests(APITestCase):
             asset, _ = create_asset_and_link(resource, owner, [raster_file], title="Original")
             self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
 
-            location = asset.location
-            asset.location = ["/path/invalid_file.wrong"]
-            asset.save()
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
-
-            asset.location = location
             asset.title = "not_the_original"
             asset.save()
             self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
