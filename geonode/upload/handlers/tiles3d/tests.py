@@ -442,13 +442,61 @@ class TestTiles3DFileHandler(TestCase):
         )
         self.assertTrue(resource.bbox == self.default_bbox)
 
-    def _generate_execid_asset(self):
+    def test_create_geonode_resource_should_raise_exception_if_tileset_json_is_missing(self):
         exec_id = orchestrator.create_execution_request(
             user=self.owner,
             func_name="funct1",
             step="step",
             input_params={
-                "files": {"base_file": "/tmp/tileset.json"},
+                "files": {"base_file": "/tmp/model.glb"},
+                "skip_existing_layer": True,
+            },
+        )
+
+        with self.assertRaises(Exception) as _exc:
+            self.handler.create_geonode_resource(
+                "layername",
+                "layeralternate",
+                execution_id=exec_id,
+                resource_type="ResourceBase",
+                asset=None,
+            )
+
+        self.assertTrue("tileset.json file is missing" in str(_exc.exception))
+
+    def test_create_geonode_resource_should_read_bbox_from_tileset_regardless_of_asset_file_order(self):
+        # the bbox must be extracted from the tileset.json file explicitly,
+        # not from asset.location[0], which is not guaranteed to be the json file
+        shutil.copy(self.valid_tileset_with_region, "/tmp/tileset.json")
+        with open("/tmp/model.glb", "wb") as _f:
+            _f.write(b"\x00\x01\x02not-a-json-file")
+
+        exec_id, asset = self._generate_execid_asset(
+            files={"base_file": "/tmp/tileset.json", "glb_file": "/tmp/model.glb"},
+            asset_files=["/tmp/model.glb", "/tmp/tileset.json"],
+        )
+
+        try:
+            resource = self.handler.create_geonode_resource(
+                "layername",
+                "layeralternate",
+                execution_id=exec_id,
+                resource_type="ResourceBase",
+                asset=asset,
+            )
+            self.assertFalse(resource.bbox == self.default_bbox)
+        finally:
+            os.remove("/tmp/model.glb")
+
+    def _generate_execid_asset(self, files=None, asset_files=None):
+        files = files or {"base_file": "/tmp/tileset.json"}
+        asset_files = asset_files or ["/tmp/tileset.json"]
+        exec_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": files,
                 "skip_existing_layer": True,
             },
         )
@@ -457,7 +505,7 @@ class TestTiles3DFileHandler(TestCase):
             owner=self.owner,
             description=None,
             type=str(self.handler),
-            files=["/tmp/tileset.json"],
+            files=asset_files,
             clone_files=False,
         )
 
