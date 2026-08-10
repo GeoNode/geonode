@@ -313,7 +313,9 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
                         attachment=force_download,
                     )
                     response.headers["X-Content-Type-Options"] = "nosniff"
-                    response.headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+                    response.headers["Content-Security-Policy"] = (
+                        "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+                    )
                     return response
         else:
             logger.warning(f"Internal file {localfile} not found for asset {asset.id}")

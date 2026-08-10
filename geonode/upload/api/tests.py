@@ -155,6 +155,63 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertEqual(400, response.status_code)
         self.assertFalse(Dataset.objects.filter(name="fake").exists())
 
+    def test_importer_upload_rejects_unsafe_xml_file(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "xml_file": SimpleUploadedFile(
+                name="meta.xml",
+                content=b'<?xml version="1.0"?><!DOCTYPE x SYSTEM "http://evil.example.com/x.dtd"><x/>',
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe XML file", response.content)
+
+    def test_importer_upload_rejects_unsafe_sld_file(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "sld_file": SimpleUploadedFile(
+                name="style.sld",
+                content=b'<?xml version="1.0"?><StyledLayerDescriptor><x onload="alert(1)"/>'
+                b"</StyledLayerDescriptor>",
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe SLD file", response.content)
+
+    @patch("geonode.upload.api.views.import_orchestrator")
+    def test_importer_upload_accepts_safe_xml_and_sld(self, mock_orchestrator):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "xml_file": SimpleUploadedFile(
+                name="meta.xml",
+                content=b'<?xml version="1.0"?><metadata><title>ok</title></metadata>',
+                content_type="application/xml",
+            ),
+            "sld_file": SimpleUploadedFile(
+                name="style.sld",
+                content=b'<?xml version="1.0"?><StyledLayerDescriptor version="1.0.0"/>',
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(201, response.status_code)
+
     def test_importer_upload_rejects_zip_with_path_traversal(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         buf = io.BytesIO()

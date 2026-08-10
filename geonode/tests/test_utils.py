@@ -32,7 +32,14 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects, assert_safe_xml, UnsafeXMLError
+from geonode.utils import (
+    copy_tree,
+    bbox_to_wkt,
+    is_safe_url,
+    is_safe_url_with_redirects,
+    assert_safe_xml,
+    UnsafeXMLError,
+)
 from unittest.mock import MagicMock
 
 

@@ -21,7 +21,6 @@ import logging
 from geonode.resource.registry import resource_manager_registry
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.sld.exceptions import InvalidSldException
-from owslib.etree import etree as dlxml
 from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
@@ -95,7 +94,6 @@ class SLDFileHandler(MetadataFileHandler):
         try:
             with open(files.get("base_file")) as _xml:
                 content = _xml.read()
-                dlxml.fromstring(content.encode())
                 assert_safe_xml(content)
         except UnsafeXMLError as err:
             logger.warning("Unsafe SLD content rejected: %s", err)
