@@ -32,6 +32,7 @@ if [[ ! -d "${MEDIA_ROOT}" ]]; then
     mkdir -p "${MEDIA_ROOT}"
 fi
 
+python -W ignore manage.py importlayers -v2 -hh "${SITEURL}" "${DATA_DIR}"
 
 echo "Loading data done."
 echo "Start test"
