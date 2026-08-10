@@ -464,16 +464,17 @@ class TestTiles3DFileHandler(TestCase):
 
         self.assertTrue("tileset.json file is missing" in str(_exc.exception))
 
-    def test_create_geonode_resource_should_pick_tileset_by_name_when_base_file_is_not_json(self):
-        # base_file can be the main 3d model (e.g. glb), tileset.json must still be picked
-        # by name and not by grabbing an arbitrary ".json" out of the files dict
+    def test_create_geonode_resource_should_skip_invalid_json_and_pick_the_actual_tileset(self):
+        # a stray/decoy ".json" file must not be mistaken for the tileset: the file is only
+        # accepted once its content passes the 3dtiles schema check, regardless of its name
+        # or of where it sorts among the other files
         shutil.copy(self.valid_tileset_with_region, "/tmp/tileset.json")
-        with open("/tmp/model.glb", "wb") as _f:
-            _f.write(b"\x00\x01\x02not-a-json-file")
+        with open("/tmp/aaa_decoy.json", "w") as _f:
+            _f.write(json.dumps({"not": "a tileset"}))
 
         exec_id, asset = self._generate_execid_asset(
-            files={"base_file": "/tmp/model.glb", "json_file": "/tmp/tileset.json"},
-            asset_files=["/tmp/model.glb", "/tmp/tileset.json"],
+            files={"base_file": "/tmp/aaa_decoy.json", "json_file": "/tmp/tileset.json"},
+            asset_files=["/tmp/aaa_decoy.json", "/tmp/tileset.json"],
         )
 
         try:
@@ -486,7 +487,7 @@ class TestTiles3DFileHandler(TestCase):
             )
             self.assertFalse(resource.bbox == self.default_bbox)
         finally:
-            os.remove("/tmp/model.glb")
+            os.remove("/tmp/aaa_decoy.json")
 
     def test_create_geonode_resource_should_read_bbox_from_tileset_regardless_of_asset_file_order(self):
         # the bbox must be extracted from the tileset.json file explicitly,
