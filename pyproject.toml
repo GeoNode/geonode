@@ -88,7 +88,7 @@ dependencies = [
     "django-recaptcha==4.0.0",
 
     # REST
-    "djangorestframework==3.17.1",
+    "djangorestframework==3.17.2",
     "djangorestframework-gis==1.2.1",
     "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
