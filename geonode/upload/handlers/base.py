@@ -257,8 +257,13 @@ class BaseHandler(ABC):
             # if a zipfile is provided, we need to unzip it before searching for an handler
             zipname = Path(files["base_file"]).stem
             # extract all the file content
+            extract_dir = os.path.dirname(files["base_file"])
             with zipfile.ZipFile(files["base_file"], "r") as z:
-                z.extractall(path=os.path.dirname(files["base_file"]))
+                for member in z.namelist():
+                    # zip-slip: reject entries that would extract outside extract_dir
+                    if not os.path.realpath(os.path.join(extract_dir, member)).startswith(os.path.realpath(extract_dir)):
+                        raise ImportException(f"Invalid zip entry: {member}")
+                z.extractall(path=extract_dir)
             # getting the path of the extracted files
             unzipped_path = [entry.path for entry in os.scandir(os.path.dirname(files["base_file"]))]
             # updating paths in the data paylad

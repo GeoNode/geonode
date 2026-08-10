@@ -453,7 +453,7 @@ class TestTiles3DFileHandler(TestCase):
             },
         )
 
-        with self.assertRaises(Exception) as _exc:
+        with self.assertRaises(Invalid3DTilesException) as _exc:
             self.handler.create_geonode_resource(
                 "layername",
                 "layeralternate",
@@ -463,6 +463,30 @@ class TestTiles3DFileHandler(TestCase):
             )
 
         self.assertTrue("tileset.json file is missing" in str(_exc.exception))
+
+    def test_create_geonode_resource_should_pick_tileset_by_name_when_base_file_is_not_json(self):
+        # base_file can be the main 3d model (e.g. glb), tileset.json must still be picked
+        # by name and not by grabbing an arbitrary ".json" out of the files dict
+        shutil.copy(self.valid_tileset_with_region, "/tmp/tileset.json")
+        with open("/tmp/model.glb", "wb") as _f:
+            _f.write(b"\x00\x01\x02not-a-json-file")
+
+        exec_id, asset = self._generate_execid_asset(
+            files={"base_file": "/tmp/model.glb", "json_file": "/tmp/tileset.json"},
+            asset_files=["/tmp/model.glb", "/tmp/tileset.json"],
+        )
+
+        try:
+            resource = self.handler.create_geonode_resource(
+                "layername",
+                "layeralternate",
+                execution_id=exec_id,
+                resource_type="ResourceBase",
+                asset=asset,
+            )
+            self.assertFalse(resource.bbox == self.default_bbox)
+        finally:
+            os.remove("/tmp/model.glb")
 
     def test_create_geonode_resource_should_read_bbox_from_tileset_regardless_of_asset_file_order(self):
         # the bbox must be extracted from the tileset.json file explicitly,

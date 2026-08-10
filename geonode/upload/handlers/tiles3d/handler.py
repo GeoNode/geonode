@@ -262,13 +262,17 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
 
         files = exec_obj.input_params["files"]
         # fixing-up bbox for the 3dtile object
-        tileset = set(x for x in files.values() if x.endswith(".json"))
-        if not tileset:
-            raise Exception("tileset.json file is missing")
+        # base_file is always the tileset when a single file is provided, otherwise
+        # look it up by name: picking an arbitrary ".json" is not safe if the zip ships more than one
+        tileset_path = files.get("base_file")
+        if not str(tileset_path).endswith(".json"):
+            tileset_path = next((x for x in files.values() if os.path.basename(x) == "tileset.json"), None)
+        if not tileset_path:
+            raise Invalid3DTilesException("tileset.json file is missing")
 
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset, **kwargs)
 
-        js_file = Tiles3DFileHandler.is_3dtiles_json(next(iter(tileset)))
+        js_file = Tiles3DFileHandler.is_3dtiles_json(tileset_path)
         if js_file:
             files = {"base_file": files.get("base_file")}
 
