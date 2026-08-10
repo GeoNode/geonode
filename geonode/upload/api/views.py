@@ -32,7 +32,7 @@ from geonode.base.api.permissions import (
     ResourceBasePermissionsFilter,
     UserHasPerms,
 )
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, APIException
 from rest_framework import status
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import ResourceBaseViewSet
@@ -155,28 +155,24 @@ class ImporterViewSet(DynamicModelViewSet):
         if "url" in _data:
             check_add_remote_resource_perm(request.user)
 
-        # clone the memory files into local file system
-        if "url" not in _data and not _data.get("is_empty", False):
-            storage_manager = StorageManager(
-                remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
-                concrete_storage_manager=FileSystemStorageManager(),
-            )
-            storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
-            # validate the upload
-            try:
+        try:
+            # clone the memory files into local file system
+            if "url" not in _data and not _data.get("is_empty", False):
+                storage_manager = StorageManager(
+                    remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
+                    concrete_storage_manager=FileSystemStorageManager(),
+                )
+                storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
+                # validate the upload
                 self.validate_upload(request, storage_manager)
-            except Exception:
-                self._cleanup_cloned_files(storage_manager)
-                raise
-            # merging the new local path with the input payload
-            _data = _data | storage_manager.get_retrieved_paths()
-        # checking the correct handler for the uploaded files
-        handler = orchestrator.get_handler(_data)
-        # not file but handler means that is a remote resource
-        action = _data.get("action")
+                # merging the new local path with the input payload
+                _data = _data | storage_manager.get_retrieved_paths()
+            # checking the correct handler for the uploaded files
+            handler = orchestrator.get_handler(_data)
+            # not file but handler means that is a remote resource
+            action = _data.get("action")
 
-        if handler and handler.can_do(action):
-            try:
+            if handler and handler.can_do(action):
                 extracted_params, _files = handler.extract_params_from_data(_data)
                 if "url" in extracted_params:
                     # we should register the hosts for the proxy
@@ -202,14 +198,16 @@ class ImporterViewSet(DynamicModelViewSet):
                 sig = import_orchestrator.s(_data, str(execution_id), handler=str(handler), action=action)
                 sig.apply_async()
                 return Response(data={"execution_id": execution_id}, status=201)
-            except Exception as e:
-                # in case of any exception, is better to delete the
-                # cloned files to keep the storage under control
-                self._cleanup_cloned_files(storage_manager)
-                if execution_id:
-                    orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
-                logger.exception(e)
-                raise ImportException(detail=e.args[0] if len(e.args) > 0 else e)
+        except Exception as e:
+            # in case of any exception, is better to delete the
+            # cloned files to keep the storage under control
+            self._cleanup_cloned_files(storage_manager)
+            if execution_id:
+                orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
+            logger.exception(e)
+            if isinstance(e, APIException):
+                raise
+            raise ImportException(detail=e.args[0] if len(e.args) > 0 else e)
 
         self._cleanup_cloned_files(storage_manager)
         raise ImportException(detail="No handlers found for this dataset type/action")
