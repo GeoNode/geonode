@@ -454,6 +454,12 @@ INSTALLED_APPS = (
     "geonode",
 )
 
+TINYMCE_DEFAULT_CONFIG = {
+    "selector": "textarea#id_resource-featureinfo_custom_template",
+    "height": 500,
+    "plugins": "code",
+    "toolbar": "undo redo | formatselect | bold italic | code",
+}
 markdown_white_listed_tags = [
     "a",
     "p",
