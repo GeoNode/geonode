@@ -327,7 +327,7 @@ class ResourceImporter(DynamicModelViewSet):
             if execution_id:
                 orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
             logger.exception(e)
-            raise CopyResourceException(detail=e.args[0] if len(e.args) > 0 else e)
+            raise CopyResourceException(detail=_("Invalid request data."))
         except (Exception, Http404) as e:
             logger.error(e)
             return HttpResponse(status=404, content=e)
