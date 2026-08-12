@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-import json
 from urllib.parse import urljoin, urlsplit
 from django.conf import settings
 from django.http import Http404, HttpResponse
@@ -35,14 +34,14 @@ from geonode.base.api.permissions import (
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
-from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import StorageManager
 from geonode.upload.api.permissions import UploadPermissionsFilter
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
+from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.upload.utils import UploadLimitValidator
-from geonode.upload.api.exceptions import HandlerException, ImportException
+from geonode.upload.api.exceptions import CopyResourceException, HandlerException, ImportException
 from geonode.upload.api.serializer import CopyImporterSerializer, ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
@@ -142,6 +141,12 @@ class ImporterViewSet(DynamicModelViewSet):
         validation_error = getattr(request, "upload_validation_error", None)
         if validation_error:
             raise ValidationError(detail=validation_error, code="invalid_file_type")
+        action = request.data.get("action")
+        if action in (ExecutionRequestAction.COPY.value, ira.DOCUMENT_COPY.value):
+            raise ValidationError(
+                detail=f"Action '{action}' is not supported on this endpoint, use PUT /api/v2/resources/{{id}}/copy instead.",
+                code="invalid_action",
+            )
         execution_id = None
         storage_manager = None
         serializer = self.get_serializer_class()
@@ -272,6 +277,11 @@ class ResourceImporter(DynamicModelViewSet):
 
                 extracted_params, _data = handler.extract_params_from_data(request.data, action=action)
 
+                serializer = self.get_serializer_class()
+                data = serializer(data={**extracted_params, **{"resource_pk": resource.pk}})
+                # serializer data validation
+                data.is_valid(raise_exception=True)
+
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
                     func_name=step,
@@ -307,6 +317,9 @@ class ResourceImporter(DynamicModelViewSet):
                     },
                     status=200,
                 )
+        except ValidationError as e:
+            logger.exception(e)
+            raise CopyResourceException(detail=e.args[0] if len(e.args) > 0 else e)
         except (Exception, Http404) as e:
             logger.error(e)
             return HttpResponse(status=404, content=e)

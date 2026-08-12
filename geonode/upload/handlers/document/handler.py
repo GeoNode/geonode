@@ -53,7 +53,10 @@ class DocumentFileHandler(BaseDocumentFileHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return _data.get("action") in DocumentFileHandler.TASKS
+        # a clone carries no file: it must go through the copy endpoint like every other resource,
+        # never through this generic upload endpoint
+        action = _data.get("action")
+        return action in DocumentFileHandler.TASKS and action != ira.DOCUMENT_COPY.value
 
     @staticmethod
     def has_serializer(_data) -> bool:

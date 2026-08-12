@@ -56,6 +56,10 @@ class BaseHandler(ABC):
 
     REGISTRY = []
 
+    # what kind of resource this handler manages, used to pick the right extension set
+    # when organizing a zip's content (organize_files_by_ext); overridden by the common handlers
+    handler_kind = "none"
+
     # Merged FileValidationUploadHandler config across all registered handlers.
     # Populated incrementally by ``register()`` from each handler's
     # ``upload_validation_config`` property. Read by
@@ -283,12 +287,13 @@ class BaseHandler(ABC):
                 z.extractall(path=os.path.dirname(files["base_file"]))
             # getting the path of the extracted files
             unzipped_path = [entry.path for entry in os.scandir(os.path.dirname(files["base_file"]))]
+            kind = self.handler_kind
             # updating paths in the data paylad
             _data.update(
                 {
                     **{"original_zip_name": zipname},
                     # should be converted to string because the Path is not json serializable
-                    **{"files": {k: str(v) for k, v in organize_files_by_ext(unzipped_path).items()}},
+                    **{"files": {k: str(v) for k, v in organize_files_by_ext(unzipped_path, kind=kind).items()}},
                 }
             )
             # updating the execution id params

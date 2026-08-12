@@ -221,7 +221,7 @@ class ImporterCopyEnd2EndDocumentTest(BaseClassEnd2End):
 
         payload = QueryDict("", mutable=True)
         payload.update({"defaults": '{"title":"title_of_the_cloned_document"}'})
-        payload["action"] = "document_clone"
+        payload["action"] = "document_copy"
 
         response = self.client.put(
             reverse("importer_resource_copy", args=[document.id]), data=payload, content_type="application/json"

@@ -32,7 +32,7 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects
+from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects, get_allowed_extensions
 from unittest.mock import MagicMock
 
 
@@ -204,6 +204,24 @@ class TestSupportedTypes(TestCase):
                 "optional": ["xml", "sld"],
             },
         ]
+
+    def test_get_allowed_extensions_defaults_to_dataset(self):
+        actual = get_allowed_extensions()
+        self.assertIn("shp", actual)
+        self.assertNotIn("txt", actual)
+
+    def test_get_allowed_extensions_for_document(self):
+        actual = get_allowed_extensions(kind="document")
+        self.assertIn("txt", actual)
+        self.assertNotIn("shp", actual)
+
+    def test_get_allowed_extensions_for_all_is_the_union(self):
+        actual = get_allowed_extensions(kind="all")
+        self.assertIn("shp", actual)
+        self.assertIn("txt", actual)
+
+    def test_get_allowed_extensions_returns_empty_list_for_an_invalid_kind(self):
+        self.assertEqual([], get_allowed_extensions(kind="invalid"))
 
 
 class TestRegionsCrossingDateLine(TestCase):

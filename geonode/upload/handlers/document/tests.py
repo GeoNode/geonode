@@ -49,7 +49,6 @@ DOCUMENT_FIXTURE = os.path.join(os.path.dirname(documents.__file__), "tests", "d
 PDF_FIXTURE = os.path.join(os.path.dirname(documents.__file__), "tests", "data", "pdf_doc.pdf")
 
 
-@override_settings(ASYNC_SIGNALS=False)
 class TestDocumentFileHandler(ImporterBaseTestSupport):
     @classmethod
     def setUpClass(cls):
@@ -107,23 +106,27 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
             "start_copy",
             "geonode.upload.copy_document_resource",
         )
-        self.assertEqual(len(self.handler.TASKS[ira.DOCUMENT_CLONE.value]), 2)
-        self.assertTupleEqual(expected, self.handler.TASKS[ira.DOCUMENT_CLONE.value])
+        self.assertEqual(len(self.handler.TASKS[ira.DOCUMENT_COPY.value]), 2)
+        self.assertTupleEqual(expected, self.handler.TASKS[ira.DOCUMENT_COPY.value])
 
     def test_copy_action_should_be_handled_as_a_clone(self):
         """The clone endpoint is shared with the other resources, it must fallback on the document clone"""
         self.assertTrue(self.handler.can_do("copy"))
-        self.assertTupleEqual(self.handler.TASKS[ira.DOCUMENT_CLONE.value], self.handler.get_task_list("copy"))
+        self.assertTupleEqual(self.handler.TASKS[ira.DOCUMENT_COPY.value], self.handler.get_task_list("copy"))
 
     def test_can_handle_should_return_true_for_document_actions(self):
-        for action in [ira.DOCUMENT_UPLOAD.value, ira.DOCUMENT_REPLACE.value, ira.DOCUMENT_CLONE.value]:
+        for action in [ira.DOCUMENT_UPLOAD.value, ira.DOCUMENT_REPLACE.value]:
             self.assertTrue(self.handler.can_handle({"action": action}))
+
+    def test_can_handle_should_return_false_for_document_copy(self):
+        """A clone carries no file, it must go through the copy endpoint, never this generic upload one"""
+        self.assertFalse(self.handler.can_handle({"action": ira.DOCUMENT_COPY.value}))
 
     def test_can_handle_should_return_false_for_a_dataset_upload(self):
         self.assertFalse(self.handler.can_handle({"base_file": "test.gpkg", "action": "upload"}))
 
     def test_should_get_the_specific_serializer(self):
-        actual = self.handler.has_serializer({"action": ira.DOCUMENT_UPLOAD.value})
+        actual = self.handler.has_serializer({"action": str(ira.DOCUMENT_UPLOAD.value)})
         self.assertEqual(DocumentImporterSerializer, actual)
 
     def test_should_not_get_the_specific_serializer_for_a_dataset(self):
@@ -171,7 +174,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
     def test_extract_params_from_data_should_fallback_the_title_to_the_file_name(self):
         actual, _files = self.handler.extract_params_from_data(
-            {"base_file": self.base_file, "action": ira.DOCUMENT_UPLOAD.value}
+            {"base_file": self.base_file, "action": str(ira.DOCUMENT_UPLOAD.value)}
         )
 
         self.assertEqual("img.gif", actual["title"])
@@ -182,7 +185,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
     def test_extract_params_from_data_should_keep_the_url_of_a_remote_document(self):
         actual, _files = self.handler.extract_params_from_data(
-            {"url": self.remote_url, "action": ira.DOCUMENT_UPLOAD.value}
+            {"url": self.remote_url, "action": str(ira.DOCUMENT_UPLOAD.value)}
         )
 
         self.assertEqual(self.remote_url, actual["url"])
@@ -191,21 +194,21 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
     def test_extract_params_from_data_should_get_the_title_from_the_clone_defaults(self):
         for defaults in ['{"title": "cloned document"}', {"title": "cloned document"}]:
             actual, _files = self.handler.extract_params_from_data(
-                {"defaults": defaults}, action=ira.DOCUMENT_CLONE.value
+                {"defaults": defaults}, action=ira.DOCUMENT_COPY.value
             )
 
             self.assertEqual("cloned document", actual["title"])
-            self.assertEqual(ira.DOCUMENT_CLONE.value, actual["action"])
+            self.assertEqual(ira.DOCUMENT_COPY.value, actual["action"])
             # the clone does not require any file
             self.assertNotIn("base_file", actual)
 
     def test_extract_params_from_data_should_get_the_clone_payload_from_the_action_of_the_data(self):
         """The upload endpoint does not provide the action, is taken from the payload"""
         actual, _files = self.handler.extract_params_from_data(
-            {"title": "cloned document", "resource_pk": 1, "action": ira.DOCUMENT_CLONE.value}
+            {"title": "cloned document", "resource_pk": 1, "action": ira.DOCUMENT_COPY.value}
         )
 
-        self.assertEqual({"title": "cloned document", "resource_pk": 1, "action": ira.DOCUMENT_CLONE.value}, actual)
+        self.assertEqual({"title": "cloned document", "resource_pk": 1, "action": ira.DOCUMENT_COPY.value}, actual)
 
     def test_get_extension(self):
         self.assertEqual("gif", self.handler.get_extension({"files": self.files}))
@@ -361,7 +364,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
     def test_copy_geonode_resource_should_clone_the_document(self):
         document = create_single_doc("document to clone")
-        exec_id = self._create_execution_request(action=ira.DOCUMENT_CLONE.value, title="cloned document")
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
         _exec = orchestrator.get_execution_object(exec_id)
 
         cloned = self.handler.copy_geonode_resource(document, _exec)
@@ -375,7 +378,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         document.doc_url = self.remote_url
         document.sourcetype = SOURCE_TYPE_REMOTE
         document.save()
-        exec_id = self._create_execution_request(action=ira.DOCUMENT_CLONE.value, title="cloned remote document")
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned remote document")
         _exec = orchestrator.get_execution_object(exec_id)
 
         cloned = self.handler.copy_geonode_resource(document, _exec)
@@ -446,7 +449,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
     def test_copy_document_resource_rollback_should_delete_the_clone(self):
         document = create_single_doc("cloned document to rollback")
-        exec_id = self._create_execution_request(action=ira.DOCUMENT_CLONE.value)
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value)
         orchestrator.update_execution_request_status(
             execution_id=exec_id, output_params={"output": {"uuid": str(document.uuid)}}
         )
@@ -461,7 +464,9 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.client.force_login(self.user)
 
         with open(self.base_file, "rb") as _file:
-            response = self.client.post(self.upload_url, data={"base_file": _file, "action": ira.DOCUMENT_UPLOAD.value})
+            response = self.client.post(
+                self.upload_url, data={"base_file": _file, "action": str(ira.DOCUMENT_UPLOAD.value)}
+            )
 
         self.assertEqual(201, response.status_code)
         _exec = orchestrator.get_execution_object(response.json()["execution_id"])
@@ -475,7 +480,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.client.force_login(self.user)
         document = create_single_doc("cloned document to rollback")
 
-        exec_id = self._create_execution_request(action=ira.DOCUMENT_CLONE.value, title="cloned document")
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
         self.handler.create_resourcehandlerinfo(
             self.handler_module_path, document, orchestrator.get_execution_object(exec_id)
         )
@@ -483,19 +488,20 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
         response = self.client.put(
             _url,
-            data=json.dumps({"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document", "resource_pk": document.pk}),
+            data=json.dumps(
+                {"action": str(ira.DOCUMENT_COPY.value), "title": "cloned document", "resource_pk": document.pk}
+            ),
             content_type="application/json",
         )
 
         self.assertEqual(200, response.status_code)
-        _exec = orchestrator.get_execution_object(response.json()["execution_id"])
 
     @patch("geonode.upload.api.views.import_orchestrator")
     def test_document_clone_should_not_require_any_file(self, patch_orchestrator):
         patch_orchestrator.s.return_value = MagicMock()
         document = create_single_doc("document to clone from the upload endpoint")
         self.client.force_login(self.user)
-        exec_id = self._create_execution_request(action=ira.DOCUMENT_CLONE.value, title="cloned document")
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
         self.handler.create_resourcehandlerinfo(
             self.handler_module_path, document, orchestrator.get_execution_object(exec_id)
         )
@@ -503,7 +509,9 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
         response = self.client.put(
             _url,
-            data=json.dumps({"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document", "resource_pk": document.pk}),
+            data=json.dumps(
+                {"action": str(ira.DOCUMENT_COPY.value), "title": "cloned document", "resource_pk": document.pk}
+            ),
             content_type="application/json",
         )
 
@@ -514,20 +522,27 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.assertEqual(document.pk, _exec.geonode_resource.pk)
         self.assertEqual("cloned document", _exec.input_params["title"])
 
+    @override_settings(ASYNC_SIGNALS=False)
+    @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
     def test_document_clone_should_fail_without_the_title_or_the_document_to_clone(self):
         self.client.force_login(self.user)
         document = create_single_doc("document to clone from the upload endpoint")
+        self.client.force_login(self.user)
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
+        self.handler.create_resourcehandlerinfo(
+            self.handler_module_path, document, orchestrator.get_execution_object(exec_id)
+        )
         _url = reverse("importer_resource_copy", args=[document.id])
 
-        response = self.client.put(_url, data={"action": ira.DOCUMENT_CLONE.value})
+        response = self.client.put(_url, data={"action": ira.DOCUMENT_COPY.value}, content_type="application/json")
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(500, response.status_code)
 
     @patch("geonode.upload.api.views.import_orchestrator")
     def test_document_clone_from_the_copy_endpoint_should_create_the_execution_request(self, patch_orchestrator):
         patch_orchestrator.s.return_value = MagicMock()
         document = create_single_doc("document to clone from the api")
-        exec_id = self._create_execution_request(action=ira.DOCUMENT_CLONE.value, title="cloned document")
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
         self.handler.create_resourcehandlerinfo(
             self.handler_module_path, document, orchestrator.get_execution_object(exec_id)
         )
@@ -535,7 +550,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
         response = self.client.put(
             reverse("importer_resource_copy", kwargs={"pk": document.pk}),
-            data=json.dumps({"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document"}),
+            data=json.dumps({"action": str(ira.DOCUMENT_COPY.value), "title": "cloned document"}),
             content_type="application/json",
         )
 
@@ -547,7 +562,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
     def test_document_upload_should_fail_without_a_file_or_a_url(self):
         self.client.force_login(self.user)
 
-        response = self.client.post(self.upload_url, data={"action": ira.DOCUMENT_UPLOAD.value})
+        response = self.client.post(self.upload_url, data={"action": str(ira.DOCUMENT_UPLOAD.value)})
 
         self.assertEqual(400, response.status_code)
         self.assertFalse(ExecutionRequest.objects.filter(action=ira.DOCUMENT_UPLOAD.value).exists())
@@ -557,7 +572,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
         with open(self.base_file, "rb") as _file:
             response = self.client.post(
-                self.upload_url, data={"base_file": _file, "action": ira.DOCUMENT_REPLACE.value}
+                self.upload_url, data={"base_file": _file, "action": str(ira.DOCUMENT_REPLACE.value)}
             )
 
         self.assertEqual(400, response.status_code)

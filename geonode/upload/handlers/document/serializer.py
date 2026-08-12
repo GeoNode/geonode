@@ -29,7 +29,7 @@ class DocumentImporterSerializer(BaseImporterSerializer):
         ref_name = "DocumentImporterSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ("base_file", "url", "title", "extension", "resource_pk", "action", "is_empty")
+        fields = ("base_file", "url", "title", "extension", "resource_pk", "action")
 
     base_file = serializers.FileField(required=False)
     url = serializers.URLField(required=False, help_text="URL of the remote document")
@@ -37,22 +37,11 @@ class DocumentImporterSerializer(BaseImporterSerializer):
     extension = serializers.CharField(required=False)
     resource_pk = serializers.IntegerField(required=False)
     action = serializers.CharField(required=True)
-    is_empty = serializers.SerializerMethodField()
-
-    def get_is_empty(self, attrs):
-        # a clone carries no file, the upload endpoint must skip the cloning of the files
-        return attrs.get("action") == ira.DOCUMENT_CLONE.value
 
     def validate(self, attrs):
         """
         A document is a file or a remote url, as the document form requires.
-        A clone has none of them: the document to clone and the title of the new one are the only input
         """
-        if attrs.get("action") == ira.DOCUMENT_CLONE.value:
-            if not attrs.get("title") or not attrs.get("resource_pk"):
-                raise serializers.ValidationError("The title and the resource_pk are required to clone a document.")
-            return attrs
-
         if not attrs.get("base_file") and not attrs.get("url"):
             raise serializers.ValidationError("Document must be a file or url.")
 

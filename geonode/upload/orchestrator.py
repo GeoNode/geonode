@@ -31,14 +31,12 @@ from rest_framework import serializers
 
 from geonode.storage.utils import organize_files_by_ext
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.api.serializer import (CopyImporterSerializer, ImporterSerializer,
-    OverwriteImporterSerializer, UpsertImporterSerializer)
+from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer, UpsertImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import create_layer_key
 from geonode.upload.utils import error_handler
 from geonode.upload.utils import ImporterRequestAction as ira
-from geonode.resource.enumerator import ExecutionRequestAction as exa
 
 logger = logging.getLogger("importer")
 
@@ -91,8 +89,6 @@ class ImportOrchestrator:
                 return UpsertImporterSerializer
             case ira.REPLACE.value:
                 return OverwriteImporterSerializer
-            case exa.COPY.value:
-                return CopyImporterSerializer
         return ImporterSerializer
 
     def load_handler(self, module_path):
@@ -102,9 +98,11 @@ class ImportOrchestrator:
             raise ImportException(detail=f"The handler is not available: {module_path}")
 
     def load_handler_by_id(self, handler_id):
-        for handler in self.get_handler_registry():
-            if handler().id == handler_id:
-                return handler
+        for handler_cls in self.get_handler_registry():
+            instance = handler_cls()
+            # a handler with no client-facing config (e.g. empty_dataset) has no id to compare against
+            if instance.supported_file_extension_config and instance.id == handler_id:
+                return handler_cls
         logger.error("Handler not found")
         return None
 

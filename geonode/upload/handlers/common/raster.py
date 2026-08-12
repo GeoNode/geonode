@@ -59,6 +59,8 @@ class BaseRasterFileHandler(BaseHandler):
     It must provide the task_lists required to comple the upload
     """
 
+    handler_kind = "dataset"
+
     @property
     def default_geometry_column_name(self):
         return "geometry"

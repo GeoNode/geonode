@@ -33,6 +33,8 @@ class MetadataFileHandler(BaseHandler):
     It must provide the task_lists required to comple the upload
     """
 
+    handler_kind = "dataset"
+
     @staticmethod
     def has_serializer(data) -> bool:
         _base = data.get("base_file")

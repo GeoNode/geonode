@@ -138,7 +138,7 @@ class ImporterRequestAction(enum.Enum):
     UPSERT = _("upsert")
     DOCUMENT_UPLOAD = _("document_upload")
     DOCUMENT_REPLACE = _("document_replace")
-    DOCUMENT_CLONE = _("document_clone")
+    DOCUMENT_COPY = _("document_copy")
 
 
 def error_handler(exc, exec_id=None):

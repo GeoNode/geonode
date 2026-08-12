@@ -435,15 +435,18 @@ The upload is asynchronous: the response contains the ``execution_id`` of the ex
 | **`url`** | `String` | Yes* | URL of a remote document. Required unless `base_file` is provided. Requires the `add_remote_resource` permission. |
 | **`title`** | `String` | No | Title of the document. Defaults to the file name or to the last segment of the remote URL. |
 | **`extension`** | `String` | No | Extension of the document. Taken from the file/URL name when not provided, so it is needed only when a remote URL does not end with a valid document extension. |
-| **`resource_pk`** | `Integer` | Yes* | Primary key of the document to replace. Required by the `document_replace` action. |
+| **`resource_pk`** | `Integer` | Yes* | Primary key of the document to replace or to duplicate. Required by the `document_replace` and `document_copy` actions. |
 
 | Action Value | Purpose | Additional Required Parameters |
 | :--- | :--- | :--- |
 | **`document_upload`** | Creates a new document from a file or from a remote URL. | None |
 | **`document_replace`** | Replaces the file (or the URL) of an existing document, its metadata are preserved. | `resource_pk` |
-| **`document_clone`** | Duplicates an existing document, file included. No file is uploaded. | `title`<br>`resource_pk` |
+| **`document_copy`** | Duplicates an existing document, file included. No file is uploaded. Not accepted on this endpoint, see [**Clone a document**](#clone-a-document) below. | `title`<br>`resource_pk` |
 
 The accepted file types are the ones listed in the ``ALLOWED_DOCUMENT_TYPES`` setting and the maximum file size is the one configured for the ``document_upload_size`` slug in the upload size limits. Zip based documents (`zip` itself, but also the Office Open XML and OpenDocument formats) are inspected before being saved and are rejected when they contain unsafe entries.
+
+!!! note
+    `document_copy` is rejected with a 400 on this endpoint: a clone carries no file, so it must go through the copy endpoint shared with the other resources, like every other resource type.
 
 #### Upload a document
 
@@ -511,22 +514,7 @@ A remote document is replaced the same way, by sending ``url`` instead of ``base
 
 A clone uploads nothing: it only needs the title of the new document and the ``resource_pk`` of the document to duplicate. The file is cloned along with its asset.
 
-```python
-import requests
-
-url = "https://development.demo.geonode.org/api/v2/uploads/upload"
-payload = {
-    "action": "document_clone",
-    "title": "Copy of an example image",
-    "resource_pk": "123",
-}
-headers = {
-    "Authorization": "Basic dXNlcjpwYXNzd29yZA==",
-}
-response = requests.request("POST", url, headers=headers, data=payload)
-```
-
-The copy endpoint shared with the other resources performs the clone as well, taking the document from the path and the title from the ``defaults``:
+The copy endpoint shared with the other resources performs the clone, taking the document from the path and the title from the ``defaults``:
 
 - API: ``PUT /api/v2/resources/{document_id}/copy``
 - Status Code: ``200``
@@ -537,7 +525,7 @@ import json
 
 url = "https://development.demo.geonode.org/api/v2/resources/123/copy"
 payload = {
-    "action": "document_clone",
+    "action": "document_copy",
     "defaults": json.dumps({"title": "Copy of an example image"}),
 }
 headers = {

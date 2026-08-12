@@ -63,6 +63,8 @@ class BaseDocumentFileHandler(BaseHandler):
     A document does not need to be published, so no GeoServer step is defined
     """
 
+    handler_kind = "document"
+
     TASKS = {
         ira.DOCUMENT_UPLOAD.value: (
             "start_import",
@@ -74,7 +76,7 @@ class BaseDocumentFileHandler(BaseHandler):
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
         ),
-        ira.DOCUMENT_CLONE.value: (
+        ira.DOCUMENT_COPY.value: (
             "start_copy",
             "geonode.upload.copy_document_resource",
         ),
@@ -92,7 +94,7 @@ class BaseDocumentFileHandler(BaseHandler):
     def get_task_list(cls, action) -> tuple:
         # the copy endpoint is shared with the other resources, for a document it means a clone
         if action == exa.COPY.value:
-            action = ira.DOCUMENT_CLONE.value
+            action = ira.DOCUMENT_COPY.value
         return super().get_task_list(action)
 
     @staticmethod
@@ -143,7 +145,7 @@ class BaseDocumentFileHandler(BaseHandler):
         """
         action = action or _data.get("action")
 
-        if action in (exa.COPY.value, ira.DOCUMENT_CLONE.value):
+        if action in (exa.COPY.value, ira.DOCUMENT_COPY.value):
             # a clone carries no file: the title of the new document and the document to clone
             # (the resource_pk, or the pk in the path of the copy endpoint) are the only input
             defaults = _data.get("defaults") or {}
