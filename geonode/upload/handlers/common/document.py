@@ -478,6 +478,11 @@ def copy_document_resource(self, execution_id, /, handler_module_path, action, *
             **kwargs,
         )
 
+        logger.exception(
+            "Failed to copy document resource for execution_id=%s in copy_document_resource",
+            execution_id,
+        )
+
         # Explicitly call on_failure only if running in sync mode
         call_on_failure(self, e, execution_id, handler_module_path, action, kwargs)
-        raise CopyResourceException(detail=e)
+        raise CopyResourceException(detail="An internal error occurred while copying the document resource.")
