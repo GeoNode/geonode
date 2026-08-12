@@ -20,6 +20,7 @@ import os
 import json
 import shutil
 import logging
+import warnings
 from django.urls import reverse
 from django.conf import settings
 from django.contrib import messages
@@ -89,9 +90,22 @@ def document_embed(request, docid):
         return render(request, "documents/document_embed.html", context_dict)
 
 
+DEPRECATION_REASON = (
+    "POST /documents/upload/ is deprecated, use the importer API instead "
+    "(POST /api/v2/uploads/upload with action=document_upload/document_replace/document_copy)."
+)
+
+
 class DocumentUploadView(CreateView):
     http_method_names = ["post"]
     form_class = DocumentCreateForm
+
+    def dispatch(self, request, *args, **kwargs):
+        warnings.warn(DEPRECATION_REASON, DeprecationWarning, stacklevel=2)
+        logger.warning(DEPRECATION_REASON)
+        response = super().dispatch(request, *args, **kwargs)
+        response["Deprecation"] = "true"
+        return response
 
     def post(self, request, *args, **kwargs):
         self.object = None

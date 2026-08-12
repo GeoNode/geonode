@@ -426,6 +426,9 @@ Documents are uploaded through the same importer endpoint used by the datasets. 
 
 The upload is asynchronous: the response contains the ``execution_id`` of the execution request, the document is created by the background tasks. See [**Tracking dataset upload progress**](#tracking-dataset-upload-progress) to follow it and to get the ID of the new document.
 
+!!! warning "Deprecated"
+    The legacy ``POST /documents/upload/`` endpoint (used by the web UI form, not part of the DRF API) is deprecated in favor of this one. It still works, but every response carries a ``Deprecation: true`` header. The old DRF create endpoint, ``POST /api/v2/documents/``, has already been removed, it now returns ``405``.
+
 **Request parameters:**
 
 | Parameter | Type | Required | Description |
