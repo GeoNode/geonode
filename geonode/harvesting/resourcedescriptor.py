@@ -20,7 +20,7 @@
 import dataclasses
 import datetime as dt
 import typing
-import uuid
+import uuid # noqua
 
 from django.contrib.gis import geos
 

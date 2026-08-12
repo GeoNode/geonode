@@ -489,7 +489,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         response = self.client.put(
             _url,
             data=json.dumps(
-                {"action": str(ira.DOCUMENT_CLONE.value), "title": "cloned document", "resource_pk": document.pk}
+                {"action": str(ira.DOCUMENT_COPY.value), "title": "cloned document", "resource_pk": document.pk}
             ),
             content_type="application/json",
         )
@@ -497,7 +497,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.assertEqual(200, response.status_code)
 
     @patch("geonode.upload.api.views.import_orchestrator")
-    def test_document_clone_should_not_require_any_file(self, patch_orchestrator):
+    def test_document_copy_should_not_require_any_file(self, patch_orchestrator):
         document = create_single_doc("document to clone from the upload endpoint")
         self.client.force_login(self.user)
         exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
@@ -523,7 +523,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
     @override_settings(ASYNC_SIGNALS=False)
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
-    def test_document_clone_should_fail_without_the_title_or_the_document_to_clone(self):
+    def test_document_copy_should_fail_without_the_title_or_the_document_to_clone(self):
         self.client.force_login(self.user)
         document = create_single_doc("document to clone from the upload endpoint")
         self.client.force_login(self.user)
@@ -538,7 +538,7 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.assertEqual(500, response.status_code)
 
     @patch("geonode.upload.api.views.import_orchestrator")
-    def test_document_clone_from_the_copy_endpoint_should_create_the_execution_request(self, patch_orchestrator):
+    def test_document_copy_from_the_copy_endpoint_should_create_the_execution_request(self, patch_orchestrator):
         patch_orchestrator.s.return_value = MagicMock()
         document = create_single_doc("document to clone from the api")
         exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
@@ -574,4 +574,4 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
                 self.upload_url, data={"base_file": _file, "action": str(ira.DOCUMENT_REPLACE.value)}
             )
 
-        self.assertEqual(500, response.status_code)
+        self.assertEqual(400, response.status_code)

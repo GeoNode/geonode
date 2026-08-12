@@ -86,7 +86,7 @@ class BaseVectorFileHandler(BaseHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    handler_kind = "dataset"
+    handler_type = "dataset"
 
     TASKS = {
         exa.UPLOAD.value: (

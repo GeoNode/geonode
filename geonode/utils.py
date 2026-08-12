@@ -1718,7 +1718,7 @@ def get_supported_datasets_file_types():
     _available_settings = [
         module().supported_file_extension_config
         for module in orchestrator.get_handler_registry()
-        if module().supported_file_extension_config and module().handler_kind == "dataset"
+        if module().supported_file_extension_config and module().handler_type == "dataset"
     ]
     # injecting the new config required for FE
     default_types = [

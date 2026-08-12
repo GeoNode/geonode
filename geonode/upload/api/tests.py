@@ -105,7 +105,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertEqual(400, response.status_code)
         self.assertIn(b"use PUT /api/v2/resources/{id}/copy instead", response.content)
 
-    def test_importer_upload_rejects_document_clone_action(self):
+    def test_importer_upload_rejects_document_copy_action(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         payload = {"action": "document_copy", "resource_pk": self.dataset.pk, "title": "copy"}
 

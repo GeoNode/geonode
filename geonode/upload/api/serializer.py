@@ -98,9 +98,9 @@ class OverwriteImporterSerializer(ImporterSerializer):
     resource_pk = serializers.IntegerField(required=True)
 
 
-class CopyImporterSerializer(BaseImporterSerializer):
+class ResourceCopySerializer(BaseImporterSerializer):
     class Meta:
-        ref_name = "CopyImporterSerializer"
+        ref_name = "ResourceCopySerializer"
         model = ResourceBase
         view_name = "importer_copy"
         fields = ("resource_pk", "title", "action")

@@ -63,7 +63,7 @@ class BaseDocumentFileHandler(BaseHandler):
     A document does not need to be published, so no GeoServer step is defined
     """
 
-    handler_kind = "document"
+    handler_type = "document"
 
     TASKS = {
         ira.DOCUMENT_UPLOAD.value: (

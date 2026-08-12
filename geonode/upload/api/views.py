@@ -42,7 +42,7 @@ from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.api.exceptions import CopyResourceException, HandlerException, ImportException
-from geonode.upload.api.serializer import CopyImporterSerializer, ImporterSerializer
+from geonode.upload.api.serializer import ResourceCopySerializer, ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
 from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
@@ -255,7 +255,7 @@ class ResourceImporter(DynamicModelViewSet):
         FavoriteFilter,
     ]
     queryset = ResourceBase.objects.all().order_by("-last_updated")
-    serializer_class = CopyImporterSerializer
+    serializer_class = ResourceCopySerializer
     pagination_class = GeoNodeApiPagination
 
     def copy(self, request, *args, **kwargs):

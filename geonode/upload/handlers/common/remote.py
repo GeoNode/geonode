@@ -49,7 +49,7 @@ class BaseRemoteResourceHandler(BaseHandler):
     As first implementation only remote 3dtiles are supported
     """
 
-    handler_kind = "dataset"
+    handler_type = "dataset"
 
     TASKS = {
         exa.UPLOAD.value: (
