@@ -529,6 +529,11 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.client.force_login(self.user)
         exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document")
         self.handler.create_resourcehandlerinfo(
+            self.handler_module_path, document, orchestrator.get_execution_object(exec_id)
+        )
+        _url = reverse("importer_resource_copy", args=[document.id])
+
+        response = self.client.put(_url, data={"action": ira.DOCUMENT_COPY.value}, content_type="application/json")
 
         self.assertEqual(500, response.status_code)
 
