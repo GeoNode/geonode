@@ -23,7 +23,6 @@ from django.conf import settings
 from geonode.documents.enumerations import DOCUMENT_MAGIC_MIMETYPE_MAP
 from geonode.upload.handlers.common.document import BaseDocumentFileHandler
 from geonode.upload.handlers.document.serializer import DocumentImporterSerializer
-from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -37,7 +36,7 @@ class DocumentFileHandler(BaseDocumentFileHandler):
     @property
     def supported_file_extension_config(self):
         # a document is not a dataset file type, nothing to expose to the client
-        return {}
+        return {"id": "doc", "type": "document", "exclude_from_config": True}
 
     @property
     def upload_validation_config(self):

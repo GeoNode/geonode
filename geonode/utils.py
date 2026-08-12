@@ -1718,7 +1718,12 @@ def get_supported_datasets_file_types():
     _available_settings = [
         module().supported_file_extension_config
         for module in orchestrator.get_handler_registry()
+<<<<<<< HEAD
         if module().supported_file_extension_config and module().handler_kind == "dataset"
+=======
+        if module().supported_file_extension_config
+        and not module().supported_file_extension_config.get("exclude_from_config")
+>>>>>>> e5f6c54c6cf4fa0a7b86abb14cd0aefcb9ac46fd
     ]
     # injecting the new config required for FE
     default_types = [
