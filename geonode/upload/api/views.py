@@ -207,7 +207,7 @@ class ImporterViewSet(DynamicModelViewSet):
             logger.exception(e)
             if isinstance(e, APIException):
                 raise
-            raise ImportException(detail=e.args[0] if len(e.args) > 0 else e)
+            raise ImportException(detail=_("An internal error occurred while processing the upload."))
 
         self._cleanup_cloned_files(storage_manager)
         raise ImportException(detail="No handlers found for this dataset type/action")
