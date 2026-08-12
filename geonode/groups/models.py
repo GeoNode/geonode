@@ -276,14 +276,16 @@ class GroupMember(models.Model):
     joined = models.DateTimeField(default=now)
 
     def save(self, *args, **kwargs):
-        # add django.contrib.auth.group to user
-        self.user.groups.add(self.group.group)
         super().save(*args, **kwargs)
+        # add django.contrib.auth.group to user
+        if not self.user.groups.filter(id=self.group.group.id).exists():
+            self.user.groups.add(self.group.group)
         self._handle_perms(role=self.role)
 
     def delete(self, *args, **kwargs):
-        self.user.groups.remove(self.group.group)
         super().delete(*args, **kwargs)
+        if self.user.groups.filter(id=self.group.group.id).exists():
+            self.user.groups.remove(self.group.group)
         self._handle_perms()
 
     def promote(self, *args, **kwargs):
