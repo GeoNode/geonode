@@ -149,8 +149,8 @@ def assert_safe_xml(data):
     if docinfo is not None and docinfo.doctype:
         raise UnsafeXMLError("DOCTYPE/DTD declarations are not allowed in uploaded XML")
 
-    for pi in root.xpath("//processing-instruction()"):
-        raise UnsafeXMLError(f"Processing instruction '<?{pi.target} ...?>' is not allowed")
+    for proins in root.xpath("//processing-instruction()"):
+        raise UnsafeXMLError(f"Processing instruction '<?{proins.target} ...?>' is not allowed")
 
     for el in root.iter():
         if not isinstance(el.tag, str):
