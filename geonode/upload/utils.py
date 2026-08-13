@@ -257,14 +257,20 @@ class UploadLimitValidator:
         return [django_file for field_name, django_file in self.files.items() if field_name != "base_file"]
 
     def _get_uploaded_files_total_size(self, file_dict):
-        """Return a list with all of the uploaded files"""
+        """Return the total size of the uploaded files."""
+        # excluded from the count only when their size matches base_file, to
+        # avoid counting the same file twice.
         excluded_files = (
             "zip_file",
             "shp_file",
         )
         _iterate_files = file_dict.data_items if hasattr(file_dict, "data_items") else file_dict
+        base_file = _iterate_files.get("base_file")
+        base_size = base_file.size if base_file else None
         uploaded_files_sizes = [
-            file_obj.size for field_name, file_obj in _iterate_files.items() if field_name not in excluded_files
+            file_obj.size
+            for field_name, file_obj in _iterate_files.items()
+            if field_name not in excluded_files or file_obj.size != base_size
         ]
         total_size = sum(uploaded_files_sizes)
         return total_size

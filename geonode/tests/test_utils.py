@@ -32,7 +32,15 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects, get_allowed_extensions
+from geonode.utils import (
+    copy_tree,
+    bbox_to_wkt,
+    get_allowed_extensions,
+    is_safe_url,
+    is_safe_url_with_redirects,
+    assert_safe_xml,
+    UnsafeXMLError,
+)
 from unittest.mock import MagicMock
 
 
@@ -190,6 +198,25 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         # The name and type should be set as provided by attribute map
         for a in _l.attributes:
             self.assertIn([a.attribute, a.attribute_type], expected_results)
+
+
+class TestAssertSafeXml(TestCase):
+    def test_rejects_xslt_stylesheet(self):
+        payload = (
+            b'<?xml version="1.0"?>'
+            b'<?xml-stylesheet type="text/xsl" href="#s"?>'
+            b'<doc><xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/></doc>'
+        )
+        with self.assertRaises(UnsafeXMLError):
+            assert_safe_xml(payload)
+
+    def test_rejects_script_element(self):
+        with self.assertRaises(UnsafeXMLError):
+            assert_safe_xml(b"<doc><script>alert(1)</script></doc>")
+
+    def test_accepts_safe_xml(self):
+        payload = b"<doc><title>safe content</title></doc>"
+        self.assertIsNotNone(assert_safe_xml(payload))
 
 
 class TestSupportedTypes(TestCase):
