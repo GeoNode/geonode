@@ -113,6 +113,7 @@ from geonode.utils import get_supported_datasets_file_types
 from geonode.base.utils import patch_perms
 
 import logging
+from geonode.utils import assert_safe_xml, UnsafeXMLError
 
 logger = logging.getLogger(__name__)
 
@@ -1495,6 +1496,17 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     {"message": f"The uploaded file type {file_ext} is not allowed."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            if file_ext in ("xml", "sld"):
+                try:
+                    assert_safe_xml(file.read())
+                except UnsafeXMLError:
+                    logger.warning("XML validation failed for uploaded asset.", exc_info=True)
+                    return Response(
+                        {"message": f"The uploaded {file_ext} file is invalid or unsafe."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                finally:
+                    file.seek(0)
         try:
             handler = asset_handler_registry.get_default_handler()
             asset, link = create_asset_and_link(
