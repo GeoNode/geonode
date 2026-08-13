@@ -97,6 +97,80 @@ FORWARDED_HEADERS = ["content-type", "content-disposition"]
 # explicitly disable resolving XML entities in order to prevent malicious attacks
 XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
 
+
+class UnsafeXMLError(Exception):
+    """Raised when an uploaded XML carries active content (XSLT, scripts, PIs, DTD)."""
+
+
+_XSLT_NAMESPACES: typing.Final = frozenset(
+    {
+        "http://www.w3.org/1999/XSL/Transform",
+        "http://www.w3.org/TR/WD-xsl",
+    }
+)
+
+_DANGEROUS_LOCAL_NAMES: typing.Final = frozenset(
+    {
+        "script",
+        "iframe",
+        "object",
+        "embed",
+        "applet",
+        "foreignobject",
+        "handler",
+    }
+)
+
+# only data:text/html is blocked, so legitimate data:image/... keeps working
+_ACTIVE_URI_SCHEMES: typing.Final = ("javascript:", "vbscript:", "data:text/html")
+
+
+def _safe_xml_parser() -> etree.XMLParser:
+    return etree.XMLParser(
+        resolve_entities=False,
+        no_network=True,
+        load_dtd=False,
+        dtd_validation=False,
+        huge_tree=False,
+    )
+
+
+def assert_safe_xml(data):
+    """Raise UnsafeXMLError if the XML carries active content; return the root element."""
+    if isinstance(data, str):
+        data = data.encode("utf-8", "surrogatepass")
+
+    try:
+        root = etree.fromstring(data, parser=_safe_xml_parser())
+    except etree.XMLSyntaxError as err:
+        raise UnsafeXMLError(f"Document is not well-formed XML: {err}")
+
+    docinfo = root.getroottree().docinfo
+    if docinfo is not None and docinfo.doctype:
+        raise UnsafeXMLError("DOCTYPE/DTD declarations are not allowed in uploaded XML")
+
+    for proins in root.xpath("//processing-instruction()"):
+        raise UnsafeXMLError(f"Processing instruction '<?{proins.target} ...?>' is not allowed")
+
+    for el in root.iter():
+        if not isinstance(el.tag, str):
+            continue
+        qname = etree.QName(el)
+        if qname.namespace in _XSLT_NAMESPACES:
+            raise UnsafeXMLError(f"Embedded XSLT element '<{qname.localname}>' is not allowed")
+        if qname.localname.lower() in _DANGEROUS_LOCAL_NAMES:
+            raise UnsafeXMLError(f"Disallowed element '<{qname.localname}>' found")
+        for name, value in el.attrib.items():
+            local = etree.QName(name).localname if name.startswith("{") else name
+            if len(local) > 2 and local.lower().startswith("on"):
+                raise UnsafeXMLError(f"Event-handler attribute '{local}' is not allowed")
+            v = "".join((value or "").split()).lower()
+            if v.startswith(_ACTIVE_URI_SCHEMES):
+                raise UnsafeXMLError("Active URI scheme (javascript:/vbscript:/data:text/html) is not allowed")
+
+    return root
+
+
 requests.packages.urllib3.disable_warnings()
 
 
