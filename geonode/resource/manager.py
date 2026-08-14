@@ -986,15 +986,6 @@ class BaseResourceManager(ResourceManagerInterface):
                 logger.exception(e)
         return False
 
-    def _has_asset(self, instance: ResourceBase, original_title=False) -> bool:
-        from geonode.assets.models import Asset
-
-        filters = {"link__resource": instance}
-        if original_title:
-            filters["title"] = "Original"
-
-        return Asset.objects.filter(**filters).exists()
-
     def user_can_copy(self, instance: ResourceBase, /, user=None) -> bool:
         """
         Whether ``user`` is allowed to clone ``instance``.
