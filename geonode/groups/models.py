@@ -91,7 +91,7 @@ class GroupProfile(models.Model):
     email = models.EmailField(_("Email"), null=True, blank=True, help_text=email_help_text)
     keywords = TaggableManager(_("Keywords"), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(
-        _("Access"), max_length=15, default="public'", choices=GROUP_CHOICES, help_text=access_help_text
+        _("Access"), max_length=15, default="public", choices=GROUP_CHOICES, help_text=access_help_text
     )
     categories = models.ManyToManyField(GroupCategory, verbose_name=_("Categories"), blank=True, related_name="groups")
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
