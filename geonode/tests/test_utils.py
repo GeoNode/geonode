@@ -18,7 +18,7 @@
 #########################################################################
 import copy
 import requests
-from requests.models import Response
+from requests.models import PreparedRequest, Response
 from unittest import TestCase
 
 from unittest.mock import patch
@@ -449,8 +449,11 @@ class TestIsSafeURL(djangoTestCase):
 def _fake_response(status_code, url, location=None):
     """Build a minimal requests.Response usable by resolve_redirects without a socket."""
     response = Response()
+    request = PreparedRequest()
+    request.prepare(method="GET", url=url)
     response.status_code = status_code
     response.url = url
+    response.request = request
     response.raw = None
     response._content = b""
     response._content_consumed = True
