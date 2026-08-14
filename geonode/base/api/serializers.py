@@ -796,7 +796,7 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
 
         request = self.context.get("request")
         try:
-            return resource_manager_registry.get_for_instance(instance).is_copyable(
+            return resource_manager_registry.get_for_instance(instance).user_can_copy(
                 instance, user=request.user if request else None
             )
         except Exception as e:

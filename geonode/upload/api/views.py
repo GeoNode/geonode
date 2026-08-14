@@ -253,7 +253,7 @@ class ResourceImporter(DynamicModelViewSet):
 
         try:
             resource = self.get_object()
-            if not resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=request.user):
+            if not resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=request.user):
                 return Response({"message": "Resource can not be cloned."}, status=400)
             if resource.resourcehandlerinfo_set.exists():
                 handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path

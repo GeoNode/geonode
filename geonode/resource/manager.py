@@ -995,17 +995,16 @@ class BaseResourceManager(ResourceManagerInterface):
 
         return Asset.objects.filter(**filters).exists()
 
-    def _is_local_resource_copyable(self, instance: ResourceBase, user=None) -> bool:
-        return self._has_asset(instance)
-
-    def is_copyable(self, instance: ResourceBase, /, user=None) -> bool:
+    def user_can_copy(self, instance: ResourceBase, /, user=None) -> bool:
         """
         Whether ``user`` is allowed to clone ``instance``.
         """
+        if user is None or not user.has_perm("base.add_resourcebase"):
+            return False
         _resource = instance.get_real_instance()
+        if not _resource.is_copyable:
+            return False
         if _resource.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
-            if user is None:
-                return False
             if user == _resource.owner:
                 return True
             remote_service = getattr(_resource, "remote_service", None)
@@ -1014,7 +1013,7 @@ class BaseResourceManager(ResourceManagerInterface):
                 return True
             else:
                 return False
-        return self._is_local_resource_copyable(_resource, user=user)
+        return True
 
     def _apply_extent_and_role_defaults(
         self, instance: ResourceBase, extent: dict = None, user: settings.AUTH_USER_MODEL = None

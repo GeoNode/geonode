@@ -1308,6 +1308,29 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except Exception:
             return False
 
+    @property
+    def is_copyable(self):
+        from geonode.assets.models import Asset
+
+        if self.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+            return True
+        if self.resource_type == "dataset":
+            if self.subtype in ["vector", "vector_time"]:
+                return True
+            if self.subtype == "raster":
+                return Asset.objects.filter(
+                    link__resource=self,
+                    title="Original",
+                ).exists()
+
+            # for tabular/local 3dtiles etc.
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type == "document":
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type in ["map", "dashboard", "geostory"]:
+            return True
+        return False
+
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 

@@ -2887,10 +2887,10 @@ class BaseApiTests(APITestCase):
         )
         try:
             asset, _ = create_asset_and_link(resource, owner, [raster_file])
-            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
 
             asset.delete()
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
         finally:
             try:
                 resource.delete()
@@ -2911,14 +2911,14 @@ class BaseApiTests(APITestCase):
         )
         try:
             asset, _ = create_asset_and_link(resource, owner, [raster_file], title="Original")
-            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
 
             asset.title = "not_the_original"
             asset.save()
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
 
             asset.delete()
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
         finally:
             try:
                 resource.delete()
@@ -2961,22 +2961,22 @@ class BaseApiTests(APITestCase):
             uuid=str(uuid4()),
         )
         try:
-            # no AuthConfig: owner and administrators may clone, nobody else
-            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=other))
-            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=admin))
+            # No AuthConfig owner and administrators may clone, nobody else
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=admin))
 
-            # an AuthConfig restricts cloning to the owner, admins included
+            # An AuthConfig restricts cloning to the owner, admins included
             resource.auth_config = AuthConfig.objects.create(type="basic")
             resource.save()
             resource.refresh_from_db()
-            self.assertTrue(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=owner))
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=other))
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=admin))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=admin))
 
             # attaching an arbitrary file must not make it copyable
             create_asset_and_link(resource, other, [os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")])
-            self.assertFalse(resource_manager_registry.get_for_instance(resource).is_copyable(resource, user=other))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
         finally:
             try:
                 resource.delete()

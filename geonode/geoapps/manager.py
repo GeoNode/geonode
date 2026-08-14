@@ -76,6 +76,3 @@ class GeoAppResourceManager(BaseResourceManager):
         if payload:
             return self._create_and_update(payload, instance=instance, notify=notify, request_user=request_user)
         return super().update(uuid, instance=instance, vals=vals, notify=notify, **kwargs)
-
-    def _is_local_resource_copyable(self, instance: GeoApp, user=None) -> bool:
-        return True
