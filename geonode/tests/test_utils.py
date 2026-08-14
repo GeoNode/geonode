@@ -40,9 +40,9 @@ from geonode.utils import (
     is_safe_url,
     is_safe_url_with_redirects,
     assert_safe_xml,
+    safe_request_url,
     UnsafeXMLError,
 )
-from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects, safe_request_url
 from unittest.mock import MagicMock
 
 
