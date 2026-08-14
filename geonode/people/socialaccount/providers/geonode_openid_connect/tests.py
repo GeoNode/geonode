@@ -250,4 +250,3 @@ class AppInSettingsTests(GoogleTests):
     """
 
     pass
-
