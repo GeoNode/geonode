@@ -392,6 +392,8 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 {
                     "alternate": resource["alternate"],
                     "workspace": resource["workspace"],
+                    # store is a GeoServer grouping: remote datasets have none
+                    "store": None,
                 }
             )
         return descriptor
@@ -782,6 +784,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             "resource_type": "dataset",
             "alternate": api_record.get("alternate", descriptor.identification.name),
             "workspace": api_record.get("workspace"),
+            # store is a GeoServer grouping: remote datasets have none
+            "store": None,
         }
         if descriptor.identification.native_format.lower() == RemoteDatasetType.VECTOR.value:
             result["subtype"] = GeoNodeDatasetType.VECTOR.value

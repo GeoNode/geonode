@@ -113,13 +113,14 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
         except Dataset.DoesNotExist:
             pass
         except Dataset.MultipleObjectsReturned:
-            logger.error(
-                "Ambiguous dataset lookup for map layer '%s' (store=%s, ows_url=%s)",
+            # Expected since #14381: the same endpoint can be registered by several services, so a
+            # name can match one dataset per service. Nothing on the map layer tells them apart.
+            logger.warning(
+                "Ambiguous dataset lookup for map layer '%s' (store=%s, ows_url=%s), leaving it unresolved",
                 instance.name,
                 instance.store,
                 instance.ows_url,
             )
-            raise
 
 
 @deprecated(version="3.2.1", reason="Use direct calls to the ReourceManager.")

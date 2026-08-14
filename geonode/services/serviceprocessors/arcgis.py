@@ -195,7 +195,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         typename = slugify(f"{dataset_meta.id}-{''.join(c for c in dataset_meta.title if ord(c) < 128)}")
         return {
             "name": dataset_meta.title,
-            "store": self.name,
+            # store is a GeoServer grouping: remote datasets have none
+            "store": None,
             "subtype": "remote",
             "workspace": "remoteWorkspace",
             "typename": typename,

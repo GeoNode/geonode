@@ -217,7 +217,7 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
             raise RuntimeError(f"Resource BBOX is not valid: {bbox}")
         return {
             "name": dataset_meta.name,
-            "store": self.name,
+            "store": None,
             "subtype": "remote",
             "workspace": "remoteWorkspace",
             "typename": dataset_meta.name,

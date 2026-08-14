@@ -284,6 +284,22 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         attribute_config = lyr.attribute_config()
         self.assertTrue("ftInfoTemplate" not in attribute_config)
 
+    def test_remote_datasets_are_exempt_from_store_workspace_name_uniqueness(self):
+        # store is NULL for remote datasets, and PostgreSQL does not consider two NULLs equal,
+        # so the (store, workspace, name) uniqueness no longer applies to them: the same remote
+        # endpoint can be registered by more than one service (#14381).
+        common = dict(
+            owner=get_user_model().objects.get(username="admin"),
+            workspace="remoteWorkspace",
+            name="bahra",
+            subtype="remote",
+            store=None,
+        )
+        first = Dataset.objects.create(uuid=str(uuid4()), title="bahra", alternate="bahra", **common)
+        second = Dataset.objects.create(uuid=str(uuid4()), title="bahra", alternate="bahra", **common)
+        self.assertNotEqual(first.pk, second.pk)
+        self.assertEqual(Dataset.objects.filter(workspace="remoteWorkspace", name="bahra").count(), 2)
+
     def test_dataset_styles(self):
         lyr = Dataset.objects.all().first()
         # There should be a total of 3 styles
