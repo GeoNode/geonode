@@ -32,7 +32,7 @@ from geonode.assets.utils import create_asset_and_link
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
 from geonode.storage.utils import organize_files_by_ext
-from geonode.upload.api.exceptions import ImportException
+from geonode.upload.api.exceptions import GeneralUploadException, ImportException
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
@@ -128,7 +128,7 @@ class BaseHandler(ABC):
     @classmethod
     def get_task_list(cls, action) -> tuple:
         if action not in cls.TASKS:
-            raise Exception("The requested action is not implemented yet")
+            raise GeneralUploadException("The requested action is not implemented yet")
         return cls.TASKS.get(action)
 
     @property
