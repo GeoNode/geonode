@@ -41,6 +41,9 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 
 from geonode.storage.manager import StorageManager
+from geonode.security.registry import permissions_registry
+from geonode.security.permissions import _to_compact_perms
+from rest_framework.exceptions import PermissionDenied
 
 from .serializers import (
     DatasetSerializer,
