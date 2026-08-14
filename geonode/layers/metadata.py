@@ -22,7 +22,6 @@
 # Standard Modules
 import logging
 import datetime
-from owslib.etree import etree as dlxml
 from django.conf import settings
 
 # Geonode functionality
@@ -39,10 +38,14 @@ LOGGER = logging.getLogger(__name__)
 
 def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}):
     """Generate dict of model properties based on XML metadata"""
+    from geonode.utils import assert_safe_xml, UnsafeXMLError
 
     # check if document is XML
     try:
-        exml = dlxml.fromstring(xml.encode())
+        exml = assert_safe_xml(xml)
+    except UnsafeXMLError as err:
+        LOGGER.warning("Unsafe XML content rejected in metadata: %s", err)
+        raise GeoNodeException("Uploaded XML document contains unsafe content")
     except Exception as err:
         raise GeoNodeException(f"Uploaded XML document is not XML: {str(err)}")
 

@@ -33,8 +33,11 @@ from geonode.documents.models import Document
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.api.exceptions import FileUploadLimitException
 from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
+from geonode.utils import assert_safe_xml, UnsafeXMLError
 
 logger = logging.getLogger(__name__)
+
+XML_LIKE_DOCUMENT_EXTENSIONS = {"xml", "sld"}
 
 
 class SizeRestrictedFileField(forms.FileField):
@@ -155,6 +158,19 @@ class DocumentCreateForm(TranslationModelForm):
             except ZipValidationError:
                 logger.warning("ZIP validation failed for uploaded document.", exc_info=True)
                 raise forms.ValidationError(_("Invalid or unsafe ZIP archive."))
+            finally:
+                if hasattr(doc_file, "seek"):
+                    try:
+                        doc_file.seek(0)
+                    except (OSError, ValueError):
+                        pass
+
+        if doc_file and os.path.splitext(doc_file.name)[1].lower()[1:] in XML_LIKE_DOCUMENT_EXTENSIONS:
+            try:
+                assert_safe_xml(doc_file.read())
+            except UnsafeXMLError as err:
+                logger.warning("Unsafe XML content rejected on document upload: %s", err)
+                raise forms.ValidationError(_("Uploaded XML contains unsafe content."))
             finally:
                 if hasattr(doc_file, "seek"):
                     try:
