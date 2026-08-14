@@ -32,6 +32,7 @@ from geonode.assets.models import Asset
 from geonode.base import enumerations
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.base.models import Link
+from geonode.documents.forms import XML_LIKE_DOCUMENT_EXTENSIONS
 from geonode.documents.models import Document
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.resource.models import ExecutionRequest
@@ -110,7 +111,8 @@ class BaseDocumentFileHandler(BaseHandler):
         if not base_file:
             raise InvalidDocumentException("A document must have a file or a url")
 
-        if Path(base_file).suffix.lower().replace(".", "") not in settings.ALLOWED_DOCUMENT_TYPES:
+        extension = Path(base_file).suffix.lower().replace(".", "")
+        if extension not in settings.ALLOWED_DOCUMENT_TYPES:
             raise InvalidDocumentException("This file type is not allowed")
 
         if is_zip_extension(base_file):
@@ -121,6 +123,16 @@ class BaseDocumentFileHandler(BaseHandler):
             except ZipValidationError:
                 logger.warning("ZIP validation failed for uploaded document.", exc_info=True)
                 raise InvalidDocumentException("Invalid or unsafe ZIP archive.")
+
+        if extension in XML_LIKE_DOCUMENT_EXTENSIONS:
+            from geonode.utils import assert_safe_xml, UnsafeXMLError
+
+            try:
+                with open(base_file) as _xml:
+                    assert_safe_xml(_xml.read())
+            except UnsafeXMLError as err:
+                logger.warning("Unsafe XML content rejected on document upload: %s", err)
+                raise InvalidDocumentException("Uploaded document contains unsafe content")
 
         max_size = get_max_upload_size("document_upload_size")
         if os.path.getsize(base_file) > max_size:

@@ -169,6 +169,23 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
 
         self.assertIn("Invalid or unsafe ZIP archive", str(_exc.exception.detail))
 
+    def test_is_valid_should_raise_exception_for_an_unsafe_xml_document(self):
+        unsafe_xml = os.path.join(self.tempdir, "unsafe.xml")
+        with open(unsafe_xml, "w") as _f:
+            _f.write('<?xml version="1.0"?><doc><script>alert(1)</script></doc>')
+
+        with self.assertRaises(InvalidDocumentException) as _exc:
+            self.handler.is_valid(files={"base_file": unsafe_xml}, user=self.user)
+
+        self.assertIn("Uploaded document contains unsafe content", str(_exc.exception.detail))
+
+    def test_is_valid_should_pass_for_a_safe_xml_document(self):
+        safe_xml = os.path.join(self.tempdir, "safe.xml")
+        with open(safe_xml, "w") as _f:
+            _f.write('<?xml version="1.0"?><doc><title>safe</title></doc>')
+
+        self.assertTrue(self.handler.is_valid(files={"base_file": safe_xml}, user=self.user))
+
     def test_is_valid_url_should_pass_for_a_remote_document(self):
         self.assertTrue(self.handler.is_valid_url(url=self.remote_url))
 
