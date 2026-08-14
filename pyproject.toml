@@ -38,7 +38,6 @@ dependencies = [
     "celery==5.6.3",
     "Deprecated==1.2.14",
     "jsonschema==4.22.0",
-    "schema==0.7.7",
     "rdflib==6.3.2",
     "smart_open==7.0.4",
     "PyMuPDF==1.28.2",
@@ -90,7 +89,6 @@ dependencies = [
     # REST
     "djangorestframework==3.17.2",
     "djangorestframework-gis==1.2.1",
-    "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
     "geonode-dynamic-rest==2.3.0.2",
     "geonode-pinax-notifications==6.0.0.4",
@@ -122,13 +120,11 @@ dependencies = [
     "inflection>=0.4.0",
     "mock<6.0.0",
     "python-dateutil==2.9.0.post0",
-    "pytz==2024.1",
     "requests==2.34.2",
     "timeout-decorator==0.5.0",
     "django-redis>=5.4",
     "sherlock==0.4.1",
     "GDAL==3.12.2",
-    "psutil==5.9.8",
     "django-cors-headers==4.9.0",
     "django-user-agents==0.4.0",
     # production
@@ -141,19 +137,13 @@ dependencies = [
     "flake8==7.3.0",
     "black==24.4.2",
     "pytest==8.4.2",
-    "pytest-bdd==7.1.2",
-    "splinter==0.21.0",
-    "pytest-splinter==3.3.2",
     "pytest-django==4.13.0",
     "pixelmatch==0.3.0",
     "factory-boy==3.3.0",
     "flaky==3.8.1",
     "selenium>=4.15.1,<5.0.0",
-    "selenium-requests==2.0.4",
-    "webdriver_manager==4.0.1",
     # Security and audit
     "cryptography==50.0.0",
-    "jwcrypto>=1.5.8",
     # dependency for XLSX handler
     "python-calamine==0.7.0",
     "python-magic==0.4.27",
@@ -165,10 +155,6 @@ dev = [
     "flake8==7.3.0",
     "black==24.4.2",
     "coverage==7.15.4",
-]
-docs = [
-    "Sphinx",
-    "sphinx-rtd-theme",
 ]
 
 [project.urls]
