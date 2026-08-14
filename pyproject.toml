@@ -27,7 +27,7 @@ dependencies = [
     "Pillow==12.3.0",
     "lxml==6.1.1",
     "psycopg2==2.9.12",
-    "Django==5.2.16",
+    "Django==5.2.17",
 
     # Other
     "beautifulsoup4==4.12.3",
@@ -41,12 +41,12 @@ dependencies = [
     "schema==0.7.7",
     "rdflib==6.3.2",
     "smart_open==7.0.4",
-    "PyMuPDF==1.28.0",
+    "PyMuPDF==1.28.2",
     "defusedxml==0.7.1",
     "zipstream-ng==1.9.2",
 
     # Django Apps
-    "django-allauth==65.18.0",
+    "django-allauth==65.19.0",
     "django-appconf==1.0.6",
     "django-filter==25.2",
     "django-imagekit==5.0.0",
@@ -88,7 +88,7 @@ dependencies = [
     "django-recaptcha==4.0.0",
 
     # REST
-    "djangorestframework==3.17.1",
+    "djangorestframework==3.17.2",
     "djangorestframework-gis==1.2.1",
     "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
@@ -114,7 +114,7 @@ dependencies = [
     "django-bootstrap3-datetimepicker-2==2.8.3",
     # storage manager dependencies
     "django-storages==1.14.3",
-    "boto3==1.43.46",
+    "boto3==1.43.66",
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
@@ -136,7 +136,7 @@ dependencies = [
     "docker==7.0.0",
     "invoke==2.2.0",
     # tests
-    "coverage==7.15.1",
+    "coverage==7.15.4",
     "requests-toolbelt==1.0.0",
     "flake8==7.3.0",
     "black==24.4.2",
@@ -144,7 +144,7 @@ dependencies = [
     "pytest-bdd==7.1.2",
     "splinter==0.21.0",
     "pytest-splinter==3.3.2",
-    "pytest-django==4.8.0",
+    "pytest-django==4.13.0",
     "pixelmatch==0.3.0",
     "factory-boy==3.3.0",
     "flaky==3.8.1",
@@ -152,7 +152,7 @@ dependencies = [
     "selenium-requests==2.0.4",
     "webdriver_manager==4.0.1",
     # Security and audit
-    "cryptography==49.0.0",
+    "cryptography==50.0.0",
     "jwcrypto>=1.5.8",
     # dependency for XLSX handler
     "python-calamine==0.7.0",
@@ -164,7 +164,7 @@ dev = [
     "pytest==8.4.2",
     "flake8==7.3.0",
     "black==24.4.2",
-    "coverage==7.15.1",
+    "coverage==7.15.4",
 ]
 docs = [
     "Sphinx",
