@@ -664,6 +664,14 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.perm_spec = self.__class__.perm_spec
         self.doc_link_url = self.__class__.doc_link_url
 
+    def test_document_link_sets_anti_xss_headers(self):
+        self.test_doc.set_permissions(self.perm_spec)
+        self.client.login(username=self.not_admin.username, password="very-secret")
+        response = self.client.get(self.doc_link_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("X-Content-Type-Options"), "nosniff")
+        self.assertIn("sandbox", response.headers.get("Content-Security-Policy", ""))
+
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)
         # Get link as Anonymous user
