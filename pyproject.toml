@@ -137,7 +137,7 @@ dependencies = [
     "flake8==7.3.0",
     "black==24.4.2",
     "pytest==8.4.2",
-    "pytest-django==4.13.0",
+    "pytest-django==4.14.0",
     "pixelmatch==0.3.0",
     "factory-boy==3.3.0",
     "flaky==3.8.1",
