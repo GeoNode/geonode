@@ -48,23 +48,35 @@ class TestRemoteFlatGeobufResourceHandler(TestCase):
         self.assertTrue(self.handler.can_handle({"url": "http://example.com/y.fgb", "type": "FlatGeobuf"}))
         self.assertFalse(self.handler.can_handle({"url": "http://example.com/y.jpg", "type": "image"}))
 
-    @patch("geonode.upload.handlers.remote.flatgeobuf.requests.head")
-    @patch("geonode.upload.handlers.remote.flatgeobuf.requests.get")
-    @patch("geonode.upload.handlers.common.remote.requests.get")
-    def test_is_valid_url_success(self, mock_base_get, mock_get, mock_head):
-        mock_head.return_value.headers = {"Accept-Ranges": "bytes"}
-        mock_head.return_value.status_code = 200
-        mock_base_get.return_value.status_code = 200
+    @patch("geonode.upload.handlers.remote.flatgeobuf.is_safe_url_with_redirects")
+    @patch("geonode.upload.handlers.remote.flatgeobuf.safe_request_url")
+    def test_is_valid_url_success(self, mock_safe_request_url, mock_is_safe_url):
+        mock_is_safe_url.return_value = (True, None)
+
+        mock_head_response = MagicMock()
+        mock_head_response.headers = {"Accept-Ranges": "bytes"}
+        mock_head_response.status_code = 200
+        mock_head_response.raise_for_status.return_value = None
+
+        mock_safe_request_url.return_value = mock_head_response
 
         self.assertTrue(self.handler.is_valid_url(self.valid_url))
 
-    @patch("geonode.upload.handlers.remote.flatgeobuf.requests.head")
-    @patch("geonode.upload.handlers.remote.flatgeobuf.requests.get")
-    @patch("geonode.upload.handlers.common.remote.requests.get")
-    def test_is_valid_url_no_range_support(self, mock_base_get, mock_get, mock_head):
-        mock_head.return_value.headers = {}
-        mock_get.return_value.status_code = 404
-        mock_base_get.return_value.status_code = 200
+    @patch("geonode.upload.handlers.remote.flatgeobuf.is_safe_url_with_redirects")
+    @patch("geonode.upload.handlers.remote.flatgeobuf.safe_request_url")
+    def test_is_valid_url_no_range_support(self, mock_safe_request_url, mock_is_safe_url):
+        mock_is_safe_url.return_value = (True, None)
+
+        mock_head_response = MagicMock()
+        mock_head_response.headers = {}
+        mock_head_response.status_code = 200
+        mock_head_response.raise_for_status.return_value = None
+
+        mock_get_response = MagicMock()
+        mock_get_response.status_code = 404
+        mock_get_response.close.return_value = None
+
+        mock_safe_request_url.side_effect = [mock_head_response, mock_get_response]
 
         with self.assertRaises(ImportException):
             self.handler.is_valid_url(self.valid_url)
