@@ -42,6 +42,7 @@ from geonode.security.permissions import (
     DATASET_ADMIN_PERMISSIONS,
 )
 from geonode.resource.manager import BaseResourceManager, ResourceManagerInterface
+from geonode.resource.utils import is_remote_resource
 from geonode.geoserver.signals import geofence_rule_assign
 from .geofence import AutoPriorityBatch
 from .tasks import geoserver_set_style, geoserver_delete_map, geoserver_create_style, geoserver_cascading_delete
@@ -72,7 +73,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         if instance:
             _real_instance = instance.get_real_instance()
-            if hasattr(_real_instance, "subtype") and _real_instance.subtype not in ["tileStore", "remote"]:
+            if not is_remote_resource(_real_instance):
                 try:
                     logger.debug(f"Searching GeoServer for layer '{_real_instance.alternate}'")
                     # Let's reset the connections first
