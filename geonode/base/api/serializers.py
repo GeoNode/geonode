@@ -647,7 +647,7 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
     license = ComplexDynamicRelationField(LicenseSerializer, embed=True)
     spatial_representation_type = ComplexDynamicRelationField(SpatialRepresentationTypeSerializer, embed=True)
     blob = serializers.JSONField(required=False, write_only=True)
-    is_copyable = serializers.BooleanField(read_only=True)
+    is_copyable = serializers.SerializerMethodField(read_only=True)
     download_url = DownloadLinkField(read_only=True)
     favorite = FavoriteField(read_only=True)
     download_urls = DownloadArrayLinkField(read_only=True)
@@ -790,6 +790,18 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
             else []
         )
         return permissions
+
+    def get_is_copyable(self, instance):
+        from geonode.resource.registry import resource_manager_registry
+
+        request = self.context.get("request")
+        try:
+            return resource_manager_registry.get_for_instance(instance).user_can_copy(
+                instance, user=request.user if request else None
+            )
+        except Exception as e:
+            logger.warning(f"Cannot evaluate is_copyable for resource {instance.pk}: {e}")
+            return False
 
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)

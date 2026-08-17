@@ -43,6 +43,7 @@ from geonode.geoserver.helpers import (
     get_dataset_capabilities_url,
     get_layer_ows_url,
     get_time_info,
+    _sync_geoserver_keywords_to_instance,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 from unittest.mock import patch, Mock
@@ -360,3 +361,29 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
 
         result = get_time_info(mock_layer)
         self.assertIsNone(result)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_sync_geoserver_keywords_merges_and_does_not_replace(self):
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="keywords_merge_test",
+            store="httpfooremoteservce",
+            subtype="remote",
+            alternate="geonode:keywords_merge_test",
+        )
+        dataset.keywords.add("keyword_from_geonode", "shared_keyword")
+
+        _sync_geoserver_keywords_to_instance(dataset, ["keyword_from_geoserver", "shared_keyword"])
+
+        self.assertSetEqual(
+            {"keyword_from_geonode", "keyword_from_geoserver", "shared_keyword"},
+            set(dataset.keyword_list()),
+        )
+
+        # an empty keyword list from GeoServer must leave the existing keywords untouched
+        _sync_geoserver_keywords_to_instance(dataset, [])
+        self.assertSetEqual(
+            {"keyword_from_geonode", "keyword_from_geoserver", "shared_keyword"},
+            set(dataset.keyword_list()),
+        )

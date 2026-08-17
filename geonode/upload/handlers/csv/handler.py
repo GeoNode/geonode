@@ -93,10 +93,13 @@ class CSVFileHandler(BaseVectorFileHandler):
         upload_validator.validate_parallelism_limit_per_user()
         actual_upload = upload_validator._get_parallel_uploads_count()
         max_upload = upload_validator._get_max_parallel_uploads()
+        try:
+            layers = CSVFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
 
-        layers = CSVFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
-
-        if not layers:
+            if not layers:
+                raise InvalidCSVException("The CSV provided is invalid, no layers found")
+        except Exception as e:
+            logger.exception(e)
             raise InvalidCSVException("The CSV provided is invalid, no layers found")
 
         layers_count = len(layers)

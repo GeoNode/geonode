@@ -75,7 +75,7 @@ def sync_geonode_datasets(
                 sync_instance_with_geoserver(layer.id, updatemetadata=False, updatebbox=True)
             if updatemetadata:
                 logger.info("Updating metadata...")
-                sync_instance_with_geoserver(layer.id, updatemetadata=True, updatebbox=False)
+                sync_instance_with_geoserver(layer.id, updatemetadata=True, updatebbox=False, importgskeywords=True)
             if removeduplicates:
                 # remove duplicates
                 logger.info("Removing duplicate links...")

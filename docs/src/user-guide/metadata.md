@@ -52,6 +52,6 @@ Subsequently, more specialized metadata fields are presented in the metadata for
  - **Temporal extent start / Temporal extent end;
  - **Maintenance frequency** of the resource;
  - **Spatial representation type** used.
- - **Related resources** to link one or multiple resources to the document. These will be visible inside the Resource information panel
+ - **Related resources** to link one or multiple resources to the document. These will be visible inside the [Resource information](resource_info.md) panel
  - **Contacts** to reference one or more users for specific roles in relationship to this resource.
   

@@ -27,7 +27,7 @@ dependencies = [
     "Pillow==12.3.0",
     "lxml==6.1.1",
     "psycopg2==2.9.12",
-    "Django==5.2.15",
+    "Django==5.2.17",
 
     # Other
     "beautifulsoup4==4.12.3",
@@ -38,17 +38,16 @@ dependencies = [
     "celery==5.6.3",
     "Deprecated==1.2.14",
     "jsonschema==4.22.0",
-    "schema==0.7.7",
     "rdflib==6.3.2",
     "smart_open==7.0.4",
-    "PyMuPDF==1.28.0",
+    "PyMuPDF==1.28.2",
     "defusedxml==0.7.1",
     "zipstream-ng==1.9.2",
 
     # Django Apps
-    "django-allauth==65.18.0",
+    "django-allauth==65.19.1",
     "django-appconf==1.0.6",
-    "django-filter==24.2",
+    "django-filter==25.2",
     "django-imagekit==5.0.0",
     "django-taggit==5.0.1",
     "django-markdownify==0.9.5",
@@ -70,7 +69,7 @@ dependencies = [
     "pycsw @ https://github.com/geopython/pycsw/archive/refs/tags/3.0.0-beta1.zip",
     "pyproj<3.8.0",
     "OWSLib==0.34.1",
-    "SQLAlchemy==2.0.50",
+    "SQLAlchemy==2.0.52",
     "Shapely==2.1.2",
     "mercantile==1.2.1",
     "numpy==1.26.*",
@@ -88,9 +87,8 @@ dependencies = [
     "django-recaptcha==4.0.0",
 
     # REST
-    "djangorestframework==3.17.1",
+    "djangorestframework==3.17.2",
     "djangorestframework-gis==1.2.1",
-    "djangorestframework-guardian==0.3.0",
     "drf-extensions==0.7.1",
     "geonode-dynamic-rest==2.3.0.2",
     "geonode-pinax-notifications==6.0.0.4",
@@ -114,8 +112,7 @@ dependencies = [
     "django-bootstrap3-datetimepicker-2==2.8.3",
     # storage manager dependencies
     "django-storages==1.14.3",
-    "google-cloud-storage==2.16.0",
-    "boto3==1.39.3",
+    "boto3==1.43.66",
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
@@ -123,13 +120,11 @@ dependencies = [
     "inflection>=0.4.0",
     "mock<6.0.0",
     "python-dateutil==2.9.0.post0",
-    "pytz==2024.1",
     "requests==2.34.2",
     "timeout-decorator==0.5.0",
-    "pylibmc==1.6.3",
+    "django-redis>=5.4",
     "sherlock==0.4.1",
-    "GDAL==3.8.4",
-    "psutil==5.9.8",
+    "GDAL==3.12.2",
     "django-cors-headers==4.9.0",
     "django-user-agents==0.4.0",
     # production
@@ -137,24 +132,18 @@ dependencies = [
     "docker==7.0.0",
     "invoke==2.2.0",
     # tests
-    "coverage==7.15.0",
+    "coverage==7.15.4",
     "requests-toolbelt==1.0.0",
     "flake8==7.3.0",
     "black==24.4.2",
     "pytest==8.4.2",
-    "pytest-bdd==7.1.2",
-    "splinter==0.21.0",
-    "pytest-splinter==3.3.2",
-    "pytest-django==4.8.0",
+    "pytest-django==4.14.0",
     "pixelmatch==0.3.0",
     "factory-boy==3.3.0",
     "flaky==3.8.1",
     "selenium>=4.15.1,<5.0.0",
-    "selenium-requests==2.0.4",
-    "webdriver_manager==4.0.1",
     # Security and audit
-    "cryptography==49.0.0",
-    "jwcrypto>=1.5.7",
+    "cryptography==50.0.0",
     # dependency for XLSX handler
     "python-calamine==0.7.0",
     "python-magic==0.4.27",
@@ -165,11 +154,7 @@ dev = [
     "pytest==8.4.2",
     "flake8==7.3.0",
     "black==24.4.2",
-    "coverage==7.15.0",
-]
-docs = [
-    "Sphinx",
-    "sphinx-rtd-theme",
+    "coverage==7.15.4",
 ]
 
 [project.urls]

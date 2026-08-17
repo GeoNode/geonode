@@ -29,6 +29,9 @@ Once the service has been configured, you can select the resources you are inter
 From the page where the services are listed, it is possible to click on the Title of a service, which will open the Service Details page.
 If you want to import more resources from that service, you can click on the **Import Service Resources** button.
 
+!!! note
+    To connect to a remote service hosted on a private network, see [`SAFE_URL_TRUSTED_HOSTS`](../../setup/configuration/settings.md#safe_url_trusted_hosts).
+
 ### Remote 3D Tiles
 
 The GeoNode client supports visualization of [3D Tiles](https://docs.mapstore.geosolutionsgroup.com/en/latest/user-guide/catalog/#3d-tiles-catalog) thanks to the capabilities fo the MapStore framework on which it is based. 3D Tiles tilesets can be published either from a file upload (.zip file containing the tileset) or by reference of a remotwly published tileset, served over HTTP(S).

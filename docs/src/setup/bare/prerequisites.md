@@ -52,7 +52,7 @@ sudo apt install -y --allow-downgrades \
   build-essential \
   python3-gdal=3.8.4+dfsg-3ubuntu3 gdal-bin=3.8.4+dfsg-3ubuntu3 libgdal-dev=3.8.4+dfsg-3ubuntu3 \
   python3-all-dev python3.12-dev python3.12-venv \
-  libxml2 libxml2-dev gettext libmemcached-dev zlib1g-dev \
+  libxml2 libxml2-dev gettext zlib1g-dev \
   libxslt1-dev libjpeg-dev libpng-dev libpq-dev \
   software-properties-common \
   git unzip gcc zlib1g-dev libgeos-dev libproj-dev \

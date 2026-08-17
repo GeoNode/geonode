@@ -2868,27 +2868,62 @@ class BaseApiTests(APITestCase):
         second_cloned = Dataset.objects.exclude(pk__in=[resource.pk, cloned_resource.pk]).latest("id")
         self.assertFalse(second_cloned.featured, msg="Cloned resource should have featured=False")
 
-        # clone dataset with invalid file
-        # resource.files = ["/path/invalid_file.wrong"]
-        # resource.save()
-        asset.location = ["/path/invalid_file.wrong"]
-        asset.save()
-        response = self.client.put(copy_url)
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["message"], "Resource can not be cloned.")
-        # clone dataset with no files
-        link.delete()
-        asset.delete()
-        response = self.client.put(copy_url)
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["message"], "Resource can not be cloned.")
-        # clean
+        # the file/asset based checks do not apply to non remote vector datasets anymore,
+        # as the data can also be only stored on db level and cloning takes care of cloning db table.
         try:
             resource.delete()
         except Exception as e:
             logger.warning(f"Can't delete test resource {resource}", exc_info=e)
+
+    def test_is_copyable_document(self):
+        owner = get_user_model().objects.get(username="admin")
+        raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
+        resource = Document.objects.create(
+            owner=get_user_model().objects.get(username="admin"),
+            subtype="image",
+            alternate="geonode:test_copy",
+            resource_type="document",
+            uuid=str(uuid4()),
+        )
+        try:
+            asset, _ = create_asset_and_link(resource, owner, [raster_file])
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+
+            asset.delete()
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
+
+    def test_is_copyable_raster_dataset(self):
+        owner = get_user_model().objects.get(username="admin")
+        raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
+        resource = Dataset.objects.create(
+            owner=owner,
+            name="test_raster_copy",
+            store="geonode_data",
+            subtype="raster",
+            alternate="geonode:test_raster_copy",
+            resource_type="dataset",
+            uuid=str(uuid4()),
+        )
+        try:
+            asset, _ = create_asset_and_link(resource, owner, [raster_file], title="Original")
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+
+            asset.title = "not_the_original"
+            asset.save()
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+
+            asset.delete()
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
     def test_resource_service_copy_with_perms_dataset(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
@@ -2906,6 +2941,47 @@ class BaseApiTests(APITestCase):
             resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
         )
         self._assertCloningWithPerms(resource)
+
+    def test_is_copyable_remote_dataset(self):
+        from geonode.base import enumerations
+        from geonode.security.models import AuthConfig
+
+        owner = get_user_model().objects.get(username="bobby")
+        other = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        resource = Dataset.objects.create(
+            owner=owner,
+            name="test_remote_copy",
+            store="geonode_data",
+            subtype="remote",
+            alternate="geonode:test_remote_copy",
+            resource_type="dataset",
+            sourcetype=enumerations.SOURCE_TYPE_REMOTE,
+            uuid=str(uuid4()),
+        )
+        try:
+            # No AuthConfig owner and administrators may clone, nobody else
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=admin))
+
+            # An AuthConfig restricts cloning to the owner, admins included
+            resource.auth_config = AuthConfig.objects.create(type="basic")
+            resource.save()
+            resource.refresh_from_db()
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=admin))
+
+            # attaching an arbitrary file must not make it copyable
+            create_asset_and_link(resource, other, [os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")])
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
     @override_settings(ASYNC_SIGNALS=False)

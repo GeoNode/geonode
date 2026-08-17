@@ -171,12 +171,16 @@ class UserViewSet(DynamicModelViewSet):
         )
         target = None
 
-        if not target_user and previous_owner:
+        if not target_user:
             return Response("Payload not passed", status=400)
 
-        if user.is_superuser or (
-            not user.is_superuser
-            and ResourceBase.objects.filter(owner=user, pk__in=transfer_resource_subset).count()
+        # `currentOwner` is optional and defaults to the user the resources are read from.
+        source_owner = get_object_or_404(get_user_model(), id=previous_owner) if previous_owner else user
+
+        if (
+            user.is_superuser
+            or not transfer_resource_subset
+            or ResourceBase.objects.filter(owner=user, pk__in=transfer_resource_subset).count()
             == len(transfer_resource_subset)
         ):
 
@@ -185,8 +189,7 @@ class UserViewSet(DynamicModelViewSet):
             if target == user:
                 return Response("Cannot reassign to self", status=400)
 
-            # we need to filter by the previous owner id
-            filter_payload = dict(owner=previous_owner or user)
+            filter_payload = dict(owner=source_owner)
 
             if transfer_resource_subset:
                 # transfer_resources
@@ -198,8 +201,7 @@ class UserViewSet(DynamicModelViewSet):
                 we can use the resource manager because inside it will automatically update
                 the owner
                 """
-                prev_owner = get_object_or_404(get_user_model(), id=previous_owner)
-                resource_manager_registry.get_for_instance(instance).transfer_ownership(instance, target, prev_owner)
+                resource_manager_registry.get_for_instance(instance).transfer_ownership(instance, target, source_owner)
 
             return Response("Resources transfered successfully", status=200)
 

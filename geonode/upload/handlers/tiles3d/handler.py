@@ -81,7 +81,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     @property
     def upload_validation_config(self):
         return {
-            "zip": {"mimes": {"application/zip"}},
+            "zip": {"mimes": {"application/zip", "application/octet-stream"}},
         }
 
     @staticmethod

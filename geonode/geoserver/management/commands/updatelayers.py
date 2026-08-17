@@ -49,6 +49,12 @@ class Command(BaseCommand):
             default=False,
             help='Just processing GeoServer layers still not registered in GeoNode.'),
         parser.add_argument(
+            '--skip-keywords',
+            action='store_true',
+            dest='skip_keywords',
+            default=False,
+            help='Do not import GeoServer keywords into the GeoNode datasets.'),
+        parser.add_argument(
             '--remove-deleted',
             action='store_true',
             dest='remove_deleted',
@@ -89,6 +95,7 @@ class Command(BaseCommand):
         ignore_errors = options.get('ignore_errors')
         skip_unadvertised = options.get('skip_unadvertised')
         skip_geonode_registered = options.get('skip_geonode_registered')
+        skip_keywords = options.get('skip_keywords')
         remove_deleted = options.get('remove_deleted')
         verbosity = int(options.get('verbosity'))
         user = options.get('user')
@@ -116,6 +123,7 @@ class Command(BaseCommand):
             filter=filter,
             skip_unadvertised=skip_unadvertised,
             skip_geonode_registered=skip_geonode_registered,
+            skip_keywords=skip_keywords,
             remove_deleted=remove_deleted,
             permissions=permissions,
             execute_signals=True)

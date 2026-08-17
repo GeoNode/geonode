@@ -32,7 +32,14 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects
+from geonode.utils import (
+    copy_tree,
+    bbox_to_wkt,
+    is_safe_url,
+    is_safe_url_with_redirects,
+    assert_safe_xml,
+    UnsafeXMLError,
+)
 from unittest.mock import MagicMock
 
 
@@ -190,6 +197,25 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         # The name and type should be set as provided by attribute map
         for a in _l.attributes:
             self.assertIn([a.attribute, a.attribute_type], expected_results)
+
+
+class TestAssertSafeXml(TestCase):
+    def test_rejects_xslt_stylesheet(self):
+        payload = (
+            b'<?xml version="1.0"?>'
+            b'<?xml-stylesheet type="text/xsl" href="#s"?>'
+            b'<doc><xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/></doc>'
+        )
+        with self.assertRaises(UnsafeXMLError):
+            assert_safe_xml(payload)
+
+    def test_rejects_script_element(self):
+        with self.assertRaises(UnsafeXMLError):
+            assert_safe_xml(b"<doc><script>alert(1)</script></doc>")
+
+    def test_accepts_safe_xml(self):
+        payload = b"<doc><title>safe content</title></doc>"
+        self.assertIsNotNone(assert_safe_xml(payload))
 
 
 class TestSupportedTypes(TestCase):
@@ -380,3 +406,38 @@ class TestIsSafeURL(djangoTestCase):
 
         self.assertTrue(result)
         self.assertIsNone(blocked_url)
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:9090"])
+    def test_trusted_host_with_private_ip_is_allowed(self):
+        """Hosts in SAFE_URL_TRUSTED_HOSTS should bypass IP validation even if they resolve to a private IP."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host:9090/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:9090"])
+    def test_non_trusted_host_with_private_ip_is_rejected(self):
+        """Hosts not in SAFE_URL_TRUSTED_HOSTS should still be rejected when resolving to a private IP."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertFalse(is_safe_url("https://other.private.host:9090/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:9090"])
+    def test_trusted_host_without_port_is_not_matched(self):
+        """A trusted host entry with port should not match the same host without a port."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertFalse(is_safe_url("https://internal.private.host/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["internal.private.host:443"])
+    def test_trusted_host_implicit_default_port_is_matched(self):
+        """A URL without an explicit port should match a trusted host entry with the default port."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host/geoserver/ows"))
+
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["INTERNAL.PRIVATE.HOST:9090"])
+    def test_trusted_host_case_insensitive(self):
+        """Trusted host matching should be case-insensitive."""
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
+            self.assertTrue(is_safe_url("https://internal.private.host:9090/geoserver/ows"))

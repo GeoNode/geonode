@@ -37,6 +37,10 @@ from . import (
     models,
 )
 
+from django.core.cache import caches
+
+service_cache = caches["services"]
+
 logger = logging.getLogger(__name__)
 
 
@@ -85,6 +89,7 @@ class HarvesterAdmin(admin.ModelAdmin):
     ]
 
     def save_model(self, request, harvester: models.Harvester, form, change):
+        service_cache.delete(harvester.remote_url)
         super().save_model(request, harvester, form, change)
         if _worker_config_changed(form):
             self.message_user(
@@ -190,6 +195,7 @@ class HarvesterAdmin(admin.ModelAdmin):
                 if harvester.update_availability():
                     harvester.initiate_abort_perform_harvesting()
                     being_aborted.append(harvester)
+                    service_cache.delete(harvester.remote_url)
                 else:
                     raise RuntimeError(f"Harvester {harvester!r} is not available")
             except RuntimeError as exc:
@@ -208,6 +214,7 @@ class HarvesterAdmin(admin.ModelAdmin):
     def reset_harvester_status(self, request, queryset):
         for harvester in queryset:
             if harvester.status != models.Harvester.STATUS_READY:
+                service_cache.delete(harvester.remote_url)
                 harvester.status = models.Harvester.STATUS_READY
                 harvester.save()
                 self.message_user(request, _("Resetting status for harvester %(name)s...") % {"name": harvester.name})

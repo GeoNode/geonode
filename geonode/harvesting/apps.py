@@ -34,5 +34,5 @@ class HarvestingAppConfig(AppConfig):
         urlpatterns += [re_path(r"^api/v2/", include("geonode.harvesting.api.urls"))]
         settings.CELERY_BEAT_SCHEDULE["harvesting-scheduler"] = {
             "task": "geonode.harvesting.tasks.harvesting_scheduler",
-            "schedule": config.get_setting("HARVESTER_SCHEDULER_FREQUENCY_MINUTES") * 60,
+            "schedule": config.get_setting("HARVESTER_SCHEDULER_FREQUENCY_MINUTES") * 0.5,
         }

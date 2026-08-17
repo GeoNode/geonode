@@ -547,15 +547,6 @@ class BaseResourceManager(ResourceManagerInterface):
                     if files:
                         to_update = {"files": files}
 
-                    assets_and_links = copy_assets_and_links(instance, target=_resource)
-                    # we're just merging all the files together: it won't work once we have multiple assets per resource
-                    # TODO: get the files from the proper Asset, or make the _concrete_resource_manager.copy use assets
-                    to_update = {}
-
-                    files = list(itertools.chain.from_iterable([asset.location for asset, _ in assets_and_links]))
-                    if files:
-                        to_update = {"files": files}
-
             except Exception as e:
                 logger.exception(e)
                 _resource = None
@@ -985,6 +976,26 @@ class BaseResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
         return False
+
+    def user_can_copy(self, instance: ResourceBase, /, user=None) -> bool:
+        """
+        Whether ``user`` is allowed to clone ``instance``.
+        """
+        if user is None or not user.has_perm("base.add_resourcebase"):
+            return False
+        _resource = instance.get_real_instance()
+        if not _resource.is_copyable:
+            return False
+        if _resource.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+            if user == _resource.owner:
+                return True
+            remote_service = getattr(_resource, "remote_service", None)
+            has_auth_config = _resource.auth_config_id or (remote_service and remote_service.auth_config_id)
+            if not has_auth_config and user.is_superuser:
+                return True
+            else:
+                return False
+        return True
 
     def _apply_extent_and_role_defaults(
         self, instance: ResourceBase, extent: dict = None, user: settings.AUTH_USER_MODEL = None
