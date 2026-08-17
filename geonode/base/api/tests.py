@@ -516,7 +516,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 28)
+        self.assertEqual(response.data["total"], 29)
 
         url = f"{reverse('base-resources-list')}?filter{{metadata_only}}=false"
         # Anonymous
@@ -984,7 +984,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}?sort[]=title", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 28)
+        self.assertEqual(response.data["total"], 29)
         # Pagination
         self.assertEqual(len(response.data["resources"]), 10)
 
@@ -997,7 +997,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}?sort[]=-title", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 28)
+        self.assertEqual(response.data["total"], 29)
         # Pagination
         self.assertEqual(len(response.data["resources"]), 10)
 
