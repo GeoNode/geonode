@@ -139,6 +139,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 else:
                     logger.exception(GeoNodeException("Could not reach remote endpoint."))
                 new_instance.harvester = new_harvester
+                new_instance.save()
                 return new_instance
 
         instance = base.create_with_unique_name(self.name, _create)

@@ -855,7 +855,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=False,
         default=enumerations.SOURCE_TYPE_LOCAL,
         choices=enumerations.SOURCE_TYPES,
-        help_text=_('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".'),
+        help_text=_('The resource source type, which can be one of "LOCAL" or "REMOTE".'),
     )
 
     remote_typename = models.CharField(
