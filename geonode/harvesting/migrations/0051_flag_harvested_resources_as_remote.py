@@ -1,6 +1,8 @@
 from django.db import migrations
 
-from geonode.base.enumerations import SOURCE_TYPE_REMOTE
+# Inlined rather than imported from geonode.base.enumerations: migrations must stay correct
+# even if that constant's value changes in a later version of the application code.
+SOURCE_TYPE_REMOTE = "REMOTE"
 
 
 def flag_harvested_resources_as_remote(apps, schema_editor):
