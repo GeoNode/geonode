@@ -226,6 +226,8 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
             ),
             reference_systems=[epsg_code],
             additional_parameters={
+                # ArcGIS layer kind does not map to vector/raster
+                "subtype": "remote",
                 # store is a GeoServer grouping: remote datasets have none
                 "store": None,
                 "workspace": workspace,
@@ -328,6 +330,8 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
             ),
             reference_systems=[epsg_code],
             additional_parameters={
+                # ArcGIS layer kind does not map to vector/raster
+                "subtype": "remote",
                 # store is a GeoServer grouping: remote datasets have none
                 "store": None,
                 "workspace": workspace,

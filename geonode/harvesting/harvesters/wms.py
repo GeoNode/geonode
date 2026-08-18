@@ -333,6 +333,8 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                     reference_systems=[relevant_layer["crs"]],
                     additional_parameters={
                         "alternate": relevant_layer["name"],
+                        # WMS does not tell whether the layer is vector or raster
+                        "subtype": "remote",
                         "store": None,
                         "workspace": "remoteWorkspace",
                         "ows_url": relevant_layer["wms_url"],
