@@ -22,15 +22,15 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-import taggit
+from taggit.forms import TagField
 
 from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 
-from . import enumerations
-from .models import Service, get_service_type_choices
-from .serviceprocessors import get_service_handler
+from geonode.services import enumerations
+from geonode.services.models import Service, get_service_type_choices
+from geonode.services.serviceprocessors import get_service_handler
 from geonode.utils import is_safe_url
 
 logger = logging.getLogger(__name__)
@@ -72,10 +72,6 @@ class CreateServiceForm(forms.Form):
 
         if not is_safe_url(proposed_url):
             raise ValidationError(_("Invalid URL provided"))
-
-        existing = Service.objects.filter(base_url=proposed_url).exists()
-        if existing:
-            raise ValidationError(_("Service %(url)s is already registered"), params={"url": proposed_url})
         return proposed_url
 
     def clean(self):
@@ -129,7 +125,7 @@ class ServiceForm(forms.ModelForm):
     )
     description = forms.CharField(label=_("Description"), widget=forms.Textarea(attrs={"cols": 60}))
     abstract = forms.CharField(label=_("Abstract"), widget=forms.Textarea(attrs={"cols": 60}))
-    keywords = taggit.forms.TagField(required=False)
+    keywords = TagField(required=False)
 
     class Meta:
         model = Service

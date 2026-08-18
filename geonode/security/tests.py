@@ -1438,7 +1438,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             actual = get_visible_resources(
                 queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user)
             )
-            self.assertEqual(1, actual.count())
+            # plus "dataset metadata true" from the fixtures
+            self.assertEqual(2, actual.count())
         finally:
             if dataset:
                 dataset.delete()
@@ -1470,7 +1471,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertIsNotNone(standard_user)
         admin_user.is_superuser = True
         admin_user.save()
-        layers = Dataset.objects.all()
+        # get_visible_resources only returns metadata_only=False resources
+        layers = Dataset.objects.filter(metadata_only=False)
 
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
