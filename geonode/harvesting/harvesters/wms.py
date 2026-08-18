@@ -32,7 +32,6 @@ from owslib.util import clean_ows_url
 
 from django.conf import settings
 from django.contrib.gis import geos
-from django.template.defaultfilters import slugify
 from geonode.layers.models import Dataset
 from geonode.base.models import Link, ResourceBase
 from geonode.layers.enumerations import GXP_PTYPES
@@ -309,7 +308,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             # WMS does not provide the date of the resource.
             # Use current time for the date stamp and resource time.
             time = datetime.now()
-            service_name = slugify(self.remote_url)[:255]
             contact = resourcedescriptor.RecordDescriptionContact(**data["contact"])
             result = base.HarvestedResourceInfo(
                 resource_descriptor=resourcedescriptor.RecordDescription(
@@ -335,7 +333,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                     reference_systems=[relevant_layer["crs"]],
                     additional_parameters={
                         "alternate": relevant_layer["name"],
-                        "store": service_name,
+                        "store": None,
                         "workspace": "remoteWorkspace",
                         "ows_url": relevant_layer["wms_url"],
                         "ptype": GXP_PTYPES["WMS"],
