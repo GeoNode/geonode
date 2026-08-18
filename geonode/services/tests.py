@@ -141,6 +141,25 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertNotIn("super-secret-password", key)
         self.assertNotIn("alice", key)
 
+    def test_get_service_cache_key_does_not_embed_username_for_username_only_auth(self):
+        # Auth objects that expose a bare `username` with no usable __dict__ (e.g.
+        # __slots__-based classes) must still be hashed, not embedded raw in the key.
+        class SlottedAuth:
+            __slots__ = ("username",)
+
+            def __init__(self, username):
+                self.username = username
+
+        phony_url = "http://fake"
+        key_alice = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth=SlottedAuth("alice")
+        )
+        key_bob = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=SlottedAuth("bob"))
+
+        self.assertNotIn("alice", key_alice)
+        self.assertNotIn("bob", key_bob)
+        self.assertNotEqual(key_alice, key_bob)
+
     def test_get_service_cache_key_is_stable_across_auth_config_save(self):
         # Saving an AuthConfig must not change its fingerprint (avoids an
         # orphaned cache entry from before create_geonode_service saves it).

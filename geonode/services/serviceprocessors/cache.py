@@ -61,7 +61,8 @@ class ServiceHandlerCache:
                 digest = cls._digest(wrapped_auth.__dict__.items())
                 return f"auth:{wrapped_auth.__class__.__name__}:{digest}"
             if hasattr(wrapped_auth, "username"):
-                return f"auth:{wrapped_auth.__class__.__name__}:{getattr(wrapped_auth, 'username', '-') or '-'}"
+                digest = cls._digest({"username": getattr(wrapped_auth, "username", None) or "-"}.items())
+                return f"auth:{wrapped_auth.__class__.__name__}:{digest}"
             return f"auth:{auth.__class__.__name__}"
 
         return "-"
