@@ -10,7 +10,7 @@ cd ~/geonode_projects
 git clone https://github.com/GeoNode/geonode-project.git
 ```
 
-This will clone the `master` branch. You will have to checkout the desidered branch or tag. As an example, if you want to generate a propject for GeoNode 5.1.0 you will do:
+This will clone the `master` branch. You will have to checkout the desidered branch or tag. As an example, if you want to generate a propject for GeoNode 5.1.0 run the following:
 
 ```bash
 cd geonode-project
