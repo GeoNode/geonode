@@ -112,7 +112,7 @@ dependencies = [
     "django-bootstrap3-datetimepicker-2==2.8.3",
     # storage manager dependencies
     "django-storages==1.14.3",
-    "boto3==1.43.66",
+    "boto3==1.43.71",
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
