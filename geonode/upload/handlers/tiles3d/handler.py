@@ -260,24 +260,33 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     ):
         exec_obj = orchestrator.get_execution_object(execution_id)
 
+        files = exec_obj.input_params["files"]
+        # a ".json" file isn't necessarily the tileset (e.g. a stray metadata file), so validate
+        # each candidate against the 3dtiles schema
+        js_file = None
+        for candidate in sorted(x for x in files.values() if str(x).endswith(".json")):
+            try:
+                js_file = Tiles3DFileHandler.is_3dtiles_json(candidate)
+                break
+            except Invalid3DTilesException:
+                continue
+        if js_file is None:
+            raise Invalid3DTilesException("tileset.json file is missing")
+
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset, **kwargs)
+
+        if js_file:
+            files = {"base_file": files.get("base_file")}
+
         asset = self.create_asset_and_link(
             resource,
-            files=exec_obj.input_params["files"],
+            files=files,
             action=exec_obj.action,
             asset_type="3dtiles",
             extension="3dtiles",
         )
 
-        if isinstance(asset, LocalAsset):
-            # fixing-up bbox for the 3dtile object
-            js_file = None
-            with open(asset.location[0]) as _file:
-                js_file = json.loads(_file.read())
-
-            if not js_file:
-                return resource
-
+        if isinstance(asset, LocalAsset) and js_file:
             if self._has_region(js_file):
                 resource = self.set_bbox_from_region(js_file, resource=resource)
             elif self._has_sphere(js_file):
