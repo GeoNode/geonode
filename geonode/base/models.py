@@ -73,7 +73,6 @@ from geonode.utils import (
     find_by_attr,
     bbox_to_projection,
     bbox_swap,
-    get_allowed_extensions,
     is_monochromatic_image,
 )
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
@@ -1311,14 +1310,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def is_copyable(self):
-        if self.resource_type == "dataset":
-            from geonode.assets.utils import get_default_asset
-            from geonode.geoserver.helpers import select_relevant_files
+        from geonode.assets.models import Asset
 
-            asset = get_default_asset(self)  # TODO: maybe we need to filter by original files
-            allowed_file = select_relevant_files(get_allowed_extensions(), asset.location) if asset else []
-            return len(allowed_file) != 0
-        return True
+        if self.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+            return True
+        if self.resource_type == "dataset":
+            if self.subtype in ["vector", "vector_time"]:
+                return True
+            if self.subtype == "raster":
+                return Asset.objects.filter(
+                    link__resource=self,
+                    title="Original",
+                ).exists()
+
+            # for tabular/local 3dtiles etc.
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type == "document":
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type in ["map", "dashboard", "geostory"]:
+            return True
+        return False
 
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]

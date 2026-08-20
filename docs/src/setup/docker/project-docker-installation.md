@@ -10,39 +10,19 @@ cd ~/geonode_projects
 git clone https://github.com/GeoNode/geonode-project.git
 ```
 
-This will clone the `master` branch. You will have to checkout the desidered branch or tag. As an example, if you want to generate a propject for GeoNode 4.4.3 you will docker.
+This will clone the `master` branch. You will have to checkout the desidered branch or tag. As an example, if you want to generate a propject for GeoNode 5.1.0 run the following:
 
 ```bash
 cd geonode-project
-git checkout -b 5.0.1
+git checkout -b 5.1.0
 ```
 
 !!! Note
-    You can replace the release number `5.0.1` with the latest one. You can find the releases [here](https://github.com/GeoNode/geonode-project/releases/)
-
-### Generate a custom GeoNode project
-
-This is the most important part for the GeoNode project installation. Before building the project, you have to generate custom GeoNode project intance, using the `GeoNode Template`
-
-!!! Note
-    We will call our instance my_geonode. You can change the name at your convenience.
-
-```bash
-# Create and activate a Python environment called my_geonode_env
-mkdir path/to/.venvs
-python3 -m venv /path/to/.venvs/my_geonode_env
-source /path/to/.venvs/my_geonode_env/bin/activate
-
-# Install Django in the activated Python environment
-pip install Django==5.2.8
-
-cd ~/geonode_projects
-django-admin startproject --template=./geonode-project -e py,sh,md,rst,json,yml,ini,env,sample,properties -n monitoring-cron -n Dockerfile my_geonode
-```
+    You can replace the release number `5.1.0` with the latest one. You can find the releases [here](https://github.com/GeoNode/geonode-project/releases/)
 
 ### Prepare the .env file
 
-Navigate to `my_geonode` folder and create the .env file by using the `create-envfile` script:
+Go inside the `geonode-project` folder and create the .env file by using the `create-envfile` script:
 
 ```bash
 cd my_geonode

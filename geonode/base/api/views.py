@@ -1128,7 +1128,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             or not request.user.has_perm("view_resourcebase", resource.get_self_resource())
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if not resource.is_copyable:
+        if not resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=request.user):
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = self._get_request_params(request)
