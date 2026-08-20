@@ -67,7 +67,7 @@ class XMLFileHandler(MetadataFileHandler):
     @property
     def upload_validation_config(self):
         return {
-            "xml": {"mimes": {"application/xml", "text/xml"}},
+            "xml": {"mimes": {"application/xml", "text/xml", "text/plain"}},
         }
 
     @staticmethod
