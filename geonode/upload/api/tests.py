@@ -210,6 +210,40 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertEqual(201, response.status_code)
 
+    @patch("geonode.upload.api.views.import_orchestrator")
+    def test_importer_upload_accepts_iso_xml_without_xml_declaration(self, _orc):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        iso_xml_content = (
+            b'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"'
+            b' xmlns:gco="http://www.isotc211.org/2005/gco">\n'
+            b"  <gmd:fileIdentifier><gco:CharacterString>test-iso-uuid</gco:CharacterString></gmd:fileIdentifier>\n"
+            b"  <gmd:identificationInfo>\n"
+            b"    <gmd:MD_DataIdentification>\n"
+            b"      <gmd:abstract><gco:CharacterString>Test abstract.</gco:CharacterString></gmd:abstract>\n"
+            b"    </gmd:MD_DataIdentification>\n"
+            b"  </gmd:identificationInfo>\n"
+            b"</gmd:MD_Metadata>"
+        )
+        payload = {
+            "base_file": SimpleUploadedFile("metadata.xml", iso_xml_content, "application/xml"),
+            "action": "resource_metadata_upload",
+            "resource_pk": self.dataset.pk,
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(201, response.status_code)
+
+    def test_importer_upload_rejects_other_text_with_xml_extension(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile("fake.xml", b"This is plain text, not XML.", "text/plain"),
+            "action": "resource_metadata_upload",
+            "resource_pk": self.dataset.pk,
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(400, response.status_code)
+
     def test_importer_upload_rejects_zip_with_path_traversal(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         buf = io.BytesIO()
