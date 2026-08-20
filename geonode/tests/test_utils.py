@@ -17,6 +17,8 @@
 #
 #########################################################################
 import copy
+import requests
+from requests.models import PreparedRequest, Response
 from unittest import TestCase
 
 from unittest.mock import patch
@@ -38,6 +40,7 @@ from geonode.utils import (
     is_safe_url,
     is_safe_url_with_redirects,
     assert_safe_xml,
+    safe_request_url,
     UnsafeXMLError,
 )
 from unittest.mock import MagicMock
@@ -406,3 +409,42 @@ class TestIsSafeURL(djangoTestCase):
 
         self.assertTrue(result)
         self.assertIsNone(blocked_url)
+
+def _fake_response(status_code, url, location=None):
+    """Build a minimal requests.Response usable by resolve_redirects without a socket."""
+    response = Response()
+    request = PreparedRequest()
+    request.prepare(method="GET", url=url)
+    response.status_code = status_code
+    response.url = url
+    response.request = request
+    response.raw = None
+    response._content = b""
+    response._content_consumed = True
+    response.history = []
+    if location is not None:
+        response.headers["Location"] = location
+    return response
+
+
+@override_settings(SAFE_URL_CHECK_ENABLED=True)
+class TestSafeRequestUrl(djangoTestCase):
+    """safe_request_url must validate the initial URL and every redirect hop."""
+
+    @patch("geonode.utils.is_safe_url")
+    def test_rejects_disallowed_initial_url(self, mock_is_safe_url):
+        """An initial URL that is not allowed is rejected before any request is sent."""
+        mock_is_safe_url.return_value = False
+        with self.assertRaises(requests.exceptions.InvalidURL):
+            safe_request_url("GET", "http://first.invalid/resource")
+
+    @patch("requests.adapters.HTTPAdapter.send")
+    @patch("geonode.utils.is_safe_url")
+    def test_rejects_disallowed_redirect_target(self, mock_is_safe_url, mock_adapter_send):
+        """A redirect whose target is not allowed is rejected on the redirect hop."""
+        mock_is_safe_url.side_effect = lambda candidate: "allowed.invalid" in candidate
+        mock_adapter_send.return_value = _fake_response(
+            302, "http://allowed.invalid/resource", location="http://other.invalid/resource"
+        )
+        with self.assertRaises(requests.exceptions.InvalidURL):
+            safe_request_url("GET", "http://allowed.invalid/resource")
