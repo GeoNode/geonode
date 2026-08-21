@@ -28,6 +28,8 @@ from datetime import datetime
 
 import slugify
 
+from django.conf import settings
+
 from geonode.assets.utils import create_asset_and_link
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
@@ -53,6 +55,10 @@ class BaseHandler(ABC):
     """
 
     REGISTRY = []
+
+    # what kind of resource this handler manages, used to pick the right extension set
+    # when organizing a zip's content (organize_files_by_ext); overridden by the common handlers
+    handler_type = "none"
 
     # Merged FileValidationUploadHandler config across all registered handlers.
     # Populated incrementally by ``register()`` from each handler's
@@ -233,6 +239,26 @@ class BaseHandler(ABC):
 
         return _exec
 
+    @staticmethod
+    def remove_temporary_file(_exec):
+        from geonode.storage.manager import FileSystemStorageManager, StorageManager
+
+        if not _exec:
+            return
+        tmp_data = _exec.input_params.get("temporary_files")
+        if tmp_data:
+            # Delete at the end of the operations, the temporary files created at the beginning
+            # to cleanup disk space
+            storage_manager = StorageManager(
+                remote_files={},
+                concrete_storage_manager=FileSystemStorageManager(),
+            )
+            base_file_path = tmp_data.get("base_file")
+            if base_file_path:
+                directory = os.path.dirname(base_file_path)
+                if settings.ASSETS_ROOT not in directory:
+                    storage_manager.rmtree(directory, ignore_errors=True)
+
     def evaluate_exec_prev_status(self, action, resource_pk=None):
         """
         Required to evaluate if the resource can be replaced/upsert
@@ -268,12 +294,13 @@ class BaseHandler(ABC):
                 z.extractall(path=extract_dir)
             # getting the path of the extracted files
             unzipped_path = [entry.path for entry in os.scandir(os.path.dirname(files["base_file"]))]
+            kind = self.handler_type
             # updating paths in the data paylad
             _data.update(
                 {
                     **{"original_zip_name": zipname},
                     # should be converted to string because the Path is not json serializable
-                    **{"files": {k: str(v) for k, v in organize_files_by_ext(unzipped_path).items()}},
+                    **{"files": {k: str(v) for k, v in organize_files_by_ext(unzipped_path, kind=kind).items()}},
                 }
             )
             # updating the execution id params
@@ -427,7 +454,7 @@ class BaseHandler(ABC):
         return self.create_resourcehandlerinfo(handler_module_path, resource, execution_id, **kwargs)
 
     def rollback(self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs):
-        steps = self.TASKS.get(action_to_rollback)
+        steps = self.get_task_list(action_to_rollback)
 
         if rollback_from_step not in steps:
             logger.info(f"Step not found {rollback_from_step}, skipping")

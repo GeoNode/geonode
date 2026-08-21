@@ -97,6 +97,24 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.patch(self.url)
         self.assertEqual(405, response.status_code)
 
+    def test_importer_upload_rejects_copy_action(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {"action": "copy", "resource_pk": self.dataset.pk, "title": "copy"}
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"use PUT /api/v2/resources/{id}/copy instead", response.content)
+
+    def test_importer_upload_rejects_document_copy_action(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {"action": "document_copy", "resource_pk": self.dataset.pk, "title": "copy"}
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"use PUT /api/v2/resources/{id}/copy instead", response.content)
+
     def test_raise_exception_if_file_is_not_a_handled(self):
 
         self.client.force_login(get_user_model().objects.get(username="admin"))

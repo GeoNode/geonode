@@ -38,6 +38,7 @@ from geonode.geoserver.geofence import Batch, Rule, AutoPriorityBatch
 from geonode.geoserver.helpers import geofence, gf_utils, gs_catalog
 from geonode.groups.models import GroupProfile
 from geonode.utils import get_dataset_workspace
+from geonode.resource.utils import is_remote_resource
 from geonode.security.registry import permissions_registry
 
 
@@ -354,6 +355,10 @@ def sync_resources_with_guardian(resource=None, force=False):
         _anon_username = guardian_settings.ANONYMOUS_USER_NAME
 
         for dataset in datasets:
+            if is_remote_resource(dataset):
+                # No local GeoFence rules to sync: the data lives on the remote service.
+                dataset.clear_dirty_state()
+                continue
             try:
                 batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f"Sync resources {dataset}")
 

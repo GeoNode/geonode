@@ -121,6 +121,18 @@ class OverwriteImporterSerializer(ImporterSerializer):
     resource_pk = serializers.IntegerField(required=True)
 
 
+class ResourceCopySerializer(BaseImporterSerializer):
+    class Meta:
+        ref_name = "ResourceCopySerializer"
+        model = ResourceBase
+        view_name = "importer_copy"
+        fields = ("resource_pk", "title", "action")
+
+    resource_pk = serializers.IntegerField(required=True)
+    title = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.COPY.value)
+
+
 class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
     class Meta:
         model = UploadSizeLimit

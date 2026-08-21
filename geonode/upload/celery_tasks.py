@@ -342,7 +342,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,
-            prev_action=exa.UPLOAD.value,
+            prev_action=action,
             layer=None,
             alternate=None,
             error=e,
@@ -511,7 +511,7 @@ def create_geonode_resource(
         handler_module_path = handler_module_path or _exec.input_params.get("handler_module_path")
 
         handler = import_string(handler_module_path)()
-        _overwrite = action == ira.REPLACE.value
+        _overwrite = action in (ira.REPLACE.value, ira.DOCUMENT_REPLACE.value)
 
         if _overwrite:
             resource = handler.overwrite_geonode_resource(

@@ -284,6 +284,22 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         attribute_config = lyr.attribute_config()
         self.assertTrue("ftInfoTemplate" not in attribute_config)
 
+    def test_remote_datasets_are_exempt_from_store_workspace_name_uniqueness(self):
+        # store is NULL for remote datasets, and PostgreSQL does not consider two NULLs equal,
+        # so the (store, workspace, name) uniqueness no longer applies to them: the same remote
+        # endpoint can be registered by more than one service (#14381).
+        common = dict(
+            owner=get_user_model().objects.get(username="admin"),
+            workspace="remoteWorkspace",
+            name="bahra",
+            subtype="remote",
+            store=None,
+        )
+        first = Dataset.objects.create(uuid=str(uuid4()), title="bahra", alternate="bahra", **common)
+        second = Dataset.objects.create(uuid=str(uuid4()), title="bahra", alternate="bahra", **common)
+        self.assertNotEqual(first.pk, second.pk)
+        self.assertEqual(Dataset.objects.filter(workspace="remoteWorkspace", name="bahra").count(), 2)
+
     def test_dataset_styles(self):
         lyr = Dataset.objects.all().first()
         # There should be a total of 3 styles
@@ -296,7 +312,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         except UnicodeEncodeError:
             self.fail("str of the Style model throws a UnicodeEncodeError with special characters.")
 
-    def test_dataset_links(self):
+    def test_vector_links(self):
         lyr = Dataset.objects.filter(subtype="vector").first()
         self.assertEqual(lyr.subtype, "vector")
 
@@ -324,6 +340,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
+    def test_raster_links(self):
         lyr = Dataset.objects.filter(subtype="raster").first()
         self.assertEqual(lyr.subtype, "raster")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -349,6 +366,42 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
+
+    def test_set_resource_default_links_passes_auth_config_to_service_handler(self):
+        remote_auth_config = object()
+        instance = MagicMock()
+        instance.resourcebase_ptr = MagicMock()
+        instance.srid = "EPSG:4326"
+        instance.bbox_polygon = True
+        instance.bbox_string = "0,0,1,1"
+        instance.ows_url = "http://example.com/ows"
+        instance.alternate = "remote:layer"
+        instance.can_have_wfs_links = False
+        instance.subtype = "vector"
+        instance.can_have_style = False
+        instance.prepare_wms_links.return_value = []
+        instance.get_thumbnail_url.return_value = None
+        instance.get_real_instance.return_value = MagicMock(ptype="NOT_WMS")
+        instance.remote_service = MagicMock(
+            service_url="http://example.com/ows?service=WMS",
+            type="WMS",
+            id=42,
+            auth_config=remote_auth_config,
+        )
+
+        with (
+            patch("geonode.utils.check_ogc_backend", return_value=True),
+            patch("geonode.resource.utils.is_remote_resource", return_value=False),
+            patch("geonode.base.models.Link.objects") as mock_link_objects,
+            patch("geonode.services.serviceprocessors.get_service_handler") as mock_get_service_handler,
+        ):
+            mock_link_objects.filter.return_value.count.return_value = 0
+            mock_get_service_handler.return_value = MagicMock(_create_dataset_legend_link=MagicMock())
+
+            set_resource_default_links(instance, instance)
+
+            _, kwargs = mock_get_service_handler.call_args
+            self.assertIs(kwargs.get("auth_config"), remote_auth_config)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
