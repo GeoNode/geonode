@@ -1642,3 +1642,10 @@ class MyObject():
 :   Default:  ``'ALLOW-FROM %s' % SITEURL``
 
 This is a [Django setting](https://docs.djangoproject.com/en/3.2/ref/clickjacking/#setting-x-frame-options-for-all-responses)
+
+
+**XLSX_UPLOAD_ENABLED**
+
+:   Default:  `False`
+
+ Enable or not the upload of XLSX / XLS files
