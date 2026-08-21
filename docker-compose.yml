@@ -70,9 +70,6 @@ services:
       - nginx-confd:/etc/nginx
       - nginx-certificates:/geonode-certificates
       - statics:/mnt/volumes/statics
-      # exposes perf_tool at /performance — a plain file dropped into
-      # sites-enabled/, untouched by geonode.conf's own envsubst templating
-      - ./docker/nginx/performance.conf:/etc/nginx/sites-enabled/performance.conf:ro
     restart: unless-stopped
     healthcheck:
       test: "if ps -o pid | grep -w 1 > /dev/null; then echo 'nginx running'; else exit 1;fi"
@@ -148,35 +145,6 @@ services:
       #ports:
       #  - "5432:5432"
 
-  # Performance test tool: times HTTP actions against this GeoNode instance
-  # and diffs Postgres's own pg_stat_* counters around them. See PERF_TOOL.md.
-  perftool:
-    build:
-      context: ./perf_tool
-      dockerfile: Dockerfile
-    container_name: perftool4${COMPOSE_PROJECT_NAME}
-    env_file:
-      - ${COMPOSE_ENV_FILES:-.env}
-    environment:
-      # Talk to nginx (the real entrypoint, same path real users take) with an
-      # explicit Host: localhost override — nginx's plain-HTTP vhost only
-      # matches server_name "localhost"/"127.0.0.1", so the bare service name
-      # "nginx" hits its default_server catch-all and gets dropped. Clear
-      # GEONODE_HOST_HEADER (set it to an empty string) if you point this tool
-      # at a real public GeoNode URL instead of this local instance.
-      - GEONODE_BASE_URL=http://nginx
-      - GEONODE_HOST_HEADER=localhost
-    ports:
-      - "5001:5001"
-    volumes:
-      - perftool-data:/data
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-      nginx:
-        condition: service_healthy
-
   # Vanilla Redis service. This is needed by celery
   redis:
     image: redis:8-alpine
@@ -213,5 +181,3 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-tmp
   redisdata:
     name: ${COMPOSE_PROJECT_NAME}-redisdata
-  perftool-data:
-    name: ${COMPOSE_PROJECT_NAME}-perftool-data
