@@ -28,8 +28,6 @@ import logging
 import datetime
 import traceback
 
-import requests
-
 from itertools import cycle
 from collections import defaultdict
 from os.path import basename, splitext, isfile
@@ -78,6 +76,7 @@ from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links,
     normalize_bbox_to_float_list,
+    safe_request_url,
 )
 
 from .geofence import GeoFenceClient, GeoFenceUtils
@@ -1005,6 +1004,10 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
+    if layer.subtype == "remote" and not layer.remote_service:
+        # avoid falling through to the local-GeoServer branches, which would wipe existing attributes
+        logger.debug(f"Dataset '{layer.alternate or layer.typename}' is remote but has no remote_service yet")
+        return
     if getattr(layer, "remote_service") and layer.remote_service:
         server_url = layer.remote_service.service_url
         if layer.remote_service.operations.get("GetCapabilities", None) and layer.remote_service.operations.get(
@@ -1040,7 +1043,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 from geonode.security.auth_registry import auth_handler_registry
 
                 remote_auth = auth_handler_registry.build(layer.remote_service.auth_config).get_request_auth()
-            response = requests.get(dft_url, auth=remote_auth, timeout=10)
+            response = safe_request_url("GET", dft_url, auth=remote_auth, timeout=10)
             response.raise_for_status()
             body = response.json()
             attribute_map = []

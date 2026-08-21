@@ -234,8 +234,8 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
             remote_service=service,
         )
 
-    @patch("geonode.geoserver.helpers.requests.get")
-    def test_set_attributes_from_geoserver_arcgis_remote_dataset(self, mock_get):
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_arcgis_remote_dataset(self, mock_safe_request_url):
         dataset = self._create_arcgis_dataset()
         mock_response = Mock()
         mock_response.json.return_value = {
@@ -245,11 +245,12 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
                 {"name": "SOME_FIELD", "type": "esriFieldTypeNotSupported"},
             ]
         }
-        mock_get.return_value = mock_response
+        mock_safe_request_url.return_value = mock_response
 
         set_attributes_from_geoserver(dataset)
 
-        called_url = mock_get.call_args[0][0]
+        method, called_url = mock_safe_request_url.call_args[0]
+        self.assertEqual(method, "GET")
         self.assertTrue(
             called_url.startswith("https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0")
         )
@@ -259,31 +260,48 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         self.assertIn(("POPULATION", "xsd:double"), attributes)
         self.assertFalse(dataset.attribute_set.filter(attribute="SOME_FIELD").exists())
 
-    @patch("geonode.geoserver.helpers.requests.get")
-    def test_set_attributes_from_geoserver_arcgis_preserves_existing_query_string(self, mock_get):
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_arcgis_preserves_existing_query_string(self, mock_safe_request_url):
         dataset = self._create_arcgis_dataset()
         dataset.remote_service.extra_queryparams = "token=abc123"
         dataset.remote_service.save()
         mock_response = Mock()
         mock_response.json.return_value = {"fields": [{"name": "STATE_NAME", "type": "esriFieldTypeString"}]}
-        mock_get.return_value = mock_response
+        mock_safe_request_url.return_value = mock_response
 
         set_attributes_from_geoserver(dataset)
 
-        called_url = mock_get.call_args[0][0]
+        called_url = mock_safe_request_url.call_args[0][1]
         self.assertIn("token=abc123", called_url)
         self.assertIn("f=json", called_url)
 
-    @patch("geonode.geoserver.helpers.requests.get")
-    def test_set_attributes_from_geoserver_arcgis_http_error(self, mock_get):
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_arcgis_http_error(self, mock_safe_request_url):
         dataset = self._create_arcgis_dataset()
         mock_response = Mock()
         mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("500 error")
-        mock_get.return_value = mock_response
+        mock_safe_request_url.return_value = mock_response
 
         set_attributes_from_geoserver(dataset)
 
         self.assertFalse(dataset.attribute_set.exists())
+
+    def test_set_attributes_from_geoserver_arcgis_no_remote_service_yet(self):
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="usa_states_pending",
+            store="arcgis-test-service",
+            subtype="remote",
+            workspace="remoteWorkspace",
+            typename="remoteWorkspace:1",
+            alternate="remoteWorkspace:1",
+        )
+        Attribute.objects.create(dataset=dataset, attribute="STATE_NAME", attribute_type="xsd:string")
+
+        set_attributes_from_geoserver(dataset, overwrite=True)
+
+        self.assertTrue(dataset.attribute_set.filter(attribute="STATE_NAME").exists())
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_geoserver_proxy_strip_paths(self):
