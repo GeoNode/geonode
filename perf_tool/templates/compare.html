@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Compare run #{{ run_a.id }} vs #{{ run_b.id }}</h1>
+
+<section class="summary-grid">
+  <div class="card">
+    <h3>Run #{{ run_a.id }}{% if run_a.label %} — {{ run_a.label }}{% endif %}</h3>
+    <p>{{ scenario_label_a }}</p>
+    <p>avg wall time: <strong>{{ agg_a.wall_time.avg }}s</strong> (median {{ agg_a.wall_time.median }}s)</p>
+    <p>avg xact_commit Δ: <strong>{{ agg_a.xact_commit.avg }}</strong> (median {{ agg_a.xact_commit.median }})</p>
+  </div>
+  <div class="card">
+    <h3>Run #{{ run_b.id }}{% if run_b.label %} — {{ run_b.label }}{% endif %}</h3>
+    <p>{{ scenario_label_b }}</p>
+    <p>avg wall time: <strong>{{ agg_b.wall_time.avg }}s</strong> (median {{ agg_b.wall_time.median }}s)</p>
+    <p>avg xact_commit Δ: <strong>{{ agg_b.xact_commit.avg }}</strong> (median {{ agg_b.xact_commit.median }})</p>
+  </div>
+  <div class="card">
+    <h3>Change (A → B)</h3>
+    {% set wt_change = ((agg_b.wall_time.avg - agg_a.wall_time.avg) / agg_a.wall_time.avg * 100) if agg_a.wall_time.avg else 0 %}
+    {% set xc_change = ((agg_b.xact_commit.avg - agg_a.xact_commit.avg) / agg_a.xact_commit.avg * 100) if agg_a.xact_commit.avg else 0 %}
+    <p>wall time: <strong>{{ '%+.1f'|format(wt_change) }}%</strong></p>
+    <p>xact_commit: <strong>{{ '%+.1f'|format(xc_change) }}%</strong></p>
+  </div>
+</section>
+
+<h2>Per-table writes/reads — A vs B</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>table</th><th>A: ins/upd/del</th><th>B: ins/upd/del</th></tr>
+  </thead>
+  <tbody>
+    {% for table in (totals_a.keys()|list + totals_b.keys()|list)|unique %}
+    <tr>
+      <td>{{ table }}</td>
+      <td>
+        {% if table in totals_a %}{{ totals_a[table].n_tup_ins }}/{{ totals_a[table].n_tup_upd }}/{{ totals_a[table].n_tup_del }}{% else %}—{% endif %}
+      </td>
+      <td>
+        {% if table in totals_b %}{{ totals_b[table].n_tup_ins }}/{{ totals_b[table].n_tup_upd }}/{{ totals_b[table].n_tup_del }}{% else %}—{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<p><a href="{{ url_for('history') }}">← back to history</a></p>
+{% endblock %}

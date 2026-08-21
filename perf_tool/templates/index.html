@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Run a performance test</h1>
+<p class="hint">
+  Times the action end to end and diffs Postgres's own <code>pg_stat_database</code> /
+  <code>pg_stat_user_tables</code> counters around it — the same method used by hand
+  throughout the investigation. See <code>PERF_TOOL.md</code> for details.
+</p>
+
+<form method="post" action="{{ url_for('run') }}" enctype="multipart/form-data">
+  <fieldset>
+    <legend>Target &amp; credentials</legend>
+    <label>GeoNode base URL
+      <input type="text" name="base_url" id="base_url" value="{{ default_base_url }}">
+    </label>
+    <label>Host header override (leave as "localhost" for this instance's nginx; clear it if pointing at a real public URL)
+      <input type="text" name="host_header" id="host_header" value="{{ default_host_header }}">
+    </label>
+    <label>Username
+      <input type="text" name="username" id="username" required>
+    </label>
+    <label>Password
+      <input type="password" name="password" id="password" required>
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Scenario</legend>
+    <label>Test
+      <select name="scenario" id="scenario-select" onchange="showParams()">
+        {% for key, s in scenarios.items() %}
+        <option value="{{ key }}" data-needs-resource="{{ 'yes' if s.needs_resource_picker else 'no' }}">{{ s.label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    {% for key, s in scenarios.items() %}
+    <div class="scenario-params" id="params-{{ key }}" style="display:none">
+      {% for field_name, field_label, default in s.fields %}
+      <label>{{ field_label }}
+        <input type="text" name="param_{{ field_name }}" value="{{ default }}">
+      </label>
+      {% endfor %}
+      {% if s.accepts_file %}
+      <label>Upload a file instead of generating one (optional)
+        <input type="file" name="file">
+      </label>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <div id="resource-picker" style="display:none">
+      <label>Target resource — an existing resource already in the instance
+        <select name="param_pk" id="resource-select">
+          <option value="">— click "Load resources" below —</option>
+        </select>
+      </label>
+      <button type="button" onclick="loadResources()">Load resources</button>
+      <span id="resource-picker-status" class="hint"></span>
+    </div>
+
+    <label>Repeat the test
+      <input type="number" name="iterations" id="iterations" value="1" min="1" max="50">
+    </label>
+    <div class="repeat-buttons">
+      <button type="button" onclick="setIterations(1)">Run once</button>
+      <button type="button" onclick="setIterations(3)">Run 3x (avg)</button>
+      <button type="button" onclick="setIterations(5)">Run 5x (avg)</button>
+      <button type="button" onclick="setIterations(10)">Run 10x (avg)</button>
+    </div>
+    <p class="hint">Runs the same test back to back and reports the average (plus min/median/max) — use this instead of trusting a single run.</p>
+    <label>Label for this run (optional, e.g. "before fix" / "after fix")
+      <input type="text" name="label">
+    </label>
+  </fieldset>
+
+  <button type="submit">Run</button>
+</form>
+
+<script>
+  function showParams() {
+    document.querySelectorAll('.scenario-params').forEach(function (el) {
+      el.style.display = 'none';
+    });
+    var opt = document.getElementById('scenario-select');
+    var sel = opt.value;
+    var el = document.getElementById('params-' + sel);
+    if (el) el.style.display = 'block';
+
+    var needsResource = opt.options[opt.selectedIndex].dataset.needsResource === 'yes';
+    document.getElementById('resource-picker').style.display = needsResource ? 'block' : 'none';
+  }
+  showParams();
+
+  function setIterations(n) {
+    document.getElementById('iterations').value = n;
+  }
+
+  function loadResources() {
+    var status = document.getElementById('resource-picker-status');
+    status.textContent = 'loading…';
+    fetch('{{ url_for("api_lookup_resources") }}', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        base_url: document.getElementById('base_url').value,
+        host_header: document.getElementById('host_header').value,
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+      }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) {
+          status.textContent = 'error: ' + data.error;
+          return;
+        }
+        var select = document.getElementById('resource-select');
+        select.innerHTML = '';
+        data.resources.forEach(function (res) {
+          var opt = document.createElement('option');
+          opt.value = res.pk;
+          opt.textContent = '#' + res.pk + ' — ' + res.title + ' (' + res.resource_type + ')';
+          select.appendChild(opt);
+        });
+        status.textContent = data.resources.length + ' resources loaded';
+      })
+      .catch(function (e) { status.textContent = 'error: ' + e; });
+  }
+</script>
+{% endblock %}

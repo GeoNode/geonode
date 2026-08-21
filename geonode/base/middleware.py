@@ -20,12 +20,54 @@
 
 # Geonode functionality
 
+import time
+
+from django.conf import settings
+from django.db import connection
 from django.shortcuts import render
 from django.utils import translation
 from django.utils.deprecation import MiddlewareMixin
 
 from geonode.base.utils import configuration_session_cache
 from geonode.people.utils import profile_to_runtime_lang
+
+
+class RequestQueryStatsMiddleware:
+    """
+    Adds `X-DB-Query-Count` / `X-DB-Query-Time-Ms` response headers: exactly
+    how many SQL statements this one request ran and how long they took,
+    counted via connection.execute_wrapper() (works regardless of DEBUG,
+    unlike connection.queries).
+
+    Unlike pg_stat_database/pg_stat_user_tables counters (whole-database,
+    picks up unrelated concurrent activity), this is scoped to precisely
+    this request — nothing else can leak into it. Opt-in and off by default
+    (env var EXPOSE_DB_QUERY_STATS_HEADER) since it reveals internal query
+    volume to whoever can see response headers; perf_tool turns it on to
+    get a noise-free companion number next to the Postgres-side ones.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if not getattr(settings, "EXPOSE_DB_QUERY_STATS_HEADER", False):
+            return self.get_response(request)
+
+        queries = []
+
+        def wrapper(execute, sql, params, many, context):
+            start = time.monotonic()
+            try:
+                return execute(sql, params, many, context)
+            finally:
+                queries.append(time.monotonic() - start)
+
+        with connection.execute_wrapper(wrapper):
+            response = self.get_response(request)
+        response["X-DB-Query-Count"] = str(len(queries))
+        response["X-DB-Query-Time-Ms"] = str(round(sum(queries) * 1000, 2))
+        return response
 
 
 class ReadOnlyMiddleware:

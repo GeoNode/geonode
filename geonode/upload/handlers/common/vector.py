@@ -973,11 +973,17 @@ class BaseVectorFileHandler(BaseHandler):
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
         _path = _exec.input_params.get("files", {}).get("xml_file", "")
+        if not _path:
+            # ponytail: no XML sidecar to process — skip the full resource_manager.update()
+            # cascade (save + geoserver sync + permission recompute) entirely instead of
+            # running it just to set metadata_uploaded=False, which is already the model
+            # default on a freshly created resource
+            return
         resource_manager_registry.get_for_instance(saved_dataset).update(
             None,
             instance=saved_dataset,
             xml_file=_path,
-            metadata_uploaded=True if _path else False,
+            metadata_uploaded=True,
             vals={"dirty_state": True},
         )
 

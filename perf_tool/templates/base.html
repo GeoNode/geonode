@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}GeoNode perf_tool{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <a href="{{ url_for('index') }}" class="brand">perf_tool</a>
+    <nav>
+      <a href="{{ url_for('index') }}">Run a test</a>
+      <a href="{{ url_for('history') }}">History</a>
+      <a href="{{ url_for('how_it_works') }}">How it works</a>
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>How it works</h1>
+<p class="hint">
+  Full detail (setup, nginx wiring, extending it) lives in
+  <code>PERF_TOOL.md</code> in the repo — this page is just the part that
+  matters while reading a result: what each number actually measures.
+</p>
+
+<h2>Wall time</h2>
+<p>
+  Measured in the tool itself, wrapped directly around the HTTP call(s) that
+  make up the scenario. For an upload, the clock doesn't stop at the initial
+  <code>201 Accepted</code> — it keeps running while the tool polls
+  <code>/api/v2/resource-service/execution-status/&lt;id&gt;</code> until the
+  async pipeline reports finished or failed. This is real end-to-end time,
+  not just "how long until the server said OK."
+</p>
+
+<h2>min / avg / median / max — how the four numbers are computed</h2>
+<p>
+  Every metric on this page (wall time, <code>xact_commit Δ</code>, DB
+  queries) is measured once per iteration, giving a list of raw numbers —
+  e.g. running a test 5 times might give wall times
+  <code>[0.82, 0.79, 1.34, 0.81, 0.80]</code> seconds. That list is then
+  summarized four ways:
+</p>
+<ul>
+  <li><strong>min</strong> — the single fastest/lowest iteration
+    (<code>min()</code>). In the example: <code>0.79</code>. Tells you the
+    best case this instance is capable of, right now.</li>
+  <li><strong>avg</strong> (average / mean) — all the values added together,
+    divided by the iteration count (Python's <code>statistics.mean()</code>).
+    In the example: <code>(0.82+0.79+1.34+0.81+0.80)/5 = 0.912</code>. This is
+    the headline number — the one to trust when comparing two runs, and the
+    one both the summary cards and the downloadable PDF report lead with.
+    <strong>Averages get pulled hard by outliers</strong>: that one slow
+    <code>1.34</code> iteration alone moved the average up by about 0.09s
+    from what the other four would suggest on their own.</li>
+  <li><strong>median</strong> — the middle value once the list is sorted
+    (<code>statistics.median()</code>); sorted, the example is
+    <code>[0.79, 0.80, 0.81, 0.82, 1.34]</code>, so median = <code>0.81</code>.
+    Unlike the average, one outlier can't drag the median far — that's
+    exactly why it's shown side by side with avg: if avg and median are
+    close, the run was consistent; if avg is noticeably higher than median,
+    one or two iterations were unusually slow (worth checking the
+    per-iteration table for which one, and why).</li>
+  <li><strong>max</strong> — the single slowest/highest iteration
+    (<code>max()</code>). In the example: <code>1.34</code>. Tells you the
+    worst case actually observed — useful for spotting a scenario that's
+    occasionally, not consistently, expensive (a GC pause, a cold cache, a
+    celery worker busy with something else at that exact moment).</li>
+</ul>
+<p>
+  With only 1 iteration all four numbers are identical (there's only one
+  value to summarize) — which is also the reason a single run isn't a
+  measurement: there's no way to tell whether that one number was typical or
+  a fluke. 3-5 iterations is usually enough to see the difference between
+  min/median/max start to separate out and tell you something.
+</p>
+
+<h2>"DB queries (this request only)" — the noise-free number</h2>
+<p>
+  Everything above (<code>xact_commit</code>, <code>tup_inserted/updated/deleted</code>,
+  the per-table breakdown) reads Postgres's own counters, which are
+  <strong>whole-database</strong> — there's no built-in Postgres view that
+  tracks cumulative query counts per session or per request, only per
+  database or per table, both shared with everything else happening on the
+  instance.
+</p>
+<p>
+  To get a real per-request number, GeoNode itself now counts its own
+  queries: <code>geonode.base.middleware.RequestQueryStatsMiddleware</code>
+  wraps every request in <code>connection.execute_wrapper()</code> (a Django
+  hook that counts queries and timing regardless of <code>DEBUG</code>) and
+  returns the result as <code>X-DB-Query-Count</code> /
+  <code>X-DB-Query-Time-Ms</code> response headers. perf_tool reads these
+  headers on every HTTP call a scenario makes and sums them — this number
+  cannot be polluted by another user's request, a celery beat tick, or
+  anything else on the instance, because it's counted inside the exact
+  request/response cycle the tool triggered.
+</p>
+<p class="hint">
+  Off by default (<code>EXPOSE_DB_QUERY_STATS_HEADER=False</code>) since it
+  reveals internal query volume in a response header — turn it on for the
+  target instance's Django/celery services to see it. Shows as 0 when it's
+  off; everything else on this page keeps working either way.
+</p>
+
+<h2>xact_commit Δ, tup_inserted/updated/deleted Δ</h2>
+<p>
+  A snapshot of Postgres's own <code>pg_stat_database</code> counters is
+  taken immediately before and immediately after the action runs, on a
+  connection with autocommit on (so each snapshot is fresh, not served from
+  a cached transaction view — Postgres caches these views per-transaction by
+  default, which silently gives zero for both snapshots if you don't watch
+  for it). The delta is how many transactions Postgres committed, and how
+  many rows it inserted/updated/deleted, while the action ran.
+</p>
+<p class="hint">
+  <strong>The honest caveat:</strong> these are whole-database counters, not
+  scoped to one HTTP request. If anything else is hitting the same Postgres
+  instance while a test runs — another user, a celery beat tick, a
+  concurrent test — it shows up in the delta too. That's inherent to the
+  method, not a bug. The fix: run against a quiet instance when precision
+  matters, run several iterations and look at the average, and prefer
+  <em>relative</em> comparisons (before a fix vs. after) over trusting one
+  absolute number. That's what the iteration/average and compare features
+  are for.
+</p>
+
+<h2>seq_scan Δ / idx_scan Δ / inserted Δ / updated Δ / deleted Δ (per-table breakdown)</h2>
+<p>
+  The same before/after snapshot approach as <code>xact_commit Δ</code>
+  above, but read from <code>pg_stat_user_tables</code> instead of
+  <code>pg_stat_database</code> — a separate before/after delta per table,
+  for a fixed list of GeoNode-relevant tables
+  (<code>TRACKED_TABLES</code> in <code>perf_tool/db_stats.py</code>; add to
+  it if you're chasing a table not already tracked).
+</p>
+<p>
+  <strong>This one isn't min/avg/median/max — it's summed across every
+  iteration of the run.</strong> Where wall time and <code>xact_commit</code>
+  answer "what's typical for one run," the per-table breakdown answers "how
+  much did this whole test push through that table, all iterations
+  combined" — useful for the same reason a bulk-insert fix is judged on
+  total rows written, not an average per attempt. Worked example: a 3-run
+  test where each iteration updates <code>base_resourcebase</code> a
+  different number of times —
+</p>
+<ul>
+  <li>iteration 1: <code>n_tup_upd</code> delta = 28</li>
+  <li>iteration 2: <code>n_tup_upd</code> delta = 26</li>
+  <li>iteration 3: <code>n_tup_upd</code> delta = 30</li>
+</ul>
+<p>
+  The table on the result page shows <code>updated Δ = 84</code> (28+26+30)
+  for <code>base_resourcebase</code> — the total, not <code>28</code> (the
+  average of ~28). Dividing the shown total by the iteration count gets you
+  back to a rough per-run average if that's what you want instead.
+</p>
+<p>
+  <code>seq_scan</code> is a full table scan; a rising count on a table that
+  should be indexed is a red flag. <code>idx_scan</code> is an index scan —
+  generally the cheap, wanted way to read a table. Compare the two to see
+  whether a query is actually using an index. Rows are sorted by total
+  activity (highest first) so the table that moved the most during the test
+  is always at the top. This exact table (well, its manual precursor — one
+  before/after `psql` query at a time) is what originally found the 64
+  <code>base_resourcebase</code> updates in one dataset upload, and the
+  redundant <code>ContactRole</code> lookups per resource, documented in
+  <code>PERFORMANCE_FIX_PLAN.md</code>.
+</p>
+
+<h2>Top queries (pg_stat_statements)</h2>
+<p>
+  Only shown when the <code>pg_stat_statements</code> extension is installed
+  and readable — exact SQL text, call count, and total execution time,
+  diffed the same before/after way. Falls back silently to the per-table
+  breakdown above on any instance where the extension isn't available; no
+  superuser is required to read it once it's installed.
+</p>
+
+<p><a href="{{ url_for('index') }}">← back to run a test</a></p>
+{% endblock %}

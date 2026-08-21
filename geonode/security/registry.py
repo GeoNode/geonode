@@ -29,6 +29,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from guardian.shortcuts import get_groups_with_perms, get_user_obj_perms_model
+from guardian.conf import settings as guardian_settings
 
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
@@ -554,7 +555,15 @@ class PermissionsHandlerRegistry:
                 raise TypeError(f"Expected str or list, got {type(cache_keys)}")
 
     def _user_identifier(self, user):
-        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user():
+        # ponytail: get_anonymous_user() re-queries the DB every call (guardian
+        # doesn't cache it). This was falling through to it for every *regular*
+        # user too (short-circuit only saves it for the literal anonymous user),
+        # so a cache-key loop over N users meant N extra identical queries just
+        # to confirm each one ISN'T anonymous. The username check above already
+        # covers that — comparing against guardian's configured anonymous
+        # username needs no DB round trip at all.
+        anon_username = guardian_settings.ANONYMOUS_USER_NAME
+        if user.is_anonymous or user.username == anon_username:
             return "anonymous"
         return f"user:{user.pk}"
 

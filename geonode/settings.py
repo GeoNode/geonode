@@ -710,6 +710,9 @@ OPTIONS = {
 }
 
 MIDDLEWARE = (
+    # first in the list = outermost wrapper, so it counts queries run by
+    # every middleware below it too, not just the view
+    "geonode.base.middleware.RequestQueryStatsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -773,6 +776,12 @@ CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get("CSRF_COOKIE_SECURE", "True
 CSRF_COOKIE_HTTPONLY = ast.literal_eval(os.environ.get("CSRF_COOKIE_HTTPONLY", "False"))
 CORS_ALLOW_ALL_ORIGINS = ast.literal_eval(os.environ.get("CORS_ALLOW_ALL_ORIGINS", "False"))
 X_FRAME_OPTIONS = os.environ.get("X_FRAME_OPTIONS", "DENY")
+
+# Adds X-DB-Query-Count / X-DB-Query-Time-Ms response headers (see
+# geonode.base.middleware.RequestQueryStatsMiddleware) — off by default,
+# perf_tool turns it on for a request-scoped companion to its Postgres-side
+# (whole-database) counters.
+EXPOSE_DB_QUERY_STATS_HEADER = ast.literal_eval(os.environ.get("EXPOSE_DB_QUERY_STATS_HEADER", "False"))
 SECURE_CONTENT_TYPE_NOSNIFF = ast.literal_eval(os.environ.get("SECURE_CONTENT_TYPE_NOSNIFF", "True"))
 SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get("SECURE_BROWSER_XSS_FILTER", "True"))
 SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get("SECURE_SSL_REDIRECT", "False"))

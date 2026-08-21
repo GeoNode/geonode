@@ -23,6 +23,7 @@
 import os
 import ast
 from django.db import models
+from django.core.cache import cache
 
 
 class SingletonModel(models.Model):
@@ -38,8 +39,18 @@ class SingletonModel(models.Model):
         abstract = True
 
     @classmethod
+    def _cache_key(cls):
+        return f"singleton:{cls.__module__}.{cls.__name__}"
+
+    @classmethod
     def load(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
+        # ponytail: hot-path singleton read cached to dodge a get_or_create() DB hit
+        # on every request; invalidated in save() below (default cache is also
+        # wiped wholesale by Configuration.save() -> clear_permissions_cache()).
+        obj = cache.get(cls._cache_key())
+        if obj is None:
+            obj, _ = cls.objects.get_or_create(pk=1)
+            cache.set(cls._cache_key(), obj)
         val = os.getenv("FORCE_READ_ONLY_MODE", None)
         if val is not None:
             setattr(obj, "read_only", ast.literal_eval(val))
@@ -49,6 +60,7 @@ class SingletonModel(models.Model):
         self.pk = 1
         kwargs.update({"force_insert": False})
         super().save(*args, **kwargs)
+        cache.delete(self._cache_key())
 
     def delete(self, *args, **kwargs):
         pass

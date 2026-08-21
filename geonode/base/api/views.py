@@ -32,7 +32,7 @@ from django.core.validators import URLValidator
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
-from django.db.models import Subquery, QuerySet
+from django.db.models import Subquery, QuerySet, Prefetch
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
@@ -65,6 +65,8 @@ from geonode.base.models import (
     ThesaurusKeyword,
     Configuration,
     LinkedResource,
+    ContactRole,
+    Link,
 )
 from geonode.base.api.filters import (
     DynamicSearchFilter,
@@ -306,7 +308,27 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         ResourceBasePermissionsFilter,
         FavoriteFilter,
     ]
-    queryset = ResourceBase.objects.select_related("owner").order_by("-created")
+    # ponytail: prefetch what ResourceBaseSerializer touches per row (contact
+    # roles, keywords/regions/thesaurus, taxonomy FKs, links) — was N+1'ing
+    # ~30 queries/row on list endpoints, confirmed via CaptureQueriesContext.
+    queryset = (
+        ResourceBase.objects.select_related(
+            "owner",
+            "category",
+            "license",
+            "group",
+            "restriction_code_type",
+            "spatial_representation_type",
+        )
+        .prefetch_related(
+            # ponytail: keywords/tkeywords/regions are left to dynamic-rest's own
+            # sideload prefetching (DynamicFilterBackend) — prefetching them here
+            # too collides ("lookup was already seen with a different queryset").
+            Prefetch("contactrole_set", queryset=ContactRole.objects.select_related("contact")),
+            Prefetch("link_set", queryset=Link.objects.select_related("asset")),
+        )
+        .order_by("-created")
+    )
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 

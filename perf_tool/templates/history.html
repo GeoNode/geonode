@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Run history</h1>
+<p class="hint">Pick two runs to compare (e.g. a "before fix" run against an "after fix" run).</p>
+
+<form method="get" action="{{ url_for('compare') }}">
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th></th><th></th><th>id</th><th>when</th><th>label</th><th>scenario</th><th>iterations</th><th>avg wall time (s)</th><th>avg xact_commit Δ</th></tr>
+  </thead>
+  <tbody>
+    {% for r in runs %}
+    <tr>
+      <td><input type="radio" name="a" value="{{ r.id }}"></td>
+      <td><input type="radio" name="b" value="{{ r.id }}"></td>
+      <td><a href="{{ url_for('show_run', run_id=r.id) }}">{{ r.id }}</a></td>
+      <td>{{ r.created_at|datetime }}</td>
+      <td>{{ r.label }}</td>
+      <td>{{ r.scenario_label }}</td>
+      <td>{{ r.aggregate.count }}</td>
+      <td>{{ r.aggregate.wall_time.avg }}</td>
+      <td>{{ r.aggregate.xact_commit.avg }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+<button type="submit">Compare selected</button>
+</form>
+{% endblock %}

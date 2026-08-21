@@ -34,5 +34,11 @@ class HarvestingAppConfig(AppConfig):
         urlpatterns += [re_path(r"^api/v2/", include("geonode.harvesting.api.urls"))]
         settings.CELERY_BEAT_SCHEDULE["harvesting-scheduler"] = {
             "task": "geonode.harvesting.tasks.harvesting_scheduler",
-            "schedule": config.get_setting("HARVESTER_SCHEDULER_FREQUENCY_MINUTES") * 0.5,
+            # ponytail: celery's bare-number `schedule` is SECONDS, so this needs
+            # a minutes->seconds conversion (*60), not *0.5. With the 0.5-minute
+            # default that bug ran this task every 0.25s (4x/second, 24/7)
+            # instead of the intended every 30s — confirmed via live Postgres
+            # statement logging (SELECT * FROM harvesting_harvester every ~250ms
+            # even with zero harvesters configured).
+            "schedule": config.get_setting("HARVESTER_SCHEDULER_FREQUENCY_MINUTES") * 60,
         }

@@ -956,43 +956,78 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
             la.delete()
 
     # Add new layer attributes if they doesn't exist already
+    # ponytail: batched into a handful of queries instead of ~3 queries (count +
+    # get/create + unconditional save) per column — a 100-column upload used to
+    # mean 300+ queries here alone.
     if attribute_map:
-        iter = len(Attribute.objects.filter(dataset=layer)) + 1
+        existing_by_name = {}
+        for la in Attribute.objects.filter(dataset=layer):
+            existing_by_name.setdefault(la.attribute, []).append(la)
+
+        stats_for_layer = (attribute_stats or {}).get(layer.name, {})
+
+        def stats_fields(la, result):
+            la.count = result["Count"]
+            la.min = result["Min"]
+            la.max = result["Max"]
+            la.average = result["Average"]
+            la.median = result["Median"]
+            la.stddev = result["StandardDeviation"]
+            la.sum = result["Sum"]
+            la.unique_values = result["unique_values"]
+            la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
+
+        to_create = []
+        to_update = []
+        iter = len(existing_by_name) + 1
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
-            if field:
-                _gs_attrs = Attribute.objects.filter(dataset=layer, attribute=field)
-                if _gs_attrs.count() == 1:
-                    la = _gs_attrs.get()
-                else:
-                    if _gs_attrs.exists():
-                        _gs_attrs.delete()
-                    la = Attribute.objects.create(dataset=layer, attribute=field)
-                    la.visible = ftype.find("gml:") != 0
-                    la.attribute_type = ftype
-                    la.description = description
-                    la.attribute_label = label
-                    la.display_order = iter
-                    iter += 1
-                if not attribute_stats or layer.name not in attribute_stats or field not in attribute_stats[layer.name]:
-                    result = None
-                else:
-                    result = attribute_stats[layer.name][field]
+            if not field:
+                continue
+            dupes = existing_by_name.get(field, [])
+            if len(dupes) == 1:
+                la = dupes[0]
+                result = stats_for_layer.get(field)
                 if result:
                     logger.debug("Generating layer attribute statistics")
-                    la.count = result["Count"]
-                    la.min = result["Min"]
-                    la.max = result["Max"]
-                    la.average = result["Average"]
-                    la.median = result["Median"]
-                    la.stddev = result["StandardDeviation"]
-                    la.sum = result["Sum"]
-                    la.unique_values = result["unique_values"]
-                    la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
-                try:
-                    la.save()
-                except Exception as e:
-                    logger.exception(e)
+                    stats_fields(la, result)
+                    to_update.append(la)
+            else:
+                if dupes:
+                    Attribute.objects.filter(pk__in=[d.pk for d in dupes]).delete()
+                la = Attribute(dataset=layer, attribute=field)
+                la.visible = ftype.find("gml:") != 0
+                la.attribute_type = ftype
+                la.description = description
+                la.attribute_label = label
+                la.display_order = iter
+                iter += 1
+                result = stats_for_layer.get(field)
+                if result:
+                    logger.debug("Generating layer attribute statistics")
+                    stats_fields(la, result)
+                to_create.append(la)
+
+        try:
+            if to_create:
+                Attribute.objects.bulk_create(to_create)
+            if to_update:
+                Attribute.objects.bulk_update(
+                    to_update,
+                    [
+                        "count",
+                        "min",
+                        "max",
+                        "average",
+                        "median",
+                        "stddev",
+                        "sum",
+                        "unique_values",
+                        "last_stats_updated",
+                    ],
+                )
+        except Exception as e:
+            logger.exception(e)
     else:
         logger.debug("No attributes found")
 

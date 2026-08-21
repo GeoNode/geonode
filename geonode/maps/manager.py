@@ -50,7 +50,8 @@ class MapResourceManager(BaseResourceManager):
         request_user = kwargs.get("user")
         payload = copy.deepcopy(defaults or {})
         extent = payload.pop("extent", None)
-        post_creation_data = {"thumbnail": payload.pop("thumbnail_url", "")}
+        # thumbnail_url isn't a plain field write — handled via set_thumbnail() below
+        payload.pop("thumbnail_url", "")
         maplayers = payload.pop("maplayers", None)
         instance = super().create(uuid, resource_type=resource_type or Map, defaults=payload)
 
@@ -61,12 +62,16 @@ class MapResourceManager(BaseResourceManager):
         if extent is not None or request_user:
             self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
 
-        instance = self._post_change_routines(
-            instance=instance,
-            create_action_perfomed=True,
-            additional_data=post_creation_data,
-            notify=notify,
-        )
+        # ponytail: _post_change_routines() on the create path used to call a
+        # full super().update() (save + geoserver-equivalent sync + a second
+        # full permission recompute) with an empty vals dict and
+        # create_action_perfomed=True — the only branch that reads
+        # additional_data/fires map_changed_signal is gated on
+        # `not create_action_perfomed`, so on create() this call did nothing
+        # but redo the create() cascade for no reason (confirmed live: it
+        # roughly doubled base_resourcebase/base_contactrole query volume for
+        # every map created). extent/bbox already self-persist via
+        # set_bbox_polygon()'s own update() above, so nothing here needs it.
         self.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
         return instance
 

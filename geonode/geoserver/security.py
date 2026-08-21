@@ -29,6 +29,7 @@ from lxml import etree
 from defusedxml import lxml as dlxml
 from requests.auth import HTTPBasicAuth
 from guardian.shortcuts import get_anonymous_user
+from guardian.conf import settings as guardian_settings
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -344,6 +345,13 @@ def sync_resources_with_guardian(resource=None, force=False):
         logger.debug(" --------------------------- synching with guardian!")
 
         rules_committed = False
+        # ponytail: same fix as resource/manager.py/security/registry.py —
+        # get_anonymous_user() re-queries the DB every call (guardian doesn't
+        # cache it), and this was called once per (dataset x user) below. On a
+        # full resync (`force=True`, every Dataset) with N users per perm_spec
+        # that's datasets*N extra identical queries. Resolved once up front;
+        # the anonymous check only ever needs the username string anyway.
+        _anon_username = guardian_settings.ANONYMOUS_USER_NAME
 
         for dataset in datasets:
             try:
@@ -354,11 +362,11 @@ def sync_resources_with_guardian(resource=None, force=False):
                 # All the other users
                 if "users" in perm_spec:
                     for user, perms in perm_spec["users"].items():
-                        user = get_user_model().objects.get(username=user)
                         # Set the GeoFence User Rules
-                        geofence_user = str(user)
-                        if "AnonymousUser" in geofence_user or str(get_anonymous_user()) in geofence_user:
+                        if user == _anon_username:
                             geofence_user = None
+                        else:
+                            geofence_user = str(get_user_model().objects.get(username=user))
                         create_geofence_rules(dataset, perms, user=geofence_user, batch=batch)
                 # All the other groups
                 if "groups" in perm_spec:

@@ -46,15 +46,19 @@ class GeoAppResourceManager(BaseResourceManager):
         if created and "owner" in payload:
             payload["owner"] = instance.owner
 
+        # ponytail: this used to do a raw GeoApp.objects.filter(...).update(**payload)
+        # + refresh_from_db() here, then hand the *same* payload to super().update()
+        # below as `vals` — but that already writes the identical fields to the
+        # identical table via update_resource()'s own
+        # `instance.get_real_concrete_instance_class().objects.filter(...).update(...)`
+        # (resource/utils.py). Confirmed live: was doubling base_resourcebase query
+        # volume on every GeoApp create, same shape as the Map manager bug above.
+        payload["blob"] = blob
         try:
-            GeoApp.objects.filter(pk=instance.id).update(**payload)
-            instance.refresh_from_db()
+            instance = super().update(instance.uuid, instance=instance, vals=payload, notify=notify)
         except Exception as e:
             logger.exception(f"Error while creating or updating GeoApp instance with exception {e}")
             raise GeneralGeoAppException("An error occurred while saving the GeoApp.")
-
-        payload["blob"] = blob
-        instance = super().update(instance.uuid, instance=instance, vals=payload, notify=notify)
         if extent or request_user:
             # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
             # but it’s kept here to centralize manager behavior.

@@ -125,10 +125,15 @@ class PermissionLevelMixin:
             tb = traceback.format_exc()
             logger.debug(tb)
 
+        # ponytail: get_anonymous_user() re-queries the DB every call (guardian
+        # doesn't cache it) — was being called once per (user or group) entry
+        # below, so a resource with N principals holding perms meant N extra
+        # identical queries just to check "is this the anonymous user".
+        _anon_user = get_anonymous_user()
         for _k, _v in info.items():
             for _kk in list(_v):
                 # Remove AnonymousUser if set for some reason (legacy code)
-                if _kk == get_anonymous_user():
+                if _kk == _anon_user:
                     logger.warning(
                         "Guardian permisions for AnonymouUser on resource {resource.id} were found in the DB, which is unexpected"
                     )

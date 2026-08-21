@@ -136,10 +136,12 @@ class UpdateTaskClass(Task):
             if status_dict.get(task_name) is None:
                 status_dict[task_name] = "PENDING"
 
-            orchestrator.update_execution_request_status(
-                execution_id,
-                tasks=tasks_status,
-            )
+        # ponytail: write tasks_status once after the loop instead of once per
+        # layer — was firing an identical ExecutionRequest UPDATE per layer key
+        orchestrator.update_execution_request_status(
+            execution_id,
+            tasks=tasks_status,
+        )
 
     def set_task_status(self, task_name, execution_id, layer_key, status):
         """

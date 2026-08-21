@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Run #{{ run.id }} — {{ scenario_label }}</h1>
+<p class="hint">
+  {{ run.iterations|length }} iteration(s){% if run.label %} — labeled "<strong>{{ run.label }}</strong>"{% endif %}
+  &middot; params: <code>{{ run.params }}</code>
+</p>
+<p><a href="{{ url_for('download_report', run_id=run.id) }}"><button type="button">⬇ Download report (.pdf)</button></a></p>
+
+<section class="summary-grid">
+  <div class="card">
+    <h3>Wall time (s)</h3>
+    <p>min {{ aggregate.wall_time.min }} &middot; avg <strong>{{ aggregate.wall_time.avg }}</strong> &middot; median {{ aggregate.wall_time.median }} &middot; max {{ aggregate.wall_time.max }}</p>
+  </div>
+  <div class="card">
+    <h3 title="Whole-database Postgres counter — includes anything else hitting this instance while the test ran.">DB statements (xact_commit Δ)</h3>
+    <p>min {{ aggregate.xact_commit.min }} &middot; avg <strong>{{ aggregate.xact_commit.avg }}</strong> &middot; median {{ aggregate.xact_commit.median }} &middot; max {{ aggregate.xact_commit.max }}</p>
+  </div>
+  <div class="card">
+    <h3 title="Counted inside Django for this request only (X-DB-Query-Count / X-DB-Query-Time-Ms response headers) — immune to concurrent activity elsewhere on the instance, unlike the xact_commit Δ card. Needs EXPOSE_DB_QUERY_STATS_HEADER=True on the target GeoNode; 0 means it's off there.">DB queries (this request only)</h3>
+    {% if aggregate.request_query_count.max > 0 %}
+    <p>avg <strong>{{ aggregate.request_query_count.avg }}</strong> queries &middot; avg <strong>{{ aggregate.request_query_time_ms.avg }}</strong> ms in DB</p>
+    <p class="hint">min {{ aggregate.request_query_count.min }} / median {{ aggregate.request_query_count.median }} / max {{ aggregate.request_query_count.max }} queries</p>
+    {% else %}
+    <p class="hint">Not available — target GeoNode doesn't have <code>EXPOSE_DB_QUERY_STATS_HEADER=True</code> set. See "How it works".</p>
+    {% endif %}
+  </div>
+  <div class="card">
+    <h3>Success rate</h3>
+    <p>{{ aggregate.ok_count }} / {{ aggregate.count }}</p>
+  </div>
+</section>
+
+<h2>Per-iteration detail</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>wall time (s)</th>
+      <th>ok</th>
+      <th>http</th>
+      <th title="Change in Postgres's whole-database transaction-commit counter (pg_stat_database.xact_commit) while this iteration ran. A rough proxy for &quot;how many statements ran&quot; — it's database-wide, not scoped to just this request, so unrelated concurrent activity shows up here too.">xact_commit Δ</th>
+      <th title="Rows inserted anywhere in the database while this iteration ran (pg_stat_database.tup_inserted). Database-wide, like xact_commit Δ — see the per-table breakdown below to attribute this to a specific table.">tup_inserted Δ</th>
+      <th title="Rows updated anywhere in the database while this iteration ran (pg_stat_database.tup_updated). Database-wide, like xact_commit Δ — see the per-table breakdown below to attribute this to a specific table.">tup_updated Δ</th>
+      <th title="Rows deleted anywhere in the database while this iteration ran (pg_stat_database.tup_deleted). Database-wide, like xact_commit Δ — see the per-table breakdown below to attribute this to a specific table.">tup_deleted Δ</th>
+      <th title="Exact SQL query count for THIS request only, counted inside Django (X-DB-Query-Count header) — not database-wide, immune to concurrent activity. 0 if the target instance doesn't expose it.">req. queries</th>
+      <th title="Exact time spent in the database for THIS request only, in milliseconds (X-DB-Query-Time-Ms header).">req. DB ms</th>
+      <th>detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for it in run.iterations %}
+    <tr class="{{ 'ok' if it.ok else 'fail' }}">
+      <td>{{ loop.index }}</td>
+      <td>{{ it.wall_time }}</td>
+      <td>{{ '✓' if it.ok else '✗' }}</td>
+      <td>{{ it.http_status }}</td>
+      <td>{{ it.db.db.xact_commit }}</td>
+      <td>{{ it.db.db.tup_inserted }}</td>
+      <td>{{ it.db.db.tup_updated }}</td>
+      <td>{{ it.db.db.tup_deleted }}</td>
+      <td>{{ it.request_db.count if it.request_db else 0 }}</td>
+      <td>{{ it.request_db.time_ms if it.request_db else 0 }}</td>
+      <td class="detail">{{ it.detail }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Per-table writes/reads (summed across all iterations)</h2>
+{% if table_totals %}
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>table</th>
+      <th title="Change in sequential (full table) scans on this table during the test. A rising number on a table that should be indexed is a red flag — it means Postgres read every row instead of using an index.">seq_scan Δ</th>
+      <th title="Change in index scans on this table during the test. Generally the cheap, wanted way to read a table — compare against seq_scan Δ to see whether queries are using indexes.">idx_scan Δ</th>
+      <th title="Rows inserted into this table during the test (INSERT statements' effect, summed across all iterations).">inserted Δ</th>
+      <th title="Rows updated in this table during the test (UPDATE statements' effect, summed across all iterations). A high number on a row that's only supposed to be created once (e.g. one resource updated 60+ times) is the kind of thing this column exists to catch.">updated Δ</th>
+      <th title="Rows deleted from this table during the test (DELETE statements' effect, summed across all iterations).">deleted Δ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for table, t in table_totals.items() %}
+    <tr>
+      <td>{{ table }}</td>
+      <td>{{ t.seq_scan }}</td>
+      <td>{{ t.idx_scan }}</td>
+      <td>{{ t.n_tup_ins }}</td>
+      <td>{{ t.n_tup_upd }}</td>
+      <td>{{ t.n_tup_del }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="hint">No tracked table changed. Add more tables to TRACKED_TABLES in db_stats.py if you're chasing something outside the default list.</p>
+{% endif %}
+
+{% if stat_statements %}
+<h2>Top queries by call count (last iteration, pg_stat_statements)</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>calls</th><th>total time (ms)</th><th>query</th></tr></thead>
+  <tbody>
+    {% for row in stat_statements %}
+    <tr><td>{{ row.calls }}</td><td>{{ row.total_time_ms }}</td><td class="detail"><code>{{ row.query }}</code></td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="hint">
+  <code>pg_stat_statements</code> isn't installed/readable on this database, so exact per-query
+  breakdown isn't available — the table above (from <code>pg_stat_user_tables</code>) is the
+  trustworthy fallback and needs no extra privileges.
+</p>
+{% endif %}
+
+<p><a href="{{ url_for('history') }}">← back to history</a> to compare this run against another.</p>
+{% endblock %}

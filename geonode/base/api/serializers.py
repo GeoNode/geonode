@@ -24,6 +24,7 @@ import json
 
 from django.db.models import Q
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
@@ -556,9 +557,14 @@ class LinksSerializer(DynamicModelSerializer):
     def to_representation(self, instance):
         ret = []
         link_fields = ["extension", "link_type", "name", "mime", "url"]
-        links = Link.objects.filter(
-            resource_id=instance,  # link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS", "image", "metadata"]
-        )
+        # ponytail: reuse the prefetched link_set (view queryset) instead of a
+        # per-row query when the caller (get_links, below) prefetched it
+        if "link_set" in getattr(instance, "_prefetched_objects_cache", {}):
+            links = instance.link_set.all()
+        else:
+            links = Link.objects.filter(
+                resource_id=instance,  # link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS", "image", "metadata"]
+            )
         request = self.context.get("request", None)
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
@@ -652,7 +658,16 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
     favorite = FavoriteField(read_only=True)
     download_urls = DownloadArrayLinkField(read_only=True)
     perms = serializers.SerializerMethodField(read_only=True)
-    links = DynamicRelationField(LinksSerializer, source="id", read_only=True)
+    links = serializers.SerializerMethodField(read_only=True)
+
+    def get_links(self, instance):
+        # ponytail: plain SerializerMethodField instead of
+        # DynamicRelationField(..., source="id") — that wiring handed
+        # LinksSerializer the bare resource PK (dynamic-rest's get_attribute()
+        # resolves `source` off the instance when the field isn't id_only()),
+        # so it could never see a prefetched link_set. This passes the real
+        # instance through instead.
+        return LinksSerializer(context=self.context).to_representation(instance)
 
     # Deferred fields
     # Deprecated: use the sparse fields API instead of ``metadata``.
@@ -857,8 +872,23 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
         data = super().to_representation(instance)
         if not isinstance(data, int):
             try:
-                count_filter = {self.Meta.count_type: instance}
-                data["count"] = get_resources_with_perms(request.user, filter_options).filter(**count_filter).count()
+                # ponytail: each facet row was running its own full
+                # permission-filtered COUNT (get_resources_with_perms does a
+                # guardian/virtual-perms merge) — a facet list of N rows meant
+                # N of these. Short TTL cache, same pattern as the object
+                # permission cache (security/registry.py), just a shorter
+                # window since counts are read far more often than perms change.
+                user_id = getattr(request.user, "pk", None) or "anonymous"
+                cache_key = (
+                    f"facet_count:{self.Meta.count_type}:{instance.pk}:{user_id}:"
+                    f"{filter_options.get('type_filter')}:{filter_options.get('title_filter')}"
+                )
+                count = cache.get(cache_key)
+                if count is None:
+                    count_filter = {self.Meta.count_type: instance}
+                    count = get_resources_with_perms(request.user, filter_options).filter(**count_filter).count()
+                    cache.set(cache_key, count, getattr(settings, "RESOURCE_FACET_COUNT_CACHE_EXPIRATION_TIME", 60))
+                data["count"] = count
             except (TypeError, NoReverseMatch) as e:
                 logger.exception(e)
         return data

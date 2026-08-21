@@ -70,7 +70,7 @@ from ..security.utils import AdvancedSecurityWorkflowManager
 from ..layers.metadata import parse_metadata
 from ..documents.models import Document
 from ..layers.models import Dataset, Attribute
-from ..maps.models import Map
+from ..maps.models import Map, MapLayer
 from ..storage.manager import storage_manager
 
 
@@ -526,17 +526,26 @@ class BaseResourceManager(ResourceManagerInterface):
                         )
 
                     if isinstance(instance.get_real_instance(), Dataset):
+                        # ponytail: bulk_create instead of one .save() per
+                        # attribute — same fix as geoserver/helpers.py:set_attributes,
+                        # a wide table used to mean one INSERT per column here too
+                        new_attributes = []
                         for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
                             _attribute = copy.copy(attribute)
                             _attribute.pk = _attribute.id = None
                             _attribute.dataset = _resource.get_real_instance()
-                            _attribute.save()
+                            new_attributes.append(_attribute)
+                        if new_attributes:
+                            Attribute.objects.bulk_create(new_attributes)
                     if isinstance(instance.get_real_instance(), Map):
+                        new_maplayers = []
                         for maplayer in instance.get_real_instance().maplayers.iterator():
                             _maplayer = copy.copy(maplayer)
                             _maplayer.pk = _maplayer.id = None
                             _maplayer.map = _resource.get_real_instance()
-                            _maplayer.save()
+                            new_maplayers.append(_maplayer)
+                        if new_maplayers:
+                            MapLayer.objects.bulk_create(new_maplayers)
 
                     assets_and_links = copy_assets_and_links(instance, target=_resource)
                     # we're just merging all the files together: it won't work once we have multiple assets per resource
@@ -717,6 +726,12 @@ class BaseResourceManager(ResourceManagerInterface):
                         except Permission.DoesNotExist as e:
                             logger.warn(e)
 
+                    # ponytail: guardian's get_anonymous_user() re-queries the DB on
+                    # every call (no caching in the library) — was being called once
+                    # per user inside the per-principal loop below, so a perm_spec
+                    # covering N users meant N extra identical queries. Resolve once.
+                    _anon_user = get_anonymous_user()
+
                     if permissions is not None and len(permissions):
                         """
                         Sets an object's the permission levels based on the perm_spec JSON.
@@ -738,11 +753,9 @@ class BaseResourceManager(ResourceManagerInterface):
                         """
                         # Anonymous User group
                         if "users" in _perm_spec and (
-                            "AnonymousUser" in _perm_spec["users"] or get_anonymous_user() in _perm_spec["users"]
+                            "AnonymousUser" in _perm_spec["users"] or _anon_user in _perm_spec["users"]
                         ):
-                            anonymous_user = (
-                                "AnonymousUser" if "AnonymousUser" in _perm_spec["users"] else get_anonymous_user()
-                            )
+                            anonymous_user = "AnonymousUser" if "AnonymousUser" in _perm_spec["users"] else _anon_user
                             perms = copy.deepcopy(_perm_spec["users"][anonymous_user])
                             _perm_spec["users"].pop(anonymous_user)
                             _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
@@ -771,7 +784,7 @@ class BaseResourceManager(ResourceManagerInterface):
                         if "users" in _perm_spec and len(_perm_spec["users"]) > 0:
                             for user, perms in _perm_spec["users"].items():
                                 _user = get_user_model().objects.get(username=user)
-                                if user != "AnonymousUser" and user != get_anonymous_user():
+                                if user != "AnonymousUser" and user != _anon_user:
                                     for perm in perms:
                                         if _resource_type == "dataset" and perm in (
                                             "change_dataset_data",
@@ -818,11 +831,9 @@ class BaseResourceManager(ResourceManagerInterface):
 
                         # AnonymousUser
                         if "users" in _perm_spec and len(_perm_spec["users"]) > 0:
-                            if "AnonymousUser" in _perm_spec["users"] or get_anonymous_user() in _perm_spec["users"]:
-                                _user = get_anonymous_user()
-                                anonymous_user = (
-                                    "AnonymousUser" if "AnonymousUser" in _perm_spec["users"] else get_anonymous_user()
-                                )
+                            if "AnonymousUser" in _perm_spec["users"] or _anon_user in _perm_spec["users"]:
+                                _user = _anon_user
+                                anonymous_user = "AnonymousUser" if "AnonymousUser" in _perm_spec["users"] else _anon_user
                                 perms = _perm_spec["users"][anonymous_user]
                                 for perm in perms:
                                     if _resource_type == "dataset" and perm in (

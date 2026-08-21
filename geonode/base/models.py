@@ -1362,8 +1362,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     def set_processing_state(self, state):
-        self.state = state
-        ResourceBase.objects.filter(id=self.id).update(state=state)
+        # ponytail: skip the write when state is already the target value —
+        # was firing an unconditional UPDATE even for a no-op transition
+        # (e.g. PROCESSED -> PROCESSED called twice back-to-back in the same
+        # resource_manager.update() run)
+        if self.state != state:
+            self.state = state
+            ResourceBase.objects.filter(id=self.id).update(state=state)
         if state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
         elif state == enumerations.STATE_INVALID:
@@ -1745,7 +1750,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             Optional[List[settings.AUTH_USER_MODEL]]: returns the requested contact role from the database
         """
         try:
-            contact_role = ContactRole.objects.filter(role=role, resource=self)
+            # ponytail: reuse a prefetched contactrole_set instead of re-querying
+            # per role (avoids 10 ContactRole queries/resource on list endpoints)
+            if "contactrole_set" in getattr(self, "_prefetched_objects_cache", {}):
+                contact_role = [cr for cr in self.contactrole_set.all() if cr.role == role]
+            else:
+                contact_role = ContactRole.objects.filter(role=role, resource=self)
             contacts = [cr.contact for cr in contact_role]
         except ContactRole.DoesNotExist:
             contacts = None
