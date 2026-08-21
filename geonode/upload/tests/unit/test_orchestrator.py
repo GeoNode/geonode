@@ -60,6 +60,11 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         actual = self.orchestrator.get_serializer({"base_file": "file.shp"})
         self.assertEqual(type(ShapeFileSerializer), type(actual))
 
+    def test_get_serializer_should_return_the_default_one_for_the_copy_action(self):
+        """The copy action is handled by its own endpoint, never by the generic upload one"""
+        actual = self.orchestrator.get_serializer({"action": "copy"})
+        self.assertEqual(type(ImporterSerializer), type(actual))
+
     def test_load_handler_raise_error_if_not_exists(self):
         with self.assertRaises(ImportException) as _exc:
             self.orchestrator.load_handler("invalid_type")

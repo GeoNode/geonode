@@ -26,7 +26,6 @@ import shutil
 import tempfile
 from django.db import connections
 from geonode.security.permissions import _to_compact_perms
-from geonode.storage.manager import StorageManager
 from geonode.upload.publisher import DataPublisher
 from geonode.upload.utils import DEFAULT_PK_COLUMN_NAME, call_rollback_function
 import json
@@ -73,7 +72,6 @@ from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_inv
 from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.security.registry import permissions_registry
-from geonode.storage.manager import FileSystemStorageManager
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
 from geonode.upload.registry import feature_validators_registry
 from django.core.exceptions import ValidationError
@@ -87,6 +85,8 @@ class BaseVectorFileHandler(BaseHandler):
     Handler to import Vector files into GeoNode data db
     It must provide the task_lists required to comple the upload
     """
+
+    handler_type = "dataset"
 
     TASKS = {
         exa.UPLOAD.value: (
@@ -415,25 +415,7 @@ class BaseVectorFileHandler(BaseHandler):
             for asset in assets:
                 asset.delete()
 
-        BaseVectorFileHandler.__remove_temporary_file(_exec)
-
-    @staticmethod
-    def __remove_temporary_file(_exec):
-        if not _exec:
-            return
-        tmp_data = _exec.input_params.get("temporary_files")
-        if tmp_data:
-            # Delete at the end of the operations, the temporary files created at the beginning
-            # to cleanup disk space
-            storage_manager = StorageManager(
-                remote_files={},
-                concrete_storage_manager=FileSystemStorageManager(),
-            )
-            base_file_path = tmp_data.get("base_file")
-            if base_file_path:
-                directory = os.path.dirname(base_file_path)
-                if settings.ASSETS_ROOT not in directory:
-                    storage_manager.rmtree(directory, ignore_errors=True)
+        BaseHandler.remove_temporary_file(_exec)
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
@@ -1129,7 +1111,7 @@ class BaseVectorFileHandler(BaseHandler):
         """
         logger.info(f"Rollback temporary file uploaded for execid: {exec_id} resource published was: {instance_name}")
         try:
-            BaseVectorFileHandler.__remove_temporary_file(orchestrator.get_execution_object(exec_id=exec_id))
+            BaseHandler.remove_temporary_file(orchestrator.get_execution_object(exec_id=exec_id))
         except Exception as e:
             logger.warning(f"Failed to remove temporary files during rollback: {e}")
 

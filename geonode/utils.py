@@ -46,8 +46,9 @@ from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, tan
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.upload.api.exceptions import GeneralUploadException
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from django.conf import settings
 from django.db.models import signals
@@ -75,7 +76,6 @@ from geonode.base.auth import (
     get_token_from_auth_header,
     get_token_object_from_session,
 )
-
 from urllib.parse import (
     urljoin,
     unquote,
@@ -1795,7 +1795,7 @@ def get_supported_datasets_file_types():
     _available_settings = [
         module().supported_file_extension_config
         for module in orchestrator.get_handler_registry()
-        if module().supported_file_extension_config
+        if module().supported_file_extension_config and module().handler_type == "dataset"
     ]
     # injecting the new config required for FE
     default_types = [
@@ -1844,16 +1844,28 @@ def get_supported_datasets_file_types():
     return ordered_resource_types + other_resource_types
 
 
-def get_allowed_extensions():
+def get_allowed_extensions(kind: Literal["dataset", "document", "all"] = "dataset"):
     """
     The main extension is rappresented by the position 0 of the configuration
     that the handlers returns
     """
-    allowed_extention = []
-    for _type in get_supported_datasets_file_types():
-        for val in _type["formats"]:
-            allowed_extention.append(val["required_ext"][0])
-    return list(set(allowed_extention))
+    match kind:
+        case "dataset":
+            return list(set(get_dataset_extensions()))
+        case "document":
+            return list(set(get_document_extensions()))
+        case "all":
+            return list(set(get_dataset_extensions() + get_document_extensions()))
+        case _:
+            return []
+
+
+def get_dataset_extensions():
+    return [val["required_ext"][0] for _type in get_supported_datasets_file_types() for val in _type["formats"]]
+
+
+def get_document_extensions():
+    return list(DOCUMENT_TYPE_MAP.keys())
 
 
 def strtobool(value):

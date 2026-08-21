@@ -1599,6 +1599,11 @@ CELERY_TASK_QUEUES += (
         "geonode.upload.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_geonode_data_table"
     ),
     Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
+    Queue(
+        "geonode.upload.copy_document_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.copy_document_resource",
+    ),
     Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
     Queue("geonode.upload.upsert_data", GEONODE_EXCHANGE, routing_key="geonode.upload.upsert_data"),
     Queue(
