@@ -94,7 +94,7 @@ dependencies = [
     "geonode-pinax-notifications==6.0.0.4",
 
     # GeoNode org maintained apps.
-    "django_geonode_mapstore_client @ https://github.com/dsuren1/geonode-mapstore-client//archive/refs/heads/issue_2616_built.zip",
+    "django_geonode_mapstore_client @ https://github.com/GeoNode/geonode-mapstore-client/archive/refs/heads/master.zip",
     "django-avatar==8.0.1",
     "geonode-oauth-toolkit==2.2.3.1",
     "geonode-announcements==2.0.2.2",
