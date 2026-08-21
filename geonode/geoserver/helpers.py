@@ -33,7 +33,7 @@ import requests
 from itertools import cycle
 from collections import defaultdict
 from os.path import basename, splitext, isfile
-from urllib.parse import urlparse, urlencode, urlsplit, urljoin
+from urllib.parse import urlparse, urlunparse, urlencode, urlsplit, urljoin, parse_qsl
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
@@ -1022,7 +1022,17 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         # `resource_identifier` is GeoNode's own "workspace:name" form (e.g. "remoteWorkspace:0"),
         # not a real ArcGIS REST path: the actual layer id is whatever follows the last ':'.
         arcgis_layer_id = resource_identifier.rsplit(":", 1)[-1]
-        dft_url = f"{server_url.rstrip('/')}/{arcgis_layer_id}?f=json"
+        # server_url may already carry a query string (e.g. an auth token via extra_queryparams):
+        # append the layer id to the path and merge f=json into the existing query, not the string.
+        parsed_server_url = urlparse(server_url)
+        query = dict(parse_qsl(parsed_server_url.query))
+        query["f"] = "json"
+        dft_url = urlunparse(
+            parsed_server_url._replace(
+                path=f"{parsed_server_url.path.rstrip('/')}/{arcgis_layer_id}",
+                query=urlencode(query),
+            )
+        )
         try:
             # Not http_client(user=...): that would send our own GeoServer OAuth token to this third party.
             remote_auth = None
@@ -1031,10 +1041,13 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 
                 remote_auth = auth_handler_registry.build(layer.remote_service.auth_config).get_request_auth()
             response = requests.get(dft_url, auth=remote_auth, timeout=10)
-            body = json.loads(response.text)
-            attribute_map = [
-                [n["name"], _esri_types[n["type"]]] for n in body["fields"] if n.get("name") and n.get("type")
-            ]
+            response.raise_for_status()
+            body = response.json()
+            attribute_map = []
+            for n in body["fields"]:
+                esri_type = _esri_types.get(n.get("type"))
+                if n.get("name") and esri_type:
+                    attribute_map.append([n["name"], esri_type])
         except Exception:
             logger.warning(f"Error while retrieving info for {layer.subtype} '{resource_identifier}'", exc_info=True)
             attribute_map = []

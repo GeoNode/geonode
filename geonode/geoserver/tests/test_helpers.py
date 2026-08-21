@@ -19,6 +19,7 @@
 import re
 import time
 import logging
+import requests
 
 from urllib.parse import urljoin
 
@@ -43,9 +44,12 @@ from geonode.geoserver.helpers import (
     get_dataset_capabilities_url,
     get_layer_ows_url,
     get_time_info,
+    set_attributes_from_geoserver,
     _sync_geoserver_keywords_to_instance,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
+from geonode.services.models import Service
+from geonode.services.enumerations import REST_MAP, INDEXED
 from unittest.mock import patch, Mock
 
 
@@ -207,6 +211,79 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
     def test_remoteStore_should_return_remote(self):
         el = get_dataset_storetype("remoteStore")
         self.assertEqual("remote", el)
+
+    def _create_arcgis_dataset(self):
+        service = Service.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            type=REST_MAP,
+            method=INDEXED,
+            base_url="https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer",
+            name="arcgis-test-service",
+            title="ArcGIS test service",
+        )
+        return Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="usa_states",
+            store="arcgis-test-service",
+            subtype="remote",
+            workspace="remoteWorkspace",
+            typename="remoteWorkspace:0",
+            alternate="remoteWorkspace:0",
+            remote_service=service,
+        )
+
+    @patch("geonode.geoserver.helpers.requests.get")
+    def test_set_attributes_from_geoserver_arcgis_remote_dataset(self, mock_get):
+        dataset = self._create_arcgis_dataset()
+        mock_response = Mock()
+        mock_response.json.return_value = {
+            "fields": [
+                {"name": "STATE_NAME", "type": "esriFieldTypeString"},
+                {"name": "POPULATION", "type": "esriFieldTypeDouble"},
+                {"name": "SOME_FIELD", "type": "esriFieldTypeNotSupported"},
+            ]
+        }
+        mock_get.return_value = mock_response
+
+        set_attributes_from_geoserver(dataset)
+
+        called_url = mock_get.call_args[0][0]
+        self.assertTrue(
+            called_url.startswith("https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0")
+        )
+        self.assertIn("f=json", called_url)
+        attributes = set(dataset.attribute_set.values_list("attribute", "attribute_type"))
+        self.assertIn(("STATE_NAME", "xsd:string"), attributes)
+        self.assertIn(("POPULATION", "xsd:double"), attributes)
+        self.assertFalse(dataset.attribute_set.filter(attribute="SOME_FIELD").exists())
+
+    @patch("geonode.geoserver.helpers.requests.get")
+    def test_set_attributes_from_geoserver_arcgis_preserves_existing_query_string(self, mock_get):
+        dataset = self._create_arcgis_dataset()
+        dataset.remote_service.extra_queryparams = "token=abc123"
+        dataset.remote_service.save()
+        mock_response = Mock()
+        mock_response.json.return_value = {"fields": [{"name": "STATE_NAME", "type": "esriFieldTypeString"}]}
+        mock_get.return_value = mock_response
+
+        set_attributes_from_geoserver(dataset)
+
+        called_url = mock_get.call_args[0][0]
+        self.assertIn("token=abc123", called_url)
+        self.assertIn("f=json", called_url)
+
+    @patch("geonode.geoserver.helpers.requests.get")
+    def test_set_attributes_from_geoserver_arcgis_http_error(self, mock_get):
+        dataset = self._create_arcgis_dataset()
+        mock_response = Mock()
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("500 error")
+        mock_get.return_value = mock_response
+
+        set_attributes_from_geoserver(dataset)
+
+        self.assertFalse(dataset.attribute_set.exists())
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_geoserver_proxy_strip_paths(self):
