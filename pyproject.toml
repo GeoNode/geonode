@@ -42,7 +42,7 @@ dependencies = [
     "smart_open==7.0.4",
     "PyMuPDF==1.28.2",
     "defusedxml==0.7.1",
-    "zipstream-ng==1.9.2",
+    "zipstream-ng==1.9.3",
 
     # Django Apps
     "django-allauth==65.19.1",
