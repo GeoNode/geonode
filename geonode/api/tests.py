@@ -1468,6 +1468,7 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
             self.assertIn("name", item)
             self.assertIn("download_url", item)
             self.assertIn("created", item)
+            self.assertIn("deletable", item)
 
         returned_ids = {item["id"] for item in response.data}
         self.assertEqual(returned_ids, {self.asset_owner.id, self.asset_admin.id})

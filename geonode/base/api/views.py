@@ -109,7 +109,7 @@ from .pagination import GeoNodeApiPagination
 from geonode.base.utils import patch_perms
 from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataMixin
 from geonode.assets.models import Asset
-from geonode.assets.utils import create_asset_and_link, unlink_asset
+from geonode.assets.utils import create_asset_and_link, unlink_asset, is_asset_deletable
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
 from geonode.utils import assert_safe_xml, UnsafeXMLError
@@ -1420,6 +1420,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                     "name": real_asset.title,
                     "download_url": download_url,
                     "created": real_asset.created,
+                    "deletable": is_asset_deletable(real_asset),
                 }
             )
 
