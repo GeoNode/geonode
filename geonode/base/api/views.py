@@ -1386,6 +1386,45 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             logger.exception(e)
             return Response({"message": "Error creating asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path=r"asset",
+        url_name="asset",
+    )
+    def get_asset(self, request, pk=None, *args, **kwargs):
+        """
+        Returns assets linked to the resource.
+        GET /api/v2/resources/<pk>/asset
+        """
+        resource = self.get_object()
+        user = request.user
+
+        if user and user.is_authenticated:
+            assets = Asset.objects.filter(link__resource=resource).distinct()
+            if not user.is_superuser:
+                # Non-admin users only see assets they own
+                assets = assets.filter(owner=user)
+        else:
+            assets = Asset.objects.none()
+
+        data = []
+        for asset in assets:
+            real_asset = asset.get_real_instance()
+            handler = asset_handler_registry.get_handler(real_asset)
+            download_url = handler.create_download_url(real_asset) if handler else None
+
+            data.append(
+                {
+                    "id": real_asset.id,
+                    "name": real_asset.title,
+                    "download_url": download_url,
+                    "created": real_asset.created,
+                }
+            )
+
+        return Response(data, status=status.HTTP_200_OK)
+
     @action(detail=True, methods=["delete"], url_path=r"assets/(?P<asset_id>\d+)", url_name="delete-asset")
     def delete_asset(self, request, pk=None, asset_id=None, *args, **kwargs):
         """Deletes an asset and its link to the resource."""

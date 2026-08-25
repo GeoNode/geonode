@@ -1387,3 +1387,116 @@ class AssetDeleteApiTests(GeoNodeBaseTestSupport):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Asset.objects.filter(pk=self.asset1.pk).exists())
+
+
+class AssetGetApiTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.owner_user = get_user_model().objects.create_user(
+            username="asset_owner", email="owner@example.com", password="password123"
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="other_user", email="other@example.com", password="password123"
+        )
+
+        self.resource = ResourceBase.objects.create(
+            title="Test Resource for Asset Retrieval",
+            owner=self.owner_user,
+            uuid=str(uuid4()),
+        )
+
+        # Allow view permissions to public / registered users for the resource
+        self.resource.set_permissions(
+            {
+                "users": {
+                    self.owner_user.username: ["view_resourcebase", "change_resourcebase"],
+                    self.other_user.username: ["view_resourcebase"],
+                },
+                "groups": {
+                    "anonymous": ["view_resourcebase"],
+                },
+            }
+        )
+
+        # Create assets and links
+        self.asset_owner = Asset.objects.create(
+            title="Owner Asset.pdf",
+            description="Created by owner",
+            type="file",
+            owner=self.owner_user,
+        )
+        Link.objects.create(
+            resource=self.resource,
+            asset=self.asset_owner,
+            name=self.asset_owner.title,
+            link_type="uploaded",
+            extension="pdf",
+            url="http://example.com/owner_asset.pdf",
+        )
+
+        self.asset_admin = Asset.objects.create(
+            title="Admin Asset.png",
+            description="Created by admin",
+            type="image",
+            owner=self.admin_user,
+        )
+        Link.objects.create(
+            resource=self.resource,
+            asset=self.asset_admin,
+            name=self.asset_admin.title,
+            link_type="image",
+            extension="png",
+            url="http://example.com/admin_asset.png",
+        )
+
+        self.url = reverse("base-resources-asset", kwargs={"pk": self.resource.pk})
+
+    def test_get_assets_as_admin(self):
+        """Superuser should see all assets linked to the resource."""
+        self.client.force_login(self.admin_user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)  # No pagination
+        self.assertEqual(len(response.data), 2)
+
+        # Validate response schema
+        for item in response.data:
+            self.assertIn("id", item)
+            self.assertIn("name", item)
+            self.assertIn("download_url", item)
+            self.assertIn("created", item)
+
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.asset_owner.id, self.asset_admin.id})
+
+    def test_get_assets_as_owner(self):
+        """Asset owner should only see their own assets linked to the resource."""
+        self.client.force_login(self.owner_user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["id"], self.asset_owner.id)
+        self.assertEqual(response.data[0]["name"], self.asset_owner.title)
+
+    def test_get_assets_as_non_owner(self):
+        """Authenticated non-owner/non-admin user should get an empty list."""
+        self.client.force_login(self.other_user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 0)
+
+    def test_get_assets_as_anonymous(self):
+        """Anonymous user should get an empty list."""
+        self.client.logout()
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 0)
