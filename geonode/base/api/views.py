@@ -109,6 +109,7 @@ from .pagination import GeoNodeApiPagination
 from geonode.base.utils import patch_perms
 from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataMixin
 from geonode.assets.models import Asset
+from geonode.base.models import Link
 from geonode.assets.utils import create_asset_and_link, unlink_asset, is_asset_deletable
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
@@ -1401,26 +1402,33 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         user = request.user
 
         if user and user.is_authenticated:
-            assets = Asset.objects.filter(link__resource=resource).distinct()
+            asset_links = Link.objects.filter(
+                resource=resource,
+                asset__isnull=False,
+            ).select_related("asset")
+
             if not user.is_superuser:
-                # Non-admin users only see assets they own
-                assets = assets.filter(owner=user)
+                asset_links = asset_links.filter(asset__owner=user)
         else:
-            assets = Asset.objects.none()
+            asset_links = Link.objects.none()
 
         data = []
-        for asset in assets:
-            real_asset = asset.get_real_instance()
-            handler = asset_handler_registry.get_handler(real_asset)
-            download_url = handler.create_download_url(real_asset) if handler else None
+        for asset_link in asset_links:
+            asset = asset_link.asset.get_real_instance()
+            handler = asset_handler_registry.get_handler(asset)
+            download_url = handler.create_download_url(asset) if handler else None
 
             data.append(
                 {
-                    "id": real_asset.id,
-                    "name": real_asset.title,
-                    "download_url": download_url,
-                    "created": real_asset.created,
-                    "deletable": is_asset_deletable(real_asset),
+                    "id": asset.id,
+                    "title": asset.title,
+                    "description": asset.description,
+                    "type": asset.type,
+                    "deletable": is_asset_deletable(asset),
+                    "urls": {
+                        "download_url": download_url,
+                        "link": asset_link.url,
+                    },
                 }
             )
 

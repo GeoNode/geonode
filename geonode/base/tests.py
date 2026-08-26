@@ -83,7 +83,6 @@ from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.resource.registry import dataset_manager
-from geonode.base.api.serializers import ResourceBaseSerializer
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
@@ -1370,26 +1369,23 @@ class TestDeletableAssetKey(GeoNodeBaseTestSupport):
         self.asset2 = create_asset(self.user, asset_type="document", title="Original", files=[ONE_JSON])
         self.link = Link.objects.create(resource=self.resource, asset=self.asset1, name="test_link")
         self.link2 = Link.objects.create(resource=self.resource, asset=self.asset2, name="test_link_2")
+        self.url = reverse("base-resources-asset", kwargs={"pk": self.resource.pk})
 
-    def test_deletable_extra_property(self):
-        serializer = ResourceBaseSerializer(instance=self.resource)
-        data = serializer.data
-        links = data.get("links", [])  # get value from LinksSerializer
-
-        # Create a mapping from asset title to the link's deletable status
+    def test_deletable_property(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        # Create a mapping from asset title to the deletable status
         deletable_status_by_title = {
-            link.get("extras", {}).get("content", {}).get("title"): link.get("extras", {}).get("deletable")
-            for link in links
-            if link.get("extras", {}).get("content", {}).get("title")
+            item.get("title"): item.get("deletable") for item in response.data if item.get("title")
         }
-        # Assertions for specific asset titles
         self.assertIn("Test Asset for Deletion", deletable_status_by_title)
         self.assertTrue(
             deletable_status_by_title["Test Asset for Deletion"],
-            "Link with title 'Test Asset for Deletion' should have deletable=True",
+            "Asset with title 'Test Asset for Deletion' should have deletable=True",
         )
         self.assertIn("Original", deletable_status_by_title)
         self.assertFalse(
             deletable_status_by_title["Original"],
-            "Link with title 'Original' should have deletable=False",
+            "Asset with title 'Original' should have deletable=False",
         )

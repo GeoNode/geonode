@@ -1456,6 +1456,7 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
     def test_get_assets_as_admin(self):
         """Superuser should see all assets linked to the resource."""
         self.client.force_login(self.admin_user)
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -1465,10 +1466,13 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
         # Validate response schema
         for item in response.data:
             self.assertIn("id", item)
-            self.assertIn("name", item)
-            self.assertIn("download_url", item)
-            self.assertIn("created", item)
+            self.assertIn("title", item)
+            self.assertIn("description", item)
+            self.assertIn("type", item)
             self.assertIn("deletable", item)
+            self.assertIn("urls", item)
+            self.assertIn("download_url", item["urls"])
+            self.assertIn("link", item["urls"])
 
         returned_ids = {item["id"] for item in response.data}
         self.assertEqual(returned_ids, {self.asset_owner.id, self.asset_admin.id})
@@ -1476,17 +1480,21 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
     def test_get_assets_as_owner(self):
         """Asset owner should only see their own assets linked to the resource."""
         self.client.force_login(self.owner_user)
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, list)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["id"], self.asset_owner.id)
-        self.assertEqual(response.data[0]["name"], self.asset_owner.title)
+        self.assertEqual(response.data[0]["title"], self.asset_owner.title)
+        self.assertEqual(response.data[0]["description"], self.asset_owner.description)
+        self.assertEqual(response.data[0]["type"], self.asset_owner.type)
 
     def test_get_assets_as_non_owner(self):
         """Authenticated non-owner/non-admin user should get an empty list."""
         self.client.force_login(self.other_user)
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -1496,6 +1504,7 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
     def test_get_assets_as_anonymous(self):
         """Anonymous user should get an empty list."""
         self.client.logout()
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
