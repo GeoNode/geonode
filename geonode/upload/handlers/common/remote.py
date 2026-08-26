@@ -36,6 +36,7 @@ from urllib.parse import urlparse
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
+from geonode.utils import safe_request_url
 
 logger = logging.getLogger("importer")
 
@@ -90,7 +91,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         and if the url is valid
         """
         try:
-            r = requests.get(url, timeout=10)
+            r = safe_request_url("GET", url, timeout=10)
             r.raise_for_status()
         except requests.exceptions.Timeout:
             raise ImportException("Timed out")
