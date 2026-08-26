@@ -433,6 +433,8 @@ INSTALLED_APPS = (
     "rest_framework",
     "rest_framework_gis",
     "dynamic_rest",
+    # OpenAPI schema for /api/v3/ only -- see geonode.api.v3.schema
+    "drf_spectacular",
     # Theme
     "django_select2",
     "django_forms_bootstrap",
@@ -492,6 +494,24 @@ REST_FRAMEWORK = {
 }
 REST_FRAMEWORK_EXTENSIONS = {
     "DEFAULT_PARENT_LOOKUP_KWARG_NAME_PREFIX": "",
+}
+
+# OpenAPI schema, /api/v3/ only -- see geonode.api.v3.schema.
+#
+# REST_FRAMEWORK above deliberately has no DEFAULT_SCHEMA_CLASS; setting one
+# globally would apply it outside v3 too.
+SPECTACULAR_SETTINGS = {
+    "TITLE": "GeoNode API v3",
+    "DESCRIPTION": (
+        "Version 3 of the GeoNode REST API. Plain Django REST Framework: field "
+        "selection is the single `fields` query parameter, and a trailing slash "
+        "is required on every path."
+    ),
+    "VERSION": "3.0.0",
+    "SCHEMA_PATH_PREFIX": "/api/v3",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "PREPROCESSING_HOOKS": ["geonode.api.v3.schema.exclude_non_v3_endpoints"],
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 REST_API_DEFAULT_PAGE = os.getenv("REST_API_DEFAULT_PAGE", 1)
