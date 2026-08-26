@@ -25,7 +25,7 @@ classifiers = [
 # Core dependencies (consolidated from requirements.txt)
 dependencies = [
     "Pillow==12.3.0",
-    "lxml==6.1.1",
+    "lxml==6.1.2",
     "psycopg2==2.9.12",
     "Django==5.2.17",
 
@@ -42,7 +42,7 @@ dependencies = [
     "smart_open==7.0.4",
     "PyMuPDF==1.28.2",
     "defusedxml==0.7.1",
-    "zipstream-ng==1.9.2",
+    "zipstream-ng==1.9.3",
 
     # Django Apps
     "django-allauth==65.19.1",
@@ -105,7 +105,7 @@ dependencies = [
     "gisdata==0.5.4",
     # importer dependencies
     # blocked to <80 to avoid warning during the runtime for with py312 related to the polymorphic model
-    "setuptools<83",
+    "setuptools<85",
     "pdok-geopackage-validator==0.14.4",
     "geonode-django-dynamic-model==0.4.0",
     # datetimepicker widget
