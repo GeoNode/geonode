@@ -18,7 +18,7 @@
 #########################################################################
 from collections import namedtuple
 from urllib.parse import ParseResult
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from mock import MagicMock, patch
 from geonode.upload.api.exceptions import ImportException
 from django.contrib.auth import get_user_model
@@ -113,6 +113,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertIsNotNone(_exc)
         self.assertTrue("The provided url is not reachable")
 
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["geoserver:8080"])
     def test_is_valid_should_pass_with_valid_url(self):
         self.handler.is_valid_url(url=self.valid_payload_with_parse_false["url"])
 
