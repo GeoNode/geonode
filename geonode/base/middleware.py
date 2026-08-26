@@ -75,10 +75,18 @@ class RequestQueryStatsMiddleware:
 
 class RequestProfilingMiddleware:
     """
-    Adds an `X-Profile-Top` response header: the N slowest functions this
-    request called, by cumulative time, straight from stdlib cProfile/pstats
-    (one line per function, `|`-joined since header values can't carry
-    newlines). Same opt-in pattern as RequestQueryStatsMiddleware, but
+    Adds an `X-Profile-Top` response header: the N functions this request
+    spent the most *self* time in (pstats "tottime" — time in that function
+    alone, excluding sub-calls), straight from stdlib cProfile/pstats (one
+    line per function, `|`-joined since header values can't carry
+    newlines). Sorted by tottime rather than cumtime on purpose: cumtime on
+    a request profile is dominated by the outer middleware/dispatch chain
+    (every wrapper down to the view shows nearly the same cumulative time,
+    which just retraces the call stack, not where time is actually spent).
+    tottime goes straight to the leaf functions doing real work — DB
+    driver calls, serialization, template rendering.
+
+    Same opt-in pattern as RequestQueryStatsMiddleware, but
     noisier to run — cProfile instruments every function call, so this adds
     real per-request overhead. Off by default (env var
     EXPOSE_REQUEST_PROFILING); only ever turn it on for a perf-testing
@@ -102,7 +110,7 @@ class RequestProfilingMiddleware:
             profiler.disable()
 
         buf = io.StringIO()
-        pstats.Stats(profiler, stream=buf).strip_dirs().sort_stats("cumulative").print_stats(self.TOP_N)
+        pstats.Stats(profiler, stream=buf).strip_dirs().sort_stats("tottime").print_stats(self.TOP_N)
         # first 5 lines are the summary header pstats always prints
         # (call count, sort order, column titles) — the header only wants
         # the actual function rows
