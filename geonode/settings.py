@@ -713,6 +713,7 @@ MIDDLEWARE = (
     # first in the list = outermost wrapper, so it counts queries run by
     # every middleware below it too, not just the view
     "geonode.base.middleware.RequestQueryStatsMiddleware",
+    "geonode.base.middleware.RequestProfilingMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -782,6 +783,12 @@ X_FRAME_OPTIONS = os.environ.get("X_FRAME_OPTIONS", "DENY")
 # perf_tool turns it on for a request-scoped companion to its Postgres-side
 # (whole-database) counters.
 EXPOSE_DB_QUERY_STATS_HEADER = ast.literal_eval(os.environ.get("EXPOSE_DB_QUERY_STATS_HEADER", "False"))
+
+# Adds an X-Profile-Top response header with the slowest functions this
+# request called (see geonode.base.middleware.RequestProfilingMiddleware) —
+# off by default, cProfile adds real per-request overhead. perf_tool turns
+# it on to profile Python code itself, not just DB/wall-time numbers.
+EXPOSE_REQUEST_PROFILING = ast.literal_eval(os.environ.get("EXPOSE_REQUEST_PROFILING", "False"))
 SECURE_CONTENT_TYPE_NOSNIFF = ast.literal_eval(os.environ.get("SECURE_CONTENT_TYPE_NOSNIFF", "True"))
 SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get("SECURE_BROWSER_XSS_FILTER", "True"))
 SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get("SECURE_SSL_REDIRECT", "False"))

@@ -20,6 +20,9 @@
 
 # Geonode functionality
 
+import cProfile
+import io
+import pstats
 import time
 
 from django.conf import settings
@@ -67,6 +70,44 @@ class RequestQueryStatsMiddleware:
             response = self.get_response(request)
         response["X-DB-Query-Count"] = str(len(queries))
         response["X-DB-Query-Time-Ms"] = str(round(sum(queries) * 1000, 2))
+        return response
+
+
+class RequestProfilingMiddleware:
+    """
+    Adds an `X-Profile-Top` response header: the N slowest functions this
+    request called, by cumulative time, straight from stdlib cProfile/pstats
+    (one line per function, `|`-joined since header values can't carry
+    newlines). Same opt-in pattern as RequestQueryStatsMiddleware, but
+    noisier to run — cProfile instruments every function call, so this adds
+    real per-request overhead. Off by default (env var
+    EXPOSE_REQUEST_PROFILING); only ever turn it on for a perf-testing
+    instance, never in production.
+    """
+
+    TOP_N = 15
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if not getattr(settings, "EXPOSE_REQUEST_PROFILING", False):
+            return self.get_response(request)
+
+        profiler = cProfile.Profile()
+        profiler.enable()
+        try:
+            response = self.get_response(request)
+        finally:
+            profiler.disable()
+
+        buf = io.StringIO()
+        pstats.Stats(profiler, stream=buf).strip_dirs().sort_stats("cumulative").print_stats(self.TOP_N)
+        # first 5 lines are the summary header pstats always prints
+        # (call count, sort order, column titles) — the header only wants
+        # the actual function rows
+        lines = [ln.strip() for ln in buf.getvalue().splitlines()[5:] if ln.strip()]
+        response["X-Profile-Top"] = " | ".join(lines)
         return response
 
 
