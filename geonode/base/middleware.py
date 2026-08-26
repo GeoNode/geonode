@@ -23,6 +23,7 @@
 import cProfile
 import io
 import pstats
+import re
 import time
 
 from django.conf import settings
@@ -75,16 +76,23 @@ class RequestQueryStatsMiddleware:
 
 class RequestProfilingMiddleware:
     """
-    Adds an `X-Profile-Top` response header: the N functions this request
-    spent the most *self* time in (pstats "tottime" — time in that function
-    alone, excluding sub-calls), straight from stdlib cProfile/pstats (one
-    line per function, `|`-joined since header values can't carry
-    newlines). Sorted by tottime rather than cumtime on purpose: cumtime on
-    a request profile is dominated by the outer middleware/dispatch chain
-    (every wrapper down to the view shows nearly the same cumulative time,
-    which just retraces the call stack, not where time is actually spent).
-    tottime goes straight to the leaf functions doing real work — DB
-    driver calls, serialization, template rendering.
+    Adds an `X-Profile-Top` response header: the N *geonode* functions this
+    request spent the most self time in (pstats "tottime" — time in that
+    function alone, excluding sub-calls), straight from stdlib
+    cProfile/pstats (one line per function, `|`-joined since header values
+    can't carry newlines). Sorted by tottime rather than cumtime on
+    purpose: cumtime on a request profile is dominated by the outer
+    middleware/dispatch chain (every wrapper down to the view shows nearly
+    the same cumulative time, which just retraces the call stack, not
+    where time is actually spent).
+
+    Filtered to frames whose file path contains "/geonode/" — psycopg2,
+    Django's URL resolver, DRF internals etc. can dominate a raw top-N by
+    self time, but there's no app code to change there. The one place
+    that noise IS the finding (e.g. an unindexed query, or a per-row
+    reverse() call) still shows up here, just attributed to the geonode
+    call site that triggered it rather than the stdlib/library frame that
+    happened to burn the time.
 
     Same opt-in pattern as RequestQueryStatsMiddleware, but
     noisier to run — cProfile instruments every function call, so this adds
@@ -110,11 +118,17 @@ class RequestProfilingMiddleware:
             profiler.disable()
 
         buf = io.StringIO()
-        pstats.Stats(profiler, stream=buf).strip_dirs().sort_stats("tottime").print_stats(self.TOP_N)
+        # no strip_dirs(): the "/geonode/" regex restriction below needs the
+        # full path to match on, not just the bare filename
+        stats = pstats.Stats(profiler, stream=buf).sort_stats("tottime")
+        stats.print_stats(r"/geonode/", self.TOP_N)
         # first 5 lines are the summary header pstats always prints
         # (call count, sort order, column titles) — the header only wants
         # the actual function rows
         lines = [ln.strip() for ln in buf.getvalue().splitlines()[5:] if ln.strip()]
+        # trim the absolute path down to "geonode/..." now that filtering's
+        # done — every remaining line is a geonode file by construction
+        lines = [re.sub(r"^\S*?(?=geonode/)", "", ln) for ln in lines]
         response["X-Profile-Top"] = " | ".join(lines)
         return response
 
