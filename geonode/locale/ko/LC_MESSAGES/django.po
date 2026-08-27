@@ -4756,8 +4756,6 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr "고도"
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
 msgstr "데이터셋"
 
@@ -5259,7 +5257,7 @@ msgstr ""
 msgid "Log in"
 msgstr "로그인"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "기존 계정에 로그인"
 
 #, python-format

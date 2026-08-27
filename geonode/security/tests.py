@@ -40,7 +40,7 @@ from django.http import HttpRequest
 from django.test.testcases import TestCase
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, Permission
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
@@ -89,6 +89,7 @@ from geonode.geoserver.security import (
     create_geofence_rules,
     delete_geofence_rules_for_layer,
 )
+from geonode.base import enumerations
 
 
 from .utils import (
@@ -1438,7 +1439,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             actual = get_visible_resources(
                 queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user)
             )
-            self.assertEqual(1, actual.count())
+            # plus "dataset metadata true" from the fixtures
+            self.assertEqual(2, actual.count())
         finally:
             if dataset:
                 dataset.delete()
@@ -1470,7 +1472,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertIsNotNone(standard_user)
         admin_user.is_superuser = True
         admin_user.save()
-        layers = Dataset.objects.all()
+        # get_visible_resources only returns metadata_only=False resources
+        layers = Dataset.objects.filter(metadata_only=False)
 
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
@@ -2264,6 +2267,18 @@ class SecurityRulesTests(TestCase):
             clean_dataset = Dataset.objects.get(pk=self._l.id)
             # Check dirty state
             self.assertFalse(clean_dataset.dirty_state)
+
+    @patch("geonode.geoserver.security.create_geofence_rules")
+    def test_sync_resources_with_guardian_skips_remote_resources(self, mock_create_geofence_rules):
+        # Remote datasets have no local GeoFence rules to sync (#14524)
+        remote_dataset = create_single_dataset("test_remote_dataset", sourcetype=enumerations.SOURCE_TYPE_REMOTE)
+        remote_dataset.dirty_state = True
+        remote_dataset.save()
+
+        sync_resources_with_guardian(resource=remote_dataset)
+
+        mock_create_geofence_rules.assert_not_called()
+        self.assertFalse(Dataset.objects.get(pk=remote_dataset.id).dirty_state)
 
     # TODO: DELAYED SECURITY MUST BE REVISED
     def test_sync_resources_with_guardian_delay_true(self):
@@ -4161,6 +4176,99 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         finally:
             config.read_only = original_read_only
             config.save()
+
+    def test_global_perms_caching(self):
+        """Global (no-instance) perms are cached and returned from cache on the second call."""
+        cache_key = permissions_registry._get_global_cache_key(self.test_user)
+        self.assertIsNone(cache.get(cache_key))
+
+        perms_1 = permissions_registry.get_perms(user=self.test_user, use_cache=True)
+        self.assertIsInstance(perms_1, list)
+        # cache is now populated
+        self.assertEqual(cache.get(cache_key), perms_1)
+
+        perms_2 = permissions_registry.get_perms(user=self.test_user, use_cache=True)
+        self.assertEqual(perms_1, perms_2)
+
+    def test_global_perms_not_cached_without_use_cache(self):
+        """Without use_cache the global perms are not written to the cache."""
+        cache_key = permissions_registry._get_global_cache_key(self.test_user)
+        permissions_registry.get_perms(user=self.test_user)
+        self.assertIsNone(cache.get(cache_key))
+
+    def test_global_perms_cache_cleared_on_profile_activity(self):
+        """delete_resource_permissions_cache invalidates the user's global perms cache."""
+        cache_key = permissions_registry._get_global_cache_key(self.test_user)
+        permissions_registry.get_perms(user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(cache_key))
+
+        permissions_registry.delete_resource_permissions_cache(self.test_user)
+        self.assertIsNone(cache.get(cache_key))
+
+    def test_global_perms_cache_cleared_on_group_activity(self):
+        """delete_resource_permissions_cache on a group invalidates its members' global perms cache."""
+        # admin_user is a member of test_group (see setUpClass)
+        cache_key = permissions_registry._get_global_cache_key(self.admin_user)
+        permissions_registry.get_perms(user=self.admin_user, use_cache=True)
+        self.assertIsNotNone(cache.get(cache_key))
+
+        permissions_registry.delete_resource_permissions_cache(self.test_group)
+        self.assertIsNone(cache.get(cache_key))
+
+    def test_global_perms_cache_cleared_on_superuser_flag_change(self):
+        """Toggling is_superuser invalidates the cached global perms immediately."""
+        user = get_user_model().objects.create_user(
+            username=f"promoted_user_{uuid4()}", password="testpass123", is_superuser=False
+        )
+        try:
+            cache_key = permissions_registry._get_global_cache_key(user)
+            perms_before = permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertNotIn("add_remote_resource", perms_before)
+            self.assertIsNotNone(cache.get(cache_key))
+
+            user.is_superuser = True
+            user.save()
+            self.assertIsNone(cache.get(cache_key))
+
+            perms_after = permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertIn("add_remote_resource", perms_after)
+        finally:
+            user.delete()
+
+    def test_global_perms_cache_cleared_on_user_permissions_change(self):
+        """Adding a Permission to a user's user_permissions invalidates the cached global perms."""
+        user = get_user_model().objects.create_user(username=f"perm_user_{uuid4()}", password="testpass123")
+        try:
+            cache_key = permissions_registry._get_global_cache_key(user)
+            permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertIsNotNone(cache.get(cache_key))
+
+            perm = Permission.objects.first()
+            user.user_permissions.add(perm)
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            user.delete()
+
+    def test_global_perms_cache_cleared_on_group_permissions_change(self):
+        """Changing a Group's permissions invalidates the cached global perms of its members."""
+        group, _ = Group.objects.get_or_create(name=f"perm_group_{uuid4()}")
+        user = get_user_model().objects.create_user(username=f"group_perm_user_{uuid4()}", password="testpass123")
+        user.groups.add(group)
+        try:
+            cache_key = permissions_registry._get_global_cache_key(user)
+            permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertIsNotNone(cache.get(cache_key))
+
+            perm = Permission.objects.first()
+            group.permissions.add(perm)
+            self.assertIsNone(cache.get(cache_key))
+
+            permissions_registry.get_perms(user=user, use_cache=True)
+            group.permissions.remove(perm)
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            user.delete()
+            group.delete()
 
 
 class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):

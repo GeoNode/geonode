@@ -5274,7 +5274,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Autentificare"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Conectați-vă la un cont existent"
 
 #, python-format

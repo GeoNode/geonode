@@ -17,6 +17,8 @@
 #
 #########################################################################
 import copy
+import requests
+from requests.models import PreparedRequest, Response
 from unittest import TestCase
 
 from unittest.mock import patch
@@ -32,7 +34,16 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, bbox_to_wkt, is_safe_url, is_safe_url_with_redirects
+from geonode.utils import (
+    copy_tree,
+    bbox_to_wkt,
+    get_allowed_extensions,
+    is_safe_url,
+    is_safe_url_with_redirects,
+    assert_safe_xml,
+    safe_request_url,
+    UnsafeXMLError,
+)
 from unittest.mock import MagicMock
 
 
@@ -192,6 +203,25 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
             self.assertIn([a.attribute, a.attribute_type], expected_results)
 
 
+class TestAssertSafeXml(TestCase):
+    def test_rejects_xslt_stylesheet(self):
+        payload = (
+            b'<?xml version="1.0"?>'
+            b'<?xml-stylesheet type="text/xsl" href="#s"?>'
+            b'<doc><xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/></doc>'
+        )
+        with self.assertRaises(UnsafeXMLError):
+            assert_safe_xml(payload)
+
+    def test_rejects_script_element(self):
+        with self.assertRaises(UnsafeXMLError):
+            assert_safe_xml(b"<doc><script>alert(1)</script></doc>")
+
+    def test_accepts_safe_xml(self):
+        payload = b"<doc><title>safe content</title></doc>"
+        self.assertIsNotNone(assert_safe_xml(payload))
+
+
 class TestSupportedTypes(TestCase):
     def setUp(self):
         self.replaced = [
@@ -204,6 +234,24 @@ class TestSupportedTypes(TestCase):
                 "optional": ["xml", "sld"],
             },
         ]
+
+    def test_get_allowed_extensions_defaults_to_dataset(self):
+        actual = get_allowed_extensions()
+        self.assertIn("shp", actual)
+        self.assertNotIn("txt", actual)
+
+    def test_get_allowed_extensions_for_document(self):
+        actual = get_allowed_extensions(kind="document")
+        self.assertIn("txt", actual)
+        self.assertNotIn("shp", actual)
+
+    def test_get_allowed_extensions_for_all_is_the_union(self):
+        actual = get_allowed_extensions(kind="all")
+        self.assertIn("shp", actual)
+        self.assertIn("txt", actual)
+
+    def test_get_allowed_extensions_returns_empty_list_for_an_invalid_kind(self):
+        self.assertEqual([], get_allowed_extensions(kind="invalid"))
 
 
 class TestRegionsCrossingDateLine(TestCase):
@@ -415,3 +463,43 @@ class TestIsSafeURL(djangoTestCase):
         with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(None, None, None, None, ("192.168.1.100", 0))]
             self.assertTrue(is_safe_url("https://internal.private.host:9090/geoserver/ows"))
+
+
+def _fake_response(status_code, url, location=None):
+    """Build a minimal requests.Response usable by resolve_redirects without a socket."""
+    response = Response()
+    request = PreparedRequest()
+    request.prepare(method="GET", url=url)
+    response.status_code = status_code
+    response.url = url
+    response.request = request
+    response.raw = None
+    response._content = b""
+    response._content_consumed = True
+    response.history = []
+    if location is not None:
+        response.headers["Location"] = location
+    return response
+
+
+@override_settings(SAFE_URL_CHECK_ENABLED=True)
+class TestSafeRequestUrl(djangoTestCase):
+    """safe_request_url must validate the initial URL and every redirect hop."""
+
+    @patch("geonode.utils.is_safe_url")
+    def test_rejects_disallowed_initial_url(self, mock_is_safe_url):
+        """An initial URL that is not allowed is rejected before any request is sent."""
+        mock_is_safe_url.return_value = False
+        with self.assertRaises(requests.exceptions.InvalidURL):
+            safe_request_url("GET", "http://first.invalid/resource")
+
+    @patch("requests.adapters.HTTPAdapter.send")
+    @patch("geonode.utils.is_safe_url")
+    def test_rejects_disallowed_redirect_target(self, mock_is_safe_url, mock_adapter_send):
+        """A redirect whose target is not allowed is rejected on the redirect hop."""
+        mock_is_safe_url.side_effect = lambda candidate: "allowed.invalid" in candidate
+        mock_adapter_send.return_value = _fake_response(
+            302, "http://allowed.invalid/resource", location="http://other.invalid/resource"
+        )
+        with self.assertRaises(requests.exceptions.InvalidURL):
+            safe_request_url("GET", "http://allowed.invalid/resource")

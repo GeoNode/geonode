@@ -1,11 +1,14 @@
 {% load thesaurus %}
 {% load l10n %}
+{% load multilang %}
 <gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
    <gmd:fileIdentifier>
      <gco:CharacterString>{{layer.uuid}}</gco:CharacterString>
    </gmd:fileIdentifier>
+   {% language_info layer.language as resource_language %}
+   {% languages_info metadata as locales %}
    <gmd:language>
-     <gco:CharacterString>{{layer.language}}</gco:CharacterString>
+     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="{{ resource_language.iso639_2 }}">{{ resource_language.label }}</gmd:LanguageCode>
    </gmd:language>
    <gmd:characterSet>
      <gmd:MD_CharacterSetCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
@@ -91,6 +94,18 @@
    <gmd:metadataStandardVersion>
      <gco:CharacterString>ISO 19115:2003</gco:CharacterString>
    </gmd:metadataStandardVersion>
+   {% for locale in locales %}
+   <gmd:locale>
+     <gmd:PT_Locale id="{{ locale.id }}">
+       <gmd:languageCode>
+         <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="{{ locale.iso639_2 }}">{{ locale.label }}</gmd:LanguageCode>
+       </gmd:languageCode>
+       <gmd:characterEncoding>
+         <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="{{ locale.encoding }}">{{ locale.encoding }}</gmd:MD_CharacterSetCode>
+       </gmd:characterEncoding>
+     </gmd:PT_Locale>
+   </gmd:locale>
+   {% endfor %}
    <gmd:spatialRepresentationInfo />
    <gmd:referenceSystemInfo>
      <gmd:MD_ReferenceSystem>
@@ -114,8 +129,18 @@
      <gmd:MD_DataIdentification>
        <gmd:citation>
          <gmd:CI_Citation>
-           <gmd:title>
+           {% multilang_values "title" metadata as title_translations %}
+           <gmd:title{% if title_translations %} xsi:type="gmd:PT_FreeText_PropertyType"{% endif %}>
              <gco:CharacterString>{{layer.title}}</gco:CharacterString>
+             {% if title_translations %}
+             <gmd:PT_FreeText>
+               {% for t in title_translations %}
+               <gmd:textGroup>
+                 <gmd:LocalisedCharacterString locale="#locale-{{ t.locale }}">{{ t.text }}</gmd:LocalisedCharacterString>
+               </gmd:textGroup>
+               {% endfor %}
+             </gmd:PT_FreeText>
+             {% endif %}
            </gmd:title>
            {% if layer.alternate %}
            <gmd:alternateTitle>
@@ -149,8 +174,18 @@
            </gmd:presentationForm>
          </gmd:CI_Citation>
        </gmd:citation>
-       <gmd:abstract>
+       {% multilang_values "abstract" metadata as abstract_translations %}
+       <gmd:abstract{% if abstract_translations %} xsi:type="gmd:PT_FreeText_PropertyType"{% endif %}>
          <gco:CharacterString>{{layer.raw_abstract}}</gco:CharacterString>
+         {% if abstract_translations %}
+         <gmd:PT_FreeText>
+           {% for t in abstract_translations %}
+           <gmd:textGroup>
+             <gmd:LocalisedCharacterString locale="#locale-{{ t.locale }}">{{ t.text }}</gmd:LocalisedCharacterString>
+           </gmd:textGroup>
+           {% endfor %}
+         </gmd:PT_FreeText>
+         {% endif %}
        </gmd:abstract>
        <gmd:purpose {% if not layer.raw_purpose %}gco:nilReason="missing"{% endif %}>
              {% if layer.raw_purpose %}<gco:CharacterString>{{layer.raw_purpose}}</gco:CharacterString>{% endif %}
@@ -370,7 +405,7 @@
        </gmd:spatialRepresentationType>
        {% endif %}
        <gmd:language>
-         <gco:CharacterString>{{layer.language}}</gco:CharacterString>
+         <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="{{ resource_language.iso639_2 }}">{{ resource_language.label }}</gmd:LanguageCode>
        </gmd:language>
        <gmd:characterSet>
          <gmd:MD_CharacterSetCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>

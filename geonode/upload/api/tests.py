@@ -33,6 +33,7 @@ from django.http import HttpResponse, QueryDict
 
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.tests.utils import ImporterBaseTestSupport
+from geonode.upload.utils import UploadLimitValidator
 
 
 def _build_gpkg_header():
@@ -96,6 +97,24 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.patch(self.url)
         self.assertEqual(405, response.status_code)
 
+    def test_importer_upload_rejects_copy_action(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {"action": "copy", "resource_pk": self.dataset.pk, "title": "copy"}
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"use PUT /api/v2/resources/{id}/copy instead", response.content)
+
+    def test_importer_upload_rejects_document_copy_action(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {"action": "document_copy", "resource_pk": self.dataset.pk, "title": "copy"}
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"use PUT /api/v2/resources/{id}/copy instead", response.content)
+
     def test_raise_exception_if_file_is_not_a_handled(self):
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -154,6 +173,97 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertEqual(400, response.status_code)
         self.assertFalse(Dataset.objects.filter(name="fake").exists())
+
+    def test_importer_upload_rejects_unsafe_xml_file(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "xml_file": SimpleUploadedFile(
+                name="meta.xml",
+                content=b'<?xml version="1.0"?><!DOCTYPE x SYSTEM "http://evil.example.com/x.dtd"><x/>',
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe XML file", response.content)
+
+    def test_importer_upload_rejects_unsafe_sld_file(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "sld_file": SimpleUploadedFile(
+                name="style.sld",
+                content=b'<?xml version="1.0"?><StyledLayerDescriptor><x onload="alert(1)"/>'
+                b"</StyledLayerDescriptor>",
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe SLD file", response.content)
+
+    @patch("geonode.upload.api.views.import_orchestrator")
+    def test_importer_upload_accepts_safe_xml_and_sld(self, mock_orchestrator):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "xml_file": SimpleUploadedFile(
+                name="meta.xml",
+                content=b'<?xml version="1.0"?><metadata><title>ok</title></metadata>',
+                content_type="application/xml",
+            ),
+            "sld_file": SimpleUploadedFile(
+                name="style.sld",
+                content=b'<?xml version="1.0"?><StyledLayerDescriptor version="1.0.0"/>',
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(201, response.status_code)
+
+    @patch("geonode.upload.api.views.import_orchestrator")
+    def test_importer_upload_accepts_iso_xml_without_xml_declaration(self, _orc):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        iso_xml_content = (
+            b'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"'
+            b' xmlns:gco="http://www.isotc211.org/2005/gco">\n'
+            b"  <gmd:fileIdentifier><gco:CharacterString>test-iso-uuid</gco:CharacterString></gmd:fileIdentifier>\n"
+            b"  <gmd:identificationInfo>\n"
+            b"    <gmd:MD_DataIdentification>\n"
+            b"      <gmd:abstract><gco:CharacterString>Test abstract.</gco:CharacterString></gmd:abstract>\n"
+            b"    </gmd:MD_DataIdentification>\n"
+            b"  </gmd:identificationInfo>\n"
+            b"</gmd:MD_Metadata>"
+        )
+        payload = {
+            "base_file": SimpleUploadedFile("metadata.xml", iso_xml_content, "application/xml"),
+            "action": "resource_metadata_upload",
+            "resource_pk": self.dataset.pk,
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(201, response.status_code)
+
+    def test_importer_upload_rejects_other_text_with_xml_extension(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile("fake.xml", b"This is plain text, not XML.", "text/plain"),
+            "action": "resource_metadata_upload",
+            "resource_pk": self.dataset.pk,
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(400, response.status_code)
 
     def test_importer_upload_rejects_zip_with_path_traversal(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -328,6 +438,29 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.post(self.url, data=payload)
 
         self.assertEqual(201, response.status_code)
+
+    def test_total_upload_size_counts_zip_file_of_different_size(self):
+        validator = UploadLimitValidator(user=None)
+        files = {"base_file": MagicMock(size=10), "zip_file": MagicMock(size=1000)}
+        self.assertEqual(1010, validator._get_uploaded_files_total_size(files))
+
+    def test_total_upload_size_ignores_zip_file_matching_base_file(self):
+        validator = UploadLimitValidator(user=None)
+        files = {"base_file": MagicMock(size=500), "zip_file": MagicMock(size=500)}
+        self.assertEqual(500, validator._get_uploaded_files_total_size(files))
+
+    @patch("geonode.storage.manager.StorageManager.delete_retrieved_paths")
+    def test_cloned_files_removed_when_no_handler_is_found(self, mock_delete):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": open(f"{project_dir}/tests/fixture/valid.zip", "rb"),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertNotEqual(201, response.status_code)
+        mock_delete.assert_called_with(force=True)
 
     @override_settings(SAFE_URL_CHECK_ENABLED=True)
     def test_remote_upload_rejects_unsafe_url(self):

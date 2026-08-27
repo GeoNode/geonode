@@ -38,6 +38,7 @@ from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
+from geonode.utils import safe_request_url
 
 logger = logging.getLogger("importer")
 
@@ -48,6 +49,8 @@ class BaseRemoteResourceHandler(BaseHandler):
     It must provide the task_lists required to comple the upload
     As first implementation only remote 3dtiles are supported
     """
+
+    handler_type = "dataset"
 
     TASKS = {
         exa.UPLOAD.value: (
@@ -95,7 +98,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         """
         try:
             auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
-            r = requests.get(url, timeout=10, auth=auth)
+            r = safe_request_url("GET", url, timeout=10, auth=auth)
             r.raise_for_status()
         except requests.exceptions.Timeout:
             raise ImportException("Timed out")

@@ -91,7 +91,7 @@ class GroupProfile(models.Model):
     email = models.EmailField(_("Email"), null=True, blank=True, help_text=email_help_text)
     keywords = TaggableManager(_("Keywords"), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(
-        _("Access"), max_length=15, default="public'", choices=GROUP_CHOICES, help_text=access_help_text
+        _("Access"), max_length=15, default="public", choices=GROUP_CHOICES, help_text=access_help_text
     )
     categories = models.ManyToManyField(GroupCategory, verbose_name=_("Categories"), blank=True, related_name="groups")
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -276,14 +276,16 @@ class GroupMember(models.Model):
     joined = models.DateTimeField(default=now)
 
     def save(self, *args, **kwargs):
-        # add django.contrib.auth.group to user
-        self.user.groups.add(self.group.group)
         super().save(*args, **kwargs)
+        # add django.contrib.auth.group to user
+        if not self.user.groups.filter(id=self.group.group.id).exists():
+            self.user.groups.add(self.group.group)
         self._handle_perms(role=self.role)
 
     def delete(self, *args, **kwargs):
-        self.user.groups.remove(self.group.group)
         super().delete(*args, **kwargs)
+        if self.user.groups.filter(id=self.group.group.id).exists():
+            self.user.groups.remove(self.group.group)
         self._handle_perms()
 
     def promote(self, *args, **kwargs):

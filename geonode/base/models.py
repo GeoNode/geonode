@@ -23,7 +23,9 @@ import html
 import math
 import uuid
 import logging
+import tempfile
 import traceback
+from io import BytesIO
 from typing import List, Optional, Union, Tuple
 from sequences.models import Sequence
 from sequences import get_next_value
@@ -37,7 +39,7 @@ from django.utils.timezone import now
 from django.db.models import Q, signals
 from django.db.utils import IntegrityError, OperationalError
 from django.contrib.auth.models import Group
-from django.core.files.base import ContentFile
+from django.core.files import File
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.db.models.fields.json import JSONField
@@ -71,7 +73,6 @@ from geonode.utils import (
     find_by_attr,
     bbox_to_projection,
     bbox_swap,
-    get_allowed_extensions,
     is_monochromatic_image,
 )
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
@@ -854,7 +855,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=False,
         default=enumerations.SOURCE_TYPE_LOCAL,
         choices=enumerations.SOURCE_TYPES,
-        help_text=_('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".'),
+        help_text=_('The resource source type, which can be one of "LOCAL" or "REMOTE".'),
     )
 
     remote_typename = models.CharField(
@@ -1309,14 +1310,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def is_copyable(self):
-        if self.resource_type == "dataset":
-            from geonode.assets.utils import get_default_asset
-            from geonode.geoserver.helpers import select_relevant_files
+        from geonode.assets.models import Asset
 
-            asset = get_default_asset(self)  # TODO: maybe we need to filter by original files
-            allowed_file = select_relevant_files(get_allowed_extensions(), asset.location) if asset else []
-            return len(allowed_file) != 0
-        return True
+        if self.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+            return True
+        if self.resource_type == "dataset":
+            if self.subtype in ["vector", "vector_time"]:
+                return True
+            if self.subtype == "raster":
+                return Asset.objects.filter(
+                    link__resource=self,
+                    title="Original",
+                ).exists()
+
+            # for tabular/local 3dtiles etc.
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type == "document":
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type in ["map", "dashboard", "geostory"]:
+            return True
+        return False
 
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
@@ -1593,28 +1606,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     image = None
 
             if image:
-                actual_name = storage_manager.save(upload_path, ContentFile(image))
-                actual_file_name = os.path.basename(actual_name)
-
-                if filename != actual_file_name:
-                    upload_path = upload_path.replace(filename, actual_file_name)
                 url = storage_manager.url(upload_path)
                 try:
-                    # Optimize the Thumbnail size and resolution
-                    im = Image.open(storage_manager.open(actual_name))
+                    im = Image.open(BytesIO(image))
                     im = thumbnail_algorithm(im, **kwargs)
 
-                    # Saving the thumb into a temporary directory on file system
-                    tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
-                    im.save(tmp_location, quality="high")
-
-                    with open(tmp_location, "rb+") as img:
-                        # Saving the img via storage manager
-                        storage_manager.save(upload_path, img)
-
-                    # If we use a remote storage, the local img is deleted
-                    if tmp_location != storage_manager.path(upload_path):
-                        os.remove(tmp_location)
+                    with tempfile.NamedTemporaryFile(suffix=".jpg") as optimized_tmp:
+                        im.save(optimized_tmp, format="JPEG", quality="high")
+                        optimized_tmp.seek(0)
+                        storage_manager.save(upload_path, File(optimized_tmp))
                 except Exception as e:
                     logger.exception(e)
 

@@ -19,6 +19,7 @@
 import io
 import os
 import shutil
+import tempfile
 from django.test import override_settings
 import gisdata
 from unittest.mock import patch
@@ -29,8 +30,28 @@ from geonode.utils import mkdtemp
 from geonode.storage.aws import AwsStorageManager
 from geonode.storage.exceptions import DataRetrieverExcepion
 from geonode.storage.manager import StorageManager
+from geonode.storage.utils import organize_files_by_ext
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
+
+
+class TestOrganizeFilesByExt(SimpleTestCase):
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp()
+        self.sample_file = os.path.join(self.tmp_dir, "sample.txt")
+        with open(self.sample_file, "w") as f:
+            f.write("content")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
+
+    def test_organize_files_by_ext_does_not_pick_a_txt_file_as_base_file_for_a_dataset(self):
+        actual = organize_files_by_ext([self.sample_file], kind="dataset")
+        self.assertNotIn("base_file", actual)
+
+    def test_organize_files_by_ext_picks_a_txt_file_as_base_file_for_a_document(self):
+        actual = organize_files_by_ext([self.sample_file], kind="document")
+        self.assertEqual(self.sample_file, str(actual["base_file"]))
 
 
 @override_settings(AWS_STORAGE_BUCKET_NAME="my-bucket-name")

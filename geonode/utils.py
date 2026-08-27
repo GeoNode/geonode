@@ -46,8 +46,9 @@ from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, tan
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.upload.api.exceptions import GeneralUploadException
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from django.conf import settings
 from django.db.models import signals
@@ -75,7 +76,6 @@ from geonode.base.auth import (
     get_token_from_auth_header,
     get_token_object_from_session,
 )
-
 from urllib.parse import (
     urljoin,
     unquote,
@@ -96,6 +96,80 @@ FORWARDED_HEADERS = ["content-type", "content-disposition"]
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
 XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
+
+
+class UnsafeXMLError(Exception):
+    """Raised when an uploaded XML carries active content (XSLT, scripts, PIs, DTD)."""
+
+
+_XSLT_NAMESPACES: typing.Final = frozenset(
+    {
+        "http://www.w3.org/1999/XSL/Transform",
+        "http://www.w3.org/TR/WD-xsl",
+    }
+)
+
+_DANGEROUS_LOCAL_NAMES: typing.Final = frozenset(
+    {
+        "script",
+        "iframe",
+        "object",
+        "embed",
+        "applet",
+        "foreignobject",
+        "handler",
+    }
+)
+
+# only data:text/html is blocked, so legitimate data:image/... keeps working
+_ACTIVE_URI_SCHEMES: typing.Final = ("javascript:", "vbscript:", "data:text/html")
+
+
+def _safe_xml_parser() -> etree.XMLParser:
+    return etree.XMLParser(
+        resolve_entities=False,
+        no_network=True,
+        load_dtd=False,
+        dtd_validation=False,
+        huge_tree=False,
+    )
+
+
+def assert_safe_xml(data):
+    """Raise UnsafeXMLError if the XML carries active content; return the root element."""
+    if isinstance(data, str):
+        data = data.encode("utf-8", "surrogatepass")
+
+    try:
+        root = etree.fromstring(data, parser=_safe_xml_parser())
+    except etree.XMLSyntaxError as err:
+        raise UnsafeXMLError(f"Document is not well-formed XML: {err}")
+
+    docinfo = root.getroottree().docinfo
+    if docinfo is not None and docinfo.doctype:
+        raise UnsafeXMLError("DOCTYPE/DTD declarations are not allowed in uploaded XML")
+
+    for proins in root.xpath("//processing-instruction()"):
+        raise UnsafeXMLError(f"Processing instruction '<?{proins.target} ...?>' is not allowed")
+
+    for el in root.iter():
+        if not isinstance(el.tag, str):
+            continue
+        qname = etree.QName(el)
+        if qname.namespace in _XSLT_NAMESPACES:
+            raise UnsafeXMLError(f"Embedded XSLT element '<{qname.localname}>' is not allowed")
+        if qname.localname.lower() in _DANGEROUS_LOCAL_NAMES:
+            raise UnsafeXMLError(f"Disallowed element '<{qname.localname}>' found")
+        for name, value in el.attrib.items():
+            local = etree.QName(name).localname if name.startswith("{") else name
+            if len(local) > 2 and local.lower().startswith("on"):
+                raise UnsafeXMLError(f"Event-handler attribute '{local}' is not allowed")
+            v = "".join((value or "").split()).lower()
+            if v.startswith(_ACTIVE_URI_SCHEMES):
+                raise UnsafeXMLError("Active URI scheme (javascript:/vbscript:/data:text/html) is not allowed")
+
+    return root
+
 
 requests.packages.urllib3.disable_warnings()
 
@@ -1418,7 +1492,10 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 from geonode.services.serviceprocessors import get_service_handler
 
                 handler = get_service_handler(
-                    instance.remote_service.service_url, service_type=instance.remote_service.type
+                    instance.remote_service.service_url,
+                    service_type=instance.remote_service.type,
+                    service_id=instance.remote_service.id,
+                    auth_config=instance.remote_service.auth_config,
                 )
                 if handler and hasattr(handler, "_create_dataset_legend_link"):
                     handler._create_dataset_legend_link(instance)
@@ -1718,7 +1795,7 @@ def get_supported_datasets_file_types():
     _available_settings = [
         module().supported_file_extension_config
         for module in orchestrator.get_handler_registry()
-        if module().supported_file_extension_config
+        if module().supported_file_extension_config and module().handler_type == "dataset"
     ]
     # injecting the new config required for FE
     default_types = [
@@ -1767,16 +1844,28 @@ def get_supported_datasets_file_types():
     return ordered_resource_types + other_resource_types
 
 
-def get_allowed_extensions():
+def get_allowed_extensions(kind: Literal["dataset", "document", "all"] = "dataset"):
     """
     The main extension is rappresented by the position 0 of the configuration
     that the handlers returns
     """
-    allowed_extention = []
-    for _type in get_supported_datasets_file_types():
-        for val in _type["formats"]:
-            allowed_extention.append(val["required_ext"][0])
-    return list(set(allowed_extention))
+    match kind:
+        case "dataset":
+            return list(set(get_dataset_extensions()))
+        case "document":
+            return list(set(get_document_extensions()))
+        case "all":
+            return list(set(get_dataset_extensions() + get_document_extensions()))
+        case _:
+            return []
+
+
+def get_dataset_extensions():
+    return [val["required_ext"][0] for _type in get_supported_datasets_file_types() for val in _type["formats"]]
+
+
+def get_document_extensions():
+    return list(DOCUMENT_TYPE_MAP.keys())
 
 
 def strtobool(value):
@@ -1861,3 +1950,24 @@ def is_safe_url_with_redirects(url: str, max_redirects: int = 3):
             return False, current_url
 
     return False, current_url
+
+
+class SafeSession(requests.Session):
+    """requests Session that validates the target host of every request it
+    dispatches, including each redirect hop, before the socket is opened.
+    """
+
+    def send(self, request, **kwargs):
+        # request.url is the fully-resolved absolute URL of this hop.
+        if not is_safe_url(request.url):
+            # Keep the raised message generic: the URL may carry tokens or credentials.
+            logger.debug("Rejected request to disallowed host: %s", urlparse(request.url).hostname)
+            raise requests.exceptions.InvalidURL("The requested URL is not allowed.")
+        return super().send(request, **kwargs)
+
+
+def safe_request_url(method, url, max_redirects=3, **kwargs):
+    kwargs.setdefault("timeout", 10)
+    with SafeSession() as session:
+        session.max_redirects = max_redirects
+        return session.request(method, url, **kwargs)

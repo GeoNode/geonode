@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2018 OSGeo
+# Copyright (C) 2026 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,3 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from rest_framework.exceptions import APIException
+from rest_framework import status
+
+
+class InvalidDocumentException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = "The document provided is invalid"
+    default_code = "invalid_document"
+    category = "importer"

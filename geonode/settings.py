@@ -1458,10 +1458,10 @@ SEARCH_FILTERS = {
 
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
-BROKER_HEARTBEAT = 0
+CELERY_BROKER_HEARTBEAT = 0
 
 # Avoid long running and retried tasks to be run over-and-over again.
-BROKER_TRANSPORT_OPTIONS = {
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "fanout_prefix": True,
     "fanout_patterns": True,
     "socket_timeout": 60,
@@ -1496,7 +1496,7 @@ CELERY_RESULT_EXPIRES = 86400
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get("CELERY_ACKS_LATE", "True"))
 
 # Add a ten-minutes timeout to all Celery tasks.
-CELERYD_SOFT_TIME_LIMIT = 600
+CELERY_TASK_SOFT_TIME_LIMIT = 600
 
 # Set this to False in order to run async
 _EAGER_FLAG = "False" if ASYNC_SIGNALS else "True"
@@ -1599,6 +1599,11 @@ CELERY_TASK_QUEUES += (
         "geonode.upload.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_geonode_data_table"
     ),
     Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
+    Queue(
+        "geonode.upload.copy_document_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.copy_document_resource",
+    ),
     Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
     Queue("geonode.upload.upsert_data", GEONODE_EXCHANGE, routing_key="geonode.upload.upsert_data"),
     Queue(
@@ -1654,7 +1659,7 @@ CELERY_MESSAGE_COMPRESSION = os.environ.get("CELERY_MESSAGE_COMPRESSION", "gzip"
 CELERY_MAX_CACHED_RESULTS = os.environ.get("CELERY_MAX_CACHED_RESULTS", 32768)
 
 # NOTE: I don't know if this is compatible with upstart.
-CELERYD_POOL_RESTARTS = ast.literal_eval(os.environ.get("CELERYD_POOL_RESTARTS", "True"))
+CELERY_WORKER_POOL_RESTARTS = ast.literal_eval(os.environ.get("CELERYD_POOL_RESTARTS", "True"))
 CELERY_TRACK_STARTED = ast.literal_eval(os.environ.get("CELERY_TRACK_STARTED", "True"))
 CELERY_SEND_TASK_SENT_EVENT = ast.literal_eval(os.environ.get("CELERY_SEND_TASK_SENT_EVENT", "True"))
 
@@ -2128,6 +2133,15 @@ METADATA_INDEXES = {
     "title_abstract": ["title", "abstract"],
     "all": ["title", "abstract", "supplemental_information"],
 }
+
+# Maps ISO 639-1 (2-letter) codes to ISO 639-2 (3-letter) code(s)
+LANGUAGE_MAPPINGS = (
+    ("en", "eng"),
+    ("de", ["ger", "deu"]),
+    ("es", "spa"),
+    ("fr", ["fre", "fra"]),
+    ("it", "ita"),
+)
 
 # you can get the language names in psql using "\dF"
 MULTILANG_POSTGRES_LANGS = {

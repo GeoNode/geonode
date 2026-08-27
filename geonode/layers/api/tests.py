@@ -141,8 +141,8 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         dataset_list = response.data["datasets"]
 
-        # dirty resource is now included in count
-        resource_count_clean = Dataset.objects.count()
+        # dirty resource is now included in count; the listing excludes metadata-only datasets
+        resource_count_clean = Dataset.objects.filter(metadata_only=False).count()
         self.assertEqual(len(dataset_list), resource_count_clean)
         # ensure that the updated dirty dataset is included in the response
         self.assertTrue(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
@@ -157,10 +157,11 @@ class DatasetsApiTests(APITestCase):
         dirty_dataset.dirty_state = True
         dirty_dataset.save()
 
+        # the listing excludes metadata-only datasets
         # clean resources
-        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        resource_count_clean = Dataset.objects.filter(dirty_state=False, metadata_only=False).count()
         # dirty resources
-        resource_count_dirty = Dataset.objects.filter(dirty_state=True).count()
+        resource_count_dirty = Dataset.objects.filter(dirty_state=True, metadata_only=False).count()
 
         resource_count_all = resource_count_clean + resource_count_dirty
 
@@ -187,7 +188,7 @@ class DatasetsApiTests(APITestCase):
 
         prev_count = payload.json().get("total")
         # the user can see only the advertised resources
-        self.assertEqual(Dataset.objects.filter(advertised=True).count(), prev_count)
+        self.assertEqual(Dataset.objects.filter(advertised=True, metadata_only=False).count(), prev_count)
 
         payload = self.client.get(f"{url}?advertised=True")
         # so if advertised is True, we dont see the advertised=False resource
@@ -650,6 +651,20 @@ class DatasetsApiTests(APITestCase):
         put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(200, response.status_code)
+
+    def test_timeseries_update_blocked_for_view_only_user(self):
+        """A user with only view rights must not be able to edit the time configuration."""
+        view_only_user = get_user_model().objects.create_user(
+            username="timeseries_viewer",
+            password="timeseries_viewer_password",
+        )
+        layer = Dataset.objects.first()
+        assign_perm("view_resourcebase", view_only_user, layer.get_self_resource())
+        url = reverse("datasets-timeseries", args=(layer.id,))
+        self.client.login(username="timeseries_viewer", password="timeseries_viewer_password")
+
+        response = self.client.put(url, data={"has_time": False}, format="json")
+        self.assertEqual(403, response.status_code)
 
     def test_valid_metadata_file(self):
         layer = Dataset.objects.first()

@@ -20,11 +20,13 @@ import io
 import os
 
 from uuid import uuid4
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
-from django.test import override_settings
+from django.test import SimpleTestCase, override_settings
 
+from geonode.base import enumerations
+from geonode.resource.utils import get_alternate_name
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -58,6 +60,37 @@ from gisdata import GOOD_DATA
 
 class ResourceManagerClassTest:
     pass
+
+
+class GetAlternateNameTestCase(SimpleTestCase):
+    """get_alternate_name must key off is_remote_resource(), not a bespoke sourcetype check (#14524)."""
+
+    def _make_dataset(self, **attrs):
+        instance = MagicMock(spec=Dataset)
+        instance.remote_service = None
+        instance.remote_service_id = None
+        instance.sourcetype = enumerations.SOURCE_TYPE_LOCAL
+        instance.workspace = None
+        instance.name = "layer"
+        for key, value in attrs.items():
+            setattr(instance, key, value)
+        return instance
+
+    def test_local_dataset_falls_back_to_default_workspace(self):
+        instance = self._make_dataset()
+        self.assertEqual(get_alternate_name(instance), "geonode:layer")
+
+    def test_remote_dataset_without_remote_service_uses_workspace_as_is(self):
+        # WMS/ArcGIS-harvested datasets have no remote_service.method to key off of, so
+        # detection falls through to this branch and must still recognize them as remote.
+        instance = self._make_dataset(sourcetype=enumerations.SOURCE_TYPE_REMOTE, workspace="remoteWorkspace")
+        self.assertEqual(get_alternate_name(instance), "remoteWorkspace:layer")
+
+    def test_leftover_remote_service_without_sourcetype_is_still_remote(self):
+        # A row with remote_service set but sourcetype not yet REMOTE (pre-#14524 data, or any
+        # code path that only set one of the two) must still be treated as remote.
+        instance = self._make_dataset(remote_service_id=7, workspace="remoteWorkspace")
+        self.assertEqual(get_alternate_name(instance), "remoteWorkspace:layer")
 
 
 class TestResourceManager(GeoNodeBaseTestSupport):
