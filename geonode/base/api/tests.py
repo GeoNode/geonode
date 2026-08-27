@@ -4228,6 +4228,7 @@ class TestAPIPermissionCache(GeoNodeBaseTestSupport):
             cls.test_group.delete()
         super().tearDownClass()
 
+
 class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
