@@ -84,11 +84,12 @@ class TestBaseVectorFileHandler(TestCase):
         tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
         dataset.tkeywords.add(tkeyword)
 
+        other_user, _ = get_user_model().objects.get_or_create(username="vector_copy_other_user")
         custom_group, _ = GroupProfile.objects.get_or_create(
             slug="vector_copy_group", title="vector_copy_group", access="private"
         )
         custom_perms = {
-            "users": {self.owner.username: ["view_resourcebase", "change_resourcebase"]},
+            "users": {other_user.username: ["view_resourcebase", "change_resourcebase"]},
             "groups": {custom_group.slug: ["view_resourcebase"]},
         }
         dataset_manager.set_permissions(dataset.uuid, instance=dataset, permissions=custom_perms)
@@ -126,7 +127,10 @@ class TestBaseVectorFileHandler(TestCase):
             self.assertCountEqual(list(dataset.regions.all()), list(new_resource.regions.all()))
             self.assertCountEqual(list(dataset.tkeywords.all()), list(new_resource.tkeywords.all()))
 
-            source_perms = permissions_registry.get_perms(instance=dataset, include_virtual=False)
+            # read via the plain ResourceBase, like production does (resource, not the downcast
+            # dataset) - get_all_level_info() only merges in the dataset-specific perms when
+            # called on a ResourceBase with a '.dataset' accessor, not on an already-downcast Dataset
+            source_perms = permissions_registry.get_perms(instance=resource, include_virtual=False)
             copy_perms = permissions_registry.get_perms(instance=new_resource, include_virtual=False)
             for perm_key in ("users", "groups"):
                 source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}

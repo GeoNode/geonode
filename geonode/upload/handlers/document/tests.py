@@ -407,12 +407,13 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_document_copy", title="Test Thesaurus")
         tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
         document.tkeywords.add(tkeyword)
-
+        
+        other_user, _ = get_user_model().objects.get_or_create(username="document_copy_other_user")
         custom_group, _ = GroupProfile.objects.get_or_create(
             slug="document_copy_group", title="document_copy_group", access="private"
         )
         custom_perms = {
-            "users": {other_owner.username: ["view_resourcebase", "change_resourcebase"]},
+            "users": {other_user.username: ["view_resourcebase", "change_resourcebase"]},
             "groups": {custom_group.slug: ["view_resourcebase"]},
         }
         document_manager.set_permissions(document.uuid, instance=document, permissions=custom_perms)
