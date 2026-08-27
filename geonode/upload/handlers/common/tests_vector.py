@@ -43,6 +43,11 @@ from geoserver.catalog import Catalog
 from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
 from geonode.utils import OGC_Servers_Handler
 from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
+from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.resource.registry import dataset_manager
+from geonode.security.registry import permissions_registry
+from geonode.groups.models import GroupProfile
+from geonode.base.models import ResourceBase, Region, Thesaurus, ThesaurusKeyword
 
 
 class TestBaseVectorFileHandler(TestCase):
@@ -64,6 +69,70 @@ class TestBaseVectorFileHandler(TestCase):
     def setUp(self) -> None:
         shutil.copy(self.valid_gpkg, "/tmp")
         super().setUp()
+
+    def test_copy_geonode_resource_should_copy_metadata_and_permissions(self):
+        dataset = create_single_dataset(name="dataset_to_clone_metadata", owner=self.owner)
+        # this TestCase carries no fixtures (unlike GeoNodeBaseTestSupport), so Region.objects
+        # is empty here, create one instead of relying on Region.objects.first()
+        region, _ = Region.objects.get_or_create(code="test_vector_copy_region", defaults={"name": "Test Region"})
+        dataset = dataset_manager.update(
+            dataset.uuid,
+            instance=dataset,
+            vals={"abstract": "test abstract", "purpose": "test purpose"},
+            keywords=["foo", "bar"],
+            regions=[region.name],
+        )
+        thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_vector_copy", title="Test Thesaurus")
+        tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
+        dataset.tkeywords.add(tkeyword)
+
+        custom_group, _ = GroupProfile.objects.get_or_create(
+            slug="vector_copy_group", title="vector_copy_group", access="private"
+        )
+        custom_perms = {
+            "users": {self.owner.username: ["view_resourcebase", "change_resourcebase"]},
+            "groups": {custom_group.slug: ["view_resourcebase"]},
+        }
+        dataset_manager.set_permissions(dataset.uuid, instance=dataset, permissions=custom_perms)
+
+        resource = ResourceBase.objects.get(pk=dataset.pk)
+        exec_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="start_import",
+            step="start_import",
+            action=exa.COPY.value,
+            input_params={"title": "cloned dataset metadata"},
+        )
+        _exec = orchestrator.get_execution_object(str(exec_id))
+
+        new_resource = self.handler.copy_geonode_resource(
+            alternate=dataset.alternate,
+            resource=resource,
+            _exec=_exec,
+            data_to_update={"title": "cloned dataset metadata"},
+            new_alternate="dataset_to_clone_metadata_copy",
+            kwargs={"original_dataset_alternate": dataset.alternate},
+        )
+
+        try:
+            self.assertNotEqual(dataset.pk, new_resource.pk)
+            self.assertEqual(dataset.abstract, new_resource.abstract)
+            self.assertEqual(dataset.purpose, new_resource.purpose)
+            self.assertCountEqual(
+                [k.name for k in dataset.keywords.all()], [k.name for k in new_resource.keywords.all()]
+            )
+            self.assertCountEqual(list(dataset.regions.all()), list(new_resource.regions.all()))
+            self.assertCountEqual(list(dataset.tkeywords.all()), list(new_resource.tkeywords.all()))
+
+            source_perms = permissions_registry.get_perms(instance=dataset, include_virtual=False)
+            copy_perms = permissions_registry.get_perms(instance=new_resource, include_virtual=False)
+            for perm_key in ("users", "groups"):
+                source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
+                copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                self.assertEqual(source_entries, copy_entries)
+        finally:
+            new_resource.delete()
+            dataset.delete()
 
     def test_create_error_log(self):
         """

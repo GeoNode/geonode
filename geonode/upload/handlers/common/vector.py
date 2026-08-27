@@ -1046,9 +1046,7 @@ class BaseVectorFileHandler(BaseHandler):
         if subtype:
             defaults["subtype"] = subtype
 
-        new_resource = dataset_manager.copy(
-            resource, owner=_exec.user, defaults=defaults
-        )
+        new_resource = dataset_manager.copy(resource, owner=_exec.user, defaults=defaults)
 
         if resource.dataset.has_time is True:
 

@@ -31,7 +31,7 @@ from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import BaseResourceManager
-from geonode.base.models import LinkedResource, ResourceBase
+from geonode.base.models import LinkedResource, ResourceBase, Region, Thesaurus, ThesaurusKeyword
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
@@ -367,6 +367,64 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         LinkedResource.objects.get_or_create(source_id=res.id, target_id=target.id)
         self.assertTrue(isinstance(res, Map))
         _copy_assert_resource(res, "A Test Map 2")
+
+    def test_resource_copy_carries_over_metadata_and_permissions(self):
+        res = create_single_map("A Test Map With Metadata")
+        try:
+            region = Region.objects.first()
+            vals = {
+                "abstract": "test abstract",
+                "purpose": "test purpose",
+                "supplemental_information": "test supplemental information",
+                "data_quality_statement": "test data quality statement",
+            }
+            # go through the resource manager, same as production code, so metadata_manager's
+            # schema instance and the other update() side effects run too, not just the model save
+            res = self.rm.update(res.uuid, instance=res, vals=vals, keywords=["foo", "bar"], regions=[region.name])
+
+            # no update() param for tkeywords, so set directly like the rest of the codebase does
+            thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_copy", title="Test Thesaurus")
+            tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
+            res.tkeywords.add(tkeyword)
+
+            custom_group, _ = GroupProfile.objects.get_or_create(
+                slug="test_copy_group", title="test_copy_group", access="private"
+            )
+            custom_perms = {
+                "users": {self.user.username: ["view_resourcebase", "change_resourcebase"]},
+                "groups": {custom_group.slug: ["view_resourcebase"]},
+            }
+            self.rm.set_permissions(res.uuid, instance=res, permissions=custom_perms)
+
+            dataset_copy = self.rm.copy(res, defaults=dict(title="A Test Map With Metadata Copy"))
+            try:
+                self.assertIsNotNone(dataset_copy)
+                self.assertEqual(res.abstract, dataset_copy.abstract)
+                self.assertEqual(res.purpose, dataset_copy.purpose)
+                self.assertEqual(res.supplemental_information, dataset_copy.supplemental_information)
+                self.assertEqual(res.data_quality_statement, dataset_copy.data_quality_statement)
+                self.assertCountEqual(
+                    [k.name for k in res.keywords.all()], [k.name for k in dataset_copy.keywords.all()]
+                )
+                self.assertCountEqual(list(res.regions.all()), list(dataset_copy.regions.all()))
+                self.assertCountEqual(list(res.tkeywords.all()), list(dataset_copy.tkeywords.all()))
+
+                source_perms = permissions_registry.get_perms(instance=res, include_virtual=False)
+                copy_perms = permissions_registry.get_perms(instance=dataset_copy, include_virtual=False)
+                for perm_key in ("users", "groups"):
+                    source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
+                    copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                    self.assertEqual(source_entries, copy_entries)
+                # sanity: our own custom entries actually landed, not just "both sides equally empty"
+                copy_user_perms = {profile.username: perms for profile, perms in copy_perms["users"].items()}
+                self.assertCountEqual(copy_user_perms[self.user.username], custom_perms["users"][self.user.username])
+                copy_group_perms = {group.name: perms for group, perms in copy_perms["groups"].items()}
+                self.assertCountEqual(copy_group_perms[custom_group.slug], custom_perms["groups"][custom_group.slug])
+            finally:
+                if dataset_copy:
+                    dataset_copy.delete()
+        finally:
+            res.delete()
 
     def test_exec(self):
         map = create_single_map("test_exec_map")
