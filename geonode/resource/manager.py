@@ -508,14 +508,24 @@ class BaseResourceManager(ResourceManagerInterface):
                     # Ensure that the featured flag is set to False
                     _resource.featured = False
                     try:
-                        # Avoid Integrity errors...
                         _resource.get_real_instance()._meta.get_field("name")
-                        _name = defaults.get("name", _resource.get_real_instance().name)
-                        _resource.get_real_instance().name = defaults["name"] = f"{_name}_{uuid1().hex[:8]}"
+                        if "name" in defaults:
+                            # caller passed an explicit name (e.g. a dataset alternate already
+                            # published on the GIS backend) - honor it as-is, no suffix
+                            _resource.get_real_instance().name = defaults["name"]
+                        else:
+                            # Avoid Integrity errors...
+                            _name = _resource.get_real_instance().name
+                            _resource.get_real_instance().name = defaults["name"] = f"{_name}_{uuid1().hex[:8]}"
                     except FieldDoesNotExist:
                         if "name" in defaults:
                             defaults.pop("name")
                     _resource.save()
+                    # copy.copy() only duplicates scalar/FK fields, M2M metadata (keywords, regions,
+                    # tkeywords) live in join tables keyed by pk and are lost on the new pk otherwise
+                    _resource.get_real_instance().keywords.set(instance.get_real_instance().keywords.all())
+                    _resource.get_real_instance().regions.set(instance.get_real_instance().regions.all())
+                    _resource.get_real_instance().tkeywords.set(instance.get_real_instance().tkeywords.all())
                     for lr in LinkedResource.get_linked_resources(source=instance.pk, is_internal=False):
                         LinkedResource.objects.get_or_create(
                             source_id=_resource.pk, target_id=lr.target.pk, internal=False
@@ -558,7 +568,12 @@ class BaseResourceManager(ResourceManagerInterface):
                     to_update.update(defaults)
                     # Refresh from DB
                     _resource.refresh_from_db()
-                    return self.update(_resource.uuid, _resource, vals=to_update)
+                    _resource = self.update(_resource.uuid, _resource, vals=to_update)
+                    # update() re-derives default permissions for the (still perm-less) new
+                    # resource; re-apply the source's own perm_spec so the clone keeps it
+                    _source_perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+                    self.set_permissions(_resource.uuid, instance=_resource, permissions=_source_perms)
+                    return _resource
                 except Exception as e:
                     logger.exception(e)
                 finally:
