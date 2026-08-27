@@ -4228,6 +4228,81 @@ class TestAPIPermissionCache(GeoNodeBaseTestSupport):
             cls.test_group.delete()
         super().tearDownClass()
 
+class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.owner_user = get_user_model().objects.create_user(username="owner", password="owner_password")
+        self.other_user = get_user_model().objects.create_user(username="other", password="other_password")
+
+        self.dataset = create_single_dataset(name="test_dataset_for_download_permission")
+
+        dataset_files = [
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
+        ]
+
+        self.owner_asset, self.owner_link = create_asset_and_link(
+            self.dataset,
+            self.owner_user,
+            dataset_files,
+            title="Owner Asset",
+            clone_files=False,
+        )
+        self.admin_asset, self.admin_link = create_asset_and_link(
+            self.dataset,
+            self.admin_user,
+            dataset_files,
+            title="Admin Asset",
+            clone_files=False,
+        )
+
+        self.url = reverse("base-resources-asset", kwargs={"pk": self.dataset.pk})
+
+    def test_admin_sees_all_asset_download_urls(self):
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.owner_asset.id, self.admin_asset.id})
+
+        for item in response.data:
+            self.assertIsNotNone(item["urls"]["download_url"])
+
+    def test_owner_sees_only_own_asset_download_url(self):
+        self.client.force_login(self.owner_user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.owner_asset.id})
+        self.assertNotIn(self.admin_asset.id, returned_ids)
+
+        download_urls = {item["urls"]["download_url"] for item in response.data}
+        self.assertEqual(len(download_urls), 1)
+        self.assertTrue(any(f"/api/v2/assets/{self.owner_asset.id}/download" in url for url in download_urls))
+        self.assertFalse(any(f"/api/v2/assets/{self.admin_asset.id}/download" in url for url in download_urls))
+
+    def test_non_owner_gets_empty_asset_list(self):
+        self.client.force_login(self.other_user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
+
+    def test_anonymous_gets_empty_asset_list(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
+
 
 class ResourceBaseMetadataXMLTest(GeoNodeBaseTestSupport):
 
