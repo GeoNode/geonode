@@ -115,7 +115,10 @@ def get_geoapp_subtypes():
     """
     from geonode.geoapps.models import GeoApp
 
-    if not globals().get("geoapp_subtypes"):
+    # `is None`, not a truthiness check — an empty list (no geoapps yet) is
+    # falsy too, which used to defeat this cache forever and re-query on
+    # every single call for exactly the common "few/no geoapps" case.
+    if globals().get("geoapp_subtypes") is None:
         globals()["geoapp_subtypes"] = list(GeoApp.objects.values_list("resource_type", flat=True).distinct())
     return globals().get("geoapp_subtypes", [])
 

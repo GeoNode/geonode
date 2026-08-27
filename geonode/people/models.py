@@ -212,7 +212,7 @@ class Profile(AbstractUser):
 
     @property
     def perms(self):
-        return permissions_registry.get_perms(user=self)
+        return permissions_registry.get_perms(user=self, use_cache=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
