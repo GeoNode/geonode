@@ -72,8 +72,6 @@ class TestBaseVectorFileHandler(TestCase):
 
     def test_copy_geonode_resource_should_copy_metadata_and_permissions(self):
         dataset = create_single_dataset(name="dataset_to_clone_metadata", owner=self.owner)
-        # this TestCase carries no fixtures (unlike GeoNodeBaseTestSupport), so Region.objects
-        # is empty here, create one instead of relying on Region.objects.first()
         region, _ = Region.objects.get_or_create(code="test_vector_copy_region", defaults={"name": "Test Region"})
         dataset = dataset_manager.update(
             dataset.uuid,

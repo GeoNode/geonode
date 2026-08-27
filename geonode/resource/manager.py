@@ -497,8 +497,6 @@ class BaseResourceManager(ResourceManagerInterface):
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
     ) -> ResourceBase:
         if owner is None:
-            # the clone must always belong to whoever triggered it, never the source's owner -
-            # silently falling back to the source owner here masked ownership bugs (cloning fix)
             raise ValueError("copy() requires an explicit 'owner': the user who triggered the clone")
         _resource = None
         if instance:
@@ -514,19 +512,14 @@ class BaseResourceManager(ResourceManagerInterface):
                     try:
                         _resource.get_real_instance()._meta.get_field("name")
                         if "name" in defaults:
-                            # caller passed an explicit name (e.g. a dataset alternate already
-                            # published on the GIS backend) - honor it as-is, no suffix
                             _resource.get_real_instance().name = defaults["name"]
                         else:
-                            # Avoid Integrity errors...
                             _name = _resource.get_real_instance().name
                             _resource.get_real_instance().name = defaults["name"] = f"{_name}_{uuid1().hex[:8]}"
                     except FieldDoesNotExist:
                         if "name" in defaults:
                             defaults.pop("name")
                     _resource.save()
-                    # copy.copy() only duplicates scalar/FK fields, M2M metadata (keywords, regions,
-                    # tkeywords) live in join tables keyed by pk and are lost on the new pk otherwise
                     _resource.get_real_instance().keywords.set(instance.get_real_instance().keywords.all())
                     _resource.get_real_instance().regions.set(instance.get_real_instance().regions.all())
                     _resource.get_real_instance().tkeywords.set(instance.get_real_instance().tkeywords.all())
@@ -573,8 +566,6 @@ class BaseResourceManager(ResourceManagerInterface):
                     # Refresh from DB
                     _resource.refresh_from_db()
                     _resource = self.update(_resource.uuid, _resource, vals=to_update)
-                    # update() re-derives default permissions for the (still perm-less) new
-                    # resource; re-apply the source's own perm_spec so the clone keeps it
                     _source_perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
                     self.set_permissions(_resource.uuid, instance=_resource, permissions=_source_perms)
                     return _resource

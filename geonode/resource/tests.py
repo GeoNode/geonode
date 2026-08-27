@@ -300,9 +300,6 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         def _copy_assert_resource(res, title):
             dataset_copy = None
             try:
-                # owner must always be whoever triggers the clone, not the source's owner
-                # (both created with self.user, use a distinct trigger_user so the assertion
-                # actually proves it's not just falling back to the source's owner)
                 dataset_copy = self.rm.copy(res, owner=trigger_user, defaults=dict(title=title))
                 self.assertIsNotNone(dataset_copy)
                 self.assertEqual(dataset_copy.title, title)
@@ -384,11 +381,8 @@ class TestResourceManager(GeoNodeBaseTestSupport):
                 "supplemental_information": "test supplemental information",
                 "data_quality_statement": "test data quality statement",
             }
-            # go through the resource manager, same as production code, so metadata_manager's
-            # schema instance and the other update() side effects run too, not just the model save
             res = self.rm.update(res.uuid, instance=res, vals=vals, keywords=["foo", "bar"], regions=[region.name])
 
-            # no update() param for tkeywords, so set directly like the rest of the codebase does
             thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_copy", title="Test Thesaurus")
             tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
             res.tkeywords.add(tkeyword)

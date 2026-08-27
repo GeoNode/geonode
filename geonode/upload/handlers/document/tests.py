@@ -394,11 +394,6 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.assertTrue(cloned.files)
 
     def test_copy_geonode_resource_should_copy_metadata_and_permissions(self):
-        """copy_geonode_resource() routes through document_manager.copy(), which must carry over
-        scalar metadata, keywords/regions/tkeywords, the source's own perm_spec, and set owner
-        to whoever triggered the clone rather than the source document's owner (cloning fix)."""
-        # distinct from self.user (the execution trigger below), so the owner assertion actually
-        # proves the clone follows the trigger, not just falls back to the source's owner
         other_owner, _ = get_user_model().objects.get_or_create(username="document_copy_source_owner")
         document = create_single_doc("document with metadata to clone", owner=other_owner)
         region = Region.objects.first()
