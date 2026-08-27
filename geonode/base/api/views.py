@@ -1424,6 +1424,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                     "title": asset.title,
                     "description": asset.description,
                     "type": asset.type,
+                    "created": asset.created,
                     "deletable": is_asset_deletable(asset),
                     "urls": {
                         "download_url": download_url,

@@ -1471,6 +1471,7 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
             self.assertIn("type", item)
             self.assertIn("deletable", item)
             self.assertIn("urls", item)
+            self.assertIn("created", item)
             self.assertIn("download_url", item["urls"])
             self.assertIn("link", item["urls"])
 
