@@ -2985,7 +2985,7 @@ class BaseApiTests(APITestCase):
 
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
     @override_settings(ASYNC_SIGNALS=False)
-    def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
+    def test_resource_service_copy_with_perms_dataset_keep_original_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
@@ -3026,7 +3026,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
-        self.assertNotIn(
+        self.assertIn(
             "bobby",
             [x.username for x in permissions_registry.get_perms(instance=_resource).get("users", [])],
         )
