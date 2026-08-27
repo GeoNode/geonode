@@ -295,12 +295,18 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res.delete()
 
     def test_dataset_copy(self):
+        trigger_user = self.User.objects.create_user(username="test_dataset_copy_trigger", email="trigger@test.com")
+
         def _copy_assert_resource(res, title):
             dataset_copy = None
             try:
-                dataset_copy = self.rm.copy(res, defaults=dict(title=title))
+                # owner must always be whoever triggers the clone, not the source's owner
+                # (both created with self.user, use a distinct trigger_user so the assertion
+                # actually proves it's not just falling back to the source's owner)
+                dataset_copy = self.rm.copy(res, owner=trigger_user, defaults=dict(title=title))
                 self.assertIsNotNone(dataset_copy)
                 self.assertEqual(dataset_copy.title, title)
+                self.assertEqual(dataset_copy.owner, trigger_user)
             finally:
                 if dataset_copy:
                     dataset_copy.delete()
@@ -352,7 +358,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         def _copy_assert_resource(res, title):
             dataset_copy = None
             try:
-                dataset_copy = self.rm.copy(res, defaults=dict(title=title))
+                dataset_copy = self.rm.copy(res, owner=self.user, defaults=dict(title=title))
                 self.assertIsNotNone(dataset_copy)
                 self.assertEqual(dataset_copy.title, title)
             finally:
@@ -396,9 +402,12 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             }
             self.rm.set_permissions(res.uuid, instance=res, permissions=custom_perms)
 
-            dataset_copy = self.rm.copy(res, defaults=dict(title="A Test Map With Metadata Copy"))
+            # owner must be whoever triggers the clone (self.user), not res's own owner
+            self.assertNotEqual(res.owner, self.user)
+            dataset_copy = self.rm.copy(res, owner=self.user, defaults=dict(title="A Test Map With Metadata Copy"))
             try:
                 self.assertIsNotNone(dataset_copy)
+                self.assertEqual(dataset_copy.owner, self.user)
                 self.assertEqual(res.abstract, dataset_copy.abstract)
                 self.assertEqual(res.purpose, dataset_copy.purpose)
                 self.assertEqual(res.supplemental_information, dataset_copy.supplemental_information)

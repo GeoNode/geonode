@@ -496,13 +496,17 @@ class BaseResourceManager(ResourceManagerInterface):
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
     ) -> ResourceBase:
+        if owner is None:
+            # the clone must always belong to whoever triggered it, never the source's owner -
+            # silently falling back to the source owner here masked ownership bugs (cloning fix)
+            raise ValueError("copy() requires an explicit 'owner': the user who triggered the clone")
         _resource = None
         if instance:
             try:
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
                     _resource = copy.copy(instance.get_real_instance())
-                    _resource.owner = owner or instance.get_real_instance().owner
+                    _resource.owner = owner
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
                     # Ensure that the featured flag is set to False

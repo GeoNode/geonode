@@ -84,11 +84,13 @@ class GeoAppTests(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         geoapp_copy = None
         try:
+            # owner must be whoever triggers the clone (self.bobby), not self.geoapp's own owner (self.user)
             geoapp_copy = resource_manager_registry.get_for_instance(self.geoapp).copy(
-                self.geoapp, defaults=dict(title="Testing GeoApp 2")
+                self.geoapp, owner=self.bobby, defaults=dict(title="Testing GeoApp 2")
             )
             self.assertIsNotNone(geoapp_copy)
             self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")
+            self.assertEqual(geoapp_copy.owner, self.bobby)
         finally:
             if geoapp_copy:
                 geoapp_copy.delete()
@@ -122,9 +124,10 @@ class GeoAppTests(GeoNodeBaseTestSupport):
         geoapp_copy = None
         try:
             geoapp_copy = resource_manager_registry.get_for_instance(self.geoapp).copy(
-                self.geoapp, defaults=dict(title="Testing GeoApp Metadata Copy")
+                self.geoapp, owner=self.bobby, defaults=dict(title="Testing GeoApp Metadata Copy")
             )
             self.assertIsNotNone(geoapp_copy)
+            self.assertEqual(geoapp_copy.owner, self.bobby)
             self.assertEqual(self.geoapp.abstract, geoapp_copy.abstract)
             self.assertEqual(self.geoapp.purpose, geoapp_copy.purpose)
             self.assertCountEqual(

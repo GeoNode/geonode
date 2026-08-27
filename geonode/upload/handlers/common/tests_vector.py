@@ -96,8 +96,11 @@ class TestBaseVectorFileHandler(TestCase):
         dataset_manager.set_permissions(dataset.uuid, instance=dataset, permissions=custom_perms)
 
         resource = ResourceBase.objects.get(pk=dataset.pk)
+        # distinct from self.owner (the dataset's owner) so the owner assertion below actually
+        # proves the clone follows the trigger, not just falls back to the source's owner
+        trigger_user, _ = get_user_model().objects.get_or_create(username="vector_copy_trigger")
         exec_id = orchestrator.create_execution_request(
-            user=self.owner,
+            user=trigger_user,
             func_name="start_import",
             step="start_import",
             action=exa.COPY.value,
@@ -116,6 +119,7 @@ class TestBaseVectorFileHandler(TestCase):
 
         try:
             self.assertNotEqual(dataset.pk, new_resource.pk)
+            self.assertEqual(trigger_user, new_resource.owner)
             self.assertEqual(dataset.abstract, new_resource.abstract)
             self.assertEqual(dataset.purpose, new_resource.purpose)
             self.assertCountEqual(
