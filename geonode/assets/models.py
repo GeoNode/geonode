@@ -36,7 +36,7 @@ class Asset(PolymorphicModel):
 
     def __str__(self) -> str:
         return self.title
-    
+
     def get_real_instance(self):
         real_model = self.get_real_instance_class()
         if real_model is self.__class__:
