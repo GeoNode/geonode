@@ -46,7 +46,7 @@ from geonode.base.models import (
 )
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
-from geonode.groups.models import GroupProfile
+from geonode.groups.models import GroupProfile, GroupCategory
 from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_models, remove_models
@@ -382,19 +382,17 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     @override_settings(API_LOCKDOWN=True)
     def test_groups_lockdown(self):
-        groups_list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "groups"})
+        groups_list_url = reverse("groups-list")
 
-        filter_url = groups_list_url
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)["objects"]), 0)
+        resp = self.api_client.get(groups_list_url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["total"], 0)
 
         # now test with logged in user
         self.api_client.client.login(username="bobby", password="bob")
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)["objects"]), 1)
+        resp = self.api_client.get(groups_list_url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()["groups"]), 1)
 
     @override_settings(API_LOCKDOWN=True)
     def test_regions_lockdown(self):
@@ -454,7 +452,8 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.bar = GroupProfile.objects.get(slug="bar")
         self.anonymous_user = get_anonymous_user()
         self.profiles_list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "profiles"})
-        self.groups_list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "groups"})
+        self.groups_list_url = reverse("groups-list")
+        self.bar_category, _ = GroupCategory.objects.get_or_create(slug="bar", name="bar")
 
     def test_profiles_filters(self):
         """Test profiles filtering"""
@@ -496,26 +495,67 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             filter_url = self.groups_list_url
 
             resp = self.api_client.get(filter_url)
-            self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)["objects"]), 1)
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["groups"]), 1)
 
-            filter_url = f"{self.groups_list_url}?name__icontains=bar"
+            resp = self.api_client.get(f"{filter_url}?name__icontains=bar")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["groups"]), 1)
 
-            resp = self.api_client.get(filter_url)
-            self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)["objects"]), 1)
+            resp = self.api_client.get(f"{filter_url}?name__icontains=BaR")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["groups"]), 1)
 
-            filter_url = f"{self.groups_list_url}?name__icontains=BaR"
+            resp = self.api_client.get(f"{filter_url}?name__icontains=foo")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["groups"]), 0)
 
-            resp = self.api_client.get(filter_url)
-            self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)["objects"]), 1)
+    def test_group_categories_filters(self):
+        """Test group categories filtering"""
+        with self.settings(API_LOCKDOWN=False):
+            group_categories_list_url = reverse("group-category-list")
+            resp = self.api_client.get(group_categories_list_url)
+            self.assertEqual(resp.status_code, 200)
 
-            filter_url = f"{self.groups_list_url}?name__icontains=foo"
+            resp = self.api_client.get(f"{group_categories_list_url}?name__icontains=bar")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_categories"]), 1)
 
-            resp = self.api_client.get(filter_url)
-            self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)["objects"]), 0)
+            resp = self.api_client.get(f"{group_categories_list_url}?name__icontains=BaR")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_categories"]), 1)
+
+            resp = self.api_client.get(f"{group_categories_list_url}?name__icontains=nonexistent")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_categories"]), 0)
+
+            resp = self.api_client.get(f"{group_categories_list_url}?slug=bar")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_categories"]), 1)
+
+    def test_group_profiles_filters(self):
+        """Test group profiles filtering"""
+        with self.settings(API_LOCKDOWN=False):
+            group_profiles_list_url = reverse("group-profile-list")
+
+            resp = self.api_client.get(group_profiles_list_url)
+            self.assertEqual(resp.status_code, 200)
+
+            resp = self.api_client.get(f"{group_profiles_list_url}?title__icontains=bar")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_profiles"]), 1)
+
+            resp = self.api_client.get(f"{group_profiles_list_url}?title__icontains=BaR")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_profiles"]), 1)
+
+            resp = self.api_client.get(f"{group_profiles_list_url}?title__icontains=nonexistent")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_profiles"]), 0)
+
+            resp = self.api_client.get(f"{group_profiles_list_url}?slug=bar")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(resp.json()["group_profiles"]), 1)
 
     def test_category_filters(self):
         """Test category filtering"""
@@ -915,6 +955,49 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # by adding a new layer, the total should increase
         actual = sum([x["count"] for x in resp.json()["objects"]])
         self.assertEqual(0, actual)
+
+    def test_group_autocomplete_anonymous(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        resp = self.client.get(group_autocomplete_url)
+        self.assertEqual(resp.status_code, 200)
+        results = resp.json()
+        self.assertTrue(all(r.get("access") != "private" for r in results))
+
+    def test_group_autocomplete_with_query(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(f"{group_autocomplete_url}?q=bar")
+        self.assertEqual(resp.status_code, 200)
+        results = resp.json()
+        self.assertEqual(len(results), 1)
+        self.assertIn("bar", results[0]["text"].lower())
+
+    def test_group_autocomplete_no_query(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(group_autocomplete_url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_group_autocomplete_no_match(self):
+        group_autocomplete_url = reverse("groups-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(f"{group_autocomplete_url}?q=nonexistent")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 0)
+
+    def test_category_autocomplete_with_query(self):
+        category_autocomplete_url = reverse("group-category-autocomplete")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get(f"{category_autocomplete_url}?q=bar")
+        self.assertEqual(resp.status_code, 200)
+        results = resp.json()
+        self.assertTrue(all("bar" in r["text"].lower() for r in results))
+
+    def test_category_autocomplete_no_match(self):
+        category_autocomplete_url = reverse("group-category-autocomplete")
+        resp = self.client.get(f"{category_autocomplete_url}?q=nonexistent")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 0)
 
 
 class ThesauriApiTests(GeoNodeBaseTestSupport):
