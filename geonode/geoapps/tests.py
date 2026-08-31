@@ -97,11 +97,9 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             self.assertIsNotNone(self.geoapp)
 
     def test_geoapp_copy_carries_over_metadata_and_permissions(self):
-        """Same fix as the Dataset/Map copy (cloning fix): M2M metadata and the source's own
-        perm_spec must survive a GeoApp copy too, the copy() logic in BaseResourceManager is generic."""
+        """M2M metadata and perm_spec must survive a GeoApp copy too, same as Dataset/Map."""
         self.client.login(username="admin", password="admin")
-        # geoapp_manager.update() only forwards `vals` to GeoApp's own _create_and_update(),
-        # keywords/regions kwargs would be silently dropped, so set M2M fields directly instead
+        # update() drops keywords/regions kwargs, set M2M fields directly instead
         region = Region.objects.first()
         self.geoapp = geoapp_manager.update(
             self.geoapp.uuid, instance=self.geoapp, vals={"abstract": "test abstract", "purpose": "test purpose"}
@@ -141,7 +139,12 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             for perm_key in ("users", "groups"):
                 source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
                 copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                # bobby is also the clone's new owner, who always gets full owner perms on top
+                # of whatever perm_spec is passed, regardless of what the source spec granted him
+                source_entries.pop(self.bobby.pk, None)
+                copy_entries.pop(self.bobby.pk, None)
                 self.assertEqual(source_entries, copy_entries)
+            self.assertIn("change_resourcebase_permissions", copy_perms["users"][self.bobby])
         finally:
             if geoapp_copy:
                 geoapp_copy.delete()

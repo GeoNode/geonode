@@ -436,7 +436,11 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         for perm_key in ("users", "groups"):
             source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
             copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+            # self.user is the clone's new owner, always granted full owner perms on top of
+            # the reapplied source perm_spec, on top of whatever the source spec granted it
+            copy_entries.pop(self.user.pk, None)
             self.assertEqual(source_entries, copy_entries)
+        self.assertIn("change_resourcebase_permissions", copy_perms["users"][self.user])
 
     def test_copy_geonode_resource_should_clone_a_remote_document(self):
         document = create_single_doc("remote document to clone")

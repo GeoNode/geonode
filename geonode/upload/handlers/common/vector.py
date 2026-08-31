@@ -1047,6 +1047,8 @@ class BaseVectorFileHandler(BaseHandler):
             defaults["subtype"] = subtype
 
         new_resource = dataset_manager.copy(resource, owner=_exec.user, defaults=defaults)
+        # copy() only relinks GeoNode-side data, the GIS backend still needs its own style
+        self.handle_sld_file(new_resource, _exec)
 
         if resource.dataset.has_time is True:
 

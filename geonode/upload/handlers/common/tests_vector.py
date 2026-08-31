@@ -135,7 +135,11 @@ class TestBaseVectorFileHandler(TestCase):
             for perm_key in ("users", "groups"):
                 source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
                 copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                # trigger_user is the clone's new owner, always granted full owner perms on top
+                # of the reapplied source perm_spec, on top of whatever the source spec granted
+                copy_entries.pop(trigger_user.pk, None)
                 self.assertEqual(source_entries, copy_entries)
+            self.assertIn("change_resourcebase_permissions", copy_perms["users"][trigger_user])
         finally:
             new_resource.delete()
             dataset.delete()
