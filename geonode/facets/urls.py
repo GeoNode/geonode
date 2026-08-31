@@ -20,7 +20,8 @@
 from django.urls import path
 from .views import ListFacetsView, GetFacetView
 
+# "facets" prefix comes from the include() in geonode/urls.py.
 urlpatterns = [
-    path("facets", ListFacetsView.as_view(), name="list_facets"),
-    path("facets/<facet>", GetFacetView.as_view(), name="get_facet"),
+    path("", ListFacetsView.as_view(), name="list_facets"),
+    path("/<facet>", GetFacetView.as_view(), name="get_facet"),
 ]

@@ -31,42 +31,43 @@ from geonode.metadata.api.views import (
 
 router.register(r"metadata", views.MetadataViewSet, "metadata")
 
-urlpatterns = router.urls + [
+# metadata-* routes come from router.urls in geonode/urls.py; only extra paths here.
+urlpatterns = [
     path(
-        r"metadata/autocomplete/thesaurus/<thesaurusid>/keywords",
+        r"autocomplete/thesaurus/<thesaurusid>/keywords",
         views.tkeywords_autocomplete,
         name="metadata_autocomplete_tkeywords",
     ),
-    path(r"metadata/autocomplete/users", ProfileAutocomplete.as_view(), name="metadata_autocomplete_users"),
+    path(r"autocomplete/users", ProfileAutocomplete.as_view(), name="metadata_autocomplete_users"),
     path(
-        r"metadata/autocomplete/resources",
+        r"autocomplete/resources",
         MetadataLinkedResourcesAutocomplete.as_view(),
         name="metadata_autocomplete_resources",
     ),
     path(
-        r"metadata/autocomplete/regions",
+        r"autocomplete/regions",
         MetadataRegionsAutocomplete.as_view(),
         name="metadata_autocomplete_regions",
     ),
     path(
-        r"metadata/autocomplete/hkeywords",
+        r"autocomplete/hkeywords",
         MetadataHKeywordAutocomplete.as_view(),
         name="metadata_autocomplete_hkeywords",
     ),
     path(
-        r"metadata/autocomplete/groups",
+        r"autocomplete/groups",
         MetadataGroupAutocomplete.as_view(),
         name="metadata_autocomplete_groups",
     ),
     path(
-        r"metadata/autocomplete/categories",
+        r"autocomplete/categories",
         views.categories_autocomplete,
         name="metadata_autocomplete_categories",
     ),
     path(
-        r"metadata/autocomplete/licenses",
+        r"autocomplete/licenses",
         views.licenses_autocomplete,
         name="metadata_autocomplete_licenses",
     ),
-    # path(r"metadata/autocomplete/users", login_required(ProfileAutocomplete.as_view()), name="metadata_autocomplete_users"),
+    # path(r"autocomplete/users", login_required(ProfileAutocomplete.as_view()), name="metadata_autocomplete_users"),
 ]

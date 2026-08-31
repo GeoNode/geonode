@@ -27,6 +27,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.test import SimpleTestCase
 from django.test.utils import override_settings
 
 from guardian.shortcuts import get_anonymous_user
@@ -1387,3 +1388,46 @@ class AssetDeleteApiTests(GeoNodeBaseTestSupport):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Asset.objects.filter(pk=self.asset1.pk).exists())
+
+
+class RouterUrlpatternsCompletenessTest(SimpleTestCase):
+    """Guards the shared /api/v2/ router against app-loading-order regressions."""
+
+    def test_router_is_complete(self):
+        from geonode.api.urls import router
+
+        names = {getattr(pattern, "name", None) for pattern in router.urls}
+
+        # first 5 were previously only reachable via a ready() hook or a stale router.urls read;
+        # base-resources-list is a baseline that was never affected
+        for expected in (
+            "executionrequest-list",
+            "upload-size-limits-list",
+            "upload-parallelism-limits-list",
+            "assets-list",
+            "metadata-list",
+            "base-resources-list",
+        ):
+            with self.subTest(name=expected):
+                self.assertIn(expected, names)
+
+    def test_resource_and_harvesting_no_longer_inject_urls_from_ready(self):
+        import inspect
+
+        import geonode.harvesting.apps
+        import geonode.resource.apps
+
+        for module in (geonode.resource.apps, geonode.harvesting.apps):
+            with self.subTest(module=module.__name__):
+                source = inspect.getsource(module)
+                self.assertNotIn("geonode.urls", source)
+                self.assertNotIn("urlpatterns", source)
+
+    def test_upload_no_longer_has_the_dead_override_mechanism(self):
+        import inspect
+
+        import geonode.upload.apps
+
+        source = inspect.getsource(geonode.upload.apps)
+        self.assertNotIn("run_setup_hooks", source)
+        self.assertNotIn("url_already_injected", source)

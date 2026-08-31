@@ -22,9 +22,10 @@ from geonode.management_commands_http.views import ManagementCommandView
 from geonode.management_commands_http.routers import router
 
 
+# "management/" prefix comes from the include() in geonode/urls.py.
 urlpatterns = [
-    re_path(r"management/commands/$", ManagementCommandView.as_view()),
-    re_path(r"management/commands/(?P<cmd_name>\w+)/$", ManagementCommandView.as_view()),
-    re_path(r"management/commands/(?P<cmd_name>\w+)/", include(router.urls)),
-    path("management/", include(router.urls)),
+    re_path(r"commands/$", ManagementCommandView.as_view()),
+    re_path(r"commands/(?P<cmd_name>\w+)/$", ManagementCommandView.as_view()),
+    re_path(r"commands/(?P<cmd_name>\w+)/", include(router.urls)),
+    path("", include(router.urls)),
 ]
