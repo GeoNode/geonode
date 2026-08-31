@@ -414,13 +414,23 @@ class TestResourceManager(GeoNodeBaseTestSupport):
 
                 source_perms = permissions_registry.get_perms(instance=res, include_virtual=False)
                 copy_perms = permissions_registry.get_perms(instance=dataset_copy, include_virtual=False)
+                # self.user is the copy's new owner, so the permission engine promotes it to full
+                # owner perms on top of whatever custom perms it already had (AdvancedSecurityWorkflowManager
+                # always grants the owner admin+view perms) - it's the one entry expected to differ.
                 for perm_key in ("users", "groups"):
-                    source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
+                    source_entries = {
+                        profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()
+                    }
                     copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                    if perm_key == "users":
+                        source_entries.pop(self.user.pk, None)
+                        copy_entries.pop(self.user.pk, None)
                     self.assertEqual(source_entries, copy_entries)
-                # sanity: our own custom entries actually landed, not just "both sides equally empty"
-                copy_user_perms = {profile.username: perms for profile, perms in copy_perms["users"].items()}
-                self.assertCountEqual(copy_user_perms[self.user.username], custom_perms["users"][self.user.username])
+                # sanity: our own custom entries actually landed (owner promotion is a superset, not a replacement)
+                copy_user_perms = {profile.username: set(perms) for profile, perms in copy_perms["users"].items()}
+                self.assertTrue(
+                    set(custom_perms["users"][self.user.username]).issubset(copy_user_perms[self.user.username])
+                )
                 copy_group_perms = {group.name: perms for group, perms in copy_perms["groups"].items()}
                 self.assertCountEqual(copy_group_perms[custom_group.slug], custom_perms["groups"][custom_group.slug])
             finally:
