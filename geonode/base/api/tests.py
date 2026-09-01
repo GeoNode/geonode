@@ -2188,6 +2188,29 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(expected, response.json())
 
+    def test_set_thumbnail_from_bbox_without_resource_change_permission_rejected(self):
+        bobby = get_user_model().objects.get(username="bobby")
+        resource = Dataset.objects.first()
+        resource.owner = bobby
+        resource.save()
+
+        self.client.logout()
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+
+        url = reverse("base-resources-set-thumb-from-bbox", kwargs={"resource_id": resource.id})
+        payload = {
+            "bbox": [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365],
+            "srid": "EPSG:3857",
+        }
+
+        response = self.client.post(url, data=payload, format="json")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            {"message": "You do not have permission to set this thumbnail.", "success": False},
+        )
+
     @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail")
     def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_set_thumbnail):
         """
