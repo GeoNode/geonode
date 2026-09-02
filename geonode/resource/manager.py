@@ -864,9 +864,14 @@ class ResourceManager(ResourceManagerInterface):
                         file_name = _generate_thumbnail_name(_resource.get_real_instance())
                         _resource.save_thumbnail(file_name, thumbnail, thumbnail_algorithm=thumbnail_algorithm)
                     else:
-                        if instance and isinstance(instance.get_real_instance(), Document):
-                            if overwrite or not instance.thumbnail_url:
-                                create_document_thumbnail.apply((instance.id,))
+                        if instance:
+                            doc = instance.get_real_instance()
+                            if isinstance(doc, Document):
+                                if not doc.is_local:
+                                    logger.info(f"Skipping thumbnail generation for remote document: {doc.doc_url}")
+                                    return False
+                                if overwrite or not instance.thumbnail_url:
+                                    create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(
                             uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox
                         )
