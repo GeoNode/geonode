@@ -697,6 +697,13 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
+            # Check if the current user has the permissions to set the thumbnail
+            if not request.user.has_perm("change_resourcebase", resource.get_self_resource()):
+                return Response(
+                    {"message": "You do not have permission to set this thumbnail.", "success": False},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
             map_thumb_from_bbox = False
             if isinstance(resource.get_real_instance(), Map):
                 map_thumb_from_bbox = True
