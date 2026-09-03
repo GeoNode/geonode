@@ -109,7 +109,8 @@ from .pagination import GeoNodeApiPagination
 from geonode.base.utils import patch_perms
 from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataMixin
 from geonode.assets.models import Asset
-from geonode.assets.utils import create_asset_and_link, unlink_asset
+from geonode.base.models import Link
+from geonode.assets.utils import create_asset_and_link, unlink_asset, is_asset_deletable
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
 from geonode.utils import assert_safe_xml, UnsafeXMLError
@@ -1392,6 +1393,54 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         except Exception as e:
             logger.exception(e)
             return Response({"message": "Error creating asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path=r"asset",
+        url_name="asset",
+    )
+    def get_asset(self, request, pk=None, *args, **kwargs):
+        """
+        Returns assets linked to the resource.
+        GET /api/v2/resources/<pk>/asset
+        """
+        resource = self.get_object()
+        user = request.user
+
+        if user and user.is_authenticated:
+            asset_links = Link.objects.filter(
+                resource=resource,
+                asset__isnull=False,
+            ).select_related("asset")
+
+            if not user.is_superuser:
+                asset_links = asset_links.filter(asset__owner=user)
+        else:
+            asset_links = Link.objects.none()
+
+        data = []
+        for asset_link in asset_links:
+            asset = asset_link.asset.get_real_instance()
+            handler = asset_handler_registry.get_handler(asset)
+            download_url = handler.create_download_url(asset) if handler else None
+
+            data.append(
+                {
+                    "id": asset.id,
+                    "title": asset.title,
+                    "description": asset.description,
+                    "type": asset.type,
+                    "created": asset.created,
+                    "deletable": is_asset_deletable(asset),
+                    "urls": {
+                        "download_url": download_url,
+                        "link": asset_link.url,
+                    },
+                }
+            )
+
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["delete"], url_path=r"assets/(?P<asset_id>\d+)", url_name="delete-asset")
     def delete_asset(self, request, pk=None, asset_id=None, *args, **kwargs):
