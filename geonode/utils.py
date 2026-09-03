@@ -1868,6 +1868,19 @@ def get_document_extensions():
     return list(DOCUMENT_TYPE_MAP.keys())
 
 
+def get_db_schema(db_settings):
+    """Extract the configured schema name from a Django database settings dict.
+
+    Returns the first schema listed in the PostgreSQL ``search_path`` option,
+    or ``"public"`` if none is configured.
+    """
+    options_str = db_settings.get("OPTIONS", {}).get("options", "")
+    for part in options_str.split():
+        if "search_path=" in part:
+            return part.split("=")[1].split(",")[0]
+    return "public"
+
+
 def strtobool(value):
     """Convert common string/int boolean representations to bool.
 
