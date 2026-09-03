@@ -455,6 +455,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(self.rm.set_thumbnail(dt.uuid, instance=dt))
         self.assertTrue(self.rm.set_thumbnail(doc.uuid, instance=doc))
 
+    @patch("geonode.documents.tasks.create_document_thumbnail.apply")
+    def test_set_thumbnail_skips_remote_document(self, create_thumb):
+        doc = create_single_doc("test_remote_thumb_doc")
+        doc.doc_url = "http://example.com/test.pdf"
+        doc.save()
+
+        self.assertFalse(self.rm.set_thumbnail(doc.uuid, instance=doc))
+        create_thumb.assert_not_called()
+
     def test_set_thumbnail_algo(self):
         thumb_path = os.path.join(os.path.dirname(__file__), "../tests/data/thumb_sample.png")
         image = io.open(thumb_path, "rb").read()
