@@ -218,7 +218,12 @@ def get_keywords(resource):
 @csrf_exempt
 def csw_render_extra_format_txt(request, layeruuid, resname):
     """pycsw wrapper"""
-    resource = ResourceBase.objects.get(uuid=layeruuid)
+    resource = resolve_object(
+        request,
+        ResourceBase,
+        {"uuid": layeruuid},
+        permission="base.view_resourcebase",
+    )
     chrs = get_CSV_spec_char()
     s = chrs["separator"]
     c = chrs["carriage_return"]
@@ -297,7 +302,12 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
 
 
 def csw_render_extra_format_html(request, layeruuid, resname):
-    resource = ResourceBase.objects.get(uuid=layeruuid)
+    resource = resolve_object(
+        request,
+        ResourceBase,
+        {"uuid": layeruuid},
+        permission="base.view_resourcebase",
+    )
     extra_res_md = {}
     try:
         sprt = SpatialRepresentationType.objects.get(id=resource.spatial_representation_type_id)

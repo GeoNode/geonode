@@ -33,7 +33,12 @@ from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLab
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.catalogue.models import catalogue_post_save
 
-from geonode.catalogue.views import csw_global_dispatch, resolve_uuid
+from geonode.catalogue.views import (
+    csw_global_dispatch,
+    resolve_uuid,
+    csw_render_extra_format_html,
+    csw_render_extra_format_txt,
+)
 from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
@@ -208,3 +213,25 @@ class CatalogueMetadataTemplateTest(GeoNodeBaseTestSupport):
         rendered_xml = template.render(context)
         self.assertIn(self.keyword_label.label, rendered_xml)
         self.assertNotIn(self.keyword.alt_label, rendered_xml)
+
+    def test_csw_extra_format_html_denies_anonymous_private_resource(self):
+        self.dataset.set_permissions(
+            {"groups": {"registered-members": ["base.view_resourcebase", "base.download_resourcebase"]}}
+        )
+
+        request = RequestFactory().get(f"/catalogue/csw_to_extra_format/{self.dataset.uuid}/{self.dataset.name}.html")
+        request.user = AnonymousUser()
+
+        with self.assertRaises(PermissionDenied):
+            csw_render_extra_format_html(request, self.dataset.uuid, self.dataset.name)
+
+    def test_csw_extra_format_txt_denies_anonymous_private_resource(self):
+        self.dataset.set_permissions(
+            {"groups": {"registered-members": ["base.view_resourcebase", "base.download_resourcebase"]}}
+        )
+
+        request = RequestFactory().get(f"/catalogue/csw_to_extra_format/{self.dataset.uuid}/{self.dataset.name}.txt")
+        request.user = AnonymousUser()
+
+        with self.assertRaises(PermissionDenied):
+            csw_render_extra_format_txt(request, self.dataset.uuid, self.dataset.name)
