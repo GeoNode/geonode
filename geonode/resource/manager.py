@@ -41,7 +41,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 
 from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links, create_link
-from geonode.base.models import ResourceBase, LinkedResource
+from geonode.base.models import ResourceBase, LinkedResource, ContactRole, UserGeoLimit, GroupGeoLimit
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.metadata.manager import metadata_manager
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
@@ -496,26 +496,60 @@ class BaseResourceManager(ResourceManagerInterface):
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
     ) -> ResourceBase:
+        """Clone a resource under a new pk/uuid, owned by `owner`.
+
+        Scalar/FK fields (title, abstract, license, ...) come along via copy.copy().
+        Everything else lives in a join table keyed by the old pk and needs re-linking by
+        hand: keywords/regions/tkeywords, contacts (ContactRole), geolimits (own new rows,
+        not shared with the source), linked resources, dataset attributes/maplayers, assets,
+        and the source's permission spec (re-applied after update(), which resets to defaults).
+        """
+        if owner is None:
+            raise ValueError("copy() requires an explicit 'owner': the user who triggered the clone")
         _resource = None
         if instance:
             try:
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
                     _resource = copy.copy(instance.get_real_instance())
-                    _resource.owner = owner or instance.get_real_instance().owner
+                    _resource.owner = owner
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
                     # Ensure that the featured flag is set to False
                     _resource.featured = False
                     try:
-                        # Avoid Integrity errors...
                         _resource.get_real_instance()._meta.get_field("name")
-                        _name = defaults.get("name", _resource.get_real_instance().name)
-                        _resource.get_real_instance().name = defaults["name"] = f"{_name}_{uuid1().hex[:8]}"
+                        if "name" in defaults:
+                            _resource.get_real_instance().name = defaults["name"]
+                        else:
+                            _name = _resource.get_real_instance().name
+                            _resource.get_real_instance().name = defaults["name"] = f"{_name}_{uuid1().hex[:8]}"
                     except FieldDoesNotExist:
                         if "name" in defaults:
                             defaults.pop("name")
                     _resource.save()
+                    _src = instance.get_real_instance()
+                    _dst = _resource.get_real_instance()
+                    # M2M fields live in join tables keyed by pk, not carried by copy.copy()
+                    for _field in ("keywords", "regions", "tkeywords"):
+                        getattr(_dst, _field).set(getattr(_src, _field).all())
+                    # contacts goes through ContactRole (has a "role" field), plain .set() doesn't work
+                    for _contact_role in ContactRole.objects.filter(resource=instance):
+                        ContactRole.objects.get_or_create(
+                            resource=_dst, contact=_contact_role.contact, role=_contact_role.role
+                        )
+                    # UserGeoLimit/GroupGeoLimit own a `resource` FK (CASCADE), reusing the source's
+                    # rows via .set() would tie the clone's limits to the source resource's lifetime
+                    for _geolimit in UserGeoLimit.objects.filter(resource=instance):
+                        _new_geolimit = UserGeoLimit.objects.create(
+                            user=_geolimit.user, resource=_dst, wkt=_geolimit.wkt
+                        )
+                        _dst.users_geolimits.add(_new_geolimit)
+                    for _geolimit in GroupGeoLimit.objects.filter(resource=instance):
+                        _new_geolimit = GroupGeoLimit.objects.create(
+                            group=_geolimit.group, resource=_dst, wkt=_geolimit.wkt
+                        )
+                        _dst.groups_geolimits.add(_new_geolimit)
                     for lr in LinkedResource.get_linked_resources(source=instance.pk, is_internal=False):
                         LinkedResource.objects.get_or_create(
                             source_id=_resource.pk, target_id=lr.target.pk, internal=False
@@ -558,7 +592,10 @@ class BaseResourceManager(ResourceManagerInterface):
                     to_update.update(defaults)
                     # Refresh from DB
                     _resource.refresh_from_db()
-                    return self.update(_resource.uuid, _resource, vals=to_update)
+                    _resource = self.update(_resource.uuid, _resource, vals=to_update)
+                    _source_perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+                    self.set_permissions(_resource.uuid, instance=_resource, permissions=_source_perms)
+                    return _resource
                 except Exception as e:
                     logger.exception(e)
                 finally:

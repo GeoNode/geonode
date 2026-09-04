@@ -61,8 +61,9 @@ from geonode.resource.models import ExecutionRequest
 from osgeo import ogr, gdal
 from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.celery_app import importer_app
-from geonode.assets.utils import copy_assets_and_links, get_default_asset
+from geonode.assets.utils import get_default_asset
 
+from geonode.resource.registry import dataset_manager
 from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
@@ -188,8 +189,10 @@ class BaseVectorFileHandler(BaseHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
@@ -1030,14 +1033,22 @@ class BaseVectorFileHandler(BaseHandler):
         ).first()
         if previous_resource:
             subtype = previous_resource.subtype
-        new_resource = self.create_geonode_resource(
-            layer_name=data_to_update.get("title"),
-            alternate=new_alternate,
-            execution_id=str(_exec.exec_id),
-            subtype=subtype,
-        )
 
-        copy_assets_and_links(resource, target=new_resource)
+        workspace = getattr(settings, "DEFAULT_WORKSPACE", getattr(settings, "CASCADE_WORKSPACE", "geonode"))
+        defaults = {
+            "name": new_alternate,
+            "alternate": f"{workspace}:{new_alternate}",
+            "workspace": workspace,
+            "store": os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
+        }
+        if data_to_update.get("title"):
+            defaults["title"] = data_to_update["title"]
+        if subtype:
+            defaults["subtype"] = subtype
+
+        new_resource = dataset_manager.copy(resource, owner=_exec.user, defaults=defaults)
+        # copy() only relinks GeoNode-side data, the GIS backend still needs its own style
+        self.handle_sld_file(new_resource, _exec)
 
         if resource.dataset.has_time is True:
 
