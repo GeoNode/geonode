@@ -45,7 +45,7 @@ dependencies = [
     "zipstream-ng==1.9.3",
 
     # Django Apps
-    "django-allauth==65.19.1",
+    "django-allauth==65.19.2",
     "django-appconf==1.0.6",
     "django-filter==25.2",
     "django-imagekit==5.0.0",
