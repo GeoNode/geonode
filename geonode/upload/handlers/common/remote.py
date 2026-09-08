@@ -332,6 +332,26 @@ class BaseRemoteResourceHandler(BaseHandler):
 
         return resource
 
+    def copy_geonode_resource(self, alternate, resource, _exec, data_to_update, new_alternate, **kwargs):
+        defaults = {
+            "alternate": new_alternate,
+        }
+
+        if data_to_update.get("title"):
+            defaults["title"] = data_to_update["title"]
+
+        if resource.subtype:
+            defaults["subtype"] = resource.subtype
+
+        if resource.sourcetype:
+            defaults["sourcetype"] = resource.sourcetype
+
+        return resource_manager_registry.get_for_instance(resource).copy(
+            resource,
+            owner=_exec.user,
+            defaults=defaults,
+        )
+
     def create_link(self, resource, params: dict, name):
         link = Link(
             resource=resource,
