@@ -592,18 +592,18 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
     new_alternate = kwargs.get("kwargs").get("new_dataset_alternate")
     from geonode.upload.celery_tasks import import_orchestrator
 
+    resource = None
     try:
-        if not original_dataset_alternate:
-            original_dataset_alternate = alternate
-            kwargs["kwargs"]["original_dataset_alternate"] = original_dataset_alternate
-        resource = ResourceBase.objects.filter(alternate=original_dataset_alternate)
-        if not resource.exists():
+        _exec = orchestrator.get_execution_object(exec_id)
+
+        resource = _exec.geonode_resource
+        if not resource:
+            resource = ResourceBase.objects.filter(alternate=original_dataset_alternate).first()
+
+        if not resource:
             raise Exception("The resource requested does not exists")
-        resource = resource.first()
         # setting the original resource in dirty_state
         resource.set_dirty_state()
-
-        _exec = orchestrator.get_execution_object(exec_id)
 
         if not new_alternate:
             new_alternate = create_alternate(
