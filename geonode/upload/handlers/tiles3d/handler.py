@@ -34,6 +34,7 @@ from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.base.models import ResourceBase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
+from geonode.resource.registry import resource_manager_registry
 
 logger = logging.getLogger("importer")
 
@@ -184,8 +185,10 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
@@ -295,6 +298,23 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
 
         return resource
+
+    def copy_geonode_resource(self, alternate, resource, _exec, data_to_update, new_alternate, **kwargs):
+        defaults = {
+            "alternate": new_alternate,
+        }
+
+        if data_to_update.get("title"):
+            defaults["title"] = data_to_update["title"]
+
+        if resource.subtype:
+            defaults["subtype"] = resource.subtype
+
+        return resource_manager_registry.get_for_instance(resource).copy(
+            resource,
+            owner=_exec.user,
+            defaults=defaults,
+        )
 
     def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
         """
