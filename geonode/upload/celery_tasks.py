@@ -597,6 +597,9 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
         _exec = orchestrator.get_execution_object(exec_id)
 
         resource = _exec.geonode_resource
+        if not original_dataset_alternate:
+            original_dataset_alternate = resource.alternate if resource else alternate
+            kwargs["kwargs"]["original_dataset_alternate"] = original_dataset_alternate
         if not resource:
             resource = ResourceBase.objects.filter(alternate=original_dataset_alternate).first()
 
