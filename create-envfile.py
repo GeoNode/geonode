@@ -42,7 +42,6 @@ def shuffle(chars):
     random.shuffle(chars_as_list)
     return "".join(chars_as_list)
 
-
 _simple_chars = shuffle(string.ascii_letters + string.digits)
 _strong_chars = shuffle(string.ascii_letters + string.digits + "#%*._~")
 
@@ -74,25 +73,42 @@ def generate_env_file(args):
             with open(args.file) as _json_file:
                 _jsfile = json.load(_json_file)
 
-        _vals_to_replace = {key: _jsfile.get(key, val) for key, val in vars(args).items() if key not in _config}
-        tcp = "https" if ast.literal_eval(f"{_jsfile.get('https', args.https)}".capitalize()) else "http"
-
-        _vals_to_replace["public_port"] = (
-            "443" if ast.literal_eval(f"{_jsfile.get('https', args.https)}".capitalize()) else "80"
+        _vals_to_replace = {
+            key: _jsfile.get(key, val)
+            for key, val in vars(args).items()
+            if key not in _config
+        }
+        tcp = (
+            "https"
+            if ast.literal_eval(f"{_jsfile.get('https', args.https)}".capitalize())
+            else "http"
         )
-        _vals_to_replace["http_host"] = _jsfile.get("hostname", args.hostname) if tcp == "http" else ""
-        _vals_to_replace["https_host"] = _jsfile.get("hostname", args.hostname) if tcp == "https" else ""
 
-        _vals_to_replace["siteurl"] = f"{tcp}://{_jsfile.get('hostname', args.hostname)}"
-        _vals_to_replace["secret_key"] = _jsfile.get("secret_key", args.secret_key) or "".join(
-            random.choice(_strong_chars) for _ in range(50)
+        _vals_to_replace["http_host"] = (
+            _jsfile.get("hostname", args.hostname) if tcp == "http" else ""
         )
+        _vals_to_replace["https_host"] = (
+            _jsfile.get("hostname", args.hostname) if tcp == "https" else ""
+        )
+
+        _vals_to_replace[
+            "siteurl"
+        ] = f"{tcp}://{_jsfile.get('hostname', args.hostname)}"
+        _vals_to_replace["secret_key"] = _jsfile.get(
+            "secret_key", args.secret_key
+        ) or "".join(random.choice(_strong_chars) for _ in range(50))
         _vals_to_replace["letsencrypt_mode"] = (
             "disabled"
             if not _vals_to_replace.get("https_host")
-            else "staging" if _jsfile.get("env_type", args.env_type) in ["test"] else "production"
+            else "staging"
+            if _jsfile.get("env_type", args.env_type) in ["test"]
+            else "production"
         )
-        _vals_to_replace["debug"] = False if _jsfile.get("env_type", args.env_type) in ["prod", "test"] else True
+        _vals_to_replace["debug"] = (
+            False
+            if _jsfile.get("env_type", args.env_type) in ["prod", "test"]
+            else True
+        )
         _vals_to_replace["email"] = _jsfile.get("email", args.email)
 
         if tcp == "https" and not _vals_to_replace["email"]:
@@ -120,7 +136,7 @@ if __name__ == "__main__":
         prog="ENV file builder",
         description="Tool for generate environment file automatically. The information can be passed or via CLI or via JSON file ( --file /path/env.json)",
         usage="python create-envfile.py localhost -f /path/to/json/file.json",
-        allow_abbrev=False,
+        allow_abbrev=False
     )
     parser.add_argument(
         "--noinput",
@@ -132,7 +148,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-hn",
         "--hostname",
-        help="Host name, default localhost",
+        help=f"Host name, default localhost",
         default="localhost",
     )
 
@@ -149,9 +165,13 @@ if __name__ == "__main__":
         help="absolute path of the file with the configuration. Note: we expect that the keys of the dictionary have the same name as the CLI params",
     )
     # booleans
-    parser.add_argument("--https", action="store_true", default=False, help="If provided, https is used")
+    parser.add_argument(
+        "--https", action="store_true", default=False, help="If provided, https is used"
+    )
     # strings
-    parser.add_argument("--email", help="Admin email, this field is required if https is enabled")
+    parser.add_argument(
+        "--email", help="Admin email, this field is required if https is enabled"
+    )
 
     parser.add_argument("--geonodepwd", help="GeoNode admin password")
     parser.add_argument("--geoserverpwd", help="Geoserver admin password")
@@ -160,6 +180,7 @@ if __name__ == "__main__":
     parser.add_argument("--geodbpwd", help="Geodatabase user password")
     parser.add_argument("--clientid", help="Oauth2 client id")
     parser.add_argument("--clientsecret", help="Oauth2 client secret")
+    parser.add_argument("--authapikey", help="Oauth2 API key")
     parser.add_argument("--secret_key", help="Django Secret Key")
 
     parser.add_argument(
@@ -174,7 +195,9 @@ if __name__ == "__main__":
     if not args.confirmation:
         generate_env_file(args)
     else:
-        overwrite_env = input("This action will overwrite any existing .env file. Do you wish to continue? (y/n)")
+        overwrite_env = input(
+            "This action will overwrite any existing .env file. Do you wish to continue? (y/n)"
+        )
         if overwrite_env not in ["y", "n"]:
             logger.error("Please enter a valid response")
         if overwrite_env == "y":
