@@ -31,10 +31,17 @@ class Asset(PolymorphicModel):
     objects = AssetPolymorphicManager()
 
     class Meta:
+        base_manager_name = "objects"
         verbose_name_plural = "Assets"
 
     def __str__(self) -> str:
         return self.title
+
+    def get_real_instance(self):
+        real_model = self.get_real_instance_class()
+        if real_model is self.__class__:
+            return self
+        return real_model.objects.db_manager(self._state.db).get(pk=self.pk)
 
 
 class LocalAsset(Asset):
