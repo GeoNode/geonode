@@ -10,7 +10,7 @@
   {% if user == profile %}
     <h2 class="page-title">{% trans "Edit Your Profile" %}</h2>
   {% else %}
-    <h2 class="page-title">{% trans "Edit Profile for" %} {{ profile.username }}</h2>
+    <h2 class="page-title" ng-non-bindable>{% trans "Edit Profile for" %} {{ profile.username }}</h2>
   {% endif %}
 </div>
 
@@ -22,7 +22,7 @@
 </div>
 
 <div class="col-xs-9 col-md-7">
-  <form action="" method="post">
+  <form action="" method="post" ng-non-bindable>
     {% csrf_token %}
     <div class="form-controls">
       {# form|as_bootstrap #}
@@ -32,6 +32,9 @@
             <label for="{{ field.auto_id }}" class="control-label">{{ field.label }}</label>
             <div class="">
                 {% render_field field class="form-control" %}
+                {% for error in field.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                {% endfor %}
             </div>
         </div>
         {% endif %}

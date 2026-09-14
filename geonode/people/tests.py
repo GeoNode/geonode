@@ -290,6 +290,38 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertIn("Profile of bobby", content)
         self.assertIn(bobby.voice, content)
 
+    def test_profile_edit_rejects_disallowed_characters(self):
+        admin = get_user_model().objects.get(username="admin")
+        previous_last_name = admin.last_name
+        payload = "{{7*6}}"
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        response = self.client.post(
+            reverse("profile_edit", args=[admin.username]),
+            data={
+                "first_name": admin.first_name,
+                "last_name": payload,
+                "email": admin.email,
+                "organization": admin.organization or "",
+                "profile": admin.profile or "",
+                "position": admin.position or "",
+                "voice": admin.voice or "",
+                "fax": admin.fax or "",
+                "delivery": admin.delivery or "",
+                "city": admin.city or "",
+                "area": admin.area or "",
+                "zipcode": admin.zipcode or "",
+                "country": admin.country or "",
+                "language": admin.language,
+                "keywords": "",
+                "timezone": admin.timezone or "",
+            },
+        )
+
+        self.assertContains(response, "This field contains characters that are not allowed.")
+        admin.refresh_from_db()
+        self.assertEqual(admin.last_name, previous_last_name)
+
     def _facebook_extractor_init(self):
         data = {
             "email": "phony_mail",
