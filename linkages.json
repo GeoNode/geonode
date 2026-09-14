@@ -1,0 +1,431 @@
+{
+    "1164": {
+        "resource": {
+            "id": 1164,
+            "title": "Riesgo Geologico de Mendoza",
+            "type": "map",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 1177,
+                "title": "Map Export plugin",
+                "type": "mapviewer",
+                "owner": {
+                    "id": 1000,
+                    "username": "admin"
+                }
+            },
+            {
+                "id": 1146,
+                "title": "Zonificacion sismica de Mendoza.",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 1137,
+                "title": "Volcanes activos en Mendoza.",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 1161,
+                "title": "Acelerografos en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 1128,
+                "title": "Fallas activas en la Provincia de Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 1147,
+                "title": "Riesgo sismico de Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 1130,
+                "title": "Departamentos de la Provincia de Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 1129,
+                "title": "Asentamientos humanos en la Provincia de Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4314": {
+        "resource": {
+            "id": 4314,
+            "title": "Mapa de Registros Georreferenciados de Peces de Aguas Continentales de Mendoza",
+            "type": "map",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4313,
+                "title": "mendoza_cuencas",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 4315,
+                "title": "cursos_agua_ign",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 4312,
+                "title": "Registros Georreferenciados de Peces de Aguas Continentales de Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4327": {
+        "resource": {
+            "id": 4327,
+            "title": "Peces de Aguas Continentales de Mendoza",
+            "type": "geostory",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4312,
+                "title": "Registros Georreferenciados de Peces de Aguas Continentales de Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 4314,
+                "title": "Mapa de Registros Georreferenciados de Peces de Aguas Continentales de Mendoza",
+                "type": "map",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            },
+            {
+                "id": 4371,
+                "title": "Filter tests",
+                "type": "map",
+                "owner": {
+                    "id": 1000,
+                    "username": "admin"
+                }
+            }
+        ]
+    },
+    "4336": {
+        "resource": {
+            "id": 4336,
+            "title": "Fotografía de Astyanax abramis (Jenyns_ 1842)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4335,
+                "title": "Astyanax abramis (Jenyns_ 1842) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4338": {
+        "resource": {
+            "id": 4338,
+            "title": "Fotografía de Astyanax fasciatus (Cuvier_ 1819)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4337,
+                "title": "Astyanax fasciatus (Cuvier_ 1819) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4340": {
+        "resource": {
+            "id": 4340,
+            "title": "Fotografía de Cheirodon interruptus (Jenyns_ 1842)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4339,
+                "title": "Cheirodon interruptus (Jenyns_ 1842) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4342": {
+        "resource": {
+            "id": 4342,
+            "title": "Fotografía de Cnesterodon decemmaculatus (Jenyns_ 1842)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4341,
+                "title": "Cnesterodon decemmaculatus (Jenyns_ 1842) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4344": {
+        "resource": {
+            "id": 4344,
+            "title": "Fotografía de Diplomystes cuyanus Ringuelet_ 1965",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4343,
+                "title": "Diplomystes cuyanus Ringuelet_ 1965 – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4346": {
+        "resource": {
+            "id": 4346,
+            "title": "Fotografía de Hatcheria macraei (Girard_ 1855)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4345,
+                "title": "Hatcheria macraei (Girard_ 1855) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4348": {
+        "resource": {
+            "id": 4348,
+            "title": "Fotografía de Jenynsia multidentata (Jenyns_ 1842)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4347,
+                "title": "Jenynsia multidentata (Jenyns_ 1842) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4350": {
+        "resource": {
+            "id": 4350,
+            "title": "Fotografía de Odontesthes hatcheri (Eigenmann_ 1909)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4349,
+                "title": "Odontesthes hatcheri (Eigenmann_ 1909) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4352": {
+        "resource": {
+            "id": 4352,
+            "title": "Fotografía de Olivaichthys viedmensis (MacDonagh_ 1931)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4351,
+                "title": "Olivaichthys viedmensis (MacDonagh_ 1931) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4354": {
+        "resource": {
+            "id": 4354,
+            "title": "Fotografía de Percichthys trucha (Valenciennes_ 1833)",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4353,
+                "title": "Percichthys trucha (Valenciennes_ 1833) – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4357": {
+        "resource": {
+            "id": 4357,
+            "title": "Fotografía de Trichomycterus areolatus Valenciennes_ 1846",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4356,
+                "title": "Trichomycterus areolatus Valenciennes_ 1846 – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    },
+    "4359": {
+        "resource": {
+            "id": 4359,
+            "title": "Fotografía de Trichomycterus borellii Boulenger_ 1897",
+            "type": "document",
+            "owner": {
+                "id": 1340,
+                "username": "GenMaps"
+            }
+        },
+        "linked_resources": [
+            {
+                "id": 4358,
+                "title": "Trichomycterus borellii Boulenger_ 1897 – Registros Georreferenciados en Mendoza",
+                "type": "dataset",
+                "owner": {
+                    "id": 1340,
+                    "username": "GenMaps"
+                }
+            }
+        ]
+    }
+}
