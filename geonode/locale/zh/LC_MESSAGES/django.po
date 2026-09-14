@@ -53,31 +53,31 @@ msgid "Owner has requested permissions to modify a resource"
 msgstr "所有者请求修改资源的权限"
 
 msgid "series"
-msgstr "系列"
+msgstr "序列"
 
 msgid "computer program or routine"
-msgstr "计算机程序或例程"
+msgstr "电脑程序"
 
 msgid "feature type"
-msgstr "要素类型"
+msgstr "功能类型"
 
 msgid "copy or imitation of an existing or hypothetical object"
-msgstr "现有对象或假设对象的副本或仿制品"
+msgstr "存在或假设对象的副本"
 
 msgid "collection hardware"
-msgstr "采集硬件"
+msgstr "集合硬件"
 
 msgid "collection session"
-msgstr "采集会话"
+msgstr "集合时段"
 
 msgid "non-geographic data"
 msgstr "非地理数据"
 
 msgid "property type"
-msgstr "属性类型"
+msgstr "属性种类"
 
 msgid "field session"
-msgstr "外业会话"
+msgstr "类时段"
 
 #| msgid "dataset"
 msgid "dataset"
@@ -88,25 +88,25 @@ msgid "service interfaces"
 msgstr "服务接口"
 
 msgid "attribute class"
-msgstr "属性类别"
+msgstr "属性"
 
 msgid "characteristic of a feature"
-msgstr "要素特征"
+msgstr "功能特点"
 
 msgid "tile or spatial subset of geographic data"
-msgstr "地理数据的瓦片或空间子集"
+msgstr "地理数据段"
 
 msgid "feature"
-msgstr "要素"
+msgstr "功能"
 
 msgid "dimension group"
 msgstr "维度组"
 
 msgid "frequency of maintenance for the data is not known"
-msgstr "数据维护频率未知"
+msgstr "维护数据的频率未知"
 
 msgid "data is repeatedly and frequently updated"
-msgstr "数据会反复频繁更新"
+msgstr "数据被反复频繁地更新"
 
 msgid "there are no plans to update the data"
 msgstr "没有更新数据的计划"
@@ -118,7 +118,7 @@ msgid "data is updated every year"
 msgstr "数据每年更新一次"
 
 msgid "data is updated as deemed necessary"
-msgstr "根据需要更新数据"
+msgstr "数据一经需要并更新一次"
 
 msgid "data is updated each month"
 msgstr "数据每月更新一次"
@@ -127,7 +127,7 @@ msgid "data is updated every two weeks"
 msgstr "数据每两周更新一次"
 
 msgid "data is updated in intervals that are uneven in duration"
-msgstr "数据按不规则的时间间隔更新"
+msgstr "上传数据的时间间隔不一致"
 
 msgid "data is updated on a weekly basis"
 msgstr "数据每周更新一次"
@@ -139,16 +139,16 @@ msgid "data is updated every three months"
 msgstr "数据每三个月更新一次"
 
 msgid "No information provided"
-msgstr "未提供信息"
+msgstr "无信息提供"
 
 msgid "Category is required."
-msgstr "类别为必填项。"
+msgstr "类别是必需的。"
 
 msgid "Keywords from Thesaurus"
-msgstr "来自词库的关键词"
+msgstr "来自 Thesauri 的关键词"
 
 msgid "List of keywords from Thesaurus"
-msgstr "来自词库的关键词列表"
+msgstr "来自 Thesauri 的关键词列表"
 
 msgid "Abstract"
 msgstr "摘要"
@@ -181,10 +181,10 @@ msgid "temporal extent end"
 msgstr "结束时间"
 
 msgid "Person outside GeoNode (fill form)"
-msgstr "GeoNode 外部人员（填写表单）"
+msgstr "在GeoNode（填表）之外的人"
 
 msgid "Point of Contact"
-msgstr "联系人"
+msgstr "切点"
 
 msgid "Metadata Author"
 msgstr "元数据作者"
@@ -202,13 +202,13 @@ msgid "Regions"
 msgstr "地区"
 
 msgid "Group"
-msgstr "群组"
+msgstr "群体"
 
 msgid "Category"
 msgstr "类别"
 
 msgid "License"
-msgstr "许可证"
+msgstr "许可"
 
 msgid "Language"
 msgstr "语言"
@@ -236,19 +236,19 @@ msgid "Short reasoning behind the request"
 msgstr "请求的简要说明"
 
 msgid "function performed by the responsible party"
-msgstr "责任方履行的职能"
+msgstr "责任方履行职务"
 
 msgid "brief narrative summary of the content of the resource(s)"
-msgstr "资源内容的简要叙述性摘要"
+msgstr "资料简介"
 
 msgid "reference date for the cited resource"
-msgstr "引用资源的参考日期"
+msgstr "资料引用日期"
 
 msgid "identification of when a given event occurred"
-msgstr "用于标识特定事件发生时间的信息"
+msgstr "特定事件发生的标识码"
 
 msgid "version of the cited resource"
-msgstr "引用资源的版本"
+msgstr "引用文献的版本"
 
 msgid ""
 "authority or function assigned, as to a ruler, legislative assembly, "
@@ -259,7 +259,7 @@ msgid "a DOI will be added by Admin before publication."
 msgstr "管理员将在发布前添加 DOI。"
 
 msgid "summary of the intentions with which the resource(s) was developed"
-msgstr "资源开发目的概述"
+msgstr "总结生成资源的动机"
 
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
@@ -283,52 +283,52 @@ msgid ""
 msgstr "用于描述主题的固定词表中的规范词或短语（以空格或逗号分隔）"
 
 msgid "keyword identifies a location"
-msgstr "用于标识位置的关键词"
+msgstr "定位关键词"
 
 msgid "limitation(s) placed upon the access or use of the data."
-msgstr "对数据访问或使用的限制。"
+msgstr "限制（多个）放置在所述数据的访问或使用。"
 
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr "访问和使用资源或元数据的其他限制及法律前提"
+msgstr "使用资料或元数据的限制及法律前提"
 
 msgid "license of the dataset"
-msgstr "数据集许可证"
+msgstr "数据集的许可"
 
 msgid "language used within the dataset"
-msgstr "数据集使用的语言"
+msgstr "数据集使用语言"
 
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
-msgstr "用于归类和搜索可用地理数据集的高层次地理数据主题分类。"
+msgstr "用以助于地理信息搜集的高层次地理信息分类"
 
 msgid "method used to represent geographic information in the dataset."
-msgstr "用于表示数据集中地理信息的方法。"
+msgstr "方法用于表示数据集中的地理信息。"
 
 msgid "time period covered by the content of the dataset (start)"
-msgstr "数据内容覆盖的时间段（开始）"
+msgstr "数据集所覆盖时间段 (起始日期)"
 
 msgid "time period covered by the content of the dataset (end)"
-msgstr "数据内容覆盖的时间段（结束）"
+msgstr "数据集所覆盖时间段 (结束日期)"
 
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
-msgstr "数据生产者对数据集沿革的总体说明"
+msgstr "数据生产者对于数据集沿袭知识的基本解释"
 
 msgid "title"
 msgstr "标题"
 
 msgid "name by which the cited resource is known"
-msgstr "引用资源的名称"
+msgstr "用已知资源命名"
 
 msgid "abstract"
 msgstr "摘要"
 
 msgid "purpose"
-msgstr "目的"
+msgstr "目标"
 
 msgid "date"
 msgstr "日期"
@@ -365,58 +365,58 @@ msgid "language"
 msgstr "语言"
 
 msgid "spatial representation type"
-msgstr "空间表示类型"
+msgstr "空间呈现类型"
 
 msgid "supplemental information"
 msgstr "补充信息"
 
 msgid "any other descriptive information about the dataset"
-msgstr "关于数据集的其他描述性信息"
+msgstr "其他关于数据的描述性信息"
 
 msgid "data quality statement"
 msgstr "数据质量描述"
 
 msgid "CSW typename"
-msgstr "CSW 类型名称"
+msgstr "CSW类型名称"
 
 msgid "CSW schema"
-msgstr "CSW 模式"
+msgstr "CSW 图解"
 
 msgid "CSW source"
-msgstr "CSW 来源"
+msgstr "CSW资源"
 
 msgid "CSW insert date"
 msgstr "CSW 插入日期"
 
 msgid "CSW type"
-msgstr "CSW 类型"
+msgstr "CSW类型"
 
 msgid "CSW anytext"
-msgstr "CSW 全文"
+msgstr "CSW文本"
 
 msgid "CSW WKT geometry"
-msgstr "CSW WKT 几何图形"
+msgstr "CSW WKT几何图形"
 
 msgid "Metadata uploaded preserve"
-msgstr "是否保留上传的元数据？"
+msgstr "上传的元数据是否保存？"
 
 msgid "Featured"
-msgstr "是否设为精选"
+msgstr "是否作为特色"
 
 msgid "Should this resource be advertised in home page?"
-msgstr "是否在首页展示此资源？"
+msgstr "该资源应该发布到主页上吗？"
 
 msgid "Is Published"
-msgstr "是否已发布"
+msgstr "是否发布"
 
 msgid "Should this resource be published and searchable?"
-msgstr "是否发布并允许搜索此资源？"
+msgstr "该资源可否被发布和查询？"
 
 msgid "Approved"
-msgstr "是否已批准"
+msgstr "是否被准许"
 
 msgid "Is this resource validated from a publisher or editor?"
-msgstr "此资源是否已由发布者或编辑者验证？"
+msgstr "该资源是否被发布者或编辑者准许？"
 
 msgid "Thumbnail url"
 msgstr "缩略图链接"
@@ -444,13 +444,13 @@ msgid "If true, will be excluded from search"
 msgstr "如果为 true，将从搜索结果中排除"
 
 msgid "For example \"kml\""
-msgstr "例如“kml”"
+msgstr "比如“kml”"
 
 msgid "For example \"View in Google Earth\""
-msgstr "例如“在 Google Earth 中查看”"
+msgstr "比如“在谷歌地球中查看”"
 
 msgid "For example \"text/xml\""
-msgstr "例如“text/xml”"
+msgstr "比如“text/xml”"
 
 msgid "About"
 msgstr "关于"
@@ -513,7 +513,7 @@ msgid "Supplemental Information"
 msgstr "补充信息"
 
 msgid "Spatial Representation Type"
-msgstr "空间表示类型"
+msgstr "空间呈现类型"
 
 msgid "No content created yet."
 msgstr "尚未创建任何内容。"
@@ -551,7 +551,7 @@ msgid "Create a Map"
 msgstr "创建一张地图"
 
 msgid "View Map"
-msgstr "查看地图"
+msgstr "浏览地图"
 
 #| msgid "Advanced Edit"
 msgid "Batch Edit"
@@ -568,7 +568,7 @@ msgid "Set Permissions"
 msgstr "设置权限"
 
 msgid "Discover the available datasets."
-msgstr "浏览可用数据集。"
+msgstr "发现可用的数据集。"
 
 #| msgid "Updating Thumbnail..."
 msgid "Upload a Thumbnail"
@@ -749,7 +749,7 @@ msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
 "illness, factors affecting health, hygiene, substance abuse, mental and "
 "physical health, health services."
-msgstr "健康、卫生服务、人类生态学和安全。示例：疾病与病症、影响健康的因素、卫生、药物滥用、身心健康、卫生服务。"
+msgstr "Health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services."
 
 msgid "Health"
 msgstr "健康"
@@ -757,7 +757,7 @@ msgstr "健康"
 msgid ""
 "Base maps. Examples: land cover, topographic maps, imagery, unclassified "
 "images, annotations."
-msgstr "基础地图。示例：土地覆盖、地形图、影像、未分类影像、注记。"
+msgstr "Base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations."
 
 msgid "Imagery Base Maps Earth Cover"
 msgstr "影像基础地图与地表覆盖"
@@ -766,7 +766,7 @@ msgid ""
 "Inland water features, drainage systems and their characteristics. Examples: "
 "rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
 "floods, water quality, hydrographic charts."
-msgstr "内陆水域要素、排水系统及其特征。示例：河流和冰川、盐湖、水资源利用规划、水坝、水流、洪水、水质、水文图。"
+msgstr "Inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts."
 
 msgid "Inland Waters"
 msgstr "内陆水域"
@@ -774,7 +774,7 @@ msgstr "内陆水域"
 msgid ""
 "Military bases, structures, activities. Examples: barracks, training "
 "grounds, military transportation, information collection."
-msgstr "军事基地、设施和活动。示例：营房、训练场、军事运输、信息收集。"
+msgstr "Military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection."
 
 msgid "Intelligence Military"
 msgstr "情报与军事"
@@ -782,7 +782,7 @@ msgstr "情报与军事"
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
-msgstr "定位信息和服务。示例：地址、大地测量网络、控制点、邮政区域和服务、地名。"
+msgstr "Positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names."
 
 msgid "Location"
 msgstr "位置"
@@ -790,7 +790,7 @@ msgstr "位置"
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
 "Examples: tides, tidal waves, coastal information, reefs."
-msgstr "咸水水体的要素和特征（不包括内陆水域）。示例：潮汐、潮浪、海岸信息、礁石。"
+msgstr "Features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs."
 
 msgid "Oceans"
 msgstr "海洋"
@@ -798,7 +798,7 @@ msgstr "海洋"
 msgid ""
 "Information used for appropriate actions for future use of the land. "
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
-msgstr "用于指导土地未来合理利用的信息。示例：土地利用图、分区图、地籍调查、土地所有权。"
+msgstr "Information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 
 msgid "Planning Cadastre"
 msgstr "规划与地籍"
@@ -808,7 +808,7 @@ msgid ""
 "manners and customs, demographic data, recreational areas and activities, "
 "social impact assessments, crime and justice, census information. Economic "
 "activities, conditions and employment."
-msgstr "聚落、人类学、考古学、教育、传统信仰、礼仪和习俗、人口数据、休闲区域和活动、社会影响评估、犯罪与司法、人口普查信息。经济活动、经济状况和就业。"
+msgstr "Settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information. Economic activities, conditions and employment."
 
 msgid "Population"
 msgstr "人口"
@@ -818,7 +818,7 @@ msgid ""
 "anthropology, archaeology, education, traditional beliefs, manners and "
 "customs, demographic data, recreational areas and activities, social impact "
 "assessments, crime and justice, census information."
-msgstr "社会和文化特征。示例：聚落、人类学、考古学、教育、传统信仰、礼仪和习俗、人口数据、休闲区域和活动、社会影响评估、犯罪与司法、人口普查信息。"
+msgstr "Characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information."
 
 msgid "Society"
 msgstr "社会"
@@ -826,7 +826,7 @@ msgstr "社会"
 msgid ""
 "Man-made construction. Examples: buildings, museums, churches, factories, "
 "housing, monuments, shops, towers."
-msgstr "人造构筑物。示例：建筑物、博物馆、教堂、工厂、住宅、纪念碑、商店、塔楼。"
+msgstr "Man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers."
 
 msgid "Structure"
 msgstr "构筑物"
@@ -835,7 +835,7 @@ msgid ""
 "Means and aids for conveying persons and/or goods. Examples: roads, airports/"
 "airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel "
 "location, aeronautical charts, railways."
-msgstr "运送人员和/或货物的方式与设施。示例：道路、机场/跑道、航运路线、隧道、航海图、车辆或船舶位置、航空图、铁路。"
+msgstr "Means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways."
 
 msgid "Transportation"
 msgstr "交通运输"
@@ -846,56 +846,56 @@ msgid ""
 "of energy, water purification and distribution, sewage collection and "
 "disposal, electricity and gas distribution, data communication, "
 "telecommunication, radio, communication networks."
-msgstr "能源、水资源、废弃物系统以及通信基础设施和服务。示例：水力、地热、太阳能和核能，水净化与分配，污水收集与处理，电力和燃气分配，数据通信、电信、无线电、通信网络。"
+msgstr "Energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks."
 
 msgid "Utilities Communication"
 msgstr "公用设施与通信"
 
 msgid "Document Created"
-msgstr "文件已创建"
+msgstr "创建文件"
 
 msgid "A Document was created"
-msgstr "文件已创建"
+msgstr "已创建一个文件"
 
 msgid "Document Updated"
-msgstr "文件已更新"
+msgstr "更新文件"
 
 msgid "A Document was updated"
-msgstr "文件已更新"
+msgstr "已更新一个文件"
 
 #| msgid "Document Type"
 msgid "Document Approved"
-msgstr "文件已批准"
+msgstr "文档已批准"
 
 #| msgid "A Document was created"
 msgid "A Document was approved by a Manager"
-msgstr "文件已由管理员批准"
+msgstr "文档已由管理员批准"
 
 #| msgid "Document Deleted"
 msgid "Document Published"
-msgstr "文件已发布"
+msgstr "文档已发布"
 
 #| msgid "A Document was updated"
 msgid "A Document was published"
-msgstr "文件已发布"
+msgstr "文档已发布"
 
 msgid "Document Deleted"
-msgstr "文件已删除"
+msgstr "删除文件"
 
 msgid "A Document was deleted"
-msgstr "文件已删除"
+msgstr "已删除一个文件"
 
 msgid "Comment on Document"
-msgstr "文件评论"
+msgstr "相关文件的评论"
 
 msgid "A Document was commented on"
-msgstr "有人评论了文件"
+msgstr "已评论一个文件"
 
 msgid "Rating for Document"
-msgstr "文件评分"
+msgstr "文件评级"
 
 msgid "A rating was given to a document"
-msgstr "文件已获得评分"
+msgstr "文件已获得打分"
 
 msgid "Width"
 msgstr "宽度"
@@ -904,52 +904,52 @@ msgid "Height"
 msgstr "高度"
 
 msgid "Make"
-msgstr "制造商"
+msgstr "制作"
 
 msgid "Model"
-msgstr "型号"
+msgstr "模型"
 
 msgid "Latitude"
 msgstr "纬度"
 
 msgid "Not specified"
-msgstr "未指定"
+msgstr "未标明的"
 
 msgid "Longitude"
 msgstr "经度"
 
 msgid "Flash"
-msgstr "闪光灯"
+msgstr "闪现"
 
 msgid "True"
-msgstr "是"
+msgstr "正确"
 
 msgid "False"
-msgstr "否"
+msgstr "错误"
 
 msgid "Speed Rating"
-msgstr "速度评级"
+msgstr "速度打分"
 
 msgid "Link to"
-msgstr "链接到"
+msgstr "链接"
 
 msgid "File"
 msgstr "文件"
 
 msgid "Document must be a file or url."
-msgstr "文件资源必须是文件或 URL。"
+msgstr "文档必须是一个文件或URL。"
 
 msgid "A document cannot have both a file and a url."
-msgstr "文件资源不能同时包含本地文件和 URL。"
+msgstr "文档不可兼得的文件和网址。"
 
 msgid "This file type is not allowed"
-msgstr "不允许使用此文件类型"
+msgstr "该文件类型不允许"
 
 msgid "Permissions must be valid JSON."
-msgstr "权限必须是有效的 JSON。"
+msgstr "权限必须是有效的JSON。"
 
 msgid "The URL of the document if it is external."
-msgstr "外部文件的 URL。"
+msgstr "的文档的URL，如果它是外部的。"
 
 msgid "URL"
 msgstr "网址"
@@ -966,22 +966,22 @@ msgstr "下载"
 
 #| msgid "Document"
 msgid "document"
-msgstr "文件"
+msgstr "文档"
 
 msgid "External Resource"
 msgstr "外部资源"
 
 msgid "Rate this document"
-msgstr "为此文件评分"
+msgstr "给此文件打分"
 
 msgid "Average Rating"
-msgstr "平均评分"
+msgstr "平均分数"
 
 msgid "Metadata Detail"
-msgstr "元数据详情"
+msgstr "元数据细节"
 
 msgid "Download Document"
-msgstr "下载文件"
+msgstr "下载文档"
 
 msgid "Request Download"
 msgstr "请求下载"
@@ -1002,13 +1002,13 @@ msgstr "高级编辑"
 #| msgid "Document"
 msgid "Document"
 msgid_plural "Documents"
-msgstr[0] "文件"
+msgstr[0] "文档"
 
 msgid "Clone"
 msgstr "克隆"
 
 msgid "Replace"
-msgstr "替换"
+msgstr "代替"
 
 msgid "Remove"
 msgstr "删除"
@@ -1036,19 +1036,19 @@ msgstr "标准元数据 - XML 格式"
 
 #| msgid "Resource using this document"
 msgid "Resources using this document"
-msgstr "使用此文件的资源"
+msgstr "使用此文档的资源"
 
 msgid "List of resources using this document:"
-msgstr "使用此文件的资源列表："
+msgstr "列出用到此文件的资源"
 
 msgid "This document is not related to any maps or layers"
-msgstr "当前文件未关联任何地图或图层"
+msgstr "当前文件未被任何地图或图层使用"
 
 msgid "Permissions"
 msgstr "权限"
 
 msgid "Click the button below to change the permissions of this document."
-msgstr "点击下方按钮更改此文件的权限。"
+msgstr "点击下方按钮以改变此文件的使用权限"
 
 msgid "Change Document Permissions"
 msgstr "更改文件权限"
@@ -1061,19 +1061,19 @@ msgstr "上传文件"
 
 #, python-format
 msgid "for %(document_title)s"
-msgstr "：%(document_title)s"
+msgstr "- %(document_title)s"
 
 msgid "Completeness"
 msgstr "完整性"
 
 msgid "Metadata Schema mandatory fields completed"
-msgstr "元数据模式必填字段已完成"
+msgstr "元数据模式强制性字段已完成"
 
 msgid "Check Schema mandatory fields"
-msgstr "检查模式必填字段"
+msgstr "检查模式强制性字段"
 
 msgid "Error updating metadata.  Please check the following fields: "
-msgstr "更新元数据时出错。请检查以下字段："
+msgstr "错误更新元数据。请检查以下字段："
 
 #| msgid "Done!"
 msgid "Done"
@@ -1097,19 +1097,19 @@ msgid "Select an option"
 msgstr "选择一个选项"
 
 msgid "Edit Metadata"
-msgstr "编辑元数据"
+msgstr "修改元数据"
 
 msgid "Editing details for"
-msgstr "编辑详情："
+msgstr "编辑细节于"
 
 msgid "Return to Document"
-msgstr "返回文件"
+msgstr "返回文档"
 
 msgid "Deleting"
 msgstr "删除"
 
 msgid "Remove Document"
-msgstr "删除文件"
+msgstr "删除文档"
 
 #, python-format
 msgid ""
@@ -1119,7 +1119,7 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          您确定要删除 <a href='%(document.get_absolute_url)s'>%(document_title)s</a>吗？\n"
+"          Are you sure you want to remove <a href=\\\"%(document.get_absolute_url)s\\\">%(document_title)s</a>?\n"
 "        "
 
 msgid "Yes, I am sure"
@@ -1135,23 +1135,23 @@ msgid "Replace "
 msgstr "替换"
 
 msgid "Clear"
-msgstr "清除"
+msgstr "明确"
 
 #| msgid "Upload Documents"
 msgid "Upload Document's Thumbnail"
-msgstr "上传文件缩略图"
+msgstr "上传文档缩略图"
 
 msgid "Drop files here"
-msgstr "将文件拖放到此处"
+msgstr "此文件拖放"
 
 msgid " or select them one by one:"
-msgstr "或逐个选择："
+msgstr "或选择其中一个接一个："
 
 msgid "Choose Files"
 msgstr "选择文件"
 
 msgid "Files to be uploaded"
-msgstr "待上传文件"
+msgstr "文件上传"
 
 #| msgid "Download Metadata"
 msgid "Is Upload Metadata XML Form"
@@ -1165,7 +1165,7 @@ msgstr "上传文件"
 
 #| msgid "Upload Documents"
 msgid "Allowed document types"
-msgstr "允许的文件类型"
+msgstr "允许的文档类型"
 
 msgid "Done!"
 msgstr "完成！"
@@ -1178,7 +1178,7 @@ msgid "Settings"
 msgstr "设置"
 
 msgid "Mandatory"
-msgstr "必填"
+msgstr "强制"
 
 msgid "Optional"
 msgstr "可选"
@@ -1187,7 +1187,7 @@ msgid "Basic Metadata"
 msgstr "基础元数据"
 
 msgid "Location and Licenses"
-msgstr "位置和许可证"
+msgstr "位置和许可"
 
 #| msgid "Basic Metadata"
 msgid "Required Metadata"
@@ -1198,10 +1198,10 @@ msgstr "可选元数据"
 
 #| msgid "This action affects the following maps:"
 msgid "Choose one of the following..."
-msgstr "请选择以下选项之一……"
+msgstr "Choose one of the following..."
 
 msgid "Other, Optional, Metadata"
-msgstr "其他可选元数据"
+msgstr "其他的，可选择的元数据"
 
 msgid "Responsible Parties"
 msgstr "责任方"
@@ -1211,10 +1211,10 @@ msgid "Responsible and Permissions"
 msgstr "责任方和权限"
 
 msgid "Publishing"
-msgstr "发布"
+msgstr "发布属性"
 
 msgid "You are not allowed to view this document."
-msgstr "您无权查看此文件。"
+msgstr "您不"
 
 msgid "You are not permitted to delete this document"
 msgstr "您无权删除此文件"
@@ -1223,13 +1223,13 @@ msgid "You do not have permissions for this document."
 msgstr "您没有此文件的权限"
 
 msgid "You are not permitted to modify this document"
-msgstr "您无权修改此文件"
+msgstr "您没有修改此文件的权限"
 
 msgid "You are not permitted to modify this document's metadata"
-msgstr "您无权修改此文件的元数据"
+msgstr "您没有权限修改此文件的元数据"
 
 msgid "You are not permitted to view this document"
-msgstr "您无权查看此文件"
+msgstr "您无权以查看此文件"
 
 #| msgid "No Dismissals Allowed"
 msgid "Not allowed"
@@ -1240,32 +1240,32 @@ msgid "Not found"
 msgstr "未找到"
 
 msgid "You must set a point of contact for this resource"
-msgstr "您必须为该资源设置联系人"
+msgstr "您必须为该资源设置一个联系点"
 
 msgid "You must set an author for this resource"
 msgstr "您必须为该资源设置一个作者"
 
 msgid "Favorite"
-msgstr "收藏"
+msgstr "喜爱的"
 
 msgid "Add to Favorites"
-msgstr "添加到收藏夹"
+msgstr "添加到喜爱"
 
 #| msgid "Add to Favorites"
 msgid "Go to Favorites"
 msgstr "前往收藏夹"
 
 msgid "Log in to add/delete Favorites."
-msgstr "登录后才能添加或删除收藏。"
+msgstr "登录去添加／删除收喜爱"
 
 msgid "Delete from Favorites"
-msgstr "从收藏夹中删除"
+msgstr "从喜爱中删除"
 
 msgid "Favorites"
-msgstr "收藏夹"
+msgstr "喜爱"
 
 msgid "Favorites for"
-msgstr "收藏夹："
+msgstr "喜爱"
 
 msgid "Item"
 msgstr "项目"
@@ -1276,7 +1276,7 @@ msgstr "应用已创建"
 
 #| msgid "A Layer was created"
 msgid "A App was created"
-msgstr "应用已创建"
+msgstr "一个应用已创建"
 
 #| msgid "Map Updated"
 msgid "App Updated"
@@ -1284,7 +1284,7 @@ msgstr "应用已更新"
 
 #| msgid "A Layer was updated"
 msgid "A App was updated"
-msgstr "应用已更新"
+msgstr "一个应用已更新"
 
 #| msgid "Approved"
 msgid "App Approved"
@@ -1292,7 +1292,7 @@ msgstr "应用已批准"
 
 #| msgid "A Layer was created"
 msgid "A App was approved by a Manager"
-msgstr "应用已由管理员批准"
+msgstr "一个应用已由管理员批准"
 
 #| msgid "Published"
 msgid "App Published"
@@ -1300,7 +1300,7 @@ msgstr "应用已发布"
 
 #| msgid "A Map was deleted"
 msgid "A App was published"
-msgstr "应用已发布"
+msgstr "一个应用已发布"
 
 #| msgid "Map Deleted"
 msgid "App Deleted"
@@ -1308,7 +1308,7 @@ msgstr "应用已删除"
 
 #| msgid "A Map was deleted"
 msgid "A App was deleted"
-msgstr "应用已删除"
+msgstr "一个应用已删除"
 
 #| msgid "Comment on Map"
 msgid "Comment on App"
@@ -1316,7 +1316,7 @@ msgstr "应用评论"
 
 #| msgid "A map was commented on"
 msgid "An App was commented on"
-msgstr "有人评论了应用"
+msgstr "有人评论了一个应用"
 
 #| msgid "Rating for Map"
 msgid "Rating for App"
@@ -1324,7 +1324,7 @@ msgstr "应用评分"
 
 #| msgid "A rating was given to a map"
 msgid "A rating was given to an App"
-msgstr "有人为应用评分"
+msgstr "有人为一个应用评分"
 
 msgid "Name"
 msgstr "名称"
@@ -1336,10 +1336,10 @@ msgid "projection"
 msgstr "投影"
 
 msgid "center X"
-msgstr "中心 X"
+msgstr "中心X"
 
 msgid "center Y"
-msgstr "中心 Y"
+msgstr "中心Y"
 
 msgid "Site URL"
 msgstr "网站网址"
@@ -1361,10 +1361,10 @@ msgid "Set"
 msgstr "设置"
 
 msgid "View"
-msgstr "查看"
+msgstr "看"
 
 msgid "Specify which users can view or modify this map"
-msgstr "指定哪些用户可以查看或修改此地图"
+msgstr "指定可以浏览或修改该地图的用户"
 
 #| msgid "Change Permissions of this Map"
 msgid "Change Permissions of this"
@@ -1395,7 +1395,7 @@ msgstr "浏览"
 
 #, python-format
 msgid "for %(map_title)s"
-msgstr "：%(map_title)s"
+msgstr "给%(map_title)s"
 
 #| msgid ""
 #| "Note: this map's orginal metadata was populated by importing a metadata "
@@ -1410,9 +1410,9 @@ msgid ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
-"注意：此地理应用的原始元数据是通过导入元数据 XML 文件生成的。\n"
-"        GeoNode 的元数据导入支持 ISO、FGDC 和 Dublin Core 元数据元素的子集。\n"
-"        部分原始元数据可能已经丢失。"
+"Note: this geoapp's orginal metadata was populated by importing a metadata XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"        Some of your original metadata may have been lost."
 
 #| msgid "Explore Maps"
 msgid "Explore Apps"
@@ -1425,7 +1425,7 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"编辑 %(map_title)s 的详情"
+"编辑细节%(map_title)s"
 
 #| msgid "Return to"
 msgid "Return to GeoApp"
@@ -1448,7 +1448,7 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          您确定要删除 <a href='%(resource.get_absolute_url)s'>%(resource_title)s</a>吗？\n"
+"          Are you sure you want to remove <a href=\\\"%(resource.get_absolute_url)s\\\">%(resource_title)s</a>?\n"
 "        "
 
 msgid "Other Settings"
@@ -1479,26 +1479,26 @@ msgid "You are not allowed to view this app."
 msgstr "您无权查看此应用。"
 
 msgid "An unknown error has occured."
-msgstr "发生未知错误。"
+msgstr "未知出错。"
 
 msgid "Layer Uploaded"
 msgstr "图层上传成功"
 
 #| msgid "A Layer was updated"
 msgid "A layer was uploaded"
-msgstr "图层已上传"
+msgstr "已上传一个图层"
 
 msgid "Comment on Layer"
-msgstr "图层评论"
+msgstr "相关图层的评论"
 
 msgid "A layer was commented on"
-msgstr "有人评论了图层"
+msgstr "一个图层被评论于"
 
 msgid "Rating for Layer"
 msgstr "图层评分"
 
 msgid "A rating was given to a layer"
-msgstr "图层已获得评分"
+msgstr "一个图层被评分"
 
 #| msgid "Contact Points"
 msgid "Points"
@@ -1538,7 +1538,7 @@ msgid "Add Attribute"
 msgstr "添加属性"
 
 msgid "Create"
-msgstr "创建"
+msgstr "创建地图"
 
 msgid "String"
 msgstr "字符串"
@@ -1555,25 +1555,25 @@ msgid "No title provided"
 msgstr "未提供标题"
 
 msgid "No abstract provided"
-msgstr "未提供摘要"
+msgstr "没有摘要"
 
 msgid "An exception occurred loading data to PostGIS"
-msgstr "将数据加载到 PostGIS 时发生异常。"
+msgstr "在加载数据倒PostGIS时出现了一个异常"
 
 msgid " Additionally an error occured during database cleanup"
-msgstr " 此外，清理数据库时发生错误。"
+msgstr "在数据库清理时又发生了一个错误"
 
 msgid "Invalid Projection. Layer is missing CRS!"
 msgstr "投影无效。图层缺少 CRS！"
 
 msgid "GZIP"
-msgstr "GZIP"
+msgstr "压缩程序"
 
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
 msgid "Zipped Shapefile"
-msgstr "Shapefile 压缩包（.zip）"
+msgstr "Shapefile压缩包(.zip)"
 
 msgid "GML 2.0"
 msgstr "GML 2.0"
@@ -1600,25 +1600,25 @@ msgid "PNG"
 msgstr "PNG"
 
 msgid "You don't have permissions to change style for this layer"
-msgstr "您无权更改此图层的样式。"
+msgstr "您没有权限改变该图层的样式"
 
 msgid "Bad HTTP Authorization Credentials."
-msgstr "HTTP 授权凭据错误。"
+msgstr "HTTP授权证书错误。"
 
 msgid ""
 "a short version of the name consisting only of letters, numbers, underscores "
 "and hyphens."
-msgstr "仅由字母、数字、下划线和连字符组成的名称简写。"
+msgstr "短版只包含字母，数字，下划线和连字符的名称。"
 
 msgid "A group already exists with that slug."
-msgstr "已存在使用该别名的群组。"
+msgstr "已存在拥有该标识的群体。"
 
 msgid "A group already exists with that name."
-msgstr "已存在使用该名称的群组。"
+msgstr "已存在拥有该名称的群体"
 
 #| msgid "User Identifiers"
 msgid "User Identifiers"
-msgstr "用户标识符"
+msgstr "User Identifiers"
 
 msgid "Assign manager role"
 msgstr "分配管理员角色"
@@ -1626,19 +1626,19 @@ msgstr "分配管理员角色"
 #, python-format
 msgid ""
 "The following are not valid usernames: %(errors)s; not added to the group"
-msgstr "以下用户名无效：%(errors)s；未添加到群组中"
+msgstr "以下用户名无效：%(errors)s；将无法加入到群体中"
 
 msgid "Group Categories"
-msgstr "群组类别"
+msgstr "群体类别"
 
 msgid "Public"
 msgstr "公开"
 
 msgid "Public (invite-only)"
-msgstr "公开（仅限邀请）"
+msgstr "公开（只邀请）"
 
 msgid "Private"
-msgstr "私有"
+msgstr "私人"
 
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
@@ -1646,29 +1646,29 @@ msgid ""
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
 msgstr ""
-"公开：任何注册用户都可以查看并加入公开群组。<br>公开（仅限邀请）：任何注册用户"
-"都可以查看该群组，但只有受邀用户可以加入。<br>私有：注册用户无法查看该群组的"
-"任何详情，包括成员信息。只有受邀用户可以加入。"
+"公开：任何注册用户都可以查看并加入公开群体。<br>公开（只邀请）：任何注册用户"
+"可以查看该群体，但只有被邀请的用户可以加入。 <br>私有：注册用户无法查看私有群"
+"体的详细信息，只有被邀请的用户可以加入。"
 
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
-msgstr "用于联系一个或所有群组成员的电子邮件地址，例如邮件列表、共享邮箱或交流组。"
+msgstr "电子邮件用于联系一个或所有组成员，如邮件列表，共享电子邮件或交流群。"
 
 msgid "Logo"
 msgstr "标志"
 
 msgid "Email"
-msgstr "电子邮件"
+msgstr "邮件"
 
 msgid "A space or comma-separated list of keywords"
-msgstr "以空格或逗号分隔的关键词列表"
+msgstr "用空格或者逗号隔开的关键词"
 
 msgid "Access"
-msgstr "访问权限"
+msgstr "通道"
 
 msgid "Categories"
-msgstr "类别"
+msgstr "种类"
 
 msgid "Manager"
 msgstr "管理员"
@@ -1677,7 +1677,7 @@ msgid "Member"
 msgstr "成员"
 
 msgid "Activity Feed for"
-msgstr "活动动态："
+msgstr "活动提要 - "
 
 msgid "All"
 msgstr "全部"
@@ -1689,52 +1689,52 @@ msgid "Maps"
 msgstr "地图"
 
 msgid "Documents"
-msgstr "文件"
+msgstr "文档"
 
 msgid "Comments"
 msgstr "评论"
 
 msgid "No actions yet"
-msgstr "暂无活动"
+msgstr "尚无活动信息"
 
 msgid "Explore Group Categories"
-msgstr "浏览群组类别"
+msgstr "浏览群体类别"
 
 msgid "Create a New Group Category"
-msgstr "创建群组类别"
+msgstr "创建群体类别"
 
 msgid "Explore Groups"
-msgstr "浏览群组"
+msgstr "浏览群体类别"
 
 msgid "Create a Group"
-msgstr "创建群组"
+msgstr "创建群体"
 
 msgid "Update Group"
-msgstr "更新群组"
+msgstr "更新群体"
 
 msgid "Remove Group"
-msgstr "删除群组"
+msgstr "删除群体"
 
 msgid "Create Group"
-msgstr "创建群组"
+msgstr "创建群体"
 
 msgid "Last Modified"
-msgstr "最后修改时间"
+msgstr "最近修改"
 
 msgid "This group has not created a logo."
-msgstr "该群组尚未设置标志。"
+msgstr "该群体并未设置标志。"
 
 msgid "Edit Group Details"
-msgstr "编辑群组信息"
+msgstr "编辑群体信息"
 
 msgid "Manage Group Members"
-msgstr "管理群组成员"
+msgstr "管理群体成员"
 
 msgid "Delete this Group"
-msgstr "删除此群组"
+msgstr "删除此群体"
 
 msgid "Group Activities"
-msgstr "群组活动"
+msgstr "群体活动"
 
 #, python-format
 msgid ""
@@ -1743,19 +1743,19 @@ msgid ""
 "          "
 msgstr ""
 "\n"
-"该群组为<strong>%(access)s</strong>，"
+"该群体<strong>%(access)s</strong>，"
 
 msgid "Anyone may join this group."
-msgstr "任何人都可以加入该群组。"
+msgstr "任何人都可以加入该群体。"
 
 msgid "Join Group"
-msgstr "加入群组"
+msgstr "加入群体"
 
 msgid "Anyone may view this group but membership is by invitation only."
-msgstr "任何人都可以查看该群组，但只有受邀用户才能加入。"
+msgstr "任何人都可以查看该群体的成员，但只有接受邀请才能加入群体。"
 
 msgid "Membership is by invitation only."
-msgstr "只有受邀用户才能加入群组。"
+msgstr "只有接受邀请才能加入群体。"
 
 msgid "Managers"
 msgstr "管理员"
@@ -1764,10 +1764,10 @@ msgid "Members"
 msgstr "成员"
 
 msgid "Create a New Group"
-msgstr "创建一个新群组"
+msgstr "创建一个新群体"
 
 msgid "Edit Members for"
-msgstr "编辑成员："
+msgstr "编辑成员 - "
 
 msgid "Current Members"
 msgstr "当前成员"
@@ -1785,7 +1785,7 @@ msgid "Add new members"
 msgstr "添加新成员"
 
 msgid "Add Group Members"
-msgstr "添加群组成员"
+msgstr "添加群体成员"
 
 #, python-format
 msgid ""
@@ -1794,29 +1794,29 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"请确认是否删除该群组：%(group_title)s？"
+"请确认是否删除该群体：%(group_title)s？"
 
 msgid "Remove Maps/Data from Group"
-msgstr "从群组中删除地图/数据"
+msgstr "从群体中删除地图/数据"
 
 msgid "Remove selected maps/data"
 msgstr "删除所选地图/数据"
 
 #| msgid "Edit Group Details"
 msgid "Edit Group Category Details"
-msgstr "编辑群组类别详情"
+msgstr "编辑群体类别详情"
 
 msgid "Groups"
-msgstr "群组"
+msgstr "群体"
 
 msgid "Create Group Category"
-msgstr "创建群组类别"
+msgstr "创建群体类别"
 
 msgid "Create a Group Category"
-msgstr "创建一个群组类别"
+msgstr "创建一个群体类别"
 
 msgid "Edit Group Category"
-msgstr "编辑群组类别"
+msgstr "编辑群体类别"
 
 msgid "Save"
 msgstr "保存"
@@ -1850,7 +1850,7 @@ msgid ""
 "How often (in minutes) should new harvesting sessions be automatically "
 "scheduled? Setting this value to zero has the same effect as setting "
 "`scheduling_enabled` to False "
-msgstr "应多久（分钟）自动调度新的采集会话？将此值设为 0 与将 `scheduling_enabled` 设为 False 的效果相同。"
+msgstr "How often (in minutes) should new harvesting sessions be automatically scheduled? Setting this value to zero has the same effect as setting `scheduling_enabled` to False "
 
 msgid "Whether the remote service is known to be available or not"
 msgstr "远程服务当前是否可用"
@@ -1884,7 +1884,7 @@ msgid ""
 "automatically? This also applies to when a harvester configuration is "
 "deleted, in which case all of the resources that originated from that "
 "harvester are now considered to be orphan."
-msgstr "孤立资源是指之前通过采集操作创建，但 GeoNode 已无法在被采集的远程服务中找到的资源。是否应自动从 GeoNode 中删除这些资源？删除采集器配置时也适用此规则，此时由该采集器创建的所有资源都会被视为孤立资源。"
+msgstr "Orphan resources are those that have previously been created by means of a harvesting operation but that GeoNode can no longer find on the remote service being harvested. Should these resources be deleted from GeoNode automatically? This also applies to when a harvester configuration is deleted, in which case all of the resources that originated from that harvester are now considered to be orphan."
 
 msgid "Date of last update to the harvester configuration."
 msgstr "采集器配置最后更新时间。"
@@ -1892,13 +1892,13 @@ msgstr "采集器配置最后更新时间。"
 msgid ""
 "Harvester class used to perform harvesting sessions. New harvester types can "
 "be added by an admin by changing the main GeoNode `settings.py` file"
-msgstr "用于执行采集会话的采集器类。管理员可以修改 GeoNode 主 `settings.py` 文件来添加新的采集器类型。"
+msgstr "Harvester class used to perform harvesting sessions. New harvester types can be added by an admin by changing the main GeoNode `settings.py` file"
 
 msgid ""
 "Configuration specific to each harvester type. Please consult GeoNode "
 "documentation on harvesting for more info. This field is mandatory, so at "
 "the very least an empty object (i.e. {}) must be supplied."
-msgstr "每种采集器类型的专用配置。有关详细信息，请参阅 GeoNode 的采集文档。此字段为必填项，至少必须提供一个空对象（即 {}）。"
+msgstr "Configuration specific to each harvester type. Please consult GeoNode documentation on harvesting for more info. This field is mandatory, so at the very least an empty object (i.e. {}) must be supplied."
 
 msgid "Periodic task used to configure harvest scheduling"
 msgstr "用于配置采集调度的周期任务"
@@ -1922,13 +1922,13 @@ msgid ""
 "worker. The harvester worker needs to know how to either read or generate "
 "this from each remote resource in order to be able to compare the "
 "availability of resources between consecutive harvesting sessions."
-msgstr "用于在远程服务中唯一引用资源的标识符。通常由采集工作程序自动填写。采集工作程序需要知道如何从每个远程资源中读取或生成该标识符，以便比较连续采集会话之间资源的可用性。"
+msgstr "Identifier that allows referencing the resource on its remote service in a unique fashion. This is usually automatically filled by the harvester worker. The harvester worker needs to know how to either read or generate this from each remote resource in order to be able to compare the availability of resources between consecutive harvesting sessions."
 
 msgid ""
 "Type of the resource in the remote service. Each harvester worker knows how "
 "to fill this field, in accordance with the resources for which harvesting is "
 "supported"
-msgstr "资源在远程服务中的类型。每个采集工作程序都会根据所支持采集的资源类型填写此字段。"
+msgstr "Type of the resource in the remote service. Each harvester worker knows how to fill this field, in accordance with the resources for which harvesting is supported"
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -1948,25 +1948,25 @@ msgstr "电子邮件"
 
 #, python-format
 msgid "Invitations successfully sent to '%(email)s'"
-msgstr "邀请已成功发送至“%(email)s”"
+msgstr "Invitations successfully sent to '%(email)s'"
 
 #, python-format
 msgid ""
 "Sorry, it was not possible to invite '%(email)s' due to the following isse: "
 "%(error)s (%(type)s)"
-msgstr "抱歉，无法邀请“%(email)s”，原因如下：%(error)s（%(type)s）"
+msgstr "Sorry, it was not possible to invite '%(email)s' due to the following isse: %(error)s (%(type)s)"
 
 msgid "Layer Created"
-msgstr "图层已创建"
+msgstr "图层被创建"
 
 msgid "A Layer was created"
-msgstr "图层已创建"
+msgstr "已创建一个图层"
 
 msgid "Layer Updated"
-msgstr "图层已更新"
+msgstr "图层更新"
 
 msgid "A Layer was updated"
-msgstr "图层已更新"
+msgstr "已更新一个图层"
 
 #| msgid "Approved"
 msgid "Layer Approved"
@@ -1974,7 +1974,7 @@ msgstr "图层已批准"
 
 #| msgid "A Layer was created"
 msgid "A Layer was approved by a Manager"
-msgstr "图层已由管理员批准"
+msgstr "一个图层已由管理员批准"
 
 #| msgid "Published"
 msgid "Layer Published"
@@ -1982,13 +1982,13 @@ msgstr "图层已发布"
 
 #| msgid "A Layer was updated"
 msgid "A Layer was published"
-msgstr "图层已发布"
+msgstr "一个图层已发布"
 
 msgid "Layer Deleted"
-msgstr "图层已删除"
+msgstr "图层被删除"
 
 msgid "A Layer was deleted"
-msgstr "图层已删除"
+msgstr "已删除一个图层"
 
 msgid "YYYYMMDD"
 msgstr "YYYYMMDD"
@@ -2000,25 +2000,25 @@ msgid "YYYYMMDD'T'hhmmss'Z'"
 msgstr "YYYYMMDD'T'hhmmss'Z'"
 
 msgid "style name"
-msgstr "样式名称"
+msgstr "格式名称"
 
 msgid "sld text"
-msgstr "SLD 文本"
+msgstr "sld文本"
 
 msgid "sld version"
-msgstr "SLD 版本"
+msgstr "sld版本"
 
 msgid "sld url"
-msgstr "SLD 链接"
+msgstr "sld链接"
 
 msgid "Workspace"
 msgstr "工作空间"
 
 msgid "Store"
-msgstr "存储"
+msgstr "仓库"
 
 msgid "Storetype"
-msgstr "存储类型"
+msgstr "仓库类型"
 
 # msgid "Type"
 # msgstr "类型"
@@ -2026,13 +2026,13 @@ msgid "Typename"
 msgstr "类型名"
 
 msgid "Is mosaic?"
-msgstr "是否为镶嵌图？"
+msgstr "是镶嵌图像？"
 
 msgid "Has time?"
-msgstr "是否包含时间？"
+msgstr "具有时间属性？"
 
 msgid "Has elevation?"
-msgstr "是否包含高程？"
+msgstr "具有高程？"
 
 msgid "Time regex"
 msgstr "时间正则表达式"
@@ -2053,14 +2053,14 @@ msgid "the custom GetFeatureInfo template HTML contents."
 msgstr "自定义 GetFeatureInfo 模板的 HTML 内容。"
 
 msgid "File cannot be opened, maybe check the encoding"
-msgstr "无法打开文件，请检查文件编码。"
+msgstr "文件不能打开，也许检查编码"
 
 #| msgid "attribute name"
 msgid "attribute name"
 msgstr "属性名称"
 
 msgid "name of attribute as stored in shapefile/spatial database"
-msgstr "存储在 Shapefile 或空间数据库中的属性名称"
+msgstr "在shapefile和空间数据库中使用的属性名称"
 
 #| msgid "distribution description"
 msgid "attribute description"
@@ -2073,19 +2073,19 @@ msgid "attribute label"
 msgstr "属性标签"
 
 msgid "title of attribute as displayed in GeoNode"
-msgstr "GeoNode 中显示的属性标题"
+msgstr "GeoNode中显示属性的标题"
 
 msgid "attribute type"
-msgstr "属性类型"
+msgstr "属性种类"
 
 msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr "属性的数据类型（整数、字符串、几何图形等）"
+msgstr "属性的数据种类(整数，字符串，几何图形等)"
 
 msgid "visible?"
 msgstr "可见？"
 
 msgid "specifies if the attribute should be displayed in identify results"
-msgstr "指定是否在要素识别结果中显示该属性"
+msgstr "标明是否在identity中显示属性"
 
 msgid "display order"
 msgstr "显示顺序"
@@ -2093,7 +2093,7 @@ msgstr "显示顺序"
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
-msgstr "指定属性在要素识别结果中的显示顺序"
+msgstr "标明属性在identity中显示的顺序"
 
 msgid "Label"
 msgstr "标签"
@@ -2140,49 +2140,49 @@ msgid "count"
 msgstr "数量"
 
 msgid "count value for this field"
-msgstr "此字段的计数"
+msgstr "计算此列的值"
 
 msgid "min"
 msgstr "最小值"
 
 msgid "minimum value for this field"
-msgstr "此字段的最小值"
+msgstr "此列最小值"
 
 msgid "max"
 msgstr "最大值"
 
 msgid "maximum value for this field"
-msgstr "此字段的最大值"
+msgstr "此列最大值"
 
 msgid "average"
 msgstr "平均值"
 
 msgid "average value for this field"
-msgstr "此字段的平均值"
+msgstr "此列平均值"
 
 msgid "median"
-msgstr "中位数"
+msgstr "中间值"
 
 msgid "median value for this field"
-msgstr "此字段的中位数"
+msgstr "此列中间值"
 
 msgid "standard deviation"
-msgstr "标准差"
+msgstr "方差"
 
 msgid "standard deviation for this field"
-msgstr "此字段的标准差"
+msgstr "此列方差"
 
 msgid "sum"
 msgstr "和"
 
 msgid "sum value for this field"
-msgstr "此字段的总和"
+msgstr "此列和"
 
 msgid "unique values for this field"
-msgstr "此字段的唯一值"
+msgstr "此列唯一值"
 
 msgid "last modified"
-msgstr "最后修改时间"
+msgstr "最近修改"
 
 msgid "date when attribute statistics were last updated"
 msgstr "上一次统计更新的时间"
@@ -2200,31 +2200,31 @@ msgid "Preserve Metadata XML"
 msgstr "保留元数据 XML"
 
 msgid "Select the charset or leave default"
-msgstr "选择字符集，或保留默认值"
+msgstr "选择的字符集或保留默认值"
 
 msgid "Home"
 msgstr "主页"
 
 msgid "Change point of contact"
-msgstr "更改联系人"
+msgstr "改变联络地址"
 
 msgid "Assign a new point of contact to the layers below:"
-msgstr "为以下图层指定新的联系人："
+msgstr "给以下图层添加一个新的联系点"
 
 msgid "Dataset WMS GetCapabilities document"
 msgstr "数据集 WMS GetCapabilities 文档"
 
 msgid "Filter Granules"
-msgstr "筛选栅格粒元"
+msgstr "过滤器颗粒"
 
 msgid "Active Filter:"
-msgstr "当前筛选条件："
+msgstr "激活过滤器"
 
 msgid "Granule ID"
-msgstr "粒元 ID"
+msgstr "颗粒ID"
 
 msgid "Bounding Box"
-msgstr "边界框"
+msgstr "边界矩形"
 
 msgid "Time"
 msgstr "时间"
@@ -2234,17 +2234,17 @@ msgstr "操作"
 
 #| msgid "Granule ID"
 msgid "Granule Preview"
-msgstr "预览栅格粒元"
+msgstr "预览栅格粒"
 
 #| msgid "Granule ID"
 msgid "Granule Remove"
-msgstr "移除栅格粒元"
+msgstr "移除栅格粒"
 
 msgid "Dimension"
 msgstr "维度"
 
 msgid "Enabled"
-msgstr "已启用"
+msgstr "使可用"
 
 msgid "Regex"
 msgstr "正则表达式"
@@ -2265,17 +2265,17 @@ msgid "Average"
 msgstr "平均值"
 
 msgid "Median"
-msgstr "中位数"
+msgstr "中值"
 
 msgid "Standard Deviation"
-msgstr "标准差"
+msgstr "方差"
 
 #| msgid "Rate this layer"
 msgid "Rate this dataset"
 msgstr "为此数据集评分"
 
 msgid "Analyze with"
-msgstr "使用以下工具分析"
+msgstr "分析工具"
 
 #| msgid "Download"
 msgid "Download Dataset"
@@ -2410,12 +2410,12 @@ msgid "Documents related to this layer"
 msgstr "与此图层相关的文件"
 
 msgid "List of documents related to this layer:"
-msgstr "与此图层相关的文件列表："
+msgstr "列出与此图层相关的文件"
 
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
-msgstr "以下样式与此图层相关联。请选择一种样式，以在预览地图中查看。"
+msgstr "以下样式与此图层关联。选择一种样式以在"
 
 #| msgid "Layer Default Style"
 msgid "(default style)"
@@ -2425,7 +2425,7 @@ msgid "No styles associated with this layer"
 msgstr "此图层没有与任何样式关联"
 
 msgid "External service layer"
-msgstr "外部服务图层"
+msgstr "外部服务层"
 
 msgid "Source"
 msgstr "源"
@@ -2437,7 +2437,7 @@ msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
 "Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
-msgstr "点击下面的按钮，让 GeoNode 刷新可用数据集属性列表。如果后端同时启用了“WPS_ENABLED”选项，系统也会重新计算这些属性的统计信息。"
+msgstr "Click the button below to allow GeoNode refreshing the list of available Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the backend, it will recalculate their statistics too."
 
 msgid "Refresh Attributes and Statistics"
 msgstr "刷新属性和统计信息"
@@ -2451,17 +2451,17 @@ msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "点击下方按钮，清除此图层的瓦片缓存。"
 
 msgid "Empty Tiled-Dataset Cache"
-msgstr "清空切片数据集缓存"
+msgstr "清空瓦片数据集缓存"
 
 msgid "Click the button below to change the permissions of this layer."
-msgstr "点击下方按钮更改此图层的权限。"
+msgstr "点击下方按钮以改变该图层的使用权限"
 
 #| msgid "Change Layer Permissions"
 msgid "Change Dataset Permissions"
 msgstr "更改数据集权限"
 
 msgid "Remove Mosaic Granules"
-msgstr "移除镶嵌粒元"
+msgstr "移除镶嵌颗粒"
 
 #, python-format
 msgid ""
@@ -2471,8 +2471,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          您确定要移除镶嵌图层中的粒元 %(granule_id)s：<a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a> 吗？\n"
+"          您确定您想要移除镶嵌颗粒 %(granule_id)s <a href="
+"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 
 msgid "This action affects the following maps:"
@@ -2487,15 +2487,15 @@ msgstr "上传数据集"
 
 #, python-format
 msgid "for %(layer_title)s"
-msgstr "：%(layer_title)s"
+msgstr "给%(layer_title)s"
 
 msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file.\n"
 "          This metadata cannot be edited."
 msgstr ""
-"注意：该图层的原始元数据是通过导入元数据 XML 文件生成并保留的。\n"
-"          此元数据无法编辑。"
+"注意：该图层的原始元数据已通过一个元数据XML文件导入的方式被保存。\n"
+"          该元数据不能被编辑"
 
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
@@ -2504,9 +2504,9 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"注意：该图层的原始元数据是通过导入元数据 XML 文件生成的。\n"
-"          GeoNode 的元数据导入支持 ISO、FGDC 和 Dublin Core 元数据元素的子集。\n"
-"          部分原始元数据可能已经丢失。"
+"注：此图的原单的元数据被填充通过导入元数据的XML文件。         GeoNode的元数据"
+"导入支持ISO，FGDC和都柏林核心元数据元素的一个子集。         一些您原来的元数"
+"据可能已经丢失。"
 
 #, python-format
 msgid ""
@@ -2515,7 +2515,7 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"编辑 %(layer_title)s 的详情"
+"细节修改%(layer_title)s"
 
 msgid "Use a custom template?"
 msgstr "使用自定义模板？"
@@ -2546,7 +2546,7 @@ msgstr "（XML - ISO、FGDC、ebRIM、Dublin Core）"
 
 #| msgid "Remove Layers"
 msgid "Remove Datasets"
-msgstr "删除数据集"
+msgstr "移除数据集"
 
 #, python-format
 msgid ""
@@ -2556,8 +2556,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          您确定要删除 <a href=\"%(layer.get_absolute_url)s\">"
-"%(layer_title)s</a> 吗？\n"
+"          您确定您想要移除 <a href=\"%(layer.get_absolute_url)s\">"
+"%(layer_title)s</a>?\n"
 "        "
 
 #| msgid "Replace Layer"
@@ -2575,7 +2575,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"管理 <a href=\"{{ layer_url }}\">%(layer_title)s</a> 的可用样式"
+"为 <a href=\"{{ layer_url }}\">%(layer_title)s</a>管理可用的样式</a>"
 
 #| msgid "Layer Default Style"
 msgid "Dataset Default Style"
@@ -2588,7 +2588,7 @@ msgid ""
 "Click on an available style in the upper box to assign it to this layer. "
 "Selected styles appear in the lower box."
 msgstr ""
-"在上方选择框中点击可用样式，将其分配给此图层。选中的样式会显示在下方选择框中。"
+"在右边第一个选框中选择可用的样式，选择成功的样式将出现在右边第二个选框中。"
 
 msgid "Update Available Styles"
 msgstr "更新可用样式"
@@ -2658,17 +2658,17 @@ msgstr "删除未完成的上传"
 
 #| msgid "Are you sure you want to delete this upload?"
 msgid "Are you sure you want to remove this incomplete upload?"
-msgstr "确定要删除此未完成的上传吗？"
+msgstr "Are you sure you want to remove this incomplete upload?"
 
 #| msgid "Upload Layer Step 2"
 msgid "Upload Dataset Step: Set SRS"
 msgstr "上传数据集步骤：设置 SRS"
 
 msgid "Provide CRS for "
-msgstr "为以下内容提供 CRS："
+msgstr "提供CRS于"
 
 msgid "Coordinate Reference System"
-msgstr "坐标参考系统"
+msgstr "坐标参照系"
 
 #| msgid ""
 #| "\n"
@@ -2692,11 +2692,7 @@ msgid ""
 "            "
 msgstr ""
 "\n"
-"无法确定此数据集的坐标参考系统。\n"
-"请在下方找到或输入适用于此数据集的 EPSG 代码。\n"
-"一种方法是访问：\n"
-"<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
-"并输入以下内容：\n"
+"无法确定此数据集的坐标参考系统。请在下方输入适用的 EPSG 代码。\n"
 "            "
 
 msgid "Native CRS could not be found!"
@@ -2724,17 +2720,10 @@ msgid ""
 "                    More information is provided at the bottom of the page "
 "in the \"Additional Help\" sections.\n"
 "                    "
-msgstr ""
-"源 SRS EPSG 代码为必填项，表示数据的原生空间参考系统。\n"
-"<br><br>\n"
-"它必须与地理空间数据集中存储的几何值（例如经纬度坐标）一致。\n"
-"<br><br>\n"
-"如果地理空间数据本身未指定，则必须由操作人员手动声明。\n"
-"<br><br>\n"
-"更多信息见页面底部的“附加帮助”部分。"
+msgstr "源 SRS EPSG 代码为必填项，表示数据的原生空间参考系统。"
 
 msgid "Next"
-msgstr "下一步"
+msgstr "下一页"
 
 #| msgid "Advanced Edit"
 msgid "Advanced Options"
@@ -2777,7 +2766,15 @@ msgid ""
 "information—Spatial referencing by coordinates, also published as\n"
 "                            OGC Abstract Specification, Topic 2: Spatial "
 "referencing by coordinate."
-msgstr "空间参考系统（SRS）或坐标参考系统（CRS）是一个基于坐标的本地、区域或全球系统，用于定位地理实体。空间参考系统定义了特定的地图投影以及不同空间参考系统之间的转换。空间参考系统由 OGC 的 Simple feature access 使用众所周知文本定义，多个基于标准的地理信息系统已经实现了相关支持。空间参考系统可以使用 SRID 整数引用，其中包括国际石油和天然气生产者协会定义的 EPSG 代码。其定义见 ISO 19111:2007《地理信息——基于坐标的空间参照》，该标准也作为 OGC 抽象规范第 2 主题《基于坐标的空间参照》发布。"
+msgstr ""
+"A spatial reference system (SRS) or coordinate reference system (CRS) is a coordinate-based local,\n"
+"                            regional or global system used to locate geographical entities. A spatial reference system defines a specific map\n"
+"                            projection, as well as transformations between different spatial reference systems. Spatial reference systems are\n"
+"                            defined by the OGC's Simple feature access using well-known text, and support has been implemented by several\n"
+"                            standards-based geographic information systems. Spatial reference systems can be referred to using a SRID integer,\n"
+"                            including EPSG codes defined by the International Association of Oil and Gas Producers.\n"
+"                            It is specified in ISO 19111:2007 Geographic information—Spatial referencing by coordinates, also published as\n"
+"                            OGC Abstract Specification, Topic 2: Spatial referencing by coordinate."
 
 #| msgid "User Identifiers"
 msgid "Identifiers"
@@ -2796,14 +2793,21 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"空间参考系统标识符（SRID）是用于明确识别投影、未投影和本地空间坐标系定义的唯一值。这些坐标系是所有 GIS 应用的核心。几乎所有主要空间信息厂商都创建了自己的 SRID 实现，或引用某个权威机构（例如欧洲石油调查组织（EPSG））的实现。"
+"                        A Spatial Reference System Identifier (SRID) is a unique value used to unambiguously identify projected, unprojected,\n"
+"                        and local spatial coordinate system definitions. These coordinate systems form the heart of all GIS applications.\n"
+"\n"
+"                        Virtually all major spatial vendors have created their own SRID implementation or refer to those of an authority,\n"
+"                        such as the European Petroleum Survey Group (EPSG).\n"
+"                        "
 
 msgid ""
 "NOTE: As of 2005 the EPSG SRID values are now maintained by the "
 "International\n"
 "                            Association of Oil & Gas Producers (OGP) "
 "Surveying & Positioning Committee"
-msgstr "注意：自 2005 年起，EPSG SRID 值由国际石油和天然气生产者协会（OGP）测量与定位委员会维护。"
+msgstr ""
+"NOTE: As of 2005 the EPSG SRID values are now maintained by the International\n"
+"                            Association of Oil & Gas Producers (OGP) Surveying & Positioning Committee"
 
 msgid ""
 "\n"
@@ -2814,7 +2818,9 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"SRID 是开放地理空间联盟（OGC）spatial_ref_sys 元数据表的主键，该表用于 SQL 简单要素规范 1.1 和 1.2 版本，定义如下："
+"                        SRIDs are the primary key for the Open Geospatial Consortium (OGC) spatial_ref_sys metadata table for the Simple\n"
+"                        Features for SQL Specification, Versions 1.1 and 1.2, which is defined as follows:\n"
+"                        "
 
 msgid ""
 "\n"
@@ -2830,14 +2836,19 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"在支持空间功能的数据库（例如 IBM DB2、IBM Informix、Microsoft SQL Server、MySQL、Oracle RDBMS、Teradata、PostGIS 和 SQL Anywhere）中，SRID 用于唯一标识定义空间数据列或空间列中单个空间对象所使用的坐标系（具体取决于空间实现）。SRID 通常与坐标系的众所周知文本（WKT）字符串定义（即上面的 SRTEXT）相关联。内容来自“众所周知文本”维基百科页面。"
+"                        In spatially enabled databases (such as IBM DB2, IBM Informix, Microsoft SQL Server, MySQL, Oracle RDBMS, Teradata, PostGIS and\n"
+"                        SQL Anywhere), SRIDs are used to uniquely identify the coordinate systems used to define columns of spatial data or individual\n"
+"                        spatial objects in a spatial column (depending on the spatial implementation). SRIDs are typically associated with a well known\n"
+"                        text (WKT) string definition of the coordinate system (SRTEXT, above). From the Well Known Text Wikipedia page\n"
+"                        "
 
 msgid ""
 "“A WKT string for a spatial reference system describes the datum, geoid, "
 "coordinate system,\n"
 "                            and map projection of the spatial objects”."
 msgstr ""
-"“空间参考系统的 WKT 字符串描述空间对象的基准面、大地水准面、坐标系和地图投影”。"
+"“A WKT string for a spatial reference system describes the datum, geoid, coordinate system,\n"
+"                            and map projection of the spatial objects”."
 
 msgid ""
 "\n"
@@ -2846,7 +2857,8 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"下面是两个常见坐标系及其 EPSG SRID 值和众所周知文本："
+"                        Here are two common coordinate systems with their EPSG SRID value followed by their well known text:\n"
+"                        "
 
 msgid ""
 "\n"
@@ -2854,7 +2866,8 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"UTM，第 17N 区，NAD27——SRID 2029"
+"                        UTM, Zone 17N, NAD27 — SRID 2029\n"
+"                        "
 
 msgid ""
 "\n"
@@ -2862,7 +2875,8 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"WGS84——SRID 4326"
+"                        WGS84 — SRID 4326\n"
+"                        "
 
 msgid ""
 "\n"
@@ -2875,7 +2889,9 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"与空间数据关联的 SRID 值可用于约束空间操作。例如，在某些系统中，不同 SRID 的空间对象之间不能执行空间操作；在其他系统中，则会触发空间对象之间的坐标系转换。"
+"                        SRID values associated with spatial data can be used to constrain spatial operations — for instance, spatial operations cannot be performed\n"
+"                        between spatial objects with differing SRIDs in some systems, or trigger coordinate system transformations between spatial objects in others.\n"
+"                        "
 
 msgid ""
 "Source SRS EPSG Code is mandatory and represents the native data Spatial "
@@ -2884,13 +2900,13 @@ msgid ""
 "instance) stored on the geospatial dataset. If not specified on the "
 "geospatial data itself, it\n"
 "                            must be manually declared by the operator."
-msgstr "源 SRS EPSG 代码为必填项，表示数据的原生空间参考系统。它必须与地理空间数据集中存储的几何值（例如经纬度坐标）一致。如果地理空间数据本身未指定，则必须由操作人员手动声明。"
+msgstr "源 SRS EPSG 代码为必填项，表示数据的原生空间参考系统。"
 
 msgid ""
 "Target SRS EPSG Code is optional. This must be used only if we need to re-"
 "project the coordinates from Source SRS to another one.\n"
 "                        "
-msgstr "目标 SRS EPSG 代码为可选项，仅在需要将坐标从源 SRS 重投影到另一个 SRS 时使用。"
+msgstr "目标 SRS EPSG 代码为可选项，仅在需要重投影时使用。"
 
 #| msgid "Upload Layer Step 2"
 msgid "Upload Dataset Step: CSV Field Mapping"
@@ -2902,7 +2918,7 @@ msgstr "地理空间数据"
 msgid ""
 "Please indicate which attributes contain the latitude and longitude "
 "coordinates in the CSV data."
-msgstr "请指出 CSV 数据中包含纬度和经度坐标的属性。"
+msgstr "请指出哪个属性包含纬度和CSV数据经度坐标。"
 
 #| msgid ""
 #| "With this data, GeoNode was able to guess which attributes contain the\n"
@@ -2935,7 +2951,7 @@ msgstr ""
 "未检测到可用于纬度和经度的列。请确认 CSV 文件中有两列可分别用于表示纬度和经度。"
 
 msgid "Your upload is either complete or you haven't resumed an earlier one."
-msgstr "您的上传已完成，或者您尚未恢复之前的上传。"
+msgstr "您的上传或者是完整的，或者您还没有恢复较早之一。"
 
 msgid "Return to"
 msgstr "返回到"
@@ -2964,16 +2980,10 @@ msgid ""
 "                      More information is provided at the bottom of the page "
 "in the \"Additional Help\" sections.\n"
 "                      "
-msgstr ""
-"切换此选择器可以将数据配置为（或不配置为）时间序列；在这种情况下，\n"
-"还需要选择一个属性来驱动时间维度。\n"
-"<br><br>\n"
-"如果 GeoNode 无法解析所选属性的任何值，将显示红色标记以突出显示问题。\n"
-"<br><br>\n"
-"更多信息见页面底部的“附加帮助”部分。"
+msgstr "切换此选择器可将数据配置为时间序列，并选择一个属性驱动时间维度。"
 
 msgid "No"
-msgstr "否"
+msgstr "没有"
 
 msgid "Use an existing timestamp attribute in the data"
 msgstr "使用数据中的现有时间戳属性"
@@ -3024,26 +3034,26 @@ msgid "Existing Time Attribute"
 msgstr "现有的时间属性"
 
 msgid "Convert Text Attribute"
-msgstr "转换文本属性"
+msgstr "文本转换属性"
 
 msgid "Convert Number (As Year)"
-msgstr "将数字转换为年份"
+msgstr "转换号（年）"
 
 #| msgid "attribute description"
 msgid "Time attribute Presentation"
-msgstr "时间属性呈现方式"
+msgstr "时间属性显示方式"
 
 msgid "List"
-msgstr "列表"
+msgstr "列"
 
 msgid "of all the distinct time values"
-msgstr "（所有不重复的时间值）"
+msgstr "所有的不同的时间值的"
 
 msgid "Intervals"
 msgstr "间隔"
 
 msgid "defined by the resolution"
-msgstr "由分辨率定义"
+msgstr "该决议规定"
 
 msgid "Continuous Intervals"
 msgstr "连续间隔"
@@ -3051,10 +3061,10 @@ msgstr "连续间隔"
 msgid ""
 "for data that is frequently updated, resolution describes the frequency of "
 "updates"
-msgstr "对于频繁更新的数据，分辨率描述更新频率。"
+msgstr "对于经常更新的数据，分辨率描述的更新频率"
 
 msgid "Resolution of time attribute"
-msgstr "时间属性分辨率"
+msgstr "时间属性的决议"
 
 msgid "Enabling Time"
 msgstr "启用时间"
@@ -3075,23 +3085,26 @@ msgid ""
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
-"数据集可以支持一个或两个时间属性。如果使用单个属性，则数据集被视为包含在单个时间点有效的数据。如果使用两个属性，第二个属性表示有效期的结束，因此数据集被视为包含在特定时段内有效的数据。"
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to contain data that is valid at single points in time. If two\n"
+"                        attributes are used, the second attribute represents the end of a valid period  hence the dataset is considered\n"
+"                        to contain data that is valid at certain periods in time."
 
 msgid "Selecting an Attribute"
 msgstr "选择属性"
 
 #| msgid "A time attribute can be one of"
 msgid "A time attribute can be"
-msgstr "时间属性可以是"
+msgstr "A time attribute can be"
 
 msgid "An existing date"
 msgstr "现有的日期"
 
 msgid "Text that can be converted to a timestamp"
-msgstr "可转换为时间戳的文本"
+msgstr "文本可被转换到一个时间戳"
 
 msgid "A number representing a year"
-msgstr "表示年份的数字"
+msgstr "一些较上年"
 
 msgid ""
 "\n"
@@ -3103,15 +3116,14 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"对于文本属性，可以指定自定义格式（作为“高级选项”的一部分），也可以使用“最佳猜测”方式，\n"
-"自动将已识别的常见格式转换为有效时间。\n"
+"对于文本属性，可以指定自定义格式或使用“最佳猜测”方式识别常见时间格式。\n"
 "                        "
 
 msgid "The 'best guess' will handle date and optional time variants of"
-msgstr "“最佳猜测”方式将处理以下日期和可选时间格式："
+msgstr "“最好的猜测”会处理的日期和可选的时间变"
 
 msgid "In terms of the formatting flags noted above, these are"
-msgstr "就上文所述的格式标志而言，具体如下："
+msgstr "在上面提到的格式化标志而言，这些是"
 
 msgid "Modal Header"
 msgstr "模态框标题"
@@ -3126,27 +3138,27 @@ msgid "Valid ISO-8601 for"
 msgstr "有效的 ISO-8601 日期时间："
 
 msgid "matches a valid ISO-8601 Date-Time string!"
-msgstr "匹配有效的 ISO-8601 日期时间字符串！"
+msgstr "matches a valid ISO-8601 Date-Time string!"
 
 msgid "Not Valid ISO-8601 for"
-msgstr "无效的 ISO-8601 日期时间："
+msgstr "Not Valid ISO-8601 for"
 
 msgid "does NOT match any valid ISO-8601 Date-Time string!"
-msgstr "不匹配任何有效的 ISO-8601 日期时间字符串！"
+msgstr "does NOT match any valid ISO-8601 Date-Time string!"
 
 #| msgid "Your selections"
 msgid "Wrong Selection"
 msgstr "选择错误"
 
 msgid "Please, select one Time Attribute to test!"
-msgstr "请选择一个时间属性进行测试！"
+msgstr "Please, select one Time Attribute to test!"
 
 msgid ""
 "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
-msgstr "将在 <span id=\"cnt\">5</span> 秒后返回上传起始页面"
+msgstr "返回到上载起始页在<span id=\"cnt\">5</span>秒"
 
 msgid " Or just go "
-msgstr "或者直接前往"
+msgstr "或者只是去"
 
 msgid "now"
 msgstr "现在"
@@ -3191,7 +3203,7 @@ msgstr "请确保数据集结构一致。"
 
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
-msgstr "访问上传的模式时发生错误：{str(e)}"
+msgstr "Some error occurred while trying to access the uploaded schema: {str(e)}"
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
@@ -3204,7 +3216,7 @@ msgstr "在上传数据时出现错误。请重试，如果还有问题，请与
 msgid ""
 "Note: this dataset's orginal metadata was populated and preserved by "
 "importing a metadata XML file. This metadata cannot be edited."
-msgstr "注意：此数据集的原始元数据是通过导入元数据 XML 文件生成并保留的。此元数据无法编辑。"
+msgstr "Note: this dataset's orginal metadata was populated and preserved by importing a metadata XML file. This metadata cannot be edited."
 
 #| msgid "You are not permitted to delete this layer"
 msgid "You are not permitted to delete this dataset"
@@ -3232,7 +3244,7 @@ msgstr "您无权查看此数据集。"
 msgid ""
 "This dataset is a member of a layer group, you must remove the dataset from "
 "the group before deleting."
-msgstr "此数据集属于图层组，删除前必须先将数据集从图层组中移除。"
+msgstr "This dataset is a member of a layer group, you must remove the dataset from the group before deleting."
 
 #, python-format
 #| msgid "Remote Thumbnail"
@@ -3240,18 +3252,18 @@ msgid "couldn't generate thumbnail: %s"
 msgstr "无法生成缩略图：%s"
 
 msgid "Map Created"
-msgstr "地图已创建"
+msgstr "地图生成"
 
 #| msgid "A Layer was created"
 msgid "A Map was created"
-msgstr "地图已创建"
+msgstr "一个地图已创建"
 
 msgid "Map Updated"
-msgstr "地图已更新"
+msgstr "更新地图"
 
 #| msgid "A Layer was updated"
 msgid "A Map was updated"
-msgstr "地图已更新"
+msgstr "一个地图已更新"
 
 #| msgid "Approved"
 msgid "Map Approved"
@@ -3259,7 +3271,7 @@ msgstr "地图已批准"
 
 #| msgid "A Layer was created"
 msgid "A Map was approved by a Manager"
-msgstr "地图已由管理员批准"
+msgstr "一个地图已由管理员批准"
 
 #| msgid "Published"
 msgid "Map Published"
@@ -3267,25 +3279,25 @@ msgstr "地图已发布"
 
 #| msgid "A Map was deleted"
 msgid "A Map was published"
-msgstr "地图已发布"
+msgstr "一个地图已发布"
 
 msgid "Map Deleted"
-msgstr "地图已删除"
+msgstr "删除地图"
 
 msgid "A Map was deleted"
-msgstr "地图已删除"
+msgstr "一个地图删除"
 
 msgid "Comment on Map"
-msgstr "地图评论"
+msgstr "相关地图的评论"
 
 msgid "A map was commented on"
-msgstr "有人评论了地图"
+msgstr "一张地图被评论于"
 
 msgid "Rating for Map"
 msgstr "地图评分"
 
 msgid "A rating was given to a map"
-msgstr "地图已获得评分"
+msgstr "一张地图被评分"
 
 msgid "Featured Map URL"
 msgstr "特色地图网址"
@@ -3295,14 +3307,14 @@ msgstr "重叠顺序"
 
 #| msgid "format"
 msgid "format"
-msgstr "格式"
+msgstr "format"
 
 msgid "name"
 msgstr "名称"
 
 #| msgid "Store"
 msgid "store"
-msgstr "存储"
+msgstr "store"
 
 msgid "opacity"
 msgstr "透明度"
@@ -3318,13 +3330,13 @@ msgstr "固定"
 
 #| msgid "group"
 msgid "group"
-msgstr "群组"
+msgstr "group"
 
 msgid "visibility"
-msgstr "可见性"
+msgstr "能见度"
 
 msgid "ows URL"
-msgstr "OWS URL"
+msgstr "OWS网址"
 
 msgid "layer params"
 msgstr "图层参数"
@@ -3336,7 +3348,7 @@ msgid "Map layers WMS GetCapabilities document"
 msgstr "地图图层 WMS GetCapabilities 文档"
 
 msgid "Rate this Map"
-msgstr "为此地图评分"
+msgstr "给此地图评分"
 
 msgid "Download Map"
 msgstr "下载地图"
@@ -3349,25 +3361,25 @@ msgid "Map Layers"
 msgstr "地图图层"
 
 msgid "This map uses the following layers:"
-msgstr "此地图使用以下图层："
+msgstr "这张地图用了以下图层"
 
 msgid "Documents related to this map"
-msgstr "与此地图相关的文件"
+msgstr "与此地图有关的文件"
 
 msgid "List of documents related to this map:"
-msgstr "与此地图相关的文件列表："
+msgstr "列出与此地图有关文件"
 
 msgid "Change Permissions of this Map"
-msgstr "更改此地图的访问权限"
+msgstr "改变此地图的访问权限"
 
 msgid "Copy this map"
 msgstr "复制该地图"
 
 msgid "Duplicate this map and modify it for your own purposes"
-msgstr "复制此地图并根据需要进行修改"
+msgstr "复制该地图并且根据您自己的需要进行修改"
 
 msgid "Create a New Map"
-msgstr "创建新地图"
+msgstr "生成新地图"
 
 msgid ""
 "\n"
@@ -3376,7 +3388,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"在此可以下载托管于此 GeoNode 的该地图所有图层。"
+"在这里您可以下载该地图上承载该GeoNode的所有图层。"
 
 msgid ""
 "\n"
@@ -3385,7 +3397,7 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"      <div class=\"alert alert-warning\">找不到可下载的图层。您可以返回"
+"<div class=\"alert alert-warning\">无法找到该地图下载层。您可以回去"
 
 msgid ""
 "\n"
@@ -3395,8 +3407,8 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"        此外，该地图还包含以下图层，由于安全限制无法下载：\n"
-"      "
+"此外，由于安全限制该地图包含的这些图层不会被下载：\n"
+"    "
 
 msgid ""
 "\n"
@@ -3405,8 +3417,9 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"        最后，该地图还包含以下图层，由于这些图层无法直接从此 GeoNode 获取，无法下载：\n"
-"      "
+"    最后，该地图包含的这些图层将不会被下载，\n"
+"    因为图层不是GeoNode数据：\n"
+"    "
 
 msgid "Downloading"
 msgstr "下载"
@@ -3436,16 +3449,16 @@ msgid ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
-"注意：此地图的原始元数据是通过导入元数据 XML 文件生成的。\n"
-"        GeoNode 的元数据导入支持 ISO、FGDC 和 Dublin Core 元数据元素的子集。\n"
-"        部分原始元数据可能已经丢失。"
+"注：此图的原单的元数据被填充通过导入元数据的XML文件。        GeoNode的元数据"
+"导入支持ISO，FGDC和都柏林核心元数据元素的一个子集。        一些您原来的元数据"
+"可能已经丢失。"
 
 #| msgid "Return to"
 msgid "Return to Map"
 msgstr "返回地图"
 
 msgid "Remove Map"
-msgstr "删除地图"
+msgstr "移除地图"
 
 #, python-format
 msgid ""
@@ -3455,24 +3468,24 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          您确定要删除 <a href=\"%(map.get_absolute_url)s\">"
-"%(map_title)s</a> 吗？\n"
+"          您确定您想要移除 <a href=\"%(map.get_absolute_url)s\">"
+"%(map_title)s</a>?\n"
 "        "
 
 msgid "You are not permitted to delete this map."
 msgstr "您无权删除此地图。"
 
 msgid "You do not have permissions for this map."
-msgstr "您没有此地图的权限。"
+msgstr "您没有权限查看或下载此地图。"
 
 msgid "You must be logged in to save this map"
 msgstr "登录后才能保存地图"
 
 msgid "You are not permitted to save or edit this map."
-msgstr "您无权保存或编辑此地图。"
+msgstr "您不允许保存或编辑此地图。"
 
 msgid "You are not allowed to modify this map's metadata."
-msgstr "您无权修改此地图的元数据。"
+msgstr "您不得修改此地图元数据。"
 
 msgid "You are not allowed to view this map."
 msgstr "您无权查看此地图。"
@@ -3494,7 +3507,7 @@ msgid "Alert situation reported by monitoring"
 msgstr "监控报告了告警情况"
 
 msgid "GeoNode Monitoring on {base_ctx['host']} "
-msgstr "GeoNode 监控：{base_ctx['host']}"
+msgstr "GeoNode Monitoring on {base_ctx['host']} "
 
 #| msgid "Confirm your email address"
 msgid "Enter valid email addresses."
@@ -3506,12 +3519,12 @@ msgstr "显示服务列表"
 msgid ""
 "Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, last sync will be used."
-msgstr "从指定时间戳（YYYY-MM-DD HH:MM:SS 格式）开始处理数据。如果未提供，将使用上次同步时间。"
+msgstr "Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, last sync will be used."
 
 msgid ""
 "Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, now will be used."
-msgstr "处理数据直到指定时间戳（YYYY-MM-DD HH:MM:SS 格式）。如果未提供，将使用当前时间。"
+msgstr "Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, now will be used."
 
 msgid "Force check"
 msgstr "强制检查"
@@ -3522,13 +3535,13 @@ msgstr "审计日志格式（xml、json）"
 msgid ""
 "Should old data be preserved (default: no, data older than settings."
 "MONITORING_DATA_TTL will be removed)"
-msgstr "是否保留旧数据（默认为否，早于 settings.MONITORING_DATA_TTL 的数据将被删除）"
+msgstr "Should old data be preserved (default: no, data older than settings.MONITORING_DATA_TTL will be removed)"
 
 msgid "Should stop on first error occured (default: no)"
-msgstr "是否在首次发生错误时停止（默认为否）"
+msgstr "Should stop on first error occured (default: no)"
 
 msgid "Should process and send notifications as well (default: no)"
-msgstr "是否同时处理并发送通知（默认为否）"
+msgstr "Should process and send notifications as well (default: no)"
 
 msgid "Collect data from this service only"
 msgstr "仅从此服务收集数据"
@@ -3544,7 +3557,7 @@ msgid "Show list of resources for metric"
 msgstr "显示指标资源列表"
 
 msgid "Data aggregation interval in seconds (default: 60)"
-msgstr "数据聚合间隔（秒，默认为 60）"
+msgstr "Data aggregation interval in seconds (default: 60)"
 
 #| msgid "Layer name"
 msgid "Metric name"
@@ -3552,24 +3565,24 @@ msgstr "指标名称"
 
 #| msgid "reference date for the cited resource"
 msgid "Show data for specific resource in resource_type=resource_name format"
-msgstr "以 resource_type=resource_name 格式显示指定资源的数据"
+msgstr "Show data for specific resource in resource_type=resource_name format"
 
 #| msgid "reference date for the cited resource"
 msgid "Show data for specific resource"
-msgstr "显示指定资源的数据"
+msgstr "Show data for specific resource"
 
 #| msgid "reference date for the cited resource"
 msgid "Show data for specific label"
-msgstr "显示指定标签的数据"
+msgstr "Show data for specific label"
 
 #, python-brace-format
 msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
-msgstr "将结果写入文件，默认 GEOIP_PATH：{settings.GEOIP_PATH}"
+msgstr "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 
 msgid ""
 "Fetch database from specific url. If nothing provided, default {} will be "
 "used"
-msgstr "从指定 URL 获取数据库。如果未提供，将使用默认值 {}。"
+msgstr "Fetch database from specific url. If nothing provided, default {} will be used"
 
 msgid "Overwrite file if exists"
 msgstr "如果文件存在则覆盖"
@@ -3582,11 +3595,11 @@ msgstr "GeoServer"
 
 #| msgid "GeoServer"
 msgid "Host (GeoServer)"
-msgstr "主机（GeoServer）"
+msgstr "Host (GeoServer)"
 
 #| msgid "About GeoNode"
 msgid "Host (GeoNode)"
-msgstr "主机（GeoNode）"
+msgstr "Host (GeoNode)"
 
 #| msgid "Resources"
 msgid "No resource"
@@ -3594,11 +3607,11 @@ msgstr "无资源"
 
 #| msgid "Resources"
 msgid "Resource base"
-msgstr "资源基类"
+msgstr "资源基数"
 
 #| msgid "Styles"
 msgid "Style"
-msgstr "样式"
+msgstr "Style"
 
 msgid "Admin"
 msgstr "网站管理"
@@ -3607,11 +3620,11 @@ msgid "Other"
 msgstr "其他"
 
 msgid "Rate"
-msgstr "速率"
+msgstr "Rate"
 
 #| msgid "Country"
 msgid "Count"
-msgstr "数量"
+msgstr "Count"
 
 msgid "Value"
 msgstr "值"
@@ -3623,13 +3636,13 @@ msgid "Bytes"
 msgstr "字节"
 
 msgid "Kilobytes"
-msgstr "千字节"
+msgstr "Kilobytes"
 
 msgid "Megabytes"
-msgstr "兆字节"
+msgstr "Megabytes"
 
 msgid "Gigabytes"
-msgstr "吉字节"
+msgstr "Gigabytes"
 
 msgid "Bytes per second"
 msgstr "字节/秒"
@@ -3708,7 +3721,7 @@ msgid "Expected min/max values for user configuration"
 msgstr "用户配置需要最小值和最大值"
 
 msgid "Marker of last delivery"
-msgstr "最后发送标记"
+msgstr "Marker of last delivery"
 
 msgid "Minimum time between subsequent notifications"
 msgstr "连续通知之间的最短时间"
@@ -3742,7 +3755,7 @@ msgid "Only superusers can monitor performance"
 msgstr "只有超级用户可以监控性能"
 
 msgid "Hi,"
-msgstr "您好："
+msgstr "Hi,"
 
 msgid "Monitoring on"
 msgstr "监控对象："
@@ -3752,32 +3765,32 @@ msgid "has detected following problems :"
 msgstr "检测到以下问题："
 
 msgid "spotted"
-msgstr "发现"
+msgstr "spotted"
 
 msgid "ago"
 msgstr "前"
 
 msgid "emerged"
-msgstr "出现"
+msgstr "emerged"
 
 msgid "User following you"
 msgstr "关注您的用户"
 
 msgid "Another user has started following you"
-msgstr "另一位用户开始关注您"
+msgstr "另一个用户已经开始跟随您"
 
 msgid "User requested access"
-msgstr "用户请求访问权限"
+msgstr "用户请求通道"
 
 msgid "A new user has requested access to the site"
-msgstr "新用户请求访问该网站"
+msgstr "一个新的用户已经请求进入网站"
 
 #| msgid "Account activated"
 msgid "Account activated"
 msgstr "账户已激活"
 
 msgid "This account is now active and can log in the site"
-msgstr "该账户现已激活，可以登录网站。"
+msgstr "该账户现在是活动状态，可以登录该网站"
 
 msgid "Personal info"
 msgstr "个人信息"
@@ -3796,12 +3809,12 @@ msgid "Change password: %s"
 msgstr "修改密码：%s"
 
 msgid "party who authored the resource"
-msgstr "资源作者"
+msgstr "资源授权方"
 
 msgid ""
 "party who has processed the data in a manner such that the resource has been "
 "modified"
-msgstr "以修改资源的方式处理数据的一方"
+msgstr "资源修改方"
 
 msgid "party who published the resource"
 msgstr "资源发布方"
@@ -3809,15 +3822,15 @@ msgstr "资源发布方"
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
-msgstr "对数据承担问责和责任，并确保资源得到适当维护的相关方"
+msgstr "接受问责和责任的数据，并确保资源的适当的维护和保养方"
 
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr "可联系以了解或获取该资源的一方"
+msgstr "资源信息查询方"
 
 msgid "party who distributes the resource"
-msgstr "资源分发方"
+msgstr "资源分配方"
 
 msgid "party who uses the resource"
 msgstr "资源使用方"
@@ -3826,7 +3839,7 @@ msgid "party that supplies the resource"
 msgstr "资源提供方"
 
 msgid "party who created the resource"
-msgstr "资源创建方"
+msgstr "资源制造方"
 
 msgid "party that owns the resource"
 msgstr "资源拥有方"
@@ -3841,10 +3854,10 @@ msgid "Organization Name"
 msgstr "组织名称"
 
 msgid "name of the responsible organization"
-msgstr "责任组织名称"
+msgstr "命名有关责任组织"
 
 msgid "Profile"
-msgstr "个人资料"
+msgstr "简介"
 
 msgid "introduce yourself"
 msgstr "自我介绍"
@@ -3853,7 +3866,7 @@ msgid "Position Name"
 msgstr "职位名称"
 
 msgid "role or position of the responsible person"
-msgstr "责任人的角色或职位"
+msgstr "责任人的作用"
 
 msgid "Voice"
 msgstr "电话"
@@ -3877,7 +3890,7 @@ msgstr "联系地址"
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr "可联系该组织或个人的实际地址和电子邮件地址"
+msgstr "可以联系到负责人或负责团体的地址及email地址"
 
 msgid "City"
 msgstr "城市"
@@ -3912,7 +3925,7 @@ msgid "Timezone"
 msgstr "时区"
 
 msgid "No Group"
-msgstr "没有群组"
+msgstr "没有群体"
 
 msgid "All contents"
 msgstr "所有内容"
@@ -3929,7 +3942,7 @@ msgid ""
 msgstr "请输入电子邮箱地址并点击提交按钮。<br />我们将向您发送您的用户名。"
 
 msgid "Create Profile"
-msgstr "创建个人资料"
+msgstr "创建个人信息"
 
 msgid "First name"
 msgstr "名"
@@ -3947,7 +3960,7 @@ msgid "Not provided."
 msgstr "未提供信息。"
 
 msgid "Position"
-msgstr "职位"
+msgstr "位置"
 
 msgid "Organization"
 msgstr "组织"
@@ -3985,10 +3998,10 @@ msgstr "创建新图层"
 
 #| msgid "Upload Document"
 msgid "Upload new document"
-msgstr "上传新文件"
+msgstr "上传新文档"
 
 msgid "Create a new map"
-msgstr "创建新地图"
+msgstr "创建一个新的地图"
 
 msgid "My Activities"
 msgstr "我的活动"
@@ -4009,7 +4022,7 @@ msgid "Resources"
 msgstr "资源"
 
 msgid "Edit Your Profile"
-msgstr "编辑您的个人资料"
+msgstr "编辑您的个人信息"
 
 msgid "Edit Profile for"
 msgstr "编辑个人资料："
@@ -4018,7 +4031,7 @@ msgid "Change your avatar"
 msgstr "更换头像"
 
 msgid "Update profile"
-msgstr "更新个人资料"
+msgstr "更新个人信息"
 
 msgid "Explore People"
 msgstr "浏览用户"
@@ -4032,7 +4045,7 @@ msgid "Your username has been emailed to you."
 msgstr "用户名已发送到您的电子邮箱。"
 
 msgid "No user could be found with that email address."
-msgstr "找不到使用该电子邮件地址的用户。"
+msgstr "找不到使用此email的用户。"
 
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this resource."
@@ -4073,7 +4086,7 @@ msgstr "权限已成功更新！"
 
 #| msgid "Permissions"
 msgid "Error updating permissions :("
-msgstr "更新权限时出错。"
+msgstr "更新权限时出错 :("
 
 #| msgid "You do not have permissions for this layer."
 msgid "You are not allowed to change permissions for this resource"
@@ -4091,24 +4104,24 @@ msgid "Attributes/Stats Refreshed Successfully!"
 msgstr "属性/统计信息已成功刷新！"
 
 msgid "GeoWebCache Tiled Layer Emptied!"
-msgstr "GeoWebCache 瓦片图层已清空！"
+msgstr "GeoWebCache Tiled Layer Emptied!"
 
 #| msgid "Set permissions"
 msgid "Wrong permissions specification"
-msgstr "权限设置错误"
+msgstr "Wrong permissions specification"
 
 #| msgid "Identification"
 msgid "error delivering notification"
-msgstr "发送通知时出错"
+msgstr "error delivering notification"
 
 msgid "Auto-detect"
 msgstr "自动检测"
 
 msgid "Paired WMS/WFS/WCS"
-msgstr "配对 WMS/WFS/WCS"
+msgstr "配对WMS / WFS / WCS"
 
 msgid "Web Map Service"
-msgstr "Web 地图服务"
+msgstr "网络地图服务"
 
 msgid "Catalogue Service"
 msgstr "目录服务"
@@ -4136,7 +4149,7 @@ msgid "GeoNode (Catalogue Service)"
 msgstr "GeoNode（目录服务）"
 
 msgid "Service URL"
-msgstr "服务 URL"
+msgstr "服务URL"
 
 msgid "Service Type"
 msgstr "服务类型"
@@ -4148,7 +4161,7 @@ msgstr "服务 %(url)s 已注册"
 
 #, python-format
 msgid "Could not connect to the service at %(url)s"
-msgstr "无法连接到位于 %(url)s 的服务"
+msgstr "无法连接到 %(url)s 的服务"
 
 #, python-format
 msgid "Could not find importable resources for the service at %(url)s"
@@ -4165,13 +4178,13 @@ msgid "Cascaded"
 msgstr "级联"
 
 msgid "Harvested"
-msgstr "已采集"
+msgstr "收获"
 
 msgid "Indexed"
-msgstr "已索引"
+msgstr "索引"
 
 msgid "Live"
-msgstr "实时"
+msgstr "直播"
 
 #| msgid "Resources"
 msgid "Resource is queued"
@@ -4191,7 +4204,7 @@ msgstr "无法联系"
 
 #| msgid "Contact:"
 msgid "Contact"
-msgstr "联系人"
+msgstr "Contact"
 
 #| msgid "Resources"
 msgid "Service Resources"
@@ -4215,7 +4228,7 @@ msgid "Connecting to service..."
 msgstr "正在连接服务……"
 
 msgid "Edit Service Metadata"
-msgstr "编辑服务元数据"
+msgstr "编辑元数据服务"
 
 #| msgid "Remote Services"
 msgid "Import Service Resources"
@@ -4251,10 +4264,10 @@ msgid "Service has been created:"
 msgstr "服务已创建："
 
 msgid "The following layers will be imported"
-msgstr "以下图层将被导入"
+msgstr "以下层将被导入"
 
 msgid "Remove Remote Service"
-msgstr "移除远程服务"
+msgstr "移除遥感服务"
 
 msgid "Are you sure you want to remove"
 msgstr "您确定要删除"
@@ -4277,11 +4290,11 @@ msgid "- These will be cascaded through your local geoserver instance"
 msgstr "这些资源将通过本地 GeoServer 实例级联导入"
 
 msgid "Id"
-msgstr "标识符"
+msgstr "ID"
 
 #| msgid "Clear all filters"
 msgid "Clear Filter"
-msgstr "清除筛选条件"
+msgstr "清除筛选器"
 
 msgid "Back to service details"
 msgstr "返回服务详情"
@@ -4330,7 +4343,7 @@ msgstr "服务重新扫描成功"
 
 #| msgid "You are not permitted to save or edit this map."
 msgid "You dont have enougth rigths to see the resource detail"
-msgstr "您没有足够的权限查看资源详情。"
+msgstr "您没有足够权限查看资源详情"
 
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
@@ -4345,22 +4358,22 @@ msgid "Service {service.name} has been deleted"
 msgstr "服务 {service.name} 已删除"
 
 msgid "created"
-msgstr "创建了"
+msgstr "创建"
 
 msgid "deleted"
-msgstr "删除了"
+msgstr "删除"
 
 msgid "updated"
-msgstr "更新了"
+msgstr "更新"
 
 msgid "added a comment"
-msgstr "添加了评论"
+msgstr "添加评论"
 
 msgid "updated a comment"
-msgstr "更新了评论"
+msgstr "最新评论"
 
 msgid "uploaded"
-msgstr "上传了"
+msgstr "上传"
 
 msgid "Recent activity"
 msgstr "近期活动"
@@ -4388,7 +4401,7 @@ msgstr ""
 "      "
 
 msgid "Please verify that you are logged in as the correct user."
-msgstr "请确认您以正确的用户身份登录。"
+msgstr "您不是登录用户。"
 
 msgid "Please login or register and retry."
 msgstr "请登录或注册，然后重试。"
@@ -4442,7 +4455,7 @@ msgid "People"
 msgstr "用户"
 
 msgid "Search"
-msgstr "搜索"
+msgstr "查询"
 
 msgid "Register"
 msgstr "注册"
@@ -4451,15 +4464,15 @@ msgid "Sign in"
 msgstr "登录"
 
 msgid "You are using an outdated browser that is not supported by GeoNode."
-msgstr "您正在使用 GeoNode 不支持的过时浏览器。"
+msgstr "您正在使用一个GeoNode不支持的过时网站"
 
 msgid ""
 "Please use a <strong>modern browser</strong> like Mozilla Firefox, Google "
 "Chrome or Safari."
-msgstr "请使用<strong>较新的浏览器</strong>，例如 Mozilla Firefox、Google Chrome 或 Safari。"
+msgstr "请使用<strong>更新的浏览器</strong>，比如火狐、谷歌和苹果浏览器。"
 
 msgid "There was a problem loading this page"
-msgstr "加载此页面时出现问题"
+msgstr "有一个问题，加载此页"
 
 #| msgid ""
 #| "\n"
@@ -4479,9 +4492,7 @@ msgid ""
 "            "
 msgstr ""
 "\n"
-"请联系 GeoNode 管理员（如果管理员配置正确，可能已自动收到一封邮件）。\n"
-"如果您是站点管理员，请启用调试模式查看实际错误并修复问题，或在 "
-"<a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode 问题跟踪器</a> 中提交问题。\n"
+"请联系 GeoNode 管理员并检查调试日志。\n"
 "            "
 
 #| msgid "Create a new map"
@@ -4511,7 +4522,7 @@ msgid "Password"
 msgstr "密码"
 
 msgid "Remember Me"
-msgstr "记住我"
+msgstr "保存密码"
 
 msgid "Menu"
 msgstr "菜单"
@@ -4526,13 +4537,13 @@ msgid "Help"
 msgstr "帮助"
 
 msgid "Log out"
-msgstr "退出登录"
+msgstr "注销"
 
 msgid "Info"
 msgstr "信息"
 
 msgid "Granules"
-msgstr "粒元"
+msgstr "颗粒"
 
 msgid "Share"
 msgstr "分享"
@@ -4550,7 +4561,7 @@ msgid "Apply Changes"
 msgstr "应用更改"
 
 msgid "total"
-msgstr "总计"
+msgstr "total"
 
 msgid "Add Comment"
 msgstr "添加评论"
@@ -4559,10 +4570,10 @@ msgid "Log in to add a comment"
 msgstr "登录以添加评论"
 
 msgid "By"
-msgstr "由"
+msgstr "通过"
 
 msgid "Submit Comment"
-msgstr "提交评论"
+msgstr "上传评论"
 
 msgid "Who can view it?"
 msgstr "谁可以查看它？"
@@ -4574,13 +4585,13 @@ msgid "The following users:"
 msgstr "以下用户："
 
 msgid "The following groups:"
-msgstr "以下群组："
+msgstr "以下群体："
 
 msgid "Who can download it?"
-msgstr "谁可以下载？"
+msgstr "谁可以下载吗？"
 
 msgid "Who can change metadata for it?"
-msgstr "谁可以更改其元数据？"
+msgstr "谁可以改变元数据？"
 
 #| msgid "Who can edit data for this layer?"
 msgid "Who can edit data for this dataset?"
@@ -4592,14 +4603,14 @@ msgstr "谁可以编辑此数据集的样式？"
 
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish it)"
-msgstr "谁可以管理它？（更新、删除、更改权限、发布/取消发布）"
+msgstr "谁可以管理它？ (更新，删除，更改权限，发布/取消发布)"
 
 msgid "Set permissions for this resource"
-msgstr "设置此资源的权限"
+msgstr "此资源设置权限"
 
 #| msgid "Explore Groups"
 msgid "People and Groups"
-msgstr "用户和群组"
+msgstr "用户和群体"
 
 msgid "Geo Limits"
 msgstr "地理范围"
@@ -4627,7 +4638,7 @@ msgid "Message box"
 msgstr "消息框"
 
 msgid "OK"
-msgstr "确定"
+msgstr "好的"
 
 msgid "Mandatory files : SHP , DBF"
 msgstr "必需文件：SHP、DBF"
@@ -4649,13 +4660,13 @@ msgid "Reset"
 msgstr "重置"
 
 msgid "Only the SRID number without the 'EPSG:' prefix!"
-msgstr "只填写 SRID 数字，不要包含“EPSG:”前缀！"
+msgstr "Only the SRID number without the 'EPSG:' prefix!"
 
 msgid "Default : 4326"
-msgstr "默认值：4326"
+msgstr "Default : 4326"
 
 msgid "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
-msgstr "设置所需的编码：UTF-8、Big5、Big5-HKSCS……"
+msgstr "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
 
 msgid "Load SHP-ZIP"
 msgstr "加载 SHP-ZIP"
@@ -4664,14 +4675,14 @@ msgid ""
 "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In "
 "order to store the Geo Limits you will need to <strong>save</strong> them "
 "anyway.</p><p>Do you want to proceed?</p>"
-msgstr "<p>这将移除地图上当前绘制的地理范围。</p><p>如需保存地理范围，仍必须点击<strong>保存</strong>。</p><p>是否继续？</p>"
+msgstr "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In order to store the Geo Limits you will need to <strong>save</strong> them anyway.</p><p>Do you want to proceed?</p>"
 
 msgid ""
 "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
 "apply them you will need to click on <strong>Apply Changes</strong> button "
 "anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</"
 "p><p>Do you want to proceed?</p>"
-msgstr "<p>这将覆盖数据库中当前保存的地理范围。</p><p>如需应用更改，仍必须点击<strong>应用更改</strong>按钮。</p><p><strong>警告：</strong>此操作无法撤销！</p><p>是否继续？</p>"
+msgstr "<p>This will override the current stored Geo Limits on the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</p><p>Do you want to proceed?</p>"
 
 msgid "Save Geo Limit"
 msgstr "保存地理范围"
@@ -4679,10 +4690,10 @@ msgstr "保存地理范围"
 msgid ""
 "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
 "will need to click on <strong>Apply Changes</strong> button.</p>"
-msgstr "<p>几何图形已<strong>成功</strong>保存！</p><p>如需应用更改，请点击<strong>应用更改</strong>按钮。</p>"
+msgstr "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p>"
 
 msgid "<p><strong>Error</strong> while trying to save the Geometry!</p>"
-msgstr "<p>保存几何图形时发生<strong>错误</strong>！</p>"
+msgstr "<p><strong>Error</strong> while trying to save the Geometry!</p>"
 
 msgid "Load Geo Limits"
 msgstr "加载地理范围"
@@ -4691,29 +4702,29 @@ msgid "Load Geo Limit"
 msgstr "加载地理范围"
 
 msgid "<p><strong>No Geometry</strong> found!</p>"
-msgstr "<p>未找到<strong>几何图形</strong>！</p>"
+msgstr "<p><strong>No Geometry</strong> found!</p>"
 
 msgid ""
 "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB."
 "</p><p>To apply them you will need to click on <strong>Apply Changes</"
 "strong> button.</p><p>Do you want to proceed?</p>"
-msgstr "<p>这将从数据库中<strong>永久</strong>移除地理范围。</p><p>如需应用更改，请点击<strong>应用更改</strong>按钮。</p><p>是否继续？</p>"
+msgstr "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p><p>Do you want to proceed?</p>"
 
 msgid "Delete Geo Limit"
 msgstr "删除地理范围"
 
 msgid "<p><strong>Geo Limitsy</strong> successfully deleted!</p>"
-msgstr "<p><strong>地理范围</strong>已成功删除！</p>"
+msgstr "<p><strong>Geo Limitsy</strong> successfully deleted!</p>"
 
 msgid ""
 "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>"
-msgstr "<p>删除地理范围时发生<strong>错误</strong>：</p>"
+msgstr "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>"
 
 msgid "Choose users..."
-msgstr "选择用户……"
+msgstr "选择用户..."
 
 msgid "Choose groups..."
-msgstr "选择群组……"
+msgstr "选择群体..."
 
 msgid "Placeholder for status-message"
 msgstr "状态消息占位符"
@@ -4722,7 +4733,7 @@ msgid "Placeholder for status-message-body"
 msgstr "状态消息正文占位符"
 
 msgid "About GeoNode"
-msgstr "关于 GeoNode"
+msgstr "关于GeoNode"
 
 msgid ""
 "GeoNode is a geospatial content management system, a platform for the "
@@ -4731,8 +4742,8 @@ msgid ""
 "interface allowing non-specialized users to share data and create "
 "interactive maps."
 msgstr ""
-"GeoNode 是一个地理空间内容管理系统，也是用于管理和发布地理空间数据的平台。它将"
-"成熟稳定的开源软件项目整合在一致且易用的界面中，使非专业用户也能共享数据并创建"
+"GeoNode是一个地理空间内容管理系统，用于管理地理空间数据的发布。它将成熟且稳定"
+"的开放源码软件项目组合在一个一致且易用的界面上，允许非专业用户共享数据并创建"
 "交互式地图。"
 
 msgid ""
@@ -4743,18 +4754,18 @@ msgid ""
 "communities around each platform to facilitate the use, management, and "
 "quality control of the data the GeoNode instance contains."
 msgstr ""
-"GeoNode 内置的数据管理工具支持一体化创建数据、元数据和地图可视化内容。"
+"集成于GeoNode的数据管理工具允许对数据、元数据和地图可视化进行集成创建。"
 "系统中的每个数据集都可以公开共享，也可以限制为仅允许特定用户访问。"
-"用户资料、评分系统等社交功能有助于围绕平台建立社区，促进 GeoNode 实例中"
-"数据的使用、管理和质量控制。"
+"用户配置文件、评分系统等社交功能有助于围绕每个平台建立社区，从而促进"
+"GeoNode实例中数据的使用、管理和质量控制。"
 
 msgid ""
 "It is also designed to be a flexible platform that software developers can "
 "extend, modify or integrate against to meet requirements in their own "
 "applications."
 msgstr ""
-"它还被设计为一个灵活的平台，软件开发人员可以根据自己的应用需求对其进行扩展、"
-"修改或集成。"
+"它还被设计成一个灵活的、软件开发人员可以扩展、修改或集成的平台，以满足软件开"
+"发人员自己对程序应用的需求。"
 
 #| msgid "Account activated"
 msgid "Account Inactive"
@@ -4773,8 +4784,8 @@ msgid ""
 "with <b>%(email)s</b>. If the account is approved, you will receive a "
 "confirmation notice."
 msgstr ""
-"我们已向管理员发送通知，请求批准与 <b>%(email)s</b> 关联的账户。"
-"账户获批后，您将收到确认通知。"
+"我们已经给管理员发送了一个通知准许您的账户与<b>%(email)s</b>连接。 如果该账户"
+"被批准，您将收到一个确认通知。"
 
 msgid "Account"
 msgstr "账户"
@@ -4865,7 +4876,7 @@ msgstr "已将 {email} 标记为已验证。"
 
 #, python-brace-format
 msgid "Failed to mark {email} as verified."
-msgstr "无法将 {email} 标记为已验证。"
+msgstr "标记 {email} 为已验证失败。"
 
 msgid "Mark selected email addresses as verified"
 msgstr "将选中的电子邮件地址标记为已验证"
@@ -4879,7 +4890,7 @@ msgid ""
 "\n"
 "To confirm this is correct, go to %(activate_url)s\n"
 msgstr ""
-"来自 %(site_name)s 的问候！\n"
+"您好，来自 %(site_name)s！\n"
 "\n"
 "您收到此邮件是因为用户 %(user_display)s 提供了您的电子邮件地址来关联其账户。\n"
 "\n"
@@ -4931,7 +4942,7 @@ msgid ""
 "It can be safely ignored if you did not request a password reset. Click the "
 "link below to reset your password."
 msgstr ""
-"来自 %(site_name)s 的问候！\n"
+"您好，来自 %(site_name)s！\n"
 "\n"
 "您收到此邮件是因为您或其他人请求为您的用户账户设置密码。若您没有请求重置密码，可以安全地忽略此邮件。请点击下面的链接重置密码。"
 
@@ -4984,7 +4995,7 @@ msgid "Log in"
 msgstr "登录"
 
 msgid "Log in to your account"
-msgstr "登录您的账户"
+msgstr "登录到现有帐户"
 
 #, python-format
 #| msgid ""
@@ -5005,7 +5016,7 @@ msgstr "或"
 msgid ""
 "If you have not created an account yet, then please\n"
 "      <a href=\"%(signup_url)s\">sign up</a> first."
-msgstr "如果您还没有账户，请先<a href=\"%(signup_url)s\">注册</a>。"
+msgstr "如果您未拥有账号，请先<a href=\"%(signup_url)s\">注册</a>。"
 
 #| msgid "Forgot your password?"
 msgid "Forgot Password?"
@@ -5015,7 +5026,7 @@ msgid "Sign In"
 msgstr "登录"
 
 msgid "Are you sure you want to log out?"
-msgstr "您确定要退出登录吗？"
+msgstr "您确定要注销？"
 
 msgid "Password change"
 msgstr "更改密码"
@@ -5050,7 +5061,7 @@ msgstr "忘记密码？"
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
-msgstr "请在下方输入您的电子邮件地址，我们会向您发送用于重置密码的邮件。"
+msgstr "在下面输入您的邮件地址，我们将会向您发送一封允许您重置密码的邮件。"
 
 msgid "Reset my password"
 msgstr "重设密码"
@@ -5067,7 +5078,7 @@ msgstr ""
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it "
 "within a few minutes."
-msgstr "我们已发送电子邮件。如果您在几分钟内没有收到，请联系我们。"
+msgstr "We have sent you an e-mail. Please contact us if you do not receive it within a few minutes."
 
 #| msgid "Change password"
 msgid "Change Password"
@@ -5081,7 +5092,7 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
 "a>."
-msgstr "密码重置链接无效，可能是因为该链接已被使用。请申请<a href=\"%(passwd_reset_url)s\">新的密码重置链接</a>。"
+msgstr "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
 
 #| msgid "Change password"
 msgid "change password"
@@ -5110,7 +5121,8 @@ msgid ""
 "Sign up with one\n"
 "              of your existing third party accounts"
 msgstr ""
-"使用您已有的第三方账户之一注册"
+"Sign up with one\n"
+"              of your existing third party accounts"
 
 msgid "Create a new local account"
 msgstr "创建新的本地账户"
@@ -5150,13 +5162,13 @@ msgid ""
 "This part of the site requires us to verify that\n"
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
-msgstr "本网站部分功能需要验证您的身份。为此，请验证您对电子邮件地址的所有权。"
+msgstr "此网站部分需要验证您的身份，请验证电子邮件地址的所有权。"
 
 msgid ""
 "We have sent an e-mail to you for\n"
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
-msgstr "我们已发送验证邮件。请点击邮件中的链接。如果几分钟内未收到，请联系我们。"
+msgstr "我们已发送验证邮件。请点击邮件中的链接。"
 
 #, python-format
 msgid ""
@@ -5165,30 +5177,30 @@ msgid ""
 msgstr "<strong>注意：</strong>您仍可<a href=\"%(email_url)s\">更改电子邮件地址</a>。"
 
 msgid "My Activity feed"
-msgstr "我的活动动态"
+msgstr "我的活动饲料"
 
 msgid "Activity Feed"
-msgstr "活动动态"
+msgstr "活动资​​讯"
 
 #| msgid "Are you sure you want to remove"
 msgid "Are you sure you want to run the selected"
-msgstr "您确定要运行所选项"
+msgstr "您确定要运行所选的"
 
 #| msgid "Yes, I am sure"
 msgid "Yes, I'm sure"
 msgstr "是的，我确定"
 
 msgid "GeoNode site admin"
-msgstr "GeoNode 站点管理员"
+msgstr "GeoNode站点管理员"
 
 msgid "GeoNode administration"
-msgstr "GeoNode 管理"
+msgstr "GeoNode管理"
 
 msgid "Delete Announcement?"
 msgstr "删除公告？"
 
 msgid "Are you sure you want to delete this announcement?"
-msgstr "您确定要删除此公告吗？"
+msgstr "您确定您想要删除该公告"
 
 msgid "Edit Announcement"
 msgstr "编辑公告"
@@ -5206,7 +5218,7 @@ msgid "Announcement"
 msgstr "公告"
 
 msgid "Published From"
-msgstr "发布时间"
+msgstr "有效时间"
 
 #, python-format
 msgid ""
@@ -5216,7 +5228,7 @@ msgid ""
 "          "
 msgstr ""
 "\n"
-"          发布起始时间：<b>%(publish_start)s</b>；结束时间：<b>%(publish_end)s</b>。\n"
+"          发布自 <b>%(publish_start)s</b> 到 <b>%(publish_end)s</b>.\n"
 "          "
 
 #, python-format
@@ -5265,30 +5277,30 @@ msgid "Tel"
 msgstr "电话"
 
 msgid "Uploading..."
-msgstr "上传中……"
+msgstr "上传中..."
 
 msgid "Upload in progress..."
-msgstr "正在上传……"
+msgstr "正在上传..."
 
 msgid "Processing..."
-msgstr "处理中……"
+msgstr "处理中…"
 
 msgid "Updating Thumbnail..."
-msgstr "正在更新缩略图……"
+msgstr "正在更新缩略图..."
 
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
-msgstr "消息：是否继续？"
+msgstr "消息。是否继续？"
 
 #| msgid "Processing..."
 msgid "Processing Resource..."
 msgstr "正在处理资源……"
 
 msgid "Information for Developers"
-msgstr "开发者信息"
+msgstr "针对开发者的帮助信息"
 
 msgid "Useful information for developers interested in GeoNode."
-msgstr "面向 GeoNode 开发者的实用信息。"
+msgstr "帮助信息 - 对GeoNode感兴趣的开发者"
 
 #, python-format
 #| msgid ""
@@ -5493,27 +5505,27 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"    <p><a href=\\\"http://geonode.org/\\\">GeoNode</a> 是一项基于开源软件构建的开放服务。我们鼓励您使用它提供的组件和资源构建新应用。本页面为希望充分利用 GeoNode 的开发者提供入门信息，也包含项目源代码链接，任何人都可以据此构建和定制自己的 GeoNode。 </p>\n"
+"    <p><a href=\\\"http://geonode.org/\\\">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>\n"
 "\n"
-"    <h3>GeoNode 软件</h3>\n"
+"    <h3>GeoNode Software</h3>\n"
 "\n"
-"    <p>运行 GeoNode 的全部代码都是开源的。代码位于 <a href=\\\"http://github.com/GeoNode/geonode\\\">http://github.com/GeoNode/geonode/</a>，项目问题跟踪器位于 <a href=\\\"http://github.com/GeoNode/geonode/issues\\\">http://github.com/GeoNode/geonode/issues</a>。</p>\n"
+"    <p>All the code that runs GeoNode is open source. The code is available at <a href=\\\"http://github.com/GeoNode/geonode\\\">http://github.com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href=\\\"http://github.com/GeoNode/geonode/issues\\\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
 "\n"
-"    <p>GeoNode 由多个开源项目构建，每个项目都有自己的社区。如果您希望为 GeoNode 贡献新功能，我们鼓励您向构成 GeoNode 的项目之一贡献代码：</p>\n"
+"    <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>\n"
 "    <ul>\n"
-"      <li><a href=\\\"http://geoserver.org\\\">GeoServer</a>——基于标准的地理信息服务器</li>\n"
-"      <li><a href=\\\"http://geowebcache.org\\\">GeoWebCache</a>——WMS 瓦片缓存引擎</li><li><a href=\\\"http://openlayers.org\\\">OpenLayers</a>——为 GeoExt 地图提供支持的纯 JavaScript 库</li>\n"
-"      <li><a href=\\\"http://pycsw.org\\\">pycsw</a>——CSW、OpenSearch 和 OAI-PMH 元数据目录服务器</li>\n"
+"      <li><a href=\\\"http://geoserver.org\\\">GeoServer</a> - Standards based server for geospatial information</li>\n"
+"      <li><a href=\\\"http://geowebcache.org\\\">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href=\\\"http://openlayers.org\\\">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>\n"
+"      <li><a href=\\\"http://pycsw.org\\\">pycsw</a> - CSW, OpenSearch and OAI-PMH metadata catalogue server</li>\n"
 "    </ul>\n"
 "\n"
-"    <h3>什么是 OGC 服务？</h3>\n"
-"    <p>本应用中的数据通过 ISO 和<a href=\\\"http://opengeospatial.org/\\\">开放地理空间联盟</a>认可的开放标准提供。WMS（Web 地图服务）用于访问地图，WFS（Web 要素服务）用于访问矢量数据，WCS（Web 覆盖服务）用于访问栅格数据。WMC（Web 地图上下文文档）用于共享地图。您可以在自己的应用中使用 OpenLayers、GeoTools 和 OGR 等库调用这些服务（这些库都是开源软件且免费提供）。此外，CSW（Web 目录服务）支持访问有关数据和服务的描述性信息（元数据）集合。</p>\n"
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed by ISO and the <a href=\\\"http://opengeospatial.org/\\\">Open Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web Feature Service) is used for accessing vector data, and WCS (Web Coverage Service) is used for accessing raster data.  WMC (Web Map Context Documents) is used for sharing maps. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost). Additionally, CSW (Catalog Service for the Web) supports access to collections of descriptive information (metadata) about data and services.</p>\n"
 "\n"
-"    <h3>什么是 GeoWebCache？</h3>\n"
-"    <p>GeoWebCache 提供与多种地图引擎兼容的地图瓦片，包括 Google Maps、Bing Maps 和 OpenLayers。GeoNode 托管的所有数据也可以通过 GeoWebCache 获取。GeoWebCache 通过缓存数据并提供响应更快的地图改进了 WMS。</p>\n"
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
-"    <h3>CSW 示例代码</h3>\n"
-"    <p>要与 GeoNode 的 CSW 交互，可以使用任意 CSW 客户端（QGIS MetaSearch、GRASS 等）。下面的示例演示如何使用 OWSLib Python 包进行简单调用：</p>\n"
+"    <h3>CSW Example Code</h3>\n"
+"    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS MetaSearch, GRASS, etc.).  The following example illustrates a simple invocation using the OWSLib Python package:</p>\n"
 "    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
 "    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
 "    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
@@ -5522,61 +5534,61 @@ msgstr ""
 "    <p><code>print csw.results</code></p>\n"
 "    <p><code>print csw.records</code></p>\n"
 "\n"
-"    <h3>OpenLayers 示例代码</h3>\n"
+"    <h3>OpenLayers Example Code</h3>\n"
 "\n"
-"    <p>要在 OpenLayers 地图中加入 GeoNode 地图图层，首先找到该图层的名称。名称位于图层列表的 <code>name</code> 字段中，而不是 <code>title</code> 字段。本示例使用尼加拉瓜政治边界背景图层，其名称为 <code>risk:nicaragua_admin</code>。然后创建一个 OpenLayers.Layer.WMS 实例：</p>\n"
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>\n"
 "    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\\\"GeoNode Risk Data\\\", \\\"http://demo.geonode.org/geoserver/wms\\\",{ layers: \\\"risk:nicaragua_admin\\\" });</code></p>\n"
 "\n"
-"    <h3>Google Maps 示例代码</h3>\n"
-"    <p>要在 Google 地图中加入 GeoNode 地图图层，请将数据集名称包含在 URL 模板中。</p>\n"
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>\n"
 "\n"
-"    <h3>Shapefile/GeoJSON/GML 输出</h3>\n"
-"    <p>要从 GeoNode Web 服务获取数据，请使用 WFS 协议。例如，要获取完整的尼加拉瓜行政边界，请使用：</p>\n"
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>\n"
 "    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"    <p>将输出格式改为 <code>json</code>、<code>GML2</code>、<code>GML3</code> 或 <code>csv</code>，即可获取相应格式的数据。WFS 协议还可以处理更精确的查询，例如指定边界框，或根据数据属性指定各种空间和非空间过滤器。</p>\n"
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>\n"
 "\n"
-"    <h3>GeoTools 示例代码</h3>\n"
-"    <p>创建一个 DataStore 并从中提取 FeatureType，然后运行查询。相关内容都记录在 <code>http://geotools.org/</code> 的 Wiki 中。</p>\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
 "    "
 
 msgid "GeoNode's Web Services"
-msgstr "GeoNode 的 Web 服务"
+msgstr "GeoNode Web服务"
 
 msgid "GeoNode's Web Services are available from the following URLs:"
-msgstr "GeoNode 的 Web 服务可通过以下 URL 访问："
+msgstr "GeoNode Web服务网址："
 
 msgid "Dynamic tiles via WMS:"
-msgstr "通过 WMS 提供动态瓦片："
+msgstr "通过WMS动态瓦片："
 
 msgid "Vector data via WFS:"
-msgstr "通过 WFS 提供矢量数据："
+msgstr "WFS矢量数据："
 
 msgid "Raster data via WCS:"
-msgstr "通过 WCS 提供栅格数据："
+msgstr "通过WCS栅格数据："
 
 msgid "Metadata search via CSW:"
-msgstr "通过 CSW 搜索元数据："
+msgstr "CSW元数据搜索："
 
 msgid "Metadata search via OpenSearch:"
-msgstr "通过 OpenSearch 搜索元数据："
+msgstr "通过OpenSearch搜索元数据："
 
 msgid "Metadata search via OAI-PMH:"
-msgstr "通过 OAI-PMH 搜索元数据："
+msgstr "通过OAI-PMH搜索元数据："
 
 msgid "Cached tiles via WMTS:"
-msgstr "通过 WMTS 提供缓存瓦片："
+msgstr "WMTS缓存切片："
 
 msgid "User Guide"
 msgstr "用户指南"
 
 msgid "GeoNode Help"
-msgstr "GeoNode 帮助"
+msgstr "GeoNode帮助"
 
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
-msgstr "本页提供有关如何使用 GeoNode 的帮助信息。请使用侧边栏链接浏览所需内容。"
+msgstr "本页提供如何使用GeoNode的帮助信息。请点击工具栏链接了解您想知道的内容"
 
 msgid ""
 "\n"
@@ -5667,68 +5679,77 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"    <p>GeoNode 提供数据集访问，并通过地图编辑应用让用户浏览现有地图和贡献自己的"
-"地图。</p>\n"
+"    <p>GeoNode提供获取数据集的通道和一种使用户能够浏览已存在地图和投稿自己的"
+"地图的地图编辑应用。</p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">浏览图层</h4>\n"
-"    <p><a href=\"{{ url_layer_browse }}\">图层</a>标签允许您浏览上传到 GeoNode 的"
+"    <p><a href=\"{{ url_layer_browse }}\">Layers</a>标签允许您去浏览那些被上传到GeoNode上的"
 "数据。</p>\n"
-"    <p>所有数据都可以下载为多种格式，以便在其他应用中使用。</p>\n"
+"    <p>为了在其他应用上使用，所有数据都可以以多种格式下载。</p>\n"
 "\n"
-"    <h4 id=\"developer-access\">开发者访问</h4>\n"
-"    <p><a href=\"{{ url_developer }}\">开发者</a>页面帮助开发者开始构建基于 GeoNode 的"
-"应用，其中包括 Web 服务使用说明、GeoNode 源代码链接，以及用于创建 GeoNode 的"
-"开源项目介绍。</p>\n"
+"    <h4 id=\"developer-access\">开发者使用权</h4>\n"
+"    <p><a href=\"{{ url_developer }}\">开发者</a>页面是一个开发者开始构建不同于GeoNode"
+"应用的地方。它包括网络服务的使用说明，GeoNode源代码的链接和用于创建它的关于开"
+"源项目的信息。</p>\n"
 "\n"
 "    <h4 id=\"browsing-maps\">浏览地图</h4>\n"
-"    <p>GeoNode 允许用户创建地图并与他人分享。</p>\n"
-"    <p><a href=\"{{ url_maps_browse }}\">地图</a>标签是 GeoNode 上的地图浏览入口。"
-"您可以在此<strong>搜索地图</strong>或<strong>创建地图</strong>，后者会打开"
-"<a href=\"{{ url_maps_new }}\">地图编辑器</a>。</p>\n"
-"    <h5>Google Earth 模式</h5>\n"
-"    <p>在交互式地图编辑器中查看的任何地图，都可以通过 Google Earth 插件以 3D 模式"
-"查看。要切换到 3D 模式，请选择顶部工具栏最右侧的 Google Earth 地球图标。"
-"如果尚未安装 Google Earth 插件，系统会提示您安装。</p>\n"
+"    <p>GeoNode允许用户创建和分享地图给他人。</p>\n"
+"    <p><a href=\"{{ url_maps_browse }}\">Maps</a>标签是一个在GeoNode上浏览地图的途径。从这里"
+"您可以<strong>搜索一张地图</strong>或者<strong>创建一张地图</strong>, 这将会"
+"打开<a href=\"{{ url_maps_new }}\">地图编辑器</a>。</p>\n"
+"    <h5>谷歌地球模式</h5>\n"
+"    <p>任何在交互地图编辑器上观察的地图可以利用谷歌地球的插件用3D的形式进行观"
+"看。为了转换至3D模式，选择谷歌地球按钮，它在上方工具栏中最右方的。如果您没有"
+"安装谷歌地球的插件，您将会被提示安装插件。</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">创建地图</h4>\n"
-"    <p>要创建新地图，请转到<a href=\"{{ url_maps_browse }}\">贡献的地图</a>标签，"
-"然后点击<a href=\"{{ url_maps_new }}\">创建自己的地图</a>链接。</p>\n"
-"    <p>这会打开加载了基础图层的<a href=\"{{ url_maps_new }}\">地图编辑器</a>。</p>\n"
-"    <p>要从 GeoNode 添加数据图层，请点击屏幕左侧图层标签下方的绿色加号按钮。"
-"此时会打开一个对话框，列出 GeoNode 上所有可用的图层。</p>\n"
-"    <p>选择要添加到地图的图层，然后点击<strong>添加图层</strong>按钮。完成后，"
-"点击<strong>完成</strong>关闭对话框并返回地图。</p>\n"
+"    <p>为了创建一张新的地图，进入<a href=\"{{ url_maps_browse }}\">查看地图</a>标签，然后点击"
+"<a href=\"{{ url_maps_new }}\">创建您自己的地图</a>链接。</p>\n"
+"    <p>这将会带您进入<a href=\"{{ url_maps_new }}\">地图编辑器</a>，同时加载一个基础图"
+"层。</p>\n"
+"    <p>为了从GeoNode添加数据图层，点击绿色加号按钮，它位于图层底部，在屏幕的"
+"左手边。这将会打开一个会话，该会话中列出了GeoNode上所有可用的图层。</p>\n"
+"    <p>为了添加图层倒您的地图，选中它们，点击<strong>添加图层</strong>按钮。"
+"当完成时，您可以点击<strong>Done</strong>去关闭会话，返回地图。</p>\n"
 "\n"
-"    <h5>重新排序和移除图层</h5>\n"
-"    <p>拖放图层名称即可更改数据标签中图层的显示顺序，地图中的顺序也会随之更新。"
-"取消选中图层可关闭其可见性；选择图层并点击红色减号按钮可将其完全移除。</p>\n"
+"    <h5>重排和移除图层</h5>\n"
+"    <p>通过简单地拖拽和放下它们的名称来改变列在标签中的图层展示顺序。在地图上"
+"的顺序将会通过更新体现出来。简单地不选中图层该将会关闭该图层的可见性，选中图"
+"层并点击红色减号按钮将完全地移除该图层。</p>\n"
 "\n"
 "    <h5>保存地图</h5>\n"
-"    <p>找到合适的图层和缩放级别后，请保存地图，以便其他人查看。点击顶部菜单中的"
-"“保存”按钮（顶部工具栏最左侧、带有磁盘图标的地图按钮），然后填写地图标题和摘要。</p>\n"
+"    <p>当找到一个合适的图层集和缩放级别时，需要进行保存，这样其他人就可以看见"
+"它。点击保存按钮--在顶部工具栏最左边的图标，一个带有磁盘的地图影像--在顶部菜"
+"单，然后填写地图的标题和摘要。</p>\n"
 "\n"
 "    <h4 id=\"exporting-a-map\">发布一张地图</h4>\n"
-"    <p>GeoNode 中的任何地图都可以嵌入其他网站或博客。发布地图的步骤如下：</p>\n"
+"    <p>任何来自GeoNode的地图可以在另一个网站或者博客被嵌入使用。发布一张地"
+"图：</p>\n"
 "    <ol>\n"
-"      <li>从社区或地图页面的地图列表中选择一张地图，然后点击“发布地图”按钮。</li>\n"
-"      <li>在向导中选择组件所需的高度和宽度。</li>\n"
-"      <li>将向导提供的 HTML 代码片段复制到任意 HTML 页面或支持 iFrame 的博客文章中。</li>\n"
+"      <li>从社区地图列表或者地图页面中选择一个地图，然后单击\"发布地图\"按"
+"钮。</li>\n"
+"      <li>为安装向导产品选择您想要的高度和宽度。</li>\n"
+"      <li>复制在安装向导中提供的HTML消息给任何HTML页面或者iFrame-supporting博"
+"客站</li>\n"
 "    </ol>\n"
-"    <p>这样会在您的网页或博客文章中放置一个显示地图的交互式组件。</p>\n"
-"    <p>请注意，<a href=\"{{ url_maps_new }}\">地图编辑器</a>中也有发布地图按钮。"
-"如果希望他人看到所做的更改，请在发布前保存地图。发布的是最近保存的版本，而不是"
-"最近查看的版本。</p>\n"
+"    <p>这将会放置一个交互的装置在您的网络页面上展示您的地图或者博客站点。</"
+"p>\n"
+"    <p>注意<a href=\"{{ url_maps_new }}\">地图编辑器</a>也有一个发布地图的按钮。如果您"
+"有任何希望其他人看见的改动，请在发布地图前确认保存过地图。地图编辑器会发布最"
+"后一次保存的地图版本而不是最后看见的版本。</p>\n"
 "\n"
-"    <h4 id=\"remixing-a-map\">基于现有地图创建新地图</h4>\n"
-"    <p>任何可用地图都可以作为新地图的起点。</p>\n"
+"    <h4 id=\"remixing-a-map\">重新混合地图</h4>\n"
+"    <p>任何可用的地图都可以作为一个新地图的起点。</p>\n"
 "    <ol>\n"
 "      <li>在地图编辑器中打开地图。</li>\n"
-"      <li>按需添加或移除图层。</li>\n"
-"      <li>平移和缩放地图以突出显示感兴趣的区域。</li>\n"
-"      <li><strong>重要：</strong>更新标题、摘要、联系人信息和标签，以反映新地图。</li>\n"
+"      <li>按照您的喜好添加或移除地图</li>\n"
+"      <li>通过移动和缩放来高亮感兴趣的区域。</li>\n"
+"      <li><strong>重要:</strong>更新标题、摘要、联系方式、信息和标签来显示新"
+"地图。</li>\n"
 "      <li>保存地图。</li>\n"
 "    </ol>\n"
-"    <p>在<a href=\"{{ url_maps_browse }}\">地图</a>标签中搜索时，您将看到新地图。</p>\n"
+"    <p>当您搜索地图自<a href=\"{{ url_maps_browse }}\">Maps</a>标签，您将能够看见您的新地图</"
+"p>\n"
 "    "
 
 msgid "Sections"
@@ -5738,7 +5759,7 @@ msgid "Browsing Layers"
 msgstr "浏览图层"
 
 msgid "Developer Access"
-msgstr "开发者访问"
+msgstr "开发者通道"
 
 msgid "Browsing Maps"
 msgstr "浏览地图"
@@ -5750,7 +5771,7 @@ msgid "Exporting a Map"
 msgstr "导出地图"
 
 msgid "Remixing a Map"
-msgstr "基于现有地图创建新地图"
+msgstr "混合地图"
 
 msgid "Welcome!"
 msgstr "欢迎您！"
@@ -5770,7 +5791,7 @@ msgstr "高级搜索"
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
-msgstr "点击搜索其他用户、组织和公共来源发布的地理空间数据，并以标准格式下载。"
+msgstr "点击搜索其他用户，组织和公共资源出版的地理空间数据。以标准格式下载。"
 
 #| msgid "dataset"
 msgid "Add datasets"
@@ -5787,7 +5808,7 @@ msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be saved, downloaded, shared publicly or restricted to specify "
 "users only."
-msgstr "数据可用于浏览、聚合和设置样式，以生成地图；地图可以保存、下载、公开分享，也可以限制为仅允许指定用户访问。"
+msgstr "数据可用于浏览、聚合和设置样式，以生成可保存、下载或分享的地图。"
 
 msgid "Create maps"
 msgstr "创建地图"
@@ -5798,15 +5819,15 @@ msgstr "浏览地图"
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, "
 "manage their metadata and associated documents."
-msgstr "GeoNode 还允许发布表格和文本数据，并管理其元数据及关联文件。"
+msgstr "GeoNode 还允许发布表格和文本数据，并管理其元数据及关联文档。"
 
 #| msgid "Add Comment"
 msgid "Add documents"
-msgstr "添加文件"
+msgstr "添加文档"
 
 #| msgid "Explore Documents"
 msgid "Explore documents"
-msgstr "浏览文件"
+msgstr "浏览文档"
 
 #| msgid ""
 #| "GeoNode allows registered users to easily upload geospatial data in "
@@ -5814,7 +5835,7 @@ msgstr "浏览文件"
 msgid ""
 "Geonode allows registered users to easily upload geospatial data and various "
 "documents in several formats."
-msgstr "GeoNode 允许注册用户以多种格式上传地理空间数据和各类文件。"
+msgstr "GeoNode 允许注册用户以多种格式上传地理空间数据和文档。"
 
 msgid "See users"
 msgstr "查看用户"
@@ -5839,7 +5860,7 @@ msgstr "尊敬的先生/女士："
 
 #, python-format
 msgid "is inviting you to join (%(site_name)s)."
-msgstr "邀请您加入 %(site_name)s。"
+msgstr "邀请您加入（%(site_name)s）。"
 
 #, python-format
 msgid ""
@@ -5853,7 +5874,7 @@ msgid ""
 msgstr "收到您的账户已激活的确认后，您可以通知"
 
 msgid "that you wish to join her/his group(s) through"
-msgstr "您希望通过以下方式加入其群组："
+msgstr "您希望通过以下方式加入其群体："
 
 msgid "this link"
 msgstr "此链接"
@@ -5861,7 +5882,7 @@ msgstr "此链接"
 #, python-format
 msgid ""
 "<strong>%(inviter_name)s</strong> is a member of the following group(s):"
-msgstr "<strong>%(inviter_name)s</strong> 是以下群组的成员："
+msgstr "<strong>%(inviter_name)s</strong> is a member of the following group(s):"
 
 msgid "We look forward to seeing you on the platform,"
 msgstr "期待在平台上与您相见，"
@@ -5877,29 +5898,29 @@ msgid "To do so, please register at"
 msgstr "请在以下地址完成注册："
 
 msgid "that you wish to join her/his group(s) through this link"
-msgstr "您希望通过此链接加入其群组"
+msgstr "您希望通过此链接加入其群体"
 
 #| msgid "The following groups:"
 msgid "is a member of the following group(s)"
-msgstr "是以下群组的成员"
+msgstr "是以下群体的成员"
 
 msgid "Updating Metadata..."
-msgstr "正在更新元数据……"
+msgstr "更新元数据中…"
 
 msgid "Topic Category is mandatory and cannot be empty!"
-msgstr "主题类别为必填项，不能为空！"
+msgstr "主题类别是强制性的，不能是空的！"
 
 msgid "Group is mandatory and cannot be empty!"
-msgstr "群组是必填项，不能留空！"
+msgstr "群体是强制性的，不能是空的！"
 
 msgid "Identification"
 msgstr "身份认证"
 
 msgid "Yes"
-msgstr "是"
+msgstr "是的"
 
 msgid "Published"
-msgstr "已发布"
+msgstr "发布"
 
 msgid "email"
 msgstr "电子邮件"
@@ -5908,7 +5929,7 @@ msgid "Information"
 msgstr "信息"
 
 msgid "Identification Image"
-msgstr "标识图像"
+msgstr "确认影像"
 
 #| msgid "Temporal Extent"
 msgid "Spatial Extent"
@@ -5919,28 +5940,28 @@ msgid "Projection System"
 msgstr "投影系统"
 
 msgid "Extension x0"
-msgstr "扩展 x0"
+msgstr "扩展x0"
 
 msgid "Extension x1"
-msgstr "扩展 x1"
+msgstr "扩展x1"
 
 msgid "Extension y0"
-msgstr "扩展 y0"
+msgstr "扩展y0"
 
 msgid "Extension y1"
-msgstr "扩展 y1"
+msgstr "扩展y1"
 
 msgid "Features"
-msgstr "要素"
+msgstr "特征"
 
 msgid "Contact Points"
-msgstr "联系人"
+msgstr "联系点"
 
 msgid "References"
-msgstr "参考资料"
+msgstr "参考系"
 
 msgid "Link Online"
-msgstr "在线链接"
+msgstr "连接在线"
 
 msgid "Metadata Page"
 msgstr "元数据页面"
@@ -5970,10 +5991,10 @@ msgid "Send request"
 msgstr "发送请求"
 
 msgid "Your account has been approved and is now active."
-msgstr "您的账户已获批准，现已激活。"
+msgstr "您的账户已经被批准，现在处于活动状态。"
 
 msgid "You can use the login form at"
-msgstr "您可以使用以下地址的登录表单："
+msgstr "您可以使用登录表格"
 
 #| msgid "Welcome"
 msgid "Welcome at"
@@ -5984,78 +6005,78 @@ msgid "Your account is now active"
 msgstr "您的账户现已激活"
 
 msgid "has requested access to the site."
-msgstr "已请求访问网站。"
+msgstr "已经请求进入网站。"
 
 msgid ""
 "You can enable access by setting the user as active on the admin section"
-msgstr "您可以在管理后台将用户设置为“已激活”以启用访问权限。"
+msgstr "您可以在管理部分通过设置用户为活动状态进入"
 
 msgid "A user has requested access to the site"
-msgstr "用户已请求访问网站"
+msgstr "一个用户已经请求进入网站"
 
 #| msgid "The following document was updated"
 msgid "The following document was approved"
-msgstr "以下文件已获批准"
+msgstr "以下文档已获批准"
 
 msgid "owned by"
 msgstr "属于"
 
 msgid "You can visit the document's detail page here"
-msgstr "您可以在此访问文件详情页"
+msgstr "您可以在这里阅读文档的具体信息"
 
 #| msgid "A document has been rated"
 msgid "A document has been approved"
-msgstr "文件已获批准"
+msgstr "一个文档已获批准"
 
 msgid "A comment has been posted for the document"
-msgstr "文件收到一条评论"
+msgstr "该文档有一个评论发布"
 
 msgid "by the user"
-msgstr "由用户"
+msgstr "被用户"
 
 msgid "A comment has been posted for a document"
-msgstr "文件收到一条评论"
+msgstr "一个文档有个评论发布"
 
 msgid "The user"
 msgstr "该用户"
 
 msgid "uploaded the following document"
-msgstr "上传了以下文件"
+msgstr "上传下列文档"
 
 msgid "A document has been uploaded"
-msgstr "文件已上传"
+msgstr "一个文档已经上传"
 
 msgid "The following document was deleted"
-msgstr "以下文件已删除"
+msgstr "下列文档被删除"
 
 msgid "A document has been deleted"
-msgstr "文件已删除"
+msgstr "一个文档已经被删除"
 
 #| msgid "The following document was deleted"
 msgid "The following document was published"
-msgstr "以下文件已发布"
+msgstr "以下文档已发布"
 
 #| msgid "A document has been uploaded"
 msgid "A document has been published"
-msgstr "文件已发布"
+msgstr "一个文档已发布"
 
 msgid "rated"
 msgstr "评分"
 
 msgid "the following document"
-msgstr "以下文件"
+msgstr "下列文档"
 
 msgid "You can visit the layer's detail page here"
-msgstr "您可以在此访问图层详情页"
+msgstr "您可以在这里参阅该图层的具体信息"
 
 msgid "A document has been rated"
-msgstr "文件已获得评分"
+msgstr "一个文档已经被评分"
 
 msgid "The following document was updated"
-msgstr "以下文件已更新"
+msgstr "下列文档被更新"
 
 msgid "A document has been updated"
-msgstr "文件已更新"
+msgstr "一个文档已经被更新"
 
 #| msgid "You have the following incomplete uploads"
 msgid "You have received the following notice from"
@@ -6079,25 +6100,25 @@ msgstr "以下图层已获批准"
 
 #| msgid "A layer has been rated"
 msgid "A layer has been approved"
-msgstr "图层已获批准"
+msgstr "一个图层已获批准"
 
 msgid "A comment has been posted for the layer"
-msgstr "图层收到一条评论"
+msgstr "一个图层的评论已经发布"
 
 msgid "A comment has been posted for a layer"
-msgstr "图层收到一条评论"
+msgstr "一个图层的评论已经发布"
 
 msgid "uploaded the following layer"
-msgstr "上传了以下图层"
+msgstr "上传下列图层"
 
 msgid "A new layer has been uploaded"
-msgstr "新图层已上传"
+msgstr "一个新的图层已经上传"
 
 msgid "The following layer was deleted"
-msgstr "以下图层已删除"
+msgstr "下列图层被删除"
 
 msgid "A layer has been deleted"
-msgstr "图层已删除"
+msgstr "一个图层已经被删除"
 
 #| msgid "The following layer was deleted"
 msgid "The following layer was published"
@@ -6105,48 +6126,48 @@ msgstr "以下图层已发布"
 
 #| msgid "A layer has been deleted"
 msgid "A layer has been published"
-msgstr "图层已发布"
+msgstr "一个图层已发布"
 
 msgid "the following layer"
-msgstr "以下图层"
+msgstr "下列图层"
 
 msgid "A layer has been rated"
-msgstr "图层已获得评分"
+msgstr "一个图层已经评分"
 
 msgid "The following layer was updated"
-msgstr "以下图层已更新"
+msgstr "下列图层被更新"
 
 msgid "A layer has been updated"
-msgstr "图层已更新"
+msgstr "一个图层已经被更新"
 
 #| msgid "The following map was updated"
 msgid "The following map was approved"
 msgstr "以下地图已获批准"
 
 msgid "You can visit the map's detail page here"
-msgstr "您可以在此访问地图详情页"
+msgstr "您可以在这里参阅该地图的详细信息"
 
 #| msgid "A map has been rated"
 msgid "A map has been approved"
-msgstr "地图已获批准"
+msgstr "一个地图已获批准"
 
 msgid "A comment has been posted for the map"
-msgstr "地图收到一条评论"
+msgstr "该地图的评论已经发布"
 
 msgid "A comment has been posted for a map"
-msgstr "地图收到一条评论"
+msgstr "一个地图评论已经发布"
 
 msgid "created the following map"
-msgstr "创建了以下地图"
+msgstr "创建下列地图"
 
 msgid "A map has been created"
-msgstr "地图已创建"
+msgstr "一个地图已经被创建"
 
 msgid "The following map was deleted"
-msgstr "以下地图已删除"
+msgstr "下列地图被删除"
 
 msgid "A map has been deleted"
-msgstr "地图已删除"
+msgstr "一个地图已经被删除"
 
 #| msgid "The following map was deleted"
 msgid "The following map was published"
@@ -6154,20 +6175,20 @@ msgstr "以下地图已发布"
 
 #| msgid "A map has been deleted"
 msgid "A map has been published"
-msgstr "地图已发布"
+msgstr "一个地图已发布"
 
 #| msgid "the following layer"
 msgid "the following map"
 msgstr "以下地图"
 
 msgid "A map has been rated"
-msgstr "地图已获得评分"
+msgstr "一个地图已评分"
 
 msgid "The following map was updated"
 msgstr "下列地图已更新"
 
 msgid "A map has been updated"
-msgstr "地图已更新"
+msgstr "一个地图已经更新"
 
 msgid "Notification Settings"
 msgstr "通知设置"
@@ -6184,8 +6205,8 @@ msgid ""
 msgstr ""
 "\n"
 "        <p class=\\\"alert alert-warning\\\">\n"
-"            <span class=\\\"warning\\\">注意</span>：\n"
-"            您没有已验证的电子邮件地址，无法向其发送通知。现在<a href=\\\"%(email_url)s\\\">添加一个</a>。\n"
+"            <span class=\\\"warning\\\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be sent. <a href=\\\"%(email_url)s\\\">Add one</a> now.\n"
 "        </p>\n"
 "        "
 
@@ -6193,7 +6214,7 @@ msgid "Notification Type"
 msgstr "通知类型"
 
 msgid "requested you to download this resource"
-msgstr "请求您下载该资源"
+msgstr "请您下载该资源"
 
 msgid ""
 "Please go to resource page and assign the download permissions if you wish"
@@ -6201,7 +6222,7 @@ msgstr "如果您愿意，请前往资源页面设置下载许可"
 
 #| msgid "A document has been deleted"
 msgid "A resource's download has been requested"
-msgstr "有人请求下载该资源"
+msgstr "已请求下载一个资源"
 
 msgid "Privacy &#038; Cookies Policy"
 msgstr "隐私和 Cookie 政策"
@@ -6222,10 +6243,10 @@ msgid "No one is following this user"
 msgstr "没有人关注该用户"
 
 msgid "Manage Connections"
-msgstr "管理关联"
+msgstr "管理联系"
 
 msgid "Blocking"
-msgstr "屏蔽"
+msgstr "排除"
 
 msgid "Unfollow"
 msgstr "取消关注"
@@ -6234,17 +6255,17 @@ msgid "Follow"
 msgstr "关注"
 
 msgid "Unblock"
-msgstr "取消屏蔽"
+msgstr "解锁"
 
 msgid "Block"
-msgstr "屏蔽"
+msgstr "锁定"
 
 msgid "No longer"
 msgstr "不再"
 
 #, python-format
 msgid "You're not %(status_slug)s anyone!"
-msgstr "您没有%(status_slug)s任何人！"
+msgstr "您不是 %(status_slug)s 任何人！"
 
 msgid "Success"
 msgstr "成功"
@@ -6257,33 +6278,33 @@ msgstr "不再"
 
 #, python-format
 msgid "%(to_user_username)s's profile"
-msgstr "%(to_user_username)s 的个人资料"
+msgstr "%(to_user_username)s 的信息"
 
 #| msgid "Responsible Parties"
 msgid "Responsibles"
 msgstr "责任方"
 
 msgid "Date begins after:"
-msgstr "开始日期晚于："
+msgstr "日期之后开始："
 
 msgid "yyyy-mm-dd"
 msgstr "YYYY-MM-DD"
 
 msgid "Date ends before:"
-msgstr "结束日期早于："
+msgstr "日前结束："
 
 msgid "Search by region"
-msgstr "按地区搜索"
+msgstr "通过地区搜索"
 
 #| msgid "Sections"
 msgid "Selection"
 msgstr "选择"
 
 msgid "No list items selected. Use the selection fields to add."
-msgstr "未选择任何列表项。请使用选择字段添加项目。"
+msgstr "未选择列表项。请使用选择字段添加。"
 
 msgid "Filters"
-msgstr "筛选条件"
+msgstr "过滤器"
 
 #| msgid "Layers"
 msgid "Datasets found"
@@ -6294,7 +6315,7 @@ msgstr "找到的地图"
 
 #| msgid "Documents"
 msgid "Documents found"
-msgstr "找到的文件"
+msgstr "找到的文档"
 
 msgid "found"
 msgstr "找到"
@@ -6310,19 +6331,19 @@ msgid "Total"
 msgstr "总计"
 
 msgid "Most recent"
-msgstr "最新"
+msgstr "时间正序"
 
 msgid "Less recent"
-msgstr "较早"
+msgstr "时间倒序"
 
 msgid "A - Z"
-msgstr "A - Z"
+msgstr "字符正序"
 
 msgid "Z - A"
-msgstr "Z - A"
+msgstr "字符倒序"
 
 msgid "Most popular"
-msgstr "最热门"
+msgstr "热门度"
 
 msgid "Text"
 msgstr "文本"
@@ -6395,7 +6416,7 @@ msgid "Sign in with"
 msgstr "使用以下账户登录"
 
 msgid "Connect with"
-msgstr "连接到"
+msgstr "连接"
 
 #| msgid "Sign up"
 msgid "Sign up with"
@@ -6414,7 +6435,7 @@ msgid "Mark selected as unread"
 msgstr "标记为未读"
 
 msgid "Create Message"
-msgstr "创建消息"
+msgstr "创建短信"
 
 #| msgid "to users"
 msgid "To users"
@@ -6422,22 +6443,22 @@ msgstr "发送给用户"
 
 #| msgid "to groups"
 msgid "To groups"
-msgstr "发送给群组"
+msgstr "发送给群体"
 
 msgid "Subject"
 msgstr "主题"
 
 msgid "Content"
-msgstr "内容"
+msgstr "最近修改"
 
 msgid "Send message"
-msgstr "发送消息"
+msgstr "发送短信"
 
 msgid "Back to Inbox"
 msgstr "回到收件箱"
 
 msgid "Sent to"
-msgstr "发送给"
+msgstr "发给"
 
 msgid "by"
 msgstr "作者"
@@ -6483,68 +6504,12 @@ msgid ""
 "them."
 msgstr "提供了 SLD 文件，但未找到与其匹配的文件。"
 
-msgid "Base file must be a file or url."
-msgstr "基础文件必须是文件或 URL。"
-
-#, python-brace-format
-msgid ""
-"`{field_name}` field cannot have both a file and a path. Please choose one "
-"and try again."
-msgstr "字段“{field_name}”不能同时包含文件和路径。请选择其中一个后重试。"
-
-#, python-brace-format
-msgid ""
-"Total upload size exceeds {filesizeformat(max_size)}. Please try again with "
-"smaller files."
-msgstr "上传总大小超过 {filesizeformat(max_size)}。请使用较小的文件重试。"
-
-msgid "The maximum file size allowed for upload (bytes)."
-msgstr "允许上传的最大文件大小（字节）。"
-
-#, python-brace-format
-msgid ""
-"File size size exceeds {filesizeformat(max_size)}. Please try again with a "
-"smaller file."
-msgstr "文件大小超过 {filesizeformat(max_size)}。请使用较小的文件重试。"
-
-msgid ""
-"To avoid errors, max size should be at least 2 times "
-"smaller than the value of 'file_upload_handler'."
-msgstr "为避免错误，最大大小应小于“file_upload_handler”值的一半。"
-
-#, python-brace-format
-msgid ""
-"The limit `{instance.slug}` should not be deleted."
-msgstr "不应删除限制“{instance.slug}”。"
-
-msgid "toggle more Contact Roles"
-msgstr "展开更多联系人角色"
-
-msgid "more metadata contact roles"
-msgstr "更多元数据联系人角色"
-
-#, python-brace-format
-msgid "You can not start the job {job.id} because its status is \"{job.status}\"."
-msgstr "无法启动任务 {job.id}，因为其状态为“{job.status}”。"
-
-msgid "Positional Arguments"
-msgstr "位置参数"
-
-msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
-msgstr "JSON 编码的位置参数（示例：[\"arg1\", \"arg2\"]）"
-
-msgid "Keyword Arguments"
-msgstr "关键字参数"
-
-msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
-msgstr "JSON 编码的关键字参数（示例：{\"argument\": \"value\"}）"
-
 #| msgid "Layer Created"
 msgid "Layer already exists"
 msgstr "图层已存在"
 
 msgid "Name already in use and overwrite is False"
-msgstr "名称已被使用且未启用覆盖"
+msgstr "Name already in use and overwrite is False"
 
 msgid "Error configuring time:"
 msgstr "配置时间时出错："
@@ -6571,7 +6536,7 @@ msgstr "检测到无效的 ZIP 文件"
 
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not find any valid spatial file inside the uploaded zip"
-msgstr "在上传的 ZIP 中找不到有效的空间数据文件。"
+msgstr "在上传的 ZIP 中找不到有效的空间文件。"
 
 msgid "Invalid kmz file detected"
 msgstr "检测到无效的 KMZ 文件"
@@ -6584,10 +6549,10 @@ msgid "Only one shapefile per zip is allowed"
 msgstr "每个 ZIP 只允许包含一个 Shapefile"
 
 msgid "kml files with more than one GroundOverlay are not supported"
-msgstr "不支持包含多个地面叠加层（GroundOverlay）的 KML 文件"
+msgstr "kml files with more than one GroundOverlay are not supported"
 
 msgid "Ground overlay image declared in kml file cannot be found"
-msgstr "找不到 KML 文件中声明的地面叠加图像"
+msgstr "Ground overlay image declared in kml file cannot be found"
 
 msgid "Only one kml file per ZIP is allowed"
 msgstr "每个 ZIP 只允许包含一个 KML 文件"
@@ -6598,7 +6563,7 @@ msgstr "每个 KMZ 只允许包含一个 KML 文件"
 msgid ""
 "You are trying to upload multiple GeoTIFFs without a valid 'indexer."
 "properties' file."
-msgstr "您正在尝试上传多个 GeoTIFF，但没有有效的“indexer.properties”文件。"
+msgstr "You are trying to upload multiple GeoTIFFs without a valid 'indexer.properties' file."
 
 msgid "Only one raster file per ZIP is allowed"
 msgstr "每个 ZIP 只允许包含一个栅格文件"
@@ -6627,7 +6592,7 @@ msgstr "导入期间出错：{progress.get('message')}"
 
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr "找不到适用于镶嵌文件的有效时间正则表达式。"
+msgstr "找不到适用于 Mosaic 文件的有效时间正则表达式。"
 
 msgid "Unsupported DataBase for Mosaics!"
 msgstr "不支持用于镶嵌的数据库！"
@@ -6636,10 +6601,10 @@ msgid "Upload Session invalid or no more accessible!"
 msgstr "上传会话无效或已无法访问。"
 
 msgid "Invalid permission level."
-msgstr "权限级别无效。"
+msgstr "权限等级不够。"
 
 msgid "Permission Denied"
-msgstr "拒绝访问"
+msgstr "权限级别"
 
 #~ msgid "Layer name"
 #~ msgstr "图层名"
@@ -6822,7 +6787,7 @@ msgid "Date to"
 msgstr "结束日期"
 
 msgid "Select..."
-msgstr "选择……"
+msgstr "选择..."
 
 msgid "Select Date"
 msgstr "选择日期"
