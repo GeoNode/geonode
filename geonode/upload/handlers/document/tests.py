@@ -30,10 +30,13 @@ from geonode import documents
 from geonode.assets.models import Asset
 from geonode.assets.utils import get_default_asset
 from geonode.base.enumerations import SOURCE_TYPE_LOCAL, SOURCE_TYPE_REMOTE
-from geonode.base.models import Link
+from geonode.base.models import Link, Region, Thesaurus, ThesaurusKeyword
 from geonode.base.populate_test_data import create_single_doc
 from geonode.documents.models import Document
+from geonode.groups.models import GroupProfile
 from geonode.resource.models import ExecutionRequest
+from geonode.resource.registry import document_manager
+from geonode.security.registry import permissions_registry
 from geonode.upload.api.exceptions import InvalidInputFileException
 from geonode.upload.celery_tasks import create_geonode_resource, import_resource
 from geonode.upload.handlers.document.exceptions import InvalidDocumentException
@@ -389,6 +392,55 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
         self.assertNotEqual(document.pk, cloned.pk)
         self.assertEqual("cloned document", cloned.title)
         self.assertTrue(cloned.files)
+
+    def test_copy_geonode_resource_should_copy_metadata_and_permissions(self):
+        other_owner, _ = get_user_model().objects.get_or_create(username="document_copy_source_owner")
+        document = create_single_doc("document with metadata to clone", owner=other_owner)
+        region = Region.objects.first()
+        document = document_manager.update(
+            document.uuid,
+            instance=document,
+            vals={"abstract": "test abstract", "purpose": "test purpose"},
+            keywords=["foo", "bar"],
+            regions=[region.name],
+        )
+        thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_document_copy", title="Test Thesaurus")
+        tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
+        document.tkeywords.add(tkeyword)
+
+        other_user, _ = get_user_model().objects.get_or_create(username="document_copy_other_user")
+        custom_group, _ = GroupProfile.objects.get_or_create(
+            slug="document_copy_group", title="document_copy_group", access="private"
+        )
+        custom_perms = {
+            "users": {other_user.username: ["view_resourcebase", "change_resourcebase"]},
+            "groups": {custom_group.slug: ["view_resourcebase"]},
+        }
+        document_manager.set_permissions(document.uuid, instance=document, permissions=custom_perms)
+
+        exec_id = self._create_execution_request(action=ira.DOCUMENT_COPY.value, title="cloned document metadata")
+        _exec = orchestrator.get_execution_object(exec_id)
+
+        cloned = self.handler.copy_geonode_resource(document, _exec)
+
+        self.assertNotEqual(document.pk, cloned.pk)
+        self.assertEqual(self.user, cloned.owner)
+        self.assertEqual(document.abstract, cloned.abstract)
+        self.assertEqual(document.purpose, cloned.purpose)
+        self.assertCountEqual([k.name for k in document.keywords.all()], [k.name for k in cloned.keywords.all()])
+        self.assertCountEqual(list(document.regions.all()), list(cloned.regions.all()))
+        self.assertCountEqual(list(document.tkeywords.all()), list(cloned.tkeywords.all()))
+
+        source_perms = permissions_registry.get_perms(instance=document, include_virtual=False)
+        copy_perms = permissions_registry.get_perms(instance=cloned, include_virtual=False)
+        for perm_key in ("users", "groups"):
+            source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
+            copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+            # self.user is the clone's new owner, always granted full owner perms on top of
+            # the reapplied source perm_spec, on top of whatever the source spec granted it
+            copy_entries.pop(self.user.pk, None)
+            self.assertEqual(source_entries, copy_entries)
+        self.assertIn("change_resourcebase_permissions", copy_perms["users"][self.user])
 
     def test_copy_geonode_resource_should_clone_a_remote_document(self):
         document = create_single_doc("remote document to clone")
