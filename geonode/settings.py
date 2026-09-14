@@ -1363,6 +1363,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         ("es-es", "Español"),
         ("fr-fr", "Français"),
         ("it-it", "Italiano"),
+        ("zh-cn", "Chinese"),
     )
 
     if os.getenv("LANGUAGES"):
