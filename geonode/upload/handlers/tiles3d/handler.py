@@ -227,6 +227,8 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 alternate = layer_name
             else:
                 alternate = create_alternate(layer_name, execution_id)
+        else:
+            return [], [], execution_id
 
         import_orchestrator.apply_async(
             (
