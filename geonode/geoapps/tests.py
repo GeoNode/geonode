@@ -21,8 +21,10 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from geonode.geoapps.models import GeoApp
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, Region, Thesaurus, ThesaurusKeyword
+from geonode.groups.models import GroupProfile
 from geonode.resource.registry import resource_manager_registry, geoapp_manager
+from geonode.security.registry import permissions_registry
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.metadata.manager import metadata_manager
 from geonode.base.populate_test_data import all_public, create_models, remove_models
@@ -82,11 +84,67 @@ class GeoAppTests(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         geoapp_copy = None
         try:
+            # owner must be whoever triggers the clone (self.bobby), not self.geoapp's own owner (self.user)
             geoapp_copy = resource_manager_registry.get_for_instance(self.geoapp).copy(
-                self.geoapp, defaults=dict(title="Testing GeoApp 2")
+                self.geoapp, owner=self.bobby, defaults=dict(title="Testing GeoApp 2")
             )
             self.assertIsNotNone(geoapp_copy)
             self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")
+            self.assertEqual(geoapp_copy.owner, self.bobby)
+        finally:
+            if geoapp_copy:
+                geoapp_copy.delete()
+            self.assertIsNotNone(self.geoapp)
+
+    def test_geoapp_copy_carries_over_metadata_and_permissions(self):
+        """M2M metadata and perm_spec must survive a GeoApp copy too, same as Dataset/Map."""
+        self.client.login(username="admin", password="admin")
+        # update() drops keywords/regions kwargs, set M2M fields directly instead
+        region = Region.objects.first()
+        self.geoapp = geoapp_manager.update(
+            self.geoapp.uuid, instance=self.geoapp, vals={"abstract": "test abstract", "purpose": "test purpose"}
+        )
+        self.geoapp.keywords.add("foo", "bar")
+        self.geoapp.regions.add(region)
+        thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_geoapp_copy", title="Test Thesaurus")
+        tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
+        self.geoapp.tkeywords.add(tkeyword)
+
+        custom_group, _ = GroupProfile.objects.get_or_create(
+            slug="geoapp_copy_group", title="geoapp_copy_group", access="private"
+        )
+        custom_perms = {
+            "users": {self.bobby.username: ["view_resourcebase", "change_resourcebase"]},
+            "groups": {custom_group.slug: ["view_resourcebase"]},
+        }
+        geoapp_manager.set_permissions(self.geoapp.uuid, instance=self.geoapp, permissions=custom_perms)
+
+        geoapp_copy = None
+        try:
+            geoapp_copy = resource_manager_registry.get_for_instance(self.geoapp).copy(
+                self.geoapp, owner=self.bobby, defaults=dict(title="Testing GeoApp Metadata Copy")
+            )
+            self.assertIsNotNone(geoapp_copy)
+            self.assertEqual(geoapp_copy.owner, self.bobby)
+            self.assertEqual(self.geoapp.abstract, geoapp_copy.abstract)
+            self.assertEqual(self.geoapp.purpose, geoapp_copy.purpose)
+            self.assertCountEqual(
+                [k.name for k in self.geoapp.keywords.all()], [k.name for k in geoapp_copy.keywords.all()]
+            )
+            self.assertCountEqual(list(self.geoapp.regions.all()), list(geoapp_copy.regions.all()))
+            self.assertCountEqual(list(self.geoapp.tkeywords.all()), list(geoapp_copy.tkeywords.all()))
+
+            source_perms = permissions_registry.get_perms(instance=self.geoapp, include_virtual=False)
+            copy_perms = permissions_registry.get_perms(instance=geoapp_copy, include_virtual=False)
+            for perm_key in ("users", "groups"):
+                source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
+                copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                # bobby is also the clone's new owner, who always gets full owner perms on top
+                # of whatever perm_spec is passed, regardless of what the source spec granted him
+                source_entries.pop(self.bobby.pk, None)
+                copy_entries.pop(self.bobby.pk, None)
+                self.assertEqual(source_entries, copy_entries)
+            self.assertIn("change_resourcebase_permissions", copy_perms["users"][self.bobby])
         finally:
             if geoapp_copy:
                 geoapp_copy.delete()
