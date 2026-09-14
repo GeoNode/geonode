@@ -22,7 +22,7 @@
 {% block body %}
 
 <div class="page-header">
-  <h2 class="page-title">{{ profile.name_long }}</h2>
+  <h2 class="page-title" ng-non-bindable>{{ profile.name_long }}</h2>
 </div>
 
 <div class="col-xs-3 col-md-2 profile-image">
@@ -34,7 +34,7 @@
 {% if user.is_authenticated %}
 {% if user == profile %}
   {% for group in profile.group_list_all %}
-  <div ng-if="group.logo_url != ''" class="col-xs-1 pull-right group-logo">
+  <div ng-if="group.logo_url != ''" class="col-xs-1 pull-right group-logo" ng-non-bindable>
     <a href="{{ group.get_absolute_url }}" ><img src="{{ group.logo_url }}" alt="{{ group.title }}" /></a>
   </div>
   <!-- <div class="col-xs-6 col-md-8">
@@ -46,7 +46,7 @@
   {% endfor %}
 {% else %}
   {% for group in profile.group_list_public %}
-  <div ng-if="group.logo_url != ''" class="col-xs-1 pull-right group-logo">
+  <div ng-if="group.logo_url != ''" class="col-xs-1 pull-right group-logo" ng-non-bindable>
     <a href="{{ group.get_absolute_url }}" ><img src="{{ group.logo_url }}" alt="{{ group.title }}" /></a>
   </div>
   <!-- <div class="col-xs-6 col-md-8">
@@ -59,8 +59,8 @@
 {% endif %}
 {% endif %}
 
-  <h3>{{ profile.first_name|default:profile.name_long }}</h3>
-  <table class="table table-user-profile">
+  <h3 ng-non-bindable>{{ profile.first_name|default:profile.name_long }}</h3>
+  <table class="table table-user-profile" ng-non-bindable>
     <tbody>
       {% if user.is_authenticated and user == profile or user.is_superuser or user.is_staff %}
       {% if SHOW_PROFILE_EMAIL %}

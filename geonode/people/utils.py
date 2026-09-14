@@ -214,3 +214,11 @@ def check_user_deletion_rules(profile) -> None:
     if error_list:
         return False, ", ".join(error_list)
     return True, None
+
+
+DISALLOWED_TEMPLATE_TOKENS = ("{{", "}}", "[[", "]]")
+
+
+def contains_disallowed_template_tokens(value):
+    values = value if isinstance(value, (list, tuple)) else [value]
+    return any(isinstance(item, str) and any(token in item for token in DISALLOWED_TEMPLATE_TOKENS) for item in values)

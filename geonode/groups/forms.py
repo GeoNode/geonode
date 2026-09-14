@@ -26,6 +26,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.groups.models import GroupProfile
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.people.utils import contains_disallowed_template_tokens
 
 
 class GroupForm(TranslationModelForm):
@@ -47,6 +48,12 @@ class GroupForm(TranslationModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
+        for field_name, value in list(cleaned_data.items()):
+            if contains_disallowed_template_tokens(value):
+                raise forms.ValidationError(
+                    _("Field %(field_name)s contains characters that are not allowed."),
+                    params={"field_name": field_name},
+                )
 
         name = cleaned_data.get("title")
         if not name or GroupProfile.objects.filter(title__iexact=self.cleaned_data["title"]).exists():
@@ -71,6 +78,16 @@ class GroupUpdateForm(forms.ModelForm):
             else:
                 raise forms.ValidationError(_("A group already exists with that name."))
         return self.cleaned_data["title"]
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        for field_name, value in list(cleaned_data.items()):
+            if contains_disallowed_template_tokens(value):
+                raise forms.ValidationError(
+                    _("Field %(field_name)s contains characters that are not allowed."),
+                    params={"field_name": field_name},
+                )
+        return cleaned_data
 
     class Meta:
         model = GroupProfile
