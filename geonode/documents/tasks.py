@@ -99,7 +99,9 @@ def create_document_thumbnail(self, object_id):
     except Document.DoesNotExist:
         logger.error(f"Document #{object_id} does not exist.")
         raise
-
+    if not document.is_local:
+        logger.info(f"Skipping thumbnail generation for remote document: {document.doc_url}")
+        return
     image_file = None
     thumbnail_content = None
     remove_tmp_file = False

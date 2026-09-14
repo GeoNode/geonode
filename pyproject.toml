@@ -25,7 +25,7 @@ classifiers = [
 # Core dependencies (consolidated from requirements.txt)
 dependencies = [
     "Pillow==12.3.0",
-    "lxml==6.1.2",
+    "lxml==6.1.3",
     "psycopg2==2.9.12",
     "Django==5.2.17",
 
@@ -45,7 +45,7 @@ dependencies = [
     "zipstream-ng==1.9.3",
 
     # Django Apps
-    "django-allauth==65.19.1",
+    "django-allauth==65.19.2",
     "django-appconf==1.0.6",
     "django-filter==25.2",
     "django-imagekit==5.0.0",
@@ -105,14 +105,14 @@ dependencies = [
     "gisdata==0.5.4",
     # importer dependencies
     # blocked to <80 to avoid warning during the runtime for with py312 related to the polymorphic model
-    "setuptools<83",
+    "setuptools<85",
     "pdok-geopackage-validator==0.14.4",
     "geonode-django-dynamic-model==0.4.0",
     # datetimepicker widget
     "django-bootstrap3-datetimepicker-2==2.8.3",
     # storage manager dependencies
     "django-storages==1.14.3",
-    "boto3==1.43.71",
+    "boto3==1.43.88",
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
@@ -132,7 +132,7 @@ dependencies = [
     "docker==7.0.0",
     "invoke==2.2.0",
     # tests
-    "coverage==7.15.4",
+    "coverage==7.16.0",
     "requests-toolbelt==1.0.0",
     "flake8==7.3.0",
     "black==24.4.2",
@@ -143,7 +143,7 @@ dependencies = [
     "flaky==3.8.1",
     "selenium>=4.15.1,<5.0.0",
     # Security and audit
-    "cryptography==50.0.0",
+    "cryptography==50.0.1",
     # dependency for XLSX handler
     "python-calamine==0.7.0",
     "python-magic==0.4.27",
@@ -154,7 +154,7 @@ dev = [
     "pytest==8.4.2",
     "flake8==7.3.0",
     "black==24.4.2",
-    "coverage==7.15.4",
+    "coverage==7.16.0",
 ]
 
 [project.urls]
