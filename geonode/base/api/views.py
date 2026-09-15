@@ -1248,6 +1248,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
 
     def _get_request_params(self, request, encode=False):
         try:
+            if "application/json" in request.content_type:
+                # Handle JSON explicitly
+                return request.data if isinstance(request.data, dict) else json.loads(request.body)
             return (
                 QueryDict(request.body, mutable=True, encoding="UTF-8")
                 if encode
