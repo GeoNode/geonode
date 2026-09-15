@@ -3086,7 +3086,9 @@ class BaseApiTests(APITestCase):
             self.assertTrue(self.client.login(username="admin", password="admin"))
             copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
             response = self.client.put(
-                copy_url, data=json.dumps({"defaults": {"title": "cloned via json body"}}), content_type="application/json"
+                copy_url,
+                data=json.dumps({"defaults": {"title": "cloned via json body"}}),
+                content_type="application/json",
             )
             self.assertEqual(response.status_code, 200)
             cloned = Map.objects.exclude(pk=resource.pk).latest("id")
