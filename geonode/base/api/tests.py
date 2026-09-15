@@ -3080,6 +3080,7 @@ class BaseApiTests(APITestCase):
 
         self._assertCloningWithPerms(resource)
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_resource_service_copy_map_with_json_payload(self):
         resource = create_single_map(name="test_copy_json_payload")
         try:
@@ -3087,8 +3088,8 @@ class BaseApiTests(APITestCase):
             copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
             response = self.client.put(
                 copy_url,
-                data=json.dumps({"defaults": {"title": "cloned via json body"}}),
-                content_type="application/json",
+                data={"defaults": {"title": "cloned via json body"}},
+                format="json",
             )
             self.assertEqual(response.status_code, 200)
             cloned = Map.objects.exclude(pk=resource.pk).latest("id")

@@ -1248,7 +1248,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
 
     def _get_request_params(self, request, encode=False):
         try:
-            if "application/json" in (request.content_type or ""):
+            if "application/json" in request.content_type:
                 # Handle JSON explicitly
                 return request.data if isinstance(request.data, dict) else json.loads(request.body)
             return (
