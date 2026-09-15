@@ -3080,6 +3080,20 @@ class BaseApiTests(APITestCase):
 
         self._assertCloningWithPerms(resource)
 
+    def test_resource_service_copy_map_with_json_payload(self):
+        resource = create_single_map(name="test_copy_json_payload")
+        try:
+            self.assertTrue(self.client.login(username="admin", password="admin"))
+            copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
+            response = self.client.put(
+                copy_url, data=json.dumps({"defaults": {"title": "cloned via json body"}}), content_type="application/json"
+            )
+            self.assertEqual(response.status_code, 200)
+            cloned = Map.objects.exclude(pk=resource.pk).latest("id")
+            self.assertEqual(cloned.title, "cloned via json body")
+        finally:
+            resource.delete()
+
     def _assertCloningWithPerms(self, resource):
         # login as bobby
         self.assertTrue(self.client.login(username="bobby", password="bob"))
