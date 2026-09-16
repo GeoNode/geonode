@@ -1512,6 +1512,8 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, list)
         self.assertEqual(len(response.data), 0)
+
+
 class RouterUrlpatternsCompletenessTest(SimpleTestCase):
     """Guards the shared /api/v2/ router against app-loading-order regressions."""
 
