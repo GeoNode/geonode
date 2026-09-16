@@ -136,6 +136,9 @@ class ImporterRequestAction(enum.Enum):
     RESOURCE_STYLE_UPLOAD = _("resource_style_upload")
     REPLACE = _("replace")
     UPSERT = _("upsert")
+    DOCUMENT_UPLOAD = _("document_upload")
+    DOCUMENT_REPLACE = _("document_replace")
+    DOCUMENT_COPY = _("document_copy")
 
 
 def error_handler(exc, exec_id=None):

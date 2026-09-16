@@ -93,6 +93,17 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         group = Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
         self.assertTrue(group)
 
+    def test_default_access_is_a_valid_choice(self):
+        """
+        Ensures a GroupProfile created without an explicit access gets one of the
+        field's own GROUP_CHOICES, so that code filtering on access="public"
+        (e.g. geonode.people.utils.get_available_users) can see it.
+        """
+        group = GroupProfile.objects.create(slug="default_access_group", title="default_access_group")
+        self.assertEqual(group.access, "public")
+        self.assertIn(group.access, dict(GroupProfile.GROUP_CHOICES))
+        self.assertIn(group, GroupProfile.objects.filter(access="public"))
+
     def test_users_group_list_view(self):
         """
         1. Ensures that a superuser can see the whole group list.

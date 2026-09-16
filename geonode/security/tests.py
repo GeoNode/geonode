@@ -89,6 +89,7 @@ from geonode.geoserver.security import (
     create_geofence_rules,
     delete_geofence_rules_for_layer,
 )
+from geonode.base import enumerations
 
 
 from .utils import (
@@ -1438,7 +1439,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             actual = get_visible_resources(
                 queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user)
             )
-            self.assertEqual(1, actual.count())
+            # plus "dataset metadata true" from the fixtures
+            self.assertEqual(2, actual.count())
         finally:
             if dataset:
                 dataset.delete()
@@ -1470,7 +1472,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertIsNotNone(standard_user)
         admin_user.is_superuser = True
         admin_user.save()
-        layers = Dataset.objects.all()
+        # get_visible_resources only returns metadata_only=False resources
+        layers = Dataset.objects.filter(metadata_only=False)
 
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
@@ -2264,6 +2267,18 @@ class SecurityRulesTests(TestCase):
             clean_dataset = Dataset.objects.get(pk=self._l.id)
             # Check dirty state
             self.assertFalse(clean_dataset.dirty_state)
+
+    @patch("geonode.geoserver.security.create_geofence_rules")
+    def test_sync_resources_with_guardian_skips_remote_resources(self, mock_create_geofence_rules):
+        # Remote datasets have no local GeoFence rules to sync (#14524)
+        remote_dataset = create_single_dataset("test_remote_dataset", sourcetype=enumerations.SOURCE_TYPE_REMOTE)
+        remote_dataset.dirty_state = True
+        remote_dataset.save()
+
+        sync_resources_with_guardian(resource=remote_dataset)
+
+        mock_create_geofence_rules.assert_not_called()
+        self.assertFalse(Dataset.objects.get(pk=remote_dataset.id).dirty_state)
 
     # TODO: DELAYED SECURITY MUST BE REVISED
     def test_sync_resources_with_guardian_delay_true(self):

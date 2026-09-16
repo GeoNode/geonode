@@ -92,6 +92,27 @@ From the lower right toolbar on the thumbnail part of the properties panel, it i
 - Copy the resource URL
 - Copy the OGC resource web services URL (in the case of a `Dataset`)
 
+## Cloning a resource
+
+Cloning creates a new, fully independent resource. It gets its own UUID, its own permissions record, and, for a `Dataset`, its own copy of the data on the GIS backend. Ownership of the clone is transferred to whoever triggers it, regardless of who owned the source.
+
+What is carried over from the source:
+
+- Metadata: title, abstract, category, license, and every other descriptive field
+- Keywords, regions, and thesaurus keywords
+- Contacts and their roles (point of contact, metadata author, and so on)
+- Geographic access limits (per-user and per-group)
+- Permissions: the clone starts with the same permission spec as the source, not the default permissions a newly created resource would get
+- Linked resources (e.g. a `Map`'s linked `Datasets`)
+- Type-specific data: a `Dataset`'s attribute table, a `Map`'s layers, and the underlying files/assets
+
+What does not carry over:
+
+- The owner, which becomes the user who triggered the clone
+- The `featured` flag, always reset to off on the clone
+
+Because the clone owns its own copy of everything above rather than sharing rows with the source, deleting the source resource afterward does not affect the clone.
+
 You can access the resource details page by clicking the button on the right (`View dataset` in the case of a `dataset`) in the overview panel.
 That page looks like the one shown in the picture below.
 

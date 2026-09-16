@@ -16,6 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from unittest import mock
+
 from geonode.harvesting.harvesters import wms
 from geonode.tests.base import GeoNodeBaseSimpleTestSupport
 
@@ -29,3 +31,25 @@ class WmsModuleTestCase(GeoNodeBaseSimpleTestSupport):
         for original, expected in fixtures:
             result = wms._get_nsmap(original)
             self.assertEqual(result, expected)
+
+    def test_harvested_resource_has_no_store(self):
+        # store is a GeoServer grouping, so harvested datasets must not claim one (#14381)
+        data = {
+            "contact": {"role": "", "name": "someone"},
+            "layers": [
+                {
+                    "name": "bahra",
+                    "title": "Bahra",
+                    "abstract": "",
+                    "keywords": [],
+                    "spatial_extent": None,
+                    "crs": "EPSG:4326",
+                    "wms_url": "https://wms.example.org/geoserver/wms?layers=bahra",
+                }
+            ],
+        }
+        worker = wms.OgcWmsHarvester("https://wms.example.org/geoserver/wms", 1)
+        harvestable_resource = mock.MagicMock(unique_identifier="bahra", geonode_resource=None)
+        with mock.patch.object(worker, "_get_data", return_value=data):
+            harvested = worker.get_resource(harvestable_resource)
+        self.assertIsNone(harvested.resource_descriptor.additional_parameters["store"])

@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 import geonode.base.api.serializers as base_serializers
+from geonode.people.utils import contains_disallowed_template_tokens
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,14 @@ class UserSerializer(base_serializers.DynamicModelSerializer):
         password = request.data.get("password")
         if password:
             data["password"] = self.password_validation(password)
+        field_errors = {
+            field_name: "This field contains characters that are not allowed."
+            for field_name, value in data.items()
+            if field_name != "password" and contains_disallowed_template_tokens(value)
+        }
+
+        if field_errors:
+            raise serializers.ValidationError(field_errors)
         return data
 
     @classmethod

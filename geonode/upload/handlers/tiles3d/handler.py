@@ -34,6 +34,7 @@ from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.base.models import ResourceBase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
+from geonode.resource.registry import resource_manager_registry
 
 logger = logging.getLogger("importer")
 
@@ -184,8 +185,10 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
@@ -260,24 +263,33 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     ):
         exec_obj = orchestrator.get_execution_object(execution_id)
 
+        files = exec_obj.input_params["files"]
+        # a ".json" file isn't necessarily the tileset (e.g. a stray metadata file), so validate
+        # each candidate against the 3dtiles schema
+        js_file = None
+        for candidate in sorted(x for x in files.values() if str(x).endswith(".json")):
+            try:
+                js_file = Tiles3DFileHandler.is_3dtiles_json(candidate)
+                break
+            except Invalid3DTilesException:
+                continue
+        if js_file is None:
+            raise Invalid3DTilesException("tileset.json file is missing")
+
         resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset, **kwargs)
+
+        if js_file:
+            files = {"base_file": files.get("base_file")}
+
         asset = self.create_asset_and_link(
             resource,
-            files=exec_obj.input_params["files"],
+            files=files,
             action=exec_obj.action,
             asset_type="3dtiles",
             extension="3dtiles",
         )
 
-        if isinstance(asset, LocalAsset):
-            # fixing-up bbox for the 3dtile object
-            js_file = None
-            with open(asset.location[0]) as _file:
-                js_file = json.loads(_file.read())
-
-            if not js_file:
-                return resource
-
+        if isinstance(asset, LocalAsset) and js_file:
             if self._has_region(js_file):
                 resource = self.set_bbox_from_region(js_file, resource=resource)
             elif self._has_sphere(js_file):
@@ -286,6 +298,23 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
 
         return resource
+
+    def copy_geonode_resource(self, alternate, resource, _exec, data_to_update, new_alternate, **kwargs):
+        defaults = {
+            "alternate": new_alternate,
+        }
+
+        if data_to_update.get("title"):
+            defaults["title"] = data_to_update["title"]
+
+        if resource.subtype:
+            defaults["subtype"] = resource.subtype
+
+        return resource_manager_registry.get_for_instance(resource).copy(
+            resource,
+            owner=_exec.user,
+            defaults=defaults,
+        )
 
     def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
         """

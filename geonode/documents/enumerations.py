@@ -93,7 +93,7 @@ DOCUMENT_MAGIC_MIMETYPE_MAP.update(
     {
         "csv": {"text/plain", "text/csv"},
         "log": {"text/plain", "text/csv"},
-        "xml": {"application/xml", "text/xml"},
+        "xml": {"application/xml", "text/xml", "text/plain"},
         "sld": {"text/plain", "application/xml", "text/xml"},
         "dxf": {"image/vnd.dwg", "image/vnd.dxf"},
         "doc": {"application/msword", "application/x-ole-storage"},

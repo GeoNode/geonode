@@ -38,6 +38,7 @@ from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
+from geonode.utils import safe_request_url
 
 logger = logging.getLogger("importer")
 
@@ -48,6 +49,8 @@ class BaseRemoteResourceHandler(BaseHandler):
     It must provide the task_lists required to comple the upload
     As first implementation only remote 3dtiles are supported
     """
+
+    handler_type = "dataset"
 
     TASKS = {
         exa.UPLOAD.value: (
@@ -95,7 +98,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         """
         try:
             auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
-            r = requests.get(url, timeout=10, auth=auth)
+            r = safe_request_url("GET", url, timeout=10, auth=auth)
             r.raise_for_status()
         except requests.exceptions.Timeout:
             raise ImportException("Timed out")
@@ -111,8 +114,10 @@ class BaseRemoteResourceHandler(BaseHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         payload = {
             "action": _data.pop("action", "upload"),
@@ -326,6 +331,26 @@ class BaseRemoteResourceHandler(BaseHandler):
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
         return resource
+
+    def copy_geonode_resource(self, alternate, resource, _exec, data_to_update, new_alternate, **kwargs):
+        defaults = {
+            "alternate": new_alternate,
+        }
+
+        if data_to_update.get("title"):
+            defaults["title"] = data_to_update["title"]
+
+        if resource.subtype:
+            defaults["subtype"] = resource.subtype
+
+        if resource.sourcetype:
+            defaults["sourcetype"] = resource.sourcetype
+
+        return resource_manager_registry.get_for_instance(resource).copy(
+            resource,
+            owner=_exec.user,
+            defaults=defaults,
+        )
 
     def create_link(self, resource, params: dict, name):
         link = Link(

@@ -57,7 +57,7 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:
-    image: geonode/nginx:1.31.2-latest
+    image: geonode/nginx:1.31.4-latest
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
       - ${COMPOSE_ENV_FILES:-.env}
@@ -147,8 +147,9 @@ services:
 
   # Vanilla Redis service. This is needed by celery
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: redis4${COMPOSE_PROJECT_NAME}
+    command: redis-server --maxmemory 512mb --maxmemory-policy noeviction --appendonly yes
     volumes:
       - redisdata:/data
     restart: unless-stopped

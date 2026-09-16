@@ -258,7 +258,7 @@ def update_resource(
         raise
 
     # Check for "remote services" availability
-    if instance.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+    if is_remote_resource(instance):
         from ..services.models import Service
         from ..harvesting.models import HarvestableResource
 
@@ -335,7 +335,7 @@ def get_alternate_name(instance):
                 _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
                 result = f"{_ws}:{instance.name}"
             else:
-                if hasattr(instance, "sourcetype") and instance.sourcetype != enumerations.SOURCE_TYPE_LOCAL:
+                if is_remote_resource(instance):
                     _ws = instance.workspace
                 else:
                     # we are not dealing with a service-related instance
@@ -540,4 +540,15 @@ def resolve_resource_owner(initial_user):
 
 
 def is_remote_resource(resource):
-    return hasattr(resource, "subtype") and getattr(resource, "subtype") in ["tileStore", "remote"]
+    """Whether the resource data lives on a remote service, i.e. not in the local GeoServer.
+
+    Keyed on sourcetype: subtype describes the data, and harvesters set it to the remote's own
+    value, so it cannot answer this question (see #14524).
+    """
+    if getattr(resource, "sourcetype", None) == enumerations.SOURCE_TYPE_REMOTE:
+        return True
+    if getattr(resource, "remote_service_id", None):
+        # Left over from before #14524: the resource is remote but was not flagged as such.
+        logger.warning("Resource %s has a remote service but sourcetype is not REMOTE", resource)
+        return True
+    return False

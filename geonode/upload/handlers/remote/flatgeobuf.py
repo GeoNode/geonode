@@ -17,9 +17,9 @@
 #
 #########################################################################
 import logging
-import requests
 from osgeo import gdal
 
+from geonode.utils import is_safe_url_with_redirects, safe_request_url
 from geonode.security.utils import init_gdal_security
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.layers.models import Dataset
@@ -60,10 +60,14 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
         Check if the URL is reachable and supports HTTP Range requests
         """
         logger.debug(f"Checking FlatGeobuf URL validity (HEAD): {url}")
+        # Reject disallowed URLs early, before running the remaining validity checks.
+        is_safe, _ = is_safe_url_with_redirects(url)
+        if not is_safe:
+            raise ImportException("The requested URL is not allowed.")
         try:
             auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
             # Reachability check using HEAD
-            head_res = requests.head(url, timeout=10, allow_redirects=True, auth=auth)
+            head_res = safe_request_url("HEAD", url, timeout=10, auth=auth)
             logger.debug(f"HTTP HEAD status: {head_res.status_code}")
             head_res.raise_for_status()
 
@@ -76,7 +80,7 @@ class RemoteFlatGeobufResourceHandler(BaseRemoteResourceHandler):
 
             # Some servers might not return Accept-Ranges in HEAD, so we try a small range request
             logger.debug("Accept-Ranges header missing, trying a small Range GET...")
-            range_res = requests.get(url, headers={"Range": "bytes=0-1"}, timeout=10, stream=True, auth=auth)
+            range_res = safe_request_url("GET", url, headers={"Range": "bytes=0-1"}, timeout=10, stream=True, auth=auth)
             logger.debug(f"Range GET status: {range_res.status_code}")
             try:
                 if range_res.status_code != 206:

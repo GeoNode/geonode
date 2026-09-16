@@ -84,10 +84,11 @@ class ImportOrchestrator:
             if _serializer:
                 return _serializer
         logger.info("specific serializer not found, fallback on the default one")
-        if _data.get("action") == ira.UPSERT.value:
-            return UpsertImporterSerializer
-        elif _data.get("action") == ira.REPLACE.value:
-            return OverwriteImporterSerializer
+        match _data.get("action"):
+            case ira.UPSERT.value:
+                return UpsertImporterSerializer
+            case ira.REPLACE.value:
+                return OverwriteImporterSerializer
         return ImporterSerializer
 
     def load_handler(self, module_path):
@@ -97,9 +98,11 @@ class ImportOrchestrator:
             raise ImportException(detail=f"The handler is not available: {module_path}")
 
     def load_handler_by_id(self, handler_id):
-        for handler in self.get_handler_registry():
-            if handler().id == handler_id:
-                return handler
+        for handler_cls in self.get_handler_registry():
+            instance = handler_cls()
+            # a handler with no client-facing config (e.g. empty_dataset) has no id to compare against
+            if instance.supported_file_extension_config and instance.id == handler_id:
+                return handler_cls
         logger.error("Handler not found")
         return None
 

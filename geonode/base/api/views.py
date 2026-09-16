@@ -654,6 +654,13 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
+            # Check if the current user has the permissions to set the thumbnail
+            if not request.user.has_perm("change_resourcebase", resource.get_self_resource()):
+                return Response(
+                    {"message": "You do not have permission to set this thumbnail.", "success": False},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
             map_thumb_from_bbox = False
             if isinstance(resource.get_real_instance(), Map):
                 map_thumb_from_bbox = True
@@ -1129,7 +1136,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             or not request.user.has_perm("view_resourcebase", resource.get_self_resource())
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if not resource.is_copyable:
+        if not resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=request.user):
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = self._get_request_params(request)
@@ -1242,6 +1249,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
 
     def _get_request_params(self, request, encode=False):
         try:
+            if "application/json" in request.content_type:
+                # Handle JSON explicitly
+                return request.data if isinstance(request.data, dict) else json.loads(request.body)
             return (
                 QueryDict(request.body, mutable=True, encoding="UTF-8")
                 if encode

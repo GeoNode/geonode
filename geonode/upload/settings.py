@@ -27,6 +27,7 @@ IMPORTER_RESOURCE_CREATION_RATE_LIMIT = os.getenv("IMPORTER_RESOURCE_CREATION_RA
 IMPORTER_RESOURCE_COPY_RATE_LIMIT = os.getenv("IMPORTER_RESOURCE_COPY_RATE_LIMIT", 10)
 
 SYSTEM_HANDLERS = [
+    "geonode.upload.handlers.document.handler.DocumentFileHandler",
     "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
     "geonode.upload.handlers.geojson.handler.GeoJsonFileHandler",
     "geonode.upload.handlers.shapefile.handler.ShapeFileHandler",

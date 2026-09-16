@@ -31,7 +31,7 @@ import traceback
 from itertools import cycle
 from collections import defaultdict
 from os.path import basename, splitext, isfile
-from urllib.parse import urlparse, urlencode, urlsplit, urljoin
+from urllib.parse import urlparse, urlunparse, urlencode, urlsplit, urljoin, parse_qsl
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
@@ -76,6 +76,7 @@ from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links,
     normalize_bbox_to_float_list,
+    safe_request_url,
 )
 
 from .geofence import GeoFenceClient, GeoFenceUtils
@@ -1003,6 +1004,10 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
+    if layer.subtype == "remote" and not layer.remote_service:
+        # avoid falling through to the local-GeoServer branches, which would wipe existing attributes
+        logger.debug(f"Dataset '{layer.alternate or layer.typename}' is remote but has no remote_service yet")
+        return
     if getattr(layer, "remote_service") and layer.remote_service:
         server_url = layer.remote_service.service_url
         if layer.remote_service.operations.get("GetCapabilities", None) and layer.remote_service.operations.get(
@@ -1014,20 +1019,40 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                     break
     else:
         server_url = ogc_server_settings.LOCATION
-    if layer.subtype in ["tileStore", "remote"] and layer.remote_service.ptype == "gxp_arcrestsource":
-        logger.info(f"Getting info for {layer.subtype} '{layer.alternate or layer.typename}'")
-        dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
-        try:
-            # The code below will fail if http_client cannot be imported
-            req, body = http_client.get(dft_url, user=_user)
-            body = json.loads(body)
-            attribute_map = [
-                [n["name"], _esri_types[n["type"]]] for n in body["fields"] if n.get("name") and n.get("type")
-            ]
-        except Exception:
-            logger.warning(
-                f"Error while retrieving info for {layer.subtype} '{layer.alternate or layer.typename}'", exc_info=True
+    if layer.subtype == "remote" and layer.remote_service and layer.remote_service.ptype == "gxp_arcrestsource":
+        resource_identifier = layer.alternate or layer.typename
+        logger.info(f"Getting info for {layer.subtype} '{resource_identifier}'")
+        # `resource_identifier` is GeoNode's own "workspace:name" form (e.g. "remoteWorkspace:0"),
+        # not a real ArcGIS REST path: the actual layer id is whatever follows the last ':'.
+        arcgis_layer_id = resource_identifier.rsplit(":", 1)[-1]
+        # server_url may already carry a query string (e.g. an auth token via extra_queryparams):
+        # append the layer id to the path and merge f=json into the existing query, not the string.
+        parsed_server_url = urlparse(server_url)
+        query = dict(parse_qsl(parsed_server_url.query))
+        query["f"] = "json"
+        dft_url = urlunparse(
+            parsed_server_url._replace(
+                path=f"{parsed_server_url.path.rstrip('/')}/{arcgis_layer_id}",
+                query=urlencode(query),
             )
+        )
+        try:
+            # Not http_client(user=...): that would send our own GeoServer OAuth token to this third party.
+            remote_auth = None
+            if layer.remote_service.needs_authentication:
+                from geonode.security.auth_registry import auth_handler_registry
+
+                remote_auth = auth_handler_registry.build(layer.remote_service.auth_config).get_request_auth()
+            response = safe_request_url("GET", dft_url, auth=remote_auth, timeout=10)
+            response.raise_for_status()
+            body = response.json()
+            attribute_map = []
+            for n in body["fields"]:
+                esri_type = _esri_types.get(n.get("type"))
+                if n.get("name") and esri_type:
+                    attribute_map.append([n["name"], esri_type])
+        except Exception:
+            logger.warning(f"Error while retrieving info for {layer.subtype} '{resource_identifier}'", exc_info=True)
             attribute_map = []
     elif layer.can_have_wps_links:
         typename = layer.alternate if layer.alternate else layer.typename

@@ -11,7 +11,7 @@
 {% block sidebar %}
 <div class="row">
   <div class="col-md-12">
-    <h2 class="page-header">{%  trans "Edit Members for"  %} <a href="{% url "group_detail" group.slug %}">{{ group.title }}</a></h2>
+    <h2 class="page-header" ng-non-bindable>{%  trans "Edit Members for"  %} <a href="{% url "group_detail" group.slug %}">{{ group.title }}</a></h2>
     <h3 class="page-title">{%  trans "Current Members" %}</h3>
     <div class="row">
       <div class="col-md-12">
@@ -24,7 +24,7 @@
           <article id="all" class="tab-pane active">
             <ul class="no-style-list">
             {% for member in members %}
-              <h4>
+              <h4 ng-non-bindable>
                 <i class="fa fa-user"></i> <a href="{{ member.user.get_absolute_url }}">{{ member.user.username }}</a>
                 {% if member.user.email %}
                 <a href="mailto:{{ member.user.email }}"><i class="fa fa-envelope-o"></i></a>
@@ -64,7 +64,7 @@
             <ul class="no-style-list">
             {% for member in members %}
               {% if member.role == 'manager' %}
-              <h4>
+              <h4 ng-non-bindable>
                 <i class="fa fa-user"></i> <a href="{{ member.user.get_absolute_url }}">{{ member.user.username }}</a>
                 {% if member.user.email %}
                 <a href="mailto:{{ member.user.email }}"><i class="fa fa-envelope-o"></i></a>
@@ -96,7 +96,7 @@
             <ul class="no-style-list">
             {% for member in members %}
               {% if member.role == 'member' %}
-              <h4>
+              <h4 ng-non-bindable>
                 <i class="fa fa-user"></i> <a href="{{ member.user.get_absolute_url }}">{{ member.user.username }}</a>
                 {% if member.user.email %}
                 <a href="mailto:{{ member.user.email }}"><i class="fa fa-envelope-o"></i></a>

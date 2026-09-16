@@ -71,6 +71,7 @@ from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataFi
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
 from geonode.security.registry import permissions_registry
+from geonode.people.utils import contains_disallowed_template_tokens
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +178,18 @@ class GroupProfileSerializer(BaseDynamicModelSerializer):
     group = DynamicRelationField(GroupSerializer, embed=True, many=False)
     keywords = serializers.SlugRelatedField(many=True, slug_field="slug", read_only=True)
     categories = serializers.SlugRelatedField(many=True, slug_field="slug", queryset=GroupCategory.objects.all())
+
+    def validate(self, data):
+        field_errors = {
+            field_name: "This field contains characters that are not allowed."
+            for field_name, value in data.items()
+            if contains_disallowed_template_tokens(value)
+        }
+
+        if field_errors:
+            raise serializers.ValidationError(field_errors)
+
+        return data
 
 
 class SimpleHierarchicalKeywordSerializer(DynamicModelSerializer):
@@ -631,7 +644,7 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
     license = ComplexDynamicRelationField(LicenseSerializer, embed=True)
     spatial_representation_type = ComplexDynamicRelationField(SpatialRepresentationTypeSerializer, embed=True)
     blob = serializers.JSONField(required=False, write_only=True)
-    is_copyable = serializers.BooleanField(read_only=True)
+    is_copyable = serializers.SerializerMethodField(read_only=True)
     download_url = DownloadLinkField(read_only=True)
     favorite = FavoriteField(read_only=True)
     download_urls = DownloadArrayLinkField(read_only=True)
@@ -774,6 +787,18 @@ class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
             else []
         )
         return permissions
+
+    def get_is_copyable(self, instance):
+        from geonode.resource.registry import resource_manager_registry
+
+        request = self.context.get("request")
+        try:
+            return resource_manager_registry.get_for_instance(instance).user_can_copy(
+                instance, user=request.user if request else None
+            )
+        except Exception as e:
+            logger.warning(f"Cannot evaluate is_copyable for resource {instance.pk}: {e}")
+            return False
 
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)

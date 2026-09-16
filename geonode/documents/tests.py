@@ -411,6 +411,22 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         form = DocumentCreateForm(form_data, file_data)
         self.assertTrue(form.is_valid(), msg=form.errors)
 
+    def test_upload_document_form_accepts_valid_xml(self):
+        iso_xml_content = (
+            b'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd">'
+            b"<gmd:fileIdentifier>"
+            b'<gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">123-abc</gco:CharacterString>'
+            b"</gmd:fileIdentifier>"
+            b"</gmd:MD_Metadata>"
+        )
+        form_data = {
+            "title": "ISO Metadata XML",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("metadata.xml", iso_xml_content, "text/plain")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertTrue(form.is_valid(), msg=form.errors)
+
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""
         d = Document.objects.all().first()

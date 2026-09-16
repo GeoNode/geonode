@@ -18,7 +18,6 @@
 #########################################################################
 import logging
 
-import requests
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
@@ -27,7 +26,7 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.base.models import ResourceBase
-from geonode.utils import is_safe_url_with_redirects
+from geonode.utils import is_safe_url_with_redirects, safe_request_url
 
 logger = logging.getLogger("importer")
 
@@ -60,10 +59,14 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
 
     @staticmethod
     def is_valid_url(url, **kwargs):
+        # Reject disallowed URLs early, before running the remaining validity checks.
+        is_safe, _ = is_safe_url_with_redirects(url)
+        if not is_safe:
+            raise Invalid3DTilesException("The requested URL is not allowed.")
         BaseRemoteResourceHandler.is_valid_url(url, **kwargs)
         try:
             auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
-            payload = requests.get(url, timeout=10, auth=auth).json()
+            payload = safe_request_url("GET", url, timeout=10, auth=auth).json()
             # required key described in the specification of 3dtiles
             # https://docs.ogc.org/cs/22-025r4/22-025r4.html#toc92
             is_valid = all(key in payload.keys() for key in ("asset", "geometricError", "root"))
@@ -93,13 +96,10 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
         _exec = orchestrator.get_execution_object(exec_id=execution_id)
 
         url = _exec.input_params.get("url")
-        is_safe, unsafe_url = is_safe_url_with_redirects(url)
-        if not is_safe:
-            raise Invalid3DTilesException("Invalid URL Provided")
 
         try:
             auth = self.get_request_auth_from_execution(execution_id)
-            js_file = requests.get(url, timeout=10, auth=auth).json()
+            js_file = safe_request_url("GET", url, timeout=10, auth=auth).json()
         except Exception as e:
             raise Invalid3DTilesException(e)
 

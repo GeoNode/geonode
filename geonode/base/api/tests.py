@@ -516,7 +516,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 28)
+        self.assertEqual(response.data["total"], 29)
 
         url = f"{reverse('base-resources-list')}?filter{{metadata_only}}=false"
         # Anonymous
@@ -984,7 +984,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}?sort[]=title", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 28)
+        self.assertEqual(response.data["total"], 29)
         # Pagination
         self.assertEqual(len(response.data["resources"]), 10)
 
@@ -997,7 +997,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}?sort[]=-title", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 28)
+        self.assertEqual(response.data["total"], 29)
         # Pagination
         self.assertEqual(len(response.data["resources"]), 10)
 
@@ -2188,6 +2188,29 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(expected, response.json())
 
+    def test_set_thumbnail_from_bbox_without_resource_change_permission_rejected(self):
+        bobby = get_user_model().objects.get(username="bobby")
+        resource = Dataset.objects.first()
+        resource.owner = bobby
+        resource.save()
+
+        self.client.logout()
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+
+        url = reverse("base-resources-set-thumb-from-bbox", kwargs={"resource_id": resource.id})
+        payload = {
+            "bbox": [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365],
+            "srid": "EPSG:3857",
+        }
+
+        response = self.client.post(url, data=payload, format="json")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            {"message": "You do not have permission to set this thumbnail.", "success": False},
+        )
+
     @patch("geonode.layers.manager.DatasetResourceManager.set_thumbnail")
     def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_set_thumbnail):
         """
@@ -2868,27 +2891,62 @@ class BaseApiTests(APITestCase):
         second_cloned = Dataset.objects.exclude(pk__in=[resource.pk, cloned_resource.pk]).latest("id")
         self.assertFalse(second_cloned.featured, msg="Cloned resource should have featured=False")
 
-        # clone dataset with invalid file
-        # resource.files = ["/path/invalid_file.wrong"]
-        # resource.save()
-        asset.location = ["/path/invalid_file.wrong"]
-        asset.save()
-        response = self.client.put(copy_url)
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["message"], "Resource can not be cloned.")
-        # clone dataset with no files
-        link.delete()
-        asset.delete()
-        response = self.client.put(copy_url)
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["message"], "Resource can not be cloned.")
-        # clean
+        # the file/asset based checks do not apply to non remote vector datasets anymore,
+        # as the data can also be only stored on db level and cloning takes care of cloning db table.
         try:
             resource.delete()
         except Exception as e:
             logger.warning(f"Can't delete test resource {resource}", exc_info=e)
+
+    def test_is_copyable_document(self):
+        owner = get_user_model().objects.get(username="admin")
+        raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
+        resource = Document.objects.create(
+            owner=get_user_model().objects.get(username="admin"),
+            subtype="image",
+            alternate="geonode:test_copy",
+            resource_type="document",
+            uuid=str(uuid4()),
+        )
+        try:
+            asset, _ = create_asset_and_link(resource, owner, [raster_file])
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+
+            asset.delete()
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
+
+    def test_is_copyable_raster_dataset(self):
+        owner = get_user_model().objects.get(username="admin")
+        raster_file = os.path.join(gisdata.GOOD_DATA, "raster", "relief_san_andres.tif")
+        resource = Dataset.objects.create(
+            owner=owner,
+            name="test_raster_copy",
+            store="geonode_data",
+            subtype="raster",
+            alternate="geonode:test_raster_copy",
+            resource_type="dataset",
+            uuid=str(uuid4()),
+        )
+        try:
+            asset, _ = create_asset_and_link(resource, owner, [raster_file], title="Original")
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+
+            asset.title = "not_the_original"
+            asset.save()
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+
+            asset.delete()
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
     def test_resource_service_copy_with_perms_dataset(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
@@ -2907,9 +2965,50 @@ class BaseApiTests(APITestCase):
         )
         self._assertCloningWithPerms(resource)
 
+    def test_is_copyable_remote_dataset(self):
+        from geonode.base import enumerations
+        from geonode.security.models import AuthConfig
+
+        owner = get_user_model().objects.get(username="bobby")
+        other = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        resource = Dataset.objects.create(
+            owner=owner,
+            name="test_remote_copy",
+            store="geonode_data",
+            subtype="remote",
+            alternate="geonode:test_remote_copy",
+            resource_type="dataset",
+            sourcetype=enumerations.SOURCE_TYPE_REMOTE,
+            uuid=str(uuid4()),
+        )
+        try:
+            # No AuthConfig owner and administrators may clone, nobody else
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=admin))
+
+            # An AuthConfig restricts cloning to the owner, admins included
+            resource.auth_config = AuthConfig.objects.create(type="basic")
+            resource.save()
+            resource.refresh_from_db()
+            self.assertTrue(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=owner))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=admin))
+
+            # attaching an arbitrary file must not make it copyable
+            create_asset_and_link(resource, other, [os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")])
+            self.assertFalse(resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=other))
+        finally:
+            try:
+                resource.delete()
+            except Exception as e:
+                logger.warning(f"Can't delete test resource {resource}", exc_info=e)
+
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
     @override_settings(ASYNC_SIGNALS=False)
-    def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
+    def test_resource_service_copy_with_perms_dataset_keep_original_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
@@ -2950,7 +3049,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
-        self.assertNotIn(
+        self.assertIn(
             "bobby",
             [x.username for x in permissions_registry.get_perms(instance=_resource).get("users", [])],
         )
@@ -2980,6 +3079,23 @@ class BaseApiTests(APITestCase):
         resource = create_single_map(name="test_copy")
 
         self._assertCloningWithPerms(resource)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_resource_service_copy_map_with_json_payload(self):
+        resource = create_single_map(name="test_copy_json_payload")
+        try:
+            self.assertTrue(self.client.login(username="admin", password="admin"))
+            copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
+            response = self.client.put(
+                copy_url,
+                data={"defaults": {"title": "cloned via json body"}},
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            cloned = Map.objects.exclude(pk=resource.pk).latest("id")
+            self.assertEqual(cloned.title, "cloned via json body")
+        finally:
+            resource.delete()
 
     def _assertCloningWithPerms(self, resource):
         # login as bobby

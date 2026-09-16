@@ -3,11 +3,11 @@ from pathlib import Path
 import zipfile
 
 
-def organize_files_by_ext(input_data):
+def organize_files_by_ext(input_data, kind="dataset"):
     file_paths = {}
     from geonode.utils import get_allowed_extensions
 
-    available_choices = get_allowed_extensions()
+    available_choices = get_allowed_extensions(kind=kind)
     not_main_files = ["xml", "sld", "zip", "kmz"]
     base_file_choices = [x for x in available_choices if x not in not_main_files]
 

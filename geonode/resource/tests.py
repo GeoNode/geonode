@@ -20,16 +20,18 @@ import io
 import os
 
 from uuid import uuid4
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
-from django.test import override_settings
+from django.test import SimpleTestCase, override_settings
 
+from geonode.base import enumerations
+from geonode.resource.utils import get_alternate_name
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import BaseResourceManager
-from geonode.base.models import LinkedResource, ResourceBase
+from geonode.base.models import LinkedResource, ResourceBase, Region, Thesaurus, ThesaurusKeyword
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
@@ -58,6 +60,37 @@ from gisdata import GOOD_DATA
 
 class ResourceManagerClassTest:
     pass
+
+
+class GetAlternateNameTestCase(SimpleTestCase):
+    """get_alternate_name must key off is_remote_resource(), not a bespoke sourcetype check (#14524)."""
+
+    def _make_dataset(self, **attrs):
+        instance = MagicMock(spec=Dataset)
+        instance.remote_service = None
+        instance.remote_service_id = None
+        instance.sourcetype = enumerations.SOURCE_TYPE_LOCAL
+        instance.workspace = None
+        instance.name = "layer"
+        for key, value in attrs.items():
+            setattr(instance, key, value)
+        return instance
+
+    def test_local_dataset_falls_back_to_default_workspace(self):
+        instance = self._make_dataset()
+        self.assertEqual(get_alternate_name(instance), "geonode:layer")
+
+    def test_remote_dataset_without_remote_service_uses_workspace_as_is(self):
+        # WMS/ArcGIS-harvested datasets have no remote_service.method to key off of, so
+        # detection falls through to this branch and must still recognize them as remote.
+        instance = self._make_dataset(sourcetype=enumerations.SOURCE_TYPE_REMOTE, workspace="remoteWorkspace")
+        self.assertEqual(get_alternate_name(instance), "remoteWorkspace:layer")
+
+    def test_leftover_remote_service_without_sourcetype_is_still_remote(self):
+        # A row with remote_service set but sourcetype not yet REMOTE (pre-#14524 data, or any
+        # code path that only set one of the two) must still be treated as remote.
+        instance = self._make_dataset(remote_service_id=7, workspace="remoteWorkspace")
+        self.assertEqual(get_alternate_name(instance), "remoteWorkspace:layer")
 
 
 class TestResourceManager(GeoNodeBaseTestSupport):
@@ -262,12 +295,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res.delete()
 
     def test_dataset_copy(self):
+        trigger_user = self.User.objects.create_user(username="test_dataset_copy_trigger", email="trigger@test.com")
+
         def _copy_assert_resource(res, title):
             dataset_copy = None
             try:
-                dataset_copy = self.rm.copy(res, defaults=dict(title=title))
+                dataset_copy = self.rm.copy(res, owner=trigger_user, defaults=dict(title=title))
                 self.assertIsNotNone(dataset_copy)
                 self.assertEqual(dataset_copy.title, title)
+                self.assertEqual(dataset_copy.owner, trigger_user)
             finally:
                 if dataset_copy:
                     dataset_copy.delete()
@@ -319,7 +355,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         def _copy_assert_resource(res, title):
             dataset_copy = None
             try:
-                dataset_copy = self.rm.copy(res, defaults=dict(title=title))
+                dataset_copy = self.rm.copy(res, owner=self.user, defaults=dict(title=title))
                 self.assertIsNotNone(dataset_copy)
                 self.assertEqual(dataset_copy.title, title)
             finally:
@@ -334,6 +370,74 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         LinkedResource.objects.get_or_create(source_id=res.id, target_id=target.id)
         self.assertTrue(isinstance(res, Map))
         _copy_assert_resource(res, "A Test Map 2")
+
+    def test_resource_copy_carries_over_metadata_and_permissions(self):
+        res = create_single_map("A Test Map With Metadata")
+        try:
+            region = Region.objects.first()
+            vals = {
+                "abstract": "test abstract",
+                "purpose": "test purpose",
+                "supplemental_information": "test supplemental information",
+                "data_quality_statement": "test data quality statement",
+            }
+            res = self.rm.update(res.uuid, instance=res, vals=vals, keywords=["foo", "bar"], regions=[region.name])
+
+            thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_copy", title="Test Thesaurus")
+            tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
+            res.tkeywords.add(tkeyword)
+
+            custom_group, _ = GroupProfile.objects.get_or_create(
+                slug="test_copy_group", title="test_copy_group", access="private"
+            )
+            custom_perms = {
+                "users": {self.user.username: ["view_resourcebase", "change_resourcebase"]},
+                "groups": {custom_group.slug: ["view_resourcebase"]},
+            }
+            self.rm.set_permissions(res.uuid, instance=res, permissions=custom_perms)
+
+            # owner must be whoever triggers the clone (self.user), not res's own owner
+            self.assertNotEqual(res.owner, self.user)
+            dataset_copy = self.rm.copy(res, owner=self.user, defaults=dict(title="A Test Map With Metadata Copy"))
+            try:
+                self.assertIsNotNone(dataset_copy)
+                self.assertEqual(dataset_copy.owner, self.user)
+                self.assertEqual(res.abstract, dataset_copy.abstract)
+                self.assertEqual(res.purpose, dataset_copy.purpose)
+                self.assertEqual(res.supplemental_information, dataset_copy.supplemental_information)
+                self.assertEqual(res.data_quality_statement, dataset_copy.data_quality_statement)
+                self.assertCountEqual(
+                    [k.name for k in res.keywords.all()], [k.name for k in dataset_copy.keywords.all()]
+                )
+                self.assertCountEqual(list(res.regions.all()), list(dataset_copy.regions.all()))
+                self.assertCountEqual(list(res.tkeywords.all()), list(dataset_copy.tkeywords.all()))
+
+                source_perms = permissions_registry.get_perms(instance=res, include_virtual=False)
+                copy_perms = permissions_registry.get_perms(instance=dataset_copy, include_virtual=False)
+                # self.user is the copy's new owner, so the permission engine promotes it to full
+                # owner perms on top of whatever custom perms it already had (AdvancedSecurityWorkflowManager
+                # always grants the owner admin+view perms) - it's the one entry expected to differ.
+                for perm_key in ("users", "groups"):
+                    source_entries = {
+                        profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()
+                    }
+                    copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                    if perm_key == "users":
+                        source_entries.pop(self.user.pk, None)
+                        copy_entries.pop(self.user.pk, None)
+                    self.assertEqual(source_entries, copy_entries)
+                # sanity: our own custom entries actually landed (owner promotion is a superset, not a replacement)
+                copy_user_perms = {profile.username: set(perms) for profile, perms in copy_perms["users"].items()}
+                self.assertTrue(
+                    set(custom_perms["users"][self.user.username]).issubset(copy_user_perms[self.user.username])
+                )
+                copy_group_perms = {group.name: perms for group, perms in copy_perms["groups"].items()}
+                self.assertCountEqual(copy_group_perms[custom_group.slug], custom_perms["groups"][custom_group.slug])
+            finally:
+                if dataset_copy:
+                    dataset_copy.delete()
+        finally:
+            res.delete()
 
     def test_exec(self):
         map = create_single_map("test_exec_map")
@@ -454,6 +558,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertFalse(self.rm.set_thumbnail("invalid_uuid"))
         self.assertTrue(self.rm.set_thumbnail(dt.uuid, instance=dt))
         self.assertTrue(self.rm.set_thumbnail(doc.uuid, instance=doc))
+
+    @patch("geonode.documents.tasks.create_document_thumbnail.apply")
+    def test_set_thumbnail_skips_remote_document(self, create_thumb):
+        doc = create_single_doc("test_remote_thumb_doc")
+        doc.doc_url = "http://example.com/test.pdf"
+        doc.save()
+
+        self.assertFalse(self.rm.set_thumbnail(doc.uuid, instance=doc))
+        create_thumb.assert_not_called()
 
     def test_set_thumbnail_algo(self):
         thumb_path = os.path.join(os.path.dirname(__file__), "../tests/data/thumb_sample.png")
