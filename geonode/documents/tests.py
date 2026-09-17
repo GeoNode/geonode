@@ -432,8 +432,27 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d = Document.objects.all().first()
         d.set_default_permissions()
 
-        response = self.client.get(reverse("document_embed", args=(str(d.id),)))
+        url = reverse("document_embed", args=(str(d.id),))
+
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
+
+    def test_resourcebase_embed_is_get_only(self):
+        d = Document.objects.all().first()
+        d.set_default_permissions()
+
+        url = reverse("resourcebase_embed", kwargs={"resourcebaseid": d.pk})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""

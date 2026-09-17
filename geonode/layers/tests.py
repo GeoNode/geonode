@@ -949,8 +949,15 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
             self.map.uuid, instance=self.map.get_self_resource()
         )
         self.client.login(username="admin", password="admin")
-        response = self.client.get(reverse("dataset_embed", args=(self.layer.alternate,)))
+        url = reverse("dataset_embed", args=(self.layer.alternate,))
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["resource"].alternate, self.map_dataset.name)
+
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
 
     def test_update_with_a_comma_in_title_is_replaced_by_undescore(self):
         """
