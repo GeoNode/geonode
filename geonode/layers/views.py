@@ -29,6 +29,7 @@ from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.http import require_GET
 
 from geonode.base.auth import get_or_create_token
 from geonode.layers.models import Dataset
@@ -121,6 +122,7 @@ def dataset_download(request, layername):
 
 
 @xframe_options_exempt
+@require_GET
 def dataset_embed(request, layername):
     try:
         layer = _resolve_dataset(request, layername, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
