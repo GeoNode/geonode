@@ -36,7 +36,8 @@ class GeoAppResourceManager(BaseResourceManager):
 
         payload = copy.deepcopy(payload)
         extent = payload.pop("extent", None)
-        blob = payload.pop("blob", {})
+        missing_blob = object()
+        blob = payload.pop("blob", missing_blob)
 
         created = False
         if not instance:
@@ -53,7 +54,9 @@ class GeoAppResourceManager(BaseResourceManager):
             logger.exception(f"Error while creating or updating GeoApp instance with exception {e}")
             raise GeneralGeoAppException("An error occurred while saving the GeoApp.")
 
-        payload["blob"] = blob
+        if blob is not missing_blob:
+            payload["blob"] = blob
+
         instance = super().update(instance.uuid, instance=instance, vals=payload, notify=notify)
         if extent or request_user:
             # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
