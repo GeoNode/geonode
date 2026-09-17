@@ -82,6 +82,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
 
     def test_geoapp_copy(self):
         self.client.login(username="admin", password="admin")
+        self.geoapp.blob = {"test_data": {"test": ["test_1", "test_2", "test_3"]}}
         geoapp_copy = None
         try:
             # owner must be whoever triggers the clone (self.bobby), not self.geoapp's own owner (self.user)
@@ -91,6 +92,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             self.assertIsNotNone(geoapp_copy)
             self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")
             self.assertEqual(geoapp_copy.owner, self.bobby)
+            self.assertEqual(self.geoapp.blob, geoapp_copy.blob)
         finally:
             if geoapp_copy:
                 geoapp_copy.delete()
