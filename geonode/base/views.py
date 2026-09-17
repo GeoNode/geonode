@@ -18,8 +18,6 @@
 #########################################################################
 import json
 import logging
-import ast
-
 from dal import views, autocomplete
 from guardian.shortcuts import get_objects_for_user
 
@@ -43,7 +41,6 @@ from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
-from geonode.resource.registry import resource_manager_registry
 from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
 from geonode.base.utils import OwnerRightsRequestViewUtils, remove_country_from_languagecode
@@ -56,6 +53,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 
 from geonode.security.registry import permissions_registry
+from django.views.decorators.http import require_GET
 
 logger = logging.getLogger(__name__)
 
@@ -344,6 +342,7 @@ def _resolve_resourcebase(request, id, permission="base.change_resourcebase", ms
     return resolve_object(request, ResourceBase, {"pk": id}, permission=permission, permission_msg=msg, **kwargs)
 
 
+@require_GET
 @xframe_options_sameorigin
 def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
     """
@@ -373,15 +372,6 @@ def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
             group = None
 
     r = resourcebase_obj
-    if request.method in ("POST", "PATCH", "PUT"):
-        resolved_resource_manager = resource_manager_registry.get_for_instance(resourcebase_obj)
-        r = resolved_resource_manager.update(resourcebase_obj.uuid, instance=resourcebase_obj, notify=True)
-
-        resolved_resource_manager.set_permissions(
-            resourcebase_obj.uuid, instance=resourcebase_obj, permissions=ast.literal_eval(permissions_json)
-        )
-
-        resolved_resource_manager.set_thumbnail(resourcebase_obj.uuid, instance=resourcebase_obj, overwrite=False)
 
     access_token = None
     if request and request.user:
