@@ -34,6 +34,9 @@ from django.contrib.auth import authenticate, login, get_user_model
 from geonode import get_version
 from geonode.groups.models import GroupProfile
 from geonode.geoapps.models import GeoApp
+from urllib.parse import urlencode
+
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 class AjaxLoginForm(forms.Form):
@@ -95,7 +98,16 @@ def ajax_lookup(request):
 
 def err403(request, exception):
     if not request.user.is_authenticated:
-        return HttpResponseRedirect(f"{reverse('account_login')}?next={request.get_full_path()}")
+        next_url = request.get_full_path()
+
+        if not url_has_allowed_host_and_scheme(
+            url=next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            next_url = "/"
+
+        return HttpResponseRedirect(f"{reverse('account_login')}?{urlencode({'next': next_url})}")
     else:
         return TemplateResponse(request, "401.html", {}, status=401).render()
 
