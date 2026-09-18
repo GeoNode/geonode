@@ -24,7 +24,7 @@ from django.contrib.auth import get_user_model
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, Link
 
 
 class TestBaseRemoteResourceHandler(TestCase):
@@ -150,3 +150,39 @@ class TestBaseRemoteResourceHandler(TestCase):
         )
         self.assertIsNotNone(resource)
         self.assertEqual(resource.subtype, "3dtiles")
+
+    def test_copy_geonode_resource_should_copy_remote_data_link(self):
+        exec_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "url": "http://example.com",
+                "title": "Remote Title",
+                "type": "3dtiles",
+            },
+        )
+        exec_obj = orchestrator.get_execution_object(exec_id)
+
+        resource = self.handler.create_geonode_resource(
+            "layername",
+            "layeralternate",
+            execution_id=exec_id,
+            resource_type=ResourceBase,
+            asset=None,
+        )
+
+        new_resource = self.handler.copy_geonode_resource(
+            alternate=resource.alternate,
+            resource=resource,
+            _exec=exec_obj,
+            data_to_update={"title": "Cloned Remote Title"},
+            new_alternate="layeralternate_copy",
+        )
+
+        link = Link.objects.get(resource=new_resource, asset__isnull=True, link_type="data")
+        self.assertEqual("http://example.com", link.url)
+        self.assertEqual("3dtiles", link.extension)
+        self.assertEqual("layeralternate_copy", link.name)
+        self.assertEqual(resource.subtype, new_resource.subtype)
+        self.assertEqual(resource.sourcetype, new_resource.sourcetype)
