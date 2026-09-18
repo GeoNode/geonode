@@ -341,7 +341,7 @@ class BaseRasterFileHandler(BaseHandler):
         except Exception as e:
             logger.error(e)
             raise e
-        return
+        return [], [], execution_id
 
     def create_geonode_resource(
         self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs

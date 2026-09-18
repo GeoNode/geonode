@@ -189,6 +189,8 @@ class ImporterViewSet(DynamicModelViewSet):
                     **{"temporary_files": _files},
                     **extracted_params,
                 }
+                if "skip_existing_layers" in input_params:
+                    input_params["skip_existing_layer"] = input_params.pop("skip_existing_layers")
 
                 action = input_params.get("action")
                 first_step = next(iter(handler.get_task_list(action=action)))

@@ -58,7 +58,27 @@ class DataStoreManager:
         Private method to handle resource import and register task status.
         """
         layer_names, _, _ = self.handler().import_resource(self.files, execution_id, **kwargs)
+        _exec = orchestrator.get_execution_object(execution_id)
+        progress_needs_recheck = False
+
+        if _exec.input_params.get("skip_existing_layer") is True:
+            imported_layers = (
+                len(layer_names) if isinstance(layer_names, (list, tuple, set)) else int(bool(layer_names))
+            )
+            if _exec.input_params.get("total_layers") != imported_layers:
+                orchestrator.update_execution_request_status(
+                    execution_id=str(execution_id),
+                    input_params={**_exec.input_params, **{"total_layers": imported_layers}},
+                )
+                progress_needs_recheck = True
+
         orchestrator.register_task_status(execution_id, layer_names, task_name, status="RUNNING")
+
+        if progress_needs_recheck:
+            orchestrator.evaluate_execution_progress(
+                execution_id,
+                handler_module_path=str(self.handler()),
+            )
 
     def pre_processing(self, **kwargs):
         self.handler().pre_processing(self.files, self.execution_id, **kwargs)
