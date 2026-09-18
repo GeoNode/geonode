@@ -28,6 +28,7 @@ from django.utils.translation import gettext_lazy as _
 from django.template import loader
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect
+from django.views.decorators.http import require_GET
 
 from geonode.base.api.exceptions import geonode_exception_handler
 from geonode.client.hooks import hookset
@@ -60,6 +61,7 @@ def document_link(request, docid):
     return response
 
 
+@require_GET
 def document_embed(request, docid):
     document = get_object_or_404(Document, pk=docid)
 
