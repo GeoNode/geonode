@@ -98,6 +98,16 @@ class GeoAppTests(GeoNodeBaseTestSupport):
                 geoapp_copy.delete()
             self.assertIsNotNone(self.geoapp)
 
+    def test_geoapp_embed_is_get_only(self):
+        self.client.login(username="admin", password="admin")
+
+        url = reverse("geoapp_embed", kwargs={"geoappid": self.geoapp.pk})
+
+        self.assertEqual(self.client.get(url).status_code, 200)
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
+
     def test_geoapp_copy_carries_over_metadata_and_permissions(self):
         """M2M metadata and perm_spec must survive a GeoApp copy too, same as Dataset/Map."""
         self.client.login(username="admin", password="admin")

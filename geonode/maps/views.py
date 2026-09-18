@@ -22,6 +22,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.http import require_GET
 
 from geonode.base import register_event
 from geonode.base.auth import get_or_create_token
@@ -49,6 +50,7 @@ def _resolve_map(request, id, permission="base.change_resourcebase", msg=_PERMIS
 
 
 @xframe_options_exempt
+@require_GET
 def map_embed(request, mapid=None, template="maps/map_embed.html"):
     try:
         map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
