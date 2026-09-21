@@ -235,6 +235,58 @@ class BaseApiTests(APITestCase):
         finally:
             group.delete()
 
+    def test_group_members_requires_membership(self):
+        group = GroupProfile.objects.create(
+            slug="group_members",
+            title="group_members",
+            access="public",
+        )
+        try:
+            url = f"{reverse('group-profiles-list')}/{group.id}/members"
+
+            # Anonymous users cannot access group members
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 401)
+
+            # Authenticated non-members cannot access group members
+            self.assertTrue(self.client.login(username="bobby", password="bob"))
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 403)
+
+            # Group members can access group members
+            bobby = get_user_model().objects.get(username="bobby")
+            GroupMember.objects.get_or_create(group=group, user=bobby, role="member")
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+        finally:
+            group.delete()
+
+    def test_group_managers_requires_membership(self):
+        group = GroupProfile.objects.create(
+            slug="group_managers",
+            title="group_managers",
+            access="public",
+        )
+        try:
+            url = f"{reverse('group-profiles-list')}/{group.id}/managers"
+
+            # Anonymous users cannot access group managers
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 401)
+
+            # Authenticated non-members cannot access group managers
+            self.assertTrue(self.client.login(username="bobby", password="bob"))
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 403)
+
+            # Group members can access group managers
+            bobby = get_user_model().objects.get(username="bobby")
+            GroupMember.objects.get_or_create(group=group, user=bobby, role="member")
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+        finally:
+            group.delete()
+
     def test_delete_group(self):
         """
         Ensure only admins can delete a group.
