@@ -193,6 +193,19 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
         return False
 
 
+class IsGroupMember(permissions.BasePermission):
+    """
+    Least-privilege check for group membership listings.
+    """
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated)
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return isinstance(obj, GroupProfile) and (obj.user_is_role(user, "member") or obj.user_is_role(user, "manager"))
+
+
 class ResourceBasePermissionsFilter(BaseFilterBackend):
     """
     A filter backend that limits results to those where the requesting user

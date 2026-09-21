@@ -92,6 +92,7 @@ from .permissions import (
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
     UserHasPerms,
+    IsGroupMember,
 )
 
 from .serializers import (
@@ -132,6 +133,12 @@ class GroupViewSet(DynamicModelViewSet):
     search_fields = ["title", "slug"]
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_permissions(self):
+        if self.action in ("members", "managers"):
+            return [IsGroupMember()]
+
+        return super().get_permissions()
 
     def get_queryset(self):
         """
