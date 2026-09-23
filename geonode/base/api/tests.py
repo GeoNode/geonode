@@ -3379,6 +3379,24 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
         self.assertEqual(self.map.id, link_connected.target_id)
 
+    def test_linked_resource_requires_target_view_permission(self):
+        user = get_user_model().objects.create_user(username="linked_resource_user", password="test")
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        LinkedResource.objects.filter(source=self.doc, target=self.map).delete()
+
+        self.doc.set_permissions(
+            {"users": {user.username: ["base.view_resourcebase", "base.change_resourcebase"]}, "groups": {}}
+        )
+        self.map.set_permissions({"users": {}, "groups": {}})
+
+        self.client.force_login(user)
+        response = self.client.post(url, data={"target": [self.map.id]}, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(self.map.id, response.json()["error"])
+        self.assertFalse(LinkedResource.objects.filter(source=self.doc, target=self.map).exists())
+
     def test_insert_linked_resource_invalid_type(self):
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
