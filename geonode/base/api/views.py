@@ -1430,6 +1430,14 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             for t_id in valid_ids:
                 try:
                     target = get_object_or_404(ResourceBase, pk=t_id)
+                    if not permissions_registry.user_has_perm(
+                        request.user,
+                        target.get_self_resource(),
+                        "view_resourcebase",
+                        include_virtual=True,
+                    ):
+                        error_var.append(t_id)
+                        continue
 
                     if request.method == "POST":
                         _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
