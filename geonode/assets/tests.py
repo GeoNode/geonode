@@ -29,6 +29,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import StreamingHttpResponse
 from django.urls import reverse
+from django.test import override_settings
 
 
 from rest_framework.test import APITestCase
@@ -40,6 +41,7 @@ from geonode.assets.models import Asset, LocalAsset
 from geonode.assets.utils import create_asset, create_asset_and_link, unlink_asset
 from geonode.base.models import ResourceBase, Link
 from geonode.security.registry import permissions_registry
+
 
 logger = logging.getLogger(__name__)
 
@@ -412,6 +414,36 @@ class AssetsDownloadTests(APITestCase):
             finally:
                 if resource:
                     resource.delete()
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_download_respects_resource_visibility(self):
+        from geonode.resource.registry import dataset_manager
+        from geonode.layers.models import Dataset
+
+        owner = get_user_model().objects.get(username="admin")
+        asset = self._setup_test(owner)
+
+        resource = dataset_manager.create(
+            None,
+            resource_type=Dataset,
+            defaults={
+                "owner": owner,
+                "asset": asset,
+                "is_published": False,
+            },
+        )
+
+        resource.set_permissions(
+            {
+                "users": {"AnonymousUser": ["view_resourcebase", "download_resourcebase"]},
+                "groups": {},
+            }
+        )
+
+        self.client.logout()
+        response = self.client.get(reverse("assets-download", kwargs={"pk": asset.pk}))
+
+        self.assertEqual(response.status_code, 401)
 
     def test_cross_download(self):
 
