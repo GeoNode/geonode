@@ -90,7 +90,7 @@ dependencies = [
     "djangorestframework==3.18.1",
     "djangorestframework-gis==1.3.0",
     "drf-extensions==0.7.1",
-    "dynamic_rest @ https://github.com/GeoNode/dynamic-rest/archive/refs/heads/master.zip",
+    "geonode-dynamic_rest==2.3.0.3",
     "geonode-pinax-notifications==6.0.0.4",
 
     # GeoNode org maintained apps.
