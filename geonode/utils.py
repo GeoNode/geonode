@@ -1665,20 +1665,22 @@ def json_serializer_producer(dictionary):
     return output
 
 
-def is_monochromatic_image(image_url, image_data=None):
-    def is_local_static(url):
-        if url.startswith(settings.STATIC_URL) or (url.startswith(settings.SITEURL) and settings.STATIC_URL in url):
-            return True
-        return False
+def is_monochromatic_image(image_url, image_data=None, image_path=None):
+    def is_local_media(url):
+        return url.startswith(settings.MEDIA_URL) or (url.startswith(settings.SITEURL) and settings.MEDIA_URL in url)
 
     def is_absolute(url):
         return bool(urlparse(url).netloc)
 
-    def get_thumb_handler(url):
-        _index = url.find(settings.STATIC_URL)
-        _thumb_path = urlparse(url[_index + len(settings.STATIC_URL) :]).path
-        if storage_manager.exists(_thumb_path):
-            return storage_manager.open(_thumb_path)
+    def get_thumb_handler(url, image_path=None):
+        # prefer the stored path, parsing the url is unreliable with an absolute MEDIA_URL
+        if image_path and storage_manager.exists(image_path):
+            return storage_manager.open(image_path)
+        if is_local_media(url):
+            _index = url.find(settings.MEDIA_URL)
+            _thumb_path = urlparse(url[_index + len(settings.MEDIA_URL) :]).path
+            if storage_manager.exists(_thumb_path):
+                return storage_manager.open(_thumb_path)
         return None
 
     def verify_image(stream):
@@ -1703,13 +1705,13 @@ def is_monochromatic_image(image_url, image_data=None):
         elif image_url:
             logger.debug(f"...Checking if '{image_url}' is a blank image")
             url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
-            if not is_local_static(url):
-                req, stream_content = http_client.get(url, timeout=5)
-                with BytesIO(stream_content) as stream:
+            _handler = get_thumb_handler(url, image_path)
+            if _handler:
+                with _handler as stream:
                     return verify_image(stream)
-            else:
-                with get_thumb_handler(url) as stream:
-                    return verify_image(stream)
+            req, stream_content = http_client.get(url, timeout=5)
+            with BytesIO(stream_content) as stream:
+                return verify_image(stream)
         return True
     except Exception as e:
         logger.debug(e)
