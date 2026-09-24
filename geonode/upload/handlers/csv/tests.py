@@ -211,7 +211,7 @@ class TestCSVHandler(TestCase):
             "-oo",
             "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom",
             "-oo",
-            "X_POSSIBLE_NAMES=x,long*",
+            "X_POSSIBLE_NAMES=x,lon,long*",
             "-oo",
             "Y_POSSIBLE_NAMES=y,lat*",
             "-oo",
