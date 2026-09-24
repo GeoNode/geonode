@@ -6,6 +6,8 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-k
 # will install python3.10
 RUN apt-get install lsb-release -y
 RUN echo "deb https://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |tee  /etc/apt/sources.list.d/pgdg.list
+# Keep GDAL from the Ubuntu archive, pgdg ships newer builds that break libgdal-dev / pip GDAL==3.8.4
+RUN printf 'Package: *gdal*\nPin: release o=apt.postgresql.org\nPin-Priority: -1\n' > /etc/apt/preferences.d/pgdg-no-gdal
 
 # Prepraing dependencies
 RUN apt-get install -y \
