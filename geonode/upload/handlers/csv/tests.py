@@ -33,6 +33,7 @@ from geonode.upload.handlers.csv.handler import CSVFileHandler
 from osgeo import ogr
 
 from geonode.upload.utils import ExecutionRequest
+from geonode.geoserver.createlayer.utils import BBOX
 
 
 class TestCSVHandler(TestCase):
@@ -215,3 +216,18 @@ class TestCSVHandler(TestCase):
         ]
         _open.assert_called_once()
         _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)
+
+    @patch("geonode.upload.handlers.csv.handler.orchestrator.get_execution_object")
+    @patch("geonode.upload.handlers.csv.handler.BaseVectorFileHandler.create_geonode_resource")
+    def test_create_geonode_resource_sets_default_bbox_for_tabular_csv_only(self, create_resource, get_execution):
+        resource = MagicMock()
+        create_resource.return_value = resource
+
+        get_execution.return_value.input_params = {"is_tabular": True}
+        self.handler.create_geonode_resource("layer", "alternate", "execution-id")
+        resource.set_bbox_polygon.assert_called_once_with(BBOX, resource.srid)
+
+        resource.set_bbox_polygon.reset_mock()
+        get_execution.return_value.input_params = {}
+        self.handler.create_geonode_resource("layer", "alternate", "execution-id")
+        resource.set_bbox_polygon.assert_not_called()
