@@ -1385,6 +1385,10 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.assertEqual(tkeywords["type"], "object")
         self.assertEqual(tkeywords["title"], "Keywords from Thesaurus")
 
+        # Only the thesaurus with card_min > 0 is required, and it makes tkeywords required in turn
+        self.assertEqual(tkeywords["required"], ["3-2-4-1-gemet-inspire-themes"])
+        self.assertTrue(tkeywords["geonode:required"])
+
         # Assert thesaurus structure for "3-2-4-3-spatialscope"
         thesaurus = tkeywords["properties"]["3-2-4-3-spatialscope"]
         self.assertEqual(thesaurus["type"], "array")
@@ -1435,6 +1439,10 @@ class HandlersTests(GeoNodeBaseTestSupport):
         tkeywords = updated_schema["properties"].get("tkeywords")
         self.assertIsNotNone(tkeywords)
         self.assertEqual(tkeywords["ui:widget"], "hidden")
+
+        # With no thesaurus at all there is nothing to require
+        self.assertNotIn("required", tkeywords)
+        self.assertNotIn("geonode:required", tkeywords)
 
     def test_tkeywords_handler_get_jsonschema_instance_translated_keywords(self):
         """

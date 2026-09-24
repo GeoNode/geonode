@@ -186,3 +186,18 @@ class MetadataHandler(metaclass=ABCMeta):
     @staticmethod
     def _check_type(declared, checked):
         return declared == checked or (type(declared) is list and checked in declared)
+
+    @staticmethod
+    def _is_nullable(subschema):
+        return MetadataHandler._check_type(subschema.get("type", None), "null")
+
+    @staticmethod
+    def _add_oneof_null_option(subschema):
+        # Without a null option a nullable oneOf rejects the null it gets when left empty.
+        # Never creates the oneOf: that would restrict a field free to take any value
+        oneof = subschema.get("oneOf")
+        if not oneof or not MetadataHandler._is_nullable(subschema):
+            return
+
+        if not any("const" in option and option["const"] is None for option in oneof):
+            oneof.insert(0, {"const": None, "title": "-"})  # not "": the client turns it into None
