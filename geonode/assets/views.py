@@ -36,40 +36,20 @@ from geonode.base.api.filters import (
     DynamicSearchFilter,
 )
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.base.models import ResourceBase
 from geonode.security.registry import permissions_registry
-from geonode.security.utils import get_visible_resources
 from rest_framework import permissions
 
 logger = logging.getLogger(__name__)
 
 
 class UserHasAssetPerms(permissions.BasePermission):
+    """
+    Thin DRF adapter: the actual decision is delegated to the permissions registry,
+    which knows how to resolve an Asset's perms through its linked ResourceBase(s).
+    """
+
     def has_object_permission(self, request, view, obj):
-        user = request.user
-
-        if user and user.is_authenticated and user.is_superuser:
-            return True
-
-        resources = ResourceBase.objects.filter(link__asset=obj).distinct()
-        has_linked_resources = resources.exists()
-
-        if request.method in permissions.SAFE_METHODS:
-            if has_linked_resources:
-                return get_visible_resources(queryset=resources, user=user).exists()
-
-            return user and user.is_authenticated and obj.owner_id == user.id
-
-        if not user or not user.is_authenticated:
-            return False
-
-        if not has_linked_resources:
-            return obj.owner_id == user.id
-
-        return all(
-            "change_resourcebase" in permissions_registry.get_perms(instance=resource, user=user)
-            for resource in resources
-        )
+        return permissions_registry.user_has_asset_perm(request.user, obj, method=request.method)
 
 
 class AssetViewSet(DynamicModelViewSet):
