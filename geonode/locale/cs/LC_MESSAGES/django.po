@@ -3213,7 +3213,7 @@ msgid "Log in"
 msgstr "Přihlásit se"
 
 #: geonode/templates/account/login.html:11
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Přihlásit se k existujícímu účtu"
 
 #: geonode/templates/account/login.html:22

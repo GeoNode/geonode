@@ -184,7 +184,7 @@ class PermissionsHandlerRegistry:
         if not instance:
             if not user:
                 raise ValueError("At least one of 'instance' or 'user' must be provided. ")
-            return self._get_global_perms(user)
+            return self._get_global_perms(user, use_cache=use_cache)
 
         return self._get_perms_for_instance(
             instance,
@@ -391,7 +391,8 @@ class PermissionsHandlerRegistry:
                 users=group_users if user_clear_cache else None,
                 groups=[instance] if group_clear_cache else None,
             )
-            self._clear_cache_keys(cache_keys if cache_keys else [])
+            cache_keys = self._add_global_keys(cache_keys, group_users if user_clear_cache else [])
+            self._clear_cache_keys(cache_keys)
 
         elif isinstance(instance, Profile):
             resources = get_objects_for_user(instance, "base.view_resourcebase")
@@ -402,8 +403,8 @@ class PermissionsHandlerRegistry:
                 users=[instance] if user_clear_cache else None,
                 groups=instance.groups.all() if group_clear_cache else None,
             )
-
-            self._clear_cache_keys(cache_keys if cache_keys else [])
+            cache_keys = self._add_global_keys(cache_keys, [instance] if user_clear_cache else [])
+            self._clear_cache_keys(cache_keys)
 
         else:
             pass
@@ -415,11 +416,17 @@ class PermissionsHandlerRegistry:
         # This wipes everything in the default cache
         cache.clear()
 
-    def _get_global_perms(self, user):
+    def _get_global_perms(self, user, use_cache=False):
         """
         Return global (non-object-level) permissions for a user.
         """
         from geonode.base.models import Configuration
+
+        cache_key = self._get_global_cache_key(user) if use_cache else None
+        if cache_key:
+            cached = cache.get(cache_key)
+            if cached is not None:
+                return cached
 
         perms = set()
 
@@ -443,7 +450,10 @@ class PermissionsHandlerRegistry:
         if config.read_only:
             perms.difference_update(READ_ONLY_AFFECTED_PERMISSIONS)
 
-        return list(perms)
+        result = list(perms)
+        if cache_key:
+            cache.set(cache_key, result, settings.PERMISSION_CACHE_EXPIRATION_TIME)
+        return result
 
     def _get_perms_for_instance(
         self,
@@ -529,6 +539,10 @@ class PermissionsHandlerRegistry:
         for module_path in settings.PERMISSIONS_HANDLERS:
             self.add(module_path)
 
+    def _add_global_keys(self, cache_keys, users):
+        cache_keys = [cache_keys] if isinstance(cache_keys, str) else (cache_keys or [])
+        return cache_keys + [self._get_global_cache_key(u) for u in users]
+
     def _clear_cache_keys(self, cache_keys):
         """Clear cache keys."""
         if cache_keys:
@@ -538,6 +552,14 @@ class PermissionsHandlerRegistry:
                 cache.delete_many(cache_keys)
             else:
                 raise TypeError(f"Expected str or list, got {type(cache_keys)}")
+
+    def _user_identifier(self, user):
+        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user():
+            return "anonymous"
+        return f"user:{user.pk}"
+
+    def _get_global_cache_key(self, user):
+        return f"global_perms:{self._user_identifier(user)}"
 
     def _get_cache_key(self, resource_pks, users=None, groups=None, remove_all_cache=False):
         """
@@ -553,12 +575,7 @@ class PermissionsHandlerRegistry:
         for pk in resource_pks:
             if users:
                 for user in users:
-                    user_identifier = (
-                        "anonymous"
-                        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user()
-                        else f"user:{user.pk}"
-                    )
-                    cache_keys.append(f"resource_perms:{pk}:{user_identifier}")
+                    cache_keys.append(f"resource_perms:{pk}:{self._user_identifier(user)}")
 
             if groups:
                 for group in groups:

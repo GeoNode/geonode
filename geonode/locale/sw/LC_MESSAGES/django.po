@@ -5246,7 +5246,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Ingia"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Ingia kwenye akaunti yako"
 
 #, python-format

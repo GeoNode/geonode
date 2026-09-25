@@ -18,7 +18,6 @@
 #########################################################################
 from django.test import TestCase
 from mock import MagicMock, patch
-from geonode.upload.api.exceptions import ImportException
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.handlers.remote.tiles3d import RemoteTiles3DResourceHandler
@@ -95,7 +94,7 @@ class TestRemoteTiles3DFileHandler(TestCase):
         self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_url_is_invalid(self):
-        with self.assertRaises(ImportException) as _exc:
+        with self.assertRaises(Invalid3DTilesException) as _exc:
             self.handler.is_valid_url(url=self.invalid_files["url"])
 
         self.assertIsNotNone(_exc)

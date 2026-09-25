@@ -6,6 +6,9 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-k
 # will install python3.10
 RUN apt-get install lsb-release -y
 RUN echo "deb https://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |tee  /etc/apt/sources.list.d/pgdg.list
+# Use pgdg only for the postgres client, its GIS stack (gdal, geos, proj) would override Ubuntu's
+# To be reviewed in next versions and consider using stock Ubuntu packages for the postgresql client
+RUN printf 'Package: *\nPin: release o=apt.postgresql.org\nPin-Priority: -1\n\nPackage: postgresql-client-15 postgresql-client-common\nPin: release o=apt.postgresql.org\nPin-Priority: 500\n' > /etc/apt/preferences.d/pgdg
 
 # Prepraing dependencies
 RUN apt-get install -y \

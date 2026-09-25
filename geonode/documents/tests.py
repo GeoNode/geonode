@@ -411,13 +411,48 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         form = DocumentCreateForm(form_data, file_data)
         self.assertTrue(form.is_valid(), msg=form.errors)
 
+    def test_upload_document_form_accepts_valid_xml(self):
+        iso_xml_content = (
+            b'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd">'
+            b"<gmd:fileIdentifier>"
+            b'<gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">123-abc</gco:CharacterString>'
+            b"</gmd:fileIdentifier>"
+            b"</gmd:MD_Metadata>"
+        )
+        form_data = {
+            "title": "ISO Metadata XML",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("metadata.xml", iso_xml_content, "text/plain")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertTrue(form.is_valid(), msg=form.errors)
+
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""
         d = Document.objects.all().first()
         d.set_default_permissions()
 
-        response = self.client.get(reverse("document_embed", args=(str(d.id),)))
+        url = reverse("document_embed", args=(str(d.id),))
+
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
+
+    def test_resourcebase_embed_is_get_only(self):
+        d = Document.objects.all().first()
+        d.set_default_permissions()
+
+        url = reverse("resourcebase_embed", kwargs={"resourcebaseid": d.pk})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""
@@ -703,6 +738,14 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.test_doc = self.__class__.test_doc
         self.perm_spec = self.__class__.perm_spec
         self.doc_link_url = self.__class__.doc_link_url
+
+    def test_document_link_sets_anti_xss_headers(self):
+        self.test_doc.set_permissions(self.perm_spec)
+        self.client.login(username=self.not_admin.username, password="very-secret")
+        response = self.client.get(self.doc_link_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("X-Content-Type-Options"), "nosniff")
+        self.assertIn("sandbox", response.headers.get("Content-Security-Policy", ""))
 
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)

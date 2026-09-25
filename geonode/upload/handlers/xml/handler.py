@@ -21,7 +21,6 @@ import logging
 from geonode.resource.registry import resource_manager_registry
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.xml.exceptions import InvalidXmlException
-from owslib.etree import etree as dlxml
 from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
@@ -68,7 +67,7 @@ class XMLFileHandler(MetadataFileHandler):
     @property
     def upload_validation_config(self):
         return {
-            "xml": {"mimes": {"application/xml", "text/xml"}},
+            "xml": {"mimes": {"application/xml", "text/xml", "text/plain"}},
         }
 
     @staticmethod
@@ -89,10 +88,16 @@ class XMLFileHandler(MetadataFileHandler):
         """
         Define basic validation steps
         """
+        from geonode.utils import assert_safe_xml, UnsafeXMLError
+
         # calling base validation checks
         try:
             with open(files.get("base_file")) as _xml:
-                dlxml.fromstring(_xml.read().encode())
+                content = _xml.read()
+                assert_safe_xml(content)
+        except UnsafeXMLError as err:
+            logger.warning("Unsafe XML content rejected: %s", err)
+            raise InvalidXmlException("Uploaded document contains unsafe content")
         except Exception as err:
             raise InvalidXmlException(f"Uploaded document is not XML or is invalid: {str(err)}")
         return True

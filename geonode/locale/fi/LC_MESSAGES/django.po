@@ -4749,8 +4749,6 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
 msgstr "aineisto"
 
@@ -5231,7 +5229,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Kirjaudu sisään"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Kirjaudu sisään olemassa olevaan tiliin"
 
 #, python-format

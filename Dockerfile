@@ -1,4 +1,6 @@
-FROM geonode/geonode-base:latest-ubuntu-24.04
+FROM geonode/geonode-base:latest-ubuntu-26.04
+
+LABEL maintainer="GeoNode development team"
 
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8

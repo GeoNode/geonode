@@ -18,7 +18,7 @@
 #########################################################################
 from collections import namedtuple
 from urllib.parse import ParseResult
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from mock import MagicMock, patch
 from geonode.upload.api.exceptions import ImportException
 from django.contrib.auth import get_user_model
@@ -119,6 +119,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertIsNotNone(_exc)
         self.assertTrue("The provided url is not reachable")
 
+    @override_settings(SAFE_URL_TRUSTED_HOSTS=["geoserver:8080"])
     def test_is_valid_should_pass_with_valid_url(self):
         self.handler.is_valid_url(url=self.valid_payload_with_parse_false["url"])
 
@@ -152,7 +153,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertEqual({"username": "test_user", "password": "test_password"}, auth_config.payload)
 
     def test_create_geonode_resource_rollback_should_delete_created_auth_config(self):
-        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
         exec_id = orchestrator.create_execution_request(
             user=self.user,
             func_name="funct1",
@@ -165,7 +166,7 @@ class TestRemoteWMSResourceHandler(TestCase):
         self.assertFalse(AuthConfig.objects.filter(pk=auth_config.pk).exists())
 
     def test_create_geonode_resource_rollback_should_not_delete_attached_auth_config(self):
-        auth_config = BasicAuthHandler.create_auth_config("test_user", "test_password")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
         self._create_wms_service(self.valid_url, auth_config=auth_config)
         exec_id = orchestrator.create_execution_request(
             user=self.user,
@@ -265,7 +266,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     @patch("geonode.upload.handlers.remote.wms.WmsServiceHandler")
     @patch("geonode.upload.handlers.remote.wms.WebMapService")
     def test_prepare_import_should_use_matching_owned_service_auth_config(self, web_map_service, remote_wms):
-        service_url = "http://fake/foo?bar"
+        service_url = self.valid_url
         fake_url = ParseResult(scheme="http", netloc="fake", path="/foo", params="", query="bar", fragment="")
         remote_wms.get_cleaned_url_params.return_value = fake_url, None, None, None
         auth_config = AuthConfig.objects.create(
@@ -285,6 +286,7 @@ class TestRemoteWMSResourceHandler(TestCase):
             input_params=self.valid_payload_with_parse_true,
         )
 
+        self.handler.pre_processing(files=[], execution_id=str(exec_id))
         self.handler.prepare_import(files=[], execution_id=str(exec_id))
 
         expected_auth = auth_handler_registry.build(auth_config).get_request_auth()
@@ -295,7 +297,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     @patch("geonode.upload.handlers.remote.wms.WmsServiceHandler")
     @patch("geonode.upload.handlers.remote.wms.WebMapService")
     def test_prepare_import_should_not_use_service_auth_config_from_another_owner(self, web_map_service, remote_wms):
-        service_url = "http://fake/foo?bar"
+        service_url = self.valid_url
         fake_url = ParseResult(scheme="http", netloc="fake", path="/foo", params="", query="bar", fragment="")
         remote_wms.get_cleaned_url_params.return_value = fake_url, None, None, None
         auth_config = AuthConfig.objects.create(
@@ -316,6 +318,7 @@ class TestRemoteWMSResourceHandler(TestCase):
             input_params=self.valid_payload_with_parse_true,
         )
 
+        self.handler.pre_processing(files=[], execution_id=str(exec_id))
         self.handler.prepare_import(files=[], execution_id=str(exec_id))
 
         web_map_service.assert_called_once_with(self.valid_url, auth=None)

@@ -334,68 +334,6 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-MEMCACHED_ENABLED = ast.literal_eval(os.getenv("MEMCACHED_ENABLED", "False"))
-MEMCACHED_BACKEND = os.getenv("MEMCACHED_BACKEND", "django.core.cache.backends.memcached.PyLibMCCache")
-MEMCACHED_LOCATION = os.getenv("MEMCACHED_LOCATION", "127.0.0.1:11211")
-MEMCACHED_LOCK_EXPIRE = int(os.getenv("MEMCACHED_LOCK_EXPIRE", 3600))
-MEMCACHED_LOCK_TIMEOUT = int(os.getenv("MEMCACHED_LOCK_TIMEOUT", 10))
-
-CACHES = {
-    # Local Memory CACHE FOR DEVELOPMENT
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "TIMEOUT": 600,
-        "OPTIONS": {"MAX_ENTRIES": 10000},
-    },
-    "memcached": {"BACKEND": MEMCACHED_BACKEND, "LOCATION": MEMCACHED_LOCATION},
-    # MEMCACHED EXAMPLE
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-    #     'LOCATION': '127.0.0.1:11211',
-    # },
-    # FILECACHE EXAMPLE
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-    #     'LOCATION': '/tmp/django_cache',
-    # },
-    # DATABASE EXAMPLE -> python manage.py createcachetable
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-    #     'LOCATION': 'my_cache_table',
-    # },
-    # LOCAL-MEMORY CACHING
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    #     'LOCATION': 'geonode-cache',
-    #     'TIMEOUT': 10,
-    #     'OPTIONS': {
-    #         'MAX_ENTRIES': 10000
-    #     }
-    # },
-    "resources": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "TIMEOUT": 600,
-        "OPTIONS": {"MAX_ENTRIES": 10000},
-    },
-    "services": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "TIMEOUT": 600,
-        "OPTIONS": {"MAX_ENTRIES": 10000},
-    },
-}
-
-PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
-
-# define service cache timeout
-SERVICE_CACHE_EXPIRATION_TIME = int(os.getenv("SERVICE_CACHE_EXPIRATION_TIME", 600))
-
-if MEMCACHED_ENABLED:
-    CACHES["default"] = {
-        "BACKEND": MEMCACHED_BACKEND,
-        "LOCATION": MEMCACHED_LOCATION,
-    }
-    CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
-
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
 WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv("WHITENOISE_MANIFEST_STRICT", "False"))
 COMPRESS_STATIC_FILES = ast.literal_eval(os.getenv("COMPRESS_STATIC_FILES", "False"))
@@ -800,7 +738,7 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
 SESSION_ENGINE = os.environ.get("SESSION_ENGINE", "django.contrib.sessions.backends.db")
 if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.contrib.sessions.backends.cache"):
-    SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested
+    SESSION_CACHE_ALIAS = "default"  # use redis cache if a cached backend is requested
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
@@ -1436,9 +1374,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
     else:
         LANGUAGES = MAPSTORE_DEFAULT_LANGUAGES
 
-    # This setting includes supported Maptstore language choices in a DB-based format
-    PROFILE_LANGUAGE_CHOICES = tuple((code.split("-")[0].lower(), label) for code, label in LANGUAGES)
-
     # The default mapstore client compiles the translations json files in the /static/mapstore directory
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
     MAPSTORE_TRANSLATIONS_PATH = os.environ.get(
@@ -1524,10 +1459,10 @@ SEARCH_FILTERS = {
 
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
-BROKER_HEARTBEAT = 0
+CELERY_BROKER_HEARTBEAT = 0
 
 # Avoid long running and retried tasks to be run over-and-over again.
-BROKER_TRANSPORT_OPTIONS = {
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "fanout_prefix": True,
     "fanout_patterns": True,
     "socket_timeout": 60,
@@ -1562,7 +1497,7 @@ CELERY_RESULT_EXPIRES = 86400
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get("CELERY_ACKS_LATE", "True"))
 
 # Add a ten-minutes timeout to all Celery tasks.
-CELERYD_SOFT_TIME_LIMIT = 600
+CELERY_TASK_SOFT_TIME_LIMIT = 600
 
 # Set this to False in order to run async
 _EAGER_FLAG = "False" if ASYNC_SIGNALS else "True"
@@ -1665,6 +1600,11 @@ CELERY_TASK_QUEUES += (
         "geonode.upload.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_geonode_data_table"
     ),
     Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
+    Queue(
+        "geonode.upload.copy_document_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.copy_document_resource",
+    ),
     Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
     Queue("geonode.upload.upsert_data", GEONODE_EXCHANGE, routing_key="geonode.upload.upsert_data"),
     Queue(
@@ -1720,12 +1660,59 @@ CELERY_MESSAGE_COMPRESSION = os.environ.get("CELERY_MESSAGE_COMPRESSION", "gzip"
 CELERY_MAX_CACHED_RESULTS = os.environ.get("CELERY_MAX_CACHED_RESULTS", 32768)
 
 # NOTE: I don't know if this is compatible with upstart.
-CELERYD_POOL_RESTARTS = ast.literal_eval(os.environ.get("CELERYD_POOL_RESTARTS", "True"))
+CELERY_WORKER_POOL_RESTARTS = ast.literal_eval(os.environ.get("CELERYD_POOL_RESTARTS", "True"))
 CELERY_TRACK_STARTED = ast.literal_eval(os.environ.get("CELERY_TRACK_STARTED", "True"))
 CELERY_SEND_TASK_SENT_EVENT = ast.literal_eval(os.environ.get("CELERY_SEND_TASK_SENT_EVENT", "True"))
 
 # Disabled by default and I like it, because we use Sentry for this.
 CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get("CELERY_SEND_TASK_ERROR_EMAILS", "False"))
+
+
+# ########################################################################### #
+# REDIS CACHE SETTINGS
+# ########################################################################### #
+
+
+REDIS_LOCK_EXPIRE = int(os.getenv("REDIS_LOCK_EXPIRE", 3600))
+REDIS_LOCK_TIMEOUT = int(os.getenv("REDIS_LOCK_TIMEOUT", 10))
+
+REDIS_CACHE_URL = REDIS_SIGNALS_BROKER_URL.replace("/0", "/3")
+
+CACHES = {
+    # Local Memory CACHE FOR DEVELOPMENT
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
+    "resources": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
+    "services": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
+}
+
+PERMISSION_CACHE_EXPIRATION_TIME = int(os.getenv("PERMISSION_CACHE_EXPIRATION_TIME", 60 * 60 * 24 * 7))  # 7 days
+
+# define service cache timeout
+SERVICE_CACHE_EXPIRATION_TIME = int(os.getenv("SERVICE_CACHE_EXPIRATION_TIME", 600))
+
+if ASYNC_SIGNALS:
+    CACHES["default"] = {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "TIMEOUT": 300,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+    CACHES["services"] = CACHES["default"].copy() | {"TIMEOUT": SERVICE_CACHE_EXPIRATION_TIME}
+    CACHES["resources"] = CACHES["default"].copy()
 
 # ########################################################################### #
 # NOTIFICATIONS SETTINGS
@@ -2148,6 +2135,15 @@ METADATA_INDEXES = {
     "all": ["title", "abstract", "supplemental_information"],
 }
 
+# Maps ISO 639-1 (2-letter) codes to ISO 639-2 (3-letter) code(s)
+LANGUAGE_MAPPINGS = (
+    ("en", "eng"),
+    ("de", ["ger", "deu"]),
+    ("es", "spa"),
+    ("fr", ["fre", "fra"]),
+    ("it", "ita"),
+)
+
 # you can get the language names in psql using "\dF"
 MULTILANG_POSTGRES_LANGS = {
     None: "simple",
@@ -2280,3 +2276,6 @@ FILE_UPLOAD_PERMISSIONS = 0o777
 
 # Enable or not the XLSX / XLS upload
 XLSX_UPLOAD_ENABLED = ast.literal_eval(os.getenv("XLSX_UPLOAD_ENABLED", "False"))
+
+# Trusted hosts for bypassing the URL validation e.g internal networks. Use the format <domain>:<port>
+SAFE_URL_TRUSTED_HOSTS = ast.literal_eval(os.getenv("SAFE_URL_TRUSTED_HOSTS", "[]"))

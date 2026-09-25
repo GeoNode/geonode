@@ -44,6 +44,9 @@ class ReadOnlyMiddleware:
         "ows_endpoint",
         # The  set_session_language view updates only session/cookie when read-only is enabled
         "set_language",
+        # Django OAuth Toolkit token endpoint
+        "token",
+        "tokeninfo",
     ]
 
     def __init__(self, get_response):

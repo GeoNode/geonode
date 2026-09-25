@@ -27,6 +27,8 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse
 from dynamic_models.models import FieldSchema, ModelSchema
+from geonode import documents
+from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
@@ -56,6 +58,7 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
         cls.url_create = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
         cls.valid_kml = f"{project_dir}/tests/fixture/valid.kml"
+        cls.valid_document = os.path.join(os.path.dirname(documents.__file__), "tests", "data", "img.gif")
         cls.url_create = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
@@ -113,8 +116,8 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
         resources = self.cat.get_resources()
         self.assertTrue(schema_entity.name in [y.name for y in resources])
 
-    def _import_resource(self, payload, initial_name):
-        payload["action"] = "upload"
+    def _import_resource(self, payload, initial_name, action="upload"):
+        payload["action"] = action
         _url = reverse("importer_upload")
         self.client.force_login(get_user_model().objects.get(username="admin"))
 
@@ -199,6 +202,41 @@ class ImporterCopyEnd2EndShapeFileTest(BaseClassEnd2End):
         with transaction.atomic():
             self._import_resource(payload, initial_name)
             self._assertCloning(initial_name)
+
+
+class ImporterCopyEnd2EndDocumentTest(BaseClassEnd2End):
+    @mock.patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
+    @override_settings(ASYNC_SIGNALS=False)
+    def test_clone_document(self):
+        payload = {"base_file": open(self.valid_document, "rb")}
+        with transaction.atomic():
+            self._import_resource(payload, "img.gif", action="document_upload")
+
+            self._assertDocumentCloning("img.gif")
+
+    def _assertDocumentCloning(self, initial_name):
+        document = Document.objects.get(title=initial_name)
+        prev_document_count = Document.objects.count()
+        self.client.force_login(self.admin)
+
+        payload = QueryDict("", mutable=True)
+        payload.update({"defaults": '{"title":"title_of_the_cloned_document"}'})
+        payload["action"] = "document_copy"
+
+        response = self.client.put(
+            reverse("importer_resource_copy", args=[document.id]), data=payload, content_type="application/json"
+        )
+        self.assertEqual(200, response.status_code)
+        self._wait_execution(response)
+
+        self.assertEqual(prev_document_count + 1, Document.objects.count())
+
+        cloned = Document.objects.filter(title="title_of_the_cloned_document")
+        self.assertTrue(cloned.exists())
+        cloned = cloned.first()
+        # the file is cloned along with the asset
+        self.assertTrue(cloned.files)
+        self.assertNotEqual(document.files, cloned.files)
 
 
 class ImporterCopyEnd2EndKMLTest(BaseClassEnd2End):

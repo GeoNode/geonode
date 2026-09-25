@@ -246,3 +246,19 @@ def runtime_to_profile_lang(lang):
         return None
 
     return lang.lower().split("-")[0]
+
+
+def get_profile_language_choices():
+    """
+    Build the list of DB-based (2-char) language choices from the currently
+    configured settings.LANGUAGES
+    """
+    return tuple({code.split("-")[0].lower(): label for code, label in settings.LANGUAGES}.items())
+
+
+DISALLOWED_TEMPLATE_TOKENS = ("{{", "}}", "[[", "]]")
+
+
+def contains_disallowed_template_tokens(value):
+    values = value if isinstance(value, (list, tuple)) else [value]
+    return any(isinstance(item, str) and any(token in item for token in DISALLOWED_TEMPLATE_TOKENS) for item in values)

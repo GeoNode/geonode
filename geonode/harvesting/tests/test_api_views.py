@@ -45,7 +45,12 @@ class HarvesterViewSetTestCase(GeoNodeBaseTestSupport):
         )
         cls.sessions = [session1, session2]
 
-    def test_get_harvester_list(self):
+    def test_get_harvester_list_for_non_admin(self):
+        response = self.client.get("/api/v2/harvesters/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_harvester_list_for_admin(self):
+        self.client.login(username="admin", password="admin")
         response = self.client.get("/api/v2/harvesters/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["total"], len(self.harvesters))
@@ -73,7 +78,13 @@ class HarvesterViewSetTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(response.data["harvester"]["id"], harvester.pk)
             self.assertEqual(response.data["harvester"]["name"], harvester.name)
 
-    def test_get_harvester_resources(self):
+    def test_get_harvester_resources_for_non_admin(self):
+        harvester = self.harvesters[0]
+        response = self.client.get(f"/api/v2/harvesters/{harvester.id}/harvestable-resources/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_harvester_resources_for_admin(self):
+        self.client.login(username="admin", password="admin")
         for index, harvester in enumerate(self.harvesters):
             response = self.client.get(f"/api/v2/harvesters/{harvester.id}/harvestable-resources/")
             self.assertEqual(response.status_code, status.HTTP_200_OK)

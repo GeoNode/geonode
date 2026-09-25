@@ -19,6 +19,7 @@
 import io
 import os
 import shutil
+import tempfile
 from django.test import override_settings
 import gisdata
 from unittest.mock import patch
@@ -29,88 +30,28 @@ from geonode.utils import mkdtemp
 from geonode.storage.aws import AwsStorageManager
 from geonode.storage.exceptions import DataRetrieverExcepion
 from geonode.storage.manager import StorageManager
-from geonode.storage.gcs import GoogleStorageManager
+from geonode.storage.utils import organize_files_by_ext
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 
-class TestGoogleStorageManager(SimpleTestCase):
+class TestOrganizeFilesByExt(SimpleTestCase):
     def setUp(self):
-        self.sut = GoogleStorageManager
+        self.tmp_dir = tempfile.mkdtemp()
+        self.sample_file = os.path.join(self.tmp_dir, "sample.txt")
+        with open(self.sample_file, "w") as f:
+            f.write("content")
 
-    @patch("storages.backends.gcloud.GoogleCloudStorage.delete")
-    def test_google_deleted(self, gcs):
-        """
-        Will test that the function returns the expected result
-        and that the GoogleCloudStorage function as been called with the expected parameters
-        """
-        gcs.return_value = None
-        output = self.sut().delete("filename")
-        self.assertIsNone(output)
-        gcs.assert_called_once_with("filename")
+    def tearDown(self):
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
 
-    @patch("storages.backends.gcloud.GoogleCloudStorage.exists")
-    def test_google_exists(self, gcs):
-        """
-        Will test that the function returns the expected result
-        and that the GoogleCloudStorage function as been called with the expected parameters
-        """
-        gcs.return_value = True
-        output = self.sut().exists("filename")
-        self.assertTrue(output)
-        gcs.assert_called_once_with("filename")
+    def test_organize_files_by_ext_does_not_pick_a_txt_file_as_base_file_for_a_dataset(self):
+        actual = organize_files_by_ext([self.sample_file], kind="dataset")
+        self.assertNotIn("base_file", actual)
 
-    @patch("storages.backends.gcloud.GoogleCloudStorage.listdir")
-    def test_google_listdir(self, gcs):
-        """
-        Will test that the function returns the expected result
-        and that the GoogleCloudStorage function as been called with the expected parameters
-        """
-        gcs.return_value = (["folder1"], ["file1", "file2"])
-        output = self.sut().listdir("Apps/")
-        self.assertTupleEqual((["folder1"], ["file1", "file2"]), output)
-        gcs.assert_called_once_with("Apps/")
-
-    @patch("storages.backends.gcloud.GoogleCloudStorage._open")
-    def test_google_open(self, gcs):
-        """
-        Will test that the function returns the expected result
-        and that the GoogleCloudStorage function as been called with the expected parameters
-        """
-        gcs.return_value = io.StringIO()
-        output = self.sut().open("name", mode="xx")
-        self.assertEqual(type(output), io.StringIO().__class__)
-        gcs.assert_called_once_with("name", "xx")
-
-    def test_google_path(self):
-        """
-        Will test that the function returns the expected result
-        and that the GoogleCloudStorage function as been called with the expected parameters
-        """
-        with self.assertRaises(NotImplementedError):
-            self.sut().path("file")
-
-    @patch("storages.backends.gcloud.GoogleCloudStorage.save")
-    def test_google_save(self, gcs):
-        """
-        Will test that the function returns the expected result
-        and that the GoogleCloudStorage function as been called with the expected parameters
-        """
-        gcs.return_value = "cleaned_name"
-        output = self.sut().save("file_name", "content")
-        self.assertEqual("cleaned_name", output)
-        gcs.assert_called_once_with("file_name", "content")
-
-    @patch("storages.backends.gcloud.GoogleCloudStorage.size")
-    def test_google_size(self, gcs):
-        """
-        Will test that the function returns the expected result
-        and that the GoogleCloudStorage function as been called with the expected parameters
-        """
-        gcs.return_value = 1
-        output = self.sut().size("name")
-        self.assertEqual(1, output)
-        gcs.assert_called_once_with("name")
+    def test_organize_files_by_ext_picks_a_txt_file_as_base_file_for_a_document(self):
+        actual = organize_files_by_ext([self.sample_file], kind="document")
+        self.assertEqual(self.sample_file, str(actual["base_file"]))
 
 
 @override_settings(AWS_STORAGE_BUCKET_NAME="my-bucket-name")

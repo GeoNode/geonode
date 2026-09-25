@@ -28,7 +28,7 @@ class RemoteResourceSerializer(BaseImporterSerializer):
         ref_name = "RemoteResourceSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ("url", "title", "type", "action")
+        fields = ("url", "title", "type", "action", "authentication")
 
     url = serializers.URLField(required=True, help_text="URL of the remote service / resource")
     title = serializers.CharField(required=True, help_text="Title of the resource. Can be None or Empty")
@@ -37,8 +37,23 @@ class RemoteResourceSerializer(BaseImporterSerializer):
         help_text="Remote resource type, for example wms or 3dtiles. Is used by the handler to understand if can handle the resource",
     )
     action = serializers.CharField(required=False, default=exa.UPLOAD.value)
+    authentication = serializers.JSONField(required=False, allow_null=True)
 
     def validate_url(self, value):
         if not is_safe_url(value):
             raise serializers.ValidationError("URL is not allowed.")
+        return value
+
+    def validate_authentication(self, value):
+        if value is None:
+            return value
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Authentication must be an object.")
+        if not value.get("type"):
+            raise serializers.ValidationError("Authentication type is required.")
+        payload = value.get("payload")
+        if payload is None:
+            raise serializers.ValidationError("Authentication payload is required.")
+        if not isinstance(payload, dict):
+            raise serializers.ValidationError("Authentication payload must be an object.")
         return value

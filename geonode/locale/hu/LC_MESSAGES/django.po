@@ -4766,8 +4766,6 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
 msgstr "adatbázisba"
 
@@ -5248,7 +5246,7 @@ msgstr ""
 msgid "Log in"
 msgstr "Belépés"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "Jelentkezzen be egy meglévő számla"
 
 #, python-format

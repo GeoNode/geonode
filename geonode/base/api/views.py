@@ -112,6 +112,7 @@ from geonode.assets.models import Asset
 from geonode.assets.utils import create_asset_and_link, unlink_asset
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
+from geonode.utils import assert_safe_xml, UnsafeXMLError
 
 logger = logging.getLogger(__name__)
 
@@ -652,6 +653,13 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
+            # Check if the current user has the permissions to set the thumbnail
+            if not request.user.has_perm("change_resourcebase", resource.get_self_resource()):
+                return Response(
+                    {"message": "You do not have permission to set this thumbnail.", "success": False},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
             map_thumb_from_bbox = False
             if isinstance(resource.get_real_instance(), Map):
                 map_thumb_from_bbox = True
@@ -1127,7 +1135,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             or not request.user.has_perm("view_resourcebase", resource.get_self_resource())
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if not resource.is_copyable:
+        if not resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=request.user):
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = self._get_request_params(request)
@@ -1240,6 +1248,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
 
     def _get_request_params(self, request, encode=False):
         try:
+            if "application/json" in request.content_type:
+                # Handle JSON explicitly
+                return request.data if isinstance(request.data, dict) else json.loads(request.body)
             return (
                 QueryDict(request.body, mutable=True, encoding="UTF-8")
                 if encode
@@ -1283,6 +1294,14 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             for t_id in valid_ids:
                 try:
                     target = get_object_or_404(ResourceBase, pk=t_id)
+                    if not permissions_registry.user_has_perm(
+                        request.user,
+                        target.get_self_resource(),
+                        "view_resourcebase",
+                        include_virtual=True,
+                    ):
+                        error_var.append(t_id)
+                        continue
 
                     if request.method == "POST":
                         _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
@@ -1356,6 +1375,17 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                     {"message": f"The uploaded file type {file_ext} is not allowed."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            if file_ext in ("xml", "sld"):
+                try:
+                    assert_safe_xml(file.read())
+                except UnsafeXMLError:
+                    logger.warning("XML validation failed for uploaded asset.", exc_info=True)
+                    return Response(
+                        {"message": f"The uploaded {file_ext} file is invalid or unsafe."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                finally:
+                    file.seek(0)
         try:
             handler = asset_handler_registry.get_default_handler()
             asset, link = create_asset_and_link(

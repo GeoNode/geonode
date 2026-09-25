@@ -16,7 +16,7 @@
 {% block body_class %}groups{% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
+<div class="page-header" ng-non-bindable>
   <h2 class="page-title">{{ object.title|default:object.slug }}</h2>
   <p>
     {% trans "Last Modified" %}: {{ object.last_modified }}
@@ -25,14 +25,14 @@
 <div class="row">
   <div class="col-md-8 group-details">
     <div class="row">
-      <div class="col-xs-4 col-md-3 group-logo">
+      <div class="col-xs-4 col-md-3 group-logo" ng-non-bindable>
       {% if object.logo_url %}
         <img src="{{ object.logo_url }}" alt="{{ object.title }}" />
       {% else %}
         <!-- <p>{% trans "This group has not created a logo." %}</p> -->
       {% endif %}
       </div>
-      <div class="col-xs-8 col-md-9 group-details">
+      <div class="col-xs-8 col-md-9 group-details" ng-non-bindable>
         <p class="group-desc">{{ object.description }}</p>
         {% if object.keyword_list %}
         <p>

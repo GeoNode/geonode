@@ -33,20 +33,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class IsAdminOrListOnly(rest_framework.permissions.BasePermission):
+class IsSuperUser(rest_framework.permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_superuser:
-            result = True
-        elif view.action == "list":
-            result = True
-        else:
-            result = False
-        return result
+        return request.user and request.user.is_superuser
 
 
 class HarvesterViewSet(NestedViewSetMixin, DynamicModelViewSet):
     permission_classes = [
-        IsAdminOrListOnly,
+        IsSuperUser,
     ]
     queryset = models.Harvester.objects.all()
     serializer_class = serializers.HarvesterSerializer
@@ -67,6 +61,9 @@ class HarvestableResourceViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
+    permission_classes = [
+        IsSuperUser,
+    ]
     queryset = models.HarvestableResource.objects.all()
     pagination_class = GeoNodeApiPagination
     serializer_class = serializers.HarvestableResourceSerializer

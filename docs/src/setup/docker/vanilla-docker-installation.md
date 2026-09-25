@@ -34,6 +34,9 @@ python create-envfile.py
 - `--clientid`: Client id of Geoserver's GeoNode Oauth2 client. A random value is set if left empty
 - `--clientsecret`: Client secret of Geoserver's GeoNode Oauth2 client. A random value is set if left empty
 
+!!! note
+    When password or OAuth2 arguments are omitted, `create-envfile.py` writes random values to `.env`. Review the generated values before starting the containers and keep the admin passwords available for the first login.
+
 ### Build and run
 
 Finally, to build and run GeoNode run the following:
@@ -47,12 +50,16 @@ If the build is successful, you will be able to navigate on GeoNode project at `
 
 ### Login as an administrator on GeoNode
 
-To connect on the GeoNode project as administrator, use the credentials from the `.env` file:
+The admin credentials depend on how `.env` was created. If you used `create-envfile.py` without passing explicit `--geonodepwd` or `--geoserverpwd` values, check the generated `.env` file for the random passwords.
+
+To connect on the GeoNode project as administrator, use the GeoNode credentials from the `.env` file:
 
 ```bash
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD={geonodepwd}
 ```
+
+For production deployments, also verify the generated or configured admin passwords and OAuth2 client credentials before exposing the instance publicly. See [Verify and secure credentials](../configuration/hardening.md#verify-and-secure-credentials).
 
 ### Test the instance and follow the logs
 
@@ -88,7 +95,7 @@ The container performs these initialization steps before starting the applicatio
 3. **Static files** – collects static assets.
 4. **Thesauri autoload** – scans all installed apps for a ``thesauri/`` directory and loads (or updates) any ``.rdf`` files found there. This makes sure thesauri shipped by GeoNode apps are always up-to-date.
 
-See [Thesauri – Initialization at boot](../../../admin/thesauri/thesauri.md#initialization-at-boot) for more details on the thesaurus autoload step.
+See [Thesauri - Initialization at boot](../../admin/thesauri/thesauri.md#initialization-at-boot) for more details on the thesaurus autoload step.
 
 To exit just hit `CTRL+C`.
 
@@ -125,7 +132,7 @@ These variables are automatically set by the `create-envfile.py` script if the `
 !!! warning 
     When `LETSENCRYPT_MODE` is set to production a valid email and email SMPT server are required to make the system generate a valid certificate.
 
-Whenever you change someting on .env file, you will need to rebuild the containers:
+Whenever you change something on .env file, you will need to rebuild the containers:
 
 ```bash
 docker-compose up -d
@@ -133,6 +140,75 @@ docker-compose up -d
 
 !!! Note 
     This command drops any change you might have done manually inside the containers, except for the static volumes.
+
+### Troubleshoot HTTPS configuration
+
+If the server is not reachable through HTTPS, inspect the Nginx configuration in the `nginx` container:
+
+```bash
+docker-compose exec nginx sh
+cd /etc/nginx
+```
+
+Check that the `nginx.https.enabled.conf` symlink exists and points to `nginx.https.available.conf`:
+
+```bash
+ls -lah
+rm -f nginx.https.enabled.conf
+ln -s nginx.https.available.conf nginx.https.enabled.conf
+```
+
+Inspect the actual HTTPS configuration file:
+
+```bash
+vim nginx.https.available.conf
+```
+
+!!! warning
+    Always edit `nginx.https.available.conf`, not `nginx.https.enabled.conf`. The `nginx.https.enabled.conf` file is a symlink, while `nginx.https.available.conf` is the real configuration file where SSL-related changes should be made.
+
+After saving any changes, reload Nginx:
+
+```bash
+nginx -s reload
+exit
+```
+
+### Configure custom SSL certificates
+
+In production deployment mode, GeoNode uses Let's Encrypt certificates by default. To provide your own certificates, copy your local certificate files into the Nginx certificate volume and update the HTTPS configuration.
+
+Assuming your certificate chain and private key are already available on the host as `chain.crt` and `my_geonode.key`, run:
+
+```bash
+docker-compose exec nginx sh -c 'mkdir -p /geonode-certificates/my_geonode'
+
+docker compose cp chain.crt nginx:/geonode-certificates/my_geonode/chain.crt
+docker compose cp my_geonode.key nginx:/geonode-certificates/my_geonode/my_geonode.key
+
+docker-compose exec nginx sh
+cd /etc/nginx
+vim nginx.https.available.conf
+```
+
+!!! note
+    The `docker compose cp` command requires Docker Compose V2. The legacy `docker-compose` command does not support `cp`.
+
+Update the certificate paths:
+
+```diff
+-ssl_certificate     /certificate_symlink/fullchain.pem;
+-ssl_certificate_key /certificate_symlink/privkey.pem;
++ssl_certificate       /geonode-certificates/my_geonode/chain.crt;
++ssl_certificate_key   /geonode-certificates/my_geonode/my_geonode.key;
+```
+
+Reload Nginx when the changes are saved:
+
+```bash
+nginx -s reload
+exit
+```
 
 ### Remove all data and bring your running GeoNode deployment to the initial stage
 
@@ -146,5 +222,3 @@ cd ~/geonode
 # stop containers and remove volumes
 docker-compose down -v
 ```
-
-

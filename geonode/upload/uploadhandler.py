@@ -117,6 +117,19 @@ class FileValidationUploadHandler(FileUploadHandler):
                 self._reject(
                     f"Detected content type '{self.detected_mime}' does not match extension '.{self.extension}'."
                 )
+            if self.extension in ("xml", "sld") and self.detected_mime == "text/plain":
+                # Verify if sample contains valid XML syntax.
+                # Deep check (assert_safe_xml) is/should executed on the full file downstream.
+                from defusedxml.ElementTree import XMLParser
+
+                parser = XMLParser(forbid_dtd=True, forbid_entities=True, forbid_external=True)
+                try:
+                    # Verify that the text/plain sample has valid XML structure
+                    parser.feed(sample)
+                except Exception:
+                    self._reject(
+                        f"Detected content type '{self.detected_mime}' does not match extension '.{self.extension}'."
+                    )
 
         if self.extension in self.magic_description_map:
             self.detected_description = self._detect_description(sample)

@@ -28,19 +28,19 @@ from geonode.celery_app import app
 from importlib import import_module
 
 try:
-    import pylibmc
     import sherlock
-    from sherlock import MCLock as Lock
-
-    sherlock.configure(expire=settings.MEMCACHED_LOCK_EXPIRE, timeout=settings.MEMCACHED_LOCK_TIMEOUT)
-    memcache_client = pylibmc.Client([settings.MEMCACHED_LOCATION], binary=True)
-    lock_type = "MEMCACHED"
-except Exception:
-    from django.core.cache import cache
+    from sherlock import RedisLock as SherlockRedisLock
+    import redis
     from contextlib import contextmanager
+except ImportError:
+    from django.core.cache import cache
 
-    lock_type = "MEMCACHED-LOCAL-CONTEXT"
-    memcache_client = None
+    lock_type = "LOCAL-CONTEXT"
+    redis_client = None
+else:
+    sherlock.configure(expire=settings.REDIS_LOCK_EXPIRE, timeout=settings.REDIS_LOCK_TIMEOUT)
+    redis_client = redis.Redis.from_url(settings.REDIS_CACHE_URL)
+    lock_type = "REDIS"
 
     """
     ref.
@@ -76,9 +76,9 @@ except Exception:
 logger = get_task_logger(__name__)
 
 
-def memcache_lock(lock_id):
+def redis_lock(lock_id):
     logger.info(f"Using '{lock_type}' lock type.")
-    lock = Lock(lock_id, client=memcache_client)
+    lock = SherlockRedisLock(lock_id, client=redis_client)
     return lock
 
 
@@ -88,7 +88,7 @@ class AcquireLock:
         self.blocking = blocking
 
     def __enter__(self):
-        self.lock = memcache_lock(self.lock_id)
+        self.lock = redis_lock(self.lock_id)
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):

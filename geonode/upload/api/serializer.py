@@ -24,6 +24,7 @@ from geonode.base.models import ResourceBase
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
+from geonode.utils import assert_safe_xml, UnsafeXMLError
 
 
 logger = logging.getLogger(__name__)
@@ -65,6 +66,28 @@ class BaseImporterSerializer(DynamicModelSerializer):
                     pass
         return f
 
+    def _validate_xml_payload(self, f, label):
+        if f is None:
+            return f
+        try:
+            assert_safe_xml(f.read())
+        except UnsafeXMLError:
+            logger.warning("%s validation failed for uploaded file.", label, exc_info=True)
+            raise serializers.ValidationError(f"Invalid or unsafe {label} file.")
+        finally:
+            if hasattr(f, "seek"):
+                try:
+                    f.seek(0)
+                except (OSError, ValueError):
+                    pass
+        return f
+
+    def validate_xml_file(self, value):
+        return self._validate_xml_payload(value, "XML")
+
+    def validate_sld_file(self, value):
+        return self._validate_xml_payload(value, "SLD")
+
 
 class ImporterSerializer(BaseImporterSerializer):
     class Meta:
@@ -96,6 +119,18 @@ class OverwriteImporterSerializer(ImporterSerializer):
         fields = ImporterSerializer.Meta.fields + ("resource_pk",)
 
     resource_pk = serializers.IntegerField(required=True)
+
+
+class ResourceCopySerializer(BaseImporterSerializer):
+    class Meta:
+        ref_name = "ResourceCopySerializer"
+        model = ResourceBase
+        view_name = "importer_copy"
+        fields = ("resource_pk", "title", "action")
+
+    resource_pk = serializers.IntegerField(required=True)
+    title = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.COPY.value)
 
 
 class UploadSizeLimitSerializer(BaseDynamicModelSerializer):

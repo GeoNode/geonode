@@ -118,7 +118,8 @@ class Dataset(ResourceBase):
     # internal fields
     objects = DatasetManager()
     workspace = models.CharField(_("Workspace"), max_length=255)
-    store = models.CharField(_("Store"), max_length=255)
+    # Store is nullable for remote layers
+    store = models.CharField(_("Store"), max_length=255, null=True, blank=True)
     name = models.CharField(_("Name"), max_length=255)
     typename = models.CharField(_("Typename"), max_length=255, null=True, blank=True)
     ows_url = models.URLField(

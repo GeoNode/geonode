@@ -30,6 +30,27 @@ By clicking the copy icons, you can copy the current *Bounding Box* or the *Cent
 *Bounding Box and Center*
 ///
 
+- The *Relations* tab lets you see which other resources are linked to this one.
+
+![](img/map_relations.png){ align=center }
+/// caption
+*Relations tab of a map, listing the datasets it uses as layers*
+///
+
+!!! Note
+    The *Relations* tab is only displayed when the resource actually has something to list. When a resource has no relations at all, the tab is hidden rather than shown empty.
+
+The tab lists the related resources you have permission to view. Relations themselves come from two different sources.
+
+**Automatic relations** are derived by GeoNode from the way resources are actually used. They are kept up to date on their own:
+
+- a *Map* lists the *Datasets* it uses as layers;
+- a *Dataset* lists the *Maps* that use it as a layer.
+
+**Manual relations** are links you create yourself, through the *Related resources* field of the metadata editor. Any resource can be linked to any other resource. These links appear in the *Relations* tab alongside the automatic ones. See [Metadata](metadata.md) for how to create them.
+
+Because *GeoStories* and *Dashboards* have no automatic relations, their *Relations* tab appears only once manual links have been added.
+
 - The *Assets* tab presents the current resource download link. Moreover, the user can add additional assets related to this resource.
 
 ![](img/resource_assets.png){ align=center }
@@ -71,6 +92,27 @@ From the lower right toolbar on the thumbnail part of the properties panel, it i
 - Copy the resource URL
 - Copy the OGC resource web services URL (in the case of a `Dataset`)
 
+## Cloning a resource
+
+Cloning creates a new, fully independent resource. It gets its own UUID, its own permissions record, and, for a `Dataset`, its own copy of the data on the GIS backend. Ownership of the clone is transferred to whoever triggers it, regardless of who owned the source.
+
+What is carried over from the source:
+
+- Metadata: title, abstract, category, license, and every other descriptive field
+- Keywords, regions, and thesaurus keywords
+- Contacts and their roles (point of contact, metadata author, and so on)
+- Geographic access limits (per-user and per-group)
+- Permissions: the clone starts with the same permission spec as the source, not the default permissions a newly created resource would get
+- Linked resources (e.g. a `Map`'s linked `Datasets`)
+- Type-specific data: a `Dataset`'s attribute table, a `Map`'s layers, and the underlying files/assets
+
+What does not carry over:
+
+- The owner, which becomes the user who triggered the clone
+- The `featured` flag, always reset to off on the clone
+
+Because the clone owns its own copy of everything above rather than sharing rows with the source, deleting the source resource afterward does not affect the clone.
+
 You can access the resource details page by clicking the button on the right (`View dataset` in the case of a `dataset`) in the overview panel.
 That page looks like the one shown in the picture below.
 
@@ -90,13 +132,4 @@ Beyond the general tabs, there are a few tabs for specific resources:
 ![](img/dataset_attributes_tab.png){ align=center }
 /// caption
 *Dataset Attributes tab*
-///
-
-### Map resource
-
-- The *Relations* tab shows resources linked to the map, such as *Documents*, *Datasets*, *GeoStories*, and *Dashboards*.
-
-![](img/map_relations.png){ align=center }
-/// caption
-*Map Relations tab*
 ///

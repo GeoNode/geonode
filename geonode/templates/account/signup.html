@@ -4,40 +4,43 @@
 {% load bootstrap_tags %}
 {% load account socialaccount %}
 
-{% block title %}{% trans "Sign up" %}{% endblock %}
+{% block head_title %}{% trans "Register" %}{% endblock %}
 
 {% block body_outer %}
-    <div class="page-header">
-        <h2>{% trans "Sign up" %}</h2>
-    </div>
-    <div class="row">
-      {% get_providers as socialaccount_providers %}
-      {% if socialaccount_providers %}
-          <p>{% blocktrans with site.name as site_name %}Sign up with one
-              of your existing third party accounts{% endblocktrans %}</p>
+  <div class="page-header">
+    <h2 style="text-align: center">{% trans "Register" %}</h2>
+  </div>
+
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+
+    {% get_providers as socialaccount_providers %}
+
+    {% if socialaccount_providers %}
+      <p style="text-align:center">{% blocktrans with site.name as site_name %}Sign up with one
+          of your existing third party accounts{% endblocktrans %}</p>
+      <div class="socialaccount_ballot">
           {% include "socialaccount/snippets/provider_list.html" with process="signup" %}
-          {% include "socialaccount/snippets/login_extra.html" %}
-          <hr>
-      {% endif %}
-    </div>
-    {% if account_geonode_local_signup %}
-        <div class="row">
-          <p>{% trans "Create a new local account" %}</p>
-          <form id="signup_form" method="post" action="{% url "account_signup" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
-              <fieldset>
-                  {% csrf_token %}
-                  {{ form|as_bootstrap }}
-                  {% if redirect_field_value %}
-                      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-                  {% endif %}
-                  <div class="form-actions">
-                      <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
-                  </div>
-              </fieldset>
-          </form>
-        </div>
+      </div>
+      <div class="login-or" style="text-align: center; font-size:large;">{% trans 'or' %}</div>
+      {% include "socialaccount/snippets/login_extra.html" %}
     {% endif %}
-{% endblock %}
+
+    {% if account_geonode_local_signup %}
+      <form id="signup_form" role="form" method="POST" action="{% url 'account_signup' %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+        {% csrf_token %}
+        {{ form|as_bootstrap }}
+        {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <button class="btn btn-primary btn-lg btn-block" type="submit">{% trans "Sign up" %}</button>
+      </form>
+    {% endif %}
+  </div>
+  <div class="col-md-2"></div>
+</div>
+{% endblock body_outer %}
 
 {% block extra_script %}
     {{ block.super }}
@@ -45,6 +48,6 @@
         $(document).ready(function() {
             $('#id_username').focus();
             $('#id_captcha').removeClass('form-control');
-        }); 
+        });
     </script>
 {% endblock %}

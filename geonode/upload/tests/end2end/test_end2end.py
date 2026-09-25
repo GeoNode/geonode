@@ -26,6 +26,10 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse
 from dynamic_models.models import FieldSchema, ModelSchema
+from geonode import documents
+from geonode.assets.models import Asset
+from geonode.base.enumerations import SOURCE_TYPE_LOCAL, SOURCE_TYPE_REMOTE
+from geonode.documents.models import Document
 from geonode.harvesting.models import HarvestableResource, Harvester
 from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
@@ -71,6 +75,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         cls.valid_csv = f"{project_dir}/tests/fixture/valid.csv"
 
         cls.missing_geom_csv = f"{project_dir}/tests/fixture/missing_geom.csv"
+        cls.valid_document = os.path.join(os.path.dirname(documents.__file__), "tests", "data", "img.gif")
+        cls.valid_document_to_replace = os.path.join(
+            os.path.dirname(documents.__file__), "tests", "data", "pdf_doc.pdf"
+        )
         cls.url = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
@@ -90,6 +98,20 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
     #    super().tearDown()
     #    for el in Dataset.objects.all():
     #        el.delete()
+
+    def _wait_execution(self, response, _id="execution_id"):
+        # if is async, we must wait. It will wait for 1 min before raise exception
+        if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
+            tentative = 1
+            while (
+                ExecutionRequest.objects.get(exec_id=response.json().get(_id)) != ExecutionRequest.STATUS_FINISHED
+                and tentative <= 15
+            ):
+                time.sleep(2)
+                tentative += 1
+        exc_obj = ExecutionRequest.objects.get(exec_id=response.json().get(_id))
+        if exc_obj.status != ExecutionRequest.STATUS_FINISHED:
+            raise Exception(f"Async still in progress after 1 min of waiting: {model_to_dict(exc_obj)}")
 
     def _cleanup_layers(self, name):
         layer = [x for x in self.cat.get_resources() if name in x.name]
@@ -127,19 +149,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
             else:
                 self.assertEqual(201, response.status_code, response.json())
 
-            # if is async, we must wait. It will wait for 1 min before raise exception
-            if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
-                tentative = 1
-                while (
-                    ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
-                    != ExecutionRequest.STATUS_FINISHED
-                    and tentative <= 15
-                ):
-                    time.sleep(2)
-                    tentative += 1
-            exc_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
-            if exc_obj.status != ExecutionRequest.STATUS_FINISHED:
-                raise Exception(f"Async still in progress after 1 min of waiting: {model_to_dict(exc_obj)}")
+            self._wait_execution(response)
 
             # check if the dynamic model is created
             if settings.IMPORTER_ENABLE_DYN_MODELS:
@@ -450,6 +460,99 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
             payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True
         )
         self._cleanup_layers(name="air_Runways")
+
+
+class ImporterDocumentImportTest(BaseImporterEndToEndTest):
+    """
+    A document is not published on GeoServer and has no alternate,
+    so the assertions are done on the Document itself
+    """
+
+    def _assertdocumentimport(self, payload, title, assert_payload=None, keep_resource=False):
+        try:
+            self.client.force_login(self.admin)
+
+            response = self.client.post(self.url, data=payload)
+            self.assertEqual(201, response.status_code, response.json())
+
+            self._wait_execution(response)
+
+            document = Document.objects.filter(title=title)
+            self.assertTrue(document.exists())
+            document = document.first()
+
+            # the handler must be tracked, is used by the replace and the clone
+            self.assertEqual(
+                "geonode.upload.handlers.document.handler.DocumentFileHandler",
+                document.resourcehandlerinfo_set.first().handler_module_path,
+            )
+
+            for key, value in (assert_payload or {}).items():
+                self.assertEqual(value, getattr(document, key))
+
+            if keep_resource:
+                return document
+        finally:
+            if not keep_resource:
+                Document.objects.filter(title=title).delete()
+
+    @mock.patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
+    @override_settings(ASYNC_SIGNALS=False)
+    def test_import_document(self):
+        payload = {"base_file": open(self.valid_document, "rb"), "action": "document_upload"}
+        assert_payload = {
+            "extension": "gif",
+            "resource_type": "document",
+            "sourcetype": SOURCE_TYPE_LOCAL,
+        }
+        try:
+            document = self._assertdocumentimport(payload, "img.gif", assert_payload=assert_payload, keep_resource=True)
+            self.assertTrue(document.files[0].endswith("img.gif"))
+        finally:
+            Document.objects.filter(title="img.gif").delete()
+
+    @mock.patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
+    @override_settings(ASYNC_SIGNALS=False)
+    def test_import_remote_document(self):
+        payload = {
+            "url": "https://example.org/documents/report.pdf",
+            "title": "Remote document",
+            "action": "document_upload",
+        }
+        assert_payload = {
+            "doc_url": "https://example.org/documents/report.pdf",
+            "extension": "pdf",
+            "resource_type": "document",
+            "sourcetype": SOURCE_TYPE_REMOTE,
+        }
+        self._assertdocumentimport(payload, "Remote document", assert_payload=assert_payload)
+
+    @mock.patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
+    @override_settings(ASYNC_SIGNALS=False)
+    def test_import_document_replace(self):
+        payload = {"base_file": open(self.valid_document, "rb"), "action": "document_upload"}
+        document = self._assertdocumentimport(payload, "img.gif", keep_resource=True)
+        try:
+            payload = {
+                "base_file": open(self.valid_document_to_replace, "rb"),
+                "resource_pk": document.pk,
+                "action": "document_replace",
+            }
+            self.client.force_login(self.admin)
+
+            response = self.client.post(self.url, data=payload)
+            self.assertEqual(201, response.status_code, response.json())
+
+            self._wait_execution(response)
+
+            document.refresh_from_db()
+            # the metadata are preserved, only the file is replaced
+            self.assertEqual("img.gif", document.title)
+            self.assertEqual("pdf", document.extension)
+            self.assertEqual(1, Asset.objects.filter(link__resource=document).count())
+            self.assertTrue(document.files[0].endswith("pdf_doc.pdf"))
+        finally:
+            Document.objects.filter(pk=document.pk).delete()
 
 
 class ImporterRasterImportTest(BaseImporterEndToEndTest):

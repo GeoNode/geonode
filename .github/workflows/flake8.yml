@@ -2,10 +2,10 @@ name: "Code formatting"
 
 on:
   push:
-    branches: [ master, 4.* ]
+    branches: [ master, 5.* ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ master, 4.* ]
+    branches: [ master, 5.* ]
 
 jobs:
   validate:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.12']
+        python-version: [ '3.14']
 
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.user.login != 'dependabot[bot]'}}

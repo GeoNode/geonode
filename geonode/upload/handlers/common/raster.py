@@ -59,6 +59,8 @@ class BaseRasterFileHandler(BaseHandler):
     It must provide the task_lists required to comple the upload
     """
 
+    handler_type = "dataset"
+
     @property
     def default_geometry_column_name(self):
         return "geometry"
@@ -119,8 +121,10 @@ class BaseRasterFileHandler(BaseHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
@@ -151,15 +155,17 @@ class BaseRasterFileHandler(BaseHandler):
                 raise e
         return True
 
-    def pre_validation(self, files, execution_id, **kwargs):
+    def pre_processing(self, files, execution_id, **kwargs):
         """
         Hook for let the handler prepare the data before the validation.
         Maybe a file rename, assign the resource to the execution_id.
         We must ensure that is a LocalAsset because otherwise GeoServer
         is not able to manage the raster file from remote resources
         """
+        _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
         if not isinstance(asset_handler_registry.get_default_handler(), LocalAssetHandler):
             raise ImportException("Only LocalAsset can be used for publishing raster data")
+        return _data, execution_id
 
     def create_asset_and_link(self, resource, files, action=None):
         asset = super().create_asset_and_link(resource, files, action=action)

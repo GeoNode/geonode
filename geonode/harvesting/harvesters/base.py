@@ -194,11 +194,11 @@ class BaseHarvesterWorker(abc.ABC):
             "title": harvested_info.resource_descriptor.identification.title,
             "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
         }
+        # A harvested resource always lives on the remote service, no matter what it looks like.
+        # `subtype` describes the data instead, so it is left to each worker.
+        defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
         if harvested_info.resource_descriptor.identification.lonlat_extent:
             defaults["ll_bbox_polygon"] = harvested_info.resource_descriptor.identification.lonlat_extent
-        else:
-            defaults["subtype"] = "remote"
-            defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
         return {key: value for key, value in defaults.items() if value is not None}
 
     def update_geonode_resource(

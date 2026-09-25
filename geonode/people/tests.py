@@ -294,6 +294,38 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertIn("Profile of bobby", content)
         self.assertIn(bobby.voice, content)
 
+    def test_profile_edit_rejects_disallowed_characters(self):
+        admin = get_user_model().objects.get(username="admin")
+        previous_last_name = admin.last_name
+        payload = "{{7*6}}"
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        response = self.client.post(
+            reverse("profile_edit", args=[admin.username]),
+            data={
+                "first_name": admin.first_name,
+                "last_name": payload,
+                "email": admin.email,
+                "organization": admin.organization or "",
+                "profile": admin.profile or "",
+                "position": admin.position or "",
+                "voice": admin.voice or "",
+                "fax": admin.fax or "",
+                "delivery": admin.delivery or "",
+                "city": admin.city or "",
+                "area": admin.area or "",
+                "zipcode": admin.zipcode or "",
+                "country": admin.country or "",
+                "language": admin.language,
+                "keywords": "",
+                "timezone": admin.timezone or "",
+            },
+        )
+
+        self.assertContains(response, "This field contains characters that are not allowed.")
+        admin.refresh_from_db()
+        self.assertEqual(admin.last_name, previous_last_name)
+
     def _facebook_extractor_init(self):
         data = {
             "email": "phony_mail",
@@ -1262,12 +1294,36 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={})
-        # response should be 404
-        self.assertEqual(response.status_code, 404)
+        # a missing newOwner is a bad request, not a missing object
+        self.assertEqual(response.status_code, 400)
         # check that bobby still owns the resources
         self.assertTrue(bobby_resources.exists())
         later_bobby_resources = ResourceBase.objects.filter(owner=bobby).all()
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
+
+    def test_transfer_resources_without_current_owner(self):
+        """
+        currentOwner is optional: it defaults to the user the resources are read from.
+        Sent as JSON, so `resources` is absent rather than an empty list.
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        norman = get_user_model().objects.get(username="norman")
+
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        bobby_resources = ResourceBase.objects.filter(owner=bobby)
+        prior_bobby_resources = set(bobby_resources.all())
+        self.assertTrue(bobby_resources.exists())
+
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"newOwner": norman.id},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(bobby_resources.exists())
+        self.assertTrue(prior_bobby_resources.issubset(set(ResourceBase.objects.filter(owner=norman).all())))
 
     def test_transfer_resource_subset(self):
         """
@@ -1360,10 +1416,6 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         LANGUAGES=(
             ("en-us", "English"),
             ("it-it", "Italiano"),
-        ),
-        PROFILE_LANGUAGE_CHOICES=(
-            ("en", "English"),
-            ("it", "Italiano"),
         ),
     )
     def test_authenticated_user_language_switch_stores_profile_code_from_runtime_code(self):

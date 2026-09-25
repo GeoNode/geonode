@@ -4730,10 +4730,8 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#, fuzzy
-#| msgid "dataset"
 msgid "Datasets"
-msgstr "دیتاست"
+msgstr "مجموعه‌داده‌ها"
 
 msgid "People"
 msgstr "کاربران"
@@ -5210,7 +5208,7 @@ msgstr ""
 msgid "Log in"
 msgstr "ورود"
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr "ورود به حساب کاربری"
 
 #, python-format

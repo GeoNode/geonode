@@ -419,49 +419,140 @@ If `authentication` is not provided and the WMS URL matches a registered Remote 
 
 ### Documents
 
-Documents can be uploaded as form data.
+Documents are uploaded through the same importer endpoint used by the datasets. A document is either a file or a reference to a remote URL, never both.
 
-- API: ``POST /api/v2/documents``
-- Status Code: ``200``
+- API: ``POST /api/v2/uploads/upload``
+- Status Code: ``201``
 
-Example:
+The upload is asynchronous: the response contains the ``execution_id`` of the execution request, the document is created by the background tasks. See [**Tracking dataset upload progress**](#tracking-dataset-upload-progress) to follow it and to get the ID of the new document.
+
+!!! warning "Deprecated"
+    The legacy ``POST /documents/upload/`` endpoint (used by the web UI form, not part of the DRF API) is deprecated in favor of this one. It still works, but every response carries a ``Deprecation: true`` header. The old DRF create endpoint, ``POST /api/v2/documents/``, has already been removed, it now returns ``405``.
+
+**Request parameters:**
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| **`action`** | `String` | Yes | One of the document actions, see the table below. |
+| **`base_file`** | `File` | Yes* | The document to upload. Required unless `url` is provided. |
+| **`url`** | `String` | Yes* | URL of a remote document. Required unless `base_file` is provided. Requires the `add_remote_resource` permission. |
+| **`title`** | `String` | No | Title of the document. Defaults to the file name or to the last segment of the remote URL. |
+| **`extension`** | `String` | No | Extension of the document. Taken from the file/URL name when not provided, so it is needed only when a remote URL does not end with a valid document extension. |
+| **`resource_pk`** | `Integer` | Yes* | Primary key of the document to replace or to duplicate. Required by the `document_replace` and `document_copy` actions. |
+
+| Action Value | Purpose | Additional Required Parameters |
+| :--- | :--- | :--- |
+| **`document_upload`** | Creates a new document from a file or from a remote URL. | None |
+| **`document_replace`** | Replaces the file (or the URL) of an existing document, its metadata are preserved. | `resource_pk` |
+| **`document_copy`** | Duplicates an existing document, file included. No file is uploaded. Not accepted on this endpoint, see [**Clone a document**](#clone-a-document) below. | `title`<br>`resource_pk` |
+
+The accepted file types are the ones listed in the ``ALLOWED_DOCUMENT_TYPES`` setting and the maximum file size is the one configured for the ``document_upload_size`` slug in the upload size limits. Zip based documents (`zip` itself, but also the Office Open XML and OpenDocument formats) are inspected before being saved and are rejected when they contain unsafe entries.
+
+!!! note
+    `document_copy` is rejected with a 400 on this endpoint: a clone carries no file, so it must go through the copy endpoint shared with the other resources, like every other resource type.
+
+#### Upload a document
+
 ```python
 import requests
 
-url = "http://localhost:8000/api/v2/documents"
-payload={
-    'title': 'An example image'
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
+payload = {
+    "action": "document_upload",
+    "title": "An example image",
 }
-files=[
-    ('doc_file',('image.jpg',open('/home/myuser/image.jpg','rb'),'image/jpeg'))
+files = [
+    ("base_file", ("image.jpg", open("/home/myuser/image.jpg", "rb"), "image/jpeg"))
 ]
 headers = {
-    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+    "Authorization": "Basic dXNlcjpwYXNzd29yZA==",
 }
 response = requests.request("POST", url, headers=headers, data=payload, files=files)
 ```
 
-Documents can also be created to reference remote resources. In this case the ``doc_url`` parameter must be used to set the URL of the remote document.
+#### Upload a remote document
 
-- API: ``POST /api/v2/documents``
-- Status Code: ``200``
+The document is not fetched by GeoNode, only its URL is stored.
 
-Example:
 ```python
 import requests
 
-url = "http://localhost:8000/api/v2/documents"
-payload={
-    'title': 'An example image',
-    'doc_url' : 'http://examples.com/image.jpg'
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
+payload = {
+    "action": "document_upload",
+    "title": "An example remote image",
+    "url": "https://example.com/images/no-extension",
+    "extension": "jpeg",
 }
 headers = {
-    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+    "Authorization": "Basic dXNlcjpwYXNzd29yZA==",
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+```
+
+#### Replace a document
+
+The user must be able to edit the document, the ``edit`` or the ``manage`` permission is required.
+
+```python
+import requests
+
+url = "https://development.demo.geonode.org/api/v2/uploads/upload"
+payload = {
+    "action": "document_replace",
+    "resource_pk": "123",
+}
+files = [
+    ("base_file", ("new_image.jpg", open("/home/myuser/new_image.jpg", "rb"), "image/jpeg"))
+]
+headers = {
+    "Authorization": "Basic dXNlcjpwYXNzd29yZA==",
 }
 response = requests.request("POST", url, headers=headers, data=payload, files=files)
 ```
 
-Notice that if the URL doesn't end with a valid doc extension, the ``extension`` parameter must be used (e.g. ``extension: 'jpeg'``).
+A remote document is replaced the same way, by sending ``url`` instead of ``base_file``. Sending a file to a remote document (or a URL to a local one) switches the document source type accordingly.
+
+#### Clone a document
+
+A clone uploads nothing: it only needs the title of the new document and the ``resource_pk`` of the document to duplicate. The file is cloned along with its asset.
+
+The copy endpoint shared with the other resources performs the clone, taking the document from the path and the title from the ``defaults``:
+
+- API: ``PUT /api/v2/resources/{document_id}/copy``
+- Status Code: ``200``
+
+```python
+import requests
+import json
+
+url = "https://development.demo.geonode.org/api/v2/resources/123/copy"
+payload = {
+    "action": "document_copy",
+    "defaults": json.dumps({"title": "Copy of an example image"}),
+}
+headers = {
+    "Authorization": "Basic dXNlcjpwYXNzd29yZA==",
+}
+response = requests.request("PUT", url, headers=headers, data=payload)
+```
+
+On this endpoint the title is optional, the clone keeps the title of the original document when it is not provided. The action is handled by the importer only for the documents uploaded with it, the ones created by the legacy upload are copied by the resource service as before.
+
+#### Getting the created document
+
+Once the execution is ``finished``, ``GET /api/v2/executionrequest/{execution_id}`` returns the document created (or cloned) by it in the output params:
+
+```json
+"output_params": {
+    "resources": [
+        {
+            "detail_url": "/catalogue/#/document/123",
+            "id": 123
+        }
+    ]
+}
+```
 
 ### Tracking dataset upload progress
 
