@@ -417,13 +417,13 @@ class AssetsDownloadTests(APITestCase):
 
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_download_respects_resource_visibility(self):
-        from geonode.resource.registry import dataset_manager
+        from geonode.resource.manager import resource_manager
         from geonode.layers.models import Dataset
 
         owner = get_user_model().objects.get(username="admin")
         asset = self._setup_test(owner)
 
-        resource = dataset_manager.create(
+        resource = resource_manager.create(
             None,
             resource_type=Dataset,
             defaults={
