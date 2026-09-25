@@ -41,6 +41,7 @@ from geonode.assets.models import Asset, LocalAsset
 from geonode.assets.utils import create_asset, create_asset_and_link, unlink_asset
 from geonode.base.models import ResourceBase, Link
 from geonode.security.registry import permissions_registry
+from rest_framework import status
 
 
 logger = logging.getLogger(__name__)
@@ -661,3 +662,104 @@ class DeleteAssetTests(GeoNodeBaseTestSupport):
         self.assertFalse(Asset.objects.filter(pk=asset_pk).exists())
         self.assertFalse(Link.objects.filter(pk=self.link1.pk).exists())
         self.assertFalse(os.path.exists(asset_file_path))
+
+
+class AssetViewSetPermissionsTests(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.admin = get_user_model().objects.get(username="admin")
+        self.user = get_user_model().objects.create_user(username="asset_user", password="password")
+        self.resource = ResourceBase.objects.create(owner=self.admin, title="Private resource")
+        self.asset, self.link = create_asset_and_link(
+            self.resource,
+            self.admin,
+            [ONE_JSON],
+            title="Private asset",
+        )
+
+    def test_anonymous_cannot_retrieve_private_linked_asset(self):
+        response = self.client.get(reverse("assets-detail", kwargs={"pk": self.asset.pk}))
+
+        self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
+
+    def test_user_with_view_resourcebase_can_retrieve_linked_asset(self):
+        self.resource.set_permissions({"users": {self.user.username: ["view_resourcebase"]}, "groups": {}})
+
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("assets-detail", kwargs={"pk": self.asset.pk}))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_user_without_change_resourcebase_cannot_patch_linked_asset(self):
+        self.resource.set_permissions({"users": {self.user.username: ["view_resourcebase"]}, "groups": {}})
+
+        self.client.force_login(self.user)
+        response = self.client.patch(
+            reverse("assets-detail", kwargs={"pk": self.asset.pk}),
+            data=json.dumps({"title": "SHOULD-NOT-WORK"}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.asset.refresh_from_db()
+        self.assertEqual(self.asset.title, "Private asset")
+
+    def test_user_without_change_resourcebase_cannot_delete_linked_asset(self):
+        self.resource.set_permissions({"users": {self.user.username: ["view_resourcebase"]}, "groups": {}})
+
+        self.client.force_login(self.user)
+        response = self.client.delete(reverse("assets-detail", kwargs={"pk": self.asset.pk}))
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertTrue(Asset.objects.filter(pk=self.asset.pk).exists())
+
+
+class PermissionsRegistryAssetPermTests(GeoNodeBaseTestSupport):
+    """
+    The Asset permission logic lives in the permissions registry now (not in the
+    DRF permission class), so it's tested directly here.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.admin = get_user_model().objects.get(username="admin")
+        self.owner = get_user_model().objects.create_user(username="asset_owner", password="password")
+        self.other_user = get_user_model().objects.create_user(username="other_user", password="password")
+
+    def test_superuser_always_allowed(self):
+        asset, _ = create_asset_and_link(
+            ResourceBase.objects.create(owner=self.owner, title="r1"), self.owner, [ONE_JSON]
+        )
+        self.assertTrue(permissions_registry.user_has_asset_perm(self.admin, asset, method="GET"))
+        self.assertTrue(permissions_registry.user_has_asset_perm(self.admin, asset, method="DELETE"))
+
+    def test_asset_without_linked_resource_falls_back_to_owner(self):
+        asset = LocalAsset.objects.create(title="orphan", owner=self.owner, type="test")
+
+        self.assertTrue(permissions_registry.user_has_asset_perm(self.owner, asset, method="GET"))
+        self.assertTrue(permissions_registry.user_has_asset_perm(self.owner, asset, method="PATCH"))
+        self.assertFalse(permissions_registry.user_has_asset_perm(self.other_user, asset, method="GET"))
+
+    def test_write_requires_change_resourcebase_on_every_linked_resource(self):
+        resource = ResourceBase.objects.create(owner=self.owner, title="r2")
+        asset, _ = create_asset_and_link(resource, self.owner, [ONE_JSON])
+
+        # only view perm granted -> read ok, write denied
+        resource.set_permissions({"users": {self.other_user.username: ["view_resourcebase"]}, "groups": {}})
+        self.assertTrue(permissions_registry.user_has_asset_perm(self.other_user, asset, method="GET"))
+        self.assertFalse(permissions_registry.user_has_asset_perm(self.other_user, asset, method="PATCH"))
+
+        # bump to change perm -> write allowed too
+        resource.set_permissions(
+            {"users": {self.other_user.username: ["view_resourcebase", "change_resourcebase"]}, "groups": {}}
+        )
+        self.assertTrue(permissions_registry.user_has_asset_perm(self.other_user, asset, method="PATCH"))
+
+    def test_anonymous_denied_on_write(self):
+        resource = ResourceBase.objects.create(owner=self.owner, title="r3")
+        asset, _ = create_asset_and_link(resource, self.owner, [ONE_JSON])
+        from guardian.shortcuts import get_anonymous_user
+
+        anonymous = get_anonymous_user()
+
+        self.assertFalse(permissions_registry.user_has_asset_perm(anonymous, asset, method="DELETE"))
