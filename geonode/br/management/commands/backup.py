@@ -244,6 +244,7 @@ class Command(BaseCommand):
         error_backup = "Could not successfully backup GeoServer catalog [{}rest/br/backup/]: {} - {}"
 
         _options = [
+            "BK_SKIP_GWC=true",
             "BK_CLEANUP_TEMP=true",
             "BK_SKIP_SETTINGS=false",
             "BK_SKIP_SECURITY=false",
