@@ -144,6 +144,10 @@ class TestCSVHandler(TestCase):
         actual = self.handler.can_handle({"base_file": "random.file"})
         self.assertFalse(actual)
 
+    def test_csv_allowed_lat_long_column_names(self):
+        self.assertListEqual(["latitude", "lat", "y"], self.handler.possible_lat_column)
+        self.assertListEqual(["longitude", "long", "lon", "x"], self.handler.possible_long_column)
+
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
@@ -192,7 +196,7 @@ class TestCSVHandler(TestCase):
             "-oo",
             "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom",
             "-oo",
-            "X_POSSIBLE_NAMES=x,long*",
+            "X_POSSIBLE_NAMES=x,lon,long*",
             "-oo",
             "Y_POSSIBLE_NAMES=y,lat*",
         ]
