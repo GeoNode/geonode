@@ -268,7 +268,9 @@ class CSVFileHandler(BaseVectorFileHandler):
         self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
         res = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, **kwargs)
-        res.set_bbox_polygon(BBOX, res.srid)
+        exec_obj = orchestrator.get_execution_object(execution_id)
+        if exec_obj.input_params.get("is_tabular"):
+            res.set_bbox_polygon(BBOX, res.srid)
         return res
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
