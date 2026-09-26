@@ -78,6 +78,26 @@ class TestBaseRasterFileHandler(TestCase):
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()
 
     @patch("geonode.upload.handlers.common.raster.import_orchestrator.apply_async")
+    def test_import_resource_should_skip_existing_layer(self, import_orchestrator):
+        exec_id = None
+        try:
+            create_single_dataset(name="test_raster", owner=self.owner)
+            exec_id = orchestrator.create_execution_request(
+                user=self.owner,
+                func_name="funct1",
+                step="step",
+                input_params={"files": self.valid_files, "skip_existing_layer": True},
+            )
+
+            result = self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
+
+            self.assertEqual(([], [], str(exec_id)), result)
+            import_orchestrator.assert_not_called()
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    @patch("geonode.upload.handlers.common.raster.import_orchestrator.apply_async")
     def test_import_resource_should_work(self, import_orchestrator):
         try:
             exec_id = orchestrator.create_execution_request(

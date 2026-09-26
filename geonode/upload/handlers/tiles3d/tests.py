@@ -19,6 +19,7 @@
 import json
 import os
 import shutil
+from unittest.mock import patch
 from django.test import TestCase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.upload.handlers.tiles3d.handler import Tiles3DFileHandler
@@ -68,6 +69,21 @@ class TestTiles3DFileHandler(TestCase):
         )
         self.assertEqual(len(self.handler.TASKS["copy"]), 2)
         self.assertTupleEqual(expected, self.handler.TASKS["copy"])
+
+    @patch("geonode.upload.handlers.tiles3d.handler.import_orchestrator.apply_async")
+    def test_import_resource_should_skip_existing_layer(self, import_orchestrator):
+        create_single_dataset(name="valid_3dtiles", owner=self.owner)
+        exec_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.valid_files, "skip_existing_layer": True},
+        )
+
+        result = self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
+
+        self.assertEqual(([], [], str(exec_id)), result)
+        import_orchestrator.assert_not_called()
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
