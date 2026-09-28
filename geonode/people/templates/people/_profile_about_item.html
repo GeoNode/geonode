@@ -1,7 +1,7 @@
 {% load avatar_tags %}
 {% load i18n %}
 
-<section class="last media">
+<section class="last media" ng-non-bindable>
   {% with 40 as avatar_size %}
   <div class="media-left">
     <a href="{% url "profile_detail" profile.username %}">{% autoescape off %}{% avatar profile avatar_size %}{% endautoescape %}</a>

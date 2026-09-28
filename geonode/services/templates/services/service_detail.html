@@ -13,7 +13,6 @@
       {% if service.type == 'WMS' and service.needs_authentication %}
         <p><strong>SERVICE NOTES:</strong> The service is accessed using configured authentication.</p>
       {% endif %}
-    {% autoescape off %}
         <div id="harvestProgressWrapper" style="display:none;">
             <i class="fa fa-gear"></i> <i id="harvestProgressText"></i>
             <div class="progress" id="harvestProgressContainer">
@@ -49,7 +48,6 @@
             </nav>
         </div>
     {% endif %}
-    {% endautoescape %}
     <div class="modal fade" data-backdrop="static" data-keyboard="false" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

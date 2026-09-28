@@ -71,6 +71,7 @@ from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataFi
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
 from geonode.security.registry import permissions_registry
+from geonode.people.utils import contains_disallowed_template_tokens
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +178,18 @@ class GroupProfileSerializer(BaseDynamicModelSerializer):
     group = DynamicRelationField(GroupSerializer, embed=True, many=False)
     keywords = serializers.SlugRelatedField(many=True, slug_field="slug", read_only=True)
     categories = serializers.SlugRelatedField(many=True, slug_field="slug", queryset=GroupCategory.objects.all())
+
+    def validate(self, data):
+        field_errors = {
+            field_name: "This field contains characters that are not allowed."
+            for field_name, value in data.items()
+            if contains_disallowed_template_tokens(value)
+        }
+
+        if field_errors:
+            raise serializers.ValidationError(field_errors)
+
+        return data
 
 
 class SimpleHierarchicalKeywordSerializer(DynamicModelSerializer):

@@ -24,10 +24,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
 
-from geonode.people.utils import get_profile_language_choices
+from geonode.people.utils import get_profile_language_choices, contains_disallowed_template_tokens
 
 # Ported in from django-registration
 attrs_dict = {"class": "required"}
+DISALLOWED_TEMPLATE_TOKENS = ("{{", "}}", "[[", "]]")
 
 
 class ProfileCreationForm(UserCreationForm):
@@ -77,3 +78,15 @@ class ProfileForm(forms.ModelForm):
             "keywords",
             "timezone",
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        for field_name, value in list(cleaned_data.items()):
+            if contains_disallowed_template_tokens(value):
+                self.add_error(
+                    field_name,
+                    _("This field contains characters that are not allowed."),
+                )
+
+        return cleaned_data

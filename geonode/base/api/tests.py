@@ -3008,7 +3008,7 @@ class BaseApiTests(APITestCase):
 
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
     @override_settings(ASYNC_SIGNALS=False)
-    def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
+    def test_resource_service_copy_with_perms_dataset_keep_original_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
@@ -3049,7 +3049,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
-        self.assertNotIn(
+        self.assertIn(
             "bobby",
             [x.username for x in permissions_registry.get_perms(instance=_resource).get("users", [])],
         )
@@ -3079,6 +3079,23 @@ class BaseApiTests(APITestCase):
         resource = create_single_map(name="test_copy")
 
         self._assertCloningWithPerms(resource)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_resource_service_copy_map_with_json_payload(self):
+        resource = create_single_map(name="test_copy_json_payload")
+        try:
+            self.assertTrue(self.client.login(username="admin", password="admin"))
+            copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
+            response = self.client.put(
+                copy_url,
+                data={"defaults": {"title": "cloned via json body"}},
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            cloned = Map.objects.exclude(pk=resource.pk).latest("id")
+            self.assertEqual(cloned.title, "cloned via json body")
+        finally:
+            resource.delete()
 
     def _assertCloningWithPerms(self, resource):
         # login as bobby
@@ -3454,6 +3471,24 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertEqual(self.doc.id, link_connected.source_id)
 
         self.assertEqual(self.map.id, link_connected.target_id)
+
+    def test_linked_resource_requires_target_view_permission(self):
+        user = get_user_model().objects.create_user(username="linked_resource_user", password="test")
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        LinkedResource.objects.filter(source=self.doc, target=self.map).delete()
+
+        self.doc.set_permissions(
+            {"users": {user.username: ["base.view_resourcebase", "base.change_resourcebase"]}, "groups": {}}
+        )
+        self.map.set_permissions({"users": {}, "groups": {}})
+
+        self.client.force_login(user)
+        response = self.client.post(url, data={"target": [self.map.id]}, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(self.map.id, response.json()["error"])
+        self.assertFalse(LinkedResource.objects.filter(source=self.doc, target=self.map).exists())
 
     def test_insert_linked_resource_invalid_type(self):
         url = reverse("base-resources-linked_resources", args=[self.doc.id])

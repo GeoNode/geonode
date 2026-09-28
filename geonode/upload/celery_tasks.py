@@ -592,15 +592,28 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
     new_alternate = kwargs.get("kwargs").get("new_dataset_alternate")
     from geonode.upload.celery_tasks import import_orchestrator
 
+    resource = None
     try:
-        resource = ResourceBase.objects.filter(alternate=original_dataset_alternate)
-        if not resource.exists():
+        _exec = orchestrator.get_execution_object(exec_id)
+
+        resource = _exec.geonode_resource
+        if not original_dataset_alternate:
+            original_dataset_alternate = resource.alternate if resource else alternate
+            kwargs["kwargs"]["original_dataset_alternate"] = original_dataset_alternate
+        if not resource:
+            resource = ResourceBase.objects.filter(alternate=original_dataset_alternate).first()
+
+        if not resource:
             raise Exception("The resource requested does not exists")
-        resource = resource.first()
         # setting the original resource in dirty_state
         resource.set_dirty_state()
 
-        _exec = orchestrator.get_execution_object(exec_id)
+        if not new_alternate:
+            new_alternate = create_alternate(
+                _exec.input_params.get("title") or resource.title or resource.alternate,
+                exec_id,
+            )
+            kwargs["kwargs"]["new_dataset_alternate"] = new_alternate
 
         # Update input_params with original resource's uuid immediately so the API
         # can find this execution request for original the dirty resource
@@ -609,12 +622,14 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
             input_params={**_exec.input_params, **{"uuid": resource.uuid}},
         )
 
-        workspace = resource.alternate.split(":")[0]
-
-        data_to_update = {
-            "alternate": f"{workspace}:{new_alternate}",
-            "name": new_alternate,
-        }
+        if resource.alternate and ":" in resource.alternate:
+            workspace = resource.alternate.split(":")[0]
+            data_to_update = {
+                "alternate": f"{workspace}:{new_alternate}",
+                "name": new_alternate,
+            }
+        else:
+            data_to_update = {"alternate": new_alternate, "name": new_alternate}
 
         if _exec.input_params.get("title"):
             data_to_update["title"] = _exec.input_params.get("title")
@@ -640,7 +655,7 @@ def copy_geonode_resource(self, exec_id, actual_step, layer_name, alternate, han
             execution_id=_exec,
         )
 
-        assert f"{workspace}:{new_alternate}" == new_resource.alternate
+        assert data_to_update["alternate"] == new_resource.alternate
 
         orchestrator.update_execution_request_status(
             execution_id=str(_exec.exec_id),

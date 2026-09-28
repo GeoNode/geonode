@@ -114,8 +114,10 @@ class BaseRemoteResourceHandler(BaseHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         payload = {
             "action": _data.pop("action", "upload"),
@@ -329,6 +331,33 @@ class BaseRemoteResourceHandler(BaseHandler):
         ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
         return resource
+
+    def copy_geonode_resource(self, alternate, resource, _exec, data_to_update, new_alternate, **kwargs):
+        defaults = {
+            "alternate": new_alternate,
+        }
+
+        if data_to_update.get("title"):
+            defaults["title"] = data_to_update["title"]
+
+        if resource.subtype:
+            defaults["subtype"] = resource.subtype
+
+        if resource.sourcetype:
+            defaults["sourcetype"] = resource.sourcetype
+
+        new_resource = resource_manager_registry.get_for_instance(resource).copy(
+            resource,
+            owner=_exec.user,
+            defaults=defaults,
+        )
+        for link in Link.objects.filter(resource=resource, asset__isnull=True, link_type="data"):
+            link.pk = None
+            link.resource = new_resource
+            link.name = new_alternate
+            link.save()
+
+        return new_resource
 
     def create_link(self, resource, params: dict, name):
         link = Link(

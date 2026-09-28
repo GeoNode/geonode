@@ -1248,6 +1248,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
 
     def _get_request_params(self, request, encode=False):
         try:
+            if "application/json" in request.content_type:
+                # Handle JSON explicitly
+                return request.data if isinstance(request.data, dict) else json.loads(request.body)
             return (
                 QueryDict(request.body, mutable=True, encoding="UTF-8")
                 if encode
@@ -1291,6 +1294,14 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             for t_id in valid_ids:
                 try:
                     target = get_object_or_404(ResourceBase, pk=t_id)
+                    if not permissions_registry.user_has_perm(
+                        request.user,
+                        target.get_self_resource(),
+                        "view_resourcebase",
+                        include_virtual=True,
+                    ):
+                        error_var.append(t_id)
+                        continue
 
                     if request.method == "POST":
                         _, created = LinkedResource.objects.get_or_create(source=resource, target=target)

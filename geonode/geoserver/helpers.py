@@ -2091,7 +2091,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                         "alternate": instance.alternate,
                     }
 
-                if updatebbox and is_monochromatic_image(instance.thumbnail_url):
+                if updatebbox and is_monochromatic_image(instance.thumbnail_url, image_path=instance.thumbnail_path):
                     to_update["thumbnail_url"] = None
 
                 # Save all the modified information in the instance without triggering signals.
