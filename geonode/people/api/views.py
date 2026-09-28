@@ -55,6 +55,7 @@ class UserViewSet(DynamicModelViewSet):
         IsOwnerOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    search_fields = ["username", "first_name", "last_name"]
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
 
