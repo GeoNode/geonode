@@ -127,6 +127,7 @@ class GroupViewSet(DynamicModelViewSet):
         IsManagerEditOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    search_fields = ["title", "slug"]
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -307,6 +308,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         FavoriteFilter,
     ]
     queryset = ResourceBase.objects.select_related("owner").order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
