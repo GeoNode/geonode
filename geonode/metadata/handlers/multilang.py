@@ -120,13 +120,24 @@ class MultiLangHandler(MetadataHandler):
                     instance[def_lang_pname] = main_value
 
     def pre_deserialization(self, resource, jsonschema: dict, instance: dict, partial: set, context: dict):
-        # store default-lang value into original fields
-        for property_name in settings.MULTILANG_FIELDS:
-            logger.debug(f"Copying base multilang field '{property_name}'")
+        # partial is added to while looping: take note of what the caller asked for
+        declared = set(partial) if partial else set()
 
+        for property_name in settings.MULTILANG_FIELDS:
             def_lang_pname = multi.get_multilang_field_name(property_name, multi.get_default_language())
+            ml_pnames = {ml_pname for _, ml_pname in multi.get_multilang_field_names(property_name)}
+
+            # If only base field without any of its multilang fields -> the caller is not aware about multilang
+            # (i.e. a monolingual doc being uploaded): its content is stored as the default language.
+            if property_name in declared and not (declared & ml_pnames) and instance.get(property_name):
+                logger.info(f"Storing multilang unaware '{property_name}' into '{def_lang_pname}'")
+                instance[def_lang_pname] = instance[property_name]
+                partial.add(def_lang_pname)
+
+            # store default-lang value into original fields (read it back: it may have just been set above)
             def_lang_value = instance.get(def_lang_pname, "")
             if def_lang_value:
+                logger.debug(f"Copying base multilang field '{def_lang_pname}' -> '{property_name}'")
                 instance[property_name] = def_lang_value
             else:
                 logger.info(f"Not copying empty value to base multilang field '{property_name}'")
