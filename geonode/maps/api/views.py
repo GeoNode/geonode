@@ -65,6 +65,7 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
         MapPermissionsFilter,
     ]
     queryset = Map.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
