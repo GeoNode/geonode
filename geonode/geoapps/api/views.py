@@ -54,6 +54,7 @@ class GeoAppViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMi
         GeoAppPermissionsFilter,
     ]
     queryset = GeoApp.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = GeoAppSerializer
     pagination_class = GeoNodeApiPagination
 
