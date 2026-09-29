@@ -425,9 +425,9 @@ class PermissionsHandlerRegistry:
         elif isinstance(instance, Group):
             # membership changes only affect the given users, not the whole group
             group_users = kwargs.get("users") or instance.user_set.all()
-            resource_pks_with_perms = [
-                resource.pk for resource in get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True)
-            ]
+            resource_pks_with_perms = list(
+                get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True).values_list("pk", flat=True)
+            )
 
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks_with_perms,
@@ -438,8 +438,7 @@ class PermissionsHandlerRegistry:
             self._clear_cache_keys(cache_keys)
 
         elif isinstance(instance, Profile):
-            resources = get_objects_for_user(instance, "base.view_resourcebase")
-            resource_pks = [resource.pk for resource in resources]
+            resource_pks = list(get_objects_for_user(instance, "base.view_resourcebase").values_list("pk", flat=True))
 
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks,
@@ -596,8 +595,8 @@ class PermissionsHandlerRegistry:
             else:
                 raise TypeError(f"Expected str or list, got {type(cache_keys)}")
 
-    def _user_identifier(self, user):
-        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user():
+    def _user_identifier(self, user, anonymous_user=None):
+        if user.is_anonymous or user.username == "AnonymousUser" or user == (anonymous_user or get_anonymous_user()):
             return "anonymous"
         return f"user:{user.pk}"
 
@@ -615,8 +614,9 @@ class PermissionsHandlerRegistry:
             remove_all_cache: If True, includes the __ALL__ cache key
         """
         cache_keys = []
-        # resolve identifiers once, _user_identifier hits the DB for each call
-        user_identifiers = [self._user_identifier(user) for user in users] if users else []
+        # resolve the anonymous user once, get_anonymous_user hits the DB for each call
+        anonymous_user = get_anonymous_user() if users else None
+        user_identifiers = [self._user_identifier(user, anonymous_user) for user in users or []]
         for pk in resource_pks:
             for identifier in user_identifiers:
                 cache_keys.append(f"resource_perms:{pk}:{identifier}")

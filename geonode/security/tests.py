@@ -3671,7 +3671,7 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         with patch("geonode.security.registry.get_anonymous_user", wraps=get_anonymous_user) as _get_anonymous_user:
             cache_keys = permissions_registry._get_cache_key(resource_pks, users=users)
 
-        self.assertEqual(_get_anonymous_user.call_count, len(users))
+        self.assertEqual(_get_anonymous_user.call_count, 1)
         self.assertEqual(len(cache_keys), len(resource_pks) * len(users))
         self.assertIn(f"resource_perms:{resource_pks[-1]}:user:{self.test_user.pk}", cache_keys)
 
