@@ -614,10 +614,11 @@ class PermissionsHandlerRegistry:
             remove_all_cache: If True, includes the __ALL__ cache key
         """
         cache_keys = []
+        # resolve identifiers once, _user_identifier hits the DB for each call
+        user_identifiers = [self._user_identifier(user) for user in users] if users else []
         for pk in resource_pks:
-            if users:
-                for user in users:
-                    cache_keys.append(f"resource_perms:{pk}:{self._user_identifier(user)}")
+            for identifier in user_identifiers:
+                cache_keys.append(f"resource_perms:{pk}:{identifier}")
 
             if groups:
                 for group in groups:
