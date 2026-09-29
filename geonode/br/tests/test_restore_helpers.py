@@ -203,3 +203,34 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
             finally:
                 # remove temporary hash file
                 os.remove(tmp_hash_file)
+
+
+class GetDbSchemaTests(GeoNodeBaseTestSupport):
+    """Tests for the get_db_schema utility function."""
+
+    def setUp(self):
+        from geonode.br.management.commands.utils.utils import get_db_schema
+
+        self.get_db_schema = get_db_schema
+
+    def test_returns_public_when_no_options(self):
+        result = self.get_db_schema({})
+        self.assertEqual(result, "public")
+
+    def test_returns_public_when_empty_options(self):
+        result = self.get_db_schema({"OPTIONS": {}})
+        self.assertEqual(result, "public")
+
+    def test_returns_public_when_no_search_path(self):
+        result = self.get_db_schema({"OPTIONS": {"connect_timeout": 5}})
+        self.assertEqual(result, "public")
+
+    def test_returns_schema_from_search_path(self):
+        db_settings = {"OPTIONS": {"options": "-c search_path=my_schema,public"}}
+        result = self.get_db_schema(db_settings)
+        self.assertEqual(result, "my_schema")
+
+    def test_returns_first_schema_from_search_path(self):
+        db_settings = {"OPTIONS": {"options": "-c search_path=schema1,schema2,public"}}
+        result = self.get_db_schema(db_settings)
+        self.assertEqual(result, "schema1")

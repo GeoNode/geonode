@@ -164,6 +164,13 @@ class Config:
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
 
 
+def get_db_schema(db_settings):
+    """Extract the configured schema name from a Django database settings dict."""
+    from geonode.utils import get_db_schema as _get_db_schema
+
+    return _get_db_schema(db_settings)
+
+
 def get_db_conn(db_name, db_user, db_port, db_host, db_passwd):
     """Get db conn (GeoNode)"""
     db_host = db_host if db_host is not None else "localhost"
@@ -174,8 +181,8 @@ def get_db_conn(db_name, db_user, db_port, db_host, db_passwd):
     return conn
 
 
-def get_tables(db_user, db_passwd, db_name, db_host="localhost", db_port=5432):
-    select = f"SELECT tablename FROM pg_tables WHERE tableowner = '{db_user}' and schemaname = 'public'"
+def get_tables(db_user, db_passwd, db_name, db_host="localhost", db_port=5432, db_schema="public"):
+    select = f"SELECT tablename FROM pg_tables WHERE tableowner = '{db_user}' and schemaname = '{db_schema}'"
     logger.info(f"Retrieving table list from DB {db_name}@{db_host}: {select}")
 
     try:
@@ -194,13 +201,13 @@ def get_tables(db_user, db_passwd, db_name, db_host="localhost", db_port=5432):
         conn.close()
 
 
-def truncate_tables(db_name, db_user, db_port, db_host, db_passwd):
+def truncate_tables(db_name, db_user, db_port, db_host, db_passwd, db_schema="public"):
     """HARD Truncate all DB Tables"""
     db_host = db_host if db_host is not None else "localhost"
     db_port = db_port if db_port is not None else 5432
 
     logger.info(f"Truncating the tables in DB {db_name} @{db_host}:{db_port} for user {db_user}")
-    pg_tables = get_tables(db_user, db_passwd, db_name, db_host, db_port)
+    pg_tables = get_tables(db_user, db_passwd, db_name, db_host, db_port, db_schema)
     logger.info(f"Tables found: {pg_tables}")
 
     conn = get_db_conn(db_name, db_user, db_port, db_host, db_passwd)
@@ -227,13 +234,13 @@ def truncate_tables(db_name, db_user, db_port, db_host, db_passwd):
         conn.close()
 
 
-def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder):
+def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder, db_schema="public"):
     """Dump Full DB into target folder"""
     db_host = db_host if db_host is not None else "localhost"
     db_port = db_port if db_port is not None else 5432
 
     logger.info("Dumping data tables")
-    pg_tables = get_tables(db_user, db_passwd, db_name, db_host, db_port)
+    pg_tables = get_tables(db_user, db_passwd, db_name, db_host, db_port, db_schema)
     logger.info(f"Tables found: {pg_tables}")
 
     include_filter = config.gs_data_datasetname_filter
@@ -313,9 +320,9 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
                 logger.error(f"ERR:: {cproc.stderr}")
 
 
-def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
+def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd, db_schema="public"):
     logger.info("Dropping existing GeoServer vector data from DB")
-    pg_tables = get_tables(db_user, db_passwd, db_name, db_host, db_port)
+    pg_tables = get_tables(db_user, db_passwd, db_name, db_host, db_port, db_schema)
     bad_tables = []
 
     conn = get_db_conn(db_name, db_user, db_port, db_host, db_passwd)
