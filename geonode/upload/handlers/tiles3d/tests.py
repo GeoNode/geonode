@@ -19,6 +19,7 @@
 import json
 import os
 import shutil
+from unittest.mock import patch
 from django.test import TestCase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.upload.handlers.tiles3d.handler import Tiles3DFileHandler
@@ -26,10 +27,11 @@ from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.models import UploadParallelismLimit
-from geonode.upload.api.exceptions import UploadParallelismLimitException
+from geonode.upload.api.exceptions import UploadParallelismLimitException, ImportException
 from geonode.base.populate_test_data import create_single_dataset
 from osgeo import ogr
 from geonode.assets.handlers import asset_handler_registry
+from geonode.base.models import ResourceBase
 
 
 class TestTiles3DFileHandler(TestCase):
@@ -68,6 +70,101 @@ class TestTiles3DFileHandler(TestCase):
         )
         self.assertEqual(len(self.handler.TASKS["copy"]), 2)
         self.assertTupleEqual(expected, self.handler.TASKS["copy"])
+
+    @patch("geonode.upload.handlers.tiles3d.handler.import_orchestrator.apply_async")
+    def test_import_resource_should_skip_existing_layer(self, import_orchestrator):
+        ResourceBase.objects.create(
+            title="valid_3dtiles",
+            alternate="valid_3dtiles",
+            owner=self.owner,
+            resource_type="dataset",
+            subtype="3dtiles",
+        )
+        exec_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.valid_files, "skip_existing_layer": True},
+        )
+
+        with self.assertRaisesMessage(
+            ImportException,
+            "No new layers were detected in your upload. "
+            "Existing layers were left unchanged, so no updates were made.",
+        ):
+            self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
+
+        import_orchestrator.assert_not_called()
+
+    @patch("geonode.upload.handlers.tiles3d.handler.import_orchestrator.apply_async")
+    def test_import_resource_should_import_when_layer_is_not_skipped(self, import_orchestrator):
+        other_owner, _ = get_user_model().objects.get_or_create(username="other-3dtiles-owner")
+        cases = (
+            (False, self.owner, False),
+            (None, self.owner, False),
+            (True, other_owner, False),
+            (True, self.owner, True),
+        )
+        for index, (flag, owner, vector) in enumerate(cases):
+            with self.subTest(flag=flag, owner=owner, vector=vector):
+                layer_name = f"tiles_{index}"
+                if vector:
+                    create_single_dataset(name=layer_name, owner=owner)
+                else:
+                    ResourceBase.objects.create(
+                        title=layer_name,
+                        alternate=layer_name,
+                        owner=owner,
+                        resource_type="dataset",
+                        subtype="3dtiles",
+                    )
+                params = {"original_zip_name": layer_name}
+                if flag is not None:
+                    params["skip_existing_layer"] = flag
+                exec_id = orchestrator.create_execution_request(
+                    user=self.owner,
+                    func_name="funct1",
+                    step="step",
+                    input_params=params,
+                )
+                result = self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
+                self.assertEqual(layer_name, result[0])
+                if flag:
+                    self.assertEqual(layer_name, result[1])
+                else:
+                    self.assertNotEqual(layer_name, result[1])
+                import_orchestrator.assert_called_once()
+                import_orchestrator.reset_mock()
+
+    @patch("geonode.upload.handlers.tiles3d.handler.import_orchestrator.apply_async")
+    def test_import_resource_should_not_skip_non_3d_resource(self, import_orchestrator):
+        for resource_type, subtype in (("document", "pdf"), ("dataset", "vector")):
+            with self.subTest(resource_type=resource_type, subtype=subtype):
+                layer_name = f"non_3d_{resource_type}"
+                resource = ResourceBase.objects.create(
+                    title=layer_name,
+                    alternate=layer_name,
+                    owner=self.owner,
+                    resource_type=resource_type,
+                    subtype=subtype,
+                )
+                original = ResourceBase.objects.filter(pk=resource.pk).values().get()
+                exec_id = orchestrator.create_execution_request(
+                    user=self.owner,
+                    func_name="funct1",
+                    step="step",
+                    action="upload",
+                    input_params={"original_zip_name": layer_name, "skip_existing_layer": True},
+                )
+
+                result = self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
+
+                self.assertEqual(layer_name, result[0])
+                self.assertNotEqual(layer_name, result[1])
+                import_orchestrator.assert_called_once()
+                self.assertEqual(result[1], import_orchestrator.call_args.args[0][5])
+                self.assertEqual(original, ResourceBase.objects.filter(pk=resource.pk).values().get())
+                import_orchestrator.reset_mock()
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")

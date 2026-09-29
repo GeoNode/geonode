@@ -609,6 +609,58 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(1, len(valid_layer))
         self.assertEqual("mattia_test", valid_layer[0].GetName())
 
+    def test_existing_layers_are_filtered_only_during_import(self):
+        handler = GPKGFileHandler()
+        execution_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="import_resource",
+            step="geonode.upload.import_resource",
+            action="upload",
+            input_params={"skip_existing_layer": True},
+        )
+        source = handler.open_source_file(self.valid_files)
+        layers = handler._select_valid_layers(source, execution_id=str(execution_id))
+        self.assertEqual([self.layer.name], [layer.GetName() for layer in layers])
+        published = handler.extract_resource_to_publish(self.valid_files, "upload", self.layer.name, self.layer.name)
+        self.assertEqual(self.layer.name, published[0]["name"])
+        with self.assertLogs("importer", level="INFO") as logs:
+            with self.assertRaisesMessage(ImportException, "No new layers were detected in your upload."):
+                handler._select_valid_layers(source, execution_id=str(execution_id), filter_existing=True)
+        self.assertIn(f"Skipping existing layer: {self.layer.name}", [record.message for record in logs.records])
+
+    def test_skip_filter_preserves_disabled_flag_and_other_owners(self):
+        handler = GPKGFileHandler()
+        other_user, _ = get_user_model().objects.get_or_create(username="skip-existing-other-owner")
+        for user, params in (
+            (self.owner, {}),
+            (self.owner, {"skip_existing_layer": False}),
+            (other_user, {"skip_existing_layer": True}),
+        ):
+            with self.subTest(user=user, params=params):
+                execution_id = orchestrator.create_execution_request(
+                    user=user,
+                    func_name="import_resource",
+                    step="geonode.upload.import_resource",
+                    action="upload",
+                    input_params=params,
+                )
+                layers = handler._select_valid_layers(
+                    handler.open_source_file(self.valid_files), execution_id=str(execution_id), filter_existing=True
+                )
+                self.assertEqual([self.layer.name], [layer.GetName() for layer in layers])
+
+    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.open_source_file", return_value=[None])
+    def test_empty_input_does_not_report_existing_layers(self, open_source):
+        execution_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="import_resource",
+            step="geonode.upload.import_resource",
+            action="upload",
+            input_params={"skip_existing_layer": True},
+        )
+        with self.assertRaisesMessage(Exception, "No valid layers found"):
+            self.handler.import_resource(self.valid_files, str(execution_id))
+
     @override_settings(MEDIA_ROOT="/tmp")
     def test_perform_last_step(self):
         """
