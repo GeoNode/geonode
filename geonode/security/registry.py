@@ -423,7 +423,8 @@ class PermissionsHandlerRegistry:
             self._clear_cache_keys(cache_keys if cache_keys else [])
 
         elif isinstance(instance, Group):
-            group_users = instance.user_set.all()
+            # membership changes only affect the given users, not the whole group
+            group_users = kwargs.get("users") or instance.user_set.all()
             resource_pks_with_perms = [
                 resource.pk for resource in get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True)
             ]
@@ -592,15 +593,19 @@ class PermissionsHandlerRegistry:
             remove_all_cache: If True, includes the __ALL__ cache key
         """
         cache_keys = []
+        # resolve the anonymous user once, get_anonymous_user hits the DB for each call
+        anonymous_user = get_anonymous_user() if users else None
+        user_identifiers = [
+            (
+                "anonymous"
+                if user.is_anonymous or user.username == "AnonymousUser" or user == anonymous_user
+                else f"user:{user.pk}"
+            )
+            for user in users or []
+        ]
         for pk in resource_pks:
-            if users:
-                for user in users:
-                    user_identifier = (
-                        "anonymous"
-                        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user()
-                        else f"user:{user.pk}"
-                    )
-                    cache_keys.append(f"resource_perms:{pk}:{user_identifier}")
+            for identifier in user_identifiers:
+                cache_keys.append(f"resource_perms:{pk}:{identifier}")
 
             if groups:
                 for group in groups:

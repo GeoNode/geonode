@@ -3648,6 +3648,37 @@ class TestPermissionsCaching(GeoNodeBaseTestSupport):
         self.assertIsNotNone(cache.get(cache_key_r1))
         self.assertIsNotNone(cache.get(cache_key_r2))
 
+    def test_cache_key_resolves_user_identifier_once_per_user(self):
+        """Cache key generation must not query the anonymous user for every resource/user pair."""
+        resource_pks = [resource.pk for resource in self.resources]
+        users = [self.admin_user, self.test_user, self.test_user_owner]
+
+        with patch("geonode.security.registry.get_anonymous_user", wraps=get_anonymous_user) as _get_anonymous_user:
+            cache_keys = permissions_registry._get_cache_key(resource_pks, users=users)
+
+        self.assertEqual(_get_anonymous_user.call_count, 1)
+        self.assertEqual(len(cache_keys), len(resource_pks) * len(users))
+        self.assertIn(f"resource_perms:{resource_pks[-1]}:user:{self.test_user.pk}", cache_keys)
+
+    def test_joining_group_clears_only_member_cache(self):
+        """Joining a group must clear only the joining user's cache, not the other members' or the group's."""
+        test_resource = self.resources[0]
+        member_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        joining_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        try:
+            self.test_group_profile.join(self.test_user, role=GroupMember.MEMBER)
+
+            self.assertIsNone(cache.get(joining_key))
+            self.assertIsNotNone(cache.get(member_key))
+            self.assertIsNotNone(cache.get(group_key))
+        finally:
+            self.test_group_profile.leave(self.test_user)
+
     def test_cache_key_generation_consistency(self):
         """
         Test that the _get_cache_key method generates consistent and correct cache keys
