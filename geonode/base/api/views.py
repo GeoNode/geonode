@@ -595,7 +595,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                     func_name="remove_permissions",
                     geonode_resource=resource,
                     action="permissions",
-                    input_params={"uuid": request_params.get("uuid", resource.uuid)},
+                    input_params={"uuid": resource.uuid},
                 )
             elif request.method in ["PUT", "PATCH"]:
                 user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
@@ -636,7 +636,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                     geonode_resource=resource,
                     action="permissions",
                     input_params={
-                        "uuid": request_params.get("uuid", resource.uuid),
+                        "uuid": resource.uuid,
                         "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get("created", False),
                     },
@@ -1052,7 +1052,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                 geonode_resource=resource,
                 action="update",
                 input_params={
-                    "uuid": request_params.get("uuid", resource.uuid),
+                    "uuid": resource.uuid,
                     "xml_file": request_params.get("xml_file", None),
                     "metadata_uploaded": request_params.get("metadata_uploaded", False),
                     "vals": request_params.get("vals", "{}"),

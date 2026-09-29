@@ -263,6 +263,74 @@ class BaseApiTests(APITestCase):
         finally:
             group.delete()
 
+    def test_resource_permissions_use_url_resource(self):
+        request_user = get_user_model().objects.create_user(username="request-user", password="request-user")
+        other_user = get_user_model().objects.create_user(username="other-user", password="other-user")
+
+        url_resource = Document.objects.create(
+            title="URL Resource",
+            owner=request_user,
+            resource_type="document",
+        )
+        url_resource.set_permissions({"users": {"request-user": ["manage"]}, "groups": {}})
+
+        body_resource = Document.objects.create(
+            title="Body Resource",
+            owner=other_user,
+            resource_type="document",
+        )
+        body_resource.set_permissions({"users": {}, "groups": {}})
+
+        self.client.login(username="request-user", password="request-user")
+        response = self.client.delete(
+            f"/api/v2/resources/{url_resource.pk}/permissions/",
+            data={"uuid": str(body_resource.uuid)},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        execution_request = ExecutionRequest.objects.latest("created")
+        self.assertEqual(execution_request.input_params["uuid"], str(url_resource.uuid))
+
+    def test_resource_update_uses_url_resource(self):
+        request_user = get_user_model().objects.create_user(username="update-user", password="update-user")
+        other_user = get_user_model().objects.create_user(username="other-update-user", password="other-update-user")
+
+        url_resource = Document.objects.create(
+            title="URL Update Resource",
+            owner=request_user,
+            resource_type="document",
+        )
+        url_resource.set_permissions({"users": {"update-user": ["manage"]}, "groups": {}})
+
+        body_resource = Document.objects.create(
+            title="Body Update Resource",
+            owner=other_user,
+            resource_type="document",
+        )
+        body_resource.set_permissions({"users": {}, "groups": {}})
+
+        self.client.login(username="update-user", password="update-user")
+        response = self.client.put(
+            f"/api/v2/resources/{url_resource.pk}/update/",
+            data={
+                "uuid": str(body_resource.uuid),
+                "vals": "{}",
+                "regions": "[]",
+                "keywords": "[]",
+                "custom": "{}",
+                "metadata_uploaded": False,
+                "notify": False,
+            },
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        execution_request = ExecutionRequest.objects.latest("created")
+        self.assertEqual(execution_request.input_params["uuid"], str(url_resource.uuid))
+
     def test_group_resources_shows_related_permissions(self):
         """
         Calling the resources endpoint of the groups should return only resources
