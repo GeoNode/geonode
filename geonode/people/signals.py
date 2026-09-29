@@ -148,12 +148,14 @@ def sync_group_members(sender, instance, action, reverse, **kwargs):
     user_groups_ids = set(instance.groups.values_list("id", flat=True))
     group_profiles = GroupProfile.objects.filter(group_id__in=user_groups_ids)
 
-    for group_profile in group_profiles:
-        GroupMember.objects.get_or_create(
-            group=group_profile,
-            user=instance,
-            defaults={"role": GroupMember.MEMBER},
-        )
+    # bulk_create skips GroupMember.save(), the auth group is already assigned and
+    # _handle_perms would recompute perms for every resource/user of the group
+    GroupMember.objects.bulk_create(
+        [
+            GroupMember(group=group_profile, user=instance, role=GroupMember.MEMBER)
+            for group_profile in group_profiles.exclude(groupmember__user=instance)
+        ]
+    )
 
     stale_members = GroupMember.objects.filter(user=instance).exclude(group__group_id__in=user_groups_ids)
     for member in stale_members:
