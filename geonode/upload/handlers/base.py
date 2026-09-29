@@ -323,9 +323,6 @@ class BaseHandler(ABC):
         We use replace because it looks to be one of the fasted options:
         https://stackoverflow.com/questions/3411771/best-way-to-replace-multiple-characters-in-a-string
         """
-        prefix = name[0]
-        if prefix.isnumeric():
-            name = name.replace(name[0], "_")
         name = name.lower()
         # Replace specific chars with underscore in one pass
         name = re.sub(r"[-# \\&]", "_", name)
@@ -333,7 +330,13 @@ class BaseHandler(ABC):
         # Remove unwanted characters in one pass
         name = re.sub(r'[.(),!"$%\'*+/:;<=>?@\[\]^`{|}~]', "", name)
 
-        return slugify.slugify(name[:62], separator="_")
+        name = slugify.slugify(name[:62], separator="_")
+
+        # A name must not start with a digit: GeoServer serves such layers as invalid GML (#12749)
+        if name[:1].isdigit():
+            name = f"_{name}"
+
+        return name
 
     def extract_resource_to_publish(self, files, layer_name, alternate, **kwargs):
         """
