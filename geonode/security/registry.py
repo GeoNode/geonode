@@ -425,9 +425,9 @@ class PermissionsHandlerRegistry:
         elif isinstance(instance, Group):
             # membership changes only affect the given users, not the whole group
             group_users = kwargs.get("users") or instance.user_set.all()
-            resource_pks_with_perms = [
-                resource.pk for resource in get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True)
-            ]
+            resource_pks_with_perms = list(
+                get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True).values_list("pk", flat=True)
+            )
 
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks_with_perms,
@@ -437,8 +437,7 @@ class PermissionsHandlerRegistry:
             self._clear_cache_keys(cache_keys if cache_keys else [])
 
         elif isinstance(instance, Profile):
-            resources = get_objects_for_user(instance, "base.view_resourcebase")
-            resource_pks = [resource.pk for resource in resources]
+            resource_pks = list(get_objects_for_user(instance, "base.view_resourcebase").values_list("pk", flat=True))
 
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks,
