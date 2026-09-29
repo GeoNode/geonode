@@ -406,25 +406,29 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         patch_upload.apply_async.side_effect = MagicMock()
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
-        payload = {
-            "base_file": SimpleUploadedFile(
-                name="issue14377.geojson",
-                content=(
-                    b'{"type": "FeatureCollection", "features": '
-                    b'[{"type": "Feature", "properties": {}, "geometry": '
-                    b'{"type": "Point", "coordinates": [1, 2]}}]}'
-                ),
-            ),
-            "store_spatial_files": True,
-            "skip_existing_layers": True,
-            "action": "upload",
-        }
+        for flag in (True, False, None):
+            with self.subTest(flag=flag):
+                payload = {
+                    "base_file": SimpleUploadedFile(
+                        name="issue14377.geojson",
+                        content=(
+                            b'{"type": "FeatureCollection", "features": '
+                            b'[{"type": "Feature", "properties": {}, "geometry": '
+                            b'{"type": "Point", "coordinates": [1, 2]}}]}'
+                        ),
+                    ),
+                    "store_spatial_files": True,
+                    "action": "upload",
+                }
 
-        response = self.client.post(self.url, data=payload)
+                if flag is not None:
+                    payload["skip_existing_layers"] = flag
+                response = self.client.post(self.url, data=payload)
 
-        self.assertEqual(201, response.status_code)
-        execution = ExecutionRequest.objects.get(exec_id=response.json()["execution_id"])
-        self.assertIs(execution.input_params.get("skip_existing_layer"), True)
+                self.assertEqual(201, response.status_code)
+                execution = ExecutionRequest.objects.get(exec_id=response.json()["execution_id"])
+                self.assertIs(execution.input_params.get("skip_existing_layer"), flag is True)
+                self.assertNotIn("skip_existing_layers", execution.input_params)
 
     @patch("geonode.upload.api.views.import_orchestrator")
     def test_geojson_mixed_geometry_succed(self, patch_upload):

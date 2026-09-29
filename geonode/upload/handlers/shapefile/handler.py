@@ -113,7 +113,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
             return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         additional_params = {
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
+            "skip_existing_layer": _data.pop("skip_existing_layers", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),

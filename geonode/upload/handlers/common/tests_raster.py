@@ -25,6 +25,7 @@ from geonode.upload import project_dir
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
+from geonode.upload.api.exceptions import ImportException
 
 
 class TestBaseRasterFileHandler(TestCase):
@@ -89,9 +90,13 @@ class TestBaseRasterFileHandler(TestCase):
                 input_params={"files": self.valid_files, "skip_existing_layer": True},
             )
 
-            result = self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
+            with self.assertRaisesMessage(
+                ImportException,
+                "No new layers were detected in your upload. "
+                "Existing layers were left unchanged, so no updates were made.",
+            ):
+                self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
 
-            self.assertEqual(([], [], str(exec_id)), result)
             import_orchestrator.assert_not_called()
         finally:
             if exec_id:
