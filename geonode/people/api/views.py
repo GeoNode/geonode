@@ -39,6 +39,7 @@ from geonode.people.utils import get_available_users
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from geonode.resource.registry import resource_manager_registry
+from geonode.security.utils import get_user_visible_groups
 
 
 logger = logging.getLogger()
@@ -107,7 +108,7 @@ class UserViewSet(DynamicModelViewSet):
 
         resources = get_visible_resources(
             qs,
-            user,
+            request.user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
@@ -125,6 +126,10 @@ class UserViewSet(DynamicModelViewSet):
         user = self.get_object()
         qs_ids = GroupMember.objects.filter(user=user).values_list("group", flat=True)
         groups = GroupProfile.objects.filter(id__in=qs_ids)
+
+        visible_groups = get_user_visible_groups(request.user, include_public_invite=True)
+        # intersect with visible groups of requesting user
+        groups = groups.filter(id__in=[group.id for group in visible_groups])
         return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
     @action(detail=True, methods=["post"])

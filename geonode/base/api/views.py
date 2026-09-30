@@ -49,6 +49,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from guardian.shortcuts import get_objects_for_group
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
@@ -159,10 +160,25 @@ class GroupViewSet(DynamicModelViewSet):
     def resources(self, request, pk=None):
         """API endpoint allowing to retrieve the Group specific resources."""
         group = self.get_object()
-        resources = group.resources()
+
+        group_resources = get_objects_for_group(
+            group.group,
+            ["base.view_resourcebase", "base.change_resourcebase"],
+            any_perm=True,
+        )
+
+        resources = get_visible_resources(
+            queryset=group_resources,
+            user=request.user,
+            request=request,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
+
         paginator = GeoNodeApiPagination()
         paginator.page_size = request.GET.get("page_size", 10)
-        result_page = paginator.paginate_queryset(list(resources), request)
+        result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
         return paginator.get_paginated_response({"resources": serializer.data})
 
