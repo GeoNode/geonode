@@ -247,6 +247,42 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0]["pk"], map.pk)
 
+    def test_dataset_subresources_respect_request_user_visibility(self):
+        dataset = Dataset.objects.first()
+        map_obj = Map.objects.first()
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
+        map_obj.set_permissions({"users": {}, "groups": {}})
+
+        maplayer = MapLayer.objects.create(
+            map=map_obj,
+            dataset=dataset,
+            name=dataset.alternate,
+            store=dataset.store,
+            local=True,
+        )
+
+        maps_url = f"{reverse('datasets-detail', kwargs={'pk': dataset.pk})}/maps/"
+        maplayers_url = f"{reverse('datasets-detail', kwargs={'pk': dataset.pk})}/maplayers/"
+
+        response = self.client.get(maps_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(map_obj.pk, [item["pk"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(maplayer.pk, [item["pk"] for item in response.json()])
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), map_obj.get_self_resource())
+
+        response = self.client.get(maps_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(map_obj.pk, [item["pk"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(maplayer.pk, [item["pk"] for item in response.json()])
+
     def test_raw_HTML_stripped_properties(self):
         """
         Ensure "raw_*" properties returns no HTML or carriage-return tag

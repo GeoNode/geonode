@@ -315,6 +315,49 @@ class MapsApiTests(APITestCase):
             )
         )
 
+    def test_map_subresources_respect_request_user_visibility(self):
+        map_obj = Map.objects.first()
+        dataset = Dataset.objects.first()
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), map_obj.get_self_resource())
+        dataset.set_permissions({"users": {}, "groups": {}})
+
+        dataset_layer = MapLayer.objects.create(
+            map=map_obj,
+            dataset=dataset,
+            name=dataset.alternate,
+            store=dataset.store,
+            local=True,
+        )
+        external_layer = MapLayer.objects.create(
+            map=map_obj,
+            dataset=None,
+            name="osm_basemap",
+            local=False,
+        )
+
+        datasets_url = f"{reverse('maps-detail', kwargs={'pk': map_obj.pk})}/datasets/"
+        maplayers_url = f"{reverse('maps-detail', kwargs={'pk': map_obj.pk})}/maplayers/"
+
+        response = self.client.get(datasets_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(str(dataset.uuid), [item["uuid"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(dataset_layer.pk, [item["pk"] for item in response.json()])
+        self.assertIn(external_layer.pk, [item["pk"] for item in response.json()])
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
+
+        response = self.client.get(datasets_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(str(dataset.uuid), [item["uuid"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(dataset_layer.pk, [item["pk"] for item in response.json()])
+
     def test_create_map_featured_status_admin(self):
         """
         Post to maps/

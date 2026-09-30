@@ -265,23 +265,69 @@ class BaseApiTests(APITestCase):
 
     def test_group_resources_shows_related_permissions(self):
         """
-        Calling the resources endpoint of the groups should return also the
-        group permission on that specific resource
+        Calling the resources endpoint of the groups should return only resources
+        visible to the requesting user, along with the group permissions on those resources.
         """
         group = GroupProfile.objects.create(slug="group1", title="group1", access="public")
-        bobby = get_user_model().objects.filter(username="bobby").get()
+        bobby = get_user_model().objects.get(username="bobby")
         GroupMember.objects.get_or_create(group=group, user=bobby, role="member")
         dataset = Dataset.objects.first()
         dataset.set_permissions({"groups": {group: ["base.view_resourcebase"]}})
         try:
-            self.assertTrue(self.client.login(username="bobby", password="bob"))
             url = f"{reverse('group-profiles-list')}/{group.id}/resources"
+
+            # Anonymous user cannot see the group-restricted resource
             response = self.client.get(url, format="json")
             self.assertEqual(response.status_code, 200)
+            self.assertNotIn(
+                dataset.pk,
+                [int(resource["pk"]) for resource in response.data["resources"]],
+            )
+
+            # Bobby can see the resource
+            self.assertTrue(self.client.login(username="bobby", password="bob"))
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+
             perms = response.json().get("resources", [])[0].get("perms")
             self.assertListEqual(["view_resourcebase"], perms)
         finally:
             group.delete()
+
+    def test_group_resources_respect_request_user_visibility(self):
+        owner = get_user_model().objects.get(username="admin")
+
+        group, _ = Group.objects.get_or_create(name="group-resources-public-group")
+        group_profile, _ = GroupProfile.objects.get_or_create(
+            group=group,
+            defaults={
+                "slug": "group-resources-public-group",
+                "title": "Group Resources Public Group",
+                "access": "public",
+            },
+        )
+        group_profile.access = "public"
+        group_profile.save()
+
+        resource = Document.objects.create(
+            title="Group Private Document",
+            owner=owner,
+            resource_type="document",
+        )
+        resource.set_permissions({"users": {}, "groups": {}})
+        assign_perm("base.view_resourcebase", group, resource.get_self_resource())
+
+        url = f"{reverse('group-profiles-detail', kwargs={'pk': group_profile.pk})}/resources/"
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(str(resource.uuid), [item["uuid"] for item in response.json()["resources"]])
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), resource.get_self_resource())
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(str(resource.uuid), [item["uuid"] for item in response.json()["resources"]])
 
     def test_users_list(self):
         """
