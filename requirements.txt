@@ -80,7 +80,7 @@ geonode-dynamic-rest==2.3.0.1
 geonode-pinax-notifications==6.0.0.3
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client==4.0.5
+# django-geonode-mapstore-client==5.0.3
 git+https://github.com/GeoNode/geonode-mapstore-client.git@5.0.x#egg=django_geonode_mapstore_client
 django-avatar==8.0.1
 geonode-oauth-toolkit==2.2.2.2
