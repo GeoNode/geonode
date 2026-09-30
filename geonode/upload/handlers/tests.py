@@ -89,12 +89,30 @@ class TestHandlersUtils(TestCase):
         If the layer start with a digit, we should translate as a string
         """
         layer_name = "1layername"
-        expected_name = "layername"
+        expected_name = "_1layername"
         actual = BaseHandler().fixup_name(layer_name)
         self.assertEqual(expected_name, actual)
 
     def test_fixup_name_replace_digits_with_special_character(self):
         layer_name = "5Test-Name# \\&.()!$%*+@[]~end"
-        expected_name = "test_name_end"
+        expected_name = "_5test_name_end"
         actual = BaseHandler().fixup_name(layer_name)
         self.assertEqual(expected_name, actual)
+
+    def test_fixup_name_keeps_names_that_differ_only_in_the_leading_digit_distinct(self):
+        """
+        Ref https://github.com/GeoNode/geonode/issues/14673
+        The leading digit is prefixed, not removed: dropping it made different columns
+        ("3_1a", "6_1a") share a name and the import failed on the unique constraint
+        of the dynamic model.
+        """
+        handler = BaseHandler()
+        actual = [handler.fixup_name(name) for name in ("3_1a", "6_1a", "9_1a", "12_1a")]
+        self.assertEqual(["_3_1a", "_6_1a", "_9_1a", "_12_1a"], actual)
+
+    def test_fixup_name_is_idempotent(self):
+        """A name is normalized more than once on its way into the dynamic model."""
+        handler = BaseHandler()
+        for name in ("3_1a", "1layername", "5Test-Name# \\&.()!$%*+@[]~end", "plain_name"):
+            once = handler.fixup_name(name)
+            self.assertEqual(once, handler.fixup_name(once), name)
