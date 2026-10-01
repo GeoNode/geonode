@@ -196,7 +196,7 @@ class MetadataHandler(metaclass=ABCMeta):
         # Without a null option a nullable oneOf rejects the null it gets when left empty.
         # Never creates the oneOf: that would restrict a field free to take any value
         oneof = subschema.get("oneOf")
-        if not oneof or not MetadataHandler._is_nullable(subschema):
+        if oneof is None or not MetadataHandler._is_nullable(subschema):  # an empty one is to be filled in
             return
 
         if not any("const" in option and option["const"] is None for option in oneof):

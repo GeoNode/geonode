@@ -37,6 +37,10 @@ MAX_VALUE_REPR = 200
 # Max number of problems reported for the schema itself
 MAX_SCHEMA_ERRORS = 20
 
+# Exit codes, combined: a run with both problems exits with 3
+EXIT_INVALID_RESOURCES = 1
+EXIT_INVALID_SCHEMA = 2
+
 
 BASE_FIELDS = ["id", "uuid", "resource_type", "title", "valid", "error_count"]
 ERROR_FIELDS = ["error_path", "error_title", "error_validator", "error_message", "error_value"]
@@ -46,8 +50,14 @@ class Command(BaseCommand):
     help = (
         "Validate the metadata of the GeoNode resources: the jsonschema instance of each resource "
         "is built and validated against the metadata jsonschema. Empty fields are only reported "
-        "when mandatory, and only at top level: within a nested object every unset field is reported"
+        "when mandatory, and only at top level: within a nested object every unset field is reported. "
+        "Exits with 1 if any resource is invalid, 2 if the schema itself is, 3 if both"
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.summary = []  # the lines to be repeated in the report
+        self.schema_errors = 0
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -120,7 +130,6 @@ class Command(BaseCommand):
         log_level = logging.DEBUG if options.get("debug") else logging.INFO
         command_utils.setup_logger(logger_name=logger.name, level=log_level)
 
-        self.summary = []
         validator = self.build_validator(options["lang"], options["check_formats"])
 
         queryset = self.select_resources(options["ids"], options["resource_types"])
@@ -130,8 +139,8 @@ class Command(BaseCommand):
         total = 0
         invalid_count = 0
 
-        # iterator() keeps the memory usage bounded: the polymorphic queryset resolves
-        # the real instances in chunks, so we never hold the whole catalogue at once
+        # iterator() resolves the polymorphic instances in chunks, so the resources are never all
+        # in memory at once. The records being reported are, at some 2kB each
         for resource in queryset.iterator():
             total += 1
             record = self.validate_resource(resource, validator, options["lang"], options["max_errors"])
@@ -147,8 +156,11 @@ class Command(BaseCommand):
 
         self.write_report(records, options)
 
-        if invalid_count:
-            sys.exit(1)
+        exit_code = (EXIT_INVALID_RESOURCES if invalid_count else 0) | (
+            EXIT_INVALID_SCHEMA if self.schema_errors else 0
+        )
+        if exit_code:
+            sys.exit(exit_code)
 
     # -------------------------------------------------------------------
     # Setup
@@ -167,11 +179,12 @@ class Command(BaseCommand):
         # check_schema() would raise on the first problem only: we want to see them all at once
         metaschema_validator = js_validators.validator_for(validator_class.META_SCHEMA, default=validator_class)
         for count, error in enumerate(metaschema_validator(validator_class.META_SCHEMA).iter_errors(schema), 1):
+            self.schema_errors += 1
             if count > MAX_SCHEMA_ERRORS:
-                logger.warning(f"More than {MAX_SCHEMA_ERRORS} problems in the metadata schema, skipping the rest")
+                self.notify(f"More than {MAX_SCHEMA_ERRORS} problems in the metadata schema, skipping the rest")
                 break
             path = "/" + "/".join(str(item) for item in error.absolute_path)
-            logger.warning(f"The metadata schema itself is not valid: {path}: {error.message}")
+            self.notify(f"The metadata schema itself is not valid: {path}: {error.message}")
 
         self.schema = schema
         self.required_fields = set(schema.get("required", []))
