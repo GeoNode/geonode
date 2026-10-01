@@ -124,26 +124,39 @@ class Command(BaseCommand):
             help="Write the report to this file (default: stdout)",
         )
 
+        parser.add_argument(
+            "--schema",
+            dest="schema_file",
+            default=None,
+            help="Read the jsonschema from this file instead of building it through the metadata manager",
+        )
+
+        parser.add_argument(
+            "--instance",
+            dest="instance_files",
+            nargs="+",
+            default=None,
+            help="Validate the jsonschema instances read from these files, one instance per file, "
+            "instead of the stored resources. Not compatible with --id and --resource-type",
+        )
+
         parser.add_argument("--debug", dest="debug", action="store_true", help="Set log level to debug")
 
     def handle(self, *args, **options):
         log_level = logging.DEBUG if options.get("debug") else logging.INFO
         command_utils.setup_logger(logger_name=logger.name, level=log_level)
 
-        validator = self.build_validator(options["lang"], options["check_formats"])
+        if options["instance_files"] and (options["ids"] or options["resource_types"]):
+            raise CommandError("--instance selects the instances by itself: --id and --resource-type do not apply")
 
-        queryset = self.select_resources(options["ids"], options["resource_types"])
-        logger.info(f"Validating {queryset.count()} resource(s)")
+        validator = self.build_validator(options["lang"], options["check_formats"], options["schema_file"])
 
         records = []
         total = 0
         invalid_count = 0
 
-        # iterator() resolves the polymorphic instances in chunks, so the resources are never all
-        # in memory at once. The records being reported are, at some 2kB each
-        for resource in queryset.iterator():
+        for record in self.validate_all(validator, options):
             total += 1
-            record = self.validate_resource(resource, validator, options["lang"], options["max_errors"])
             if not record["valid"]:
                 invalid_count += 1
             if not record["valid"] or options["include_valid"]:
@@ -165,13 +178,14 @@ class Command(BaseCommand):
     # -------------------------------------------------------------------
     # Setup
     # -------------------------------------------------------------------
-    def build_validator(self, lang, check_formats):
+    def build_validator(self, lang, check_formats, schema_file=None):
         try:
             from jsonschema import validators as js_validators
         except ImportError:
             raise CommandError("The 'jsonschema' package is needed by this command. Please install it")
 
-        schema = self.as_json_types(metadata_manager.get_schema(lang))
+        # A schema read from a file is plain JSON already, no django objects to render down
+        schema = self.read_json(schema_file) if schema_file else self.as_json_types(metadata_manager.get_schema(lang))
         validator_class = js_validators.validator_for(schema)
         logger.debug(f"Using validator {validator_class.__name__}")
 
@@ -201,6 +215,13 @@ class Command(BaseCommand):
 
         format_checker = getattr(validator_class, "FORMAT_CHECKER", None) if check_formats else None
         return validator_class(schema, format_checker=format_checker)
+
+    def read_json(self, path):
+        try:
+            with open(path, encoding="utf-8") as infile:
+                return json.load(infile)
+        except (OSError, ValueError) as e:
+            raise CommandError(f"Can not read the JSON file '{path}': {e}")
 
     def as_json_types(self, data):
         """
@@ -242,6 +263,32 @@ class Command(BaseCommand):
     # -------------------------------------------------------------------
     # Validation
     # -------------------------------------------------------------------
+    def validate_all(self, validator, options):
+        """Yield a record per entry, reading them from the given files or from the stored resources"""
+        if options["instance_files"]:
+            logger.info(f"Validating {len(options['instance_files'])} instance file(s)")
+            for path in options["instance_files"]:
+                yield self.validate_file(path, validator, options["max_errors"])
+            return
+
+        queryset = self.select_resources(options["ids"], options["resource_types"])
+        logger.info(f"Validating {queryset.count()} resource(s)")
+
+        # iterator() resolves the polymorphic instances in chunks, so the resources are never all
+        # in memory at once. The records being reported are, at some 2kB each
+        for resource in queryset.iterator():
+            yield self.validate_resource(resource, validator, options["lang"], options["max_errors"])
+
+    def validate_file(self, path, validator, max_errors):
+        instance = self.read_json(path)
+        record = {
+            "id": path,
+            "uuid": instance.get("uuid"),
+            "resource_type": None,  # not part of the schema
+            "title": instance.get("title"),
+        }
+        return self.validate_instance(record, instance, validator, max_errors)
+
     def validate_resource(self, resource, validator, lang, max_errors):
         record = {
             "id": resource.pk,
@@ -271,6 +318,9 @@ class Command(BaseCommand):
                 ],
             )
 
+        return self.validate_instance(record, instance, validator, max_errors)
+
+    def validate_instance(self, record, instance, validator, max_errors):
         # GeoNode injects this key in the instance for testing purposes only (resources titled "*error*")
         instance.pop("extraErrors", None)
 
