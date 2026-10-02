@@ -44,6 +44,7 @@ from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_
 from geonode.base.models import ResourceBase, LinkedResource, ContactRole, UserGeoLimit, GroupGeoLimit
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.metadata.manager import metadata_manager
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
@@ -353,42 +354,44 @@ class BaseResourceManager(ResourceManagerInterface):
         _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
-            try:
-                # if files exist: create an Asset out of them and link it to the Resource
-                asset, link = (None, None)  # safe init in case of exception
-                if defaults.get("files", None):
-                    logger.debug(f"Found files when creating resource {_resource}: {defaults['files']}")
-                    asset, link = create_asset_and_link_dict(_resource, defaults, clone_files=True)
-                elif defaults.get("asset", None):
-                    logger.debug(f"Found asset when creating resource {_resource}: {defaults['asset']}")
-                    link = create_link(_resource, **defaults)
+            # one creation is one metadata change, by whoever is creating the resource
+            with metadata_tracker(resolved_owner):
+                try:
+                    # if files exist: create an Asset out of them and link it to the Resource
+                    asset, link = (None, None)  # safe init in case of exception
+                    if defaults.get("files", None):
+                        logger.debug(f"Found files when creating resource {_resource}: {defaults['files']}")
+                        asset, link = create_asset_and_link_dict(_resource, defaults, clone_files=True)
+                    elif defaults.get("asset", None):
+                        logger.debug(f"Found asset when creating resource {_resource}: {defaults['asset']}")
+                        link = create_link(_resource, **defaults)
 
-                with transaction.atomic():
-                    _resource.set_missing_info()
-                    _resource = self._concrete_resource_manager.create(
-                        uuid, resource_type=resource_type, defaults=resource_dict
+                    with transaction.atomic():
+                        _resource.set_missing_info()
+                        _resource = self._concrete_resource_manager.create(
+                            uuid, resource_type=resource_type, defaults=resource_dict
+                        )
+                    _resource.save()
+                    metadata_dict = infer_default_metadata(_resource.get_real_instance())
+                    # Store the resource creator as metadata Originator contact
+                    if originator:
+                        metadata_dict.setdefault("contacts", {}).setdefault(
+                            "originator",
+                            [{"id": str(originator.id), "label": originator.username}],
+                        )
+                    metadata_manager.update_schema_instance_partial(
+                        _resource,
+                        metadata_dict,
+                        user=resolved_owner,  # on a creation, the owner is who is creating it
                     )
-                _resource.save()
-                metadata_dict = infer_default_metadata(_resource.get_real_instance())
-                # Store the resource creator as metadata Originator contact
-                if originator:
-                    metadata_dict.setdefault("contacts", {}).setdefault(
-                        "originator",
-                        [{"id": str(originator.id), "label": originator.username}],
-                    )
-                metadata_manager.update_schema_instance_partial(
-                    _resource,
-                    metadata_dict,
-                    user=None,
-                )
-                resourcebase_post_save(_resource.get_real_instance())
-                self.finalize_creation_permissions(_resource, owner=resolved_owner)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-            except Exception as e:
-                logger.exception(e)
-                rollback_asset_and_link(asset, link)  # we are not removing the Asset passed in defaults
-                self.delete(_resource.uuid, instance=_resource)
-                raise e
+                    resourcebase_post_save(_resource.get_real_instance())
+                    self.finalize_creation_permissions(_resource, owner=resolved_owner)
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                except Exception as e:
+                    logger.exception(e)
+                    rollback_asset_and_link(asset, link)  # we are not removing the Asset passed in defaults
+                    self.delete(_resource.uuid, instance=_resource)
+                    raise e
         return _resource
 
     def update(
@@ -412,85 +415,88 @@ class BaseResourceManager(ResourceManagerInterface):
             _resource.set_missing_info()
             _resource.metadata_uploaded = metadata_uploaded
             logger.debug(f"Look for xml and finalize Dataset metadata {_resource}")
-            try:
-                with transaction.atomic():
-                    if metadata_uploaded and xml_file:
-                        _md_file = None
-                        try:
-                            _md_file = storage_manager.open(xml_file, mode="r")
-                        except Exception as e:
-                            logger.exception(e)
-                            if os.path.exists(xml_file) and os.path.isfile(xml_file):
-                                _md_file = open(xml_file, mode="r")
-                        if _md_file:
-                            _md_file_content = _md_file.read()
-                            _resource.metadata_xml = _md_file_content
-                            _uuid, vals, regions, keywords, custom = parse_metadata(_md_file_content)
-                            if uuid and uuid != _uuid:
-                                raise ValidationError(
-                                    "The UUID identifier from the XML Metadata is different from the {_resource} one."
-                                )
-                            else:
-                                uuid = _uuid
-
-                    logger.debug(f"Update Dataset with information coming from XML File if available {_resource}")
-
-                    if not kwargs.get("store_spatial_files", True) and vals.get("files", []):
-                        vals.update({"files": []})
-
-                    _resource.save()
-                    _resource = update_resource(
-                        instance=_resource.get_real_instance(),
-                        regions=regions,
-                        keywords=keywords,
-                        vals=vals,
-                    )
-
-                    ji = custom.get("jsoninstance", None)
-                    if not ji:
-                        ji = infer_default_metadata(_resource.get_real_instance())
-                    metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
-
-                    _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-
-                    # The following is only a demo proof of concept for a pluggable WF subsystem
-                    from geonode.resource.processing.models import ProcessingWorkflow
-
-                    _p = ProcessingWorkflow.objects.first()
-                    if _p and _p.is_enabled:
-                        for _task in _p.get_tasks():
-                            _task.execute(_resource)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-            except Exception as e:
-                logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                raise
-            finally:
+            # One update is one metadata change, however many saves it takes. Nobody to name here:
+            # the callers know who asked for it, passing it down to this point is still to be done
+            with metadata_tracker(None):
                 try:
-                    _resource.save(notify=notify)
-                    resourcebase_post_save(_resource.get_real_instance(), kwargs={**kwargs, **custom})
-                    _resource.set_permissions(
-                        created=False,
-                        approval_status_changed=(
-                            vals is not None and any([x in vals for x in ["is_approved", "is_published"]])
-                        ),
-                        group_status_changed=(vals is not None and "group" in vals),
-                    )
-                    if kwargs.get("sld_file", False) and kwargs.get("sld_uploaded", False):
-                        self._concrete_resource_manager.set_style(
-                            method="",
-                            uuid=_resource.uuid,
-                            resource=_resource,
-                            sld_file=kwargs.get("sld_file", False),
-                            sld_uploaded=kwargs.get("sld_uploaded", False),
+                    with transaction.atomic():
+                        if metadata_uploaded and xml_file:
+                            _md_file = None
+                            try:
+                                _md_file = storage_manager.open(xml_file, mode="r")
+                            except Exception as e:
+                                logger.exception(e)
+                                if os.path.exists(xml_file) and os.path.isfile(xml_file):
+                                    _md_file = open(xml_file, mode="r")
+                            if _md_file:
+                                _md_file_content = _md_file.read()
+                                _resource.metadata_xml = _md_file_content
+                                _uuid, vals, regions, keywords, custom = parse_metadata(_md_file_content)
+                                if uuid and uuid != _uuid:
+                                    raise ValidationError(
+                                        "The UUID identifier from the XML Metadata is different from the {_resource} one."
+                                    )
+                                else:
+                                    uuid = _uuid
+
+                        logger.debug(f"Update Dataset with information coming from XML File if available {_resource}")
+
+                        if not kwargs.get("store_spatial_files", True) and vals.get("files", []):
+                            vals.update({"files": []})
+
+                        _resource.save()
+                        _resource = update_resource(
+                            instance=_resource.get_real_instance(),
+                            regions=regions,
+                            keywords=keywords,
+                            vals=vals,
                         )
-                        _resource.set_permissions()
-                    if _resource.state != enumerations.STATE_INVALID:
-                        _resource.set_processing_state(enumerations.STATE_PROCESSED)
+
+                        ji = custom.get("jsoninstance", None)
+                        if not ji:
+                            ji = infer_default_metadata(_resource.get_real_instance())
+                        metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
+
+                        _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
+
+                        # The following is only a demo proof of concept for a pluggable WF subsystem
+                        from geonode.resource.processing.models import ProcessingWorkflow
+
+                        _p = ProcessingWorkflow.objects.first()
+                        if _p and _p.is_enabled:
+                            for _task in _p.get_tasks():
+                                _task.execute(_resource)
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 except Exception as e:
                     logger.exception(e)
+                    _resource.set_processing_state(enumerations.STATE_INVALID)
+                    raise
                 finally:
-                    _resource.clear_dirty_state()
+                    try:
+                        _resource.save(notify=notify)
+                        resourcebase_post_save(_resource.get_real_instance(), kwargs={**kwargs, **custom})
+                        _resource.set_permissions(
+                            created=False,
+                            approval_status_changed=(
+                                vals is not None and any([x in vals for x in ["is_approved", "is_published"]])
+                            ),
+                            group_status_changed=(vals is not None and "group" in vals),
+                        )
+                        if kwargs.get("sld_file", False) and kwargs.get("sld_uploaded", False):
+                            self._concrete_resource_manager.set_style(
+                                method="",
+                                uuid=_resource.uuid,
+                                resource=_resource,
+                                sld_file=kwargs.get("sld_file", False),
+                                sld_uploaded=kwargs.get("sld_uploaded", False),
+                            )
+                            _resource.set_permissions()
+                        if _resource.state != enumerations.STATE_INVALID:
+                            _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                    except Exception as e:
+                        logger.exception(e)
+                    finally:
+                        _resource.clear_dirty_state()
         return _resource
 
     def copy(

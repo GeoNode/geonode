@@ -27,6 +27,7 @@ from geonode.base.models import ResourceBase
 from geonode.indexing.manager import index_manager
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
+from geonode.metadata.tracking.operation import CONTEXT_PRE_INSTANCE
 from geonode.base.i18n import i18nCache
 from geonode.metadata.settings import MODEL_SCHEMA
 
@@ -146,14 +147,15 @@ class MetadataManager:
 
         return instance
 
-    def update_schema_instance(self, resource, request_obj, lang=None, partial=None) -> dict:
+    def update_schema_instance(self, resource, request_obj, lang=None, partial=None, context=None) -> dict:
         # Definition of the json instance
         json_instance = request_obj.data
 
         logger.debug(f"RECEIVED INSTANCE {json_instance}")
         resource = resource.get_real_instance()
         schema = self.get_schema()
-        context = self._init_schema_context(lang)
+        # whatever the caller already knows and the handlers may make use of
+        context = self._init_schema_context(lang) | (context or {})
 
         # We pass the request.user to the context, since it is used by the GroupHandler
         context["user"] = request_obj.user
@@ -243,9 +245,20 @@ class MetadataManager:
         # We can't loop on the payload's field, since post_ or pre_ methods may rely on the whole instance
         # Let's create a full instance by using the old one, merged with the payload
         old_instance = self.build_schema_instance(resource, lang)
-        old_instance.update(json_instance)
-        fake_req = SimpleNamespace(data=old_instance, user=user)
-        return self.update_schema_instance(resource, fake_req, lang, partial=set(json_instance.keys()))
+
+        # The handlers edit the payload in place, so it has to be a copy of its own: the old
+        # instance is handed over as the state preceding the change, and has to stay untouched
+        payload = copy.deepcopy(old_instance)
+        payload.update(json_instance)
+
+        fake_req = SimpleNamespace(data=payload, user=user)
+        return self.update_schema_instance(
+            resource,
+            fake_req,
+            lang,
+            partial=set(json_instance.keys()),
+            context={CONTEXT_PRE_INSTANCE: old_instance},
+        )
 
 
 def _create_test_errors(schema, errors, path, msg_template, create_message=True):
