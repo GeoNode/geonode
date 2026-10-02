@@ -39,7 +39,7 @@ BBOX = [-180, -90, 180, 90]
 DATA_QUALITY_MESSAGE = "Created with GeoNode"
 
 
-def create_dataset(name, title, owner_name, geometry_type, attributes=None):
+def create_dataset(name, title, owner_name, geometry_type, attributes=None, srs="EPSG:4326"):
     """
     Create an empty layer in GeoServer and register it in GeoNode.
     """
@@ -51,7 +51,7 @@ def create_dataset(name, title, owner_name, geometry_type, attributes=None):
     name = get_valid_name(name)
     # we can proceed
     logger.debug("Creating the layer in GeoServer")
-    workspace, datastore = create_gs_dataset(name, title, geometry_type, attributes)
+    workspace, datastore = create_gs_dataset(name, title, geometry_type, attributes, srs=srs)
     logger.debug("Creating the layer in GeoNode")
     return create_gn_dataset(workspace, datastore, name, title, owner_name)
 
@@ -158,7 +158,7 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
     return ds
 
 
-def create_gs_dataset(name, title, geometry_type, attributes=None):
+def create_gs_dataset(name, title, geometry_type, attributes=None, srs="EPSG:4326"):
     """
     Create an empty PostGIS layer in GeoServer with a given name, title,
     geometry_type and attributes.
@@ -201,13 +201,12 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
         )
     attributes_block += "</attributes>"
 
-    # TODO implement others srs and not only EPSG:4326
     xml = (
         "<featureType>"
         f"<name>{name}</name>"
         f"<nativeName>{native_name}</nativeName>"
         f"<title>{title}</title>"
-        "<srs>EPSG:4326</srs>"
+        f"<srs>{srs}</srs>"
         f"<latLonBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[2]}</maxx><miny>{BBOX[1]}</miny><maxy>{BBOX[3]}</maxy>"
         f"<crs>EPSG:4326</crs></latLonBoundingBox>"
         f"{attributes_block}"
