@@ -33,4 +33,6 @@ METADATA_HANDLERS = {
 # multilang is here since it localizes the fields added by the handlers before it, its own included
 FINAL_METADATA_HANDLERS = {
     "multilang": "geonode.metadata.handlers.multilang.MultiLangHandler",
+    # last of all: it reads what every other handler has left behind
+    "tracker": "geonode.metadata.handlers.tracker.TrackerHandler",
 }
