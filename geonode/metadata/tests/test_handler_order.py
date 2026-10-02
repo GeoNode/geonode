@@ -148,9 +148,11 @@ class SetupMetadataHandlersTests(SimpleTestCase):
         self.assertTrue([line for line in logged.output if "'cleaner' is declared in more than one group" in line])
         self.assertEqual(HANDLER_ORDER_DEFAULT, manager.handler_orders["cleaner"])
 
-    def test_the_registered_handlers_run_cleaner_first_and_multilang_last(self):
+    def test_the_registered_handlers_run_cleaner_first_and_tracker_last(self):
         # the manager is the authoritative list: the settings only cover what geonode itself declares
         registered = list(metadata_manager.handlers)
 
         self.assertEqual("metadata_cleaner", registered[0])
-        self.assertEqual("multilang", registered[-1])
+        self.assertEqual("tracker", registered[-1])
+        # multilang localizes what the handlers before it added, the tracker reads what they all left
+        self.assertLess(registered.index("multilang"), registered.index("tracker"))
