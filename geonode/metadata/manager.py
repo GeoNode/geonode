@@ -34,6 +34,11 @@ logger = logging.getLogger(__name__)
 
 CACHE_KEY_SCHEMA = "schema"
 
+# Handlers are called in order: the lower the value, the earlier the handler runs
+HANDLER_ORDER_INITIAL = 0
+HANDLER_ORDER_DEFAULT = 100
+HANDLER_ORDER_FINAL = 1000
+
 
 class MetadataManager:
     """
@@ -47,9 +52,22 @@ class MetadataManager:
     def __init__(self):
         self.root_schema = MODEL_SCHEMA
         self.handlers = {}
+        self.handler_orders = {}
 
-    def add_handler(self, handler_id, handler):
+    def add_handler(self, handler_id, handler, order=HANDLER_ORDER_DEFAULT):
+        """
+        Register a handler, keeping self.handlers sorted by order: handlers may be added at any
+        time, so the position can't be left to the registration sequence alone
+        """
+        self.handler_orders[handler_id] = order
         self.handlers[handler_id] = handler()
+
+        # sorted() is stable: same order means the registration sequence is preserved.
+        # Handlers put in place without add_handler() have no order of their own: they sit in the middle
+        self.handlers = {
+            hid: self.handlers[hid]
+            for hid in sorted(self.handlers, key=lambda hid: self.handler_orders.get(hid, HANDLER_ORDER_DEFAULT))
+        }
 
     def post_init(self):
         """
