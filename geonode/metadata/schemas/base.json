@@ -93,7 +93,7 @@
     }
   },
   "restriction_code_type": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "restrictions",
     "description": "limitation(s) placed upon the access or use of the data.",
     "maxLength": 255
@@ -148,13 +148,13 @@
     "description": "time period covered by the content of the dataset (end)"
   },
   "maintenance_frequency": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "maintenance frequency",
     "description": "frequency with which modifications and deletions are made to the data after it is first produced",
     "maxLength": 255
   },
   "spatial_representation_type": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "spatial representation type",
     "description": "method used to represent geographic information in the dataset.",
     "maxLength": 255
