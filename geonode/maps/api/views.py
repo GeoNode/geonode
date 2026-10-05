@@ -39,6 +39,7 @@ from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
 from geonode.metadata.multilang.views import MultiLangViewMixin
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.resource.registry import resource_manager_registry, map_manager
 from geonode.utils import resolve_object
 
@@ -129,13 +130,16 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
             raise GeneralMapsException(detail="serializer instance and object are different")
 
         dataset_names_before_changes = [lyr.alternate for lyr in instance.datasets]
-        # Preserve serializer-side validation and group/role logic before manager hooks.
-        instance = serializer.save()
-        instance = resource_manager_registry.get_for_instance(instance).update(
-            instance.uuid,
-            instance=instance,
-            dataset_names_before_changes=dataset_names_before_changes,
-            notify=True,
-        )
+        # one edit is one metadata change: the serializer writes before the manager gets to
+        with metadata_tracker(self.request.user, resource=instance):
+            # Preserve serializer-side validation and group/role logic before manager hooks.
+            instance = serializer.save()
+            instance = resource_manager_registry.get_for_instance(instance).update(
+                instance.uuid,
+                instance=instance,
+                dataset_names_before_changes=dataset_names_before_changes,
+                notify=True,
+                user=self.request.user,
+            )
         serializer.instance = instance
         register_event(self.request, EventType.EVENT_CHANGE, instance)
