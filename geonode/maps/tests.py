@@ -214,6 +214,9 @@ community."
         self.client.login(username=self.user, password=self.passwd)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
 
         # The embedded map is exempt from X-FRAME-OPTIONS restrictions.
         if hasattr(response, "xframe_options_exempt"):

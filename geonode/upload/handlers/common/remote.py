@@ -346,11 +346,18 @@ class BaseRemoteResourceHandler(BaseHandler):
         if resource.sourcetype:
             defaults["sourcetype"] = resource.sourcetype
 
-        return resource_manager_registry.get_for_instance(resource).copy(
+        new_resource = resource_manager_registry.get_for_instance(resource).copy(
             resource,
             owner=_exec.user,
             defaults=defaults,
         )
+        for link in Link.objects.filter(resource=resource, asset__isnull=True, link_type="data"):
+            link.pk = None
+            link.resource = new_resource
+            link.name = new_alternate
+            link.save()
+
+        return new_resource
 
     def create_link(self, resource, params: dict, name):
         link = Link(

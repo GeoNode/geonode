@@ -82,6 +82,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
 
     def test_geoapp_copy(self):
         self.client.login(username="admin", password="admin")
+        self.geoapp.blob = {"test_data": {"test": ["test_1", "test_2", "test_3"]}}
         geoapp_copy = None
         try:
             # owner must be whoever triggers the clone (self.bobby), not self.geoapp's own owner (self.user)
@@ -91,10 +92,21 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             self.assertIsNotNone(geoapp_copy)
             self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")
             self.assertEqual(geoapp_copy.owner, self.bobby)
+            self.assertEqual(self.geoapp.blob, geoapp_copy.blob)
         finally:
             if geoapp_copy:
                 geoapp_copy.delete()
             self.assertIsNotNone(self.geoapp)
+
+    def test_geoapp_embed_is_get_only(self):
+        self.client.login(username="admin", password="admin")
+
+        url = reverse("geoapp_embed", kwargs={"geoappid": self.geoapp.pk})
+
+        self.assertEqual(self.client.get(url).status_code, 200)
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
 
     def test_geoapp_copy_carries_over_metadata_and_permissions(self):
         """M2M metadata and perm_spec must survive a GeoApp copy too, same as Dataset/Map."""

@@ -156,9 +156,7 @@ class XLSXFileHandler(CSVFileHandler):
         lat_mapping = ",".join(XLSXFileHandler.lat_names)
         lon_mapping = ",".join(XLSXFileHandler.lon_names)
 
-        additional_option = (
-            f' -oo "X_POSSIBLE_NAMES={lon_mapping}" ' f'-oo "Y_POSSIBLE_NAMES={lat_mapping}" ' f'-nln "{alternate}"'
-        )
+        additional_option = f' -oo "X_POSSIBLE_NAMES={lon_mapping}" ' f'-oo "Y_POSSIBLE_NAMES={lat_mapping}" '
 
         # Return the combined, safe command string
         return (

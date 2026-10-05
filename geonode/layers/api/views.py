@@ -81,6 +81,7 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
         DatasetPermissionsFilter,
     ]
     queryset = Dataset.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 

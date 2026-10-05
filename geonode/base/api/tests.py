@@ -871,6 +871,44 @@ class BaseApiTests(APITestCase):
         # Pagination
         self.assertEqual(len(response.data["resources"]), 1)
 
+    def test_search_fields_allow_list(self):
+        """
+        search_fields not allowed by the view are ignored.
+        """
+        term = "no-such-value-b3wf"
+
+        def _check(url, allowed, rejected):
+            total = self.client.get(url, format="json").data["total"]
+            self.assertGreater(total, 0)
+            for field in allowed:
+                response = self.client.get(f"{url}?search={term}&search_fields={field}", format="json")
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data["total"], 0, field)
+            for field in rejected:
+                response = self.client.get(f"{url}?search={term}&search_fields={field}", format="json")
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data["total"], total, field)
+
+        resource_rejected = ["owner__password__startswith", "owner__email__regex", "owner__username", "uuid", "^title"]
+        # anonymous
+        for name in ("base-resources-list", "datasets-list", "maps-list", "documents-list"):
+            _check(reverse(name), allowed=["title", "abstract"], rejected=resource_rejected)
+
+        admin = get_user_model().objects.get(username="admin")
+        GeoApp.objects.create(title="search fields geoapp", owner=admin)
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        _check(reverse("geoapps-list"), allowed=["title", "abstract"], rejected=resource_rejected)
+        _check(
+            reverse("users-list"),
+            allowed=["username", "first_name", "last_name"],
+            rejected=["password__startswith", "email", "username__regex"],
+        )
+        _check(
+            reverse("group-profiles-list"),
+            allowed=["title", "slug"],
+            rejected=["group__user__password__startswith", "description"],
+        )
+
     def test_filter_resources(self):
         """
         Ensure we can filter across the Resource Base list.
@@ -3471,6 +3509,24 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertEqual(self.doc.id, link_connected.source_id)
 
         self.assertEqual(self.map.id, link_connected.target_id)
+
+    def test_linked_resource_requires_target_view_permission(self):
+        user = get_user_model().objects.create_user(username="linked_resource_user", password="test")
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        LinkedResource.objects.filter(source=self.doc, target=self.map).delete()
+
+        self.doc.set_permissions(
+            {"users": {user.username: ["base.view_resourcebase", "base.change_resourcebase"]}, "groups": {}}
+        )
+        self.map.set_permissions({"users": {}, "groups": {}})
+
+        self.client.force_login(user)
+        response = self.client.post(url, data={"target": [self.map.id]}, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(self.map.id, response.json()["error"])
+        self.assertFalse(LinkedResource.objects.filter(source=self.doc, target=self.map).exists())
 
     def test_insert_linked_resource_invalid_type(self):
         url = reverse("base-resources-linked_resources", args=[self.doc.id])

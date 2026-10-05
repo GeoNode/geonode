@@ -153,7 +153,9 @@ def geoserver_set_thumbnail(instance, **kwargs):
             and "thumbnail_url" in kwargs["update_fields"]
         ):
             _recreate_thumbnail = True
-        if not instance.thumbnail_url or is_monochromatic_image(instance.thumbnail_url):
+        if not instance.thumbnail_url or is_monochromatic_image(
+            instance.thumbnail_url, image_path=instance.thumbnail_path
+        ):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
             geoserver_create_thumbnail.apply_async(

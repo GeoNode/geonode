@@ -86,6 +86,48 @@ class PermissionsHandlerRegistry:
 
         return perm in resolved_perms
 
+    def user_has_asset_perm(self, user, asset, method="GET"):
+        """
+        Returns True if the user is allowed to access/edit an Asset.
+
+        Assets are not a ResourceBase themselves, so the permission is resolved through the
+        ResourceBase(s) they are linked to (via `Link`):
+        - superusers are always allowed
+        - an asset with no linked resource yet (e.g. mid-upload) falls back to ownership
+        - safe/read methods require the asset to be visible through at least one linked resource
+        - unsafe/write methods require `change_resourcebase` on every linked resource
+        """
+        from django.conf import settings
+        from geonode.base.models import ResourceBase
+
+        if not asset:
+            return False
+
+        if user and user.is_authenticated and user.is_superuser:
+            return True
+
+        resources = ResourceBase.objects.filter(link__asset=asset).distinct()
+        has_linked_resources = resources.exists()
+
+        if method in ("GET", "HEAD", "OPTIONS"):
+            if has_linked_resources:
+                return self.get_visible_resources(
+                    queryset=resources,
+                    user=user,
+                    admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                    unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                    private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+                ).exists()
+            return bool(user and user.is_authenticated and asset.owner_id == user.id)
+
+        if not user or not user.is_authenticated:
+            return False
+
+        if not has_linked_resources:
+            return asset.owner_id == user.id
+
+        return all("change_resourcebase" in self.get_perms(instance=resource, user=user) for resource in resources)
+
     def user_can_feature(self, user, resource):
         """
         Utility method to check if the user can set a resource as "featured" in the metadata
@@ -381,10 +423,11 @@ class PermissionsHandlerRegistry:
             self._clear_cache_keys(cache_keys if cache_keys else [])
 
         elif isinstance(instance, Group):
-            group_users = instance.user_set.all()
-            resource_pks_with_perms = [
-                resource.pk for resource in get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True)
-            ]
+            # membership changes only affect the given users, not the whole group
+            group_users = kwargs.get("users") or instance.user_set.all()
+            resource_pks_with_perms = list(
+                get_objects_for_group(instance, ["base.view_resourcebase"], any_perm=True).values_list("pk", flat=True)
+            )
 
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks_with_perms,
@@ -395,8 +438,7 @@ class PermissionsHandlerRegistry:
             self._clear_cache_keys(cache_keys)
 
         elif isinstance(instance, Profile):
-            resources = get_objects_for_user(instance, "base.view_resourcebase")
-            resource_pks = [resource.pk for resource in resources]
+            resource_pks = list(get_objects_for_user(instance, "base.view_resourcebase").values_list("pk", flat=True))
 
             cache_keys = self._get_cache_key(
                 resource_pks=resource_pks,
@@ -553,8 +595,8 @@ class PermissionsHandlerRegistry:
             else:
                 raise TypeError(f"Expected str or list, got {type(cache_keys)}")
 
-    def _user_identifier(self, user):
-        if user.is_anonymous or user.username == "AnonymousUser" or user == get_anonymous_user():
+    def _user_identifier(self, user, anonymous_user=None):
+        if user.is_anonymous or user.username == "AnonymousUser" or user == (anonymous_user or get_anonymous_user()):
             return "anonymous"
         return f"user:{user.pk}"
 
@@ -572,10 +614,12 @@ class PermissionsHandlerRegistry:
             remove_all_cache: If True, includes the __ALL__ cache key
         """
         cache_keys = []
+        # resolve the anonymous user once, get_anonymous_user hits the DB for each call
+        anonymous_user = get_anonymous_user() if users else None
+        user_identifiers = [self._user_identifier(user, anonymous_user) for user in users or []]
         for pk in resource_pks:
-            if users:
-                for user in users:
-                    cache_keys.append(f"resource_perms:{pk}:{self._user_identifier(user)}")
+            for identifier in user_identifiers:
+                cache_keys.append(f"resource_perms:{pk}:{identifier}")
 
             if groups:
                 for group in groups:
