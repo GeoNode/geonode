@@ -200,21 +200,31 @@ class Command(BaseCommand):
             path = "/" + "/".join(str(item) for item in error.absolute_path)
             self.notify(f"The metadata schema itself is not valid: {path}: {error.message}")
 
+        # A schema reported as invalid above may hold anything in place of a keyword: nothing
+        # derived from it can be taken on trust, starting with the shape of these two
         self.schema = schema
-        self.required_fields = set(schema.get("required", []))
+        required = schema.get("required", [])
+        self.required_fields = set(required) if isinstance(required, list) else set()
+        properties = schema.get("properties", {})
 
         # Optional fields not accepting the null they get when left empty: a defect of the schema,
         # reported once at the end of the run rather than against every resource.
         # Probed with an actual null: a "oneOf" or an "enum" may reject it as well as "type" does
         self.broken_optionals = {
             name
-            for name, subschema in schema.get("properties", {}).items()
-            if name not in self.required_fields and not validator_class(subschema).is_valid(None)
+            for name, subschema in (properties.items() if isinstance(properties, dict) else ())
+            if name not in self.required_fields and self.rejects_null(validator_class, subschema)
         }
         self.observed_defects = {}
 
         format_checker = getattr(validator_class, "FORMAT_CHECKER", None) if check_formats else None
         return validator_class(schema, format_checker=format_checker)
+
+    def rejects_null(self, validator_class, subschema):
+        try:
+            return not validator_class(subschema).is_valid(None)
+        except Exception:  # a malformed subschema: the metaschema check has reported it already
+            return False
 
     def read_json(self, path):
         try:
@@ -274,8 +284,8 @@ class Command(BaseCommand):
         queryset = self.select_resources(options["ids"], options["resource_types"])
         logger.info(f"Validating {queryset.count()} resource(s)")
 
-        # iterator() resolves the polymorphic instances in chunks, so the resources are never all
-        # in memory at once. The records being reported are, at some 2kB each
+        # Non polymorphic, exactly like the API read path: we validate what the client is served.
+        # iterator() keeps the resources out of memory; the records being reported are not
         for resource in queryset.iterator():
             yield self.validate_resource(resource, validator, options["lang"], options["max_errors"])
 
@@ -324,7 +334,26 @@ class Command(BaseCommand):
         # GeoNode injects this key in the instance for testing purposes only (resources titled "*error*")
         instance.pop("extraErrors", None)
 
-        errors = self.drop_redundant(validator.iter_errors(instance))
+        try:
+            errors = self.drop_redundant(validator.iter_errors(instance))
+        except Exception as e:
+            # A keyword the metaschema has already refused can blow up on a value of the right type
+            logger.error(f"Can not validate {record['id']} against the schema", exc_info=e)
+            return dict(
+                record,
+                valid=False,
+                error_count=1,
+                errors=[
+                    {
+                        "path": "/",
+                        "title": "",
+                        "validator": "geonode:invalid_schema",
+                        "message": f"Can not validate against the schema: {e}",
+                        "value": None,
+                    }
+                ],
+            )
+
         errors = [error for error in errors if not self.is_schema_defect(error)]
         errors = sorted(errors, key=lambda err: ([str(p) for p in err.absolute_path], str(err.validator)))
         reported = errors[:max_errors] if max_errors > 0 else errors
@@ -386,13 +415,18 @@ class Command(BaseCommand):
         titles = []
         subschema = self.schema
         for item in path:
+            # A malformed schema may hold anything in place of a subschema: fall back to the names
             if isinstance(item, int):
-                subschema = subschema.get("items", {})
+                subschema = self.as_dict(subschema).get("items")
                 titles.append(f"[{item}]")
             else:
-                subschema = subschema.get("properties", {}).get(item, {})
-                titles.append(subschema.get("title", item))
+                subschema = self.as_dict(self.as_dict(subschema).get("properties")).get(item)
+                titles.append(self.as_dict(subschema).get("title", item))
         return "/".join(titles)
+
+    @staticmethod
+    def as_dict(value):
+        return value if isinstance(value, dict) else {}
 
     def missing_property(self, error):
         # jsonschema names the missing property in the message only, and does not add it to the
