@@ -418,13 +418,13 @@ class BaseResourceManager(ResourceManagerInterface):
     ) -> ResourceBase:
         _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
-            _resource.set_processing_state(enumerations.STATE_RUNNING)
-            _resource.set_missing_info()
-            _resource.metadata_uploaded = metadata_uploaded
-            logger.debug(f"Look for xml and finalize Dataset metadata {_resource}")
-            # One update is one metadata change, however many saves it takes. `user` is whoever
-            # asked for it, when the caller knows: the request-driven ones do
+            # One update is one metadata change, however many saves it takes. Entered before any
+            # of them: set_missing_info() writes contacts of its own, which are part of the change
             with metadata_tracker(user, resource=_resource):
+                _resource.set_processing_state(enumerations.STATE_RUNNING)
+                _resource.set_missing_info()
+                _resource.metadata_uploaded = metadata_uploaded
+                logger.debug(f"Look for xml and finalize Dataset metadata {_resource}")
                 try:
                     with transaction.atomic():
                         if metadata_uploaded and xml_file:

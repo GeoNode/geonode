@@ -82,8 +82,13 @@ class MetadataOperation:
         self.snapshots[resource.pk] = (resource, build_instance())
 
     def close(self):
-        # an operation nobody claimed is still recorded, under the default user, marked as not theirs
-        user, attributed = (self.user, True) if self.user is not None else (default_user(), False)
+        try:
+            # an operation nobody claimed is recorded under the default user, marked as not theirs
+            user, attributed = (self.user, True) if self.user is not None else (default_user(), False)
+        except Exception as e:
+            # the change did happen: failing to record it is not a reason to fail the caller too
+            logger.error("Can not tell who to record the metadata changes under", exc_info=e)
+            return
 
         for resource, before in self.snapshots.values():
             try:
