@@ -163,5 +163,5 @@ When the type is `array` or `object`, the `SparseHandler` will encode the whole 
 
 ## Some custom annotations
 
-- `geonode:handler`: key to the handler defined in `METADATA_HANDLERS`; tells which handler is called to handle the field's content. Please note that this annotation may be replaced by subsequent handlers if they want to handle the field differently.
+- `geonode:handler`: id of one of the registered handlers (`metadata_manager.handlers`, whichever group it was declared in and whether it was added directly); tells which handler is called to handle the field's content. Please note that this annotation may be replaced by subsequent handlers if they want to handle the field differently.
 - `geonode:required`: the jsonschema specs want the `required` array outside the subschema definition. By defining this annotation as `true`, the metadata manager will add the current field in the `required` list.
