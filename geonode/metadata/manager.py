@@ -54,14 +54,16 @@ class MetadataManager:
         self.root_schema = MODEL_SCHEMA
         self.handlers = {}
         self.handler_orders = {}
+        self.initialized = False
 
     def add_handler(self, handler_id, handler, order=HANDLER_ORDER_DEFAULT):
         """
-        Register a handler, keeping self.handlers sorted by order: handlers may be added at any
-        time, so the position can't be left to the registration sequence alone
+        Register a handler. Handlers are expected to be added while the apps are being loaded.
+        `order` puts the handler in its group, the registration sequence orders it within the group
         """
         self.handler_orders[handler_id] = order
-        self.handlers[handler_id] = handler()
+        instance = handler()
+        self.handlers[handler_id] = instance
 
         # sorted() is stable: same order means the registration sequence is preserved.
         # Handlers put in place without add_handler() have no order of their own: they sit in the middle
@@ -70,12 +72,20 @@ class MetadataManager:
             for hid in sorted(self.handlers, key=lambda hid: self.handler_orders.get(hid, HANDLER_ORDER_DEFAULT))
         }
 
+        if self.initialized:
+            # registered after the app setup: it missed post_init(), and the schemas built so far
+            # know nothing about the fields it adds
+            logger.info(f"Metadata handler '{handler_id}' registered after the setup")
+            instance.post_init()
+            i18nCache.clear()
+
     def post_init(self):
         """
         To be called once all the handlers have been added to the MetadataManager
         """
         for handler in self.handlers.values():
             handler.post_init()
+        self.initialized = True
 
     def _init_schema_context(self, lang):
         return {"lang": lang} if lang else {}

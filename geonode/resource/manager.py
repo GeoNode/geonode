@@ -134,6 +134,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         keywords: dict = {},
         custom: dict = {},
         notify: bool = True,
+        user: settings.AUTH_USER_MODEL = None,
     ) -> ResourceBase:
         """The method will update an existing 'resource_type' on the DB model and invoke the 'post save' triggers.
 
@@ -354,8 +355,13 @@ class BaseResourceManager(ResourceManagerInterface):
         _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
-            # one creation is one metadata change, by whoever is creating the resource
-            with metadata_tracker(resolved_owner):
+            # One creation is one metadata change, by whoever is uploading: the owner may have
+            # been reassigned to an admin, which says nothing about who is doing this
+            with metadata_tracker(originator) as operation:
+                if operation:
+                    # The row is already there, carrying the defaults: taking the state now would
+                    # make them look pre-existing. A resource being created has no metadata yet
+                    operation.snapshot(_resource, dict)
                 try:
                     # if files exist: create an Asset out of them and link it to the Resource
                     asset, link = (None, None)  # safe init in case of exception
@@ -382,7 +388,7 @@ class BaseResourceManager(ResourceManagerInterface):
                     metadata_manager.update_schema_instance_partial(
                         _resource,
                         metadata_dict,
-                        user=resolved_owner,  # on a creation, the owner is who is creating it
+                        user=None,  # who is creating the resource is told to the tracker, above
                     )
                     resourcebase_post_save(_resource.get_real_instance())
                     self.finalize_creation_permissions(_resource, owner=resolved_owner)
@@ -406,6 +412,7 @@ class BaseResourceManager(ResourceManagerInterface):
         keywords: list = [],
         custom: dict = {},
         notify: bool = True,
+        user: settings.AUTH_USER_MODEL = None,
         *args,
         **kwargs,
     ) -> ResourceBase:
@@ -415,9 +422,9 @@ class BaseResourceManager(ResourceManagerInterface):
             _resource.set_missing_info()
             _resource.metadata_uploaded = metadata_uploaded
             logger.debug(f"Look for xml and finalize Dataset metadata {_resource}")
-            # One update is one metadata change, however many saves it takes. Nobody to name here:
-            # the callers know who asked for it, passing it down to this point is still to be done
-            with metadata_tracker(None):
+            # One update is one metadata change, however many saves it takes. `user` is whoever
+            # asked for it, when the caller knows: the request-driven ones do
+            with metadata_tracker(user, resource=_resource):
                 try:
                     with transaction.atomic():
                         if metadata_uploaded and xml_file:

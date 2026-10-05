@@ -21,9 +21,21 @@ Whatever happens inside the block, however many saves it takes, is one change pe
 user. Nested blocks join the outer one, so a procedure calling another one does not end up exposing
 its internal sequence as several changes.
 
-The user is not optional: recording *what* changed without *who* changed it would defeat the
-purpose. A block raising an exception records nothing, since a half applied change would be
-misleading rather than informative.
+The user is to be passed explicitly, `None` included: code that does not know who requested the
+change still groups its saves into a single one, which is then attributed by whatever does know, or
+recorded under `METADATA_TRACK_DEFAULTUSER`. A block raising an exception records nothing, since a
+half applied change would be misleading rather than informative.
+
+The resource is to be passed along whenever it is known already:
+
+```python
+with metadata_tracker(user, resource=resource):
+    ...
+```
+
+The state preceding the change is then read when the block is entered, and not when the first
+metadata save happens. Code writing to the resource before saving its metadata needs this, or what
+it wrote would be taken for part of the state the change started from.
 
 ## Changes nobody declared
 

@@ -146,6 +146,34 @@ class MetadataTrackerTests(SimpleTestCase):
         self.assertEqual(self.USER, self.track_change.call_args.args[2])
         self.assertTrue(self.track_change.call_args.args[3])
 
+    def test_the_resource_given_is_read_when_the_block_is_entered(self):
+        # resource_manager.update() writes to the resource before the first metadata save: taking
+        # the state later would make those writes look like they were there all along
+        with patch("geonode.metadata.tracking.operation.read_instance", return_value={"title": "before"}) as read:
+            with metadata_tracker(self.USER, resource=self.resource(10)) as operation:
+                read.assert_called_once()
+                # a later snapshot of the same resource does not replace it
+                operation.snapshot(self.resource(10), lambda: {"title": "too late"})
+
+        self.assertEqual({"title": "before"}, self.track_change.call_args.args[1])
+
+    def test_a_block_entered_without_a_resource_reads_nothing(self):
+        with patch("geonode.metadata.tracking.operation.read_instance") as read:
+            with metadata_tracker(self.USER):
+                pass
+
+        read.assert_not_called()
+
+    def test_a_nested_block_names_the_user_the_outer_one_did_not_know(self):
+        # resource_manager.update() groups the saves, an inner block may know who asked for them
+        with metadata_tracker(None) as outer:
+            with metadata_tracker(self.USER) as inner:
+                self.assertIs(outer, inner)
+            outer.snapshot(self.resource(8), dict)
+
+        self.assertEqual(self.USER, self.track_change.call_args.args[2])
+        self.assertTrue(self.track_change.call_args.args[3], "the inner block named the user: that is an attribution")
+
     def test_the_first_user_named_is_the_one_it_is_recorded_under(self):
         # an operation is one user's doing: a later save does not reassign it
         with metadata_tracker(self.USER) as operation:
