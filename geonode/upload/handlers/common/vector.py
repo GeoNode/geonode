@@ -457,11 +457,15 @@ class BaseVectorFileHandler(BaseHandler):
         data inside the geonode_data database
         """
         gdal_proxy = self.open_source_file(files)
-        layers = self._select_valid_layers(gdal_proxy, execution_id=execution_id, filter_existing=True)
+        _exec = self._get_execution_request_object(execution_id)
+        layers = self._select_valid_layers(
+            gdal_proxy,
+            execution_id=execution_id,
+            filter_existing=_exec.input_params.get("skip_existing_layer", False),
+        )
         # for the moment we skip the dyanamic model creation
         layer_count = len(layers)
         logger.info(f"Total number of layers available: {layer_count}")
-        _exec = self._get_execution_request_object(execution_id)
         _input = {**_exec.input_params, **{"total_layers": layer_count}}
         orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
         dynamic_model = None
