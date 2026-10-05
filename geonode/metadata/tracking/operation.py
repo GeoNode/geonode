@@ -92,6 +92,26 @@ class MetadataOperation:
                 logger.error(f"Can not track the changes of resource {resource.pk}", exc_info=e)
 
 
+def read_instance(resource):
+    """
+    The metadata of a resource as it stands. Always untranslated: a record of what changed should
+    not depend on the language whoever was editing happened to be using
+    """
+    from geonode.metadata.manager import metadata_manager
+
+    return metadata_manager.build_schema_instance(resource, lang=None)
+
+
+def _snapshot_now(operation, resource):
+    """Nothing of the tracking is allowed to break the change being tracked"""
+    if resource is None:
+        return
+    try:
+        operation.snapshot(resource, lambda: read_instance(resource))
+    except Exception as e:
+        logger.error(f"Can not read the metadata of resource {resource.pk} before the change", exc_info=e)
+
+
 def default_user():
     """The user the changes nobody claimed are recorded under"""
     from django.contrib.auth import get_user_model
@@ -104,24 +124,32 @@ def default_user():
 
 
 @contextmanager
-def metadata_tracker(user):
+def metadata_tracker(user, resource=None):
     """
     Declare a metadata change on behalf of `user`. Nested blocks join the outer one.
 
     `user` is to be passed explicitly, None included: a caller that does not know who is changing
     the metadata still groups its saves into one change, which is then attributed by whatever does
-    know, or recorded under the default user
+    know, or recorded under the default user.
+
+    `resource` is to be passed whenever it is known already: the state preceding the change is
+    read when the block is entered, and not when the first metadata save happens, so that whatever
+    the caller writes to the resource in between is part of the change and not of its premises
     """
     if not tracking_enabled():
         yield None
         return
 
     if (running := current_operation()) is not None:
-        # an inner block is part of the operation already being performed, not another one
+        # an inner block is part of the operation already being performed, not another one.
+        # It may well know the user, or the resource, the outer one was opened without
+        running.attribute(user)
+        _snapshot_now(running, resource)
         yield running
         return
 
     operation = MetadataOperation(user)
+    _snapshot_now(operation, resource)
     token = _current_operation.set(operation)
     try:
         yield operation
@@ -138,11 +166,9 @@ def track_change(resource, before, user, attributed=True):
 
     Reading the state again is the expensive part, hence it being done once the operation is over
     """
-    from geonode.metadata.manager import metadata_manager
-
     # To be read here and not later on: a save coming next would be read as part of this change
     resource.refresh_from_db()
-    after = metadata_manager.build_schema_instance(resource, lang=None)
+    after = read_instance(resource)
 
     if delta := compute_delta(before, after):
         store_change(resource, delta, user, attributed)

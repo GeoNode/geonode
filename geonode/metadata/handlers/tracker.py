@@ -28,6 +28,7 @@ from geonode.metadata.tracking.operation import (
     CONTEXT_PRE_INSTANCE,
     MetadataOperation,
     current_operation,
+    read_instance,
     tracking_enabled,
 )
 
@@ -104,18 +105,11 @@ class TrackerHandler(MetadataHandler):
             logger.error(f"Can not track the changes of resource {resource.pk}", exc_info=e)
 
     def _instance_before(self, resource, context):
-        """
-        The instance the caller has already read, when it passed one along, or a new one.
-
-        Read untranslated: a record of what changed should not depend on the language the editor
-        happened to be using
-        """
-        from geonode.metadata.manager import metadata_manager
-
+        """The instance the caller has already read, when it passed one along, or a new one"""
         if (supplied := context.get(CONTEXT_PRE_INSTANCE, None)) is not None:
             return supplied
 
-        return metadata_manager.build_schema_instance(resource, lang=None)
+        return read_instance(resource)
 
     @staticmethod
     def _user_of(context):
