@@ -39,7 +39,7 @@ dependencies = [
     "Deprecated==1.2.14",
     "jsonschema==4.22.0",
     "rdflib==6.3.2",
-    "smart_open==7.0.4",
+    "smart_open==8.0.2",
     "PyMuPDF==1.28.2",
     "defusedxml==0.7.1",
     "zipstream-ng==1.9.3",
