@@ -43,6 +43,7 @@ from dynamic_models.schema import ModelSchemaEditor
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.upload.celery_tasks import (
     ErrorBaseTaskClass,
     FieldSchema,
@@ -883,19 +884,21 @@ class BaseVectorFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
-            None,
-            resource_type=resource_type,
-            defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace, **kwargs),
-        )
+        # the whole creation is one metadata change: the xml below updates the resource again
+        with metadata_tracker(_exec.user):
+            saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
+                None,
+                resource_type=resource_type,
+                defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace, **kwargs),
+            )
 
-        saved_dataset.refresh_from_db()
+            saved_dataset.refresh_from_db()
 
-        self.handle_xml_file(saved_dataset, _exec)
-        self.handle_sld_file(saved_dataset, _exec)
-        self.handle_thumbnail(saved_dataset, _exec)
+            self.handle_xml_file(saved_dataset, _exec)
+            self.handle_sld_file(saved_dataset, _exec)
+            self.handle_thumbnail(saved_dataset, _exec)
 
-        ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
+            ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
         saved_dataset.refresh_from_db()
 
@@ -1659,16 +1662,19 @@ class BaseVectorFileHandler(BaseHandler):
         )
         payload.pop("asset")
         resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
-        dataset = resolved_resource_manager.update(
-            dataset.uuid,
-            instance=dataset,
-            vals=payload,
-        )
+        # the whole refresh is one metadata change: the xml below updates the resource again
+        with metadata_tracker(exec_obj.user, resource=dataset):
+            dataset = resolved_resource_manager.update(
+                dataset.uuid,
+                instance=dataset,
+                user=exec_obj.user,
+                vals=payload,
+            )
 
-        self.handle_xml_file(dataset, exec_obj)
-        self.handle_sld_file(dataset, exec_obj)
+            self.handle_xml_file(dataset, exec_obj)
+            self.handle_sld_file(dataset, exec_obj)
 
-        resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+            resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
         dataset.refresh_from_db()
 
         orchestrator.update_execution_request_obj(exec_obj, {"geonode_resource": dataset})
