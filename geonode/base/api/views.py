@@ -1412,6 +1412,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         methods=["get"],
         url_path=r"asset",
         url_name="asset",
+        permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
     )
     def get_asset(self, request, pk=None, *args, **kwargs):
         """
@@ -1419,24 +1420,24 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         GET /api/v2/resources/<pk>/asset
         """
         resource = self.get_object()
-        user = request.user
 
-        if user and user.is_authenticated:
-            asset_links = Link.objects.filter(
-                resource=resource,
-                asset__isnull=False,
-            ).select_related("asset")
+        asset_links = Link.objects.filter(
+            resource=resource,
+            asset__isnull=False,
+        ).select_related("asset")
 
-            if not user.is_superuser:
-                asset_links = asset_links.filter(asset__owner=user)
-        else:
-            asset_links = Link.objects.none()
+        can_have_download_url = permissions_registry.user_has_perm(
+            request.user,
+            resource.get_self_resource(),
+            "download_resourcebase",
+            include_virtual=True,
+        )
 
         data = []
         for asset_link in asset_links:
             asset = asset_link.asset.get_real_instance()
             handler = asset_handler_registry.get_handler(asset)
-            download_url = handler.create_download_url(asset) if handler else None
+            download_url = handler.create_download_url(asset) if handler and can_have_download_url else None
 
             data.append(
                 {

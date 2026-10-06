@@ -990,9 +990,8 @@ Retrieve the list of assets attached to a specific resource.
 where `{pk}` is the resource ID.
 
 **Permissions**:
-- Admins/Superusers can view all assets tied to the resource.
-- Authenticated users can view only the assets they own.
-- Non-owners/Anonymous users receive an empty list `[]`.
+- Users with `view_resourcebase` permission on the resource can view all assets attached to that resource.
+- Users without `view_resourcebase` permission receive `403 Forbidden`.
 
 **Example Request**:
 ```python

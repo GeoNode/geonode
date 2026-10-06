@@ -1401,6 +1401,9 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
         self.other_user = get_user_model().objects.create_user(
             username="other_user", email="other@example.com", password="password123"
         )
+        self.no_perm_user = get_user_model().objects.create_user(
+            username="no_perm_user", email="noperm@example.com", password="password123"
+        )
 
         self.resource = ResourceBase.objects.create(
             title="Test Resource for Asset Retrieval",
@@ -1408,7 +1411,6 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
             uuid=str(uuid4()),
         )
 
-        # Allow view permissions to public / registered users for the resource
         self.resource.set_permissions(
             {
                 "users": {
@@ -1421,14 +1423,13 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
             }
         )
 
-        # Create assets and links
         self.asset_owner = Asset.objects.create(
             title="Owner Asset.pdf",
             description="Created by owner",
             type="file",
             owner=self.owner_user,
         )
-        Link.objects.create(
+        self.owner_link = Link.objects.create(
             resource=self.resource,
             asset=self.asset_owner,
             name=self.asset_owner.title,
@@ -1443,7 +1444,7 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
             type="image",
             owner=self.admin_user,
         )
-        Link.objects.create(
+        self.admin_link = Link.objects.create(
             resource=self.resource,
             asset=self.asset_admin,
             name=self.asset_admin.title,
@@ -1454,64 +1455,64 @@ class AssetGetApiTests(GeoNodeBaseTestSupport):
 
         self.url = reverse("base-resources-asset", kwargs={"pk": self.resource.pk})
 
-    def test_get_assets_as_admin(self):
-        """Superuser should see all assets linked to the resource."""
-        self.client.force_login(self.admin_user)
-
-        response = self.client.get(self.url)
-
+    def assert_asset_response(self, response):
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)  # No pagination
+        self.assertIsInstance(response.data, list)
         self.assertEqual(len(response.data), 2)
 
-        # Validate response schema
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.asset_owner.id, self.asset_admin.id})
+
+        returned_links = {item["urls"]["link"] for item in response.data}
+        self.assertEqual(returned_links, {self.owner_link.url, self.admin_link.url})
+
         for item in response.data:
             self.assertIn("id", item)
             self.assertIn("title", item)
             self.assertIn("description", item)
             self.assertIn("type", item)
+            self.assertIn("created", item)
             self.assertIn("deletable", item)
             self.assertIn("urls", item)
-            self.assertIn("created", item)
             self.assertIn("download_url", item["urls"])
             self.assertIn("link", item["urls"])
 
-        returned_ids = {item["id"] for item in response.data}
-        self.assertEqual(returned_ids, {self.asset_owner.id, self.asset_admin.id})
-
-    def test_get_assets_as_owner(self):
-        """Asset owner should only see their own assets linked to the resource."""
-        self.client.force_login(self.owner_user)
+    def test_admin_can_get_resource_assets(self):
+        self.client.force_login(self.admin_user)
 
         response = self.client.get(self.url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["id"], self.asset_owner.id)
-        self.assertEqual(response.data[0]["title"], self.asset_owner.title)
-        self.assertEqual(response.data[0]["description"], self.asset_owner.description)
-        self.assertEqual(response.data[0]["type"], self.asset_owner.type)
+        self.assert_asset_response(response)
 
-    def test_get_assets_as_non_owner(self):
-        """Authenticated non-owner/non-admin user should get an empty list."""
+    def test_resource_viewer_can_get_resource_assets(self):
         self.client.force_login(self.other_user)
 
         response = self.client.get(self.url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 0)
+        self.assert_asset_response(response)
 
-    def test_get_assets_as_anonymous(self):
-        """Anonymous user should get an empty list."""
+    def test_anonymous_with_view_permission_can_get_resource_assets(self):
         self.client.logout()
 
         response = self.client.get(self.url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 0)
+        self.assert_asset_response(response)
+
+    def test_user_without_view_permission_cannot_get_resource_assets(self):
+        self.resource.set_permissions(
+            {
+                "users": {
+                    self.owner_user.username: ["view_resourcebase", "change_resourcebase"],
+                },
+                "groups": {},
+            }
+        )
+
+        self.client.force_login(self.no_perm_user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 403)
 
 
 class RouterUrlpatternsCompletenessTest(SimpleTestCase):
