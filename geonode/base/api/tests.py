@@ -4406,8 +4406,10 @@ class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.admin_user = get_user_model().objects.get(username="admin")
-        self.owner_user = get_user_model().objects.create_user(username="owner", password="owner_password")
-        self.other_user = get_user_model().objects.create_user(username="other", password="other_password")
+        self.viewer_user = get_user_model().objects.create_user(username="viewer", password="viewer_password")
+        self.downloader_user = get_user_model().objects.create_user(
+            username="downloader", password="downloader_password"
+        )
 
         self.dataset = create_single_dataset(name="test_dataset_for_download_permission")
 
@@ -4417,7 +4419,7 @@ class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
 
         self.owner_asset, self.owner_link = create_asset_and_link(
             self.dataset,
-            self.owner_user,
+            self.viewer_user,
             dataset_files,
             title="Owner Asset",
             clone_files=False,
@@ -4428,6 +4430,16 @@ class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
             dataset_files,
             title="Admin Asset",
             clone_files=False,
+        )
+
+        self.dataset.set_permissions(
+            {
+                "users": {
+                    self.viewer_user.username: ["view_resourcebase"],
+                    self.downloader_user.username: ["view_resourcebase", "download_resourcebase"],
+                },
+                "groups": {},
+            }
         )
 
         self.url = reverse("base-resources-asset", kwargs={"pk": self.dataset.pk})
@@ -4445,36 +4457,42 @@ class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
 
         for item in response.data:
             self.assertIsNotNone(item["urls"]["download_url"])
+            self.assertIsNotNone(item["urls"]["link"])
 
-    def test_owner_sees_only_own_asset_download_url(self):
-        self.client.force_login(self.owner_user)
+    def test_viewer_sees_all_assets_without_download_urls(self):
+        self.client.force_login(self.viewer_user)
 
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
 
         returned_ids = {item["id"] for item in response.data}
-        self.assertEqual(returned_ids, {self.owner_asset.id})
-        self.assertNotIn(self.admin_asset.id, returned_ids)
+        self.assertEqual(returned_ids, {self.owner_asset.id, self.admin_asset.id})
 
-        download_urls = {item["urls"]["download_url"] for item in response.data}
-        self.assertEqual(len(download_urls), 1)
-        self.assertTrue(any(f"/api/v2/assets/{self.owner_asset.id}/download" in url for url in download_urls))
-        self.assertFalse(any(f"/api/v2/assets/{self.admin_asset.id}/download" in url for url in download_urls))
+        for item in response.data:
+            self.assertIsNone(item["urls"]["download_url"])
+            self.assertIsNotNone(item["urls"]["link"])
 
-    def test_non_owner_gets_empty_asset_list(self):
-        self.client.force_login(self.other_user)
+    def test_downloader_sees_all_assets_with_download_urls(self):
+        self.client.force_login(self.downloader_user)
 
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertEqual(len(response.data), 2)
 
-    def test_anonymous_gets_empty_asset_list(self):
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.owner_asset.id, self.admin_asset.id})
+
+        for item in response.data:
+            self.assertIsNotNone(item["urls"]["download_url"])
+            self.assertIsNotNone(item["urls"]["link"])
+
+    def test_anonymous_without_view_permission_cannot_get_assets(self):
         response = self.client.get(self.url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.status_code, 401)
 
 
 class ResourceBaseMetadataXMLTest(GeoNodeBaseTestSupport):
