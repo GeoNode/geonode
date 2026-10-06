@@ -69,7 +69,7 @@ class ThesaurusFacetProvider(FacetProvider):
         filter = {"thesaurus__identifier": self._name, "resourcebase__in": queryset}
 
         if topic_contains:
-            filter["label__icontains"] = topic_contains
+            filter["keyword__label__icontains"] = topic_contains
 
         if keys:
             logger.debug("Filtering by keys %r\n", keys)
