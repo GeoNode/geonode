@@ -403,6 +403,21 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertEqual("T0_K0_ALT", obj["topics"]["items"][0]["label"])  # check for the alternate label
         self.assertFalse(obj["topics"]["items"][0]["is_localized"])  # check for the localization flag
 
+    def test_thesaurus_facets_are_filtered_by_words(self):
+        # topic_contains matching a keyword's localized label should return just that keyword
+        url = f"{reverse('get_facet', args=['t_0'])}?topic_contains=T0_K0"
+        response = self.client.get(url)
+
+        self.assertEqual(200, response.status_code, response.json())
+        self.assertEqual(1, response.json().get("topics", {}).get("total", 0))
+
+        # topic_contains with a random string to be searched for should be 0
+        url = f"{reverse('get_facet', args=['t_0'])}?topic_contains=abc123scfuqbrwefbasascgiu"
+        response = self.client.get(url)
+
+        self.assertEqual(200, response.status_code, response.json())
+        self.assertEqual(0, response.json().get("topics", {}).get("total", 0))
+
     def test_prefiltering(self):
         reginfo = RegionFacetProvider().get_info()
         regfilter = reginfo["filter"]
