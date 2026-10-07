@@ -137,3 +137,40 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
                 self.assertEqual(len(resource.attributes), 5)
             finally:
                 cat.delete(gs_dataset)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_dataset_creation_with_custom_srs(self):
+        """
+        Try creating a layer with a custom SRS.
+        """
+        internal_apps_tests = os.environ.get("TEST_RUN_INTERNAL_APPS", None)
+        if not internal_apps_tests:
+            internal_apps_tests = settings.internal_apps_tests
+        else:
+            dataset_name = "point_dataset_3857"
+            dataset_title = "A layer for points 3857"
+            custom_srs = "EPSG:3857"
+
+            create_dataset(dataset_name, dataset_title, "bobby", "Point", srs=custom_srs)
+
+            cat = gs_catalog
+
+            # Check the layer is in the Django database
+            layer = Dataset.objects.get(name=dataset_name)
+
+            # check if it is in geoserver
+            gs_dataset = cat.get_layer(dataset_name)
+            try:
+                self.assertIsNotNone(gs_dataset)
+                self.assertEqual(gs_dataset.name, dataset_name)
+
+                resource = gs_dataset.resource
+                # we must have only one attibute ('the_geom')
+                self.assertEqual(len(resource.attributes), 1)
+
+                # check layer corrispondence between django and geoserver
+                self.assertEqual(resource.title, dataset_title)
+                self.assertEqual(resource.projection, custom_srs)
+                self.assertEqual(layer.srid, custom_srs)
+            finally:
+                cat.delete(gs_dataset)
