@@ -69,7 +69,10 @@ class ThesaurusFacetProvider(FacetProvider):
         filter = {"thesaurus__identifier": self._name, "resourcebase__in": queryset}
 
         if topic_contains:
-            filter["label__icontains"] = topic_contains
+            # subquery avoids a join that would multiply resourcebase rows per matching translation
+            filter["pk__in"] = ThesaurusKeywordLabel.objects.filter(label__icontains=topic_contains).values(
+                "keyword_id"
+            )
 
         if keys:
             logger.debug("Filtering by keys %r\n", keys)
