@@ -53,10 +53,10 @@ def create_dataset(name, title, owner_name, geometry_type, attributes=None, srs=
     logger.debug("Creating the layer in GeoServer")
     workspace, datastore = create_gs_dataset(name, title, geometry_type, attributes, srs=srs)
     logger.debug("Creating the layer in GeoNode")
-    return create_gn_dataset(workspace, datastore, name, title, owner_name)
+    return create_gn_dataset(workspace, datastore, name, title, owner_name, srs=srs)
 
 
-def create_gn_dataset(workspace, datastore, name, title, owner_name):
+def create_gn_dataset(workspace, datastore, name, title, owner_name, srs="EPSG:4326"):
     """
     Associate a layer in GeoNode for a given layer in GeoServer.
     """
@@ -73,7 +73,7 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
             alternate=f"{workspace.name}:{name}",
             title=title,
             owner=owner,
-            srid="EPSG:4326",
+            srid=srs,
             bbox_polygon=Polygon.from_bbox(BBOX),
             ll_bbox_polygon=Polygon.from_bbox(BBOX),
             data_quality_statement=DATA_QUALITY_MESSAGE,
