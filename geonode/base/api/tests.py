@@ -4404,55 +4404,95 @@ class TestAPIPermissionCache(GeoNodeBaseTestSupport):
 class AssetDownloadPermissionTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        self.user_viewer = get_user_model().objects.create_user(username="viewer", password="viewer_password")
-        self.user_downloader = get_user_model().objects.create_user(
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.viewer_user = get_user_model().objects.create_user(username="viewer", password="viewer_password")
+        self.downloader_user = get_user_model().objects.create_user(
             username="downloader", password="downloader_password"
         )
+
         self.dataset = create_single_dataset(name="test_dataset_for_download_permission")
 
         dataset_files = [
             f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
         ]
-        create_asset_and_link(
-            self.dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+
+        self.owner_asset, self.owner_link = create_asset_and_link(
+            self.dataset,
+            self.viewer_user,
+            dataset_files,
+            title="Owner Asset",
+            clone_files=False,
+        )
+        self.admin_asset, self.admin_link = create_asset_and_link(
+            self.dataset,
+            self.admin_user,
+            dataset_files,
+            title="Admin Asset",
+            clone_files=False,
         )
 
-        perm_spec = {
-            "users": {
-                self.user_viewer.username: [
-                    "view_resourcebase",
-                ],
-                self.user_downloader.username: [
-                    "view_resourcebase",
-                    "download_resourcebase",
-                ],
-            },
-            "groups": {},
-        }
-        self.dataset.set_permissions(perm_spec)
+        self.dataset.set_permissions(
+            {
+                "users": {
+                    self.viewer_user.username: ["view_resourcebase"],
+                    self.downloader_user.username: ["view_resourcebase", "download_resourcebase"],
+                },
+                "groups": {},
+            }
+        )
 
-    def test_asset_download_link_permission(self):
-        """
-        Ensure that the download link is only visible to users with download permissions.
-        """
-        self.client.login(username="viewer", password="viewer_password")
-        url = f"/api/v2/datasets/{self.dataset.pk}"
-        response = self.client.get(f"{url}", format="json")
+        self.url = reverse("base-resources-asset", kwargs={"pk": self.dataset.pk})
+
+    def test_admin_sees_all_asset_download_urls(self):
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(self.url)
+
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
 
-        links = response.data.get("dataset").get("links", [])
-        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
-        self.assertIsNotNone(asset_link)
-        self.assertNotIn("download_url", asset_link.get("extras", {}).get("content", {}))
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.owner_asset.id, self.admin_asset.id})
 
-        self.client.login(username="downloader", password="downloader_password")
-        response = self.client.get(f"{url}", format="json")
+        for item in response.data:
+            self.assertIsNotNone(item["urls"]["download_url"])
+            self.assertIsNotNone(item["urls"]["link"])
+
+    def test_viewer_sees_all_assets_without_download_urls(self):
+        self.client.force_login(self.viewer_user)
+
+        response = self.client.get(self.url)
+
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
 
-        links = response.data.get("dataset").get("links", [])
-        asset_link = next((link for link in links if link.get("extras", {}).get("type") == "asset"), None)
-        self.assertIsNotNone(asset_link)
-        self.assertIn("download_url", asset_link.get("extras", {}).get("content", {}))
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.owner_asset.id, self.admin_asset.id})
+
+        for item in response.data:
+            self.assertIsNone(item["urls"]["download_url"])
+            self.assertIsNotNone(item["urls"]["link"])
+
+    def test_downloader_sees_all_assets_with_download_urls(self):
+        self.client.force_login(self.downloader_user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.owner_asset.id, self.admin_asset.id})
+
+        for item in response.data:
+            self.assertIsNotNone(item["urls"]["download_url"])
+            self.assertIsNotNone(item["urls"]["link"])
+
+    def test_anonymous_without_view_permission_cannot_get_assets(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 401)
 
 
 class ResourceBaseMetadataXMLTest(GeoNodeBaseTestSupport):
