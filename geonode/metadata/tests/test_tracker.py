@@ -191,6 +191,20 @@ class MetadataTrackerTests(SimpleTestCase):
         self.assertEqual("the-default", self.track_change.call_args.args[2])
         self.assertFalse(self.track_change.call_args.args[3], "nobody claimed it: that is not an attribution")
 
+    def test_an_unknown_default_user_does_not_break_the_change_being_tracked(self):
+        # METADATA_TRACK_DEFAULTUSER naming nobody is a misconfiguration of the auditing: the
+        # change did happen, and failing to record it is not a reason to fail the caller too
+        with patch("geonode.metadata.tracking.operation.logger") as logged:
+            with patch(
+                "geonode.metadata.tracking.operation.default_user", side_effect=ValueError("names no existing user")
+            ):
+                with metadata_tracker(None) as operation:
+                    operation.snapshot(self.resource(11), dict)
+
+        self.track_change.assert_not_called()
+        self.assertEqual(1, logged.error.call_count, "a change that went unrecorded is to be reported")
+        self.assertIsNone(current_operation(), "the scope is released all the same")
+
     def test_a_declared_change_is_attributed(self):
         with metadata_tracker(self.USER) as operation:
             operation.snapshot(self.resource(3), dict)

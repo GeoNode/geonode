@@ -27,6 +27,7 @@ from typing import List
 from django.conf import settings
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.resource.registry import resource_manager_registry
 from geonode.resource.models import ExecutionRequest
@@ -364,29 +365,31 @@ class BaseRasterFileHandler(BaseHandler):
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
 
-        saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
-            None,
-            resource_type=resource_type,
-            defaults=dict(
-                name=alternate,
-                workspace=workspace,
-                subtype="raster",
-                alternate=f"{workspace}:{alternate}",
-                dirty_state=True,
-                title=layer_name,
-                owner=_exec.user,
-                asset=asset,
-            ),
-        )
+        # the whole creation is one metadata change: the xml below updates the resource again
+        with metadata_tracker(_exec.user):
+            saved_dataset = resource_manager_registry.get_for_model(resource_type).create(
+                None,
+                resource_type=resource_type,
+                defaults=dict(
+                    name=alternate,
+                    workspace=workspace,
+                    subtype="raster",
+                    alternate=f"{workspace}:{alternate}",
+                    dirty_state=True,
+                    title=layer_name,
+                    owner=_exec.user,
+                    asset=asset,
+                ),
+            )
 
-        saved_dataset.refresh_from_db()
+            saved_dataset.refresh_from_db()
 
-        self.handle_xml_file(saved_dataset, _exec)
-        self.handle_sld_file(saved_dataset, _exec)
+            self.handle_xml_file(saved_dataset, _exec)
+            self.handle_sld_file(saved_dataset, _exec)
 
-        resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
+            resource_manager_registry.get_for_instance(saved_dataset).set_thumbnail(None, instance=saved_dataset)
 
-        ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
+            ResourceBase.objects.filter(alternate=alternate).update(dirty_state=False)
 
         saved_dataset.refresh_from_db()
         return saved_dataset
@@ -415,25 +418,28 @@ class BaseRasterFileHandler(BaseHandler):
                 )
 
             resolved_resource_manager = resource_manager_registry.get_for_instance(dataset)
-            dataset = resolved_resource_manager.update(
-                dataset.uuid,
-                instance=dataset,
-                vals=dict(
-                    name=alternate,
-                    workspace=dataset.workspace,
-                    store=alternate.split(":")[-1],
-                    subtype="raster",
-                    alternate=f"{dataset.workspace}:{alternate}",
-                    dirty_state=True,
-                    title=layer_name,
-                    owner=_exec.user,
-                ),
-            )
+            # the whole overwrite is one metadata change: the xml below updates the resource again
+            with metadata_tracker(_exec.user, resource=dataset):
+                dataset = resolved_resource_manager.update(
+                    dataset.uuid,
+                    instance=dataset,
+                    user=_exec.user,
+                    vals=dict(
+                        name=alternate,
+                        workspace=dataset.workspace,
+                        store=alternate.split(":")[-1],
+                        subtype="raster",
+                        alternate=f"{dataset.workspace}:{alternate}",
+                        dirty_state=True,
+                        title=layer_name,
+                        owner=_exec.user,
+                    ),
+                )
 
-            self.handle_xml_file(dataset, _exec)
-            self.handle_sld_file(dataset, _exec)
+                self.handle_xml_file(dataset, _exec)
+                self.handle_sld_file(dataset, _exec)
 
-            resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
+                resolved_resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
             dataset.refresh_from_db()
             return dataset
         elif not dataset and _overwrite:

@@ -28,6 +28,7 @@ from geonode.base.models import ResourceBase
 from geonode.metadata.handlers import tracker as tracker_handler
 from geonode.metadata.handlers.tracker import CONTEXT_OPERATION, TrackerHandler
 from geonode.metadata.manager import metadata_manager
+from geonode.metadata.tracking import operation as tracker_operation
 from geonode.metadata.tracking.operation import CONTEXT_PRE_INSTANCE, metadata_tracker
 
 
@@ -180,7 +181,8 @@ class TrackerHandlerTests(TestCase):
         with override_settings(METADATA_TRACK_DEFAULTUSER="no_such_user"):
             with self.changing():
                 context = self.load_context()
-                with self.assertLogs(tracker_handler.logger, level="ERROR") as logged:
+                # the operation swallows it so that the save does not fail: it has to say so itself
+                with self.assertLogs(tracker_operation.logger, level="ERROR") as logged:
                     self.handler.post_save(self.resource, {}, context, {})
 
         self.store_change.assert_not_called()
