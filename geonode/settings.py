@@ -2125,6 +2125,20 @@ MULTILANG_FIELDS = (
     # "abstract",
 )
 
+"""
+Track the metadata changes: every save is compared with the state preceding it, and the difference
+is recorded. It makes each save read the metadata once more, hence the opt-in
+"""
+METADATA_TRACK_CHANGES = ast.literal_eval(os.getenv("METADATA_TRACK_CHANGES", "False"))
+
+# Changes performed by a caller not telling who requested them are recorded under this user
+_metadata_track_defaultuser = os.getenv("METADATA_TRACK_DEFAULTUSER")
+if METADATA_TRACK_CHANGES and not _metadata_track_defaultuser:
+    logger.warning(
+        "METADATA_TRACK_CHANGES is enabled but METADATA_TRACK_DEFAULTUSER is not set. Defaulting to 'admin'."
+    )
+METADATA_TRACK_DEFAULTUSER = (_metadata_track_defaultuser or "admin").strip() or "admin"
+
 INSTALLED_APPS += ("geonode.indexing",)
 GEONODE_APPS += ("geonode.indexing",)
 

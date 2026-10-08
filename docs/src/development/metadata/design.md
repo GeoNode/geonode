@@ -84,9 +84,34 @@ Called handlers' methods:
 
 ## Handlers
 
-The list of handlers is declared in `geonode.metadata.settings.METADATA_HANDLERS`.
+The list of handlers is declared in `geonode.metadata.settings`, split into three groups:
+
+- `INITIAL_METADATA_HANDLERS`, called before every other handler;
+- `METADATA_HANDLERS`;
+- `FINAL_METADATA_HANDLERS`, called after every other handler.
+
+These are the handlers GeoNode declares for itself: the authoritative list of the handlers actually
+in use is `metadata_manager.handlers`, which an external module may have added to.
 
 **Order is important** since later declared handlers may want to customize previously defined fields.
+
+An external module registers its own handler by calling the manager directly, usually from its
+`AppConfig.ready()`:
+
+```python
+metadata_manager.add_handler("rndt", RNDTSchemaHandler)
+```
+
+Handlers registered this way are called in between the initial and the final ones, which is where a
+module adding its own fields belongs, and in the sequence they were registered in. The position does
+not depend on *when* the registration happens: a handler needing to be called first or last shall
+say so explicitly, since the app loading sequence is not something the manager can rely upon.
+
+```python
+from geonode.metadata.manager import HANDLER_ORDER_FINAL
+
+metadata_manager.add_handler("tracker", TrackerHandler, order=HANDLER_ORDER_FINAL)
+```
 
 Within each field subschema there are some GeoNode-specific annotations. Custom annotations are allowed by the JSON Schema standard. Some are needed for backend logic, for instance `geonode:handler`, and others for the client UI, for example `ui:options`.
 
@@ -138,5 +163,5 @@ When the type is `array` or `object`, the `SparseHandler` will encode the whole 
 
 ## Some custom annotations
 
-- `geonode:handler`: key to the handler defined in `METADATA_HANDLERS`; tells which handler is called to handle the field's content. Please note that this annotation may be replaced by subsequent handlers if they want to handle the field differently.
+- `geonode:handler`: id of one of the registered handlers (`metadata_manager.handlers`, whichever group it was declared in and whether it was added directly); tells which handler is called to handle the field's content. Please note that this annotation may be replaced by subsequent handlers if they want to handle the field differently.
 - `geonode:required`: the jsonschema specs want the `required` array outside the subschema definition. By defining this annotation as `true`, the metadata manager will add the current field in the `required` list.

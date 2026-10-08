@@ -1188,6 +1188,40 @@ pass
 For more information, please rely to `TestMetadataStorers` which contain a smoke test to explain the functionality
 
 
+**METADATA_TRACK_CHANGES**
+
+- Default: ``False``
+- Env: ``METADATA_TRACK_CHANGES``
+
+When this setting is enabled, every metadata save is compared with the state preceding it, and the
+difference is recorded along with the user who requested it.
+
+Computing the difference means reading the metadata of the resource once more, which is why the
+tracking is opt-in.
+
+The user is the one declared by the code performing the change:
+
+```python
+from geonode.metadata.tracking.operation import metadata_tracker
+
+with metadata_tracker(user):
+    resource_manager.update(...)
+```
+
+Whatever happens inside the block, however many saves it takes, is recorded as a single change.
+Changes performed outside of any such block are still recorded, one per save, under the user
+configured by ``METADATA_TRACK_DEFAULTUSER``, and a warning naming the caller is logged.
+
+**METADATA_TRACK_DEFAULTUSER**
+
+- Default: ``admin``
+- Env: ``METADATA_TRACK_DEFAULTUSER``
+
+Changes performed by code that does not declare who requested them are recorded under this user.
+
+The configured user must exist, otherwise those changes can not be recorded at all.
+
+
 **MISSING_THUMBNAIL**
 
 

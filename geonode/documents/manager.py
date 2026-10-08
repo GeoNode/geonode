@@ -21,6 +21,7 @@ import copy
 import typing
 import logging
 
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.base.models import ResourceBase
 from geonode.resource.manager import BaseResourceManager
 from geonode.documents.models import Document
@@ -43,26 +44,29 @@ class DocumentResourceManager(BaseResourceManager):
         resource_type = resource_type or Document
         defaults = copy.deepcopy(defaults or {})
         extent = defaults.pop("extent", None)
-        try:
-            if file:
-                if isinstance(file, str):
-                    defaults["files"] = [file]
+        # the whole method is one metadata change: the roles below are applied once the base
+        # manager is done creating the resource
+        with metadata_tracker(request_user):
+            try:
+                if file:
+                    if isinstance(file, str):
+                        defaults["files"] = [file]
+                    else:
+                        storage = StorageManager(remote_files={"base_file": file})
+                        storage.clone_remote_files()
+                        defaults["files"] = [storage.get_retrieved_paths().get("base_file")]
+                resource = super().create(uuid, resource_type=resource_type, defaults=defaults)
+                if extent or request_user:
+                    # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
+                    # but it’s kept here to centralize manager behavior.
+                    self._apply_extent_and_role_defaults(resource, extent=extent, user=request_user)
+                resource.handle_moderated_uploads()
+                # Only trigger thumbnailing for local documents, not for remote URLs
+                if resource.is_local:
+                    self.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
                 else:
-                    storage = StorageManager(remote_files={"base_file": file})
-                    storage.clone_remote_files()
-                    defaults["files"] = [storage.get_retrieved_paths().get("base_file")]
-            resource = super().create(uuid, resource_type=resource_type, defaults=defaults)
-            if extent or request_user:
-                # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
-                # but it’s kept here to centralize manager behavior.
-                self._apply_extent_and_role_defaults(resource, extent=extent, user=request_user)
-            resource.handle_moderated_uploads()
-            # Only trigger thumbnailing for local documents, not for remote URLs
-            if resource.is_local:
-                self.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
-            else:
-                logger.info(f"Skipping thumbnail generation for remote document: {resource.doc_url}")
-            return resource
-        finally:
-            if storage:
-                storage.delete_retrieved_paths(force=True)
+                    logger.info(f"Skipping thumbnail generation for remote document: {resource.doc_url}")
+                return resource
+            finally:
+                if storage:
+                    storage.delete_retrieved_paths(force=True)

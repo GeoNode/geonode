@@ -21,6 +21,7 @@ import copy
 import typing
 import logging
 
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.base.models import ResourceBase
 from geonode.resource.manager import BaseResourceManager
 from geonode.geoapps.models import GeoApp
@@ -32,36 +33,40 @@ class GeoAppResourceManager(BaseResourceManager):
     handled_model = GeoApp
 
     def _create_and_update(self, payload, instance=None, notify: bool = True, request_user=None):
-        from geonode.geoapps.api.exceptions import GeneralGeoAppException
+        # the whole method is one metadata change: the row is written below before the base
+        # manager gets to see it, and the roles are applied after it is done
+        with metadata_tracker(request_user, resource=instance):
+            from geonode.geoapps.api.exceptions import GeneralGeoAppException
 
-        payload = copy.deepcopy(payload)
-        extent = payload.pop("extent", None)
-        missing_blob = object()
-        blob = payload.pop("blob", missing_blob)
+            payload = copy.deepcopy(payload)
+            extent = payload.pop("extent", None)
+            missing_blob = object()
+            blob = payload.pop("blob", missing_blob)
 
-        created = False
-        if not instance:
-            instance = super().create(None, resource_type=GeoApp, defaults=payload)
-            created = True
+            created = False
+            if not instance:
+                instance = super().create(None, resource_type=GeoApp, defaults=payload)
+                created = True
 
-        if created and "owner" in payload:
-            payload["owner"] = instance.owner
+            if created and "owner" in payload:
+                payload["owner"] = instance.owner
 
-        try:
-            GeoApp.objects.filter(pk=instance.id).update(**payload)
-            instance.refresh_from_db()
-        except Exception as e:
-            logger.exception(f"Error while creating or updating GeoApp instance with exception {e}")
-            raise GeneralGeoAppException("An error occurred while saving the GeoApp.")
+            try:
+                GeoApp.objects.filter(pk=instance.id).update(**payload)
+                instance.refresh_from_db()
+            except Exception as e:
+                logger.exception(f"Error while creating or updating GeoApp instance with exception {e}")
+                raise GeneralGeoAppException("An error occurred while saving the GeoApp.")
 
-        if blob is not missing_blob:
-            payload["blob"] = blob
-        instance = super().update(instance.uuid, instance=instance, vals=payload, notify=notify)
-        if extent or request_user:
-            # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
-            # but it’s kept here to centralize manager behavior.
-            self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
-        return instance
+            if blob is not missing_blob:
+                payload["blob"] = blob
+
+            instance = super().update(instance.uuid, instance=instance, vals=payload, notify=notify, user=request_user)
+            if extent or request_user:
+                # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
+                # but it’s kept here to centralize manager behavior.
+                self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
+            return instance
 
     def create(
         self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs
