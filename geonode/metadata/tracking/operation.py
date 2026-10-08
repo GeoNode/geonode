@@ -37,6 +37,10 @@ from django.conf import settings
 
 from geonode.metadata.tracking.delta import compute_delta
 
+activity = None
+if "actstream" in settings.INSTALLED_APPS:
+    from actstream import action as activity
+
 logger = logging.getLogger(__name__)
 
 # Context key holding the instance preceding the change, when the caller has already read it
@@ -183,7 +187,7 @@ def track_change(resource, before, user, attributed=True):
 
 def store_change(resource, delta, user, attributed=True):
     """
-    Hand the change over to whoever stores it (#14684). `attributed` tells whether the user really
+    Hand the change over to whoever stores it. `attributed` tells whether the user really
     requested the change, or is just who it is recorded under.
 
     Deliberately synchronous: what is left to do by now is a single insert, and handing it over to
@@ -192,5 +196,15 @@ def store_change(resource, delta, user, attributed=True):
     """
     logger.info(
         f"Metadata of resource {resource.pk} changed by {user}"
-        f"{'' if attributed else ' (not attributed)'}: {dict(sorted(delta.items()))}"
+        f"{'' if attributed else ' (not attributed)'}: { {k:delta[k] for k in sorted(delta)} }"
     )
+    if activity:
+        activity.send(
+            user,
+            verb="updated metadata",
+            action_object=resource,
+            raw_action="updated metadata",
+            data={
+                "changes": delta,
+            },
+        )
