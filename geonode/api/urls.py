@@ -23,7 +23,12 @@ from django.urls import path
 
 from . import api as resources
 from . import resourcebase_api as resourcebase_resources
-from .views import UserInfoView
+from .views import (
+    UserInfoView,
+    GroupCategoryViewSet,
+    GroupViewSet,
+    GroupProfileViewSet,
+)
 
 api = Api(api_name="api")
 
@@ -46,6 +51,11 @@ api.register(resourcebase_resources.ResourceBaseResource())
 
 router = routers.DynamicRouter()
 
+
+router.register(r"groupcategory", GroupCategoryViewSet, base_name="group-category")
+router.register(r"group", GroupViewSet, base_name="groups")
+router.register(r"group_profile", GroupProfileViewSet, base_name="group-profile")
+
 urlpatterns = [
     path("userinfo/", UserInfoView.as_view(), name="userinfo"),
-]
+] + router.urls
