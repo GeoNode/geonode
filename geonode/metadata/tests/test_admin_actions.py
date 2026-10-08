@@ -106,6 +106,32 @@ class ValidateMetadataActionTests(MetadataManagerMixin, TestCase):
         # the resource itself is not to blame: it is reported as valid
         self.assertEqual("Validated 1 resource(s): all valid", calls[-1][0])
 
+    def broken_schema(self, property_count):
+        return {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {f"f{i}": {"maxLength": "nope"} for i in range(property_count)},
+        }
+
+    def test_schema_errors_within_the_cap_are_all_shown(self):
+        self.manager.get_schema.return_value = self.broken_schema(3)
+
+        validate_metadata(self.modeladmin, self.request, self.queryset(self.valid))
+
+        warnings = [text for text, level in self.messages() if level == messages.WARNING]
+        self.assertEqual(3, len(warnings))
+        self.assertFalse(any("more schema problem" in w for w in warnings))
+
+    def test_schema_errors_past_the_cap_point_at_the_download_action(self):
+        self.manager.get_schema.return_value = self.broken_schema(MAX_REPORTED_RESOURCES + 3)
+
+        validate_metadata(self.modeladmin, self.request, self.queryset(self.valid))
+
+        warnings = [text for text, level in self.messages() if level == messages.WARNING]
+        self.assertEqual(MAX_REPORTED_RESOURCES + 1, len(warnings))  # capped, plus one omission notice
+        self.assertIn("3 more schema problem", warnings[-1])
+        self.assertIn("Download validation report", warnings[-1])
+
     def test_reported_resources_are_capped(self):
         extra = [self.make_resource(f"Bad {i}") for i in range(MAX_REPORTED_RESOURCES)]
         for resource in extra:

@@ -44,8 +44,19 @@ def validate_metadata(modeladmin, request, queryset):
         modeladmin.message_user(request, str(e), messages.ERROR)
         return
 
+    # Admin messages go through Django's cookie-based message storage, which has a fixed size
+    # budget and no session fallback here: an uncapped loop risks losing messages to that limit
+    # instead of to this cap. Point at the download action for anything past it.
     for message in validator.schema_errors[:MAX_REPORTED_RESOURCES]:
         modeladmin.message_user(request, message, messages.WARNING)
+    if len(validator.schema_errors) > MAX_REPORTED_RESOURCES:
+        omitted = len(validator.schema_errors) - MAX_REPORTED_RESOURCES
+        modeladmin.message_user(
+            request,
+            f"... {omitted} more schema problem(s) not shown here: use 'Download validation report' "
+            f"for the full list",
+            messages.WARNING,
+        )
 
     total = 0
     invalid = []
