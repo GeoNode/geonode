@@ -196,7 +196,7 @@ def store_change(resource, delta, user, attributed=True):
     """
     logger.info(
         f"Metadata of resource {resource.pk} changed by {user}"
-        f"{'' if attributed else ' (not attributed)'}: { {k:delta[k] for k in sorted(delta)} }"
+        f"{'' if attributed else ' (not attributed)'}: {dict(sorted(delta.items()))}"
     )
     if activity:
         activity.send(
