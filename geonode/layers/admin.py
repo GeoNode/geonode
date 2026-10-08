@@ -21,6 +21,7 @@ from django.contrib import admin
 
 from geonode.base.admin import ResourceBaseAdminForm, SparseInline, LinkInline
 from geonode.layers.models import Dataset, Attribute, Style
+from geonode.metadata.admin import download_validation_report, validate_metadata
 
 
 class AttributeInline(admin.TabularInline):
@@ -34,6 +35,7 @@ class DatasetAdminForm(ResourceBaseAdminForm):
 
 
 class DatasetAdmin(admin.ModelAdmin):
+    actions = [validate_metadata, download_validation_report]
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display = (
         "id",
