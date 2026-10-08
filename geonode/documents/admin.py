@@ -20,6 +20,7 @@
 from django.contrib import admin
 
 from geonode.documents.models import Document
+from geonode.metadata.admin import download_validation_report, validate_metadata
 from geonode.base.admin import ResourceBaseAdminForm, SparseInline, LinkInline
 
 
@@ -33,6 +34,7 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
 
 class DocumentAdmin(admin.ModelAdmin):
+    actions = [validate_metadata, download_validation_report]
     inlines = (
         LinkInline,
         SparseInline,
