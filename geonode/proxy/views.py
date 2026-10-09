@@ -24,6 +24,7 @@ import logging
 import traceback
 
 from hyperlink import URL
+from urllib3.util import parse_url
 from urllib.parse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
@@ -45,8 +46,9 @@ from geonode.utils import (
     get_headers,
     http_client,
     json_response,
-    extract_ip_or_domain,
+    parse_safe_proxy_url,
     is_safe_url,
+    url_origin,
 )
 from geonode.base.enumerations import LINK_TYPES as _LT
 
@@ -94,7 +96,23 @@ def proxy(
     raw_url = url or request.GET["url"]
     raw_url = urljoin(settings.SITEURL, raw_url) if raw_url.startswith("/") else raw_url
 
-    if not kwargs.get("safe_url", False) and not is_safe_url(raw_url):
+    # safe_url marks internal GeoServer calls (/gs/): the URL is built server-side from
+    # ogc_server_settings.LOCATION and may carry unquoted query chars
+    internal = kwargs.get("safe_url", False)
+
+    # Parse once with the engine that dispatches the request; the canonical host drives
+    # every check below so validation and egress agree on the host.
+    try:
+        parsed_url = parse_url(raw_url) if internal else parse_safe_proxy_url(raw_url)
+    except ValueError:
+        return HttpResponse(
+            "Invalid URL provided.",
+            status=403,
+            content_type="text/plain",
+        )
+    host = parsed_url.host
+
+    if not internal and not is_safe_url(raw_url):
         return HttpResponse(
             "Invalid URL provided.",
             status=403,
@@ -110,18 +128,22 @@ def proxy(
         locator += f"#{url.fragment}"
 
     proxy_allowed_hosts = list(proxy_urls_registry.get_proxy_allowed_hosts())
-    if sec_chk_hosts:
-        if any(needle.lower() in url.query.lower() for needle in PROXY_ALLOWED_PARAMS_NEEDLES) or any(
-            needle.lower() in url.path.lower() for needle in PROXY_ALLOWED_PATH_NEEDLES
-        ):
-            proxy_allowed_hosts.append(url.hostname)
 
-        if not validate_host(extract_ip_or_domain(raw_url), proxy_allowed_hosts):
-            return HttpResponse(
-                "The url provided to the proxy service is not a valid hostname.",
-                status=403,
-                content_type="text/plain",
-            )
+    def _is_allowed_host(target_url, target_host):
+        parts = urlsplit(target_url)
+        allowed = list(proxy_allowed_hosts)
+        if any(needle.lower() in parts.query.lower() for needle in PROXY_ALLOWED_PARAMS_NEEDLES) or any(
+            needle.lower() in parts.path.lower() for needle in PROXY_ALLOWED_PATH_NEEDLES
+        ):
+            allowed.append(target_host)
+        return validate_host(target_host, allowed)
+
+    if sec_chk_hosts and not _is_allowed_host(raw_url, host):
+        return HttpResponse(
+            "The url provided to the proxy service is not a valid hostname.",
+            status=403,
+            content_type="text/plain",
+        )
 
     # Collecting headers and cookies
     if not headers:
@@ -163,8 +185,46 @@ def proxy(
         _url = _url.replace(f"{settings.SITEURL}geoserver", ogc_server_settings.LOCATION.rstrip("/"))
         _data = _data.replace(f"{settings.SITEURL}geoserver", ogc_server_settings.LOCATION.rstrip("/"))
 
+    egress_origin = url_origin(_url)
+    to_geoserver = egress_origin == url_origin(ogc_server_settings.LOCATION)
+    # the checks above ran on raw_url: the URL actually sent must target the same host,
+    # unless it is the internal GeoServer (/gs/ calls or the SITEURL/geoserver rewrite)
+    if not (internal or to_geoserver) and (not egress_origin or egress_origin[1] != host):
+        return HttpResponse(
+            "Invalid URL provided.",
+            status=403,
+            content_type="text/plain",
+        )
+
+    if internal or to_geoserver:
+        geoserver_origins = {o for o in (egress_origin, url_origin(ogc_server_settings.public_url)) if o}
+
+        def _is_allowed_redirect(target):
+            # GeoServer calls are only redirected within GeoServer
+            return url_origin(target) in geoserver_origins
+
+    else:
+
+        def _is_allowed_redirect(target):
+            # a redirect can only lead where a direct request to the proxy could
+            try:
+                target_host = parse_safe_proxy_url(target).host
+            except ValueError:
+                return False
+            return is_safe_url(target) and (not sec_chk_hosts or _is_allowed_host(target, target_host))
+
+    # Each redirect target is checked by _is_allowed_redirect before it is requested and the
+    # chain is capped; a rejected hop or an over-long chain makes the request fail.
     response, content = http_client.request(
-        _url, method=request.method, data=_data.encode("utf-8"), headers=headers, timeout=timeout, user=user
+        _url,
+        method=request.method,
+        data=_data.encode("utf-8"),
+        headers=headers,
+        timeout=timeout,
+        user=user,
+        allow_redirects=True,
+        redirect_validator=_is_allowed_redirect,
+        max_redirects=getattr(settings, "PROXY_MAX_REDIRECTS", 3),
     )
     if response is None:
         logger.error(f"Proxy request failed: {content}")
@@ -211,15 +271,16 @@ def proxy(
     else:
         # If we get a redirect, let's add a useful message.
         if status and status in (301, 302, 303, 307):
+            location = response.headers.get("Location")
             _response = HttpResponse(
                 (
                     f"This proxy does not support redirects. The server in '{url}' "
-                    f"asked for a redirect to '{response.getheader('Location')}'"
+                    f"asked for a redirect to '{location}'"
                 ),
                 status=status,
                 content_type=content_type,
             )
-            _response["Location"] = response.getheader("Location")
+            _response["Location"] = location
             return fetch_response_headers(_response, response_headers)
         else:
 
