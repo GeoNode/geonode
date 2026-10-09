@@ -24,6 +24,8 @@ import requests
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.test import TestCase
+from django.test.utils import override_settings
 from django.urls import reverse
 
 from geonode import geoserver
@@ -46,7 +48,9 @@ from geonode.geoserver.helpers import (
     get_time_info,
     set_attributes_from_geoserver,
     _sync_geoserver_keywords_to_instance,
+    ogc_server_settings,
 )
+from geonode.proxy.utils import ProxyUrlsRegistry
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 from geonode.services.models import Service
 from geonode.services.enumerations import REST_MAP, INDEXED
@@ -482,3 +486,78 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
             {"keyword_from_geonode", "keyword_from_geoserver", "shared_keyword"},
             set(dataset.keyword_list()),
         )
+
+
+class GeoServerProxyTest(TestCase):
+    """The /gs/ proxy only talks to the internal GeoServer."""
+
+    @staticmethod
+    def _response(request, status, location=None, content=b""):
+        resp = requests.models.Response()
+        resp.status_code = status
+        if location:
+            resp.headers["Location"] = location
+        resp.headers["Content-Type"] = "text/xml"
+        resp.url = request.url
+        resp.request = request
+        resp._content = content
+        resp._content_consumed = True
+        return resp
+
+    def _get(self, path, fake_send):
+        with patch.object(requests.adapters.HTTPAdapter, "send", fake_send):
+            return self.client.get(path)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.utils.socket.getaddrinfo", return_value=[(None, None, None, None, ("172.18.0.5", 0))])
+    def test_proxies_to_internal_geoserver(self, _mock_dns):
+        """/gs/ reaches the internal GeoServer with the safe URL check on, encoded query chars included."""
+        requested = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            requested.append(request.url)
+            return self._response(request, 200, content=b"<ok/>")
+
+        response = self._get(
+            f"{reverse('ows_endpoint')}?service=WFS&version=1.1.0&request=GetFeature&typeName=geonode:x"
+            "&CQL_FILTER=a%20%3D%201",
+            fake_send,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(requested), 1)
+        self.assertTrue(requested[0].startswith(ogc_server_settings.LOCATION))
+        self.assertIn("CQL_FILTER=a%20=%201", requested[0])
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.utils.socket.getaddrinfo", return_value=[(None, None, None, None, ("172.18.0.5", 0))])
+    def test_redirects_stay_within_geoserver(self, _mock_dns):
+        location = ogc_server_settings.LOCATION
+        for redirect_to, status in ((f"{location}ows?service=WMS", 200), ("http://spatialreference.org/x", 500)):
+            requested = []
+
+            def fake_send(adapter_self, request, **kwargs):
+                requested.append(request.url)
+                if len(requested) == 1:
+                    return self._response(request, 302, location=redirect_to)
+                return self._response(request, 200, content=b"<ok/>")
+
+            with self.subTest(redirect_to=redirect_to):
+                response = self._get(f"{reverse('ows_endpoint')}?service=WMS&request=GetCapabilities", fake_send)
+                self.assertEqual(response.status_code, status)
+                self.assertTrue(all(u.startswith(location) for u in requested))
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    def test_rejects_external_target(self):
+        """The workspace/layer route joins the path onto LOCATION: a '//host' path must not switch host."""
+        requested = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            requested.append(request.url)
+            return self._response(request, 200, content=b"<ok/>")
+
+        response = self._get(f"/gs/{settings.DEFAULT_WORKSPACE}/somelayer/ows//spatialreference.org/x", fake_send)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(requested, [])
