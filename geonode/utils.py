@@ -1075,7 +1075,7 @@ class HttpClient:
         url,
         method="GET",
         data=None,
-        headers={},
+        headers=None,
         stream=False,
         timeout=None,
         retries=None,
@@ -1085,6 +1085,7 @@ class HttpClient:
         redirect_validator=None,
         max_redirects=None,
     ):
+        headers = dict(headers or {})
         if (
             (user or self.username != "admin")
             and check_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1147,7 +1148,7 @@ class HttpClient:
                 ValueError,
                 RetryError,
             ) as e:
-                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
+                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url}"
                 logger.exception(Exception(msg))
                 response = None
                 content = str(e)
@@ -1161,7 +1162,7 @@ class HttpClient:
 
         return (response, content)
 
-    def get(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
+    def get(self, url, data=None, headers=None, stream=False, timeout=None, user=None, verify=False):
         return self.request(
             url,
             method="GET",
@@ -1173,7 +1174,7 @@ class HttpClient:
             verify=verify,
         )
 
-    def post(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
+    def post(self, url, data=None, headers=None, stream=False, timeout=None, user=None, verify=False):
         return self.request(
             url,
             method="POST",

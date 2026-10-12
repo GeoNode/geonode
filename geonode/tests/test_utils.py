@@ -42,6 +42,7 @@ from geonode.utils import (
     assert_safe_xml,
     safe_request_url,
     UnsafeXMLError,
+    HttpClient,
 )
 from unittest.mock import MagicMock
 
@@ -484,3 +485,30 @@ class TestSafeRequestUrl(djangoTestCase):
         )
         with self.assertRaises(requests.exceptions.InvalidURL):
             safe_request_url("GET", "http://allowed.invalid/resource")
+
+
+class TestHttpClient(djangoTestCase):
+    @patch("geonode.utils.get_or_create_token")
+    @patch("geonode.utils.requests.Session")
+    def test_headers_not_shared_between_requests(self, mock_session, mock_token):
+        mock_token.return_value = MagicMock(token="secret", is_expired=lambda: False)
+        client = HttpClient()
+        client.username = "admin"
+        client.get("http://localhost/first", user=get_user_model()(username="admin"))
+        client.get("http://localhost/second")
+        first, second = (c.kwargs["headers"] for c in mock_session.return_value.get.call_args_list)
+        self.assertEqual(first["Authorization"], "Bearer secret")
+        self.assertNotIn("Authorization", second)
+
+    @patch("geonode.utils.requests.Session")
+    def test_caller_headers_not_mutated(self, mock_session):
+        headers = {"Accept": "application/json"}
+        HttpClient().post("http://localhost/", headers=headers)
+        self.assertEqual(headers, {"Accept": "application/json"})
+
+    @patch("geonode.utils.requests.Session")
+    def test_headers_not_logged_on_failure(self, mock_session):
+        mock_session.return_value.get.side_effect = requests.exceptions.RequestException("boom")
+        with self.assertLogs("geonode.utils", level="ERROR") as logs:
+            HttpClient().get("http://localhost/", headers={"Authorization": "Bearer secret"})
+        self.assertNotIn("secret", "\n".join(logs.output))
