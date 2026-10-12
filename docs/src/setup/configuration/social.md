@@ -94,11 +94,12 @@
 
 GeoNode provides a configurable way to synchronize user group memberships from Social Providers (like Azure or Google) during the login process. This is controlled by the setting `SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN` which can be defined directly on the settings or in the `ENV` file:
 
-Three kinds of strategies are supported:
+Four kinds of strategies are supported:
 
 * `FULL_SYNC` (Default): In other words Strict mirroring. On every login, GeoNode wipes all local groups for that user and joins only the groups sent by the provider. This strategy is for environments where the Identity Provider (IdP) is the only source of truth.
 * `SAFE_SYNC`: If the provider's response is missing the "groups" or "roles" keys entirely, GeoNode skips the sync to protect existing memberships. If the keys are present (even if empty), a full sync occurs.
 * `NO_SYNC`: Total Decoupling. GeoNode ignores group data from the provider. This strategy is for environments where users authenticate via SSO but admins manage permissions manually inside GeoNode.
+* `DIFF_SYNC`: Like `SAFE_SYNC`, but instead of wiping and re-joining all groups, GeoNode only applies what changed: it joins new groups, leaves groups the provider no longer sends, and promotes or demotes when the role changed. Unchanged memberships are left untouched, so a login without group changes does not trigger a recalculation of resource permissions. This strategy is recommended when users belong to groups with many resources.
 
 For example, the `SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN` for the `SAFE_SYNC` strategy can be defined as follows:
 
@@ -107,4 +108,4 @@ SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN=SAFE_SYNC
 ```
 
 !!! note Note
-    For `FULL_SYNC` and `SAFE_SYNC`, ensure the slug of the GeoNode `GroupProfile` matches the Group ID or role name sent by the provider.
+    For `FULL_SYNC`, `SAFE_SYNC` and `DIFF_SYNC`, ensure the slug of the GeoNode `GroupProfile` matches the Group ID or role name sent by the provider.
