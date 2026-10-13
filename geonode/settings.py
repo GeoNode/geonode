@@ -50,6 +50,9 @@ SILENCED_SYSTEM_CHECKS = [
 # GeoNode Version
 VERSION = get_version()
 
+# Sent by geonode.utils.http_client; public tile servers (OSM, Wikimedia) throttle generic User-Agents
+GEONODE_USER_AGENT = os.getenv("GEONODE_USER_AGENT", f"GeoNode/{VERSION} (+https://geonode.org/)")
+
 DEFAULT_CHARSET = "utf-8"
 
 # Defines the directory that contains the settings file as the PROJECT_ROOT
