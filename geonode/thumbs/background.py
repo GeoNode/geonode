@@ -352,6 +352,9 @@ class GenericXYZBackground(BaseThumbBackground):
                 for retries in range(self.max_retries):
                     try:
                         resp, content = http_client.request(imgurl)
+                        if resp is None:
+                            # HttpClient swallows request exceptions and returns their message as content
+                            raise requests.exceptions.RequestException(content)
                         if resp.status_code > 400:
                             retries = self.max_retries - 1
                             resp.raise_for_status()
