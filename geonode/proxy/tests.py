@@ -263,6 +263,57 @@ class ProxyTest(TestCase):
         self.assertTrue(expected_subset.items() <= dict(response.headers.copy()).items())
 
     @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    @patch(
+        "geonode.proxy.views.proxy_urls_registry",
+        ProxyUrlsRegistry().set(["example.org", urlsplit(settings.SITEURL).hostname]),
+    )
+    def test_proxy_forwards_cookies_only_to_local_hosts(self, _mock_is_safe_url):
+        import geonode.proxy.views
+
+        class Response:
+            status_code = 200
+            content = "Hello World"
+            headers = {"Content-Type": "text/plain"}
+
+        self.client.login(username="admin", password="admin")
+
+        with patch.object(geonode.proxy.views.http_client, "request", return_value=(Response(), None)) as request_mock:
+            self.client.get(f"{self.proxy_url}?url=http://example.org/index.html")
+            headers = request_mock.call_args.kwargs["headers"]
+            self.assertNotIn("Cookie", headers)
+            self.assertNotIn("X-CSRFToken", headers)
+
+            sessionid = self.client.cookies[settings.SESSION_COOKIE_NAME].value
+            self.client.get(f"{self.proxy_url}?url={settings.SITEURL}index.html")
+            headers = request_mock.call_args.kwargs["headers"]
+            self.assertIn(f"{settings.SESSION_COOKIE_NAME}={sessionid}", headers["Cookie"])
+
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    @patch(
+        "geonode.proxy.views.proxy_urls_registry",
+        ProxyUrlsRegistry().set(["example.org", urlsplit(settings.SITEURL).hostname]),
+    )
+    def test_proxy_forwards_access_token_only_to_local_hosts(self, _mock_is_safe_url):
+        import geonode.proxy.views
+
+        class Response:
+            status_code = 200
+            content = "Hello World"
+            headers = {"Content-Type": "text/plain"}
+
+        with patch.object(geonode.proxy.views.http_client, "request", return_value=(Response(), None)) as request_mock:
+            self.client.get(
+                f"{self.proxy_url}?url=http://example.org/index.html", HTTP_AUTHORIZATION="Bearer some-token"
+            )
+            self.assertNotIn("access_token", request_mock.call_args.args[0])
+            self.assertNotIn("Authorization", request_mock.call_args.kwargs["headers"])
+
+            self.client.get(
+                f"{self.proxy_url}?url={settings.SITEURL}index.html", HTTP_AUTHORIZATION="Bearer some-token"
+            )
+            self.assertIn("access_token=some-token", request_mock.call_args.args[0])
+
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
     def test_proxy_url_forgery(self, _mock_is_safe_url):
         import geonode.proxy.views
         from urllib.parse import urlsplit
