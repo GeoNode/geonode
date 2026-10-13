@@ -20,6 +20,7 @@
 import copy
 import typing
 
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.base.models import ResourceBase
 from geonode.resource.manager import BaseResourceManager
 from geonode.maps.models import Map
@@ -52,22 +53,24 @@ class MapResourceManager(BaseResourceManager):
         extent = payload.pop("extent", None)
         post_creation_data = {"thumbnail": payload.pop("thumbnail_url", "")}
         maplayers = payload.pop("maplayers", None)
-        instance = super().create(uuid, resource_type=resource_type or Map, defaults=payload)
+        # the whole method is one metadata change: the layers and the roles below are part of it
+        with metadata_tracker(request_user):
+            instance = super().create(uuid, resource_type=resource_type or Map, defaults=payload)
 
-        if maplayers is not None:
-            instance.maplayers.set(maplayers)
-            instance.refresh_from_db()
+            if maplayers is not None:
+                instance.maplayers.set(maplayers)
+                instance.refresh_from_db()
 
-        if extent is not None or request_user:
-            self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
+            if extent is not None or request_user:
+                self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
 
-        instance = self._post_change_routines(
-            instance=instance,
-            create_action_perfomed=True,
-            additional_data=post_creation_data,
-            notify=notify,
-        )
-        self.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
+            instance = self._post_change_routines(
+                instance=instance,
+                create_action_perfomed=True,
+                additional_data=post_creation_data,
+                notify=notify,
+            )
+            self.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
         return instance
 
     def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, **kwargs) -> ResourceBase:
@@ -83,21 +86,23 @@ class MapResourceManager(BaseResourceManager):
         }
         maplayers = payload.pop("maplayers", None)
 
-        instance = super().update(uuid, instance=instance, vals=payload, notify=False, **kwargs)
+        # the whole method is one metadata change: the layers and the roles below are part of it
+        with metadata_tracker(request_user, resource=instance):
+            instance = super().update(uuid, instance=instance, vals=payload, notify=False, **kwargs)
 
-        if maplayers is not None:
-            instance.maplayers.set(maplayers)
-            instance.refresh_from_db()
+            if maplayers is not None:
+                instance.maplayers.set(maplayers)
+                instance.refresh_from_db()
 
-        if extent or request_user:
-            # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
-            # but it’s kept here to centralize manager behavior.
-            self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
+            if extent or request_user:
+                # Mirrors ResourceBaseSerializer.save() (extent + role defaults); could be moved to the API,
+                # but it’s kept here to centralize manager behavior.
+                self._apply_extent_and_role_defaults(instance, extent=extent, user=request_user)
 
-        instance = self._post_change_routines(
-            instance=instance,
-            create_action_perfomed=False,
-            additional_data=post_change_data,
-            notify=notify,
-        )
+            instance = self._post_change_routines(
+                instance=instance,
+                create_action_perfomed=False,
+                additional_data=post_change_data,
+                notify=notify,
+            )
         return instance
