@@ -1037,15 +1037,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             )
         )
         try:
-            # Not http_client(user=...): that would send our own GeoServer OAuth token to this third party.
-            remote_auth = None
-            if layer.remote_service.needs_authentication:
-                from geonode.security.auth_registry import auth_handler_registry
-
-                remote_auth = auth_handler_registry.build(layer.remote_service.auth_config).get_request_auth()
-            response = safe_request_url("GET", dft_url, auth=remote_auth, timeout=10)
-            response.raise_for_status()
-            body = response.json()
+            body = _get_from_remote_service(layer.remote_service, dft_url).json()
             attribute_map = []
             for n in body["fields"]:
                 esri_type = _esri_types.get(n.get("type"))
@@ -1065,7 +1057,10 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         logger.debug(f"WFS URL is {dft_url}")
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
-            doc = _get_xml(dft_url)
+            if layer.remote_service:
+                doc = dlxml.fromstring(_get_from_remote_service(layer.remote_service, dft_url).content)
+            else:
+                doc = _get_xml(dft_url)
             xsd = "{http://www.w3.org/2001/XMLSchema}"
             path = f".//{xsd}extension/{xsd}sequence/{xsd}element"
             attribute_map = [
@@ -1103,7 +1098,10 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             try:
                 logger.info(f"Getting WMS info for {layer.subtype} '{layer.alternate or layer.typename}'")
                 logger.debug(f"WMS URL is {dft_url}")
-                body = _get_from_catalog(dft_url)
+                if layer.remote_service:
+                    body = _get_from_remote_service(layer.remote_service, dft_url).content
+                else:
+                    body = _get_from_catalog(dft_url)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll("th"):
                     if field.string is None:
@@ -2224,6 +2222,18 @@ def _get_from_catalog(url):
     else:
         logger.debug(f"Request at {url} returned code {resp.status_code} and content {resp.content}")
         raise Exception(f"Request returned code {resp.status_code}")
+
+
+def _get_from_remote_service(service, url):
+    # Not gs_catalog/http_client: those would send our own GeoServer credentials to this third party.
+    auth = None
+    if service.needs_authentication:
+        from geonode.security.auth_registry import auth_handler_registry
+
+        auth = auth_handler_registry.build(service.auth_config).get_request_auth()
+    response = safe_request_url("GET", url, auth=auth, timeout=10)
+    response.raise_for_status()
+    return response
 
 
 def _get_xml(url):
