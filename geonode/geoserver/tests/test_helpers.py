@@ -53,7 +53,7 @@ from geonode.geoserver.helpers import (
 from geonode.proxy.utils import ProxyUrlsRegistry
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 from geonode.services.models import Service
-from geonode.services.enumerations import REST_MAP, INDEXED
+from geonode.services.enumerations import REST_MAP, INDEXED, WMS
 from unittest.mock import patch, Mock
 
 
@@ -306,6 +306,44 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         set_attributes_from_geoserver(dataset, overwrite=True)
 
         self.assertTrue(dataset.attribute_set.filter(attribute="STATE_NAME").exists())
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_wms_remote_dataset(self, mock_safe_request_url, mock_gs_catalog):
+        service = Service.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            type=WMS,
+            method=INDEXED,
+            base_url="https://remote.example.com/wms",
+            name="wms-test-service",
+            title="WMS test service",
+            operations={"GetCapabilities": {"methods": [{"type": "Get", "url": "https://advertised.example.com/wms"}]}},
+        )
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="roads",
+            store="wms-test-service",
+            subtype="remote",
+            workspace="remoteWorkspace",
+            typename="remoteWorkspace:roads",
+            alternate="remoteWorkspace:roads",
+            remote_service=service,
+        )
+        mock_safe_request_url.side_effect = [
+            Mock(content=b"not xml"),
+            Mock(content=b"<table><tr><th>NAME</th></tr></table>"),
+        ]
+
+        set_attributes_from_geoserver(dataset)
+
+        mock_gs_catalog.http_request.assert_not_called()
+        wfs_call, wms_call = mock_safe_request_url.call_args_list
+        self.assertTrue(wfs_call.args[1].startswith("https://advertised.example.com/ows?"))
+        self.assertTrue(wms_call.args[1].startswith("https://advertised.example.com/wms?"))
+        self.assertIsNone(wfs_call.kwargs["auth"])
+        self.assertTrue(dataset.attribute_set.filter(attribute="NAME").exists())
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_geoserver_proxy_strip_paths(self):
