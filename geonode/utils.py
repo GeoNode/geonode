@@ -1101,7 +1101,7 @@ class HttpClient:
                 valid_uname_pw = base64.b64encode(f"{self.username}:{self.password}".encode()).decode()
                 headers["Authorization"] = f"Basic {valid_uname_pw}"
 
-        headers["User-Agent"] = "GeoNode"
+        headers["User-Agent"] = getattr(settings, "GEONODE_USER_AGENT", "GeoNode")
         response = None
         content = None
         session = requests.Session()
