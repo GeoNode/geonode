@@ -49,6 +49,7 @@ from geonode.utils import (
     parse_safe_proxy_url,
     is_safe_url,
     url_origin,
+    is_local_host,
 )
 from geonode.base.enumerations import LINK_TYPES as _LT
 
@@ -148,7 +149,7 @@ def proxy(
     # Collecting headers and cookies
     if not headers:
         headers, access_token = get_headers(request, url, raw_url, allowed_hosts=allowed_hosts)
-    if not access_token:
+    if not access_token and is_local_host(url.hostname, allowed_hosts):
         auth_header = None
         if "Authorization" in headers:
             auth_header = headers["Authorization"]

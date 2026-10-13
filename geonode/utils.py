@@ -52,7 +52,6 @@ from typing import List, Optional, Union
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
 from django.http import HttpResponse
@@ -406,45 +405,49 @@ def get_dataset_workspace(dataset):
     return workspace
 
 
+def is_local_host(hostname, allowed_hosts=[]):
+    """True if hostname is GeoNode, the local GeoServer or one of allowed_hosts."""
+    local_hosts = [urlsplit(settings.SITEURL).hostname, urlsplit(settings.OGC_SERVER["default"]["LOCATION"]).hostname]
+    return hostname in local_hosts + allowed_hosts
+
+
 def get_headers(request, url, raw_url, allowed_hosts=[]):
     cookies = None
     csrftoken = None
     headers = {}
+    site_url = urlsplit(settings.SITEURL)
 
     for _header_key, _header_value in dict(request.headers.copy()).items():
         if _header_key.lower() in FORWARDED_HEADERS:
             headers[_header_key] = _header_value
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and url_has_allowed_host_and_scheme(
-        url=raw_url, allowed_hosts=url.hostname
-    ):
-        cookies = request.META["HTTP_COOKIE"]
 
-    for cook in request.COOKIES:
-        name = str(cook)
-        value = request.COOKIES.get(name)
-        if name == "csrftoken":
-            csrftoken = value
-        cook = f"{name}={value}"
-        cookies = cook if not cookies else (f"{cookies}; {cook}")
+    # Cookies are sent only to GeoNode and the local GeoServer
+    if is_local_host(url.hostname, allowed_hosts):
+        for cook in request.COOKIES:
+            name = str(cook)
+            value = request.COOKIES.get(name)
+            if name == "csrftoken":
+                csrftoken = value
+            cook = f"{name}={value}"
+            cookies = cook if not cookies else (f"{cookies}; {cook}")
 
-    csrftoken = get_token(request) if not csrftoken else csrftoken
+        csrftoken = get_token(request) if not csrftoken else csrftoken
 
-    if csrftoken:
-        headers["X-Requested-With"] = "XMLHttpRequest"
-        headers["X-CSRFToken"] = csrftoken
-        cook = f"csrftoken={csrftoken}"
-        cookies = cook if not cookies else (f"{cookies}; {cook}")
+        if csrftoken:
+            headers["X-Requested-With"] = "XMLHttpRequest"
+            headers["X-CSRFToken"] = csrftoken
+            cook = f"csrftoken={csrftoken}"
+            cookies = cook if not cookies else (f"{cookies}; {cook}")
 
-    if cookies and request and hasattr(request, "session"):
-        if "JSESSIONID" in request.session and request.session["JSESSIONID"]:
-            cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
-        headers["Cookie"] = cookies
+        if cookies and request and hasattr(request, "session"):
+            if "JSESSIONID" in request.session and request.session["JSESSIONID"]:
+                cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
+            headers["Cookie"] = cookies
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-    site_url = urlsplit(settings.SITEURL)
     # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
     if site_url.hostname in (allowed_hosts + [url.hostname]):
         # we give precedence to obtained from Aithorization headers
