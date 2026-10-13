@@ -149,7 +149,7 @@ def proxy(
     # Collecting headers and cookies
     if not headers:
         headers, access_token = get_headers(request, url, raw_url, allowed_hosts=allowed_hosts)
-    if not access_token and is_local_host(url.hostname, allowed_hosts):
+    if not access_token and is_local_host(host, allowed_hosts):
         auth_header = None
         if "Authorization" in headers:
             auth_header = headers["Authorization"]
