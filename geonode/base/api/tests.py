@@ -1419,6 +1419,50 @@ class BaseApiTests(APITestCase):
         self.assertNotIn("bobby", user_permissions)
         self.assertEqual(user_permissions.get("norman"), "edit")
 
+    def test_resource_service_update_with_list_params(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        resource = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_update_list_params", "owner": admin}
+        )
+
+        # regions is left to the view's "[]" default, keywords is sent as in the endpoint docs
+        response = self.client.put(
+            f"/api/v2/resources/{resource.pk}/update/",
+            data={"vals": '{"title": "api_update_list_params_updated"}', "keywords": '["k1", "k2"]'},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        resp_js = response.json()
+        resouce_service_dispatcher.apply((resp_js.get("execution_id"),))
+        response = self.client.get(resp_js.get("status_url"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json().get("status"), "finished", response.json())
+
+        resource.refresh_from_db()
+        self.assertEqual(resource.title, "api_update_list_params_updated")
+
+    def test_resource_service_update_failure_is_recorded(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        admin = get_user_model().objects.get(username="admin")
+        resource = dataset_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "api_update_failure", "owner": admin}
+        )
+
+        response = self.client.put(
+            f"/api/v2/resources/{resource.pk}/update/",
+            data={"vals": '{"owner": "no-such-user"}'},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        resp_js = response.json()
+        resouce_service_dispatcher.apply((resp_js.get("execution_id"),))
+
+        execution_request = ExecutionRequest.objects.get(exec_id=resp_js.get("execution_id"))
+        self.assertEqual(execution_request.status, ExecutionRequest.STATUS_FAILED)
+        self.assertIn("update", execution_request.output_params["error"])
+        self.assertIn("does not exist", execution_request.output_params["exception"])
+
     def test_featured_and_published_resources(self):
         """
         Ensure we can Get & Set Permissions across the Resource Base list.
