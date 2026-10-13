@@ -354,7 +354,7 @@ class GenericXYZBackground(BaseThumbBackground):
                         resp, content = http_client.request(imgurl)
                         if resp.status_code > 400:
                             retries = self.max_retries - 1
-                            raise Exception(f"{strip_tags(content)}")
+                            resp.raise_for_status()
                         im = BytesIO(content)
                         Image.open(im).verify()  # verify that it is, in fact an image
                         break
