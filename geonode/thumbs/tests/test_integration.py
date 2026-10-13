@@ -20,6 +20,7 @@ import os
 import json
 import logging
 import tempfile
+import requests
 import timeout_decorator
 
 from io import BytesIO
@@ -176,6 +177,8 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         except UnidentifiedImageError as e:
             logger.error(f"It was not possible to fetch the background: {e}")
             return
+        except requests.exceptions.HTTPError as e:
+            self.skipTest(f"Background tile server unavailable: {e}")
 
         expected_image = Image.open(expected_image_path)
         diff = Image.new("RGB", image.size)
@@ -251,6 +254,8 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
                 )
             except UnidentifiedImageError as e:
                 logger.error(f"It was not possible to fetch the background: {e}")
+            except requests.exceptions.HTTPError as e:
+                self.skipTest(f"Background tile server unavailable: {e}")
 
     def test_tile_background_wikimedia_fetch(self):
         width = 240
