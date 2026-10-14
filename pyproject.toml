@@ -48,7 +48,7 @@ dependencies = [
     "django-allauth==65.19.4",
     "django-appconf==1.0.6",
     "django-filter==25.2",
-    "django-imagekit==5.0.0",
+    "django-imagekit==6.1.1",
     "django-taggit==5.0.1",
     "django-markdownify==0.9.5",
     "django-mptt==0.16.0",
