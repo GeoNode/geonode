@@ -134,7 +134,7 @@ dependencies = [
     # tests
     "coverage==7.16.1",
     "requests-toolbelt==1.0.0",
-    "flake8==7.3.0",
+    "flake8==7.4.1",
     "black==24.4.2",
     "pytest==8.4.2",
     "pytest-django==4.14.0",
@@ -152,7 +152,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest==8.4.2",
-    "flake8==7.3.0",
+    "flake8==7.4.1",
     "black==24.4.2",
     "coverage==7.16.1",
 ]
