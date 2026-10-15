@@ -978,6 +978,35 @@ response = requests.request("GET", url)
 
 ## Assets
 
+### Get Resource Assets
+
+Retrieve the list of assets attached to a specific resource.
+
+**Endpoint**:
+
+- **API**: `GET /api/v2/resources/{pk}/asset`
+- **Status Code**: `200`
+
+where `{pk}` is the resource ID.
+
+**Permissions**:
+- Users with `view_resourcebase` permission on the resource can view all assets attached to that resource.
+- Users without `view_resourcebase` permission receive `403 Forbidden`.
+
+**Example Request**:
+```python
+import requests
+
+url = "https://development.demo.geonode.org/api/v2/resources/{pk}/asset"
+
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+
+response = requests.request("GET", url, headers=headers)
+
+```
+
 ### Assets Upload
 
 Assets can be attached to a resource as a file.
