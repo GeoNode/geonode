@@ -21,6 +21,7 @@ from django import forms
 from django.contrib import admin
 
 from geonode.maps.models import Map, MapLayer
+from geonode.metadata.admin import download_validation_report, validate_metadata
 from geonode.base.admin import ResourceBaseAdminForm, SparseInline
 
 
@@ -38,6 +39,7 @@ class MapAdminForm(ResourceBaseAdminForm):
 
 
 class MapAdmin(admin.ModelAdmin):
+    actions = [validate_metadata, download_validation_report]
     inlines = (
         MapLayerInline,
         SparseInline,
