@@ -23,7 +23,7 @@ from unittest.mock import patch
 from django.test import SimpleTestCase, override_settings
 
 from geonode.metadata.tracking.delta import compute_delta
-from geonode.metadata.tracking.operation import current_operation, metadata_tracker
+from geonode.metadata.tracking.operation import current_operation, metadata_tracker, store_change
 
 BIOTA = {"id": "biota", "label": "Biota"}
 FARMING = {"id": "farming", "label": "Farming"}
@@ -204,3 +204,23 @@ class MetadataTrackerTests(SimpleTestCase):
             self.assertIsNone(current_operation())
 
         self.track_change.assert_not_called()
+
+    @patch("geonode.metadata.tracking.operation.activity")
+    def test_change_is_sent_to_activity_stream(self, activity):
+        resource = self.resource(42)
+        delta = {
+            "title": {
+                "from": "Old title",
+                "to": "New title",
+            }
+        }
+
+        store_change(resource, delta, self.USER)
+
+        activity.send.assert_called_once_with(
+            self.USER,
+            verb="updated metadata",
+            action_object=resource,
+            raw_action="updated metadata",
+            data={"changes": delta},
+        )
