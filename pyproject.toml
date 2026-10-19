@@ -145,7 +145,7 @@ dependencies = [
     # Security and audit
     "cryptography==50.0.1",
     # dependency for XLSX handler
-    "python-calamine==0.7.0",
+    "python-calamine==0.8.3",
     "python-magic==0.4.27",
 ]
 
