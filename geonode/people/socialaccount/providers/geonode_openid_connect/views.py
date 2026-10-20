@@ -16,13 +16,27 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
+
+from django.conf import settings
+from django.utils.module_loading import import_string
+
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
 
-from geonode.people.adapters import GenericOpenIDConnectOAuth2Adapter
+from geonode.people.socialaccount.providers.geonode_openid_connect.provider import GenericOpenIDConnectProvider
 
+logger = logging.getLogger(__name__)
 
-oauth2_login = OAuth2LoginView.adapter_view(GenericOpenIDConnectOAuth2Adapter)
-oauth2_callback = OAuth2CallbackView.adapter_view(GenericOpenIDConnectOAuth2Adapter)
+# SOCIALACCOUNT_ADAPTER used to be the OAuth2 adapter too, its protocol overrides are no longer applied
+if hasattr(import_string(settings.SOCIALACCOUNT_ADAPTER), "complete_login"):
+    logger.warning(
+        "SOCIALACCOUNT_ADAPTER %s defines complete_login, which is ignored: "
+        "move the OAuth2 customizations to the OAUTH2_ADAPTER_CLASS provider setting",
+        settings.SOCIALACCOUNT_ADAPTER,
+    )
+
+oauth2_login = OAuth2LoginView.adapter_view(GenericOpenIDConnectProvider.oauth2_adapter_class)
+oauth2_callback = OAuth2CallbackView.adapter_view(GenericOpenIDConnectProvider.oauth2_adapter_class)
