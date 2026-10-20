@@ -20,7 +20,7 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 from datetime import datetime, timedelta
-from importlib import import_module
+from importlib import import_module, reload
 
 from django.conf import settings
 from django.core import mail
@@ -28,6 +28,8 @@ from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.middleware import SessionMiddleware
 
 from allauth.account import app_settings as account_settings
 from allauth.account.adapter import get_adapter
@@ -37,6 +39,7 @@ from allauth.account.signals import user_signed_up
 # from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.apple.client import jwt_encode
 from django.test import TestCase
+from unittest import mock
 
 from .allauth_test_utils import OAuth2TestsMixin
 
@@ -143,6 +146,31 @@ class GoogleTests(OAuth2TestsMixin, TestCase):
         self.assertFalse(EmailConfirmation.objects.filter(email_address__email=self.email).exists())
         account = email_address.user.socialaccount_set.all()[0]
         self.assertEqual(account.extra_data["given_name"], "Raymond")
+
+    def test_login_syncs_groups(self):
+        with mock.patch(
+            "geonode.people.adapters._update_user_groups_from_social", side_effect=lambda sl, user: user
+        ) as mock_sync:
+            self.login(resp_mock=None)
+        user = get_user_model().objects.get(email=self.email)
+        mock_sync.assert_called_once_with(mock.ANY, user)
+
+    @override_settings(SOCIALACCOUNT_ADAPTER="geonode.people.adapters.SocialAccountAdapter")
+    def test_login_with_base_social_account_adapter(self):
+        self.login(resp_mock=None)
+        self.assertTrue(get_user_model().objects.filter(email=self.email).exists())
+
+    @override_settings(SOCIALACCOUNT_ADAPTER="geonode.people.adapters.SocialAccountAdapter")
+    def test_login_view_does_not_depend_on_socialaccount_adapter(self):
+        # views are built at import time, reload them with the overridden setting
+        from geonode.people.socialaccount.providers.geonode_openid_connect import views
+
+        request = RequestFactory().post(self.provider.get_login_url(self.request))
+        SessionMiddleware(lambda r: None).process_request(request)
+        request.user = AnonymousUser()
+        resp = reload(views).oauth2_login(request)
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(resp["location"].startswith("https://accounts.google.com/o/oauth2/v2/auth"))
 
     def test_user_signed_up_signal(self):
         sent_signals = []
