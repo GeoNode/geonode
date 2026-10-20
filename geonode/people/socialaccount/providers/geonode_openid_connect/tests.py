@@ -21,6 +21,7 @@ from __future__ import absolute_import, unicode_literals
 import json
 from datetime import datetime, timedelta
 from importlib import import_module, reload
+from inspect import getclosurevars
 
 from django.conf import settings
 from django.core import mail
@@ -38,6 +39,8 @@ from allauth.account.signals import user_signed_up
 
 # from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.apple.client import jwt_encode
+
+from geonode.people.adapters import GenericOpenIDConnectAdapter, GenericOpenIDConnectOAuth2Adapter
 from django.test import TestCase
 from unittest import mock
 
@@ -278,3 +281,51 @@ class AppInSettingsTests(GoogleTests):
     """
 
     pass
+
+
+class CustomOAuth2Adapter(GenericOpenIDConnectOAuth2Adapter):
+    pass
+
+
+class LegacyAdapter(GenericOpenIDConnectAdapter):
+    def complete_login(self, request, app, token, response, **kwargs):
+        pass
+
+
+class OAuth2AdapterClassSettingTests(TestCase):
+    def _reload(self):
+        from geonode.people.socialaccount.providers.geonode_openid_connect import provider, views
+
+        reload(provider)
+        reload(views)
+        return provider, views
+
+    def tearDown(self):
+        # restore the module state built from the default settings
+        self._reload()
+
+    def _assert_adapter(self, expected):
+        provider, views = self._reload()
+        self.assertIs(provider.GenericOpenIDConnectProvider.oauth2_adapter_class, expected)
+        for view in (views.oauth2_login, views.oauth2_callback):
+            self.assertIs(getclosurevars(view).nonlocals["adapter"], expected)
+
+    def test_default_oauth2_adapter_class(self):
+        self._assert_adapter(GenericOpenIDConnectOAuth2Adapter)
+
+    def test_custom_oauth2_adapter_class(self):
+        providers = {
+            settings.SOCIALACCOUNT_OIDC_PROVIDER: {
+                **(settings.SOCIALACCOUNT_PROVIDERS.get(settings.SOCIALACCOUNT_OIDC_PROVIDER) or {}),
+                "OAUTH2_ADAPTER_CLASS": f"{__name__}.CustomOAuth2Adapter",
+            }
+        }
+        with override_settings(SOCIALACCOUNT_PROVIDERS=providers):
+            self._assert_adapter(CustomOAuth2Adapter)
+
+    def test_warns_on_legacy_socialaccount_adapter(self):
+        with override_settings(SOCIALACCOUNT_ADAPTER=f"{__name__}.LegacyAdapter"):
+            with self.assertLogs("geonode.people.socialaccount.providers.geonode_openid_connect.views", "WARNING"):
+                self._reload()
+        with self.assertNoLogs("geonode.people.socialaccount.providers.geonode_openid_connect.views", "WARNING"):
+            self._reload()

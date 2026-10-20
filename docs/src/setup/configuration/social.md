@@ -77,6 +77,7 @@
             "AUTHORIZE_URL": "the_custom_auth_uri",
             "ID_TOKEN_ISSUER": "the_custom_uri",  # or "PROFILE_URL": "the_custom_user_info_uri"; if you specify the "ID_TOKEN_ISSUER" this will take precedence
             "OAUTH_PKCE_ENABLED": True,
+            "OAUTH2_ADAPTER_CLASS": "the_custom_oauth2_adapter_class",  # This is optional
         }
     }
 
@@ -90,7 +91,12 @@
 
     SOCIALACCOUNT_ADAPTER="geonode.people.adapters.GenericOpenIDConnectAdapter"  # This is the default value
 
- This setting only controls the account-level behavior (signup, `Groups` synchronization, `ACCOUNT_APPROVAL_REQUIRED`), and the class must extend `geonode.people.adapters.SocialAccountAdapter`. The OpenID Connect protocol (tokens, `id_token` and profile fetching) is handled by `geonode.people.adapters.GenericOpenIDConnectOAuth2Adapter`, which is independent from this setting. Setting it to `geonode.people.adapters.SocialAccountAdapter` disables the `Groups` synchronization.
+ This setting only controls the account-level behavior (signup, `Groups` synchronization, `ACCOUNT_APPROVAL_REQUIRED`), and the class must extend `geonode.people.adapters.SocialAccountAdapter`. Setting it to `geonode.people.adapters.SocialAccountAdapter` disables the `Groups` synchronization.
+
+ The OpenID Connect protocol (tokens, `id_token` and profile fetching) is handled by a separate OAuth2 adapter, independent from `SOCIALACCOUNT_ADAPTER`. To customize it (e.g. overriding `complete_login`), extend `geonode.people.adapters.GenericOpenIDConnectOAuth2Adapter` and set its path in the `OAUTH2_ADAPTER_CLASS` key of the provider settings above. When omitted, `GenericOpenIDConnectOAuth2Adapter` is used.
+
+!!! warning
+    In previous versions `SOCIALACCOUNT_ADAPTER` was also used as the OAuth2 adapter. If your custom `SOCIALACCOUNT_ADAPTER` overrides `complete_login` or other OAuth2 methods, move those overrides to a `GenericOpenIDConnectOAuth2Adapter` subclass configured through `OAUTH2_ADAPTER_CLASS`. A warning is logged at startup when such overrides are detected.
 
 #### Social Account Group Synchronization Strategies
 
