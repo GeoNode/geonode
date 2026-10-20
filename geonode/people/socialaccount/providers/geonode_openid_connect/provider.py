@@ -30,7 +30,7 @@ from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.base import AuthAction, ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 
-from geonode.people.adapters import GenericOpenIDConnectAdapter
+from geonode.people.adapters import GenericOpenIDConnectOAuth2Adapter
 
 PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
 
@@ -52,7 +52,7 @@ class GenericOpenIDConnectProvider(OAuth2Provider):
             "geonode.people.socialaccount.providers.geonode_openid_connect.provider.GenericOpenIDConnectProviderAccount",
         )
     )
-    oauth2_adapter_class = GenericOpenIDConnectAdapter
+    oauth2_adapter_class = GenericOpenIDConnectOAuth2Adapter
 
     def get_default_scope(self):
         scope = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("SCOPE", "")

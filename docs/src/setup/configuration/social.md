@@ -90,6 +90,8 @@
 
     SOCIALACCOUNT_ADAPTER="geonode.people.adapters.GenericOpenIDConnectAdapter"  # This is the default value
 
+ This setting only controls the account-level behavior (signup, `Groups` synchronization, `ACCOUNT_APPROVAL_REQUIRED`), and the class must extend `geonode.people.adapters.SocialAccountAdapter`. The OpenID Connect protocol (tokens, `id_token` and profile fetching) is handled by `geonode.people.adapters.GenericOpenIDConnectOAuth2Adapter`, which is independent from this setting. Setting it to `geonode.people.adapters.SocialAccountAdapter` disables the `Groups` synchronization.
+
 #### Social Account Group Synchronization Strategies
 
 GeoNode provides a configurable way to synchronize user group memberships from Social Providers (like Azure or Google) during the login process. This is controlled by the setting `SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN` which can be defined directly on the settings or in the `ENV` file:

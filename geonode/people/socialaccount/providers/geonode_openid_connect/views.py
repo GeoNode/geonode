@@ -16,14 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf import settings
-from django.utils.module_loading import import_string
-
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
 
+from geonode.people.adapters import GenericOpenIDConnectOAuth2Adapter
 
-oauth2_login = OAuth2LoginView.adapter_view(import_string(settings.SOCIALACCOUNT_ADAPTER))
-oauth2_callback = OAuth2CallbackView.adapter_view(import_string(settings.SOCIALACCOUNT_ADAPTER))
+
+oauth2_login = OAuth2LoginView.adapter_view(GenericOpenIDConnectOAuth2Adapter)
+oauth2_callback = OAuth2CallbackView.adapter_view(GenericOpenIDConnectOAuth2Adapter)

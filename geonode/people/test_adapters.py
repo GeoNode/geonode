@@ -503,3 +503,36 @@ class GenericOpenIDConnectAdapterTestCase(GeoNodeBaseTestSupport):
 
         # User should STILL be in 'bar' because we are not syncing
         self.assertTrue(self.user.groups.filter(groupprofile__slug="bar").exists())
+
+
+class GenericOpenIDConnectAdapterHooksTestCase(TestCase):
+    def setUp(self):
+        self.adapter = adapters.GenericOpenIDConnectAdapter()
+        self.django_request = mock.MagicMock(spec="django.http.request.HttpRequest").return_value
+        self.sociallogin = mock.MagicMock()
+
+    @mock.patch.object(adapters, "_update_user_groups_from_social")
+    @mock.patch.object(adapters, "get_data_extractor", return_value=None)
+    @mock.patch.object(adapters.DefaultSocialAccountAdapter, "save_user")
+    @override_settings(ACCOUNT_APPROVAL_REQUIRED=True)
+    def test_save_user_requires_approval_and_syncs_groups(self, mock_base_save_user, _, mock_sync):
+        mock_user = mock.MagicMock(is_active=True)
+        mock_base_save_user.return_value = mock_user
+        mock_sync.side_effect = lambda sociallogin, user: user
+        result = self.adapter.save_user(self.django_request, self.sociallogin)
+        self.assertFalse(result.is_active)
+        mock_sync.assert_called_once_with(self.sociallogin, mock_user)
+
+    @mock.patch.object(adapters, "_update_user_groups_from_social")
+    @mock.patch.object(adapters.DefaultSocialAccountAdapter, "pre_social_login")
+    def test_pre_social_login_syncs_existing_users_only(self, _, mock_sync):
+        self.sociallogin.user.pk = None
+        self.adapter.pre_social_login(self.django_request, self.sociallogin)
+        mock_sync.assert_not_called()
+        self.sociallogin.user.pk = 1
+        self.adapter.pre_social_login(self.django_request, self.sociallogin)
+        mock_sync.assert_called_once_with(self.sociallogin, self.sociallogin.user)
+
+    def test_adapters_are_split(self):
+        self.assertNotIsInstance(self.adapter, adapters.OAuth2Adapter)
+        self.assertFalse(issubclass(adapters.GenericOpenIDConnectOAuth2Adapter, adapters.DefaultSocialAccountAdapter))
