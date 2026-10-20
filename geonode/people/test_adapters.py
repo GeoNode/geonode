@@ -76,6 +76,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_area_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_area.called)
         args_list = mock_user_field.call_args_list
@@ -86,6 +87,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_city_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_city.called)
         args_list = mock_user_field.call_args_list
@@ -96,6 +98,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_country_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_country.called)
         args_list = mock_user_field.call_args_list
@@ -106,6 +109,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_delivery_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_delivery.called)
         args_list = mock_user_field.call_args_list
@@ -116,6 +120,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_fax_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_fax.called)
         args_list = mock_user_field.call_args_list
@@ -126,6 +131,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_first_name_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_first_name.called)
         args_list = mock_user_field.call_args_list
@@ -136,6 +142,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_last_name_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_last_name.called)
         args_list = mock_user_field.call_args_list
@@ -146,6 +153,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_organization_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_organization.called)
         args_list = mock_user_field.call_args_list
@@ -156,6 +164,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_position_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_position.called)
         args_list = mock_user_field.call_args_list
@@ -166,6 +175,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_profile_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_profile.called)
         args_list = mock_user_field.call_args_list
@@ -176,6 +186,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_voice_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_voice.called)
         args_list = mock_user_field.call_args_list
@@ -186,6 +197,7 @@ class UpdateProfileTestCase(TestCase):
     @mock.patch("geonode.people.adapters.user_field", autospec=True)
     def test_update_profile_covers_zipcode_field(self, mock_user_field, mock_get_extractor):
         mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = None
         adapters.update_profile(self.mock_social_login)
         self.assertTrue(self.mock_extractor.extract_zipcode.called)
         args_list = mock_user_field.call_args_list
@@ -200,6 +212,14 @@ class UpdateProfileTestCase(TestCase):
         adapters.update_profile(self.mock_social_login)
         self.mock_extractor.extract_language.assert_called_once_with(self.mock_social_login.account.extra_data)
         mock_user_field.assert_any_call(self.fake_user, "language", self.fake_language)
+
+    @mock.patch.object(adapters, "get_data_extractor")
+    @mock.patch("geonode.people.adapters.user_field", autospec=True)
+    def test_update_profile_keeps_existing_values(self, mock_user_field, mock_get_extractor):
+        mock_get_extractor.return_value = self.mock_extractor
+        mock_user_field.return_value = "existing"
+        adapters.update_profile(self.mock_social_login)
+        self.assertNotIn(mock.call(self.fake_user, "city", self.fake_city), mock_user_field.call_args_list)
 
 
 class SiteAllowsSignupTestCase(TestCase):
@@ -300,6 +320,7 @@ class LocalAccountAdapterTestCase(TestCase):
         self.assertEqual(result, dummy_reverse)
 
     @mock.patch.object(adapters.DefaultAccountAdapter, "save_user")
+    @mock.patch("geonode.people.adapters.settings", autospec=True)
     def test_save_user_no_approval_required(self, mock_settings, mock_base_save_user):
         mock_user_class = mock.MagicMock(spec="geonde.people.models.Profile")
         mock_user = mock_user_class.return_value
@@ -307,6 +328,7 @@ class LocalAccountAdapterTestCase(TestCase):
         phony_form = "phony_form"
         phony_commit = "phony_commit"
         mock_settings.ACCOUNT_APPROVAL_REQUIRED = False
+        mock_base_save_user.return_value = mock_user
         result = self.extractor.save_user(self.django_request, mock_user, phony_form, commit=phony_commit)
         mock_base_save_user.assert_called_with(self.django_request, mock_user, phony_form, commit=phony_commit)
         self.assertTrue(result.is_active)
@@ -342,14 +364,10 @@ class SocialAccountAdapterTestCase(TestCase):
         django_request_class = mock.MagicMock(spec="django.http.request.HttpRequest")
         self.django_request = django_request_class.return_value
 
-    @mock.patch.object(adapters, "_site_allows_signup")
-    def test_is_open_for_signup(self, mock_func):
-        dummy_return = "dummy"
-        fake_sociallogin = "phony_sociallogin"
-        mock_func.return_value = dummy_return
-        result = self.extractor.is_open_for_signup(self.django_request, fake_sociallogin)
-        mock_func.assert_called_with(self.django_request)
-        self.assertEqual(result, dummy_return)
+    def test_is_open_for_signup(self):
+        for value in (True, False):
+            with self.subTest(value), override_settings(ACCOUNT_OPEN_SOCIALSIGNUP=value):
+                self.assertEqual(self.extractor.is_open_for_signup(self.django_request, "phony_sociallogin"), value)
 
     @mock.patch.object(adapters.DefaultSocialAccountAdapter, "populate_user")
     @mock.patch.object(adapters, "update_profile")
@@ -362,10 +380,12 @@ class SocialAccountAdapterTestCase(TestCase):
         mock_base_populate_user.assert_called_with(self.django_request, fake_sociallogin, fake_data)
         self.assertEqual(result, fake_user)
 
+    @mock.patch.object(adapters, "get_data_extractor")
     @mock.patch.object(adapters.DefaultSocialAccountAdapter, "save_user")
     @mock.patch("geonode.people.adapters.settings", autospec=True)
-    def test_save_user_no_approval_required(self, mock_settings, mock_base_save_user):
-        fake_sociallogin = "phony_sociallogin"
+    def test_save_user_no_approval_required(self, mock_settings, mock_base_save_user, mock_get_extractor):
+        fake_sociallogin = mock.MagicMock()
+        mock_get_extractor.return_value.extract_keywords.return_value = ["kw1", "kw2"]
         mock_user_class = mock.MagicMock(spec="geonde.people.models.Profile")
         mock_user = mock_user_class.return_value
         mock_user.is_active = True
@@ -375,11 +395,13 @@ class SocialAccountAdapterTestCase(TestCase):
         result = self.extractor.save_user(self.django_request, fake_sociallogin, phony_form)
         mock_base_save_user.assert_called_with(self.django_request, fake_sociallogin, form=phony_form)
         self.assertTrue(result.is_active)
+        mock_user.keywords.add.assert_has_calls([mock.call("kw1"), mock.call("kw2")])
 
+    @mock.patch.object(adapters, "get_data_extractor", return_value=None)
     @mock.patch.object(adapters.DefaultSocialAccountAdapter, "save_user")
     @mock.patch("geonode.people.adapters.settings", autospec=True)
-    def test_save_user_with_approval_required(self, mock_settings, mock_base_save_user):
-        fake_sociallogin = "phony_sociallogin"
+    def test_save_user_with_approval_required(self, mock_settings, mock_base_save_user, _):
+        fake_sociallogin = mock.MagicMock()
         mock_user_class = mock.MagicMock(spec="geonde.people.models.Profile")
         mock_user = mock_user_class.return_value
         mock_user.is_active = True
@@ -424,8 +446,8 @@ class GenericOpenIDConnectAdapterTestCase(GeoNodeBaseTestSupport):
         """Verify SAFE_SYNC preserves 'bar' if group data is missing."""
         # Setup mock extractor to return "" (missing key signal)
         mock_ext = mock.MagicMock()
-        mock_ext.extract_groups.return_value = None
-        mock_ext.extract_roles.return_value = None
+        mock_ext.extract_groups.return_value = ""
+        mock_ext.extract_roles.return_value = ""
         mock_get_extractor.return_value = mock_ext
 
         # Run logic with no groups in extra_data
