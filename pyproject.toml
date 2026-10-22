@@ -69,7 +69,7 @@ dependencies = [
     "pyjwt==2.15.1",
 
     # geopython dependencies
-    "pycsw @ git+https://github.com/geopython/pycsw.git@3.0.0-beta1",
+    "geonode-pycsw==3.0.0b2",
     "pyproj<3.8.0",
     "OWSLib==0.34.1",
     "SQLAlchemy==2.0.43",
@@ -98,7 +98,7 @@ dependencies = [
     "geonode-pinax-notifications==6.0.0.4",
 
     # GeoNode org maintained apps.
-    "django_geonode_mapstore_client @ https://github.com/GeoNode/geonode-mapstore-client/archive/refs/heads/5.1.x.zip",
+    "django-geonode-mapstore-client==5.1.1",
     "django-avatar==8.0.1",
     "geonode-oauth-toolkit==2.2.3.1",
     "geonode-announcements==2.0.2.2",
