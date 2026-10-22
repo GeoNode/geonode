@@ -32,7 +32,7 @@ dependencies = [
     # Other
     "beautifulsoup4==4.12.3",
     "hyperlink==21.0.0",
-    "urllib3==2.7.0",
+    "urllib3==2.8.0",
     "python-slugify==8.0.4",
     "decorator==5.1.1",
     "celery==5.6.3",
