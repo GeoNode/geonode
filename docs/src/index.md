@@ -1,8 +1,5 @@
 # Overview
 
-!!! warning
-    This version of the **GeoNode Documentation** is a full rewrite of the old one. It will be completed during the following weeks. We invite you to check the [old documentation](https://docs.geonode.org/projects/v4/en/4.4.x/) for any missing information.
-
 Welcome to the **GeoNode** Documentation.
 
 ## What is GeoNode
