@@ -21,6 +21,7 @@ from django.contrib import admin
 
 from geonode.geoapps.models import GeoApp
 from geonode.base.admin import ResourceBaseAdminForm
+from geonode.metadata.admin import download_validation_report, validate_metadata
 
 
 class GeoAppAdminForm(ResourceBaseAdminForm):
@@ -30,6 +31,7 @@ class GeoAppAdminForm(ResourceBaseAdminForm):
 
 
 class GeoAppAdmin(admin.ModelAdmin):
+    actions = [validate_metadata, download_validation_report]
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display_links = ("title",)
     list_display = (
