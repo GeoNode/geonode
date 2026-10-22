@@ -30,11 +30,12 @@ from geonode.upload.handlers.tiles3d.utils import box_to_wgs84, sphere_to_wgs84
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
-from geonode.upload.handlers.utils import create_alternate, should_be_imported
+from geonode.upload.handlers.utils import create_alternate
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.base.models import ResourceBase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.resource.registry import resource_manager_registry
+from geonode.upload.api.exceptions import ImportException
 
 logger = logging.getLogger("importer")
 
@@ -191,7 +192,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
+            "skip_existing_layer": _data.pop("skip_existing_layers", False),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
             "original_zip_name": _data.pop("original_zip_name", None),
@@ -209,17 +210,15 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         # start looping on the layers available
         layer_name = self.fixup_name(filename)
         should_be_overwritten = _exec.action == ira.REPLACE.value
-        # should_be_imported check if the user+layername already exists or not
-        if should_be_imported(
-            layer_name,
-            _exec.user,
-            skip_existing_layer=_exec.input_params.get("skip_existing_layer"),
-            overwrite_existing_layer=should_be_overwritten,
+        # Check for name collisions with any resource owned by the user
+        user_datasets = ResourceBase.objects.filter(owner=_exec.user, alternate=layer_name)
+
+        dataset_exists = user_datasets.exists()
+        if not (
+            dataset_exists
+            and _exec.input_params.get("skip_existing_layer")
+            and user_datasets.filter(resource_type="dataset", subtype="3dtiles").exists()
         ):
-
-            user_datasets = ResourceBase.objects.filter(owner=_exec.user, alternate=layer_name)
-
-            dataset_exists = user_datasets.exists()
 
             if dataset_exists and should_be_overwritten:
                 layer_name, alternate = (
@@ -230,6 +229,11 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 alternate = layer_name
             else:
                 alternate = create_alternate(layer_name, execution_id)
+        else:
+            raise ImportException(
+                "No new layers were detected in your upload. "
+                "Existing layers were left unchanged, so no updates were made."
+            )
 
         import_orchestrator.apply_async(
             (

@@ -127,7 +127,7 @@ class BaseRasterFileHandler(BaseHandler):
             return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
+            "skip_existing_layer": _data.pop("skip_existing_layers", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -341,7 +341,10 @@ class BaseRasterFileHandler(BaseHandler):
         except Exception as e:
             logger.error(e)
             raise e
-        return
+        raise ImportException(
+            "No new layers were detected in your upload. "
+            "Existing layers were left unchanged, so no updates were made."
+        )
 
     def create_geonode_resource(
         self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, asset=None, **kwargs

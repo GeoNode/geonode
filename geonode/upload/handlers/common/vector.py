@@ -195,7 +195,7 @@ class BaseVectorFileHandler(BaseHandler):
             return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
+            "skip_existing_layer": _data.pop("skip_existing_layers", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
@@ -457,11 +457,15 @@ class BaseVectorFileHandler(BaseHandler):
         data inside the geonode_data database
         """
         gdal_proxy = self.open_source_file(files)
-        layers = self._select_valid_layers(gdal_proxy, execution_id=execution_id)
+        _exec = self._get_execution_request_object(execution_id)
+        layers = self._select_valid_layers(
+            gdal_proxy,
+            execution_id=execution_id,
+            filter_existing=_exec.input_params.get("skip_existing_layer", False),
+        )
         # for the moment we skip the dyanamic model creation
         layer_count = len(layers)
         logger.info(f"Total number of layers available: {layer_count}")
-        _exec = self._get_execution_request_object(execution_id)
         _input = {**_exec.input_params, **{"total_layers": layer_count}}
         orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
         dynamic_model = None
@@ -482,71 +486,61 @@ class BaseVectorFileHandler(BaseHandler):
                 layer_name = self.fixup_name(layer.GetName())
 
                 should_be_overwritten = _exec.action == ira.REPLACE.value
-                # should_be_imported check if the user+layername already exists or not
-                if (
-                    should_be_imported(
-                        layer_name,
-                        _exec.user,
-                        skip_existing_layer=_exec.input_params.get("skip_existing_layer"),
-                        overwrite_existing_layer=should_be_overwritten,
-                    )
-                    # and layer.GetGeometryColumn() is not None
-                ):
-                    _files = files.copy()
-                    vrt_layer_name = None
-                    if has_incompatible_field_names(layer):
-                        vrt_filename, vrt_layer_name = create_vrt_file(layer, files.get("base_file"))
-                        _files["temp_vrt_file"] = vrt_filename
+                _files = files.copy()
+                vrt_layer_name = None
+                if has_incompatible_field_names(layer):
+                    vrt_filename, vrt_layer_name = create_vrt_file(layer, files.get("base_file"))
+                    _files["temp_vrt_file"] = vrt_filename
 
-                    # update the execution request object
-                    # setup dynamic model and retrieve the group task needed for tun the async workflow
-                    # create the async task for create the resource into geonode_data with ogr2ogr
-                    if settings.IMPORTER_ENABLE_DYN_MODELS:
-                        (
-                            dynamic_model,
-                            alternate,
-                            celery_group,
-                        ) = self.setup_dynamic_model(
-                            layer,
-                            execution_id,
-                            should_be_overwritten,
-                            username=_exec.user,
-                        )
-                    else:
-                        alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
-
-                    layer_names.append(layer_name)
-                    alternates.append(alternate)
-
-                    ogr_res = self.get_ogr2ogr_task_group(
-                        execution_id,
-                        _files,
-                        vrt_layer_name or layer.GetName().lower(),
-                        should_be_overwritten,
+                # update the execution request object
+                # setup dynamic model and retrieve the group task needed for tun the async workflow
+                # create the async task for create the resource into geonode_data with ogr2ogr
+                if settings.IMPORTER_ENABLE_DYN_MODELS:
+                    (
+                        dynamic_model,
                         alternate,
+                        celery_group,
+                    ) = self.setup_dynamic_model(
+                        layer,
+                        execution_id,
+                        should_be_overwritten,
+                        username=_exec.user,
+                    )
+                else:
+                    alternate = self.find_alternate_by_dataset(_exec, layer_name, should_be_overwritten)
+
+                layer_names.append(layer_name)
+                alternates.append(alternate)
+
+                ogr_res = self.get_ogr2ogr_task_group(
+                    execution_id,
+                    _files,
+                    vrt_layer_name or layer.GetName().lower(),
+                    should_be_overwritten,
+                    alternate,
+                )
+
+                if settings.IMPORTER_ENABLE_DYN_MODELS:
+                    group_to_call = group(
+                        celery_group.set(link_error=["dynamic_model_error_callback"]),
+                        ogr_res.set(link_error=["dynamic_model_error_callback"]),
+                    )
+                else:
+                    group_to_call = group(
+                        ogr_res.set(link_error=["dynamic_model_error_callback"]),
                     )
 
-                    if settings.IMPORTER_ENABLE_DYN_MODELS:
-                        group_to_call = group(
-                            celery_group.set(link_error=["dynamic_model_error_callback"]),
-                            ogr_res.set(link_error=["dynamic_model_error_callback"]),
-                        )
-                    else:
-                        group_to_call = group(
-                            ogr_res.set(link_error=["dynamic_model_error_callback"]),
-                        )
-
-                    # prepare the async chord workflow with the on_success and on_fail methods
-                    workflow = chord(group_to_call)(  # noqa
-                        import_next_step.s(
-                            execution_id,
-                            str(self),  # passing the handler module path
-                            task_name,
-                            layer_name,
-                            alternate,
-                            **kwargs,
-                        )
+                # prepare the async chord workflow with the on_success and on_fail methods
+                workflow = chord(group_to_call)(  # noqa
+                    import_next_step.s(
+                        execution_id,
+                        str(self),  # passing the handler module path
+                        task_name,
+                        layer_name,
+                        alternate,
+                        **kwargs,
                     )
+                )
 
         except Exception as e:
             logger.error(e)
@@ -582,6 +576,7 @@ class BaseVectorFileHandler(BaseHandler):
         to extract all the layers.
         Is possible to pass a filter_layer argument with the name of the layer
         to retrieve only the needed one
+        The import step sets filter_existing to exclude existing layers before counting them.
         """
         filter_layer = kwargs.get("filter_layer", None)
         layers = []
@@ -609,6 +604,26 @@ class BaseVectorFileHandler(BaseHandler):
         if filter_layer and not layers:
             logger.warning(f"No layer matching filter '{filter_layer}' was found.")
 
+        if layers and kwargs.get("filter_existing"):
+            _exec = self._get_execution_request_object(kwargs["execution_id"])
+            selected_layers = []
+            for layer in layers:
+                layer_name = self.fixup_name(layer.GetName())
+                if should_be_imported(
+                    layer_name,
+                    _exec.user,
+                    skip_existing_layer=_exec.input_params.get("skip_existing_layer"),
+                    overwrite_existing_layer=_exec.action == ira.REPLACE.value,
+                ):
+                    selected_layers.append(layer)
+                else:
+                    logger.info(f"Skipping existing layer: {layer_name}")
+            if not selected_layers:
+                raise ImportException(
+                    "No new layers were detected in your upload. "
+                    "Existing layers were left unchanged, so no updates were made."
+                )
+            layers = selected_layers
         return layers
 
     def can_overwrite(self, _exec_obj, dataset):
