@@ -23,6 +23,8 @@ import requests
 
 from urllib.parse import urljoin
 
+from owslib.etree import etree as dlxml
+
 from django.conf import settings
 from django.urls import reverse
 
@@ -51,7 +53,6 @@ from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 from geonode.services.models import Service
 from geonode.services.enumerations import REST_MAP, INDEXED
 from unittest.mock import patch, Mock
-
 
 logger = logging.getLogger(__name__)
 
@@ -302,6 +303,60 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         set_attributes_from_geoserver(dataset, overwrite=True)
 
         self.assertTrue(dataset.attribute_set.filter(attribute="STATE_NAME").exists())
+
+    def test_set_attributes_from_geoserver_keeps_enumerated_attributes(self):
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="enum_attributes",
+            store="datastore",
+            subtype="vector",
+            workspace="geonode",
+            typename="geonode:enum_attributes",
+            alternate="geonode:enum_attributes",
+        )
+        Attribute.objects.create(
+            dataset=dataset,
+            attribute="usv",
+            attribute_label="Custom USV",
+            description="Kept on sync",
+            attribute_type="xsd:int",
+        )
+        xsd_ns = "http://www.w3.org/2001/XMLSchema"
+        xsd = f"{{{xsd_ns}}}"
+        schema = dlxml.Element(f"{xsd}schema", nsmap={"xsd": xsd_ns})
+        sequence = dlxml.SubElement(dlxml.SubElement(schema, f"{xsd}extension"), f"{xsd}sequence")
+        dlxml.SubElement(sequence, f"{xsd}element", name="fid", type="xsd:int")
+        usv = dlxml.SubElement(sequence, f"{xsd}element", name="usv")
+        restriction = dlxml.SubElement(
+            dlxml.SubElement(usv, f"{xsd}simpleType"), f"{xsd}restriction", base="xsd:string"
+        )
+        for value in ("alpha", "beta", "gamma"):
+            dlxml.SubElement(restriction, f"{xsd}enumeration", value=value)
+        dlxml.SubElement(sequence, f"{xsd}element", name="geom", type="gml:PolygonPropertyType")
+        untyped = dlxml.SubElement(sequence, f"{xsd}element", name="untyped_field")
+        dlxml.SubElement(dlxml.SubElement(untyped, f"{xsd}simpleType"), f"{xsd}restriction")
+
+        with (
+            patch("geonode.geoserver.helpers._get_xml", return_value=schema) as mock_get_xml,
+            patch("geonode.geoserver.helpers._get_from_catalog") as mock_get_from_catalog,
+            self.assertLogs("geonode.geoserver.helpers", level="WARNING") as logs,
+        ):
+            set_attributes_from_geoserver(dataset, overwrite=True)
+
+        self.assertEqual(
+            set(dataset.attribute_set.values_list("attribute", "attribute_type")),
+            {("fid", "xsd:int"), ("usv", "xsd:string"), ("geom", "gml:PolygonPropertyType")},
+        )
+        self.assertEqual(dataset.attribute_set.count(), 3)
+        saved_usv = dataset.attribute_set.get(attribute="usv")
+        self.assertEqual(saved_usv.attribute_label, "Custom USV")
+        self.assertEqual(saved_usv.description, "Kept on sync")
+        self.assertEqual(len(logs.records), 1)
+        self.assertIn("untyped_field", logs.output[0])
+        self.assertIn(dataset.alternate, logs.output[0])
+        mock_get_xml.assert_called_once()
+        mock_get_from_catalog.assert_not_called()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_geoserver_proxy_strip_paths(self):

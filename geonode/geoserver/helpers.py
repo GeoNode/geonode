@@ -998,6 +998,21 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
         logger.debug("No attributes found")
 
 
+def _resolve_wfs_attribute_type(element, xsd):
+    """Return the XSD type QName stored for a DescribeFeatureType element.
+
+    ``@type`` wins. Enumerated fields omit it and publish an anonymous simpleType
+    whose ``restriction/@base`` is the same QName (for example ``xsd:string``).
+    Enumeration values are left unread. Returns ``""`` when neither is present.
+    """
+    if "type" in element.attrib:
+        return element.attrib["type"]
+    restriction = element.find(f"{xsd}simpleType/{xsd}restriction")
+    if restriction is None:
+        return ""
+    return restriction.attrib.get("base") or ""
+
+
 def set_attributes_from_geoserver(layer, overwrite=False):
     """
     Retrieve layer attribute names & types from Geoserver,
@@ -1068,11 +1083,19 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             doc = _get_xml(dft_url)
             xsd = "{http://www.w3.org/2001/XMLSchema}"
             path = f".//{xsd}extension/{xsd}sequence/{xsd}element"
-            attribute_map = [
-                [n.attrib["name"], n.attrib["type"]]
-                for n in doc.findall(path)
-                if n.attrib.get("name") and n.attrib.get("type")
-            ]
+            attribute_map = []
+            for element in doc.findall(path):
+                name = element.attrib.get("name") or ""
+                resolved_type = _resolve_wfs_attribute_type(element, xsd)
+                if name and resolved_type:
+                    attribute_map.append([name, resolved_type])
+                elif name:
+                    # Stay in this successful parse. Raising would clear attribute_map and
+                    # fall through to the WMS GetFeatureInfo fallback below.
+                    logger.warning(
+                        f"Skipping attribute '{name}' on '{typename}': "
+                        "DescribeFeatureType element has no type or restriction base"
+                    )
         except Exception:
             logger.warning(
                 f"Error while retrieving WFS info for {layer.subtype} '{typename}'... will try WMS", exc_info=True
