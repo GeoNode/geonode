@@ -299,6 +299,7 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
                     layer.uuid,
                     instance=layer,
                     notify=True,
+                    user=request.user,
                 )
                 return JsonResponse({"message": "the time information data was updated successfully"}, status=200)
             else:
