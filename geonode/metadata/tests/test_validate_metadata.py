@@ -240,7 +240,7 @@ class ValidateMetadataResourceTests(ValidateMetadataCommandMixin, TestCase):
             title="A document", uuid=str(uuid4()), resource_type="document", owner=owner
         )
 
-        patcher = patch("geonode.metadata.management.commands.validate_metadata.metadata_manager")
+        patcher = patch("geonode.metadata.validation.validator.metadata_manager")
         self.manager = patcher.start()
         self.addCleanup(patcher.stop)
         # every resource yields the same valid instance: what is under test here is the selection
