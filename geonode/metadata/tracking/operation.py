@@ -196,10 +196,13 @@ def store_change(resource, delta, user, attributed=True):
         f"{'' if attributed else ' (not attributed)'}: { {k:delta[k] for k in sorted(delta)} }"
     )
     if activity:
+        # resource may still be the bare, non-polymorphic ResourceBase (e.g. straight from
+        # ResourceBase.objects.get()): only the concrete subclasses are registered with
+        # django-activity-stream, so sending that would raise and the record would be lost
         activity.send(
             user,
             verb="updated metadata",
-            action_object=resource,
+            action_object=resource.get_real_instance(),
             raw_action="updated metadata",
             data={
                 "changes": json.loads(json.dumps(delta, cls=DjangoJSONEncoder)),

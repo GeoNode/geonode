@@ -22,12 +22,12 @@ from types import SimpleNamespace
 from unittest.mock import patch
 from uuid import uuid4
 
-from actstream import registry
 from actstream.models import Action
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase, override_settings
 
 from geonode.base.models import ResourceBase
+from geonode.layers.models import Dataset
 from geonode.metadata.tracking.delta import compute_delta
 from geonode.metadata.tracking.operation import current_operation, metadata_tracker, store_change
 
@@ -106,7 +106,9 @@ class MetadataTrackerTests(SimpleTestCase):
         self.addCleanup(patcher.stop)
 
     def resource(self, pk):
-        return SimpleNamespace(pk=pk)
+        resource = SimpleNamespace(pk=pk)
+        resource.get_real_instance = lambda: resource
+        return resource
 
     def test_a_nested_block_joins_the_one_already_running(self):
         with metadata_tracker(self.USER) as outer:
@@ -237,17 +239,34 @@ class StoreChangeActivityStreamTests(TestCase):
     """store_change() against the real activity stream, not a mocked one"""
 
     def setUp(self):
-        registry.register(ResourceBase)
         self.user = get_user_model().objects.create_user("ann", "ann@fakemail.com", "pwd")
-        self.resource = ResourceBase.objects.create(title="Tracked", uuid=str(uuid4()), owner=self.user)
+        self.dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=self.user,
+            name="tracked",
+            store="geonode_data",
+            subtype="vector",
+            alternate="geonode:tracked",
+        )
 
     def test_a_raw_datetime_in_the_delta_does_not_break_the_activity_record(self):
         # temporal_extent_* (among others) reach the delta as real datetimes, not strings: the
         # schema instance is not guaranteed to be made of plain JSON types
         when = datetime(2024, 1, 1, 12, 0, 0)
 
-        store_change(self.resource, {"temporal_extent_start": {"from": None, "to": when}}, self.user)
+        store_change(self.dataset, {"temporal_extent_start": {"from": None, "to": when}}, self.user)
 
         action = Action.objects.get(verb="updated metadata")
-        self.assertEqual(self.resource, action.action_object)
         self.assertEqual(when.isoformat(), action.data["data"]["changes"]["temporal_extent_start"]["to"])
+
+    def test_a_bare_resourcebase_still_resolves_to_an_actionable_instance(self):
+        # the tracker's caller often only has the bare, non-polymorphic ResourceBase in hand (e.g.
+        # ResourceBase.objects.get() in the metadata API view): only the concrete subclasses are
+        # registered with django-activity-stream, so sending that as-is would raise and the
+        # record would be silently lost (swallowed by MetadataOperation.close())
+        bare = ResourceBase.objects.get(pk=self.dataset.pk)
+
+        store_change(bare, {"title": {"from": "a", "to": "b"}}, self.user)
+
+        action = Action.objects.get(verb="updated metadata")
+        self.assertEqual(self.dataset, action.action_object)
