@@ -29,11 +29,13 @@ Whatever happens inside, however many saves it takes, is a single change perform
 Nested blocks join the outer one, so the internal sequences are not exposed as separate changes.
 """
 
+import json
 import logging
 from contextlib import contextmanager
 from contextvars import ContextVar
 
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 
 from geonode.metadata.tracking.delta import compute_delta
 
@@ -200,6 +202,6 @@ def store_change(resource, delta, user, attributed=True):
             action_object=resource,
             raw_action="updated metadata",
             data={
-                "changes": delta,
+                "changes": json.loads(json.dumps(delta, cls=DjangoJSONEncoder)),
             },
         )

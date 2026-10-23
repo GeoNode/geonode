@@ -17,11 +17,17 @@
 #
 #########################################################################
 
+from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import patch
+from uuid import uuid4
 
-from django.test import SimpleTestCase, override_settings
+from actstream import registry
+from actstream.models import Action
+from django.contrib.auth import get_user_model
+from django.test import SimpleTestCase, TestCase, override_settings
 
+from geonode.base.models import ResourceBase
 from geonode.metadata.tracking.delta import compute_delta
 from geonode.metadata.tracking.operation import current_operation, metadata_tracker, store_change
 
@@ -224,3 +230,24 @@ class MetadataTrackerTests(SimpleTestCase):
             raw_action="updated metadata",
             data={"changes": delta},
         )
+
+
+@override_settings(METADATA_TRACK_CHANGES=True)
+class StoreChangeActivityStreamTests(TestCase):
+    """store_change() against the real activity stream, not a mocked one"""
+
+    def setUp(self):
+        registry.register(ResourceBase)
+        self.user = get_user_model().objects.create_user("ann", "ann@fakemail.com", "pwd")
+        self.resource = ResourceBase.objects.create(title="Tracked", uuid=str(uuid4()), owner=self.user)
+
+    def test_a_raw_datetime_in_the_delta_does_not_break_the_activity_record(self):
+        # temporal_extent_* (among others) reach the delta as real datetimes, not strings: the
+        # schema instance is not guaranteed to be made of plain JSON types
+        when = datetime(2024, 1, 1, 12, 0, 0)
+
+        store_change(self.resource, {"temporal_extent_start": {"from": None, "to": when}}, self.user)
+
+        action = Action.objects.get(verb="updated metadata")
+        self.assertEqual(self.resource, action.action_object)
+        self.assertEqual(when.isoformat(), action.data["data"]["changes"]["temporal_extent_start"]["to"])
