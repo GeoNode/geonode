@@ -29,13 +29,19 @@ Whatever happens inside, however many saves it takes, is a single change perform
 Nested blocks join the outer one, so the internal sequences are not exposed as separate changes.
 """
 
+import json
 import logging
 from contextlib import contextmanager
 from contextvars import ContextVar
 
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 
 from geonode.metadata.tracking.delta import compute_delta
+
+activity = None
+if "actstream" in settings.INSTALLED_APPS:
+    from actstream import action as activity
 
 logger = logging.getLogger(__name__)
 
@@ -183,7 +189,7 @@ def track_change(resource, before, user, attributed=True):
 
 def store_change(resource, delta, user, attributed=True):
     """
-    Hand the change over to whoever stores it (#14684). `attributed` tells whether the user really
+    Hand the change over to whoever stores it. `attributed` tells whether the user really
     requested the change, or is just who it is recorded under.
 
     Deliberately synchronous: what is left to do by now is a single insert, and handing it over to
@@ -194,3 +200,16 @@ def store_change(resource, delta, user, attributed=True):
         f"Metadata of resource {resource.pk} changed by {user}"
         f"{'' if attributed else ' (not attributed)'}: {dict(sorted(delta.items()))}"
     )
+    if activity:
+        # resource may still be the bare, non-polymorphic ResourceBase (e.g. straight from
+        # ResourceBase.objects.get()): only the concrete subclasses are registered with
+        # django-activity-stream, so sending that would raise and the record would be lost
+        activity.send(
+            user,
+            verb="updated metadata",
+            action_object=resource.get_real_instance(),
+            raw_action="updated metadata",
+            data={
+                "changes": json.loads(json.dumps(delta, cls=DjangoJSONEncoder)),
+            },
+        )
