@@ -36,7 +36,8 @@ RUN pip3 install uwsgi \
     && pip install pip --upgrade \
     && pip install wheel==0.38.1 \
     && pip install invoke==2.2.0 \
-    && pip install GDAL==3.8.4
+    && pip install GDAL==3.8.4 \
+    && pip install certifi --upgrade
 
 # Create symlink for "invoke" command 
 # Required after installing via pip inside a virtualenv and avoid changing the 
