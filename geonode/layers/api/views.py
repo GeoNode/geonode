@@ -36,6 +36,8 @@ from geonode.resource.utils import update_resource
 from geonode.resource.registry import resource_manager_registry
 from geonode.security.registry import permissions_registry
 from geonode.security.permissions import _to_compact_perms
+from geonode.security.utils import get_visible_resources
+from django.conf import settings
 
 from rest_framework.exceptions import NotFound, PermissionDenied
 from django.shortcuts import get_object_or_404
@@ -81,6 +83,7 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
         DatasetPermissionsFilter,
     ]
     queryset = Dataset.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -173,14 +176,31 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
     def maplayers(self, request, pk=None, *args, **kwargs):
         """API endpoint allowing to retrieve the MapLayers list."""
         dataset = self.get_object()
-        resources = dataset.maplayers
+        resources = dataset.maplayers.select_related("map")
+
+        if not request.user.is_superuser:
+            visible_map_ids = get_visible_resources(
+                dataset.maps,
+                request.user,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            ).values("id")
+
+            resources = resources.filter(map_id__in=visible_map_ids)
         return Response(SimpleMapLayerSerializer(many=True).to_representation(resources))
 
     @action(detail=True, methods=["get"])
     def maps(self, request, pk=None, *args, **kwargs):
         """API endpoint allowing to retrieve maps using the dataset."""
         dataset = self.get_object()
-        resources = dataset.maps
+        resources = get_visible_resources(
+            dataset.maps,
+            request.user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
 
     @action(
@@ -279,6 +299,7 @@ class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelView
                     layer.uuid,
                     instance=layer,
                     notify=True,
+                    user=request.user,
                 )
                 return JsonResponse({"message": "the time information data was updated successfully"}, status=200)
             else:

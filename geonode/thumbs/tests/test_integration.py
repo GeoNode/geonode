@@ -17,14 +17,16 @@
 #
 #########################################################################
 import os
+import re
 import json
 import logging
 import tempfile
+import requests
 import timeout_decorator
 
 from io import BytesIO
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import MagicMock, call, patch
 from owslib.map.wms111 import WebMapService_1_1_1
 from PIL import UnidentifiedImageError, Image
 from pixelmatch.contrib.PIL import pixelmatch
@@ -57,6 +59,41 @@ logger = logging.getLogger(__name__)
 LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
+TILE_URL_RE = re.compile(r"/(\d+)/(\d+)/(\d+)\.png$")
+
+TILE_TEST_BBOXES_3857 = [
+    [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"],
+    [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, "EPSG:3857"],
+    [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, "EPSG:3857"],
+    [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
+]
+
+
+# colours far enough apart to exceed pixelmatch's default threshold
+TILE_PALETTE = [
+    (220, 40, 40),
+    (40, 170, 60),
+    (40, 80, 220),
+    (235, 205, 30),
+    (200, 50, 200),
+    (30, 200, 210),
+    (245, 140, 20),
+    (110, 50, 160),
+]
+
+
+def synthetic_tile_response(url, *args, **kwargs):
+    """Mocked HttpClient.request returning a checkerboard tile coloured by its z/x/y."""
+    z, x, y = (int(v) for v in TILE_URL_RE.search(url).groups())
+    tile = Image.new("RGB", (256, 256), TILE_PALETTE[(x + 3 * y + 5 * z) % len(TILE_PALETTE)])
+    for i in range(4):
+        for j in range(4):
+            if (i + j) % 2:
+                tile.paste((20, 20, 20), (i * 64, j * 64, (i + 1) * 64, (j + 1) * 64))
+    buf = BytesIO()
+    tile.save(buf, format="PNG")
+    return MagicMock(status_code=200), buf.getvalue()
+
 
 class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
     dataset_coast_line = None
@@ -81,39 +118,45 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
     @override_settings(
         THUMBNAIL_BACKGROUND={
             "options": {
-                "url": "http://some_fancy_url/",
+                "url": "http://some_fancy_url/{z}/{x}/{y}.png",
                 "tile_size": 256,
-                "version": "1.1.1",
             }
         }
     )
-    @patch.object(WebMapService_1_1_1, "getmap")
-    def test_tile_background_retries(self, request_mock):
-        request_mock.return_value = None
-
-        width = 240
-        height = 200
+    @patch("geonode.thumbs.background.time")
+    @patch.object(http_client, "request", return_value=(None, "Connection refused"))
+    def test_tile_background_retries(self, request_mock, time_mock):
         max_retries = 3
         retry_delay = 1
 
-        start = datetime.now()
-
-        with self.assertRaises(UnidentifiedImageError):
+        with self.assertRaises(requests.exceptions.RequestException):
             GenericXYZBackground(
-                thumbnail_width=width, thumbnail_height=height, max_retries=max_retries, retry_delay=retry_delay
+                thumbnail_width=240, thumbnail_height=200, max_retries=max_retries, retry_delay=retry_delay
             ).fetch([623869.6556559108, 2458358.334500141, 4291621.974352865, 5270015.93640312, "EPSG:3857"])
 
-        end = datetime.now()
+        self.assertEqual(request_mock.call_count, max_retries, f"Expected {max_retries} failing fetches")
+        time_mock.sleep.assert_has_calls([call(retry_delay)] * (max_retries - 1))
 
-        if request_mock.call_count:
-            self.assertEqual(
-                request_mock.call_count, max_retries, f"Expected to {max_retries} number of failing fetches"
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "url": "http://some_fancy_url/{z}/{x}/{y}.png",
+                "tile_size": 256,
+            }
+        }
+    )
+    @patch.object(http_client, "request")
+    def test_tile_background_http_error_not_retried(self, request_mock):
+        response = requests.Response()
+        response.status_code = 429
+        request_mock.return_value = (response, None)
+
+        with self.assertRaises(requests.exceptions.HTTPError):
+            GenericXYZBackground(thumbnail_width=240, thumbnail_height=200, max_retries=3).fetch(
+                TILE_TEST_BBOXES_3857[0]
             )
-            self.assertGreaterEqual(
-                (end - start).seconds,
-                max_retries * retry_delay - 1,
-                "Expected delay between consecutive failing fetches",
-            )
+
+        self.assertEqual(request_mock.call_count, 1)
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -170,37 +213,20 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
 
             self.assertEqual(zoom, expected_zoom, "Calculated zooms should be equal expected")
 
-    def _fetch_and_compare_background(self, generator, bbox_3857, expected_image_path, zoom=None):
-        try:
-            image = generator.fetch(bbox_3857, zoom)
-        except UnidentifiedImageError as e:
-            logger.error(f"It was not possible to fetch the background: {e}")
-            return
-
+    def _assert_background_matches(self, image, expected_image_path, tolerance=0.01):
         expected_image = Image.open(expected_image_path)
-        diff = Image.new("RGB", image.size)
+        self.assertEqual(image.size, expected_image.size, f"Unexpected background size for {expected_image_path}")
+        mismatch = pixelmatch(image, expected_image)
+        self.assertLess(
+            mismatch,
+            expected_image.size[0] * expected_image.size[1] * tolerance,
+            f"Background differs from {expected_image_path} by {mismatch} pixels",
+        )
 
-        mismatch = pixelmatch(image, expected_image, diff)
-        if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
-            logger.warn("Mismatch, it was not possible to bump the bg!")
-            # Sometimes this test fails to fetch the OSM background
-            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
-                logger.error(f"Dumping image to: {tmpfile.name}")
-                image.save(tmpfile)
-                # Let's check that the thumb is valid at least
-                with Image.open(tmpfile) as img:
-                    img.verify()
-            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
-                logger.error(f"Dumping diff to: {tmpfile.name}")
-                diff.save(tmpfile)
-                # Let's check that the thumb is valid at least
-                with Image.open(tmpfile) as img:
-                    img.verify()
-        else:
-            self.assertTrue(
-                mismatch < expected_image.size[0] * expected_image.size[1] * 0.01,
-                "Expected test and pre-generated backgrounds to differ up to 1%",
-            )
+    def _assert_tiles_requested_from(self, request_mock, url_prefix):
+        self.assertTrue(request_mock.call_count)
+        for request_call in request_mock.call_args_list:
+            self.assertTrue(request_call.args[0].startswith(url_prefix), request_call.args[0])
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -210,15 +236,13 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
             }
         }
     )
-    def test_tile_background_generic_fetch(self):
-        width = 240
-        height = 200
+    @patch.object(http_client, "request", side_effect=synthetic_tile_response)
+    def test_tile_background_generic_fetch(self, request_mock):
+        background = GenericXYZBackground(thumbnail_width=240, thumbnail_height=200)
+        image = background.fetch(TILE_TEST_BBOXES_3857[0])
 
-        bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"]
-        expected_image_path = f"{EXPECTED_RESULTS_DIR}background/wikimedia_outcome1.png"
-
-        background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
-        self._fetch_and_compare_background(background, bbox_3857, expected_image_path)
+        self._assert_tiles_requested_from(request_mock, "https://maps.wikimedia.org/osm-intl/")
+        self._assert_background_matches(image, f"{EXPECTED_RESULTS_DIR}background/xyz_outcome1.png")
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -228,77 +252,37 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
             }
         }
     )
-    def test_tile_background_generic_fetch_zoom(self):
-        width = 500
-        height = 200
+    @patch.object(http_client, "request", side_effect=synthetic_tile_response)
+    def test_tile_background_generic_fetch_zoom(self, request_mock):
+        background = GenericXYZBackground(thumbnail_width=500, thumbnail_height=200)
 
-        bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"]
+        for zoom in range(6, 13):
+            request_mock.reset_mock()
+            image = background.fetch(TILE_TEST_BBOXES_3857[0], zoom)
 
-        zooms = range(6, 13)
-        expected_image_paths = [f"{EXPECTED_RESULTS_DIR}background/wikimedia_zoom_{zoom}_outcome.png" for zoom in zooms]
+            for request_call in request_mock.call_args_list:
+                self.assertIn(f"/osm-intl/{zoom}/", request_call.args[0])
+            self._assert_background_matches(image, f"{EXPECTED_RESULTS_DIR}background/xyz_zoom_{zoom}_outcome.png")
 
-        background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
+    @patch.object(http_client, "request", side_effect=synthetic_tile_response)
+    def test_tile_background_wikimedia_fetch(self, request_mock):
+        background = WikiMediaTileBackground(thumbnail_width=240, thumbnail_height=200)
 
-        for zoom, expected_image_path in zip(zooms, expected_image_paths):
-            try:
-                image = background.fetch(bbox_3857, zoom)
-                expected_image = Image.open(expected_image_path)
-                diff = Image.new("RGB", image.size)
+        for i, bbox in enumerate(TILE_TEST_BBOXES_3857, start=1):
+            image = background.fetch(bbox)
+            self._assert_background_matches(image, f"{EXPECTED_RESULTS_DIR}background/xyz_outcome{i}.png")
 
-                mismatch = pixelmatch(image, expected_image, diff)
-                self.assertTrue(
-                    mismatch <= width * height * 0.05, "Expected test and pre-generated backgrounds to differ up to 5%"
-                )
-            except UnidentifiedImageError as e:
-                logger.error(f"It was not possible to fetch the background: {e}")
+        self._assert_tiles_requested_from(request_mock, "https://maps.wikimedia.org/osm-intl/")
 
-    def test_tile_background_wikimedia_fetch(self):
-        width = 240
-        height = 200
+    @patch.object(http_client, "request", side_effect=synthetic_tile_response)
+    def test_tile_background_osm_fetch(self, request_mock):
+        background = OSMTileBackground(thumbnail_width=240, thumbnail_height=200)
 
-        bboxes_3857 = [
-            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"],
-            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, "EPSG:3857"],
-            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, "EPSG:3857"],
-            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
-        ]
+        for i, bbox in enumerate(TILE_TEST_BBOXES_3857, start=1):
+            image = background.fetch(bbox)
+            self._assert_background_matches(image, f"{EXPECTED_RESULTS_DIR}background/xyz_outcome{i}.png")
 
-        expected_results_dir = f"{EXPECTED_RESULTS_DIR}background/"
-        expected_images_paths = [
-            f"{expected_results_dir}wikimedia_outcome1.png",
-            f"{expected_results_dir}wikimedia_outcome2.png",
-            f"{expected_results_dir}wikimedia_outcome3.png",
-            f"{expected_results_dir}wikimedia_outcome4.png",
-        ]
-
-        background = WikiMediaTileBackground(thumbnail_width=width, thumbnail_height=height)
-
-        for bbox, expected_image_path in zip(bboxes_3857, expected_images_paths):
-            self._fetch_and_compare_background(background, bbox, expected_image_path)
-
-    def test_tile_background_osm_fetch(self):
-        width = 240
-        height = 200
-
-        bboxes_3857 = [
-            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"],
-            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, "EPSG:3857"],
-            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, "EPSG:3857"],
-            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
-        ]
-
-        expected_results_dir = f"{EXPECTED_RESULTS_DIR}background/"
-        expected_images_paths = [
-            f"{expected_results_dir}osm_outcome1.png",
-            f"{expected_results_dir}osm_outcome2.png",
-            f"{expected_results_dir}osm_outcome3.png",
-            f"{expected_results_dir}osm_outcome4.png",
-        ]
-
-        background = OSMTileBackground(thumbnail_width=width, thumbnail_height=height)
-
-        for bbox, expected_image_path in zip(bboxes_3857, expected_images_paths):
-            self._fetch_and_compare_background(background, bbox, expected_image_path)
+        self._assert_tiles_requested_from(request_mock, "https://tile.openstreetmap.org/")
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -308,29 +292,16 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
             }
         }
     )
-    def test_tile_background_tms_fetch(self):
-        width = 240
-        height = 200
+    @patch.object(http_client, "request", side_effect=synthetic_tile_response)
+    def test_tile_background_tms_fetch(self, request_mock):
+        background = GenericXYZBackground(thumbnail_width=240, thumbnail_height=200)
 
-        bboxes_3857 = [
-            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"],
-            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, "EPSG:3857"],
-            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, "EPSG:3857"],
-            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
-        ]
+        # TMS flips the tile rows, so the same synthetic tiles compose a different image than XYZ
+        for i, bbox in enumerate(TILE_TEST_BBOXES_3857, start=1):
+            image = background.fetch(bbox)
+            self._assert_background_matches(image, f"{EXPECTED_RESULTS_DIR}background/tms_outcome{i}.png")
 
-        expected_results_dir = f"{EXPECTED_RESULTS_DIR}background/"
-        expected_images_paths = [
-            f"{expected_results_dir}tms_outcome1.png",
-            f"{expected_results_dir}tms_outcome2.png",
-            f"{expected_results_dir}tms_outcome3.png",
-            f"{expected_results_dir}tms_outcome4.png",
-        ]
-
-        background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
-
-        for bbox, expected_image_path in zip(bboxes_3857, expected_images_paths):
-            self._fetch_and_compare_background(background, bbox, expected_image_path)
+        self._assert_tiles_requested_from(request_mock, "http://maps.geosolutionsgroup.com/geoserver/gwc/service/tms/")
 
     @override_settings(
         THUMBNAIL_BACKGROUND={

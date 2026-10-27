@@ -180,3 +180,104 @@ class MetadataMultilangTests(GeoNodeBaseTestSupport):
             mm.update_schema_instance(resource, fake_req)
 
             self.assertEqual("title_it", instance["title"])
+
+    @patch("geonode.metadata.handlers.sparse.SparseHandler.update_resource")
+    @patch("geonode.indexing.manager.TSVectorIndexManager.update_index")
+    @patch("geonode.base.models.ResourceBase.get_real_instance_class")
+    def test_multilang_unaware_partial_update(self, mock_real_class, mock_update_index, mock_sparse_update):
+        """
+        A partial update setting a base field without any of its multilang fields comes from a
+        caller that knows nothing about multilang (i.e. a monolingual document being uploaded):
+        its content shall be stored as the default language, and not silently dropped.
+        """
+        with override_settings(
+            LANGUAGE_CODE="it",
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title", "abstract"],
+        ):
+            mm, _ = self.create_metadata_manager()
+            instance = {
+                "title": "uploaded title",  # the content being uploaded
+                "title_multilang_it": "stored it",  # already stored: it used to win over the upload
+                "title_multilang_en": "stored en",
+                "abstract": "stored abstract",
+                "abstract_multilang_it": "stored abstract it",
+                "abstract_multilang_en": None,
+                "license": "license_fake",
+            }
+            partial = {"title"}
+
+            resource = ResourceBase()
+            fake_req = SimpleNamespace(data=instance, user=None)
+            mm.update_schema_instance(resource, fake_req, partial=partial)
+
+            # the uploaded content becomes the default language one, and the base field follows it
+            self.assertEqual("uploaded title", instance["title_multilang_it"])
+            self.assertEqual("uploaded title", instance["title"])
+            self.assertIn("title_multilang_it", partial)  # ...and it gets stored
+
+            # any other language is left alone
+            self.assertEqual("stored en", instance["title_multilang_en"])
+
+            # a field the caller did not ask for is not touched at all
+            self.assertEqual("stored abstract it", instance["abstract_multilang_it"])
+            self.assertNotIn("abstract_multilang_it", partial)
+
+    @patch("geonode.metadata.handlers.sparse.SparseHandler.update_resource")
+    @patch("geonode.indexing.manager.TSVectorIndexManager.update_index")
+    @patch("geonode.base.models.ResourceBase.get_real_instance_class")
+    def test_multilang_aware_partial_update(self, mock_real_class, mock_update_index, mock_sparse_update):
+        """
+        When the caller does set the multilang fields it knows what it is doing: the default
+        language entry keeps winning over the base field, as usual.
+        """
+        with override_settings(
+            LANGUAGE_CODE="it",
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title"],
+        ):
+            mm, _ = self.create_metadata_manager()
+            instance = {
+                "title": "shall be ignored",
+                "title_multilang_it": "explicit it",
+                "title_multilang_en": "explicit en",
+                "abstract": "abstract_fake",
+                "license": "license_fake",
+            }
+            partial = {"title", "title_multilang_it"}
+
+            resource = ResourceBase()
+            fake_req = SimpleNamespace(data=instance, user=None)
+            mm.update_schema_instance(resource, fake_req, partial=partial)
+
+            self.assertEqual("explicit it", instance["title"])
+            self.assertEqual("explicit it", instance["title_multilang_it"])
+
+    @patch("geonode.metadata.handlers.sparse.SparseHandler.update_resource")
+    @patch("geonode.indexing.manager.TSVectorIndexManager.update_index")
+    @patch("geonode.base.models.ResourceBase.get_real_instance_class")
+    def test_multilang_unaware_empty_base_value(self, mock_real_class, mock_update_index, mock_sparse_update):
+        """
+        An empty base field shall not wipe out the stored default language value.
+        """
+        with override_settings(
+            LANGUAGE_CODE="it",
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title"],
+        ):
+            mm, _ = self.create_metadata_manager()
+            instance = {
+                "title": "",
+                "title_multilang_it": "stored it",
+                "title_multilang_en": None,
+                "abstract": "abstract_fake",
+                "license": "license_fake",
+            }
+            partial = {"title"}
+
+            resource = ResourceBase()
+            fake_req = SimpleNamespace(data=instance, user=None)
+            mm.update_schema_instance(resource, fake_req, partial=partial)
+
+            self.assertEqual("stored it", instance["title_multilang_it"])
+            self.assertEqual("stored it", instance["title"])

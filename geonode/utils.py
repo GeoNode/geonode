@@ -36,6 +36,7 @@ from lxml import etree
 from osgeo import ogr
 from PIL import Image
 from urllib3 import Retry
+from urllib3.util import parse_url
 from io import BytesIO
 from decimal import Decimal
 from threading import local
@@ -52,7 +53,6 @@ from typing import List, Literal, Optional, Union
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
 from django.http import HttpResponse
@@ -405,45 +405,49 @@ def get_dataset_workspace(dataset):
     return workspace
 
 
+def is_local_host(hostname, allowed_hosts=[]):
+    """True if hostname is GeoNode, the local GeoServer or one of allowed_hosts."""
+    local_hosts = [urlsplit(settings.SITEURL).hostname, urlsplit(settings.OGC_SERVER["default"]["LOCATION"]).hostname]
+    return hostname in local_hosts + allowed_hosts
+
+
 def get_headers(request, url, raw_url, allowed_hosts=[]):
     cookies = None
     csrftoken = None
     headers = {}
+    site_url = urlsplit(settings.SITEURL)
 
     for _header_key, _header_value in dict(request.headers.copy()).items():
         if _header_key.lower() in FORWARDED_HEADERS:
             headers[_header_key] = _header_value
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and url_has_allowed_host_and_scheme(
-        url=raw_url, allowed_hosts=url.hostname
-    ):
-        cookies = request.META["HTTP_COOKIE"]
 
-    for cook in request.COOKIES:
-        name = str(cook)
-        value = request.COOKIES.get(name)
-        if name == "csrftoken":
-            csrftoken = value
-        cook = f"{name}={value}"
-        cookies = cook if not cookies else (f"{cookies}; {cook}")
+    # Cookies are sent only to GeoNode and the local GeoServer
+    if is_local_host(url.hostname, allowed_hosts):
+        for cook in request.COOKIES:
+            name = str(cook)
+            value = request.COOKIES.get(name)
+            if name == "csrftoken":
+                csrftoken = value
+            cook = f"{name}={value}"
+            cookies = cook if not cookies else (f"{cookies}; {cook}")
 
-    csrftoken = get_token(request) if not csrftoken else csrftoken
+        csrftoken = get_token(request) if not csrftoken else csrftoken
 
-    if csrftoken:
-        headers["X-Requested-With"] = "XMLHttpRequest"
-        headers["X-CSRFToken"] = csrftoken
-        cook = f"csrftoken={csrftoken}"
-        cookies = cook if not cookies else (f"{cookies}; {cook}")
+        if csrftoken:
+            headers["X-Requested-With"] = "XMLHttpRequest"
+            headers["X-CSRFToken"] = csrftoken
+            cook = f"csrftoken={csrftoken}"
+            cookies = cook if not cookies else (f"{cookies}; {cook}")
 
-    if cookies and request and hasattr(request, "session"):
-        if "JSESSIONID" in request.session and request.session["JSESSIONID"]:
-            cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
-        headers["Cookie"] = cookies
+        if cookies and request and hasattr(request, "session"):
+            if "JSESSIONID" in request.session and request.session["JSESSIONID"]:
+                cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
+            headers["Cookie"] = cookies
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-    site_url = urlsplit(settings.SITEURL)
     # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
     if site_url.hostname in (allowed_hosts + [url.hostname]):
         # we give precedence to obtained from Aithorization headers
@@ -1074,13 +1078,17 @@ class HttpClient:
         url,
         method="GET",
         data=None,
-        headers={},
+        headers=None,
         stream=False,
         timeout=None,
         retries=None,
         user=None,
         verify=False,
+        allow_redirects=True,
+        redirect_validator=None,
+        max_redirects=None,
     ):
+        headers = dict(headers or {})
         if (
             (user or self.username != "admin")
             and check_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1101,10 +1109,16 @@ class HttpClient:
                 valid_uname_pw = base64.b64encode(f"{self.username}:{self.password}".encode()).decode()
                 headers["Authorization"] = f"Basic {valid_uname_pw}"
 
-        headers["User-Agent"] = "GeoNode"
+        headers["User-Agent"] = getattr(settings, "GEONODE_USER_AGENT", "GeoNode")
         response = None
         content = None
-        session = requests.Session()
+        # redirect_validator is checked against every redirect target before it is requested
+        if redirect_validator:
+            session = RedirectValidatingSession(redirect_validator)
+        else:
+            session = requests.Session()
+        if max_redirects is not None:
+            session.max_redirects = max_redirects
         retry = Retry(
             total=retries or self.retries,
             read=retries or self.retries,
@@ -1122,14 +1136,22 @@ class HttpClient:
         if action:
             _req_tout = timeout or self.timeout
             try:
-                response = action(url=url, data=data, headers=headers, timeout=_req_tout, stream=stream, verify=verify)
+                response = action(
+                    url=url,
+                    data=data,
+                    headers=headers,
+                    timeout=_req_tout,
+                    stream=stream,
+                    verify=verify,
+                    allow_redirects=allow_redirects,
+                )
             except (
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.RequestException,
                 ValueError,
                 RetryError,
             ) as e:
-                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
+                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url}"
                 logger.exception(Exception(msg))
                 response = None
                 content = str(e)
@@ -1143,7 +1165,7 @@ class HttpClient:
 
         return (response, content)
 
-    def get(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
+    def get(self, url, data=None, headers=None, stream=False, timeout=None, user=None, verify=False):
         return self.request(
             url,
             method="GET",
@@ -1155,7 +1177,7 @@ class HttpClient:
             verify=verify,
         )
 
-    def post(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
+    def post(self, url, data=None, headers=None, stream=False, timeout=None, user=None, verify=False):
         return self.request(
             url,
             method="POST",
@@ -1665,20 +1687,22 @@ def json_serializer_producer(dictionary):
     return output
 
 
-def is_monochromatic_image(image_url, image_data=None):
-    def is_local_static(url):
-        if url.startswith(settings.STATIC_URL) or (url.startswith(settings.SITEURL) and settings.STATIC_URL in url):
-            return True
-        return False
+def is_monochromatic_image(image_url, image_data=None, image_path=None):
+    def is_local_media(url):
+        return url.startswith(settings.MEDIA_URL) or (url.startswith(settings.SITEURL) and settings.MEDIA_URL in url)
 
     def is_absolute(url):
         return bool(urlparse(url).netloc)
 
-    def get_thumb_handler(url):
-        _index = url.find(settings.STATIC_URL)
-        _thumb_path = urlparse(url[_index + len(settings.STATIC_URL) :]).path
-        if storage_manager.exists(_thumb_path):
-            return storage_manager.open(_thumb_path)
+    def get_thumb_handler(url, image_path=None):
+        # prefer the stored path, parsing the url is unreliable with an absolute MEDIA_URL
+        if image_path and storage_manager.exists(image_path):
+            return storage_manager.open(image_path)
+        if is_local_media(url):
+            _index = url.find(settings.MEDIA_URL)
+            _thumb_path = urlparse(url[_index + len(settings.MEDIA_URL) :]).path
+            if storage_manager.exists(_thumb_path):
+                return storage_manager.open(_thumb_path)
         return None
 
     def verify_image(stream):
@@ -1703,13 +1727,13 @@ def is_monochromatic_image(image_url, image_data=None):
         elif image_url:
             logger.debug(f"...Checking if '{image_url}' is a blank image")
             url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
-            if not is_local_static(url):
-                req, stream_content = http_client.get(url, timeout=5)
-                with BytesIO(stream_content) as stream:
+            _handler = get_thumb_handler(url, image_path)
+            if _handler:
+                with _handler as stream:
                     return verify_image(stream)
-            else:
-                with get_thumb_handler(url) as stream:
-                    return verify_image(stream)
+            req, stream_content = http_client.get(url, timeout=5)
+            with BytesIO(stream_content) as stream:
+                return verify_image(stream)
         return True
     except Exception as e:
         logger.debug(e)
@@ -1745,7 +1769,8 @@ def remove_credentials_from_url(url):
 
 
 ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
-domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
+# anchor the host to a delimiter so a trailing path/query isn't folded into the match
+domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)(?:[:/?#]|$)")
 
 
 def extract_ip_or_domain(url):
@@ -1886,6 +1911,42 @@ def strtobool(value):
     raise ValueError(f"invalid truth value {value!r}")
 
 
+# backslash, whitespace and control chars make urllib.parse and urllib3 disagree on the host
+_UNSAFE_URL_CHARS = re.compile(r"[\\\s\x00-\x1f\x7f]")
+
+
+def parse_safe_proxy_url(raw_url):
+    """Parse with the engine requests/urllib3 dispatch with, rejecting anything ambiguous.
+
+    Returns a urllib3 Url or raises ValueError. Parsing the target once here, with the
+    same parser used to send the request, keeps validation and egress on the same host.
+    """
+    if _UNSAFE_URL_CHARS.search(raw_url):
+        raise ValueError("illegal character in URL")
+    try:
+        u = parse_url(raw_url)
+    except Exception:
+        raise ValueError("malformed URL")
+    if u.scheme not in ("http", "https"):
+        raise ValueError("scheme not allowed")
+    if not u.host:
+        raise ValueError("missing host")
+    if u.auth:
+        raise ValueError("userinfo not allowed")
+    return u
+
+
+def url_origin(url):
+    """(scheme, host, port) of a URL as urllib3 parses it, or None if it has no host."""
+    try:
+        u = parse_url(url)
+    except Exception:
+        return None
+    if not u.host:
+        return None
+    return (u.scheme, u.host, u.port or {"http": 80, "https": 443}.get(u.scheme))
+
+
 def is_safe_url(url: str) -> bool:
     # Required to let tests disable the safe url check via settings orerride
     if not getattr(settings, "SAFE_URL_CHECK_ENABLED", True):
@@ -1901,17 +1962,20 @@ def is_safe_url(url: str) -> bool:
         except socket.gaierror:
             return set()
 
-    parsed = urlparse(url)
-    if parsed.scheme not in {"http", "https"}:
+    # parse with urllib3 (what requests dispatches with) and reject userinfo, so this
+    # check reads the same host the request will connect to, on every hop
+    try:
+        parsed = parse_url(url)
+    except Exception:
         return False
-    if not parsed.hostname:
+    if parsed.scheme not in {"http", "https"} or not parsed.host or parsed.auth:
         return False
     _default_ports = {"http": 80, "https": 443}
     _port = parsed.port or _default_ports.get(parsed.scheme)
     _trusted_hosts = [h.lower() for h in getattr(settings, "SAFE_URL_TRUSTED_HOSTS", [])]
-    if _port and f"{parsed.hostname}:{_port}" in _trusted_hosts:
+    if _port and f"{parsed.host}:{_port}" in _trusted_hosts:
         return True
-    ips = _resolve_hostname(parsed.hostname)
+    ips = _resolve_hostname(parsed.host)
     if not ips:
         return False
     return all(_is_ip_allowed(ip) for ip in ips)
@@ -1964,6 +2028,21 @@ class SafeSession(requests.Session):
             logger.debug("Rejected request to disallowed host: %s", urlparse(request.url).hostname)
             raise requests.exceptions.InvalidURL("The requested URL is not allowed.")
         return super().send(request, **kwargs)
+
+
+class RedirectValidatingSession(requests.Session):
+    """requests Session that checks each redirect target with ``validator`` before following it."""
+
+    def __init__(self, validator):
+        super().__init__()
+        self.redirect_validator = validator
+
+    def rebuild_auth(self, prepared_request, response):
+        # resolve_redirects calls this for every hop, with the final URL set, right before sending it
+        if not self.redirect_validator(prepared_request.url):
+            logger.debug("Rejected redirect to disallowed host: %s", urlparse(prepared_request.url).hostname)
+            raise requests.exceptions.InvalidURL("The redirect target is not allowed.")
+        super().rebuild_auth(prepared_request, response)
 
 
 def safe_request_url(method, url, max_redirects=3, **kwargs):

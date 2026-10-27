@@ -20,10 +20,14 @@
 import re
 import uuid
 
+from io import BytesIO
+from PIL import Image
+
 from unittest.mock import patch, PropertyMock, MagicMock
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
+from django.core.files.base import ContentFile
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
@@ -34,7 +38,8 @@ from geonode.thumbs import thumbnails
 from geonode.layers.models import Dataset
 from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.auth_registry import auth_handler_registry
-from geonode.utils import DisableDjangoSignals
+from geonode.storage.manager import storage_manager
+from geonode.utils import DisableDjangoSignals, is_monochromatic_image
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
 
@@ -102,6 +107,46 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
 
         self.assertEqual(height / width, ratio, "Expected ratio to be equal target ratio after transformation")
         self.assertEqual(center, new_center, "Expected center to be preserved after transformation")
+
+    def _save_blank_thumb(self):
+        with BytesIO() as buffer:
+            Image.new("RGB", (10, 10), "white").save(buffer, format="JPEG")
+            return storage_manager.save(
+                f"{settings.THUMBNAIL_LOCATION}/blank-{uuid.uuid4()}.jpg", ContentFile(buffer.getvalue())
+            )
+
+    def test_monochromatic_check_with_image_path_reads_from_storage(self):
+        """A thumbnail with a stored path is read from storage, not via HTTP."""
+        _path = self._save_blank_thumb()
+        try:
+            with patch("geonode.utils.http_client.get") as _mck:
+                self.assertTrue(is_monochromatic_image("http://example.com/foo.jpg", image_path=_path))
+                _mck.assert_not_called()
+        finally:
+            storage_manager.delete(_path)
+
+    def test_monochromatic_check_local_media_url_reads_from_storage(self):
+        """A local media thumbnail url is read from storage, not via HTTP."""
+        _path = self._save_blank_thumb()
+        try:
+            with patch("geonode.utils.http_client.get") as _mck:
+                self.assertTrue(is_monochromatic_image(storage_manager.url(_path)))
+                _mck.assert_not_called()
+        finally:
+            storage_manager.delete(_path)
+
+    def test_monochromatic_check_missing_local_file_falls_back_to_http(self):
+        """A missing stored thumbnail falls back to fetching the url."""
+        with BytesIO() as buffer:
+            Image.new("RGB", (10, 10), "white").save(buffer, format="JPEG")
+            _content = buffer.getvalue()
+        with patch("geonode.utils.http_client.get", return_value=(None, _content)) as _mck:
+            self.assertTrue(
+                is_monochromatic_image(
+                    "http://example.com/foo.jpg", image_path=f"{settings.THUMBNAIL_LOCATION}/missing.jpg"
+                )
+            )
+            _mck.assert_called_once()
 
 
 class ThumbnailsUnitTest(GeoNodeBaseTestSupport):

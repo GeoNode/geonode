@@ -39,8 +39,13 @@ from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
 from geonode.metadata.multilang.views import MultiLangViewMixin
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.resource.registry import resource_manager_registry, map_manager
 from geonode.utils import resolve_object
+from geonode.security.utils import get_visible_resources
+from django.conf import settings
+from geonode.base.models import ResourceBase
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +69,7 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
         MapPermissionsFilter,
     ]
     queryset = Map.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -92,14 +98,31 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
     def maplayers(self, request, pk=None, *args, **kwargs):
         """API endpoint allowing to retrieve the MapLayers list."""
         map = self.get_object()
-        resources = map.maplayers
+        resources = map.maplayers.select_related("dataset")
+
+        if not request.user.is_superuser:
+            visible_dataset_ids = get_visible_resources(
+                ResourceBase.objects.filter(id__in=map.maplayers.filter(dataset__isnull=False).values("dataset_id")),
+                request.user,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            ).values("id")
+
+            resources = resources.filter(Q(dataset_id__isnull=True) | Q(dataset_id__in=visible_dataset_ids))
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
 
     @action(detail=True, methods=["get"])
     def datasets(self, request, pk=None, *args, **kwargs):
         """API endpoint allowing to retrieve the local MapLayers."""
         map = self.get_object()
-        resources = map.datasets
+        resources = get_visible_resources(
+            map.datasets,
+            request.user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
@@ -128,13 +151,16 @@ class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet)
             raise GeneralMapsException(detail="serializer instance and object are different")
 
         dataset_names_before_changes = [lyr.alternate for lyr in instance.datasets]
-        # Preserve serializer-side validation and group/role logic before manager hooks.
-        instance = serializer.save()
-        instance = resource_manager_registry.get_for_instance(instance).update(
-            instance.uuid,
-            instance=instance,
-            dataset_names_before_changes=dataset_names_before_changes,
-            notify=True,
-        )
+        # one edit is one metadata change: the serializer writes before the manager gets to
+        with metadata_tracker(self.request.user, resource=instance):
+            # Preserve serializer-side validation and group/role logic before manager hooks.
+            instance = serializer.save()
+            instance = resource_manager_registry.get_for_instance(instance).update(
+                instance.uuid,
+                instance=instance,
+                dataset_names_before_changes=dataset_names_before_changes,
+                notify=True,
+                user=self.request.user,
+            )
         serializer.instance = instance
         register_event(self.request, EventType.EVENT_CHANGE, instance)

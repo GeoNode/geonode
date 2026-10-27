@@ -36,8 +36,20 @@ from geonode.base.api.filters import (
     DynamicSearchFilter,
 )
 from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.security.registry import permissions_registry
+from rest_framework import permissions
 
 logger = logging.getLogger(__name__)
+
+
+class UserHasAssetPerms(permissions.BasePermission):
+    """
+    Thin DRF adapter: the actual decision is delegated to the permissions registry,
+    which knows how to resolve an Asset's perms through its linked ResourceBase(s).
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return permissions_registry.user_has_asset_perm(request.user, obj, method=request.method)
 
 
 class AssetViewSet(DynamicModelViewSet):
@@ -45,7 +57,8 @@ class AssetViewSet(DynamicModelViewSet):
     API endpoint that allows Assets to be viewed or edited.
     """
 
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasAssetPerms]
+    http_method_names = ["get", "put", "patch", "delete"]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,

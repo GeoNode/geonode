@@ -112,6 +112,7 @@ nav:
       - Metadata app design and implementation: "development/metadata/design.md"
       - Metadata localization: "development/metadata/i18n.md"
       - Schema caching: "development/metadata/caching.md"
+      - Tracking the metadata changes: "development/metadata/tracking.md"
       - Metadata editor client: "development/metadata/client.md"
       - Examples:Adding a metadata field: "development/metadata/example.md"
       - Example:Adding an handler: "development/metadata/example2.md"

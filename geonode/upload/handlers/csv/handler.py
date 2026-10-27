@@ -48,7 +48,7 @@ class CSVFileHandler(BaseVectorFileHandler):
 
     possible_geometry_column_name = ["geom", "geometry", "wkt_geom", "the_geom"]
     possible_lat_column = ["latitude", "lat", "y"]
-    possible_long_column = ["longitude", "long", "x"]
+    possible_long_column = ["longitude", "long", "lon", "x"]
     possible_latlong_column = possible_lat_column + possible_long_column
 
     @property
@@ -151,7 +151,7 @@ class CSVFileHandler(BaseVectorFileHandler):
         This is a default command that is needed to import a vector file
         """
         base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
-        additional_option = ' -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"'
+        additional_option = ' -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,lon,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"'
         return (
             f"{base_command} -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
             + additional_option
@@ -268,7 +268,9 @@ class CSVFileHandler(BaseVectorFileHandler):
         self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, asset=None, **kwargs
     ):
         res = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, **kwargs)
-        res.set_bbox_polygon(BBOX, res.srid)
+        exec_obj = orchestrator.get_execution_object(execution_id)
+        if exec_obj.input_params.get("is_tabular"):
+            res.set_bbox_polygon(BBOX, res.srid)
         return res
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):

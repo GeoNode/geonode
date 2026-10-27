@@ -25,7 +25,7 @@ from uuid import uuid4
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
-from django.test import RequestFactory
+from django.test import RequestFactory, SimpleTestCase
 from django.utils.translation import gettext as _
 
 from geonode.people import Roles
@@ -55,6 +55,7 @@ from geonode.metadata.handlers.base import (
     RestrictionsSubHandler,
     SpatialRepresentationTypeSubHandler,
 )
+from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.handlers.region import RegionHandler
 from geonode.metadata.handlers.doi import DOIHandler
 from geonode.metadata.handlers.linkedresource import LinkedResourceHandler
@@ -536,6 +537,27 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.assertEqual(subschema["oneOf"][0]["const"], "fake_restrictions")
         self.assertEqual(subschema["oneOf"][0]["title"], "fake_restrictions")
         self.assertEqual(subschema["oneOf"][0]["description"], "a detailed description")
+
+    def test_restrictions_subhandler_update_subschema_nullable(self):
+        """
+        A nullable field needs an explicit empty choice in its oneOf, or the null it is given
+        when left unset matches no branch at all
+        """
+
+        subschema = {
+            "type": ["string", "null"],
+            "title": "restrictions",
+            "maxLength": 255,
+        }
+
+        fake_restrictions = RestrictionCodeType.objects.get(identifier="fake_restrictions")
+        RestrictionCodeType.objects.exclude(identifier=fake_restrictions.identifier).delete()
+
+        RestrictionsSubHandler.update_subschema(subschema, lang="en")
+
+        self.assertEqual(2, len(subschema["oneOf"]))
+        self.assertEqual({"const": None, "title": "-"}, subschema["oneOf"][0])  # first: it is the empty one
+        self.assertEqual("fake_restrictions", subschema["oneOf"][1]["const"])
 
     def test_restrictions_subhandler_serialize_with_existed_db_value(self):
         """
@@ -1385,6 +1407,10 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.assertEqual(tkeywords["type"], "object")
         self.assertEqual(tkeywords["title"], "Keywords from Thesaurus")
 
+        # Only the thesaurus with card_min > 0 is required, and it makes tkeywords required in turn
+        self.assertEqual(tkeywords["required"], ["3-2-4-1-gemet-inspire-themes"])
+        self.assertTrue(tkeywords["geonode:required"])
+
         # Assert thesaurus structure for "3-2-4-3-spatialscope"
         thesaurus = tkeywords["properties"]["3-2-4-3-spatialscope"]
         self.assertEqual(thesaurus["type"], "array")
@@ -1435,6 +1461,10 @@ class HandlersTests(GeoNodeBaseTestSupport):
         tkeywords = updated_schema["properties"].get("tkeywords")
         self.assertIsNotNone(tkeywords)
         self.assertEqual(tkeywords["ui:widget"], "hidden")
+
+        # With no thesaurus at all there is nothing to require
+        self.assertNotIn("required", tkeywords)
+        self.assertNotIn("geonode:required", tkeywords)
 
     def test_tkeywords_handler_get_jsonschema_instance_translated_keywords(self):
         """
@@ -1731,3 +1761,55 @@ class HandlersTests(GeoNodeBaseTestSupport):
             self.resource, "integer_field", json_instance_invalid_int_number, self.context, self.errors
         )
         self.assertIn("metadata_sparse_error_parse", str(self.errors))
+
+
+class NullOptionTests(SimpleTestCase):
+    """
+    MetadataHandler._add_oneof_null_option works on plain dicts: no need for the db fixtures
+    """
+
+    NULL_OPTION = {"const": None, "title": "-"}
+
+    def test_null_option_comes_first(self):
+        subschema = {"type": ["string", "null"], "oneOf": [{"const": "a"}]}
+
+        MetadataHandler._add_oneof_null_option(subschema)
+
+        self.assertEqual([self.NULL_OPTION, {"const": "a"}], subschema["oneOf"])
+
+    def test_an_existing_null_option_is_not_duplicated(self):
+        subschema = {"type": ["string", "null"], "oneOf": [self.NULL_OPTION, {"const": "a"}]}
+
+        MetadataHandler._add_oneof_null_option(subschema)
+
+        self.assertEqual([self.NULL_OPTION, {"const": "a"}], subschema["oneOf"])
+
+    def test_an_option_without_const_is_not_taken_for_the_null_one(self):
+        subschema = {"type": ["string", "null"], "oneOf": [{"title": "no const here"}]}
+
+        MetadataHandler._add_oneof_null_option(subschema)
+
+        self.assertEqual([self.NULL_OPTION, {"title": "no const here"}], subschema["oneOf"])
+
+    def test_a_non_nullable_field_is_left_alone(self):
+        subschema = {"type": "string", "oneOf": [{"const": "a"}]}
+
+        MetadataHandler._add_oneof_null_option(subschema)
+
+        self.assertEqual([{"const": "a"}], subschema["oneOf"])
+
+    def test_the_oneof_is_never_created(self):
+        # creating it would restrict a field which was free to take any value
+        subschema = {"type": ["string", "null"]}
+
+        MetadataHandler._add_oneof_null_option(subschema)
+
+        self.assertNotIn("oneOf", subschema)
+
+    def test_an_empty_oneof_is_filled_in(self):
+        # an empty oneOf matches no instance at all, null included
+        subschema = {"type": ["string", "null"], "oneOf": []}
+
+        MetadataHandler._add_oneof_null_option(subschema)
+
+        self.assertEqual([self.NULL_OPTION], subschema["oneOf"])

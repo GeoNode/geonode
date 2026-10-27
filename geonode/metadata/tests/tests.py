@@ -42,7 +42,11 @@ from geonode.metadata.api.views import (
     MetadataHKeywordAutocomplete,
     MetadataGroupAutocomplete,
 )
-from geonode.metadata.settings import METADATA_HANDLERS
+from geonode.metadata.settings import (
+    INITIAL_METADATA_HANDLERS,
+    METADATA_HANDLERS,
+    FINAL_METADATA_HANDLERS,
+)
 from geonode.base.models import ResourceBase
 from geonode.settings import PROJECT_ROOT
 from geonode.base.i18n import I18nCache, i18nCache
@@ -807,9 +811,10 @@ class MetadataApiTests(APITestCase):
 
     def test_registry_and_add_handler(self):
 
-        self.assertEqual(set(metadata_manager.handlers.keys()), set(METADATA_HANDLERS.keys()))
-        for handler_id in METADATA_HANDLERS.keys():
-            self.assertIn(handler_id, metadata_manager.handlers)
+        # no equality check: an external module may have registered its own handlers on top
+        for declared in (INITIAL_METADATA_HANDLERS, METADATA_HANDLERS, FINAL_METADATA_HANDLERS):
+            for handler_id in declared:
+                self.assertIn(handler_id, metadata_manager.handlers)
 
     @patch(
         "geonode.metadata.manager.metadata_manager.root_schema",

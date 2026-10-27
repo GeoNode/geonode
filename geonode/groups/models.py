@@ -302,7 +302,9 @@ class GroupMember(models.Model):
         from geonode.security.utils import AdvancedSecurityWorkflowManager
         from geonode.security.registry import permissions_registry
 
-        permissions_registry.delete_resource_permissions_cache(instance=self.group.group)
+        permissions_registry.delete_resource_permissions_cache(
+            instance=self.group.group, users=[self.user], group_clear_cache=False
+        )
         if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
             AdvancedSecurityWorkflowManager.set_group_member_permissions(self.user, self.group, role)
 

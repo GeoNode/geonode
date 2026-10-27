@@ -2,6 +2,7 @@ import logging
 import os.path
 
 from django.http import HttpResponse
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from geonode.security.permissions import DOWNLOAD_PERMISSIONS
 from geonode.assets.handlers import asset_handler_registry
@@ -23,7 +24,13 @@ def get_perms_response(request, asset: Asset):
         logger.debug("Asset: access allowed by user")
         return None
 
-    visibile_res = get_visible_resources(queryset=ResourceBase.objects.filter(link__asset=asset), user=request.user)
+    visibile_res = get_visible_resources(
+        queryset=ResourceBase.objects.filter(link__asset=asset),
+        user=request.user,
+        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+    )
 
     if visibile_res.exists():
         # retrieving the resource permissions for the given user

@@ -11,6 +11,9 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc \
 # PGDG has no repo for 26.04's codename yet; pin to a supported one.
 RUN echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] https://apt.postgresql.org/pub/repos/apt/ noble-pgdg main" \
     > /etc/apt/sources.list.d/pgdg.list
+# Use pgdg only for the postgres client, its GIS stack (gdal, geos, proj) would override Ubuntu's
+# To be reviewed in next versions and consider using stock Ubuntu packages for the postgresql client
+RUN printf 'Package: *\nPin: release o=apt.postgresql.org\nPin-Priority: -1\n\nPackage: postgresql-client-15 postgresql-client-common\nPin: release o=apt.postgresql.org\nPin-Priority: 500\n' > /etc/apt/preferences.d/pgdg
 RUN apt-get update -y
 
 # Preparing dependencies
@@ -37,7 +40,8 @@ RUN pip install uwsgi \
     && pip install pip --upgrade \
     && pip install wheel==0.38.1 \
     && pip install invoke==2.2.0 \
-    && pip install GDAL==3.12.2
+    && pip install GDAL==3.12.2 \
+    && pip install certifi --upgrade
 
 # Symlink for "invoke" so existing entrypoint.sh paths (/usr/local/bin/invoke) keep working
 RUN ln -s $(which invoke) /usr/local/bin/invoke

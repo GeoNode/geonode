@@ -49,6 +49,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from guardian.shortcuts import get_objects_for_group
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
@@ -91,6 +92,7 @@ from .permissions import (
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
     UserHasPerms,
+    IsGroupMember,
 )
 
 from .serializers import (
@@ -109,7 +111,8 @@ from .pagination import GeoNodeApiPagination
 from geonode.base.utils import patch_perms
 from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataMixin
 from geonode.assets.models import Asset
-from geonode.assets.utils import create_asset_and_link, unlink_asset
+from geonode.base.models import Link
+from geonode.assets.utils import create_asset_and_link, unlink_asset, is_asset_deletable
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import get_supported_datasets_file_types
 from geonode.utils import assert_safe_xml, UnsafeXMLError
@@ -127,8 +130,15 @@ class GroupViewSet(DynamicModelViewSet):
         IsManagerEditOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    search_fields = ["title", "slug"]
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_permissions(self):
+        if self.action in ("members", "managers"):
+            return [IsGroupMember()]
+
+        return super().get_permissions()
 
     def get_queryset(self):
         """
@@ -158,10 +168,25 @@ class GroupViewSet(DynamicModelViewSet):
     def resources(self, request, pk=None):
         """API endpoint allowing to retrieve the Group specific resources."""
         group = self.get_object()
-        resources = group.resources()
+
+        group_resources = get_objects_for_group(
+            group.group,
+            ["base.view_resourcebase", "base.change_resourcebase"],
+            any_perm=True,
+        )
+
+        resources = get_visible_resources(
+            queryset=group_resources,
+            user=request.user,
+            request=request,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
+
         paginator = GeoNodeApiPagination()
         paginator.page_size = request.GET.get("page_size", 10)
-        result_page = paginator.paginate_queryset(list(resources), request)
+        result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
         return paginator.get_paginated_response({"resources": serializer.data})
 
@@ -307,6 +332,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         FavoriteFilter,
     ]
     queryset = ResourceBase.objects.select_related("owner").order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -577,7 +603,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                     func_name="remove_permissions",
                     geonode_resource=resource,
                     action="permissions",
-                    input_params={"uuid": request_params.get("uuid", resource.uuid)},
+                    input_params={"uuid": resource.uuid},
                 )
             elif request.method in ["PUT", "PATCH"]:
                 user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
@@ -618,7 +644,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                     geonode_resource=resource,
                     action="permissions",
                     input_params={
-                        "uuid": request_params.get("uuid", resource.uuid),
+                        "uuid": resource.uuid,
                         "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get("created", False),
                     },
@@ -1034,7 +1060,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                 geonode_resource=resource,
                 action="update",
                 input_params={
-                    "uuid": request_params.get("uuid", resource.uuid),
+                    "uuid": resource.uuid,
                     "xml_file": request_params.get("xml_file", None),
                     "metadata_uploaded": request_params.get("metadata_uploaded", False),
                     "vals": request_params.get("vals", "{}"),
@@ -1294,6 +1320,14 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             for t_id in valid_ids:
                 try:
                     target = get_object_or_404(ResourceBase, pk=t_id)
+                    if not permissions_registry.user_has_perm(
+                        request.user,
+                        target.get_self_resource(),
+                        "view_resourcebase",
+                        include_virtual=True,
+                    ):
+                        error_var.append(t_id)
+                        continue
 
                     if request.method == "POST":
                         _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
@@ -1395,6 +1429,55 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
         except Exception as e:
             logger.exception(e)
             return Response({"message": "Error creating asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path=r"asset",
+        url_name="asset",
+        permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
+    )
+    def get_asset(self, request, pk=None, *args, **kwargs):
+        """
+        Returns assets linked to the resource.
+        GET /api/v2/resources/<pk>/asset
+        """
+        resource = self.get_object()
+
+        asset_links = Link.objects.filter(
+            resource=resource,
+            asset__isnull=False,
+        ).select_related("asset")
+
+        can_have_download_url = permissions_registry.user_has_perm(
+            request.user,
+            resource.get_self_resource(),
+            "download_resourcebase",
+            include_virtual=True,
+        )
+
+        data = []
+        for asset_link in asset_links:
+            asset = asset_link.asset.get_real_instance()
+            handler = asset_handler_registry.get_handler(asset)
+            download_url = handler.create_download_url(asset) if handler and can_have_download_url else None
+
+            data.append(
+                {
+                    "id": asset.id,
+                    "title": asset.title,
+                    "description": asset.description,
+                    "type": asset.type,
+                    "created": asset.created,
+                    "deletable": is_asset_deletable(asset),
+                    "urls": {
+                        "download_url": download_url,
+                        "link": asset_link.url,
+                    },
+                }
+            )
+
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["delete"], url_path=r"assets/(?P<asset_id>\d+)", url_name="delete-asset")
     def delete_asset(self, request, pk=None, asset_id=None, *args, **kwargs):
