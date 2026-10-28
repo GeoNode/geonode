@@ -20,17 +20,54 @@
 """unit tests for geonode.upload.zip_validation"""
 
 import io
+import importlib
+import os
 import stat
 import zipfile
+from unittest import mock
 
 from django.test import SimpleTestCase
 
+from geonode.upload import zip_validation
 from geonode.upload.zip_validation import (
     MAX_ENTRIES,
     ZipValidationError,
     is_zip_extension,
     validate_safe_zip,
 )
+
+
+class ZipLimitConfigurationTests(SimpleTestCase):
+    def tearDown(self):
+        importlib.reload(zip_validation)
+        global MAX_ENTRIES, ZipValidationError, is_zip_extension, validate_safe_zip
+        MAX_ENTRIES = zip_validation.MAX_ENTRIES
+        ZipValidationError = zip_validation.ZipValidationError
+        is_zip_extension = zip_validation.is_zip_extension
+        validate_safe_zip = zip_validation.validate_safe_zip
+        super().tearDown()
+
+    def test_uses_default_total_uncompressed_limit(self):
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("ZIP_MAX_TOTAL_UNCOMPRESSED", None)
+            importlib.reload(zip_validation)
+
+        self.assertEqual(zip_validation.MAX_TOTAL_UNCOMPRESSED, 2 * 1024 * 1024 * 1024)
+
+    def test_uses_configured_total_uncompressed_limit(self):
+        with mock.patch.dict(os.environ, {"ZIP_MAX_TOTAL_UNCOMPRESSED": "4"}):
+            importlib.reload(zip_validation)
+
+            self.assertEqual(zip_validation.MAX_TOTAL_UNCOMPRESSED, 4)
+            validate_safe_zip(_make_zip([("small.txt", b"1234")]))
+            with self.assertRaises(zip_validation.ZipValidationError):
+                validate_safe_zip(_make_zip([("large.txt", b"12345")]))
+
+    def test_invalid_configured_limit_uses_default(self):
+        with mock.patch.dict(os.environ, {"ZIP_MAX_TOTAL_UNCOMPRESSED": "invalid"}):
+            importlib.reload(zip_validation)
+
+            self.assertEqual(zip_validation.MAX_TOTAL_UNCOMPRESSED, 2 * 1024 * 1024 * 1024)
 
 
 def _make_zip(entries):
