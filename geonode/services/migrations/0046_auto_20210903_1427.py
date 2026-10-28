@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 @transaction.atomic
 def forwards_func(apps, schema_editor):
     from geonode.services.enumerations import WMS, GN_WMS
-    from geonode.harvesting.harvesters.wms import WebMapService
+    from geonode.utils import WebMapService
     from geonode.services.serviceprocessors.wms import WmsServiceHandler
     MyModel = apps.get_model('services', 'Service')
     _services_with_empty_params = MyModel.objects.filter(

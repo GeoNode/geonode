@@ -1549,7 +1549,7 @@ When set to False just title lookup is performed.
 **SOURCE_PROVIDERS**
 
 
-:   Default: ``["geonode.sources.postgres.provider.PostgresSourceProvider"]``
+:   Default: ``["geonode.sources.postgres.provider.PostgresSourceProvider", "geonode.sources.wms.provider.WmsSourceProvider"]``
 
 List of the source providers available to define connections and data items. Each provider key must match the ``handled_type`` of an auth handler listed in ``AUTH_HANDLERS``, otherwise GeoNode refuses to start. See [Source providers and data items](../../development/sources.md).
 

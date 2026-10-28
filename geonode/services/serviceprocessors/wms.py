@@ -39,7 +39,8 @@ from django.utils.translation import gettext_lazy as _
 from geonode import GeoNodeException
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
-from geonode.harvesting.harvesters.wms import OgcWmsHarvester, WebMapService
+from geonode.harvesting.harvesters.wms import OgcWmsHarvester
+from geonode.utils import WebMapService
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.services import models, utils, enumerations
 from geonode.services.serviceprocessors import base, get_service_handler

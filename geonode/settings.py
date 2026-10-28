@@ -1764,11 +1764,13 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 AUTH_HANDLERS = [
     "geonode.security.auth_handlers.BasicAuthHandler",
     "geonode.sources.postgres.auth.PostgresAuthHandler",
+    "geonode.sources.wms.auth.WmsAuthHandler",
 ]
 
 # Source providers available to define data items, the key of each one is also its AuthConfig type
 SOURCE_PROVIDERS = [
     "geonode.sources.postgres.provider.PostgresSourceProvider",
+    "geonode.sources.wms.provider.WmsSourceProvider",
 ]
 
 ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))

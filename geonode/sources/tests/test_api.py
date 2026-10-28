@@ -92,12 +92,41 @@ class SourcesApiTests(APITestCase):
 
     def test_staff_can_create_a_connection_without_getting_the_secrets_back(self):
         self.client.force_login(self.staff)
-        response = self.client.post(CONNECTIONS_URL, {"type": "postgresql", "payload": PAYLOAD}, format="json")
+        with patch.object(PostgresSourceProvider, "browse", return_value=[]):
+            response = self.client.post(CONNECTIONS_URL, {"type": "postgresql", "payload": PAYLOAD}, format="json")
         self.assertEqual(201, response.status_code, response.json())
         _connection = response.json()["source_connection"]
         self.assertNotIn("payload", _connection)
         self.assertNotIn("password", _connection["connection"])
         self.assertEqual("db.example.com", _connection["connection"]["host"])
+
+    def test_create_connection_should_discover_its_data_items_at_once(self):
+        self.client.force_login(self.staff)
+        with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads", "rivers")):
+            response = self.client.post(CONNECTIONS_URL, {"type": "postgresql", "payload": PAYLOAD}, format="json")
+        self.assertEqual(201, response.status_code, response.json())
+        self.assertDictEqual({"found": 2, "created": 2, "missing": 0}, response.json()["discovery"])
+        self.assertEqual(2, response.json()["source_connection"]["data_items_count"])
+        _connection_id = response.json()["source_connection"]["id"]
+        self.assertSetEqual(
+            {entry_uri("roads"), entry_uri("rivers")},
+            set(DataItem.objects.filter(auth_config_id=_connection_id).values_list("uri", flat=True)),
+        )
+
+    def test_create_connection_should_not_save_a_source_that_cannot_be_read(self):
+        """Like a remote service registration: wrong parameters must not leave a connection behind"""
+        self.client.force_login(self.staff)
+        _connections = AuthConfig.objects.count()
+        with (
+            patch.object(
+                PostgresSourceProvider, "browse", side_effect=RuntimeError("PQconnectdb failed: db.example.com")
+            ),
+            self.assertLogs("geonode.sources.api.views", level="ERROR"),
+        ):
+            response = self.client.post(CONNECTIONS_URL, {"type": "postgresql", "payload": PAYLOAD}, format="json")
+        self.assertEqual(502, response.status_code)
+        self.assertDictEqual({"detail": "Could not browse the connection, it was not saved."}, response.json())
+        self.assertEqual(_connections, AuthConfig.objects.count())
 
     def test_create_connection_should_fail_with_an_invalid_payload(self):
         self.client.force_login(self.staff)

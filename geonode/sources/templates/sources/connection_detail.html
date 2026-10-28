@@ -15,7 +15,7 @@
   <thead>
     <tr>
       <th>{% trans "Table" %}</th>
-      <th>{% trans "Geometries" %}</th>
+      <th>{% trans "Details" %}</th>
       <th>{% trans "Last seen" %}</th>
       <th></th>
     </tr>
@@ -46,12 +46,16 @@
     const PAGE_SIZE = 50;
     let page = 1;
 
-    function geometriesOf(item) {
-      const geometries = (item.details && item.details.geometries) || [];
-      if (!geometries.length) {
+    // details are provider specific: shown as key=value, long values cut
+    function detailsOf(item) {
+      const entries = Object.entries(item.details || {});
+      if (!entries.length) {
         return ["-"];
       }
-      return geometries.map((geometry) => el("code", {}, [`${geometry.column} ${geometry.type} ${geometry.srid || ""}`, " "]));
+      return entries.map(([key, value]) => {
+        const text = typeof value === "object" ? JSON.stringify(value) : String(value);
+        return el("code", {}, [`${key}=${text.length > 80 ? `${text.slice(0, 80)}…` : text}`, " "]);
+      });
     }
 
     async function loadDataItems() {
@@ -59,7 +63,7 @@
       const rows = response.data_items.map((item) =>
         el("tr", {}, [
           el("td", {}, [item.title || item.uri]),
-          el("td", {}, geometriesOf(item)),
+          el("td", {}, detailsOf(item)),
           el("td", {}, [item.last_seen ? new Date(item.last_seen).toLocaleString() : "-"]),
           el("td", {}, [
             item.is_available

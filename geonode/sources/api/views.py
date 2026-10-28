@@ -18,6 +18,7 @@
 #########################################################################
 import logging
 
+from django.db import transaction
 from django.db.models import Count, Q
 from dynamic_rest.viewsets import DynamicModelViewSet
 from rest_framework import viewsets
@@ -64,6 +65,20 @@ class SourceConnectionViewSet(DynamicModelViewSet):
             .order_by("id")
         )
 
+    def create(self, request, *args, **kwargs):
+        """Register the connection and discover its data items at once: a source that cannot be read is not saved"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            with transaction.atomic():
+                _connection = serializer.save()
+                _discovery = utils.discover_connection(_connection, request.user)
+        except RuntimeError as e:
+            # GDAL or provider errors may expose server details, the client only gets a generic message
+            logger.exception(e)
+            return Response({"detail": "Could not browse the connection, it was not saved."}, status=502)
+        return Response({**self.get_serializer(_connection).data, "discovery": _discovery}, status=201)
+
     def destroy(self, request, *args, **kwargs):
         _connection = self.get_object()
         # the AuthConfig may also authenticate resources or url patterns, deleting it would silently break them
@@ -90,7 +105,7 @@ class SourceConnectionViewSet(DynamicModelViewSet):
                 status=400,
             )
         except RuntimeError as e:
-            # GDAL errors may expose server details, the client only gets a generic message
+            # GDAL or provider errors may expose server details, the client only gets a generic message
             logger.exception(e)
             return Response({"detail": "Could not browse the connection."}, status=502)
         return Response(_result, status=200)

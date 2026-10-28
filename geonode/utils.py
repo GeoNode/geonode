@@ -35,7 +35,10 @@ import socket
 from lxml import etree
 from osgeo import ogr
 from PIL import Image
+from functools import lru_cache
 from urllib3 import Retry
+from owslib.map import wms111, wms130
+from owslib.util import Authentication, clean_ows_url
 from urllib3.util import parse_url
 from io import BytesIO
 from decimal import Decimal
@@ -2050,3 +2053,66 @@ def safe_request_url(method, url, max_redirects=3, **kwargs):
     with SafeSession() as session:
         session.max_redirects = max_redirects
         return session.request(method, url, **kwargs)
+
+
+@lru_cache()
+def WebMapService(
+    url,
+    version="1.3.0",
+    xml=None,
+    username=None,
+    password=None,
+    parse_remote_metadata=False,
+    timeout=30,
+    headers=None,
+    auth=None,
+):
+    """wms factory function, returns the cleaned url and a version specific WebMapService object
+
+    @type url: string
+    @param url: url of the WMS capabilities document
+    @type xml: string
+    @param xml: elementtree object
+    @type parse_remote_metadata: boolean
+    @param parse_remote_metadata: whether to fully process MetadataURL elements
+    @param timeout: time (in seconds) after which requests should timeout
+    @return: (cleaned url, initialized WebMapService_1_1_1 or WebMapService_1_3_0 object)
+    """
+
+    clean_url = clean_ows_url(url)
+    base_ows_url = clean_url
+    auth = Authentication(auth_delegate=auth)
+
+    if version in ["1.1.1"]:
+        return (
+            base_ows_url,
+            wms111.WebMapService_1_1_1(
+                clean_url,
+                version=version,
+                xml=xml,
+                parse_remote_metadata=parse_remote_metadata,
+                auth=auth,
+                username=username,
+                password=password,
+                timeout=timeout,
+                headers=headers,
+            ),
+        )
+    elif version in ["1.3.0"]:
+        return (
+            base_ows_url,
+            wms130.WebMapService_1_3_0(
+                clean_url,
+                version=version,
+                xml=xml,
+                parse_remote_metadata=parse_remote_metadata,
+                auth=auth,
+                username=username,
+                password=password,
+                timeout=timeout,
+                headers=headers,
+            ),
+        )
+    raise NotImplementedError(
+        f"The WMS version ({version}) you requested is not implemented. Please use 1.1.1 or 1.3.0."
+    )

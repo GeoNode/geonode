@@ -20,15 +20,11 @@ import logging
 import typing
 import uuid
 from datetime import datetime
-from functools import lru_cache
 from urllib.parse import unquote, urlparse, urlencode, parse_qsl, ParseResult
-from owslib.util import Authentication
 
 import requests
 from lxml import etree
 
-from owslib.map import wms111, wms130
-from owslib.util import clean_ows_url
 
 from django.conf import settings
 from django.contrib.gis import geos
@@ -41,6 +37,7 @@ from geonode.thumbs.exceptions import ThumbnailError
 from .. import models
 from geonode.utils import (
     XML_PARSER,
+    WebMapService,
     get_xpath_value,
 )
 from .. import resourcedescriptor
@@ -48,72 +45,6 @@ from .. import resourcedescriptor
 from . import base
 
 logger = logging.getLogger(__name__)
-
-
-@lru_cache()
-def WebMapService(
-    url,
-    version="1.3.0",
-    xml=None,
-    username=None,
-    password=None,
-    parse_remote_metadata=False,
-    timeout=30,
-    headers=None,
-    auth=None,
-):
-    """
-    API for Web Map Service (WMS) methods and metadata.
-    """
-    """wms factory function, returns a version specific WebMapService object
-
-    @type url: string
-    @param url: url of WFS capabilities document
-    @type xml: string
-    @param xml: elementtree object
-    @type parse_remote_metadata: boolean
-    @param parse_remote_metadata: whether to fully process MetadataURL elements
-    @param timeout: time (in seconds) after which requests should timeout
-    @return: initialized WebFeatureService_2_0_0 object
-    """
-
-    clean_url = clean_ows_url(url)
-    base_ows_url = clean_url
-    auth = Authentication(auth_delegate=auth)
-
-    if version in ["1.1.1"]:
-        return (
-            base_ows_url,
-            wms111.WebMapService_1_1_1(
-                clean_url,
-                version=version,
-                xml=xml,
-                parse_remote_metadata=parse_remote_metadata,
-                auth=auth,
-                username=username,
-                password=password,
-                timeout=timeout,
-                headers=headers,
-            ),
-        )
-    elif version in ["1.3.0"]:
-        return (
-            base_ows_url,
-            wms130.WebMapService_1_3_0(
-                clean_url,
-                version=version,
-                xml=xml,
-                parse_remote_metadata=parse_remote_metadata,
-                auth=auth,
-                username=username,
-                password=password,
-                timeout=timeout,
-                headers=headers,
-            ),
-        )
-    raise NotImplementedError(
-        f"The WMS version ({version}) you requested is not implemented. Please use 1.1.1 or 1.3.0."
-    )
 
 
 class OgcWmsHarvester(base.BaseHarvesterWorker):

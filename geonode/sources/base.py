@@ -40,6 +40,11 @@ class Capability(enum.IntFlag):
     TRANSACTIONAL = 8  # several writes can be committed or rolled back together
 
 
+# a RuntimeError, like the GDAL errors, so that one except catches what any provider raises
+class SourceProviderError(RuntimeError):
+    """The source could not be reached or read. The cause may expose server details: log it, never return it"""
+
+
 @dataclasses.dataclass
 class BrowseEntry:
     """An item found while browsing a connection, stored as a data item by the discovery"""
@@ -59,6 +64,8 @@ def form_to_connection_fields(form_class) -> typing.List[typing.Dict]:
             _type = "choice"
         elif isinstance(field, forms.IntegerField):
             _type = "integer"
+        elif isinstance(field, forms.URLField):
+            _type = "url"
         else:
             _type = "string"
         _field = {"name": name, "label": str(field.label), "type": _type, "required": field.required}
@@ -90,7 +97,7 @@ class BaseSourceProvider(ABC):
     def connection_fields(self) -> typing.List[typing.Dict]:
         """
         Fields the UI renders to build the AuthConfig payload, each as
-        {"name", "label", "type": "string|integer|password|choice", "required", "choices"?, "default"?}
+        {"name", "label", "type": "string|integer|url|password|choice", "required", "choices"?, "default"?}
         """
         return form_to_connection_fields(self.connection_form)
 
@@ -100,4 +107,4 @@ class BaseSourceProvider(ABC):
 
     @abstractmethod
     def browse(self, auth_config: AuthConfig) -> typing.List[BrowseEntry]:
-        """List what the connection exposes, live"""
+        """List what the connection exposes, live. Raises a RuntimeError when the source cannot be read"""

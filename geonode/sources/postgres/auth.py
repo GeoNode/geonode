@@ -18,44 +18,13 @@
 #########################################################################
 import typing
 
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
-
-from geonode.security.auth_handlers import AuthHandler
-from geonode.sources.postgres.forms import PostgresConnectionForm
+from geonode.sources.auth import FormAuthHandler
 
 
-class PostgresAuthHandler(AuthHandler):
+class PostgresAuthHandler(FormAuthHandler):
     """Connection parameters of a PostgreSQL/PostGIS source, the type matches the source provider key"""
 
     handled_type = "postgresql"
-
-    @classmethod
-    def validate(cls, payload, instance=None):
-        # edited in place, the admin form keeps the dict it passed instead of the returned one
-        _stored = instance.payload if getattr(instance, "pk", None) else {}
-        for key in [key for key, value in payload.items() if value in ("", None)]:
-            del payload[key]
-        # a blank value keeps the stored one, so the password is not sent back on every edit
-        for key, value in _stored.items():
-            payload.setdefault(key, value)
-
-        form = PostgresConnectionForm(data=payload)
-        form.is_valid()
-        # a form silently drops what it does not know, the payload must not carry it
-        if extra := sorted(set(payload) - set(form.fields)):
-            form.add_error(None, f"Unknown keys: {', '.join(extra)}.")
-        if form.errors:
-            # flattened: keyed errors raised inside the admin form clean() would name fields it does not have
-            raise ValidationError(
-                [
-                    message if field == NON_FIELD_ERRORS else f"{field}: {message}"
-                    for field, messages in form.errors.items()
-                    for message in messages
-                ]
-            )
-        payload.clear()
-        payload.update(form.cleaned_data)
-        return payload
 
     def _init_from_config(self):
         payload = self.config.payload

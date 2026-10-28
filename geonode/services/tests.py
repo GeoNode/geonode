@@ -45,7 +45,7 @@ from geonode.security.auth_registry import auth_handler_registry
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.registry import resource_manager_registry
 from geonode.base import enumerations as base_enumerations
-from geonode.harvesting.harvesters.wms import WebMapService
+from geonode.utils import WebMapService
 from geonode.services.utils import parse_services_types, test_resource_table_status
 
 from geonode.services import enumerations, forms, views

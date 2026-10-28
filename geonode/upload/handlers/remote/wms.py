@@ -26,7 +26,7 @@ from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.handlers.remote.serializers.wms import RemoteWMSSerializer
 from geonode.upload.orchestrator import orchestrator
-from geonode.harvesting.harvesters.wms import WebMapService
+from geonode.utils import WebMapService
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.services.models import Service
 from geonode.services.serviceprocessors.wms import WmsServiceHandler

@@ -40,7 +40,7 @@ import gisdata
 from django.db.models import Q
 from geonode.base.models import ResourceBase
 import logging
-from geonode.harvesting.harvesters.wms import WebMapService
+from geonode.utils import WebMapService
 from geonode.services import enumerations
 from geonode.services.models import Service
 from django.forms.models import model_to_dict
