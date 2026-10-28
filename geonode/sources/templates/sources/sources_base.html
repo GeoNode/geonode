@@ -1,0 +1,72 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Sources" %} - {{ block.super }}{% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+{% csrf_token %}
+<div id="sources-messages"></div>
+{% block sources_body %}{% endblock %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script>
+  // Thin client of the sources REST API. Values coming from the API, e.g. table names of an external
+  // database, are untrusted: they are always set as text, never as HTML
+  const SOURCES_API = "/api/v2/";
+
+  async function sourcesApi(path, options = {}) {
+    const response = await fetch(SOURCES_API + path, {
+      method: options.method || "GET",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+      },
+      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    });
+    const data = response.status === 204 ? null : await response.json().catch(() => null);
+    if (!response.ok) {
+      throw { status: response.status, data: data };
+    }
+    return data;
+  }
+
+  function el(tag, attributes = {}, children = []) {
+    const node = document.createElement(tag);
+    for (const [name, value] of Object.entries(attributes)) {
+      node.setAttribute(name, value);
+    }
+    for (const child of children) {
+      node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+    }
+    return node;
+  }
+
+  function errorText(error) {
+    if (error && error.data) {
+      return Object.entries(error.data)
+        .map(([key, value]) => `${key}: ${[].concat(value).join(" ")}`)
+        .join(" - ");
+    }
+    return `{% filter escapejs %}{% trans "Request failed" %}{% endfilter %} (${error && error.status})`;
+  }
+
+  function showMessage(text, level = "success") {
+    const container = document.getElementById("sources-messages");
+    container.replaceChildren(el("div", { class: `alert alert-${level}` }, [text]));
+  }
+
+  function showError(error) {
+    showMessage(errorText(error), "danger");
+  }
+
+  function parametersOf(connection) {
+    return Object.entries(connection).map(([key, value]) => el("code", {}, [`${key}=${value}`, " "]));
+  }
+</script>
+{% block sources_script %}{% endblock %}
+{% endblock %}

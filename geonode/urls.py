@@ -70,6 +70,7 @@ urlpatterns = [
     re_path(r"^datasets/", include("geonode.layers.urls")),
     # Remote Services views
     re_path(r"^services/", include("geonode.services.urls")),
+    re_path(r"^sources/", include("geonode.sources.urls")),
     # Map views
     re_path(r"^maps/", include("geonode.maps.urls")),
     # Documents views
@@ -131,6 +132,7 @@ urlpatterns = [
     re_path(r"^api/v2/api-auth/", include("rest_framework.urls", namespace="geonode_rest_framework")),
     re_path(r"^api/v2/facets", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
+    re_path(r"^api/v2/", include("geonode.sources.api.urls")),
     re_path(r"^api/v2/metadata/", include("geonode.metadata.api.urls")),
     re_path(r"", include(api.urls)),
     re_path(

@@ -1,0 +1,84 @@
+{% extends "sources/sources_base.html" %}
+{% load i18n %}
+
+{% block sources_body %}
+<div class="page-header">
+  <h2 id="form-title">{% trans "New connection" %}</h2>
+</div>
+<form id="connection-form" autocomplete="off">
+  <div id="connection-fields"></div>
+  <a href="{% url "sources_connection_list" %}" class="btn btn-default">{% trans "Cancel" %}</a>
+  <button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+</form>
+{% endblock %}
+
+{% block sources_script %}
+<script>
+  (async () => {
+    const providerKey = "{{ provider_key|escapejs }}";
+    const detailUrl = "{% url "sources_connection_detail" 0 %}";
+    const form = document.getElementById("connection-form");
+    let fields = [];
+
+    function input(field) {
+      const attributes = { id: `field-${field.name}`, name: field.name, class: "form-control" };
+      if (field.required) {
+        attributes.required = "required";
+      }
+      if (field.type === "choice") {
+        return el(
+          "select",
+          attributes,
+          field.choices.map((choice) => {
+            const option = el("option", { value: choice }, [choice]);
+            option.selected = choice === field.default;
+            return option;
+          })
+        );
+      }
+      const types = { password: "password", integer: "number", string: "text" };
+      const node = el("input", { ...attributes, type: types[field.type] || "text" });
+      if (field.default !== undefined) {
+        node.value = field.default;
+      }
+      return node;
+    }
+
+    try {
+      const response = await sourcesApi(`source-providers/${encodeURIComponent(providerKey)}/`);
+      const provider = response.source_provider;
+      fields = provider.connection_fields;
+      document.getElementById("form-title").textContent =
+        `{% filter escapejs %}{% trans "New connection" %}{% endfilter %}: ${provider.label}`;
+      document.getElementById("connection-fields").replaceChildren(
+        ...fields.map((field) =>
+          el("div", { class: "form-group" }, [el("label", { for: `field-${field.name}` }, [field.label]), input(field)])
+        )
+      );
+    } catch (error) {
+      showError(error);
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = {};
+      for (const field of fields) {
+        const value = form.elements[field.name].value;
+        // left empty, the server fills the default
+        if (value !== "") {
+          payload[field.name] = field.type === "integer" ? Number(value) : value;
+        }
+      }
+      try {
+        const response = await sourcesApi("source-connections/", {
+          method: "POST",
+          body: { type: providerKey, payload: payload },
+        });
+        window.location = detailUrl.replace("/0/", `/${response.source_connection.id}/`);
+      } catch (error) {
+        showError(error);
+      }
+    });
+  })();
+</script>
+{% endblock %}

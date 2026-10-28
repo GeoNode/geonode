@@ -379,6 +379,7 @@ GEONODE_INTERNAL_APPS = (
     "geonode.social",
     "geonode.groups",
     "geonode.services",
+    "geonode.sources",
     "geonode.management_commands_http",
     "geonode.resource",
     "geonode.resource.processing",
@@ -1762,6 +1763,12 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 
 AUTH_HANDLERS = [
     "geonode.security.auth_handlers.BasicAuthHandler",
+    "geonode.sources.postgres.auth.PostgresAuthHandler",
+]
+
+# Source providers available to define data items, the key of each one is also its AuthConfig type
+SOURCE_PROVIDERS = [
+    "geonode.sources.postgres.provider.PostgresSourceProvider",
 ]
 
 ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv("ENABLE_APIKEY_LOGIN", "False"))

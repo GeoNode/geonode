@@ -1546,6 +1546,13 @@ Variable which controls displaying local account registration form. By default f
 This will extend search with additinoal properties. By default its on and search engine will check resource title or purpose or abstract.
 When set to False just title lookup is performed.
 
+**SOURCE_PROVIDERS**
+
+
+:   Default: ``["geonode.sources.postgres.provider.PostgresSourceProvider"]``
+
+List of the source providers available to define connections and data items. Each provider key must match the ``handled_type`` of an auth handler listed in ``AUTH_HANDLERS``, otherwise GeoNode refuses to start. See [Source providers and data items](../../development/sources.md).
+
 **SUPPORTED_DATASET_FILE_TYPES**
 
 

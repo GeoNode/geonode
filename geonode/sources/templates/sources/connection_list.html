@@ -1,0 +1,57 @@
+{% extends "sources/sources_base.html" %}
+{% load i18n %}
+
+{% block sources_body %}
+<div class="page-header">
+  <div class="pull-right">
+    <span id="provider-buttons"></span>
+  </div>
+  <h2>{% trans "Source connections" %}</h2>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>{% trans "Provider" %}</th>
+      <th>{% trans "Parameters" %}</th>
+      <th>{% trans "Data items" %}</th>
+    </tr>
+  </thead>
+  <tbody id="connections"></tbody>
+</table>
+{% endblock %}
+
+{% block sources_script %}
+<script>
+  (async () => {
+    const createUrl = "{% url "sources_connection_create" "PROVIDER" %}";
+    const detailUrl = "{% url "sources_connection_detail" 0 %}";
+    try {
+      const providers = await sourcesApi("source-providers/");
+      for (const provider of providers.source_providers) {
+        document.getElementById("provider-buttons").append(
+          el("a", { class: "btn btn-primary", href: createUrl.replace("PROVIDER", encodeURIComponent(provider.key)) }, [
+            `{% filter escapejs %}{% trans "New connection" %}{% endfilter %}: ${provider.label}`,
+          ]),
+          " "
+        );
+      }
+      const connections = await sourcesApi("source-connections/?page_size=100");
+      const rows = connections.source_connections.map((connection) =>
+        el("tr", {}, [
+          el("td", {}, [el("a", { href: detailUrl.replace("/0/", `/${connection.id}/`) }, [connection.id])]),
+          el("td", {}, [connection.type]),
+          el("td", {}, parametersOf(connection.connection)),
+          el("td", {}, [connection.data_items_count]),
+        ])
+      );
+      document.getElementById("connections").replaceChildren(...rows);
+      if (!rows.length) {
+        showMessage("{% filter escapejs %}{% trans "No connection defined yet." %}{% endfilter %}", "info");
+      }
+    } catch (error) {
+      showError(error);
+    }
+  })();
+</script>
+{% endblock %}

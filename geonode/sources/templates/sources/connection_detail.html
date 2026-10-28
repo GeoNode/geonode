@@ -1,0 +1,133 @@
+{% extends "sources/sources_base.html" %}
+{% load i18n %}
+
+{% block sources_body %}
+<div class="page-header">
+  <div class="pull-right">
+    <button id="test-button" class="btn btn-default">{% trans "Test connection" %}</button>
+    <button id="discover-button" class="btn btn-primary">{% trans "Discover" %}</button>
+    <button id="delete-button" class="btn btn-danger">{% trans "Delete" %}</button>
+  </div>
+  <h2 id="connection-title"></h2>
+  <p id="connection-parameters"></p>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>{% trans "Table" %}</th>
+      <th>{% trans "Geometries" %}</th>
+      <th>{% trans "Last seen" %}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="data-items"></tbody>
+</table>
+<ul class="pager">
+  <li><a href="#" id="previous-page">{% trans "Previous" %}</a></li>
+  <li><a href="#" id="next-page">{% trans "Next" %}</a></li>
+</ul>
+<a href="{% url "sources_connection_list" %}">{% trans "Back to connections" %}</a>
+{% endblock %}
+
+{% block sources_script %}
+<script>
+  (() => {
+    const connectionId = {{ connection_id }};
+    const connectionPath = `source-connections/${connectionId}/`;
+    const listUrl = "{% url "sources_connection_list" %}";
+
+    async function loadConnection() {
+      const response = await sourcesApi(connectionPath);
+      const connection = response.source_connection;
+      document.getElementById("connection-title").textContent = `${connection.type} #${connection.id}`;
+      document.getElementById("connection-parameters").replaceChildren(...parametersOf(connection.connection));
+    }
+
+    const PAGE_SIZE = 50;
+    let page = 1;
+
+    function geometriesOf(item) {
+      const geometries = (item.details && item.details.geometries) || [];
+      if (!geometries.length) {
+        return ["-"];
+      }
+      return geometries.map((geometry) => el("code", {}, [`${geometry.column} ${geometry.type} ${geometry.srid || ""}`, " "]));
+    }
+
+    async function loadDataItems() {
+      const response = await sourcesApi(`data-items/?connection=${connectionId}&page=${page}&page_size=${PAGE_SIZE}`);
+      const rows = response.data_items.map((item) =>
+        el("tr", {}, [
+          el("td", {}, [item.title || item.uri]),
+          el("td", {}, geometriesOf(item)),
+          el("td", {}, [item.last_seen ? new Date(item.last_seen).toLocaleString() : "-"]),
+          el("td", {}, [
+            item.is_available
+              ? el("span", { class: "label label-success" }, ["{% filter escapejs %}{% trans "Available" %}{% endfilter %}"])
+              : el("span", { class: "label label-warning" }, ["{% filter escapejs %}{% trans "Missing" %}{% endfilter %}"]),
+          ]),
+        ])
+      );
+      document.getElementById("data-items").replaceChildren(...rows);
+      document.getElementById("previous-page").parentElement.hidden = page <= 1;
+      document.getElementById("next-page").parentElement.hidden = page * PAGE_SIZE >= response.total;
+      if (!response.total) {
+        showMessage("{% filter escapejs %}{% trans "No data item yet: run a discovery." %}{% endfilter %}", "info");
+      }
+    }
+
+    for (const [id, step] of [["previous-page", -1], ["next-page", 1]]) {
+      document.getElementById(id).addEventListener("click", (event) => {
+        event.preventDefault();
+        page += step;
+        loadDataItems().catch(showError);
+      });
+    }
+
+    document.getElementById("test-button").addEventListener("click", async () => {
+      try {
+        const result = await sourcesApi(`${connectionPath}test/`, { method: "POST" });
+        if (result.success) {
+          showMessage("{% filter escapejs %}{% trans "Connection succeeded." %}{% endfilter %}");
+        } else {
+          showMessage(result.message, "danger");
+        }
+      } catch (error) {
+        showError(error);
+      }
+    });
+
+    document.getElementById("discover-button").addEventListener("click", async () => {
+      try {
+        const result = await sourcesApi(`${connectionPath}discover/`, { method: "POST" });
+        page = 1;
+        await loadDataItems();
+        showMessage(
+          `{% filter escapejs %}{% trans "Found" %}{% endfilter %}: ${result.found}, ` +
+            `{% filter escapejs %}{% trans "new" %}{% endfilter %}: ${result.created}, ` +
+            `{% filter escapejs %}{% trans "missing" %}{% endfilter %}: ${result.missing}`
+        );
+      } catch (error) {
+        showError(error);
+      }
+    });
+
+    document.getElementById("delete-button").addEventListener("click", async () => {
+      const question = "{% filter escapejs %}{% trans "Delete this connection and all its data items? The tables themselves are not touched." %}{% endfilter %}";
+      if (!window.confirm(question)) {
+        return;
+      }
+      try {
+        await sourcesApi(connectionPath, { method: "DELETE" });
+        window.location = listUrl;
+      } catch (error) {
+        showError(error);
+      }
+    });
+
+    loadConnection()
+      .then(loadDataItems)
+      .catch(showError);
+  })();
+</script>
+{% endblock %}
