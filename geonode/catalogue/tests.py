@@ -176,7 +176,7 @@ class UUIDResolverTest(GeoNodeBaseTestSupport):
         request.user = user
         response = resolve_uuid(request, self.dataset.uuid)
         self.assertEqual(302, response.status_code)
-        self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}?marker=10,40&zoom=6", response.headers["Location"])
+        self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}?marker=10%2C40&zoom=6", response.headers["Location"])
 
     def test_uuid_resolver_non_existing_dataset(self):
         user = get_user_model().objects.first()
