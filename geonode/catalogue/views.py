@@ -343,4 +343,9 @@ def csw_render_extra_format_html(request, layeruuid, resname):
 
 def resolve_uuid(request, uuid):
     resource = resolve_object(request, ResourceBase, {"uuid": uuid})
-    return redirect(resource)
+    url = resource.get_absolute_url()
+    query_string = request.META.get("QUERY_STRING")
+    if query_string:
+        separator = "&" if "?" in url else "?"
+        url = f"{url}{separator}{query_string}"
+    return redirect(url)

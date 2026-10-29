@@ -169,6 +169,15 @@ class UUIDResolverTest(GeoNodeBaseTestSupport):
         self.assertEqual(302, response.status_code)
         self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}", response.headers["Location"])
 
+    def test_uuid_resolver_preserves_query_params(self):
+        user = get_user_model().objects.first()
+        self.dataset.set_default_permissions(owner=user)
+        request = RequestFactory().get(f"http://localhost:8000/catalogue/uuid/{self.dataset.uuid}?marker=10,40&zoom=6")
+        request.user = user
+        response = resolve_uuid(request, self.dataset.uuid)
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}?marker=10,40&zoom=6", response.headers["Location"])
+
     def test_uuid_resolver_non_existing_dataset(self):
         user = get_user_model().objects.first()
         self.dataset.set_default_permissions(owner=user)
