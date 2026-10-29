@@ -19,8 +19,9 @@
 import os
 import logging
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
@@ -344,8 +345,8 @@ def csw_render_extra_format_html(request, layeruuid, resname):
 def resolve_uuid(request, uuid):
     resource = resolve_object(request, ResourceBase, {"uuid": uuid})
     url = resource.get_absolute_url()
-    query_string = request.META.get("QUERY_STRING")
-    if query_string:
-        separator = "&" if "?" in url else "?"
-        url = f"{url}{separator}{query_string}"
+    if request.GET:
+        url = f"{url}{'&' if '?' in url else '?'}{request.GET.urlencode()}"
+        if not url_has_allowed_host_and_scheme(url, {request.get_host()}, request.is_secure()):
+            return HttpResponseBadRequest("Invalid redirect")
     return redirect(url)
