@@ -32,9 +32,14 @@ import posixpath
 import stat
 import zipfile
 
-
 MAX_ENTRIES = 10_000
-MAX_TOTAL_UNCOMPRESSED = 2 * 1024 * 1024 * 1024  # 2 GiB
+_DEFAULT_MAX_TOTAL_UNCOMPRESSED = 2 * 1024 * 1024 * 1024  # 2 GiB
+try:
+    MAX_TOTAL_UNCOMPRESSED = int(os.environ.get("ZIP_MAX_TOTAL_UNCOMPRESSED", _DEFAULT_MAX_TOTAL_UNCOMPRESSED))
+except (TypeError, ValueError):
+    MAX_TOTAL_UNCOMPRESSED = _DEFAULT_MAX_TOTAL_UNCOMPRESSED
+if MAX_TOTAL_UNCOMPRESSED <= 0:
+    MAX_TOTAL_UNCOMPRESSED = _DEFAULT_MAX_TOTAL_UNCOMPRESSED
 MAX_COMPRESSION_RATIO = 100
 MIN_COMPRESSED_FOR_RATIO_CHECK = 1024  # bytes; ratios are meaningless below this
 # Cumulative ratio across the whole archive. Per-entry ratio is skipped for
