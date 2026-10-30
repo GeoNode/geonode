@@ -20,7 +20,7 @@
 import csv
 import json
 
-BASE_FIELDS = ["id", "uuid", "resource_type", "title", "valid", "error_count"]
+BASE_FIELDS = ["id", "uuid", "resource_type", "title", "valid"]
 ERROR_FIELDS = ["error_path", "error_title", "error_validator", "error_message", "error_value"]
 
 
@@ -44,7 +44,8 @@ def write_report(summary, records, out, outformat="json", error_details=True):
 
 
 def write_csv(records, out, error_details):
-    fields = BASE_FIELDS + (ERROR_FIELDS if error_details else [])
+    # error_count repeated on every error row would make unrelated rows look changed when diffing
+    fields = BASE_FIELDS + (ERROR_FIELDS if error_details else ["error_count"])
     writer = csv.DictWriter(out, fieldnames=fields, extrasaction="ignore")
     writer.writeheader()
 
