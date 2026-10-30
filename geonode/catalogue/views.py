@@ -347,6 +347,6 @@ def resolve_uuid(request, uuid):
     url = resource.get_absolute_url()
     if request.GET:
         url = f"{url}{'&' if '?' in url else '?'}{request.GET.urlencode()}"
-        if not url_has_allowed_host_and_scheme(url, {request.get_host()}, request.is_secure()):
-            return HttpResponseBadRequest("Invalid redirect")
+    if not url_has_allowed_host_and_scheme(url, {request.get_host()}, request.is_secure()):
+        return HttpResponseBadRequest("Invalid redirect")
     return redirect(url)
