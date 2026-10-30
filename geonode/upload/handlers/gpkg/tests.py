@@ -31,6 +31,7 @@ from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
 
 from geonode.upload.celery_tasks import UpdateTaskClass
+from unittest.mock import patch
 
 
 class TestGPKGHandler(TestCase):
@@ -167,7 +168,8 @@ class TestGPKGHandler(TestCase):
         errors = exec_request_obj.output_params.get("errors", [])
         assert any("exception raised" in str(e) for e in errors)
 
-    def test_select_valid_layers(self):
+    @patch("geonode.upload.handlers.common.vector.should_be_imported", return_value=False)
+    def test_select_valid_layers(self, should_import):
         """
         The function should return only the datasets with a geometry
         The other one are discarded
@@ -190,12 +192,11 @@ class TestGPKGHandler(TestCase):
 
         all_layers = GPKGFileHandler().open_source_file({"base_file": ("/tmp/multiple_layers.gpkg")})
 
-        with self.assertRaises(Exception) as exp:
-            GPKGFileHandler()._select_valid_layers(all_layers, execution_id=str(exec_id))
+        for action in ("replace", "upsert"):
+            ExecutionRequest.objects.filter(exec_id=exec_id).update(action=action)
+            with self.assertRaisesMessage(Exception, "For Upsert and Replace, only one layer is allowed in the GPKG"):
+                GPKGFileHandler()._select_valid_layers(all_layers, execution_id=str(exec_id), filter_existing=True)
 
-        self.assertIn(
-            "For Upsert and Replace, only one layer is allowed in the GPKG",
-            exp.exception.args[0],
-        )
+        should_import.assert_not_called()
 
         os.remove("/tmp/multiple_layers.gpkg")
