@@ -832,6 +832,20 @@ Options:
 - EMAIL_USE_SSL - Default:  ``False``
 - DEFAULT_FROM_EMAIL - Default:  ``GeoNode <no-reply@geonode.org>``
 
+To send email through Microsoft 365 via the Microsoft Graph ``sendMail`` API
+instead of SMTP, set ``EMAIL_BACKEND`` to
+``geonode.email_backends.ms_graph_backend.MicrosoftGraphEmailBackend`` and
+configure:
+
+- EMAIL_MS_GRAPH_TENANT_ID - Azure AD tenant (directory) ID
+- EMAIL_MS_GRAPH_CLIENT_ID - App registration client ID
+- EMAIL_MS_GRAPH_CLIENT_SECRET - App registration client secret value
+- EMAIL_MS_GRAPH_FROM - Bare email address of the sender mailbox; falls back to ``DEFAULT_FROM_EMAIL``
+
+The configured ``EMAIL_MS_GRAPH_FROM`` is always used as the sender
+regardless of any per-message ``from_email``. The display name shown to
+recipients comes from the mailbox's Azure AD configuration.
+
 **EPSG_CODE_MATCHES**
 
 
