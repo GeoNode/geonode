@@ -171,6 +171,7 @@ class ValidateMetadataOfflineTests(ValidateMetadataCommandMixin, SimpleTestCase)
         self.assertEqual("/title", rows[0]["error_path"])
         self.assertEqual("Title", rows[0]["error_title"])
         self.assertEqual("u-2", rows[0]["uuid"])
+        self.assertNotIn("error_count", rows[0])  # repeated per row, it would make diffs noisy
 
     def test_csv_report_without_details_has_one_row_per_instance(self):
         out, _ = self.call(
@@ -184,6 +185,8 @@ class ValidateMetadataOfflineTests(ValidateMetadataCommandMixin, SimpleTestCase)
         rows = list(csv.DictReader(line for line in out.splitlines() if not line.startswith("#")))
         self.assertEqual(2, len(rows))
         self.assertNotIn("error_path", rows[0])
+        # one row per resource here, not per error: no repetition, so error_count is useful
+        self.assertEqual({"0", "1"}, {row["error_count"] for row in rows})
 
     def test_report_can_be_written_to_a_file(self):
         outpath = os.path.join(self.tmpdir.name, "report.json")
