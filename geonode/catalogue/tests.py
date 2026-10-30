@@ -18,6 +18,7 @@
 #########################################################################
 import logging
 import xml.etree.ElementTree as ET
+from unittest.mock import patch
 
 from django.db.models import Q
 from django.template.loader import get_template
@@ -177,6 +178,29 @@ class UUIDResolverTest(GeoNodeBaseTestSupport):
         response = resolve_uuid(request, self.dataset.uuid)
         self.assertEqual(302, response.status_code)
         self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}?marker=10%2C40&zoom=6", response.headers["Location"])
+
+    def test_uuid_resolver_encodes_hostile_query_params(self):
+        user = get_user_model().objects.first()
+        self.dataset.set_default_permissions(owner=user)
+        request = RequestFactory().get(
+            f"http://localhost:8000/catalogue/uuid/{self.dataset.uuid}?next=//evil.com&a=@evil.com&%2F%5Cevil.com=1"
+        )
+        request.user = user
+        response = resolve_uuid(request, self.dataset.uuid)
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(
+            f"/catalogue/#/dataset/{self.dataset.pk}?next=%2F%2Fevil.com&a=%40evil.com&%2F%5Cevil.com=1",
+            response.headers["Location"],
+        )
+
+    @patch("geonode.layers.models.Dataset.get_absolute_url", return_value="https://evil.com/catalogue/")
+    def test_uuid_resolver_rejects_external_redirect(self, _):
+        user = get_user_model().objects.first()
+        self.dataset.set_default_permissions(owner=user)
+        request = RequestFactory().get(f"http://localhost:8000/catalogue/uuid/{self.dataset.uuid}")
+        request.user = user
+        response = resolve_uuid(request, self.dataset.uuid)
+        self.assertEqual(400, response.status_code)
 
     def test_uuid_resolver_non_existing_dataset(self):
         user = get_user_model().objects.first()
