@@ -22,8 +22,6 @@
          "default_style":2,
          "remote_service":null,
          "charset":"UTF-8",
-         "use_featureinfo_custom_template":false,
-         "featureinfo_custom_template":null,
          "tkeywords":[
 
          ],
@@ -64,8 +62,6 @@
          "default_style":4,
          "remote_service":null,
          "charset":"UTF-8",
-         "use_featureinfo_custom_template":false,
-         "featureinfo_custom_template":null,
          "tkeywords":[
 
          ],
@@ -106,8 +102,6 @@
          "default_style":null,
          "remote_service":1003,
          "charset":"UTF-8",
-         "use_featureinfo_custom_template":false,
-         "featureinfo_custom_template":null,
          "tkeywords":[
 
          ],

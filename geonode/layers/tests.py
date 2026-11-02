@@ -272,17 +272,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         attributes = Attribute.objects.filter(dataset=lyr)
         for _att in attributes:
             self.assertEqual(_att.featureinfo_type, "type_property")
-
-        lyr.featureinfo_custom_template = "<h1>Test HTML</h1>"
-        lyr.use_featureinfo_custom_template = True
-        lyr.save()
-        attribute_config = lyr.attribute_config()
-        self.assertTrue("ftInfoTemplate" in attribute_config)
-        self.assertEqual(attribute_config["ftInfoTemplate"], "<h1>Test HTML</h1>")
-        lyr.use_featureinfo_custom_template = False
-        lyr.save()
-        attribute_config = lyr.attribute_config()
-        self.assertTrue("ftInfoTemplate" not in attribute_config)
+        self.assertNotIn("ftInfoTemplate", attribute_config)
 
     def test_remote_datasets_are_exempt_from_store_workspace_name_uniqueness(self):
         # store is NULL for remote datasets, and PostgreSQL does not consider two NULLs equal,
