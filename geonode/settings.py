@@ -428,7 +428,6 @@ INSTALLED_APPS = (
     "mptt",
     "storages",
     # "floppyforms",
-    "tinymce",
     "widget_tweaks",
     "markdownify",
     "django_user_agents",

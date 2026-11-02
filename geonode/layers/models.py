@@ -28,8 +28,6 @@ from django.utils.timezone import now
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
-from tinymce.models import HTMLField
-
 from geonode.client.hooks import hookset
 from geonode import GeoNodeException
 from geonode.utils import build_absolute_uri, check_shp_columnnames, check_bbox_validity, normalize_bbox_to_float_list
@@ -146,19 +144,6 @@ class Dataset(ResourceBase):
     remote_service = models.ForeignKey("services.Service", null=True, blank=True, on_delete=models.CASCADE)
 
     charset = models.CharField(max_length=255, default="UTF-8")
-
-    use_featureinfo_custom_template = models.BooleanField(
-        _("use featureinfo custom template?"),
-        help_text=_("specifies wether or not use a custom GetFeatureInfo template."),
-        default=False,
-    )
-    featureinfo_custom_template = HTMLField(
-        _("featureinfo custom template"),
-        help_text=_("the custom GetFeatureInfo template HTML contents."),
-        unique=False,
-        blank=True,
-        null=True,
-    )
 
     def is_vector(self):
         return self.subtype in ["vector", "vector_time"]
@@ -312,9 +297,6 @@ class Dataset(ResourceBase):
                 "propertyNames": {lyr.attribute: lyr.attribute_label for lyr in visible_attributes},
                 "displayTypes": {lyr.attribute: lyr.featureinfo_type for lyr in visible_attributes},
             }
-
-        if self.use_featureinfo_custom_template:
-            cfg["ftInfoTemplate"] = self.featureinfo_custom_template
 
         return cfg
 

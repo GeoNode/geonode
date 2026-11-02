@@ -100,29 +100,8 @@ class DatasetsApiTests(APITestCase):
                 '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
                              <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
             )
-
-            _dataset.featureinfo_custom_template = "<div>Foo Bar</div>"
-            _dataset.save()
-            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format="json")
-            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
-            self.assertEqual(
-                response.data["dataset"].get("featureinfo_custom_template"),
-                '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
-                             <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
-            )
-
-            _dataset.use_featureinfo_custom_template = True
-            _dataset.save()
-            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format="json")
-            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
-            self.assertEqual(response.data["dataset"].get("featureinfo_custom_template"), "<div>Foo Bar</div>")
         finally:
             _attribute.delete()
-            _dataset.featureinfo_custom_template = None
-            _dataset.use_featureinfo_custom_template = False
-            _dataset.save()
 
     @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
     def test_filter_dirty_state(self):
