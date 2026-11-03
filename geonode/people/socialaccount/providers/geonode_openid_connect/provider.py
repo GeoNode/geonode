@@ -23,13 +23,13 @@ These are used in order to extend the default authorization provided by
 django-allauth.
 
 """
+
 from django.conf import settings
 from django.utils.module_loading import import_string
 
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.base import AuthAction, ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-
 
 PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
 

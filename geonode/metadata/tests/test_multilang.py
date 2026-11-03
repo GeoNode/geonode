@@ -35,7 +35,6 @@ from geonode.metadata.tests.handlers import FakeHandler, LoaderHandler
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-
 logger = logging.getLogger(__name__)
 
 

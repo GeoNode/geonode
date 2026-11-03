@@ -74,7 +74,6 @@ from ..layers.models import Dataset, Attribute
 from ..maps.models import Map
 from ..storage.manager import storage_manager
 
-
 logger = logging.getLogger(__name__)
 
 

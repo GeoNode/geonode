@@ -22,6 +22,7 @@ geonode.metadata.tests.test_validate_metadata already covers the reporting contr
 (valid/invalid, max_errors, value truncation, ...) through the command; this file is
 about what is only reachable by calling the class itself.
 """
+
 import sys
 from unittest.mock import patch
 from uuid import uuid4

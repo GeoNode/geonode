@@ -27,7 +27,6 @@ from geonode.base.models import Link
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 
-
 ISO_XSL_NAME = "ISO with XSL"
 
 settings.DOWNLOAD_FORMATS_METADATA.append(ISO_XSL_NAME)
