@@ -64,7 +64,7 @@ class SourcesApiTests(APITestCase):
         self.client.force_login(self.staff)
         response = self.client.get("/api/v2/source-providers/")
         self.assertEqual(200, response.status_code, response.json())
-        _provider = response.json()["source_providers"][0]
+        _provider = response.json()[0]
         self.assertEqual("postgresql", _provider["key"])
         self.assertListEqual(["READ"], _provider["declared_capabilities"])
         self.assertIn("password", [_field["name"] for _field in _provider["connection_fields"]])
@@ -73,7 +73,7 @@ class SourcesApiTests(APITestCase):
         self.client.force_login(self.staff)
         response = self.client.get("/api/v2/source-providers/postgresql/")
         self.assertEqual(200, response.status_code, response.json())
-        self.assertEqual("postgresql", response.json()["source_provider"]["key"])
+        self.assertEqual("postgresql", response.json()["key"])
         self.assertEqual(404, self.client.get("/api/v2/source-providers/unknown/").status_code)
 
     def test_user_cannot_list_the_providers(self):
@@ -86,7 +86,7 @@ class SourcesApiTests(APITestCase):
             source_provider="uninstalled", uri=entry_uri("roads"), auth_config=self.connection
         )
         self.client.force_login(self.staff)
-        _data = self.client.get(f"{DATA_ITEMS_URL}{_item.pk}/").json()["data_item"]
+        _data = self.client.get(f"{DATA_ITEMS_URL}{_item.pk}/").json()
         self.assertEqual("uninstalled", _data["source_provider"])
         self.assertListEqual([], _data["capabilities"])
 
@@ -95,7 +95,7 @@ class SourcesApiTests(APITestCase):
         with patch.object(PostgresSourceProvider, "browse", return_value=[]):
             response = self.client.post(CONNECTIONS_URL, {"type": "postgresql", "payload": PAYLOAD}, format="json")
         self.assertEqual(201, response.status_code, response.json())
-        _connection = response.json()["source_connection"]
+        _connection = response.json()
         self.assertNotIn("payload", _connection)
         self.assertNotIn("password", _connection["connection"])
         self.assertEqual("db.example.com", _connection["connection"]["host"])
@@ -106,8 +106,8 @@ class SourcesApiTests(APITestCase):
             response = self.client.post(CONNECTIONS_URL, {"type": "postgresql", "payload": PAYLOAD}, format="json")
         self.assertEqual(201, response.status_code, response.json())
         self.assertDictEqual({"found": 2, "created": 2, "missing": 0}, response.json()["discovery"])
-        self.assertEqual(2, response.json()["source_connection"]["data_items_count"])
-        _connection_id = response.json()["source_connection"]["id"]
+        self.assertEqual(2, response.json()["data_items_count"])
+        _connection_id = response.json()["id"]
         self.assertSetEqual(
             {entry_uri("roads"), entry_uri("rivers")},
             set(DataItem.objects.filter(auth_config_id=_connection_id).values_list("uri", flat=True)),
@@ -141,7 +141,15 @@ class SourcesApiTests(APITestCase):
         self.client.force_login(self.staff)
         response = self.client.get(CONNECTIONS_URL)
         self.assertEqual(200, response.status_code, response.json())
-        self.assertListEqual([self.connection.pk], [_item["id"] for _item in response.json()["source_connections"]])
+        self.assertListEqual([self.connection.pk], [_item["id"] for _item in response.json()["results"]])
+
+    def test_connection_list_should_use_the_plain_drf_pagination(self):
+        """The sources API is plain DRF, without the dynamic-rest envelope"""
+        self.client.force_login(self.staff)
+        response = self.client.get(CONNECTIONS_URL, {"page_size": 1000})
+        self.assertEqual(200, response.status_code, response.json())
+        self.assertSetEqual({"count", "next", "previous", "results"}, set(response.json()))
+        self.assertEqual(1, response.json()["count"])
 
     def test_connections_should_report_their_data_items_count(self):
         """Only the available items are counted"""
@@ -150,8 +158,8 @@ class SourcesApiTests(APITestCase):
             source_provider="postgresql", uri=entry_uri("lakes"), auth_config=self.connection, is_available=False
         )
         self.client.force_login(self.staff)
-        listed = self.client.get(CONNECTIONS_URL).json()["source_connections"][0]
-        detail = self.client.get(f"{CONNECTIONS_URL}{self.connection.pk}/").json()["source_connection"]
+        listed = self.client.get(CONNECTIONS_URL).json()["results"][0]
+        detail = self.client.get(f"{CONNECTIONS_URL}{self.connection.pk}/").json()
         self.assertEqual(1, listed["data_items_count"])
         self.assertEqual(1, detail["data_items_count"])
 
@@ -188,7 +196,7 @@ class SourcesApiTests(APITestCase):
         self.assertDictEqual({"found": 2, "created": 2, "missing": 0}, response.json())
         _item = DataItem.objects.get(uri=entry_uri("roads"))
         self.assertEqual("public.roads", _item.title)
-        _data = self.client.get(f"{DATA_ITEMS_URL}{_item.pk}/").json()["data_item"]
+        _data = self.client.get(f"{DATA_ITEMS_URL}{_item.pk}/").json()
         self.assertEqual("postgresql", _data["source_provider"])
         self.assertListEqual(["READ"], _data["capabilities"])
         self.assertTrue(_item.is_available)
@@ -269,7 +277,7 @@ class SourcesApiTests(APITestCase):
         self.client.force_login(self.staff)
         response = self.client.get(DATA_ITEMS_URL, {"connection": self.connection.pk})
         self.assertEqual(200, response.status_code, response.json())
-        self.assertListEqual([_item.pk], [_data["id"] for _data in response.json()["data_items"]])
+        self.assertListEqual([_item.pk], [_data["id"] for _data in response.json()["results"]])
 
     def test_data_items_filter_should_refuse_a_non_numeric_connection(self):
         self.client.force_login(self.staff)

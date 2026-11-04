@@ -105,6 +105,8 @@ Connections can also be edited in the Django admin, under *Authentication Config
 
 All endpoints are under `/api/v2/` and require a staff user.
 
+The API is plain Django REST Framework, without dynamic-rest: a single object is returned as is, and lists are paginated as `{"count", "next", "previous", "results"}` with the `page` and `page_size` parameters (default 10, at most 100). `source-providers/` is not paginated and returns a plain list.
+
 | Endpoint | Methods | Description |
 | --- | --- | --- |
 | `source-providers/` | `GET` | installed providers, their declared capabilities and the connection fields to render |

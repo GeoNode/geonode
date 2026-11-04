@@ -28,7 +28,7 @@
     const detailUrl = "{% url "sources_connection_detail" 0 %}";
     try {
       const providers = await sourcesApi("source-providers/");
-      for (const provider of providers.source_providers) {
+      for (const provider of providers) {
         document.getElementById("provider-buttons").append(
           el("a", { class: "btn btn-primary", href: createUrl.replace("PROVIDER", encodeURIComponent(provider.key)) }, [
             `{% filter escapejs %}{% trans "New connection" %}{% endfilter %}: ${provider.label}`,
@@ -37,7 +37,7 @@
         );
       }
       const connections = await sourcesApi("source-connections/?page_size=100");
-      const rows = connections.source_connections.map((connection) =>
+      const rows = connections.results.map((connection) =>
         el("tr", {}, [
           el("td", {}, [el("a", { href: detailUrl.replace("/0/", `/${connection.id}/`) }, [connection.id])]),
           el("td", {}, [connection.type]),

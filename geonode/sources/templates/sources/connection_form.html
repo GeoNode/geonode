@@ -45,8 +45,7 @@
     }
 
     try {
-      const response = await sourcesApi(`source-providers/${encodeURIComponent(providerKey)}/`);
-      const provider = response.source_provider;
+      const provider = await sourcesApi(`source-providers/${encodeURIComponent(providerKey)}/`);
       fields = provider.connection_fields;
       document.getElementById("form-title").textContent =
         `{% filter escapejs %}{% trans "New connection" %}{% endfilter %}: ${provider.label}`;
@@ -74,7 +73,7 @@
           method: "POST",
           body: { type: providerKey, payload: payload },
         });
-        window.location = detailUrl.replace("/0/", `/${response.source_connection.id}/`);
+        window.location = detailUrl.replace("/0/", `/${response.id}/`);
       } catch (error) {
         showError(error);
       }

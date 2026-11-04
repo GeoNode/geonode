@@ -16,11 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.api.urls import router
+from rest_framework.routers import SimpleRouter
+
 from geonode.sources.api import views
 
+# own plain DRF router, not the shared dynamic one: SimpleRouter has no root view to shadow the api/v2/ one
+router = SimpleRouter()
 router.register(r"source-providers", views.SourceProviderViewSet, "source-providers")
 router.register(r"source-connections", views.SourceConnectionViewSet, "source-connections")
 router.register(r"data-items", views.DataItemViewSet, "data-items")
 
-urlpatterns = []
+urlpatterns = router.urls

@@ -19,7 +19,6 @@
 import typing
 
 from django.core.exceptions import ValidationError as DjangoValidationError
-from dynamic_rest.serializers import DynamicModelSerializer
 from rest_framework import serializers
 
 from geonode.security.auth_registry import auth_handler_registry
@@ -46,7 +45,7 @@ class SourceProviderSerializer(serializers.Serializer):
         return capability_names(obj.declared_capabilities)
 
 
-class SourceConnectionSerializer(DynamicModelSerializer):
+class SourceConnectionSerializer(serializers.ModelSerializer):
     """
     A connection is an AuthConfig whose type is a source provider key.
     The payload is write only: secrets never leave the server
@@ -58,7 +57,6 @@ class SourceConnectionSerializer(DynamicModelSerializer):
 
     class Meta:
         model = AuthConfig
-        name = "source_connection"
         fields = ("id", "type", "payload", "connection", "data_items_count")
 
     def get_connection(self, obj):
@@ -97,7 +95,7 @@ class SourceConnectionSerializer(DynamicModelSerializer):
         return instance
 
 
-class DataItemSerializer(DynamicModelSerializer):
+class DataItemSerializer(serializers.ModelSerializer):
     """Data items are created by the discovery of their connection, the API only reads and removes them"""
 
     connection = serializers.PrimaryKeyRelatedField(source="auth_config", read_only=True)
@@ -106,7 +104,6 @@ class DataItemSerializer(DynamicModelSerializer):
 
     class Meta:
         model = DataItem
-        name = "data_item"
         fields = (
             "id",
             "source_provider",

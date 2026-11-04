@@ -214,7 +214,7 @@ class WmsApiTests(APITestCase):
             format="json",
         )
         self.assertEqual(201, response_.status_code, response_.json())
-        _connection = response_.json()["source_connection"]
+        _connection = response_.json()
         self.assertNotIn("password", _connection["connection"])
 
         self.assertDictEqual({"found": 2, "created": 2, "missing": 0}, response_.json()["discovery"])

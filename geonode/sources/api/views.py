@@ -20,14 +20,14 @@ import logging
 
 from django.db import transaction
 from django.db.models import Count, Q
-from dynamic_rest.viewsets import DynamicModelViewSet
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser
+from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 
-from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.sources.api.serializers import DataItemSerializer, SourceConnectionSerializer, SourceProviderSerializer
 from geonode.sources.models import DataItem
 from geonode.sources.registry import source_provider_registry
@@ -36,29 +36,39 @@ from geonode.sources import utils
 logger = logging.getLogger(__name__)
 
 
-class SourceProviderViewSet(viewsets.ViewSet):
+class SourcesPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+class SourcesViewSetMixin:
+    permission_classes = [IsAdminUser]
+    # the global default browsable renderer comes from dynamic-rest, this API is plain DRF
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
+
+
+class SourceProviderViewSet(SourcesViewSetMixin, viewsets.ViewSet):
     """The installed providers, as known by the registry"""
 
-    permission_classes = [IsAdminUser]
     lookup_field = "key"
 
     def list(self, request):
         _providers = sorted(source_provider_registry.REGISTRY.values(), key=lambda _provider: _provider.key)
-        return Response({"source_providers": SourceProviderSerializer(_providers, many=True).data}, status=200)
+        return Response(SourceProviderSerializer(_providers, many=True).data, status=200)
 
     def retrieve(self, request, key=None):
         if not (_provider := source_provider_registry.get(key)):
             raise NotFound()
-        return Response({"source_provider": SourceProviderSerializer(_provider).data}, status=200)
+        return Response(SourceProviderSerializer(_provider).data, status=200)
 
 
-class SourceConnectionViewSet(DynamicModelViewSet):
-    permission_classes = [IsAdminUser]
+class SourceConnectionViewSet(SourcesViewSetMixin, viewsets.ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
     serializer_class = SourceConnectionSerializer
-    pagination_class = GeoNodeApiPagination
+    pagination_class = SourcesPagination
 
-    def get_queryset(self, queryset=None):
+    def get_queryset(self):
         return (
             utils.source_connections()
             .annotate(data_items_count=Count("data_items", filter=Q(data_items__is_available=True)))
@@ -111,13 +121,17 @@ class SourceConnectionViewSet(DynamicModelViewSet):
         return Response(_result, status=200)
 
 
-class DataItemViewSet(DynamicModelViewSet):
-    permission_classes = [IsAdminUser]
-    http_method_names = ["get", "delete"]
+class DataItemViewSet(
+    SourcesViewSetMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     serializer_class = DataItemSerializer
-    pagination_class = GeoNodeApiPagination
+    pagination_class = SourcesPagination
 
-    def get_queryset(self, queryset=None):
+    def get_queryset(self):
         _queryset = DataItem.objects.select_related("created_by").order_by("title", "id")
         if _connection := self.request.query_params.get("connection"):
             if not _connection.isdigit():
