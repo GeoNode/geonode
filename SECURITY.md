@@ -7,7 +7,7 @@ GeoNode [versions](https://github.com/GeoNode/geonode/wiki/Releases) supported w
 | Version | Supported          |
 | ------- | ------------------ |
 | 5.1.x   | :white_check_mark: |
-| 5.0.x   | :white_check_mark: |
+| 5.0.x   | :x: |
 | < 5   | :x: |
 
 This approach provides ample time for upgrading ensuring you are always working with a supported GeoNode release.

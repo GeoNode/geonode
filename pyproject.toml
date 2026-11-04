@@ -57,7 +57,6 @@ dependencies = [
     "django-downloadview==2.4.0",
     "django-polymorphic==4.11.6",
     "django-tastypie<0.15.0",
-    "django-tinymce==3.7.1",
     "django-uuid-upload-path==1.0.0",
     "django-widget-tweaks==1.5.0",
     "django-sequences==3.0",
