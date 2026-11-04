@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from oauth2_provider.views.introspect import IntrospectTokenView
 
+from geonode.base.oauth2_validators import get_user_groups_and_roles
+
 
 class GeoNodeIntrospectTokenView(IntrospectTokenView):
     @staticmethod
@@ -20,8 +22,5 @@ class GeoNodeIntrospectTokenView(IntrospectTokenView):
         if not user:
             return response
 
-        groups = [g.name for g in user.groups.all()]
-        if user.is_superuser:
-            groups.append("admin")
-        data["groups"] = groups
+        data["groups"], data["roles"] = get_user_groups_and_roles(user)
         return HttpResponse(content=json.dumps(data), status=200, content_type="application/json")

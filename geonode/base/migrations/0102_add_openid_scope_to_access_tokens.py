@@ -1,11 +1,15 @@
 from django.db import migrations
+from django.db.models import Value
+from django.db.models.functions import Concat, Trim
 
 
 def add_openid_scope(apps, schema_editor):
     AccessToken = apps.get_model("oauth2_provider", "AccessToken")
-    updated = AccessToken.objects.all().update(scope="openid")
+    updated = AccessToken.objects.exclude(scope__contains="openid").update(
+        scope=Trim(Concat("scope", Value(" openid")))
+    )
     if updated:
-        print(f"\nUpdated {updated} access token(s) to include 'openid' scope.")
+        print(f"\nAdded 'openid' scope to {updated} access token(s).")
 
 
 class Migration(migrations.Migration):
