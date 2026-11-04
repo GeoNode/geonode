@@ -19,6 +19,8 @@
 import json
 import logging
 
+from unittest.mock import patch
+
 from django.urls import reverse
 from django.conf import settings
 from django.test import override_settings
@@ -837,6 +839,26 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.test_user.groups.remove(self.bar.group)
         member_exists = GroupMember.objects.filter(user=self.test_user, group=self.bar).exists()
         self.assertFalse(member_exists)
+
+    def test_adding_user_to_auth_group_does_not_recompute_member_perms(self):
+        """Syncing GroupMember from auth.Group must not run the per-resource perms recomputation."""
+        with patch("geonode.groups.models.GroupMember._handle_perms") as _handle_perms:
+            self.test_user.groups.add(self.bar.group)
+
+        self.assertTrue(GroupMember.objects.filter(user=self.test_user, group=self.bar).exists())
+        _handle_perms.assert_not_called()
+
+    def test_adding_user_to_multiple_auth_groups_does_not_duplicate_member(self):
+        """Each m2m sync must not create a second GroupMember for a group already synced."""
+        foo = GroupProfile.objects.create(slug="sync_foo", title="sync_foo")
+        try:
+            self.test_user.groups.add(self.bar.group)
+            self.test_user.groups.add(foo.group)
+
+            self.assertEqual(GroupMember.objects.filter(user=self.test_user, group=self.bar).count(), 1)
+            self.assertEqual(GroupMember.objects.filter(user=self.test_user, group=foo).count(), 1)
+        finally:
+            foo.delete()
 
     def test_join_syncs_to_auth_group(self):
         self.bar.join(self.test_user, role=GroupMember.MEMBER)

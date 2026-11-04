@@ -99,10 +99,11 @@ class SparseHandler(MetadataHandler):
                 self._recurse_thesauri_autocomplete(item, lang)
 
     def _add_thesaurus_options(self, d, thesaurus_id, lang):
-        oneof = []
-        for keyword in get_localized_tkeywords(lang, thesaurus_id):
-            oneof.append({"const": keyword["about"], "title": keyword["label"]})
-        d["oneOf"] = oneof
+        d["oneOf"] = [
+            {"const": keyword["about"], "title": keyword["label"] or keyword["default"]}
+            for keyword in get_localized_tkeywords(lang, thesaurus_id)
+        ]
+        self._add_oneof_null_option(d)
 
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
@@ -139,10 +140,10 @@ class SparseHandler(MetadataHandler):
         context[CONTEXT_ID]["fields"][fieldname] = value
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
-        field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
         field_value = context[CONTEXT_ID]["fields"].get(field_name, None)
-
-        is_nullable = self._check_type(field_type, "null")
+        subschema = context[CONTEXT_ID]["schema"]["properties"][field_name]
+        is_nullable = self._is_nullable(subschema)
+        field_type = subschema["type"]
 
         if field_name not in context[CONTEXT_ID]["fields"] and not is_nullable:
             raise UnsetFieldException()
@@ -192,11 +193,10 @@ class SparseHandler(MetadataHandler):
         context[CONTEXT_ID] = {"schema": jsonschema}
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-
         bare_value = json_instance.get(field_name, None)
-        field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
-
-        is_nullable = self._check_type(field_type, "null")
+        subschema = context[CONTEXT_ID]["schema"]["properties"][field_name]
+        field_type = subschema["type"]
+        is_nullable = self._is_nullable(subschema)
 
         if self._check_type(field_type, "string"):
             field_value = bare_value

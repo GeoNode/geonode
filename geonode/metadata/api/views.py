@@ -41,6 +41,7 @@ from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.base.i18n import get_localized_label
 from geonode.metadata.manager import metadata_manager
 from geonode.metadata.models import SparseField
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.metadata.multilang import utils as multi
 from geonode.people.utils import get_available_users
 from geonode.security.registry import permissions_registry
@@ -116,21 +117,26 @@ class MetadataViewSet(ViewSet):
                 # except Exception as e:
                 #     logger.warning(f"Can't parse JSON {request.data}: {e}")
                 errors = {}
-                try:
-                    errors = (
-                        metadata_manager.update_schema_instance(resource, request, lang)
-                        if request.method == "PUT"
-                        else metadata_manager.update_schema_instance_partial(resource, request.data, request.user, lang)
-                    )
-                    resource.refresh_from_db()
-                    resource.save()  # this is a ResourceBase and won't trigger the catalogue post_save
-                    update_csw_metadata(resource)
+                # One request is one change, performed by whoever sent it. The block encloses the
+                # try, so that what did get through is recorded even when some of it did not
+                with metadata_tracker(request.user):
+                    try:
+                        errors = (
+                            metadata_manager.update_schema_instance(resource, request, lang)
+                            if request.method == "PUT"
+                            else metadata_manager.update_schema_instance_partial(
+                                resource, request.data, request.user, lang
+                            )
+                        )
+                        resource.refresh_from_db()
+                        resource.save()  # this is a ResourceBase and won't trigger the catalogue post_save
+                        update_csw_metadata(resource)
 
-                except Exception as e:
-                    logger.warning(f"Error while updating schema instance: {e}")
-                    MetadataHandler._set_error(
-                        errors, [], MetadataHandler.localize_message({}, "metadata_error_save", {"exc": e})
-                    )
+                    except Exception as e:
+                        logger.warning(f"Error while updating schema instance: {e}")
+                        MetadataHandler._set_error(
+                            errors, [], MetadataHandler.localize_message({}, "metadata_error_save", {"exc": e})
+                        )
 
                 msg_t = (
                     ("m_metadata_update_error", "Some errors were found while updating the resource")

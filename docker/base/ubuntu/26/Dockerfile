@@ -40,7 +40,8 @@ RUN pip install uwsgi \
     && pip install pip --upgrade \
     && pip install wheel==0.38.1 \
     && pip install invoke==2.2.0 \
-    && pip install GDAL==3.12.2
+    && pip install GDAL==3.12.2 \
+    && pip install certifi --upgrade
 
 # Symlink for "invoke" so existing entrypoint.sh paths (/usr/local/bin/invoke) keep working
 RUN ln -s $(which invoke) /usr/local/bin/invoke

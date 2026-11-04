@@ -33,8 +33,10 @@ logger = logging.getLogger(__name__)
 
 
 class DynamicSearchFilter(SearchFilter):
+    # search_fields from the request are restricted to the view's allow-list
     def get_search_fields(self, view, request):
-        return request.GET.getlist("search_fields", [])
+        allowed = getattr(view, "search_fields", None) or []
+        return [f for f in request.GET.getlist("search_fields", []) if f in allowed]
 
 
 class ExtentFilter(BaseFilterBackend):

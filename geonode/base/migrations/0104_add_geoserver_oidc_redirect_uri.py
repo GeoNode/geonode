@@ -14,7 +14,7 @@ def add_oidc_redirect_uri(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("base", "0102_add_openid_scope_to_access_tokens"),
+        ("base", "0103_add_openid_scope_to_access_tokens"),
         ("oauth2_provider", "0001_initial"),
     ]
 

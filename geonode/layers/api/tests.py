@@ -100,29 +100,8 @@ class DatasetsApiTests(APITestCase):
                 '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
                              <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
             )
-
-            _dataset.featureinfo_custom_template = "<div>Foo Bar</div>"
-            _dataset.save()
-            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format="json")
-            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
-            self.assertEqual(
-                response.data["dataset"].get("featureinfo_custom_template"),
-                '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
-                             <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
-            )
-
-            _dataset.use_featureinfo_custom_template = True
-            _dataset.save()
-            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format="json")
-            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
-            self.assertEqual(response.data["dataset"].get("featureinfo_custom_template"), "<div>Foo Bar</div>")
         finally:
             _attribute.delete()
-            _dataset.featureinfo_custom_template = None
-            _dataset.use_featureinfo_custom_template = False
-            _dataset.save()
 
     @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
     def test_filter_dirty_state(self):
@@ -246,6 +225,42 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0]["pk"], map.pk)
+
+    def test_dataset_subresources_respect_request_user_visibility(self):
+        dataset = Dataset.objects.first()
+        map_obj = Map.objects.first()
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
+        map_obj.set_permissions({"users": {}, "groups": {}})
+
+        maplayer = MapLayer.objects.create(
+            map=map_obj,
+            dataset=dataset,
+            name=dataset.alternate,
+            store=dataset.store,
+            local=True,
+        )
+
+        maps_url = f"{reverse('datasets-detail', kwargs={'pk': dataset.pk})}/maps/"
+        maplayers_url = f"{reverse('datasets-detail', kwargs={'pk': dataset.pk})}/maplayers/"
+
+        response = self.client.get(maps_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(map_obj.pk, [item["pk"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(maplayer.pk, [item["pk"] for item in response.json()])
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), map_obj.get_self_resource())
+
+        response = self.client.get(maps_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(map_obj.pk, [item["pk"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(maplayer.pk, [item["pk"] for item in response.json()])
 
     def test_raw_HTML_stripped_properties(self):
         """

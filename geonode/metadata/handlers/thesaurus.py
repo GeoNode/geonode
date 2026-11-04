@@ -126,6 +126,12 @@ class TKeywordsHandler(MetadataHandler):
             "properties": thesauri,
         }
 
+        # minItems is not enough: it only constrains a thesaurus that is in the instance already.
+        # Same for tkeywords itself, hence the requiredness bubbling up
+        if mandatory_thesauri := [id for id, ct in collected_thesauri.items() if ct["card"]["minItems"] > 0]:
+            subschema["required"] = mandatory_thesauri  # the thesauri to be found inside tkeywords
+            subschema["geonode:required"] = True  # tkeywords itself, to be found in the resource
+
         # We are going to hide the tkeywords property if there's no thesaurus configured
         # We can't remove the property altogether, since hkeywords relies on tkeywords for positioning
         if not thesauri:

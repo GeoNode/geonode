@@ -48,10 +48,11 @@ def _get_param_value(_param, _input_value):
         _param_value = get_user_model().objects.get(username=_input_value)
     elif _param.annotation in (dict, list, tuple) and isinstance(_input_value, str):
         _param_value = _param.annotation(ast.literal_eval(_input_value))
-        for _key in ["user", "owner"]:
-            _username = _param_value.pop(_key, None)
-            if _username:
-                _param_value[_key] = get_user_model().objects.get(username=_username)
+        if isinstance(_param_value, dict):
+            for _key in ["user", "owner"]:
+                _username = _param_value.pop(_key, None)
+                if _username:
+                    _param_value[_key] = get_user_model().objects.get(username=_username)
     else:
         try:
 
@@ -150,8 +151,10 @@ def resouce_service_dispatcher(self, execution_id: str):
                                         status=ExecutionRequest.STATUS_FAILED,
                                         finished=datetime.now(),
                                         output_params={
-                                            "error": _(
-                                                f"Error occurred while executin the operation: '{_request.func_name}'"
+                                            "error": str(
+                                                _(
+                                                    f"Error occurred while executin the operation: '{_request.func_name}'"
+                                                )
                                             ),
                                             "exception": str(e),
                                         },

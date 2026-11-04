@@ -420,7 +420,7 @@ class BaseRemoteResourceHandler(BaseHandler):
             resource = resource.first()
 
             resolved_resource_manager = resource_manager_registry.get_for_instance(resource)
-            resource = resolved_resource_manager.update(resource.uuid, instance=resource)
+            resource = resolved_resource_manager.update(resource.uuid, instance=resource, user=_exec.user)
             resolved_resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=True)
             resource.refresh_from_db()
             return resource

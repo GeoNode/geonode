@@ -95,12 +95,14 @@ class FrequencySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key, "title": val} for key, val in dict(UPDATE_FREQUENCIES).items()]
+        MetadataHandler._add_oneof_null_option(subschema)
 
 
 class LanguageSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key, "title": val} for key, val in dict(ALL_LANGUAGES).items()]
+        MetadataHandler._add_oneof_null_option(subschema)
 
 
 class LicenseSubHandler(SubHandler):
@@ -132,6 +134,7 @@ class RestrictionsSubHandler(SubHandler):
             {"const": tc.identifier, "title": tc.identifier, "description": tc.description}
             for tc in RestrictionCodeType.objects.order_by("identifier")
         ]
+        MetadataHandler._add_oneof_null_option(subschema)
 
     @classmethod
     def serialize(cls, db_value):
@@ -151,6 +154,7 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
             {"const": tc.identifier, "title": tc.identifier, "description": tc.description}
             for tc in SpatialRepresentationType.objects.order_by("identifier")
         ]
+        MetadataHandler._add_oneof_null_option(subschema)
 
     @classmethod
     def serialize(cls, db_value):

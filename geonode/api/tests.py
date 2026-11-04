@@ -1390,6 +1390,131 @@ class AssetDeleteApiTests(GeoNodeBaseTestSupport):
         self.assertTrue(Asset.objects.filter(pk=self.asset1.pk).exists())
 
 
+class AssetGetApiTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.owner_user = get_user_model().objects.create_user(
+            username="asset_owner", email="owner@example.com", password="password123"
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="other_user", email="other@example.com", password="password123"
+        )
+        self.no_perm_user = get_user_model().objects.create_user(
+            username="no_perm_user", email="noperm@example.com", password="password123"
+        )
+
+        self.resource = ResourceBase.objects.create(
+            title="Test Resource for Asset Retrieval",
+            owner=self.owner_user,
+            uuid=str(uuid4()),
+        )
+
+        self.resource.set_permissions(
+            {
+                "users": {
+                    self.owner_user.username: ["view_resourcebase", "change_resourcebase"],
+                    self.other_user.username: ["view_resourcebase"],
+                },
+                "groups": {
+                    "anonymous": ["view_resourcebase"],
+                },
+            }
+        )
+
+        self.asset_owner = Asset.objects.create(
+            title="Owner Asset.pdf",
+            description="Created by owner",
+            type="file",
+            owner=self.owner_user,
+        )
+        self.owner_link = Link.objects.create(
+            resource=self.resource,
+            asset=self.asset_owner,
+            name=self.asset_owner.title,
+            link_type="uploaded",
+            extension="pdf",
+            url="http://example.com/owner_asset.pdf",
+        )
+
+        self.asset_admin = Asset.objects.create(
+            title="Admin Asset.png",
+            description="Created by admin",
+            type="image",
+            owner=self.admin_user,
+        )
+        self.admin_link = Link.objects.create(
+            resource=self.resource,
+            asset=self.asset_admin,
+            name=self.asset_admin.title,
+            link_type="image",
+            extension="png",
+            url="http://example.com/admin_asset.png",
+        )
+
+        self.url = reverse("base-resources-asset", kwargs={"pk": self.resource.pk})
+
+    def assert_asset_response(self, response):
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 2)
+
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.asset_owner.id, self.asset_admin.id})
+
+        returned_links = {item["urls"]["link"] for item in response.data}
+        self.assertEqual(returned_links, {self.owner_link.url, self.admin_link.url})
+
+        for item in response.data:
+            self.assertIn("id", item)
+            self.assertIn("title", item)
+            self.assertIn("description", item)
+            self.assertIn("type", item)
+            self.assertIn("created", item)
+            self.assertIn("deletable", item)
+            self.assertIn("urls", item)
+            self.assertIn("download_url", item["urls"])
+            self.assertIn("link", item["urls"])
+
+    def test_admin_can_get_resource_assets(self):
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(self.url)
+
+        self.assert_asset_response(response)
+
+    def test_resource_viewer_can_get_resource_assets(self):
+        self.client.force_login(self.other_user)
+
+        response = self.client.get(self.url)
+
+        self.assert_asset_response(response)
+
+    def test_anonymous_with_view_permission_can_get_resource_assets(self):
+        self.client.logout()
+
+        response = self.client.get(self.url)
+
+        self.assert_asset_response(response)
+
+    def test_user_without_view_permission_cannot_get_resource_assets(self):
+        self.resource.set_permissions(
+            {
+                "users": {
+                    self.owner_user.username: ["view_resourcebase", "change_resourcebase"],
+                },
+                "groups": {},
+            }
+        )
+
+        self.client.force_login(self.no_perm_user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 403)
+
+
 class RouterUrlpatternsCompletenessTest(SimpleTestCase):
     """Guards the shared /api/v2/ router against app-loading-order regressions."""
 

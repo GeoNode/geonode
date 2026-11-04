@@ -310,7 +310,7 @@ def _datasets_locations(
             else:
                 bbox = bbox_utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
-        for maplayer in instance.maplayers.filter(visibility=True).order_by("order").iterator():
+        for maplayer in instance.maplayers.filter(visibility=True).order_by("order", "pk").iterator():
             if maplayer.dataset and maplayer.dataset.sourcetype == SOURCE_TYPE_REMOTE and not maplayer.dataset.ows_url:
                 logger.warning(
                     "Incorrectly defined remote dataset encountered (no OWS URL defined)."

@@ -43,6 +43,8 @@ from geonode.security.registry import permissions_registry
 from geonode.people.hashers import SHA1PasswordHasher
 from geonode.people.hashers import PBKDF2SHA1WrappedSHA1PasswordHasher
 from geonode.base.middleware import ProfileLanguageMiddleware
+from guardian.shortcuts import assign_perm
+from geonode.documents.models import Document
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
@@ -222,6 +224,70 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         for layer in self.layers:
             perm_spec = permissions_registry.get_perms(instance=layer)
             self.assertTrue(user not in perm_spec["users"])
+
+    def test_user_subresources_respect_request_user_visibility(self):
+        caller = get_user_model().objects.create_user(username="caller", password="caller")
+        target = get_user_model().objects.create_user(username="target", password="target")
+
+        public_group, _ = Group.objects.get_or_create(name="user-subresources-public-group")
+        public_profile, _ = GroupProfile.objects.get_or_create(
+            group=public_group,
+            defaults={
+                "slug": "user-subresources-public-group",
+                "title": "User Subresources Public Group",
+                "access": "public",
+            },
+        )
+        public_profile.access = "public"
+        public_profile.save()
+        GroupMember.objects.get_or_create(group=public_profile, user=caller)
+        GroupMember.objects.get_or_create(group=public_profile, user=target)
+
+        private_group, _ = Group.objects.get_or_create(name="user-subresources-private-group")
+        private_profile, _ = GroupProfile.objects.get_or_create(
+            group=private_group,
+            defaults={
+                "slug": "user-subresources-private-group",
+                "title": "User Subresources Private Group",
+                "access": "private",
+            },
+        )
+        private_profile.access = "private"
+        private_profile.save()
+        GroupMember.objects.get_or_create(group=private_profile, user=target)
+
+        resource = Document.objects.create(
+            title="Target Private Document",
+            owner=target,
+            resource_type="document",
+        )
+        resource.set_permissions({"users": {}, "groups": {}})
+        assign_perm("base.view_resourcebase", target, resource.get_self_resource())
+
+        self.client.login(username="caller", password="caller")
+
+        resources_url = f"{reverse('users-list')}/{target.pk}/resources/"
+        groups_url = f"{reverse('users-list')}/{target.pk}/groups/"
+
+        response = self.client.get(resources_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(str(resource.uuid), [item["uuid"] for item in response.json()["resources"]])
+
+        response = self.client.get(groups_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(private_profile.pk, [item["pk"] for item in response.json()])
+
+        assign_perm("base.view_resourcebase", caller, resource.get_self_resource())
+        GroupMember.objects.get_or_create(group=private_profile, user=caller)
+        private_group.user_set.add(caller)
+
+        response = self.client.get(resources_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(str(resource.uuid), [item["uuid"] for item in response.json()["resources"]])
+
+        response = self.client.get(groups_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(private_profile.pk, [item["pk"] for item in response.json()])
 
     def test_forgot_username(self):
         url = reverse("forgot_username")

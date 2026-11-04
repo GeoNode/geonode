@@ -53,6 +53,7 @@ from geonode.utils import (
     _get_basic_auth_info,
     http_client,
     get_headers,
+    url_origin,
 )
 from geonode.geoserver.signals import geoserver_post_save_local
 from .helpers import (
@@ -255,6 +256,13 @@ def geoserver_proxy(request, proxy_path, downstream_path, workspace=None, layern
     raw_url, headers, access_token, downstream_path = check_geoserver_access(
         request, proxy_path, downstream_path, workspace=workspace, layername=layername, allowed_hosts=allowed_hosts
     )
+    # /gs/ only proxies to the internal GeoServer
+    if url_origin(raw_url) != url_origin(ogc_server_settings.LOCATION):
+        return HttpResponse(
+            "The url provided to the proxy service is not a valid hostname.",
+            status=403,
+            content_type="text/plain",
+        )
     url = urlsplit(raw_url)
 
     if re.match(r"^.*(?<!/rest/)/rest/", url.path) and request.method in ("POST", "PUT", "DELETE"):

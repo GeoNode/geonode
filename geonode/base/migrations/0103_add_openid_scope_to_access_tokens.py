@@ -15,7 +15,7 @@ def add_openid_scope(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("base", "0101_remove_source_type_copyremote"),
+        ("base", "0102_alter_resourcebase_options"),
         ("oauth2_provider", "0001_initial"),
     ]
 

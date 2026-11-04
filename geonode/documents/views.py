@@ -233,6 +233,7 @@ class DocumentUploadView(CreateView):
         resolved_resource_manager.update(
             self.object.uuid,
             instance=self.object,
+            user=self.request.user,
             keywords=keywords,
             regions=regions,
             vals=dict(

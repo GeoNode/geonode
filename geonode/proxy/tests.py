@@ -28,7 +28,7 @@ import io
 import zipfile
 from threading import Event, Thread
 
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
 from django.test import TestCase
@@ -54,6 +54,7 @@ from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.proxy.utils import ProxyUrlsRegistry
+from geonode.geoserver.helpers import ogc_server_settings
 
 TEST_DOMAIN = ".github.com"
 TEST_URL = f"https://help{TEST_DOMAIN}/"
@@ -71,6 +72,17 @@ class ProxyTest(TestCase):
     def setUp(self):
         super().setUp()
         self.admin = get_user_model().objects.get(username="admin")
+
+    def tearDown(self):
+        # some tests replace the http_client.request singleton without restoring it;
+        # drop any instance override so the next test sees the real method
+        import geonode.proxy.views
+
+        try:
+            del geonode.proxy.views.http_client.request
+        except AttributeError:
+            pass
+        super().tearDown()
 
     def test_register_host_lazy_initializes_registry(self):
         registry = ProxyUrlsRegistry()
@@ -251,6 +263,57 @@ class ProxyTest(TestCase):
         self.assertTrue(expected_subset.items() <= dict(response.headers.copy()).items())
 
     @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    @patch(
+        "geonode.proxy.views.proxy_urls_registry",
+        ProxyUrlsRegistry().set(["example.org", urlsplit(settings.SITEURL).hostname]),
+    )
+    def test_proxy_forwards_cookies_only_to_local_hosts(self, _mock_is_safe_url):
+        import geonode.proxy.views
+
+        class Response:
+            status_code = 200
+            content = "Hello World"
+            headers = {"Content-Type": "text/plain"}
+
+        self.client.login(username="admin", password="admin")
+
+        with patch.object(geonode.proxy.views.http_client, "request", return_value=(Response(), None)) as request_mock:
+            self.client.get(f"{self.proxy_url}?url=http://example.org/index.html")
+            headers = request_mock.call_args.kwargs["headers"]
+            self.assertNotIn("Cookie", headers)
+            self.assertNotIn("X-CSRFToken", headers)
+
+            sessionid = self.client.cookies[settings.SESSION_COOKIE_NAME].value
+            self.client.get(f"{self.proxy_url}?url={settings.SITEURL}index.html")
+            headers = request_mock.call_args.kwargs["headers"]
+            self.assertIn(f"{settings.SESSION_COOKIE_NAME}={sessionid}", headers["Cookie"])
+
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    @patch(
+        "geonode.proxy.views.proxy_urls_registry",
+        ProxyUrlsRegistry().set(["example.org", urlsplit(settings.SITEURL).hostname]),
+    )
+    def test_proxy_forwards_access_token_only_to_local_hosts(self, _mock_is_safe_url):
+        import geonode.proxy.views
+
+        class Response:
+            status_code = 200
+            content = "Hello World"
+            headers = {"Content-Type": "text/plain"}
+
+        with patch.object(geonode.proxy.views.http_client, "request", return_value=(Response(), None)) as request_mock:
+            self.client.get(
+                f"{self.proxy_url}?url=http://example.org/index.html", HTTP_AUTHORIZATION="Bearer some-token"
+            )
+            self.assertNotIn("access_token", request_mock.call_args.args[0])
+            self.assertNotIn("Authorization", request_mock.call_args.kwargs["headers"])
+
+            self.client.get(
+                f"{self.proxy_url}?url={settings.SITEURL}index.html", HTTP_AUTHORIZATION="Bearer some-token"
+            )
+            self.assertIn("access_token=some-token", request_mock.call_args.args[0])
+
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
     def test_proxy_url_forgery(self, _mock_is_safe_url):
         import geonode.proxy.views
         from urllib.parse import urlsplit
@@ -295,13 +358,25 @@ class ProxyTest(TestCase):
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 403)
 
-        # Legit requests using the local host (SITEURL)
+        # Backslash URLs are rejected even when they resolve to the local host (SITEURL):
+        # urllib.parse and urllib3 disagree on their host
         url = f"/\\@%23{urlsplit(settings.SITEURL).hostname}"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
+
+        url = f"{settings.SITEURL}\\@%23{urlsplit(settings.SITEURL).hostname}"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
+
+        # Legit requests using the local host (SITEURL)
+        url = "/index.html"
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 200)
 
-        url = f"{settings.SITEURL}\\@%23{urlsplit(settings.SITEURL).hostname}"
+        url = f"{settings.SITEURL}index.html"
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 200)
@@ -330,6 +405,270 @@ class ProxyTest(TestCase):
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 403)
+
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    def test_rejects_ambiguous_proxy_urls(self):
+        """URLs whose host differs between urllib.parse and urllib3 (backslash/CRLF/
+        userinfo) are rejected before any request is made."""
+        import geonode.proxy.views
+
+        urls = [
+            "http://127.0.0.1\\@spatialreference.org/x",  # backslash authority split
+            "http://127.0.0.1:8080\\@spatialreference.org/x",  # backslash + port
+            "http://other%0d%0a@spatialreference.org/x",  # CRLF in authority
+            "http://user:pass@spatialreference.org/x",  # userinfo
+        ]
+        request_mock = MagicMock()
+        with patch.object(geonode.proxy.views.http_client, "request", request_mock):
+            for url in urls:
+                with self.subTest(url=url):
+                    response = self.client.get(f"{self.proxy_url}?url={url}")
+                    self.assertEqual(response.status_code, 403)
+        request_mock.assert_not_called()
+
+    @staticmethod
+    def _host_aware_getaddrinfo(public_hosts):
+        """getaddrinfo mock: named public hosts resolve public, everything else (incl.
+        literal loopback IPs) passes through unchanged so is_safe_url blocks it."""
+
+        def _resolve(host, *a, **k):
+            ip = "93.184.216.34" if host in public_hosts else host
+            return [(None, None, None, None, (ip, 0))]
+
+        return _resolve
+
+    @staticmethod
+    def _response(request, status, location=None, content=b""):
+        import requests
+
+        resp = requests.models.Response()
+        resp.status_code = status
+        if location:
+            resp.headers["Location"] = location
+        resp.headers["Content-Type"] = "text/plain"
+        resp.url = request.url
+        resp.request = request
+        resp._content = content
+        resp._content_consumed = True
+        return resp
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_redirect_to_internal_host_is_blocked(self, mock_dns):
+        """A 3xx from an allow-listed public host that points at an internal host is
+        rejected at that hop; the internal host is never requested."""
+        import requests
+
+        mock_dns.side_effect = self._host_aware_getaddrinfo({"spatialreference.org"})
+        requested = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            requested.append(request.url)
+            resp = requests.models.Response()
+            resp.status_code = 302
+            resp.headers["Location"] = "http://127.0.0.1/internal"
+            resp.url = request.url
+            resp.request = request
+            resp._content = b"INTERNAL"
+            resp._content_consumed = True
+            return resp
+
+        with patch.object(requests.adapters.HTTPAdapter, "send", fake_send):
+            response = self.client.get(f"{self.proxy_url}?url=http://spatialreference.org/x")
+
+        # the internal hop is blocked -> request fails (generic 500), internal content never returned
+        self.assertEqual(response.status_code, 500)
+        self.assertNotIn(b"INTERNAL", response.content)
+        self.assertTrue(all("127.0.0.1" not in u for u in requested))
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch(
+        "geonode.proxy.views.proxy_urls_registry",
+        ProxyUrlsRegistry().set(["spatialreference.org", "nominatim.openstreetmap.org"]),
+    )
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_redirect_to_public_host_is_followed(self, mock_dns):
+        """Redirect-following is preserved: a public allow-listed host that 302s to another
+        public allow-listed host is followed to the final 200."""
+        import requests
+
+        mock_dns.side_effect = self._host_aware_getaddrinfo({"spatialreference.org", "nominatim.openstreetmap.org"})
+        requested = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            requested.append(request.url)
+            resp = requests.models.Response()
+            resp.url = request.url
+            resp.request = request
+            resp._content_consumed = True
+            if "nominatim.openstreetmap.org" in request.url:
+                resp.status_code = 200
+                resp.headers["Content-Type"] = "text/plain"
+                resp._content = b"FINAL OK"
+            else:
+                resp.status_code = 302
+                resp.headers["Location"] = "http://nominatim.openstreetmap.org/final"
+                resp._content = b""
+            return resp
+
+        with patch.object(requests.adapters.HTTPAdapter, "send", fake_send):
+            response = self.client.get(f"{self.proxy_url}?url=http://spatialreference.org/x")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"FINAL OK", response.content)
+        self.assertTrue(any("nominatim.openstreetmap.org" in u for u in requested))
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_redirect_to_not_allowlisted_host_is_blocked(self, mock_dns):
+        """A redirect is held to the proxy allow-list too: a public host that the proxy would
+        refuse directly is not reachable through a 3xx from an allow-listed one."""
+        import requests
+
+        mock_dns.side_effect = self._host_aware_getaddrinfo({"spatialreference.org", "nominatim.openstreetmap.org"})
+        requested = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            requested.append(request.url)
+            return self._response(request, 302, location="http://nominatim.openstreetmap.org/final")
+
+        with patch.object(requests.adapters.HTTPAdapter, "send", fake_send):
+            response = self.client.get(f"{self.proxy_url}?url=http://spatialreference.org/x")
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(requested, ["http://spatialreference.org/x"])
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_redirect_to_ambiguous_url_is_blocked(self, mock_dns):
+        """Redirect targets get the same URL parsing checks as the requested URL."""
+        import requests
+
+        mock_dns.side_effect = self._host_aware_getaddrinfo({"spatialreference.org"})
+        for location in (
+            "http://127.0.0.1\\@spatialreference.org/x",
+            "http://user:pass@spatialreference.org/x",
+            "ftp://spatialreference.org/x",
+        ):
+            requested = []
+
+            def fake_send(adapter_self, request, **kwargs):
+                requested.append(request.url)
+                return self._response(request, 302, location=location)
+
+            with self.subTest(location=location):
+                with patch.object(requests.adapters.HTTPAdapter, "send", fake_send):
+                    response = self.client.get(f"{self.proxy_url}?url=http://spatialreference.org/x")
+                self.assertEqual(response.status_code, 500)
+                self.assertEqual(requested, ["http://spatialreference.org/x"])
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    def test_siteurl_geoserver_rewrite_redirects(self):
+        """SITEURL/geoserver URLs are sent to the internal GeoServer (as before) and may only
+        be redirected within GeoServer."""
+        import requests
+
+        site = urlsplit(settings.SITEURL)
+        location = ogc_server_settings.LOCATION
+        url = f"{settings.SITEURL}geoserver/ows?service=WMS&request=GetCapabilities"
+        for redirect_to, status in (
+            (f"{location}wms?request=GetCapabilities", 200),
+            ("http://spatialreference.org/", 500),
+        ):
+            requested = []
+
+            def fake_send(adapter_self, request, **kwargs):
+                requested.append(request.url)
+                if len(requested) == 1:
+                    return self._response(request, 302, location=redirect_to)
+                return self._response(request, 200, content=b"CAPS")
+
+            with self.subTest(redirect_to=redirect_to):
+                with (
+                    override_settings(SAFE_URL_TRUSTED_HOSTS=[f"{site.hostname}:{site.port or 80}"]),
+                    patch.object(requests.adapters.HTTPAdapter, "send", fake_send),
+                ):
+                    response = self.client.get(self.proxy_url, {"url": url})
+                self.assertEqual(response.status_code, status)
+                self.assertTrue(requested[0].startswith(location))
+                self.assertTrue(all(u.startswith(location) for u in requested))
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True, PROXY_MAX_REDIRECTS=2)
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_redirect_chain_is_bounded(self, mock_dns):
+        """A redirect chain longer than PROXY_MAX_REDIRECTS is stopped (TooManyRedirects ->
+        generic 500), it must not loop forever."""
+        import requests
+
+        mock_dns.side_effect = self._host_aware_getaddrinfo({"spatialreference.org"})
+        hops = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            hops.append(request.url)
+            resp = requests.models.Response()
+            resp.status_code = 302
+            resp.headers["Location"] = f"http://spatialreference.org/hop{len(hops)}"
+            resp.url = request.url
+            resp.request = request
+            resp._content = b""
+            resp._content_consumed = True
+            return resp
+
+        with patch.object(requests.adapters.HTTPAdapter, "send", fake_send):
+            response = self.client.get(f"{self.proxy_url}?url=http://spatialreference.org/x")
+
+        self.assertEqual(response.status_code, 500)
+        # bounded: initial request + at most PROXY_MAX_REDIRECTS follows
+        self.assertLessEqual(len(hops), 3)
+
+    @patch("geonode.proxy.views.is_safe_url", return_value=True)
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    def test_allows_plain_allowlisted_host(self, _mock_is_safe_url):
+        """Regression: a plain allow-listed URL still proxies."""
+        import geonode.proxy.views
+
+        class Response:
+            status_code = 200
+            content = b"OK"
+            headers = {"Content-Type": "text/plain"}
+
+        request_mock = MagicMock(return_value=(Response(), b"OK"))
+        with patch.object(geonode.proxy.views.http_client, "request", request_mock):
+            response = self.client.get(f"{self.proxy_url}?url=http://spatialreference.org/")
+        self.assertEqual(response.status_code, 200)
+        request_mock.assert_called_once()
+
+    def test_parse_safe_proxy_url(self):
+        from geonode.utils import parse_safe_proxy_url
+
+        u = parse_safe_proxy_url("http://spatialreference.org/x")
+        self.assertEqual(u.host, "spatialreference.org")
+        self.assertIsNone(u.auth)
+
+        bad_urls = [
+            "http://127.0.0.1\\@spatialreference.org/x",  # backslash
+            "http://other\r\n@spatialreference.org/x",  # control chars
+            "http://user:pass@spatialreference.org/x",  # userinfo
+            "ftp://spatialreference.org/x",  # scheme
+            "spatialreference.org/x",  # missing scheme/host
+        ]
+        for bad in bad_urls:
+            with self.subTest(url=bad):
+                with self.assertRaises(ValueError):
+                    parse_safe_proxy_url(bad)
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.utils.socket.getaddrinfo")
+    def test_is_safe_url_rejects_backslash_userinfo_to_loopback(self, mock_dns):
+        from geonode.utils import is_safe_url
+
+        mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
+        self.assertFalse(is_safe_url("http://127.0.0.1\\@example.com/"))
 
 
 class DownloadResourceTestCase(TestCase):
