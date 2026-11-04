@@ -135,8 +135,6 @@ dependencies = [
     "requests-toolbelt==1.0.0",
     "flake8==7.3.0",
     "black==26.10.1",
-    "pytest==9.0.3",
-    "pytest-django==4.14.0",
     "pixelmatch==0.3.0",
     "factory-boy==3.3.0",
     "flaky==3.8.1",
@@ -150,7 +148,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest==9.0.3",
     "flake8==7.3.0",
     "black==26.10.1",
     "coverage==7.16.1",
@@ -190,9 +187,3 @@ exclude = '''
   | node_modules
 )/
 '''
-
-
-
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "geonode.settings"
-python_files = "tests.py test_*.py *_tests.py"
