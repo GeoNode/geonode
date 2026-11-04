@@ -113,7 +113,7 @@ urlpatterns = [
     ),
     # OAuth2/OIDC Provider
     # Overrides the stock introspect endpoint with one that also returns `groups`,
-    # needed by GeoServer's opaque-token role resolution. 
+    # needed by GeoServer's opaque-token role resolution.
     re_path(r"^o/introspect/$", GeoNodeIntrospectTokenView.as_view(), name="introspect"),
     re_path(r"^o/", include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace="oauth2_provider")),
     re_path(r"^api/o/v4/tokeninfo", verify_token, name="tokeninfo"),
