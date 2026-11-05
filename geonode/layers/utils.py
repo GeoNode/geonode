@@ -393,10 +393,13 @@ def download_from_wfs(resource, download_format, user):
         "outputFormat": _wfs_format,
     }
 
-    if not user.is_anonymous:
-        _wfs_params["access_token"] = get_or_create_token(user)
-
     _wfs_url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?{urlencode(_wfs_params)}"
 
+    _headers = {}
+    if not user.is_anonymous:
+        token = get_or_create_token(user)
+        if token:
+            _headers["Authorization"] = f"Bearer {token}"
+
     client = HttpClient()
-    return client.request(url=_wfs_url, method="get")
+    return client.request(url=_wfs_url, method="get", headers=_headers)
