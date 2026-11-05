@@ -27,3 +27,17 @@ The `Permissions` can also be changed for multiple datasets at once through the 
 ![](img/set_datasets_permissions_action.png){ align=center }
 
 By clicking on a dataset link, a detail page opens that allows you to modify the permissions for the selected resource.
+
+## Validating the metadata
+
+Select one or more datasets and choose the `Validate the metadata` action to check them against the metadata `jsonschema`.
+
+![](img/admin-validate-metadata-action.png){ align=center }
+
+The outcome is reported as admin messages: a summary line, one line per invalid dataset describing its errors, and a warning for any field the schema itself does not let be left empty. To keep the page readable, only the first messages are shown when many datasets are selected.
+
+![](img/admin-validate-metadata-result.png){ align=center }
+
+The `Download validation report` action runs the same validation but, instead of posting admin messages, returns the full result as a downloadable JSON file, with nothing capped or left out. Use it whenever the selection is too large for the `Validate the metadata` messages to show everything, or when the report needs to be kept or processed afterwards.
+
+Both actions are also available on the `Maps`, `Documents` and `Geo Apps` admin pages, and from the command line through the `validate_metadata` management command, which also supports CSV output and validating against an arbitrary schema or instance file.
