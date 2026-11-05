@@ -370,6 +370,7 @@ class Command(BaseCommand):
                     datastore["HOST"],
                     datastore["PASSWORD"],
                     gs_data_folder,
+                    utils.get_db_schema(datastore),
                 )
 
     def dump_geoserver_externals(self, config, settings, target_folder):
