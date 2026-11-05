@@ -152,10 +152,9 @@ class GPKGFileHandler(BaseVectorFileHandler):
         pass
 
     def _select_valid_layers(self, all_layers, **kwargs):
-        layers = super()._select_valid_layers(all_layers=all_layers, **kwargs)
         if execution_id := kwargs.get("execution_id", None):
             exec_obj = orchestrator.get_execution_object(execution_id)
             if exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
-                if len(layers) > 1:
+                if len(super()._select_valid_layers(all_layers=all_layers)) > 1:
                     raise InvalidGeopackageException("For Upsert and Replace, only one layer is allowed in the GPKG")
-        return layers
+        return super()._select_valid_layers(all_layers=all_layers, **kwargs)
