@@ -34,7 +34,6 @@ from geonode.base.auth import (
     is_ipaddress_in_whitelist,
 )
 
-
 # make sure login_url can be mapped to redirection URL and will match request.path
 login_url = settings.LOGIN_URL.replace(settings.SITEURL.rstrip("/"), "")
 if not login_url.startswith("/"):

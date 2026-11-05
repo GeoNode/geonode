@@ -40,7 +40,6 @@ from geonode.base.admin import set_user_and_group_dataset_permission
 from .models import Profile
 from .forms import ProfileCreationForm, ProfileChangeForm
 
-
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 

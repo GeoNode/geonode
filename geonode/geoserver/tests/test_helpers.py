@@ -56,7 +56,6 @@ from geonode.services.models import Service
 from geonode.services.enumerations import REST_MAP, INDEXED, WMS
 from unittest.mock import patch, Mock
 
-
 logger = logging.getLogger(__name__)
 
 

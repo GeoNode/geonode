@@ -26,7 +26,6 @@ from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
 from geonode.utils import assert_safe_xml, UnsafeXMLError
 
-
 logger = logging.getLogger(__name__)
 
 

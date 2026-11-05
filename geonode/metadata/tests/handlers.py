@@ -22,7 +22,6 @@ import logging
 
 from geonode.metadata.handlers.abstract import MetadataHandler
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -35,7 +35,6 @@ from geonode.upload.handlers.empty_dataset.serializer import EmptyDatasetSeriali
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.utils import DEFAULT_PK_COLUMN_NAME
 
-
 logger = logging.getLogger("importer")
 
 BBOX = [-180, -90, 180, 90]

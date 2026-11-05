@@ -20,7 +20,6 @@
 from geonode.upload.validation.base import ValidationConfigProvider
 from geonode.upload.validation.registry import FileValidationConfigRegistry
 
-
 __all__ = [
     "FileValidationConfigRegistry",
     "ValidationConfigProvider",
