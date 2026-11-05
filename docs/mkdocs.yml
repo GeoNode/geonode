@@ -93,6 +93,7 @@ nav:
       - Batch Sync Permissions: "admin/management_commands/batch_sync_perms.md"
       - Delete Certain GeoNode Resources: "admin/management_commands/delete_gnode_resources.md"
       - Async execution over http: "admin/management_commands/async_execution_http.md"
+      - Validate Resource Metadata: "admin/management_commands/validate_metadata.md"
     - GeoNode Async Signals: "admin/async.md"
     - Harvesting resources from remote services:
       - Overview: "admin/harvesting/harvesting_overview.md"
