@@ -35,7 +35,7 @@ dependencies = [
     "urllib3==2.8.0",
     "python-slugify==8.0.4",
     "decorator==5.1.1",
-    "celery==5.6.3",
+    "celery==5.7.0",
     "Deprecated==1.2.14",
     "jsonschema==4.22.0",
     "rdflib==6.3.2",
