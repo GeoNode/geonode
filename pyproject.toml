@@ -27,7 +27,7 @@ dependencies = [
     "Pillow==13.0.0",
     "lxml==6.1.3",
     "psycopg2==2.9.13",
-    "Django==5.2.18",
+    "Django==5.2.19",
 
     # Other
     "beautifulsoup4==4.12.3",
@@ -35,7 +35,7 @@ dependencies = [
     "urllib3==2.8.0",
     "python-slugify==8.0.4",
     "decorator==5.1.1",
-    "celery==5.6.3",
+    "celery==5.7.0",
     "Deprecated==1.2.14",
     "jsonschema==4.22.0",
     "rdflib==6.3.2",
@@ -60,7 +60,7 @@ dependencies = [
     "django-uuid-upload-path==1.0.0",
     "django-widget-tweaks==1.5.0",
     "django-sequences==3.0",
-    "oauthlib==4.0.0",
+    "oauthlib==4.0.1",
     "pyjwt==2.15.1",
     "redis==8.1.0",
 
@@ -68,7 +68,7 @@ dependencies = [
     "pycsw @ https://github.com/geopython/pycsw/archive/refs/tags/3.0.0-beta1.zip",
     "pyproj<3.8.0",
     "OWSLib==0.34.1",
-    "SQLAlchemy==2.0.54",
+    "SQLAlchemy==2.0.57",
     "Shapely==2.1.2",
     "mercantile==1.2.1",
     "numpy==1.26.*",
@@ -111,7 +111,7 @@ dependencies = [
     "django-bootstrap3-datetimepicker-2==2.8.3",
     # storage manager dependencies
     "django-storages==1.14.3",
-    "boto3==1.43.97",
+    "boto3==1.43.125",
     # Django Caches
     "whitenoise==6.6.0",
     # Contribs
