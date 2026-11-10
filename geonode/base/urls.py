@@ -28,7 +28,6 @@ from .views import (
     LinkedResourcesAutocomplete,
 )
 
-
 urlpatterns = [
     re_path(
         r"^autocomplete_response/$",

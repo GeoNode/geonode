@@ -21,7 +21,6 @@ import logging
 import xml.etree.ElementTree as ET
 from geonode.upload.api.exceptions import ImportException
 
-
 logger = logging.getLogger("importer")
 
 BBOX = [-180, -90, 180, 90]

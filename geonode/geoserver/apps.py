@@ -23,7 +23,6 @@ from django.utils.translation import gettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
 from django.apps import AppConfig
 
-
 logger = logging.getLogger(__name__)
 
 

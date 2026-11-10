@@ -27,7 +27,6 @@ from geonode.base.i18n import i18nCache
 from geonode.indexing.manager import TSVectorIndexManager
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-
 logger = logging.getLogger(__name__)
 
 
