@@ -29,7 +29,6 @@ class DataItem(models.Model):
     Not a ResourceBase: the catalog will point at it, it is not part of the catalog.
     """
 
-    # every discovery upsert draws a sequence value, also for the rows already known
     id = models.BigAutoField(primary_key=True)
     # soft reference to the registry by key, set once at creation: an uninstalled provider leaves the item unreadable
     source_provider = models.CharField(max_length=64, db_index=True)
@@ -37,11 +36,8 @@ class DataItem(models.Model):
     # deleting a connection drops its items: only GeoNode rows, never the upstream data
     auth_config = models.ForeignKey(AuthConfig, on_delete=models.CASCADE, related_name="data_items")
     title = models.TextField(blank=True, default="")
-    # cached at discovery, so that listing the items never reaches the provider
+    # read from the source when the item is adopted, so that listing the items never reaches the provider
     details = models.JSONField(blank=True, default=dict)
-    # gone upstream at the last discovery: kept, the catalog may still point at it
-    is_available = models.BooleanField(default=True)
-    last_seen = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

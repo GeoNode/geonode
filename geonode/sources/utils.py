@@ -16,10 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import dataclasses
 import typing
-
-from django.db import transaction
-from django.utils import timezone
 
 from geonode.security.models import AuthConfig
 from geonode.sources.models import DataItem
@@ -40,45 +38,39 @@ def public_payload(auth_config: AuthConfig) -> typing.Dict:
     return {_key: _value for _key, _value in auth_config.payload.items() if _key not in _secrets}
 
 
-class EmptyDiscoveryError(Exception):
-    """The connection exposes nothing while it still has available items"""
+class UnknownEntryError(Exception):
+    """Some of the requested uris are not exposed by the connection"""
 
 
-def discover_connection(auth_config: AuthConfig, user) -> typing.Dict[str, int]:
-    """
-    Store every entry of the connection as a data item, refreshing the cached ones.
-    Items gone upstream are flagged as not available instead of being deleted
-    """
+def browse_connection(auth_config: AuthConfig) -> typing.List[typing.Dict]:
+    """List what the connection exposes, live: nothing is stored"""
     _provider = source_provider_registry.get(auth_config.type)
-    # keyed by uri: the upsert fails if the same row is touched twice in one statement
+    _adopted = set(DataItem.objects.filter(auth_config=auth_config).values_list("uri", flat=True))
+    return [
+        {**dataclasses.asdict(_entry), "adopted": _entry.uri in _adopted} for _entry in _provider.browse(auth_config)
+    ]
+
+
+def adopt_entries(auth_config: AuthConfig, uris: typing.List[str], user) -> typing.List[DataItem]:
+    """Store the given entries of the connection as data items"""
+    _provider = source_provider_registry.get(auth_config.type)
+    # title and details come from the source, never from the caller
     _entries = {_entry.uri: _entry for _entry in _provider.browse(auth_config)}
-    # an empty answer is more likely a wrong parameter (e.g. a mistyped schema) than every table dropped at once
-    if not _entries and DataItem.objects.filter(auth_config=auth_config, is_available=True).exists():
-        raise EmptyDiscoveryError()
-    _known = set(DataItem.objects.filter(auth_config=auth_config).values_list("uri", flat=True))
-    _now = timezone.now()
-    with transaction.atomic():
-        DataItem.objects.bulk_create(
-            [
-                DataItem(
-                    source_provider=_provider.key,
-                    uri=_entry.uri,
-                    auth_config=auth_config,
-                    title=_entry.title,
-                    details=_entry.details,
-                    is_available=True,
-                    last_seen=_now,
-                    created_by=user,
-                )
-                for _entry in _entries.values()
-            ],
-            update_conflicts=True,
-            unique_fields=["auth_config", "uri"],
-            update_fields=["title", "details", "is_available", "last_seen", "updated"],
-        )
-        _missing = (
-            DataItem.objects.filter(auth_config=auth_config, is_available=True)
-            .exclude(last_seen=_now)
-            .update(is_available=False)
-        )
-    return {"found": len(_entries), "created": len(_entries.keys() - _known), "missing": _missing}
+    if set(uris) - set(_entries):
+        raise UnknownEntryError()
+    # adopting twice is a no-op: the unique constraint skips the known items
+    DataItem.objects.bulk_create(
+        [
+            DataItem(
+                source_provider=_provider.key,
+                uri=_uri,
+                auth_config=auth_config,
+                title=_entries[_uri].title,
+                details=_entries[_uri].details,
+                created_by=user,
+            )
+            for _uri in set(uris)
+        ],
+        ignore_conflicts=True,
+    )
+    return list(DataItem.objects.filter(auth_config=auth_config, uri__in=uris).order_by("title", "id"))

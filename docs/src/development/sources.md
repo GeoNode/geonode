@@ -11,9 +11,11 @@ The `geonode.sources` app lets administrators connect GeoNode to external data s
 
 **Connection**: the parameters needed to reach one source. A connection is an `AuthConfig` (the existing GeoNode credential store) whose `type` is the provider key, and whose encrypted payload holds the connection parameters. No secret is ever stored elsewhere.
 
-**Data item**: a uniform handle on one thing a provider can read, e.g. one table. It stores the key of its provider, a provider-owned `uri` without secrets, relative to its connection (`auth_config`). The capabilities are not stored: they come from the provider. It also caches what the discovery found (`title`, `details`, `last_seen`), so listing the items never reaches the source.
+**Data item**: a uniform handle on one thing a provider can read, e.g. one table. It stores the key of its provider, a provider-owned `uri` without secrets, relative to its connection (`auth_config`). The capabilities are not stored: they come from the provider. It also keeps the `title` and `details` read from the source when it was adopted, so listing the items never reaches the source.
 
-**Discovery**: it runs when a connection is created through the API or the pages, and again whenever an administrator asks for it. A connection whose source cannot be read is not saved. Each discovery browses the source once and stores every entry as a data item: new entries are created, known ones are refreshed. Entries gone upstream are not deleted, since the catalog may still point at them: they are flagged `is_available=False` and become available again if they come back. Data items are never created one by one. A discovery that finds nothing while the connection still has available items is refused and changes nothing: it is more likely a wrong parameter, e.g. a mistyped schema, than every table dropped at once.
+**Browsing**: a live call that lists what a connection exposes right now. Nothing is stored: each entry only tells whether it is already a data item (`adopted`).
+
+**Adoption**: the moment of durable interest. An administrator picks some of the browsed entries and each one becomes a data item. The source is browsed again at that point, so `title` and `details` always come from the source and an entry the connection does not expose is refused, along with the whole request. Adopting an entry twice changes nothing. Creating a connection does not create any data item: it only checks that the source can be reached, and a connection that cannot be reached is not saved.
 
 ### Capabilities
 
@@ -54,9 +56,9 @@ Connection parameters, validated by `PostgresConnectionForm`:
 Notes:
 
 - Every session is opened read-only, with a connect and a statement timeout.
-- Discovery goes through the OGR PostgreSQL driver, inside the request; testing a connection only performs the handshake.
+- Browsing goes through the OGR PostgreSQL driver, inside the request; testing or creating a connection only performs the handshake.
 - Access rights are enforced by PostgreSQL itself when the data is read.
-- The item uris do not carry the host, port and database: every parameter of a connection can be edited, and its items follow it. After a change the next discovery matches the tables by schema and name, and flags the ones not found as not available.
+- The item uris do not carry the host, port and database: every parameter of a connection can be edited, and its items follow it. Nothing checks the adopted items after a change: an item whose table is not in the new database or schema stays, and cannot be read.
 - Leaving a value blank when editing a connection keeps the stored one, so the password does not have to be sent again.
 
 ## The WMS provider
@@ -83,7 +85,7 @@ Notes:
 - The capabilities are fetched through `geonode.utils.safe_request_url`: only `http` and `https`, no credentials in the url, and no private, loopback or link-local host, checked on every redirect too. A service on such a host, e.g. a local GeoServer in development, must be listed in `SAFE_URL_TRUSTED_HOSTS` as `host:port`.
 - The document is parsed without resolving entities nor reaching the network, then read by owslib through `geonode.utils.WebMapService`.
 - Credentials are sent as basic authentication: prefer an `https` url when they are set.
-- Discovery runs inside the request, with a 30 seconds timeout.
+- Creating, testing, browsing and adopting each fetch the capabilities inside the request, with a 30 seconds timeout.
 
 ## Administration
 
@@ -96,24 +98,25 @@ The pages are a temporary, thin client of the REST API below: they render an emp
 | Page | Purpose |
 | --- | --- |
 | `/sources/` | list of the connections, with a button to create a connection for each installed provider |
-| `/sources/new/<provider>/` | connection form of a provider, built from its `connection_fields`; saving it runs the first discovery |
-| `/sources/<id>/` | connection detail: the data items of the connection, with *Discover*, *Test connection* and *Delete* |
+| `/sources/new/<provider>/` | connection form of a provider, built from its `connection_fields`; saving it checks that the source can be reached |
+| `/sources/<id>/` | connection detail: the data items of the connection, with *Browse* (live list of the entries, to pick and adopt), *Test connection* and *Delete* |
 
-Connections can also be edited in the Django admin, under *Authentication Configurations*: the same validation applies there, but a connection created there gets its data items only when a discovery is run. Removing a data item through the API only removes the GeoNode row, the upstream table is never touched; the next discovery adds it back if the table still exists. Deleting a connection also removes all its data items, again without touching the upstream tables. A connection also used to authenticate resources or URL patterns cannot be deleted.
+Connections can also be edited in the Django admin, under *Authentication Configurations*: the same validation applies there, but the source is not checked. Removing a data item through the API only removes the GeoNode row, the upstream table is never touched; it can be adopted again while the table exists. Deleting a connection also removes all its data items, again without touching the upstream tables. A connection also used to authenticate resources or URL patterns cannot be deleted.
 
 ### REST API
 
 All endpoints are under `/api/v2/` and require a staff user.
 
-The API is plain Django REST Framework, without dynamic-rest: a single object is returned as is, and lists are paginated as `{"count", "next", "previous", "results"}` with the `page` and `page_size` parameters (default 10, at most 100). `source-providers/` is not paginated and returns a plain list.
+The API is plain Django REST Framework, without dynamic-rest: a single object is returned as is, and lists are paginated as `{"count", "next", "previous", "results"}` with the `page` and `page_size` parameters (default 10, at most 100). `source-providers/` and `source-connections/<id>/browse/` are not paginated and return a plain list.
 
 | Endpoint | Methods | Description |
 | --- | --- | --- |
 | `source-providers/` | `GET` | installed providers, their declared capabilities and the connection fields to render |
-| `source-connections/` | `GET`, `POST` | connections, with the count of their available data items (`data_items_count`); `payload` is write only. `POST` also runs the first discovery and returns its result as `discovery`; `502` when the source cannot be read, and nothing is saved |
+| `source-connections/` | `GET`, `POST` | connections, with the count of their data items (`data_items_count`); `payload` is write only. `POST` checks that the source can be reached: `502` when it cannot, and nothing is saved |
 | `source-connections/<id>/` | `GET`, `PATCH`, `DELETE` | `DELETE` also removes the data items of the connection; `400` while the connection authenticates resources or URL patterns |
 | `source-connections/<id>/test/` | `POST` | `{"success": true, "message": ""}` |
-| `source-connections/<id>/discover/` | `POST` | stores the entries of the connection as data items: `{"found": 3, "created": 1, "missing": 1}`, where `missing` counts the items flagged not available by this run. `400` when it finds nothing while the connection has available items |
+| `source-connections/<id>/browse/` | `GET` | what the connection exposes right now, nothing is stored: `[{"uri", "title", "details", "adopted"}]`. `502` when the source cannot be read |
+| `source-connections/<id>/adopt/` | `POST` | `{"uris": [...]}`, 1 to 100 uris taken from `browse/`: stores them as data items and returns them with a `201`, the ones already adopted are returned unchanged. `400` when one of the uris is not exposed by the connection, and nothing is stored; `502` when the source cannot be read |
 | `data-items/` | `GET` | data items, `?connection=<id>` keeps the ones of a connection |
 | `data-items/<id>/` | `GET`, `DELETE` | |
 
@@ -124,7 +127,11 @@ curl -u admin:admin -H "Content-Type: application/json" -X POST \
   -d '{"type": "postgresql", "payload": {"host": "db", "database": "gis", "username": "reader", "password": "secret"}}' \
   http://localhost:8000/api/v2/source-connections/
 
-curl -u admin:admin -X POST http://localhost:8000/api/v2/source-connections/1/discover/
+curl -u admin:admin http://localhost:8000/api/v2/source-connections/1/browse/
+
+curl -u admin:admin -H "Content-Type: application/json" -X POST \
+  -d '{"uris": ["postgresql:?schema=public&table=roads"]}' \
+  http://localhost:8000/api/v2/source-connections/1/adopt/
 
 curl -u admin:admin "http://localhost:8000/api/v2/data-items/?connection=1"
 ```
@@ -135,7 +142,7 @@ A provider lives in its own package under `geonode/sources/<key>/`:
 
 - `auth.py`: a `geonode.sources.auth.FormAuthHandler` subclass whose `handled_type` is the provider key. It validates the payload with the connection form of the provider: blank values keep the stored ones, unknown keys are refused.
 - `forms.py`: the connection form. It validates the payload and generates the fields the UI renders.
-- `provider.py`: a `BaseSourceProvider` subclass defining `key`, `label`, `declared_capabilities`, `connection_form`, and implementing `test_connection` and `browse`. When the source cannot be read, `browse` raises a `RuntimeError`, e.g. `geonode.sources.base.SourceProviderError`: the API logs it and answers with a generic `502`.
+- `provider.py`: a `BaseSourceProvider` subclass defining `key`, `label`, `declared_capabilities`, `connection_form`, and implementing `test_connection` and `browse`. `browse` is called live, by browsing and by adoption. When the source cannot be read it raises a `RuntimeError`, e.g. `geonode.sources.base.SourceProviderError`: the API logs it and answers with a generic `502`.
 
 Then register both classes in the settings:
 

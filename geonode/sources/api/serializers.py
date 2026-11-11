@@ -66,7 +66,7 @@ class SourceConnectionSerializer(serializers.ModelSerializer):
         # annotated on lists, counted for the single object returned by a create or an update
         if hasattr(obj, "data_items_count"):
             return obj.data_items_count
-        return obj.data_items.filter(is_available=True).count()
+        return obj.data_items.count()
 
     def validate_type(self, value):
         if self.instance and self.instance.type != value:
@@ -95,8 +95,12 @@ class SourceConnectionSerializer(serializers.ModelSerializer):
         return instance
 
 
+class AdoptSerializer(serializers.Serializer):
+    uris = serializers.ListField(child=serializers.CharField(), allow_empty=False, max_length=100)
+
+
 class DataItemSerializer(serializers.ModelSerializer):
-    """Data items are created by the discovery of their connection, the API only reads and removes them"""
+    """Data items are created by adopting the entries of their connection, the API only reads and removes them"""
 
     connection = serializers.PrimaryKeyRelatedField(source="auth_config", read_only=True)
     capabilities = serializers.SerializerMethodField()
@@ -111,9 +115,7 @@ class DataItemSerializer(serializers.ModelSerializer):
             "title",
             "details",
             "connection",
-            "is_available",
             "capabilities",
-            "last_seen",
             "created_by",
             "created",
             "updated",

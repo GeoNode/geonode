@@ -23,8 +23,6 @@ class Migration(migrations.Migration):
                 ('uri', models.TextField(help_text='Provider-owned location of the item inside its connection, without secrets')),
                 ('title', models.TextField(blank=True, default='')),
                 ('details', models.JSONField(blank=True, default=dict)),
-                ('is_available', models.BooleanField(default=True)),
-                ('last_seen', models.DateTimeField(blank=True, null=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('auth_config', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='data_items', to='security.authconfig')),

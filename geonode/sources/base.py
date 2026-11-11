@@ -47,7 +47,7 @@ class SourceProviderError(RuntimeError):
 
 @dataclasses.dataclass
 class BrowseEntry:
-    """An item found while browsing a connection, stored as a data item by the discovery"""
+    """An item found while browsing a connection, stored as a data item once adopted"""
 
     uri: str
     title: str

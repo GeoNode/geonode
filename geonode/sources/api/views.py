@@ -19,7 +19,7 @@
 import logging
 
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Count
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
@@ -28,7 +28,12 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 
-from geonode.sources.api.serializers import DataItemSerializer, SourceConnectionSerializer, SourceProviderSerializer
+from geonode.sources.api.serializers import (
+    AdoptSerializer,
+    DataItemSerializer,
+    SourceConnectionSerializer,
+    SourceProviderSerializer,
+)
 from geonode.sources.models import DataItem
 from geonode.sources.registry import source_provider_registry
 from geonode.sources import utils
@@ -69,25 +74,19 @@ class SourceConnectionViewSet(SourcesViewSetMixin, viewsets.ModelViewSet):
     pagination_class = SourcesPagination
 
     def get_queryset(self):
-        return (
-            utils.source_connections()
-            .annotate(data_items_count=Count("data_items", filter=Q(data_items__is_available=True)))
-            .order_by("id")
-        )
+        return utils.source_connections().annotate(data_items_count=Count("data_items")).order_by("id")
 
     def create(self, request, *args, **kwargs):
-        """Register the connection and discover its data items at once: a source that cannot be read is not saved"""
+        """Register the connection only if its source can be reached"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        try:
-            with transaction.atomic():
-                _connection = serializer.save()
-                _discovery = utils.discover_connection(_connection, request.user)
-        except RuntimeError as e:
-            # GDAL or provider errors may expose server details, the client only gets a generic message
-            logger.exception(e)
-            return Response({"detail": "Could not browse the connection, it was not saved."}, status=502)
-        return Response({**self.get_serializer(_connection).data, "discovery": _discovery}, status=201)
+        with transaction.atomic():
+            _connection = serializer.save()
+            _reachable, _reason = source_provider_registry.get(_connection.type).test_connection(_connection)
+            if not _reachable:
+                transaction.set_rollback(True)
+                return Response({"detail": "Could not reach the source, the connection was not saved."}, status=502)
+        return Response(self.get_serializer(_connection).data, status=201)
 
     def destroy(self, request, *args, **kwargs):
         _connection = self.get_object()
@@ -104,21 +103,31 @@ class SourceConnectionViewSet(SourcesViewSetMixin, viewsets.ModelViewSet):
         success, message = source_provider_registry.get(_connection.type).test_connection(_connection)
         return Response({"success": success, "message": message}, status=200)
 
-    @action(detail=True, methods=["post"])
-    def discover(self, request, pk=None, *args, **kwargs):
-        """Store what the connection exposes as data items, refreshing the ones already known"""
+    @action(detail=True, methods=["get"])
+    def browse(self, request, pk=None, *args, **kwargs):
+        """What the connection exposes right now, nothing is stored"""
         try:
-            _result = utils.discover_connection(self.get_object(), request.user)
-        except utils.EmptyDiscoveryError:
-            return Response(
-                {"detail": "The connection exposes nothing, check its parameters: the data items were left untouched."},
-                status=400,
-            )
+            return Response(utils.browse_connection(self.get_object()), status=200)
         except RuntimeError as e:
             # GDAL or provider errors may expose server details, the client only gets a generic message
             logger.exception(e)
             return Response({"detail": "Could not browse the connection."}, status=502)
-        return Response(_result, status=200)
+
+    @action(detail=True, methods=["post"])
+    def adopt(self, request, pk=None, *args, **kwargs):
+        """Store the chosen entries of the connection as data items"""
+        _connection = self.get_object()
+        serializer = AdoptSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            _items = utils.adopt_entries(_connection, serializer.validated_data["uris"], request.user)
+        except utils.UnknownEntryError:
+            return Response({"uris": ["Some entries are not exposed by the connection."]}, status=400)
+        except RuntimeError as e:
+            # GDAL or provider errors may expose server details, the client only gets a generic message
+            logger.exception(e)
+            return Response({"detail": "Could not browse the connection."}, status=502)
+        return Response(DataItemSerializer(_items, many=True).data, status=201)
 
 
 class DataItemViewSet(

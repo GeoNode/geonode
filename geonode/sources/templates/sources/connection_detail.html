@@ -5,7 +5,7 @@
 <div class="page-header">
   <div class="pull-right">
     <button id="test-button" class="btn btn-default">{% trans "Test connection" %}</button>
-    <button id="discover-button" class="btn btn-primary">{% trans "Discover" %}</button>
+    <button id="browse-button" class="btn btn-primary">{% trans "Browse" %}</button>
     <button id="delete-button" class="btn btn-danger">{% trans "Delete" %}</button>
   </div>
   <h2 id="connection-title"></h2>
@@ -14,10 +14,8 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>{% trans "Table" %}</th>
+      <th>{% trans "Name" %}</th>
       <th>{% trans "Details" %}</th>
-      <th>{% trans "Last seen" %}</th>
-      <th></th>
     </tr>
   </thead>
   <tbody id="data-items"></tbody>
@@ -26,6 +24,20 @@
   <li><a href="#" id="previous-page">{% trans "Previous" %}</a></li>
   <li><a href="#" id="next-page">{% trans "Next" %}</a></li>
 </ul>
+<div id="browse-panel" hidden>
+  <h3>{% trans "Exposed by the connection" %}</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Details" %}</th>
+      </tr>
+    </thead>
+    <tbody id="browse-entries"></tbody>
+  </table>
+  <p><button id="adopt-button" class="btn btn-primary">{% trans "Adopt selected" %}</button></p>
+</div>
 <a href="{% url "sources_connection_list" %}">{% trans "Back to connections" %}</a>
 {% endblock %}
 
@@ -63,19 +75,13 @@
         el("tr", {}, [
           el("td", {}, [item.title || item.uri]),
           el("td", {}, detailsOf(item)),
-          el("td", {}, [item.last_seen ? new Date(item.last_seen).toLocaleString() : "-"]),
-          el("td", {}, [
-            item.is_available
-              ? el("span", { class: "label label-success" }, ["{% filter escapejs %}{% trans "Available" %}{% endfilter %}"])
-              : el("span", { class: "label label-warning" }, ["{% filter escapejs %}{% trans "Missing" %}{% endfilter %}"]),
-          ]),
         ])
       );
       document.getElementById("data-items").replaceChildren(...rows);
       document.getElementById("previous-page").parentElement.hidden = page <= 1;
       document.getElementById("next-page").parentElement.hidden = !response.next;
       if (!response.count) {
-        showMessage("{% filter escapejs %}{% trans "No data item yet: run a discovery." %}{% endfilter %}", "info");
+        showMessage("{% filter escapejs %}{% trans "No data item yet: browse the connection and adopt what GeoNode should know about." %}{% endfilter %}", "info");
       }
     }
 
@@ -100,16 +106,36 @@
       }
     });
 
-    document.getElementById("discover-button").addEventListener("click", async () => {
+    // live list of what the connection exposes, nothing is stored until an entry is adopted
+    async function loadEntries() {
+      const entries = await sourcesApi(`${connectionPath}browse/`);
+      const rows = entries.map((entry) => {
+        const checkbox = el("input", { type: "checkbox" });
+        checkbox.value = entry.uri;
+        checkbox.disabled = entry.adopted;
+        checkbox.checked = entry.adopted;
+        return el("tr", {}, [el("td", {}, [checkbox]), el("td", {}, [entry.title || entry.uri]), el("td", {}, detailsOf(entry))]);
+      });
+      document.getElementById("browse-entries").replaceChildren(...rows);
+      document.getElementById("browse-panel").hidden = false;
+      if (!entries.length) {
+        showMessage("{% filter escapejs %}{% trans "The connection exposes nothing, check its parameters." %}{% endfilter %}", "warning");
+      }
+    }
+
+    document.getElementById("browse-button").addEventListener("click", () => loadEntries().catch(showError));
+
+    document.getElementById("adopt-button").addEventListener("click", async () => {
+      const uris = [...document.querySelectorAll("#browse-entries input:checked:not(:disabled)")].map((input) => input.value);
+      if (!uris.length) {
+        return;
+      }
       try {
-        const result = await sourcesApi(`${connectionPath}discover/`, { method: "POST" });
+        const items = await sourcesApi(`${connectionPath}adopt/`, { method: "POST", body: { uris: uris } });
         page = 1;
         await loadDataItems();
-        showMessage(
-          `{% filter escapejs %}{% trans "Found" %}{% endfilter %}: ${result.found}, ` +
-            `{% filter escapejs %}{% trans "new" %}{% endfilter %}: ${result.created}, ` +
-            `{% filter escapejs %}{% trans "missing" %}{% endfilter %}: ${result.missing}`
-        );
+        await loadEntries();
+        showMessage(`{% filter escapejs %}{% trans "Adopted" %}{% endfilter %}: ${items.length}`);
       } catch (error) {
         showError(error);
       }
