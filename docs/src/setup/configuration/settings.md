@@ -1408,6 +1408,13 @@ With this configuration, when a user creates a resource, GeoNode assigns the res
 
 If ``RESOURCE_OWNERSHIP_ADMIN_USERNAME`` is not set, GeoNode defaults to ``admin``.
 
+**REST_API_V3_MAX_PAGE_SIZE**
+
+:   - Default ``200``
+    - Env: ``REST_API_V3_MAX_PAGE_SIZE``
+
+Upper bound of the ``page_size`` query parameter on API v3. A bigger value is clamped to this one. The default page size is ``REST_API_DEFAULT_PAGE_SIZE``.
+
 
 ## S
 

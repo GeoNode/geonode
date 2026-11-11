@@ -1,44 +1,81 @@
 {% extends "sources/sources_base.html" %}
 {% load i18n %}
 
+{% block sources_breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{% url "sources_connection_list" %}">{% trans "Sources" %}</a></li>
+  <li class="active" id="breadcrumb-title">{% trans "Connection" %}</li>
+</ol>
+{% endblock %}
+
 {% block sources_body %}
 <div class="page-header">
   <div class="pull-right">
     <button id="test-button" class="btn btn-default">{% trans "Test connection" %}</button>
-    <button id="browse-button" class="btn btn-primary">{% trans "Browse" %}</button>
     <button id="delete-button" class="btn btn-danger">{% trans "Delete" %}</button>
   </div>
-  <h2 id="connection-title"></h2>
-  <p id="connection-parameters"></p>
+  <h2 id="connection-title">{% trans "Loading…" %}</h2>
+  <span class="label label-default" id="connection-provider"></span>
 </div>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Details" %}</th>
-    </tr>
-  </thead>
-  <tbody id="data-items"></tbody>
-</table>
-<ul class="pager">
-  <li><a href="#" id="previous-page">{% trans "Previous" %}</a></li>
-  <li><a href="#" id="next-page">{% trans "Next" %}</a></li>
+<div class="panel panel-default">
+  <div class="panel-heading">{% trans "Parameters" %}</div>
+  <div class="panel-body" id="connection-parameters"></div>
+</div>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="active"><a href="#" data-tab="items-tab">{% trans "Data items" %} <span class="badge" id="items-count">0</span></a></li>
+  <li><a href="#" data-tab="browse-tab">{% trans "Browse the source" %}</a></li>
 </ul>
-<div id="browse-panel" hidden>
-  <h3>{% trans "Exposed by the connection" %}</h3>
-  <table class="table table-striped">
+
+<div class="tab-body" id="items-tab">
+  <p class="text-muted">{% trans "What GeoNode knows about this connection. Removing a data item never touches the source." %}</p>
+  <table class="table table-hover" id="items-table">
     <thead>
       <tr>
-        <th></th>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Details" %}</th>
+      </tr>
+    </thead>
+    <tbody id="data-items"></tbody>
+  </table>
+  <div class="sources-empty" id="items-empty" hidden>
+    <p class="lead">{% trans "No data item yet." %}</p>
+    <p><button class="btn btn-primary" id="go-browse">{% trans "Browse the source" %}</button></p>
+  </div>
+  <div class="sources-pager">
+    <span class="text-muted" id="items-range"></span>
+    <div class="btn-group">
+      <button class="btn btn-default btn-sm" id="previous-page">{% trans "Previous" %}</button>
+      <button class="btn btn-default btn-sm" id="next-page">{% trans "Next" %}</button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-body" id="browse-tab" hidden>
+  <p class="text-muted">{% trans "What the source exposes right now. Nothing is stored until you adopt it." %}</p>
+  <div class="sources-toolbar">
+    <button id="adopt-button" class="btn btn-primary" disabled>{% trans "Adopt selected" %}</button>
+    <input type="search" class="form-control input-sm" id="browse-filter" placeholder="{% trans "Filter this page" %}">
+    <button id="refresh-button" class="btn btn-default btn-sm">{% trans "Refresh" %}</button>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th style="width: 30px"><input type="checkbox" id="select-all" title="{% trans "Select all on this page" %}"></th>
         <th>{% trans "Name" %}</th>
         <th>{% trans "Details" %}</th>
       </tr>
     </thead>
     <tbody id="browse-entries"></tbody>
   </table>
-  <p><button id="adopt-button" class="btn btn-primary">{% trans "Adopt selected" %}</button></p>
+  <div class="sources-pager">
+    <span class="text-muted" id="browse-range"></span>
+    <div class="btn-group">
+      <button class="btn btn-default btn-sm" id="previous-browse-page">{% trans "Previous" %}</button>
+      <button class="btn btn-default btn-sm" id="next-browse-page">{% trans "Next" %}</button>
+    </div>
+  </div>
 </div>
-<a href="{% url "sources_connection_list" %}">{% trans "Back to connections" %}</a>
 {% endblock %}
 
 {% block sources_script %}
@@ -47,57 +84,73 @@
     const connectionId = {{ connection_id }};
     const connectionPath = `source-connections/${connectionId}/`;
     const listUrl = "{% url "sources_connection_list" %}";
+    const ADOPT_LABEL = "{% filter escapejs %}{% trans "Adopt selected" %}{% endfilter %}";
 
     async function loadConnection() {
-      const connection = await sourcesApi(connectionPath);
-      document.getElementById("connection-title").textContent = `${connection.type} #${connection.id}`;
-      document.getElementById("connection-parameters").replaceChildren(...parametersOf(connection.connection));
+      const [connection, providers] = await Promise.all([sourcesApi(connectionPath), loadProviders()]);
+      const provider = providers[connection.type];
+      const summary = connectionSummary(connection);
+      document.getElementById("connection-title").textContent = summary;
+      document.getElementById("breadcrumb-title").textContent = summary;
+      document.getElementById("connection-provider").textContent = provider ? provider.label : connection.type;
+      document.getElementById("connection-parameters").replaceChildren(parameterList(connection, provider));
     }
+
+    // tabs are shown and hidden here, no bootstrap javascript needed
+    let browseLoaded = false;
+
+    function showTab(id) {
+      for (const link of document.querySelectorAll("[data-tab]")) {
+        const active = link.dataset.tab === id;
+        link.parentElement.classList.toggle("active", active);
+        document.getElementById(link.dataset.tab).hidden = !active;
+      }
+      if (id === "browse-tab" && !browseLoaded) {
+        browseLoaded = true;
+        loadEntries().catch(showError);
+      }
+    }
+
+    for (const link of document.querySelectorAll("[data-tab]")) {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        showTab(link.dataset.tab);
+      });
+    }
+    document.getElementById("go-browse").addEventListener("click", () => showTab("browse-tab"));
 
     const PAGE_SIZE = 50;
     let page = 1;
 
-    // details are provider specific: shown as key=value, long values cut
-    function detailsOf(item) {
-      const entries = Object.entries(item.details || {});
-      if (!entries.length) {
-        return ["-"];
-      }
-      return entries.map(([key, value]) => {
-        const text = typeof value === "object" ? JSON.stringify(value) : String(value);
-        return el("code", {}, [`${key}=${text.length > 80 ? `${text.slice(0, 80)}…` : text}`, " "]);
-      });
-    }
-
     async function loadDataItems() {
-      const response = await sourcesApi(`data-items/?connection=${connectionId}&page=${page}&page_size=${PAGE_SIZE}`);
+      const response = await sourcesApi(
+        `data-items/?connection=${connectionId}&fields=id,uri,title,details&page=${page}&page_size=${PAGE_SIZE}`
+      );
       const rows = response.results.map((item) =>
-        el("tr", {}, [
-          el("td", {}, [item.title || item.uri]),
-          el("td", {}, detailsOf(item)),
-        ])
+        el("tr", {}, [el("td", {}, [el("strong", {}, [item.title || item.uri])]), el("td", {}, detailsOf(item.details))])
       );
       document.getElementById("data-items").replaceChildren(...rows);
-      document.getElementById("previous-page").parentElement.hidden = page <= 1;
-      document.getElementById("next-page").parentElement.hidden = !response.next;
-      if (!response.count) {
-        showMessage("{% filter escapejs %}{% trans "No data item yet: browse the connection and adopt what GeoNode should know about." %}{% endfilter %}", "info");
-      }
+      document.getElementById("items-count").textContent = response.count;
+      document.getElementById("items-table").hidden = !response.count;
+      document.getElementById("items-empty").hidden = !!response.count;
+      document.getElementById("items-range").textContent = pagerText(page, PAGE_SIZE, response.count);
+      document.getElementById("previous-page").disabled = page <= 1;
+      document.getElementById("next-page").disabled = !response.next;
     }
 
     for (const [id, step] of [["previous-page", -1], ["next-page", 1]]) {
-      document.getElementById(id).addEventListener("click", (event) => {
-        event.preventDefault();
+      document.getElementById(id).addEventListener("click", () => {
         page += step;
         loadDataItems().catch(showError);
       });
     }
 
-    document.getElementById("test-button").addEventListener("click", async () => {
+    const testButton = document.getElementById("test-button");
+    testButton.addEventListener("click", async () => {
       try {
-        const result = await sourcesApi(`${connectionPath}test/`, { method: "POST" });
+        const result = await withBusy(testButton, () => sourcesApi(`${connectionPath}test/`, { method: "POST" }));
         if (result.success) {
-          showMessage("{% filter escapejs %}{% trans "Connection succeeded." %}{% endfilter %}");
+          showMessage("{% filter escapejs %}{% trans "The source can be reached." %}{% endfilter %}");
         } else {
           showMessage(result.message, "danger");
         }
@@ -106,48 +159,120 @@
       }
     });
 
+    // the adopt limit: a whole page can always be adopted at once
+    const BROWSE_PAGE_SIZE = 100;
+    let browsePage = 1;
+    const adoptButton = document.getElementById("adopt-button");
+
+    function selectableBoxes() {
+      return [...document.querySelectorAll("#browse-entries tr:not([hidden]) input[type=checkbox]")];
+    }
+
+    function updateSelection() {
+      const boxes = selectableBoxes();
+      const selected = document.querySelectorAll("#browse-entries input[type=checkbox]:checked").length;
+      adoptButton.disabled = !selected;
+      adoptButton.textContent = selected ? `${ADOPT_LABEL} (${selected})` : ADOPT_LABEL;
+      const selectAll = document.getElementById("select-all");
+      selectAll.checked = boxes.length > 0 && boxes.every((box) => box.checked);
+      selectAll.disabled = !boxes.length;
+    }
+
+    function entryRow(entry) {
+      const name = el("td", {}, [el("strong", {}, [entry.title || entry.uri])]);
+      if (entry.adopted) {
+        name.append(" ", el("span", { class: "label label-success" }, ["{% filter escapejs %}{% trans "Adopted" %}{% endfilter %}"]));
+        return el("tr", { class: "text-muted", "data-search": (entry.title || entry.uri).toLowerCase() }, [
+          el("td", {}, []),
+          name,
+          el("td", {}, detailsOf(entry.details)),
+        ]);
+      }
+      const checkbox = el("input", { type: "checkbox" });
+      checkbox.value = entry.uri;
+      checkbox.addEventListener("change", updateSelection);
+      const row = el("tr", { style: "cursor: pointer", "data-search": (entry.title || entry.uri).toLowerCase() }, [
+        el("td", {}, [checkbox]),
+        name,
+        el("td", {}, detailsOf(entry.details)),
+      ]);
+      row.addEventListener("click", (event) => {
+        if (event.target !== checkbox) {
+          checkbox.checked = !checkbox.checked;
+          updateSelection();
+        }
+      });
+      return row;
+    }
+
     // live list of what the connection exposes, nothing is stored until an entry is adopted
     async function loadEntries() {
-      const entries = await sourcesApi(`${connectionPath}browse/`);
-      const rows = entries.map((entry) => {
-        const checkbox = el("input", { type: "checkbox" });
-        checkbox.value = entry.uri;
-        checkbox.disabled = entry.adopted;
-        checkbox.checked = entry.adopted;
-        return el("tr", {}, [el("td", {}, [checkbox]), el("td", {}, [entry.title || entry.uri]), el("td", {}, detailsOf(entry))]);
-      });
-      document.getElementById("browse-entries").replaceChildren(...rows);
-      document.getElementById("browse-panel").hidden = false;
-      if (!entries.length) {
+      const body = document.getElementById("browse-entries");
+      body.replaceChildren(el("tr", {}, [el("td", { colspan: "3", class: "text-muted" }, ["{% filter escapejs %}{% trans "Reading the source…" %}{% endfilter %}"])]));
+      const response = await sourcesApi(`${connectionPath}browse/?page=${browsePage}&page_size=${BROWSE_PAGE_SIZE}`);
+      body.replaceChildren(...response.results.map(entryRow));
+      document.getElementById("browse-filter").value = "";
+      document.getElementById("browse-range").textContent = pagerText(browsePage, BROWSE_PAGE_SIZE, response.count);
+      document.getElementById("previous-browse-page").disabled = browsePage <= 1;
+      document.getElementById("next-browse-page").disabled = !response.next;
+      updateSelection();
+      if (!response.count) {
         showMessage("{% filter escapejs %}{% trans "The connection exposes nothing, check its parameters." %}{% endfilter %}", "warning");
       }
     }
 
-    document.getElementById("browse-button").addEventListener("click", () => loadEntries().catch(showError));
+    for (const [id, step] of [["previous-browse-page", -1], ["next-browse-page", 1]]) {
+      document.getElementById(id).addEventListener("click", () => {
+        browsePage += step;
+        loadEntries().catch(showError);
+      });
+    }
 
-    document.getElementById("adopt-button").addEventListener("click", async () => {
-      const uris = [...document.querySelectorAll("#browse-entries input:checked:not(:disabled)")].map((input) => input.value);
+    const refreshButton = document.getElementById("refresh-button");
+    refreshButton.addEventListener("click", () => withBusy(refreshButton, loadEntries).catch(showError));
+
+    // filters the rows of the current page only, the source is not queried again
+    document.getElementById("browse-filter").addEventListener("input", (event) => {
+      const text = event.target.value.trim().toLowerCase();
+      for (const row of document.querySelectorAll("#browse-entries tr[data-search]")) {
+        row.hidden = !!text && !row.dataset.search.includes(text);
+      }
+      updateSelection();
+    });
+
+    document.getElementById("select-all").addEventListener("change", (event) => {
+      for (const box of selectableBoxes()) {
+        box.checked = event.target.checked;
+      }
+      updateSelection();
+    });
+
+    adoptButton.addEventListener("click", async () => {
+      const uris = [...document.querySelectorAll("#browse-entries input[type=checkbox]:checked")].map((input) => input.value);
       if (!uris.length) {
         return;
       }
       try {
-        const items = await sourcesApi(`${connectionPath}adopt/`, { method: "POST", body: { uris: uris } });
+        const items = await withBusy(adoptButton, () =>
+          sourcesApi(`${connectionPath}adopt/`, { method: "POST", body: { uris: uris } })
+        );
         page = 1;
-        await loadDataItems();
-        await loadEntries();
+        await Promise.all([loadDataItems(), loadEntries()]);
         showMessage(`{% filter escapejs %}{% trans "Adopted" %}{% endfilter %}: ${items.length}`);
       } catch (error) {
         showError(error);
+        updateSelection();
       }
     });
 
-    document.getElementById("delete-button").addEventListener("click", async () => {
-      const question = "{% filter escapejs %}{% trans "Delete this connection and all its data items? The tables themselves are not touched." %}{% endfilter %}";
+    const deleteButton = document.getElementById("delete-button");
+    deleteButton.addEventListener("click", async () => {
+      const question = "{% filter escapejs %}{% trans "Delete this connection and all its data items? The source itself is not touched." %}{% endfilter %}";
       if (!window.confirm(question)) {
         return;
       }
       try {
-        await sourcesApi(connectionPath, { method: "DELETE" });
+        await withBusy(deleteButton, () => sourcesApi(connectionPath, { method: "DELETE" }));
         window.location = listUrl;
       } catch (error) {
         showError(error);

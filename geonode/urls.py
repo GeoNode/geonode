@@ -132,7 +132,6 @@ urlpatterns = [
     re_path(r"^api/v2/api-auth/", include("rest_framework.urls", namespace="geonode_rest_framework")),
     re_path(r"^api/v2/facets", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
-    re_path(r"^api/v2/", include("geonode.sources.api.urls")),
     re_path(r"^api/v2/metadata/", include("geonode.metadata.api.urls")),
     # API v3 -- single explicit include; all v3 routes live in geonode.api.v3.urls
     re_path(r"^api/v3/", include("geonode.api.v3.urls")),

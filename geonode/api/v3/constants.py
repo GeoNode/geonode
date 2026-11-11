@@ -16,14 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-"""Names shared by the serializer, viewset and schema layers.
-
-They live here so that ``schema.py`` can describe the ``?fields=`` parameter
-without importing ``viewsets.py``, which imports ``schema.py`` back.
-"""
-
-#: Query parameter carrying the sparse field set.
+# shared by serializers, viewsets and schema: schema.py cannot import viewsets.py, which imports it back
 FIELDS_PARAM = "fields"
-
-#: Serializer-context key the viewset uses to pass the parsed field set down.
 CONTEXT_KEY = "only_fields"

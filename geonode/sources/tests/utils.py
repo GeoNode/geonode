@@ -28,3 +28,13 @@ def create_connection(**overrides):
 
 def entry_uri(table, schema="public"):
     return f"postgresql:?schema={schema}&table={table}"
+
+
+def bad_gateway(detail):
+    return {
+        "type": "about:blank",
+        "title": "Bad Gateway",
+        "status": 502,
+        "detail": detail,
+        "code": "source_unavailable",
+    }

@@ -16,133 +16,164 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from rest_framework import viewsets
+import typing
+
+from rest_framework import mixins, viewsets
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import SAFE_METHODS
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
+from rest_framework.response import Response
+from rest_framework.routers import APIRootView
 
 from geonode.api.v3.constants import CONTEXT_KEY, FIELDS_PARAM
+from geonode.api.v3.exceptions import problem_details_handler
 from geonode.api.v3.pagination import V3Pagination
 from geonode.api.v3.schema import V3AutoSchema
 
 _UNSET = object()
 
+# OPTIONS is safe too, but its metadata describes the write serializer, which is never narrowed
+READ_METHODS = ("GET", "HEAD")
 
-class FieldSelectionMixin:
-    """Implements the ``?fields=`` contract on both the serializer and the queryset.
+# the global default browsable renderer comes from dynamic-rest, v3 is plain DRF
+V3_RENDERER_CLASSES = [JSONRenderer, BrowsableAPIRenderer]
 
-    Subclasses describe what each serializer field costs to produce::
 
-        field_query_hints = {
-            "members": {"prefetch": ["groupmember_set__user"]},
-            "group": {"select": ["group"]},
-        }
-
-    Joins listed here are applied only when the field is actually being
-    returned. ``base_select_related`` / ``base_prefetch_related`` are applied
-    unconditionally, for relations the serializer always needs.
-
-    Pruning the serializer alone would leave the joins in place, which is the
-    problem v3 exists to solve, so the two are deliberately driven from one map.
+class FieldSelectionViewSetMixin:
     """
-
-    field_query_hints = {}
-    base_select_related = ()
-    base_prefetch_related = ()
+    Implements ``?fields=`` on both the serializer and the queryset.
+    The serializer declares what its fields cost in ``setup_queryset``, so the joins are added only when returned
+    """
 
     _requested_fields_cache = _UNSET
 
-    def get_requested_fields(self):
-        """The validated ``?fields=`` set, or ``None`` when it does not apply.
-
-        Returns ``None`` for unsafe methods so that writes always see the full
-        serializer and keep validating required fields.
-        """
-        if self._requested_fields_cache is not _UNSET:
-            return self._requested_fields_cache
-
-        self._requested_fields_cache = self._parse_requested_fields()
+    def get_requested_fields(self) -> typing.Optional[typing.Set[str]]:
+        """The fields a read returns: ``?fields=``, else the serializer defaults. ``None`` on writes"""
+        if self._requested_fields_cache is _UNSET:
+            self._requested_fields_cache = self.__parse_requested_fields()
         return self._requested_fields_cache
 
-    def _parse_requested_fields(self):
-        request = getattr(self, "request", None)
-        if request is None or request.method not in SAFE_METHODS:
-            return None
-
-        raw = request.query_params.get(FIELDS_PARAM)
-        if not raw:
-            return None
-
-        requested = {name.strip() for name in raw.split(",") if name.strip()}
-        if not requested:
-            return None
-
-        serializer_class = self.get_serializer_class()
-        if not hasattr(serializer_class, "available_field_names"):
-            return None
-
-        available = serializer_class.available_field_names()
-        unknown = sorted(requested - available)
-        if unknown:
-            # The message must be wrapped in a list. geonode_exception_handler's
-            # _extract_detail() walks a dict detail and calls .default_detail on
-            # the dict itself when the value is a bare string, raising
-            # AttributeError and turning a 400 into a 500.
-            raise ValidationError(
-                {FIELDS_PARAM: [f"Unknown field(s): {', '.join(unknown)}. Available: {', '.join(sorted(available))}."]}
-            )
-        return requested
+    def get_response_fields(self) -> typing.Optional[typing.Set[str]]:
+        """The fields of the response, a write answers with the read representation"""
+        if (_fields := self.get_requested_fields()) is not None:
+            return _fields
+        return self.__default_fields(self.get_serializer_class())
 
     def get_serializer_context(self):
-        context = super().get_serializer_context()
-        requested = self.get_requested_fields()
-        if requested is not None:
-            context[CONTEXT_KEY] = requested
-        return context
+        _context = super().get_serializer_context()
+        if (_fields := self.get_requested_fields()) is not None:
+            _context[CONTEXT_KEY] = _fields
+        return _context
 
-    def optimize_queryset(self, queryset):
-        """Apply only the joins the current response actually needs."""
-        if getattr(self, "action", None) not in ("list", "retrieve"):
+    def setup_queryset(self, queryset):
+        _serializer_class = self.get_serializer_class()
+        if not hasattr(_serializer_class, "setup_queryset"):
             return queryset
+        return _serializer_class.setup_queryset(queryset, self.get_response_fields(), getattr(self, "request", None))
 
-        requested = self.get_requested_fields()
-        select = set(self.base_select_related)
-        prefetch = set(self.base_prefetch_related)
+    def __parse_requested_fields(self) -> typing.Optional[typing.Set[str]]:
+        _request = getattr(self, "request", None)
+        if _request is None or _request.method not in READ_METHODS:
+            return None
 
-        for name, hints in self.field_query_hints.items():
-            if requested is not None and name not in requested:
-                continue
-            select.update(hints.get("select", ()))
-            prefetch.update(hints.get("prefetch", ()))
+        _serializer_class = self.get_serializer_class()
+        _raw = _request.query_params.get(FIELDS_PARAM, "")
+        _requested = {_name.strip() for _name in _raw.split(",") if _name.strip()}
+        if not hasattr(_serializer_class, "available_field_names"):
+            # ignoring it would silently return every field
+            if _requested:
+                raise ValidationError({FIELDS_PARAM: ["This endpoint does not support field selection."]})
+            return None
+        if not _requested:
+            return self.__default_fields(_serializer_class)
 
-        if select:
-            queryset = queryset.select_related(*sorted(select))
-        if prefetch:
-            queryset = queryset.prefetch_related(*sorted(prefetch))
-        return queryset
+        _available = _serializer_class.available_field_names()
+        if _unknown := sorted(_requested - _available):
+            raise ValidationError(
+                {
+                    FIELDS_PARAM: [
+                        f"Unknown field(s): {', '.join(_unknown)}. Available: {', '.join(sorted(_available))}."
+                    ]
+                }
+            )
+        return _requested
+
+    @staticmethod
+    def __default_fields(serializer_class) -> typing.Optional[typing.Set[str]]:
+        if not hasattr(serializer_class, "available_field_names"):
+            return None
+        # an explicit full set, so nested serializers still narrow to their own defaults
+        _default = serializer_class.default_field_names()
+        return _default if _default is not None else serializer_class.available_field_names()
 
 
-class V3ModelViewSet(FieldSelectionMixin, viewsets.ModelViewSet):
-    """Base viewset for v3.
-
-    Subclasses override :meth:`get_base_queryset` rather than ``get_queryset``,
-    so that the ``?fields=`` optimisation is never accidentally skipped.
-
-    ``permission_classes`` is intentionally not defaulted here. ``REST_FRAMEWORK``
-    sets no ``DEFAULT_PERMISSION_CLASSES``, so DRF would fall back to ``AllowAny``
-    and a viewset that forgets to declare them would ship world-writable. Every
-    v3 viewset must set it explicitly; :mod:`geonode.api.v3.tests.test_infrastructure`
-    asserts that none is left unset.
-
-    ``schema`` is set here rather than through DRF's ``DEFAULT_SCHEMA_CLASS``, so
-    that drf-spectacular only applies where this class is used. See
-    :mod:`geonode.api.v3.schema`.
+class V3GenericViewSet(FieldSelectionViewSetMixin, viewsets.GenericViewSet):
+    """
+    Base of every v3 viewset, composed with the DRF mixins it needs.
+    Subclasses override ``get_base_queryset``, so the ``?fields=`` setup is never skipped
     """
 
+    # fail closed: REST_FRAMEWORK has no default, a viewset that forgets them would be AllowAny
+    permission_classes = [IsAuthenticated]
+    renderer_classes = V3_RENDERER_CLASSES
     pagination_class = V3Pagination
+    # set here and not as DEFAULT_SCHEMA_CLASS, so drf-spectacular never inspects v2 views
     schema = V3AutoSchema()
+    # emitted as x-stability in the schema, an endpoint is promoted by changing it
+    stability = "experimental"
+
+    def get_exception_handler(self):
+        return problem_details_handler
 
     def get_base_queryset(self):
         return super().get_queryset()
 
     def get_queryset(self):
-        return self.optimize_queryset(self.get_base_queryset())
+        return self.setup_queryset(self.get_base_queryset())
+
+    def get_read_representation(self, instance):
+        # refetched through get_queryset, an instance just saved has none of the annotations of setup_queryset
+        _instance = self.get_queryset().filter(pk=instance.pk).first() or instance
+        _context = self.get_serializer_context()
+        if (_fields := self.get_response_fields()) is not None:
+            _context[CONTEXT_KEY] = _fields
+        return self.get_serializer(_instance, context=_context).data
+
+
+class V3CreateModelMixin(mixins.CreateModelMixin):
+    """Answers a create with the read representation"""
+
+    def create(self, request, *args, **kwargs):
+        _serializer = self.get_serializer(data=request.data)
+        _serializer.is_valid(raise_exception=True)
+        self.perform_create(_serializer)
+        _data = self.get_read_representation(_serializer.instance)
+        return Response(_data, status=201, headers=self.get_success_headers(_data))
+
+
+class V3UpdateModelMixin(mixins.UpdateModelMixin):
+    """Answers an update with the read representation"""
+
+    def update(self, request, *args, **kwargs):
+        _serializer = self.get_serializer(self.get_object(), data=request.data, partial=kwargs.pop("partial", False))
+        _serializer.is_valid(raise_exception=True)
+        self.perform_update(_serializer)
+        return Response(self.get_read_representation(_serializer.instance), status=200)
+
+
+class V3ModelViewSet(
+    V3CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    V3UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    V3GenericViewSet,
+):
+    pass
+
+
+class V3RootView(APIRootView):
+    """The v3 root lists the endpoints only, the endpoints check their own permissions"""
+
+    permission_classes = [AllowAny]
+    renderer_classes = V3_RENDERER_CLASSES

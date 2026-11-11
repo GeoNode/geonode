@@ -16,24 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import typing
+
 from rest_framework import serializers
 
-from geonode.api.v3.constants import CONTEXT_KEY  # noqa: F401 - re-exported for convenience
+from geonode.api.v3.constants import CONTEXT_KEY
 
 
-class FieldSelectionModelSerializer(serializers.ModelSerializer):
-    """A ``ModelSerializer`` whose output can be narrowed to a subset of fields.
-    This class implements the ``?fields=`` query parameter -- JSON:API calls the
-    concept a "sparse fieldset", which is a request-time field selection, not a
-    stored field.
-
-    The subset comes either from the ``only_fields`` constructor kwarg or from
-    ``context["only_fields"]``, which :class:`geonode.api.v3.viewsets.V3ModelViewSet`
-    populates from the ``?fields=`` query parameter.
-
-    Only read paths narrow the field set. The viewset does not set the context
-    key for unsafe methods, so writes always see the full serializer and keep
-    validating required fields.
+class FieldSelectionMixin:
+    """
+    Narrows the output to the fields asked with ``?fields=``.
+    Only the root serializer reads the requested set, a nested one returns its own ``Meta.default_fields``
     """
 
     def __init__(self, *args, only_fields=None, **kwargs):
@@ -41,17 +34,47 @@ class FieldSelectionModelSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def available_field_names(cls):
-        """The full set of field names, ignoring any narrowing."""
-        return set(cls().get_fields())
+    def available_field_names(cls) -> typing.Set[str]:
+        """The fields a read can return: write-only ones never appear in a response"""
+        return {_name for _name, _field in cls().get_fields().items() if not _field.write_only}
+
+    @classmethod
+    def default_field_names(cls) -> typing.Optional[typing.Set[str]]:
+        """The fields returned when ``?fields=`` is absent, ``None`` means all of them"""
+        _default = getattr(getattr(cls, "Meta", None), "default_fields", None)
+        return set(_default) if _default is not None else None
 
     def get_fields(self):
-        fields = super().get_fields()
-        only = self._only_fields
-        if only is None:
-            only = self.context.get(CONTEXT_KEY)
-        if only is None:
-            return fields
-        for name in [name for name in fields if name not in only]:
-            fields.pop(name)
-        return fields
+        _fields = super().get_fields()
+        if (_selected := self.__selected_field_names()) is None:
+            return _fields
+        return {_name: _field for _name, _field in _fields.items() if _name in _selected}
+
+    def __selected_field_names(self) -> typing.Optional[typing.Set[str]]:
+        if self._only_fields is not None:
+            return self._only_fields
+        # the viewset sets the key on reads only, so writes always validate the full serializer
+        if CONTEXT_KEY not in self.context:
+            return None
+        # the context is shared with nested serializers, the requested names belong to the root only
+        if self.__is_root():
+            return self.context[CONTEXT_KEY]
+        return self.default_field_names()
+
+    def __is_root(self) -> bool:
+        if self.parent is None:
+            return True
+        return isinstance(self.parent, serializers.ListSerializer) and self.parent.parent is None
+
+
+class FieldSelectionSerializer(FieldSelectionMixin, serializers.Serializer):
+    """A serializer narrowed by ``?fields=``, for data not read from a model"""
+
+
+class FieldSelectionModelSerializer(FieldSelectionMixin, serializers.ModelSerializer):
+    """A model serializer narrowed by ``?fields=``, which also prepares the queryset its selected fields need"""
+
+    @classmethod
+    def setup_queryset(cls, queryset, fields: typing.Set[str], request):
+        """Return the queryset with the joins and annotations needed by ``fields``, a nested serializer reuses it"""
+        return queryset

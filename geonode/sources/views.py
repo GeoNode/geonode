@@ -40,7 +40,7 @@ def staff_required(view):
     return _wrapped
 
 
-# the pages are a thin client of the REST API: every read and every change goes through /api/v2/
+# the pages are a thin client of the REST API: every read and every change goes through /api/v3/
 
 
 @staff_required

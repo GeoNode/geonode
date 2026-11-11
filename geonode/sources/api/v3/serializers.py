@@ -19,8 +19,12 @@
 import typing
 
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db.models import Count
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from geonode.api.v3.serializers import FieldSelectionModelSerializer, FieldSelectionSerializer
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 from geonode.sources.base import Capability
@@ -33,19 +37,35 @@ def capability_names(value: int) -> typing.List[str]:
     return [_cap.name for _cap in Capability if _cap.value and value & _cap]
 
 
-class SourceProviderSerializer(serializers.Serializer):
+# the field types form_to_connection_fields produces
+CONNECTION_FIELD_TYPES = ["string", "integer", "url", "password", "choice"]
+
+
+class ConnectionFieldSerializer(serializers.Serializer):
+    """A parameter of the connection form, as the UI renders it"""
+
+    name = serializers.CharField()
+    label = serializers.CharField()
+    type = serializers.ChoiceField(choices=CONNECTION_FIELD_TYPES)
+    required = serializers.BooleanField()
+    choices = serializers.ListField(child=serializers.CharField(), required=False)
+    default = serializers.JSONField(required=False)
+
+
+class SourceProviderSerializer(FieldSelectionSerializer):
     """A provider is code: it is read from the registry, never from the database"""
 
     key = serializers.CharField()
     label = serializers.CharField()
     declared_capabilities = serializers.SerializerMethodField()
-    connection_fields = serializers.ListField()
+    connection_fields = ConnectionFieldSerializer(many=True)
 
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
     def get_declared_capabilities(self, obj):
         return capability_names(obj.declared_capabilities)
 
 
-class SourceConnectionSerializer(serializers.ModelSerializer):
+class SourceConnectionSerializer(FieldSelectionModelSerializer):
     """
     A connection is an AuthConfig whose type is a source provider key.
     The payload is write only: secrets never leave the server
@@ -53,20 +73,21 @@ class SourceConnectionSerializer(serializers.ModelSerializer):
 
     payload = serializers.DictField(write_only=True)
     connection = serializers.SerializerMethodField()
-    data_items_count = serializers.SerializerMethodField()
+    data_items_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = AuthConfig
         fields = ("id", "type", "payload", "connection", "data_items_count")
 
+    @classmethod
+    def setup_queryset(cls, queryset, fields, request):
+        if "data_items_count" in fields:
+            queryset = queryset.annotate(data_items_count=Count("data_items"))
+        return queryset
+
+    @extend_schema_field(OpenApiTypes.OBJECT)
     def get_connection(self, obj):
         return public_payload(obj)
-
-    def get_data_items_count(self, obj):
-        # annotated on lists, counted for the single object returned by a create or an update
-        if hasattr(obj, "data_items_count"):
-            return obj.data_items_count
-        return obj.data_items.count()
 
     def validate_type(self, value):
         if self.instance and self.instance.type != value:
@@ -95,11 +116,20 @@ class SourceConnectionSerializer(serializers.ModelSerializer):
         return instance
 
 
+class BrowseEntrySerializer(FieldSelectionSerializer):
+    """What a connection exposes right now, an entry is stored only when adopted"""
+
+    uri = serializers.CharField()
+    title = serializers.CharField()
+    details = serializers.DictField()
+    adopted = serializers.BooleanField()
+
+
 class AdoptSerializer(serializers.Serializer):
     uris = serializers.ListField(child=serializers.CharField(), allow_empty=False, max_length=100)
 
 
-class DataItemSerializer(serializers.ModelSerializer):
+class DataItemSerializer(FieldSelectionModelSerializer):
     """Data items are created by adopting the entries of their connection, the API only reads and removes them"""
 
     connection = serializers.PrimaryKeyRelatedField(source="auth_config", read_only=True)
@@ -120,8 +150,17 @@ class DataItemSerializer(serializers.ModelSerializer):
             "created",
             "updated",
         )
+        # details are provider specific and can be large, e.g. a WMS layer: asked with ?fields=
+        default_fields = tuple(_field for _field in fields if _field != "details")
         read_only_fields = fields
 
+    @classmethod
+    def setup_queryset(cls, queryset, fields, request):
+        if "created_by" in fields:
+            queryset = queryset.select_related("created_by")
+        return queryset
+
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
     def get_capabilities(self, obj):
         # every item of a provider has its declared capabilities, an uninstalled provider reads nothing
         _provider = source_provider_registry.get(obj.source_provider)

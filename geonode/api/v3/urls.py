@@ -16,27 +16,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-"""The one and only place where v3 routes are registered.
-
-v3 registers everything here, explicitly, in one pass, and
-is included exactly once from :mod:`geonode.urls`.
-
-Rules for this file:
-
-* import the viewset and register it here -- never from an app's ``urls.py``
-  and never from an ``AppConfig.ready()``;
-* keep the prefixes alphabetical so the router root stays readable.
-
+"""
+The only place where v3 routes are registered: import the viewset and register it here by hand.
+Keep the prefixes alphabetical, so the root stays readable
 """
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
+from geonode.api.v3.viewsets import V3RootView
+from geonode.sources.api.v3.views import DataItemViewSet, SourceConnectionViewSet, SourceProviderViewSet
+
 app_name = "api_v3"
 
-# Explicit even though it's DRF's own default, so the requirement is visible
-# here rather than only inherited.
-router = DefaultRouter(trailing_slash=True)
+
+class V3Router(DefaultRouter):
+    APIRootView = V3RootView
+
+
+router = V3Router(trailing_slash=True)
+router.register(r"data-items", DataItemViewSet, "data-items")
+router.register(r"source-connections", SourceConnectionViewSet, "source-connections")
+router.register(r"source-providers", SourceProviderViewSet, "source-providers")
 
 urlpatterns = [
     # url_name is namespaced because this module sets app_name

@@ -1,15 +1,31 @@
 {% extends "sources/sources_base.html" %}
 {% load i18n %}
 
+{% block sources_breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{% url "sources_connection_list" %}">{% trans "Sources" %}</a></li>
+  <li class="active">{% trans "New connection" %}</li>
+</ol>
+{% endblock %}
+
 {% block sources_body %}
-<div class="page-header">
-  <h2 id="form-title">{% trans "New connection" %}</h2>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <div class="page-header">
+      <h2 id="form-title">{% trans "New connection" %}</h2>
+      <p class="text-muted">{% trans "Fields marked with * are required. Saving checks that the source can be reached: an unreachable connection is not saved." %}</p>
+    </div>
+    <form id="connection-form" class="form-horizontal" autocomplete="off">
+      <div id="connection-fields"></div>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <button type="submit" class="btn btn-primary" id="create-button">{% trans "Create connection" %}</button>
+          <a href="{% url "sources_connection_list" %}" class="btn btn-link">{% trans "Cancel" %}</a>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
-<form id="connection-form" autocomplete="off">
-  <div id="connection-fields"></div>
-  <a href="{% url "sources_connection_list" %}" class="btn btn-default">{% trans "Cancel" %}</a>
-  <button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
-</form>
 {% endblock %}
 
 {% block sources_script %}
@@ -41,7 +57,18 @@
       if (field.default !== undefined) {
         node.value = field.default;
       }
+      if (field.type === "url") {
+        node.placeholder = "https://";
+      }
       return node;
+    }
+
+    function formGroup(field) {
+      const label = el("label", { for: `field-${field.name}`, class: "col-sm-3 control-label" }, [
+        field.label,
+        field.required ? " *" : "",
+      ]);
+      return el("div", { class: "form-group" }, [label, el("div", { class: "col-sm-9" }, [input(field)])]);
     }
 
     try {
@@ -49,17 +76,18 @@
       fields = provider.connection_fields;
       document.getElementById("form-title").textContent =
         `{% filter escapejs %}{% trans "New connection" %}{% endfilter %}: ${provider.label}`;
-      document.getElementById("connection-fields").replaceChildren(
-        ...fields.map((field) =>
-          el("div", { class: "form-group" }, [el("label", { for: `field-${field.name}` }, [field.label]), input(field)])
-        )
-      );
+      document.getElementById("connection-fields").replaceChildren(...fields.map(formGroup));
+      const first = form.querySelector("input, select");
+      if (first) {
+        first.focus();
+      }
     } catch (error) {
       showError(error);
     }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      clearMessage();
       const payload = {};
       for (const field of fields) {
         const value = form.elements[field.name].value;
@@ -69,10 +97,9 @@
         }
       }
       try {
-        const response = await sourcesApi("source-connections/", {
-          method: "POST",
-          body: { type: providerKey, payload: payload },
-        });
+        const response = await withBusy(document.getElementById("create-button"), () =>
+          sourcesApi("source-connections/", { method: "POST", body: { type: providerKey, payload: payload } })
+        );
         window.location = detailUrl.replace("/0/", `/${response.id}/`);
       } catch (error) {
         showError(error);

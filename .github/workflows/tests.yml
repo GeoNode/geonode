@@ -54,6 +54,7 @@ jobs:
         TESTS=$(python -c 'import sys; from geonode import settings; print(" ".join([a + ".tests"
         for a in settings.GEONODE_APPS if "security" not in a and "geoserver" not in a and "upload" not in a]))') &&
         ./test.sh $TESTS geonode.thumbs.tests geonode.people.tests geonode.people.test_adapters
+        geonode.sources.postgres.tests geonode.sources.wms.tests
         geonode.people.socialaccount.providers.geonode_openid_connect.tests --duration=30 --failfast
 
   security:
@@ -82,7 +83,7 @@ jobs:
     with:
       suite_name: "REST API Tests"
       test_command: >
-        ./test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests
+        ./test.sh geonode.api.tests geonode.api.v3.tests geonode.base.api.tests geonode.layers.api.tests
         geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests --duration=30 --failfast
 
   csw:

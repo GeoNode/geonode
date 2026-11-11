@@ -3,22 +3,26 @@
 
 {% block sources_body %}
 <div class="page-header">
-  <div class="pull-right">
-    <span id="provider-buttons"></span>
-  </div>
+  <div class="pull-right btn-group" id="provider-buttons"></div>
   <h2>{% trans "Source connections" %}</h2>
+  <p class="text-muted">{% trans "External databases and services GeoNode can read from. Open a connection to browse what it exposes and adopt it as data items." %}</p>
 </div>
-<table class="table table-striped">
+<table class="table table-hover" id="connections-table" hidden>
   <thead>
     <tr>
-      <th>#</th>
+      <th>{% trans "Connection" %}</th>
       <th>{% trans "Provider" %}</th>
-      <th>{% trans "Parameters" %}</th>
-      <th>{% trans "Data items" %}</th>
+      <th class="text-right">{% trans "Data items" %}</th>
+      <th></th>
     </tr>
   </thead>
   <tbody id="connections"></tbody>
 </table>
+<div class="panel panel-default sources-empty" id="connections-empty" hidden>
+  <p class="lead">{% trans "No connection defined yet." %}</p>
+  <p class="text-muted">{% trans "Create one with the buttons above: GeoNode checks that the source can be reached before saving it." %}</p>
+</div>
+<p class="text-muted" id="connections-loading">{% trans "Loading…" %}</p>
 {% endblock %}
 
 {% block sources_script %}
@@ -27,30 +31,38 @@
     const createUrl = "{% url "sources_connection_create" "PROVIDER" %}";
     const detailUrl = "{% url "sources_connection_detail" 0 %}";
     try {
-      const providers = await sourcesApi("source-providers/");
-      for (const provider of providers) {
-        document.getElementById("provider-buttons").append(
+      const providers = await loadProviders();
+      document.getElementById("provider-buttons").replaceChildren(
+        ...Object.values(providers).map((provider) =>
           el("a", { class: "btn btn-primary", href: createUrl.replace("PROVIDER", encodeURIComponent(provider.key)) }, [
-            `{% filter escapejs %}{% trans "New connection" %}{% endfilter %}: ${provider.label}`,
-          ]),
-          " "
-        );
-      }
-      const connections = await sourcesApi("source-connections/?page_size=100");
-      const rows = connections.results.map((connection) =>
-        el("tr", {}, [
-          el("td", {}, [el("a", { href: detailUrl.replace("/0/", `/${connection.id}/`) }, [connection.id])]),
-          el("td", {}, [connection.type]),
-          el("td", {}, parametersOf(connection.connection)),
-          el("td", {}, [connection.data_items_count]),
-        ])
+            `+ ${provider.label}`,
+          ])
+        )
       );
+      const connections = await sourcesApi("source-connections/?page_size=100");
+      const rows = connections.results.map((connection) => {
+        const href = detailUrl.replace("/0/", `/${connection.id}/`);
+        const provider = providers[connection.type];
+        const row = el("tr", { style: "cursor: pointer" }, [
+          el("td", {}, [el("a", { href: href }, [el("strong", {}, [connectionSummary(connection)])])]),
+          el("td", {}, [el("span", { class: "label label-default" }, [provider ? provider.label : connection.type])]),
+          el("td", { class: "text-right" }, [el("span", { class: "badge" }, [connection.data_items_count])]),
+          el("td", { class: "text-right" }, [el("a", { class: "btn btn-default btn-xs", href: href }, ["{% filter escapejs %}{% trans "Open" %}{% endfilter %}"])]),
+        ]);
+        row.addEventListener("click", (event) => {
+          if (!event.target.closest("a")) {
+            window.location = href;
+          }
+        });
+        return row;
+      });
       document.getElementById("connections").replaceChildren(...rows);
-      if (!rows.length) {
-        showMessage("{% filter escapejs %}{% trans "No connection defined yet." %}{% endfilter %}", "info");
-      }
+      document.getElementById("connections-table").hidden = !rows.length;
+      document.getElementById("connections-empty").hidden = !!rows.length;
     } catch (error) {
       showError(error);
+    } finally {
+      document.getElementById("connections-loading").hidden = true;
     }
   })();
 </script>

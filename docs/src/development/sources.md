@@ -93,31 +93,31 @@ Only staff users can manage sources. Other logged in users get a `403`.
 
 ### Pages
 
-The pages are a temporary, thin client of the REST API below: they render an empty shell and every read or change goes through `/api/v2/`, so anything they do is available to other integrations as well.
+The pages are a temporary, thin client of the REST API below: they render an empty shell and every read or change goes through `/api/v3/`, so anything they do is available to other integrations as well.
 
 | Page | Purpose |
 | --- | --- |
 | `/sources/` | list of the connections, with a button to create a connection for each installed provider |
 | `/sources/new/<provider>/` | connection form of a provider, built from its `connection_fields`; saving it checks that the source can be reached |
-| `/sources/<id>/` | connection detail: the data items of the connection, with *Browse* (live list of the entries, to pick and adopt), *Test connection* and *Delete* |
+| `/sources/<id>/` | connection detail: its parameters, a *Data items* tab, and a *Browse the source* tab listing what the source exposes, page by page, to select and adopt (adopted entries are marked); plus *Test connection* and *Delete* |
 
 Connections can also be edited in the Django admin, under *Authentication Configurations*: the same validation applies there, but the source is not checked. Removing a data item through the API only removes the GeoNode row, the upstream table is never touched; it can be adopted again while the table exists. Deleting a connection also removes all its data items, again without touching the upstream tables. A connection also used to authenticate resources or URL patterns cannot be deleted.
 
 ### REST API
 
-All endpoints are under `/api/v2/` and require a staff user.
+All endpoints are under `/api/v3/` and require a staff user. Their OpenAPI schema is served at `/api/v3/schema/`, with Swagger UI at `/api/v3/schema/swagger-ui/`.
 
-The API is plain Django REST Framework, without dynamic-rest: a single object is returned as is, and lists are paginated as `{"count", "next", "previous", "results"}` with the `page` and `page_size` parameters (default 10, at most 100). `source-providers/` and `source-connections/<id>/browse/` are not paginated and return a plain list.
+The API follows the API v3 conventions: a single object is returned as is, lists are paginated as `{"count", "next", "previous", "results"}` with the `page` and `page_size` parameters (default 10, at most `REST_API_V3_MAX_PAGE_SIZE`), and `?fields=id,title` returns only the named fields (`data-items/` leaves `details` out unless asked). Errors are [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) Problem Details, served as `application/problem+json`: `{"type", "title", "status", "detail", "code"}`, plus `errors` keyed by field on a `400`. `source-connections/<id>/browse/` is paginated too, but it stays live: every page lists the source again.
 
 | Endpoint | Methods | Description |
 | --- | --- | --- |
 | `source-providers/` | `GET` | installed providers, their declared capabilities and the connection fields to render |
 | `source-connections/` | `GET`, `POST` | connections, with the count of their data items (`data_items_count`); `payload` is write only. `POST` checks that the source can be reached: `502` when it cannot, and nothing is saved |
-| `source-connections/<id>/` | `GET`, `PATCH`, `DELETE` | `DELETE` also removes the data items of the connection; `400` while the connection authenticates resources or URL patterns |
+| `source-connections/<id>/` | `GET`, `PATCH`, `DELETE` | `DELETE` also removes the data items of the connection; `409` while the connection authenticates resources or URL patterns |
 | `source-connections/<id>/test/` | `POST` | `{"success": true, "message": ""}` |
-| `source-connections/<id>/browse/` | `GET` | what the connection exposes right now, nothing is stored: `[{"uri", "title", "details", "adopted"}]`. `502` when the source cannot be read |
+| `source-connections/<id>/browse/` | `GET` | what the connection exposes right now, nothing is stored: a page of `{"uri", "title", "details", "adopted"}`. `502` when the source cannot be read |
 | `source-connections/<id>/adopt/` | `POST` | `{"uris": [...]}`, 1 to 100 uris taken from `browse/`: stores them as data items and returns them with a `201`, the ones already adopted are returned unchanged. `400` when one of the uris is not exposed by the connection, and nothing is stored; `502` when the source cannot be read |
-| `data-items/` | `GET` | data items, `?connection=<id>` keeps the ones of a connection |
+| `data-items/` | `GET` | data items, filtered with `?connection=<id>` and `?source_provider=<key>`; `400` for an unknown connection |
 | `data-items/<id>/` | `GET`, `DELETE` | |
 
 Example:
@@ -125,15 +125,15 @@ Example:
 ```bash
 curl -u admin:admin -H "Content-Type: application/json" -X POST \
   -d '{"type": "postgresql", "payload": {"host": "db", "database": "gis", "username": "reader", "password": "secret"}}' \
-  http://localhost:8000/api/v2/source-connections/
+  http://localhost:8000/api/v3/source-connections/
 
-curl -u admin:admin http://localhost:8000/api/v2/source-connections/1/browse/
+curl -u admin:admin http://localhost:8000/api/v3/source-connections/1/browse/
 
 curl -u admin:admin -H "Content-Type: application/json" -X POST \
   -d '{"uris": ["postgresql:?schema=public&table=roads"]}' \
-  http://localhost:8000/api/v2/source-connections/1/adopt/
+  http://localhost:8000/api/v3/source-connections/1/adopt/
 
-curl -u admin:admin "http://localhost:8000/api/v2/data-items/?connection=1"
+curl -u admin:admin "http://localhost:8000/api/v3/data-items/?connection=1"
 ```
 
 ## Adding a provider

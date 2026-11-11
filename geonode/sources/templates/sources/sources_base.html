@@ -7,8 +7,24 @@
 
 {% block body_outer %}
 {% csrf_token %}
-<div id="sources-messages"></div>
-{% block sources_body %}{% endblock %}
+<style>
+  .sources-page .page-header { margin-top: 10px; }
+  .sources-page .page-header h2 { margin-bottom: 4px; }
+  .sources-page .table > tbody > tr > td { vertical-align: middle; }
+  .sources-page .sources-detail { display: block; max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sources-page .sources-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .sources-page .sources-toolbar .form-control { width: 260px; }
+  .sources-page .sources-pager { display: flex; justify-content: space-between; align-items: center; margin: 8px 0 20px; }
+  .sources-page .sources-empty { padding: 30px; text-align: center; }
+  .sources-page .nav-tabs { margin-bottom: 0; }
+  .sources-page .tab-body { border: 1px solid #ddd; border-top: 0; padding: 12px 15px; }
+  .sources-page #sources-messages { position: sticky; top: 0; z-index: 10; }
+</style>
+<div class="sources-page">
+  {% block sources_breadcrumb %}{% endblock %}
+  <div id="sources-messages"></div>
+  {% block sources_body %}{% endblock %}
+</div>
 {% endblock %}
 
 {% block extra_script %}
@@ -16,7 +32,7 @@
 <script>
   // Thin client of the sources REST API. Values coming from the API, e.g. table names of an external
   // database, are untrusted: they are always set as text, never as HTML
-  const SOURCES_API = "/api/v2/";
+  const SOURCES_API = "/api/v3/";
 
   async function sourcesApi(path, options = {}) {
     const response = await fetch(SOURCES_API + path, {
@@ -46,26 +62,102 @@
     return node;
   }
 
+  // errors are RFC 9457 Problem Details: a "detail" sentence, plus the validation "errors" keyed by field
   function errorText(error) {
-    if (error && error.data) {
-      return Object.entries(error.data)
-        .map(([key, value]) => `${key}: ${[].concat(value).join(" ")}`)
-        .join(" - ");
+    const problem = error && error.data;
+    if (problem && problem.detail) {
+      const errors = problem.errors || {};
+      const messages = Array.isArray(errors)
+        ? errors
+        : Object.entries(errors).map(([key, value]) => `${key}: ${[].concat(value).join(" ")}`);
+      return [problem.detail, ...messages].join(" - ");
     }
     return `{% filter escapejs %}{% trans "Request failed" %}{% endfilter %} (${error && error.status})`;
   }
 
   function showMessage(text, level = "success") {
+    const close = el("button", { type: "button", class: "close", "aria-label": "Close" }, ["×"]);
+    const alert = el("div", { class: `alert alert-${level}`, role: "alert" }, [close, text]);
+    close.addEventListener("click", () => alert.remove());
     const container = document.getElementById("sources-messages");
-    container.replaceChildren(el("div", { class: `alert alert-${level}` }, [text]));
+    container.replaceChildren(alert);
+    container.scrollIntoView({ block: "nearest" });
+  }
+
+  function clearMessage() {
+    document.getElementById("sources-messages").replaceChildren();
   }
 
   function showError(error) {
     showMessage(errorText(error), "danger");
   }
 
-  function parametersOf(connection) {
-    return Object.entries(connection).map(([key, value]) => el("code", {}, [`${key}=${value}`, " "]));
+  // the button stays disabled, with a working label, until the task ends
+  async function withBusy(button, task) {
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent = "{% filter escapejs %}{% trans "Working…" %}{% endfilter %}";
+    try {
+      return await task();
+    } finally {
+      button.disabled = false;
+      button.textContent = label;
+    }
+  }
+
+  let providersPromise = null;
+
+  // installed providers by key, read once per page
+  function loadProviders() {
+    providersPromise =
+      providersPromise ||
+      sourcesApi("source-providers/?page_size=100").then((page) =>
+        Object.fromEntries(page.results.map((provider) => [provider.key, provider]))
+      );
+    return providersPromise;
+  }
+
+  // a short human name for a connection, from its public parameters
+  function connectionSummary(connection) {
+    const parameters = connection.connection || {};
+    if (parameters.url) {
+      return parameters.url;
+    }
+    if (parameters.host) {
+      return `${parameters.host}${parameters.port ? `:${parameters.port}` : ""}${parameters.database ? `/${parameters.database}` : ""}`;
+    }
+    return `#${connection.id}`;
+  }
+
+  // the public parameters with the labels of the provider form, in the form order
+  function parameterList(connection, provider) {
+    const parameters = connection.connection || {};
+    const fields = provider ? provider.connection_fields : Object.keys(parameters).map((name) => ({ name, label: name }));
+    const items = fields
+      .filter((field) => parameters[field.name] !== undefined && parameters[field.name] !== "")
+      .flatMap((field) => [el("dt", {}, [field.label]), el("dd", {}, [parameters[field.name]])]);
+    return el("dl", { class: "dl-horizontal" }, items);
+  }
+
+  // details are provider specific: one short "key: value" line each, the full value on hover
+  function detailsOf(details) {
+    const entries = Object.entries(details || {});
+    if (!entries.length) {
+      return [el("span", { class: "text-muted" }, ["—"])];
+    }
+    return entries.map(([key, value]) => {
+      const text = typeof value === "object" ? JSON.stringify(value) : String(value);
+      return el("small", { class: "sources-detail text-muted", title: `${key}: ${text}` }, [`${key}: ${text}`]);
+    });
+  }
+
+  function pagerText(page, pageSize, count) {
+    if (!count) {
+      return "";
+    }
+    const first = (page - 1) * pageSize + 1;
+    const last = Math.min(page * pageSize, count);
+    return `${first}–${last} {% filter escapejs %}{% trans "of" %}{% endfilter %} ${count}`;
   }
 </script>
 {% block sources_script %}{% endblock %}

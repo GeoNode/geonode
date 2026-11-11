@@ -19,6 +19,8 @@
 import dataclasses
 import typing
 
+from django.db.models import QuerySet
+
 from geonode.security.models import AuthConfig
 from geonode.sources.models import DataItem
 from geonode.sources.registry import source_provider_registry
@@ -51,7 +53,7 @@ def browse_connection(auth_config: AuthConfig) -> typing.List[typing.Dict]:
     ]
 
 
-def adopt_entries(auth_config: AuthConfig, uris: typing.List[str], user) -> typing.List[DataItem]:
+def adopt_entries(auth_config: AuthConfig, uris: typing.List[str], user) -> QuerySet:
     """Store the given entries of the connection as data items"""
     _provider = source_provider_registry.get(auth_config.type)
     # title and details come from the source, never from the caller
@@ -73,4 +75,4 @@ def adopt_entries(auth_config: AuthConfig, uris: typing.List[str], user) -> typi
         ],
         ignore_conflicts=True,
     )
-    return list(DataItem.objects.filter(auth_config=auth_config, uri__in=uris).order_by("title", "id"))
+    return DataItem.objects.filter(auth_config=auth_config, uri__in=uris).order_by("title", "id")

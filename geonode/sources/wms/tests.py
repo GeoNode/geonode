@@ -30,6 +30,7 @@ from geonode.security.models import AuthConfig
 from geonode.sources.base import SourceProviderError
 from geonode.sources.models import DataItem
 from geonode.sources.registry import source_provider_registry
+from geonode.sources.tests.utils import bad_gateway
 from geonode.sources.wms.auth import WmsAuthHandler
 
 # RFC 2606 host: the tests never reach a real service, every request is mocked
@@ -210,7 +211,7 @@ class WmsApiTests(APITestCase):
     @patch("geonode.sources.wms.provider.safe_request_url", return_value=response(CAPABILITIES_130))
     def test_wms_layers_should_be_browsed_live_and_stored_once_adopted(self, safe_request_url):
         response_ = self.client.post(
-            "/api/v2/source-connections/",
+            "/api/v3/source-connections/",
             {"type": "wms", "payload": {**PAYLOAD, "username": "reader", "password": "secret"}},
             format="json",
         )
@@ -219,15 +220,16 @@ class WmsApiTests(APITestCase):
         self.assertNotIn("password", _connection["connection"])
         self.assertFalse(DataItem.objects.exists())
 
-        response_ = self.client.get(f"/api/v2/source-connections/{_connection['id']}/browse/")
+        response_ = self.client.get(f"/api/v3/source-connections/{_connection['id']}/browse/")
         self.assertEqual(200, response_.status_code, response_.json())
         self.assertSetEqual(
-            {"wms:?layer=ws%3Aroads", "wms:?layer=ws%3Arivers"}, {_entry["uri"] for _entry in response_.json()}
+            {"wms:?layer=ws%3Aroads", "wms:?layer=ws%3Arivers"},
+            {_entry["uri"] for _entry in response_.json()["results"]},
         )
         self.assertFalse(DataItem.objects.exists())
 
         response_ = self.client.post(
-            f"/api/v2/source-connections/{_connection['id']}/adopt/",
+            f"/api/v3/source-connections/{_connection['id']}/adopt/",
             {"uris": ["wms:?layer=ws%3Aroads"]},
             format="json",
         )
@@ -241,7 +243,7 @@ class WmsApiTests(APITestCase):
         _connections = AuthConfig.objects.count()
         with self.assertLogs("geonode.sources.wms.provider", level="ERROR"):
             response_ = self.client.post(
-                "/api/v2/source-connections/", {"type": "wms", "payload": PAYLOAD}, format="json"
+                "/api/v3/source-connections/", {"type": "wms", "payload": PAYLOAD}, format="json"
             )
         self.assertEqual(502, response_.status_code)
         self.assertEqual(_connections, AuthConfig.objects.count())
@@ -249,7 +251,7 @@ class WmsApiTests(APITestCase):
     @patch("geonode.sources.wms.provider.safe_request_url", side_effect=requests.ConnectionError("down"))
     def test_browse_should_not_expose_the_cause(self, safe_request_url):
         _connection = WmsAuthHandler.create_auth_config(dict(PAYLOAD))
-        with self.assertLogs("geonode.sources.api.views", level="ERROR"):
-            response_ = self.client.get(f"/api/v2/source-connections/{_connection.pk}/browse/")
+        with self.assertLogs("geonode.sources.api.v3.views", level="ERROR"):
+            response_ = self.client.get(f"/api/v3/source-connections/{_connection.pk}/browse/")
         self.assertEqual(502, response_.status_code)
-        self.assertDictEqual({"detail": "Could not browse the connection."}, response_.json())
+        self.assertDictEqual(bad_gateway("Could not browse the connection."), response_.json())

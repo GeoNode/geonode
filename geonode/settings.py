@@ -438,6 +438,7 @@ INSTALLED_APPS = (
     "dynamic_rest",
     # OpenAPI schema for /api/v3/ only -- see geonode.api.v3.schema
     "drf_spectacular",
+    "drf_spectacular_sidecar",
     # Theme
     "django_select2",
     "django_forms_bootstrap",
@@ -515,11 +516,23 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "PREPROCESSING_HOOKS": ["geonode.api.v3.schema.exclude_non_v3_endpoints"],
     "COMPONENT_SPLIT_REQUEST": True,
+    # with ?fields= no response field is guaranteed, read-only fields must not be marked as required
+    "COMPONENT_NO_READ_ONLY_REQUIRED": True,
+    # a generic TypeEnum would collide with the next "type" choice field of v3
+    "ENUM_NAME_OVERRIDES": {"ConnectionFieldTypeEnum": "geonode.sources.api.v3.serializers.CONNECTION_FIELD_TYPES"},
+    # the schema is the public contract and lists every v3 endpoint, also the admin-only ones
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+    # swagger and redoc served from static files, not from a CDN: offline and strict CSP deployments work
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 REST_API_DEFAULT_PAGE = os.getenv("REST_API_DEFAULT_PAGE", 1)
 REST_API_DEFAULT_PAGE_SIZE = os.getenv("REST_API_DEFAULT_PAGE_SIZE", 10)
 REST_API_DEFAULT_PAGE_QUERY_PARAM = os.getenv("REST_API_DEFAULT_PAGE_QUERY_PARAM", "page_size")
+# upper bound of page_size on API v3, a bigger value is clamped
+REST_API_V3_MAX_PAGE_SIZE = int(os.getenv("REST_API_V3_MAX_PAGE_SIZE", 200))
 
 REST_API_PRESETS = {
     "bare": {"exclude[]": ["*"], "include[]": ["pk", "title"]},
