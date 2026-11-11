@@ -18,10 +18,10 @@
 #########################################################################
 from requests.auth import HTTPBasicAuth
 
-from geonode.sources.auth import FormAuthHandler
+from geonode.sources.auth import SourceConnectionAuthHandler
 
 
-class WmsAuthHandler(FormAuthHandler):
+class WmsAuthHandler(SourceConnectionAuthHandler):
     """Connection parameters of an OGC WMS, the type matches the source provider key"""
 
     handled_type = "wms"

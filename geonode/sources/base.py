@@ -21,7 +21,8 @@ import enum
 import typing
 from abc import ABC, abstractmethod
 
-from django import forms
+from rest_framework import serializers
+from rest_framework.fields import empty
 
 from geonode.security.models import AuthConfig
 
@@ -54,25 +55,25 @@ class BrowseEntry:
     details: typing.Dict = dataclasses.field(default_factory=dict)
 
 
-def form_to_connection_fields(form_class) -> typing.List[typing.Dict]:
-    """Describe a connection form for the UI, so that validation and UI come from one definition"""
+def serializer_to_connection_fields(serializer_class) -> typing.List[typing.Dict]:
+    """Describe a connection serializer for the UI, so that validation and UI come from one definition"""
     fields = []
-    for name, field in form_class.base_fields.items():
-        if isinstance(field.widget, forms.PasswordInput):
+    for name, field in serializer_class().fields.items():
+        if field.style.get("input_type") == "password":
             _type = "password"
-        elif isinstance(field, forms.ChoiceField):
+        elif isinstance(field, serializers.ChoiceField):
             _type = "choice"
-        elif isinstance(field, forms.IntegerField):
+        elif isinstance(field, serializers.IntegerField):
             _type = "integer"
-        elif isinstance(field, forms.URLField):
+        elif isinstance(field, serializers.URLField):
             _type = "url"
         else:
             _type = "string"
         _field = {"name": name, "label": str(field.label), "type": _type, "required": field.required}
-        if field.initial is not None:
-            _field["default"] = field.initial
+        if field.default is not empty:
+            _field["default"] = field.default
         if _type == "choice":
-            _field["choices"] = [value for value, _label in field.choices]
+            _field["choices"] = list(field.choices)
         fields.append(_field)
     return fields
 
@@ -90,8 +91,8 @@ class BaseSourceProvider(ABC):
     def __str__(self):
         return f"{self.__module__}.{self.__class__.__name__}"
 
-    # form validating the AuthConfig payload of a connection, also rendered by the pages
-    connection_form: typing.Type[forms.Form] = None
+    # serializer validating the AuthConfig payload of a connection, also rendered by the pages
+    connection_serializer: typing.Type[serializers.Serializer] = None
 
     @property
     def connection_fields(self) -> typing.List[typing.Dict]:
@@ -99,7 +100,7 @@ class BaseSourceProvider(ABC):
         Fields the UI renders to build the AuthConfig payload, each as
         {"name", "label", "type": "string|integer|url|password|choice", "required", "choices"?, "default"?}
         """
-        return form_to_connection_fields(self.connection_form)
+        return serializer_to_connection_fields(self.connection_serializer)
 
     @abstractmethod
     def test_connection(self, auth_config: AuthConfig) -> typing.Tuple[bool, str]:

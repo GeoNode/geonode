@@ -37,12 +37,12 @@ def capability_names(value: int) -> typing.List[str]:
     return [_cap.name for _cap in Capability if _cap.value and value & _cap]
 
 
-# the field types form_to_connection_fields produces
+# the field types serializer_to_connection_fields produces
 CONNECTION_FIELD_TYPES = ["string", "integer", "url", "password", "choice"]
 
 
 class ConnectionFieldSerializer(serializers.Serializer):
-    """A parameter of the connection form, as the UI renders it"""
+    """A parameter of the connection serializer, as the UI renders it"""
 
     name = serializers.CharField()
     label = serializers.CharField()

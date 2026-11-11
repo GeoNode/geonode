@@ -16,21 +16,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django import forms
 from django.test import TestCase
+from rest_framework import serializers
 
 from geonode.sources.base import BaseSourceProvider, Capability
 from geonode.sources.registry import source_provider_registry
 
 
-class DummyForm(forms.Form):
-    name = forms.CharField()
+class DummySerializer(serializers.Serializer):
+    name = serializers.CharField()
 
 
 class DummyProvider(BaseSourceProvider):
     key = "dummy"
     declared_capabilities = Capability.READ
-    connection_form = DummyForm
+    connection_serializer = DummySerializer
 
     def test_connection(self, auth_config):
         return True, ""
@@ -39,9 +39,9 @@ class DummyProvider(BaseSourceProvider):
         return []
 
 
-class NoFormProvider(DummyProvider):
-    key = "noform"
-    connection_form = None
+class NoSerializerProvider(DummyProvider):
+    key = "noserializer"
+    connection_serializer = None
 
 
 class SourceProviderRegistryTests(TestCase):
@@ -50,11 +50,11 @@ class SourceProviderRegistryTests(TestCase):
 
     def test_add_should_refuse_classes_that_are_not_providers(self):
         with self.assertRaises(TypeError):
-            source_provider_registry.add(DummyForm)
+            source_provider_registry.add(DummySerializer)
 
-    def test_sanity_checks_should_fail_without_a_connection_form(self):
-        source_provider_registry.add(NoFormProvider)
-        with self.assertRaisesRegex(ValueError, "connection_form"):
+    def test_sanity_checks_should_fail_without_a_connection_serializer(self):
+        source_provider_registry.add(NoSerializerProvider)
+        with self.assertRaisesRegex(ValueError, "connection_serializer"):
             source_provider_registry.sanity_checks()
 
     def test_sanity_checks_should_fail_without_an_auth_handler(self):

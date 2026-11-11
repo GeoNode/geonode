@@ -24,7 +24,7 @@ from django.test import TestCase
 from osgeo import ogr
 
 from geonode.sources.postgres.auth import PostgresAuthHandler
-from geonode.sources.postgres.forms import PostgresConnectionForm
+from geonode.sources.postgres.serializers import PostgresConnectionSerializer
 from geonode.sources.registry import source_provider_registry
 from geonode.sources.tests.utils import PAYLOAD, create_connection, entry_uri
 
@@ -76,9 +76,9 @@ class PostgresSourceProviderTests(TestCase):
         _layer.GetLayerDefn.return_value.GetGeomFieldDefn.side_effect = lambda idx: _fields[idx]
         return _layer
 
-    def test_connection_fields_should_come_from_the_connection_form(self):
+    def test_connection_fields_should_come_from_the_connection_serializer(self):
         actual = self.sut.connection_fields
-        self.assertListEqual(list(PostgresConnectionForm.base_fields), [_field["name"] for _field in actual])
+        self.assertListEqual(list(PostgresConnectionSerializer().fields), [_field["name"] for _field in actual])
         self.assertEqual("password", next(_field for _field in actual if _field["name"] == "password")["type"])
 
     @patch("geonode.sources.postgres.provider.psycopg2.connect")

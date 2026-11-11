@@ -28,7 +28,7 @@ from django.utils.translation import gettext_lazy as _
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 from geonode.sources.postgres.auth import PostgresAuthHandler
-from geonode.sources.postgres.forms import PostgresConnectionForm
+from geonode.sources.postgres.serializers import PostgresConnectionSerializer
 from geonode.sources.base import BaseSourceProvider, BrowseEntry, Capability
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ class PostgresSourceProvider(BaseSourceProvider):
     label = _("PostgreSQL / PostGIS")
     # for now the items are only looked at, never changed
     declared_capabilities = Capability.READ
-    connection_form = PostgresConnectionForm
+    connection_serializer = PostgresConnectionSerializer
 
     CONNECT_TIMEOUT = 5
     STATEMENT_TIMEOUT_MS = 30000

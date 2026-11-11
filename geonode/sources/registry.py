@@ -19,7 +19,7 @@
 import logging
 import typing
 
-from django import forms
+from rest_framework import serializers
 from django.conf import settings
 from django.utils.module_loading import import_string
 
@@ -62,8 +62,10 @@ class SourceProviderRegistry:
                 raise ValueError(f"Source provider {_provider} has no key")
             if not isinstance(_provider.declared_capabilities, Capability):
                 raise ValueError(f"Source provider {_provider} must declare its capabilities as a Capability")
-            if not (_provider.connection_form and issubclass(_provider.connection_form, forms.Form)):
-                raise ValueError(f"Source provider {_provider} must define its connection_form")
+            if not (
+                _provider.connection_serializer and issubclass(_provider.connection_serializer, serializers.Serializer)
+            ):
+                raise ValueError(f"Source provider {_provider} must define its connection_serializer")
             # the connection of a provider is an AuthConfig of the same type, it needs a handler to be read
             if not auth_handler_registry.get_handler_class(key):
                 raise ValueError(f"Source provider {_provider} has no auth handler for type '{key}'")

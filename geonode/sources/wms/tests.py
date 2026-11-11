@@ -91,7 +91,7 @@ def response(content, status_code=200):
 class WmsTestCase(TestCase):
     def setUp(self):
         # is_safe_url resolves the host: the check itself is covered by geonode.utils
-        _patcher = patch("geonode.sources.wms.forms.is_safe_url", return_value=True)
+        _patcher = patch("geonode.sources.wms.serializers.is_safe_url", return_value=True)
         self.is_safe_url = _patcher.start()
         self.addCleanup(_patcher.stop)
 
@@ -202,7 +202,7 @@ class WmsApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
-        _patcher = patch("geonode.sources.wms.forms.is_safe_url", return_value=True)
+        _patcher = patch("geonode.sources.wms.serializers.is_safe_url", return_value=True)
         _patcher.start()
         self.addCleanup(_patcher.stop)
         self.staff = get_user_model().objects.create_user(username="sources_staff", password="password", is_staff=True)

@@ -29,7 +29,7 @@ from geonode.security.models import AuthConfig
 from geonode.utils import XML_PARSER, WebMapService, safe_request_url
 from geonode.sources.base import BaseSourceProvider, BrowseEntry, Capability, SourceProviderError
 from geonode.sources.wms.auth import WmsAuthHandler
-from geonode.sources.wms.forms import WmsConnectionForm
+from geonode.sources.wms.serializers import WmsConnectionSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class WmsSourceProvider(BaseSourceProvider):
     label = _("OGC WMS")
     # for now the layers are only looked at, never changed
     declared_capabilities = Capability.READ
-    connection_form = WmsConnectionForm
+    connection_serializer = WmsConnectionSerializer
 
     TIMEOUT = 30
 

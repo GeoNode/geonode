@@ -16,15 +16,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+from django.core.exceptions import ValidationError
+from rest_framework.settings import api_settings
 
 from geonode.security.auth_handlers import AuthHandler
 
 
-class FormAuthHandler(AuthHandler):
+class SourceConnectionAuthHandler(AuthHandler):
     """
-    Connection of a source provider: the payload is validated by the connection form of the provider
-    whose key is the handled type, so the form stays the only definition of the connection parameters
+    Connection of a source provider: the payload is validated by the connection serializer of the provider
+    whose key is the handled type, so the serializer stays the only definition of the connection parameters
     """
 
     @classmethod
@@ -40,20 +41,21 @@ class FormAuthHandler(AuthHandler):
         for key, value in _stored.items():
             payload.setdefault(key, value)
 
-        form = source_provider_registry.get(cls.handled_type).connection_form(data=payload)
-        form.is_valid()
-        # a form silently drops what it does not know, the payload must not carry it
-        if extra := sorted(set(payload) - set(form.fields)):
-            form.add_error(None, f"Unknown keys: {', '.join(extra)}.")
-        if form.errors:
+        _serializer = source_provider_registry.get(cls.handled_type).connection_serializer(data=payload)
+        _serializer.is_valid()
+        _errors = dict(_serializer.errors)
+        # unknown keys are silently dropped by a serializer, the payload must not carry them
+        if extra := sorted(set(payload) - set(_serializer.fields)):
+            _errors.setdefault(api_settings.NON_FIELD_ERRORS_KEY, []).append(f"Unknown keys: {', '.join(extra)}.")
+        if _errors:
             # flattened: keyed errors raised inside the admin form clean() would name fields it does not have
             raise ValidationError(
                 [
-                    message if field == NON_FIELD_ERRORS else f"{field}: {message}"
-                    for field, messages in form.errors.items()
+                    str(message) if field == api_settings.NON_FIELD_ERRORS_KEY else f"{field}: {message}"
+                    for field, messages in _errors.items()
                     for message in messages
                 ]
             )
         payload.clear()
-        payload.update(form.cleaned_data)
+        payload.update(_serializer.validated_data)
         return payload

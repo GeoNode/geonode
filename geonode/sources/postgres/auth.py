@@ -18,10 +18,10 @@
 #########################################################################
 import typing
 
-from geonode.sources.auth import FormAuthHandler
+from geonode.sources.auth import SourceConnectionAuthHandler
 
 
-class PostgresAuthHandler(FormAuthHandler):
+class PostgresAuthHandler(SourceConnectionAuthHandler):
     """Connection parameters of a PostgreSQL/PostGIS source, the type matches the source provider key"""
 
     handled_type = "postgresql"

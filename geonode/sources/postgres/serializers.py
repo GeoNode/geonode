@@ -16,41 +16,26 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django import forms
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 POSTGRES_SSLMODES = ("disable", "allow", "prefer", "require", "verify-ca", "verify-full")
 
 
-class PostgresConnectionForm(forms.Form):
+class PostgresConnectionSerializer(serializers.Serializer):
     """Connection parameters of a PostgreSQL source: validates the AuthConfig payload and describes it to the UI"""
 
-    host = forms.CharField(label=_("Host"))
-    port = forms.IntegerField(label=_("Port"), min_value=1, max_value=65535, initial=5432, required=False)
-    database = forms.CharField(label=_("Database"))
-    username = forms.CharField(label=_("Username"))
+    host = serializers.CharField(label=_("Host"))
+    port = serializers.IntegerField(label=_("Port"), min_value=1, max_value=65535, default=5432)
+    database = serializers.CharField(label=_("Database"))
+    username = serializers.CharField(label=_("Username"))
     # spaces are part of a password
-    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput, strip=False)
-    sslmode = forms.ChoiceField(
-        label=_("SSL mode"),
-        choices=[(mode, mode) for mode in POSTGRES_SSLMODES],
-        initial="prefer",
-        required=False,
-    )
+    password = serializers.CharField(label=_("Password"), trim_whitespace=False, style={"input_type": "password"})
+    sslmode = serializers.ChoiceField(label=_("SSL mode"), choices=POSTGRES_SSLMODES, default="prefer")
     # OGR splits the schema list on commas
-    schema = forms.CharField(
+    schema = serializers.CharField(
         label=_("Schema"),
-        initial="public",
-        required=False,
+        default="public",
         validators=[RegexValidator(r"^[^,]+$", _("Enter a single schema name."))],
     )
-
-    def clean_port(self):
-        return self.cleaned_data["port"] or 5432
-
-    def clean_sslmode(self):
-        return self.cleaned_data["sslmode"] or "prefer"
-
-    def clean_schema(self):
-        return self.cleaned_data["schema"] or "public"

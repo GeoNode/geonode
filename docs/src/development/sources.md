@@ -41,7 +41,7 @@ A missing capability is a statement, not a gap: an item without `SCHEMA` has no 
 
 It works with or without the PostGIS extension: tables without geometry are listed with an empty geometry list.
 
-Connection parameters, validated by `PostgresConnectionForm`:
+Connection parameters, validated by `PostgresConnectionSerializer`:
 
 | Parameter | Required | Default | Notes |
 | --- | --- | --- | --- |
@@ -71,7 +71,7 @@ Notes:
 | Data item uri | `wms:?layer=<name>`, relative to the connection |
 | Data item details | `name`, `abstract`, `keywords`, `bbox` (west, south, east, north in EPSG:4326, or `null` when not advertised) |
 
-Connection parameters, validated by `WmsConnectionForm`:
+Connection parameters, validated by `WmsConnectionSerializer`:
 
 | Parameter | Required | Default | Notes |
 | --- | --- | --- | --- |
@@ -140,9 +140,9 @@ curl -u admin:admin "http://localhost:8000/api/v3/data-items/?connection=1"
 
 A provider lives in its own package under `geonode/sources/<key>/`:
 
-- `auth.py`: a `geonode.sources.auth.FormAuthHandler` subclass whose `handled_type` is the provider key. It validates the payload with the connection form of the provider: blank values keep the stored ones, unknown keys are refused.
-- `forms.py`: the connection form. It validates the payload and generates the fields the UI renders.
-- `provider.py`: a `BaseSourceProvider` subclass defining `key`, `label`, `declared_capabilities`, `connection_form`, and implementing `test_connection` and `browse`. `browse` is called live, by browsing and by adoption. When the source cannot be read it raises a `RuntimeError`, e.g. `geonode.sources.base.SourceProviderError`: the API logs it and answers with a generic `502`.
+- `auth.py`: a `geonode.sources.auth.SourceConnectionAuthHandler` subclass whose `handled_type` is the provider key. It validates the payload with the connection serializer of the provider: blank values keep the stored ones, unknown keys are refused.
+- `serializers.py`: the connection serializer, a DRF `Serializer`. It validates the payload and generates the fields the UI renders: a password field is a `CharField` with `style={"input_type": "password"}`.
+- `provider.py`: a `BaseSourceProvider` subclass defining `key`, `label`, `declared_capabilities`, `connection_serializer`, and implementing `test_connection` and `browse`. `browse` is called live, by browsing and by adoption. When the source cannot be read it raises a `RuntimeError`, e.g. `geonode.sources.base.SourceProviderError`: the API logs it and answers with a generic `502`.
 
 Then register both classes in the settings:
 
@@ -151,4 +151,4 @@ AUTH_HANDLERS += ["myapp.sources.mysource.auth.MySourceAuthHandler"]
 SOURCE_PROVIDERS += ["myapp.sources.mysource.provider.MySourceProvider"]
 ```
 
-GeoNode refuses to start if a provider has no connection form or no auth handler for its key.
+GeoNode refuses to start if a provider has no connection serializer or no auth handler for its key.

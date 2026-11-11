@@ -16,8 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django import forms
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from owslib.util import clean_ows_url
 
@@ -26,30 +26,25 @@ from geonode.utils import is_safe_url
 WMS_VERSIONS = ("1.3.0", "1.1.1")
 
 
-class WmsConnectionForm(forms.Form):
+class WmsConnectionSerializer(serializers.Serializer):
     """Connection parameters of an OGC WMS: validates the AuthConfig payload and describes it to the UI"""
 
-    url = forms.URLField(label=_("Service URL"), assume_scheme="https")
-    version = forms.ChoiceField(
-        label=_("Version"), choices=[(version, version) for version in WMS_VERSIONS], initial="1.3.0", required=False
-    )
-    username = forms.CharField(label=_("Username"), required=False)
+    url = serializers.URLField(label=_("Service URL"))
+    version = serializers.ChoiceField(label=_("Version"), choices=WMS_VERSIONS, default="1.3.0")
+    username = serializers.CharField(label=_("Username"), required=False)
     # spaces are part of a password
-    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput, strip=False, required=False)
+    password = serializers.CharField(
+        label=_("Password"), trim_whitespace=False, required=False, style={"input_type": "password"}
+    )
 
-    def clean_url(self):
-        _url = self.cleaned_data["url"]
+    def validate_url(self, value):
         # same check every request repeats: http(s) only, no credentials in the url, no private or local host
-        if not is_safe_url(_url):
-            raise forms.ValidationError(_("Enter a public http or https URL, without credentials."))
+        if not is_safe_url(value):
+            raise serializers.ValidationError(_("Enter a public http or https URL, without credentials."))
         # vendor parameters (e.g. map=) are kept, service, request and version are set by the provider
-        return clean_ows_url(_url)
+        return clean_ows_url(value)
 
-    def clean_version(self):
-        return self.cleaned_data["version"] or "1.3.0"
-
-    def clean(self):
-        _data = super().clean()
-        if bool(_data.get("username")) != bool(_data.get("password")):
-            raise forms.ValidationError(_("Provide both username and password, or none."))
-        return _data
+    def validate(self, attrs):
+        if bool(attrs.get("username")) != bool(attrs.get("password")):
+            raise serializers.ValidationError(_("Provide both username and password, or none."))
+        return attrs
