@@ -47,32 +47,24 @@ class UnknownEntryError(Exception):
 def browse_connection(auth_config: AuthConfig) -> typing.List[typing.Dict]:
     """List what the connection exposes, live: nothing is stored"""
     _provider = source_provider_registry.get(auth_config.type)
-    _adopted = set(DataItem.objects.filter(auth_config=auth_config).values_list("uri", flat=True))
-    return [
-        {**dataclasses.asdict(_entry), "adopted": _entry.uri in _adopted} for _entry in _provider.browse(auth_config)
-    ]
+    _published = set(DataItem.objects.filter(auth_config=auth_config).values_list("uri", flat=True))
+
+    _entries = []
+    for _entry in _provider.browse(auth_config):
+        _data = dataclasses.asdict(_entry)
+        _data["published"] = _entry.uri in _published
+        _entries.append(_data)
+    return _entries
 
 
-def adopt_entries(auth_config: AuthConfig, uris: typing.List[str], user) -> QuerySet:
-    """Store the given entries of the connection as data items"""
+def publish_entries(auth_config: AuthConfig, uris: typing.List[str], user) -> typing.Tuple[QuerySet, typing.Dict]:
+    """Publish the given entries of the connection: the data items, and the executions still publishing the others"""
     _provider = source_provider_registry.get(auth_config.type)
     # title and details come from the source, never from the caller
     _entries = {_entry.uri: _entry for _entry in _provider.browse(auth_config)}
-    if set(uris) - set(_entries):
+    _uris = set(uris)
+    if _uris - set(_entries):
         raise UnknownEntryError()
-    # adopting twice is a no-op: the unique constraint skips the known items
-    DataItem.objects.bulk_create(
-        [
-            DataItem(
-                source_provider=_provider.key,
-                uri=_uri,
-                auth_config=auth_config,
-                title=_entries[_uri].title,
-                details=_entries[_uri].details,
-                created_by=user,
-            )
-            for _uri in set(uris)
-        ],
-        ignore_conflicts=True,
-    )
-    return DataItem.objects.filter(auth_config=auth_config, uri__in=uris).order_by("title", "id")
+    _known = set(DataItem.objects.filter(auth_config=auth_config, uri__in=_uris).values_list("uri", flat=True))
+    _executions = _provider.publish(auth_config, [_entries[_uri] for _uri in sorted(_uris - _known)], user)
+    return DataItem.objects.filter(auth_config=auth_config, uri__in=uris).order_by("title", "id"), _executions

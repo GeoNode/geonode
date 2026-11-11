@@ -138,7 +138,11 @@ class DataPublisher:
         self.store = self.cat.get_store(name=store_name, workspace=self.workspace)
         if not self.store:
             logger.warning(f"The store does not exists: {store_name} creating...")
-            self.store = create_geoserver_db_featurestore(store_name=store_name, workspace=self.workspace.name)
+            self.store = create_geoserver_db_featurestore(
+                store_name=store_name,
+                workspace=self.workspace.name,
+                connection_parameters=self.handler.get_geoserver_store_parameters(),
+            )
 
     def publish_geoserver_view(self, layer_name, crs, view_name, sql=None, geometry=None):
         """

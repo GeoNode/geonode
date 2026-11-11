@@ -18,6 +18,7 @@
 #########################################################################
 import logging
 
+import requests
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiParameter, extend_schema_view, inline_serializer
@@ -26,14 +27,16 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from geoserver.catalog import FailedRequestError
 
 from geonode.api.v3.exceptions import Conflict
 from geonode.api.v3.schema import extend_v3_schema
 from geonode.api.v3.viewsets import V3GenericViewSet, V3ModelViewSet
-from geonode.sources.api.v3.exceptions import SourceUnavailable
+from geonode.sources.api.v3.exceptions import GeoServerUnavailable, SourceUnavailable
 from geonode.sources.api.v3.filters import DataItemFilterSet
 from geonode.sources.api.v3.serializers import (
-    AdoptSerializer,
+    PublishResultSerializer,
+    PublishSerializer,
     BrowseEntrySerializer,
     DataItemSerializer,
     SourceConnectionSerializer,
@@ -44,6 +47,18 @@ from geonode.sources.registry import source_provider_registry
 from geonode.sources import utils
 
 logger = logging.getLogger(__name__)
+
+
+def unpublish(data_items):
+    for _item in data_items:
+        # an uninstalled provider has nothing published anymore, the row only goes
+        if _provider := source_provider_registry.get(_item.source_provider):
+            try:
+                _provider.unpublish(_item)
+            except (FailedRequestError, requests.RequestException) as e:
+                # the data items stay: removing them would leave their layers behind
+                logger.exception(e)
+                raise GeoServerUnavailable("Could not remove the layer from GeoServer.") from e
 
 
 @extend_schema_view(retrieve=extend_v3_schema(parameters=[OpenApiParameter("key", str, OpenApiParameter.PATH)]))
@@ -87,6 +102,8 @@ class SourceConnectionViewSet(V3ModelViewSet):
         # the AuthConfig may also authenticate resources or url patterns, deleting it would silently break them
         if instance.authconfigresources.exists() or instance.url_patterns.exists():
             raise Conflict("The connection is used by resources or URL patterns and cannot be deleted.")
+        # the data items go with the connection: their layers first, the store with the last one
+        unpublish(instance.data_items.all())
         instance.delete()
 
     @extend_v3_schema(
@@ -115,29 +132,46 @@ class SourceConnectionViewSet(V3ModelViewSet):
             raise SourceUnavailable("Could not browse the connection.") from e
         return self.get_paginated_response(self.get_serializer(_page, many=True).data)
 
-    @extend_v3_schema(request=AdoptSerializer, responses={201: DataItemSerializer(many=True)})
-    # answers with the adopted items, never a page of them
+    @extend_v3_schema(
+        request=PublishSerializer,
+        responses={201: DataItemSerializer(many=True), 202: PublishResultSerializer(many=True)},
+    )
+    # answers with the published items, never a page of them
     @action(detail=True, methods=["post"], pagination_class=None)
-    def adopt(self, request, pk=None, *args, **kwargs):
-        """Store the chosen entries of the connection as data items"""
+    def publish(self, request, pk=None, *args, **kwargs):
+        """
+        Publish the chosen entries as data items: 201 with the items, or 202 when the provider publishes some first
+        (a PostgreSQL table becomes a data item once the local GeoServer serves it), listing each entry with its
+        data item or the execution still publishing it
+        """
         _connection = self.get_object()
-        serializer = AdoptSerializer(data=request.data)
+        serializer = PublishSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            _items = utils.adopt_entries(_connection, serializer.validated_data["uris"], request.user)
+            _items, _executions = utils.publish_entries(_connection, serializer.validated_data["uris"], request.user)
         except utils.UnknownEntryError:
             raise ValidationError({"uris": ["Some entries are not exposed by the connection."]})
         except RuntimeError as e:
             # GDAL or provider errors may expose server details, the client only gets a generic message
             logger.exception(e)
             raise SourceUnavailable("Could not browse the connection.") from e
+        if _executions:
+            _published = dict(_items.values_list("uri", "pk"))
+            _data = [
+                {"uri": _uri, "data_item": _published.get(_uri), "execution_id": _executions.get(_uri)}
+                for _uri in sorted(set(serializer.validated_data["uris"]))
+            ]
+            return Response(PublishResultSerializer(_data, many=True).data, status=202)
         _fields = DataItemSerializer.default_field_names()
         _items = DataItemSerializer.setup_queryset(_items, _fields, request)
         return Response(DataItemSerializer(_items, many=True, only_fields=_fields).data, status=201)
 
 
 class DataItemViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, V3GenericViewSet):
-    """Data items adopted from the connections: the API reads and removes them, removing never touches the source"""
+    """
+    Data items published from the connections: the API reads and removes them.
+    Removing one also removes its layer from the local GeoServer, never the upstream data
+    """
 
     permission_classes = [IsAdminUser]
     serializer_class = DataItemSerializer
@@ -147,3 +181,7 @@ class DataItemViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.D
 
     def get_base_queryset(self):
         return DataItem.objects.order_by("title", "id")
+
+    def perform_destroy(self, instance):
+        unpublish([instance])
+        instance.delete()

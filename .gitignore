@@ -98,3 +98,8 @@ scripts/spcgeonode/_volume_*
 
 .env
 
+.claude/
+.agents/
+worker.state-shm
+worker.state-wal
+.claude.json

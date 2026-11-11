@@ -16,16 +16,23 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import dataclasses
 from unittest.mock import MagicMock, patch
 
 import psycopg2
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from osgeo import ogr
 
+from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.resource.models import ExecutionRequest
+from geonode.sources.base import BrowseEntry
+from geonode.sources.models import DataItem
 from geonode.sources.postgres.auth import PostgresAuthHandler
 from geonode.sources.postgres.serializers import PostgresConnectionSerializer
 from geonode.sources.registry import source_provider_registry
+from geonode.upload.handlers.postgres.handler import PostgresUploadHandler
 from geonode.sources.tests.utils import PAYLOAD, create_connection, entry_uri
 
 
@@ -113,3 +120,74 @@ class PostgresSourceProviderTests(TestCase):
         )
         self.assertListEqual([], actual[1].details["geometries"])
         self.assertIn("SCHEMAS=public", open_ex.call_args.kwargs["open_options"])
+
+
+class PostgresSourceProviderPublishTests(TestCase):
+    @patch("geonode.sources.postgres.provider.import_orchestrator.apply_async")
+    def test_publish_should_start_one_execution_per_table(self, apply_async):
+        _connection = create_connection()
+        _entries = [
+            BrowseEntry(uri=entry_uri(_table), title=f"public.{_table}", details={"schema": "public", "table": _table})
+            for _table in ("Roads", "rivers")
+        ]
+        actual = source_provider_registry.get("postgresql").publish(
+            _connection, _entries, get_user_model().objects.create(username="publisher")
+        )
+
+        self.assertEqual(2, apply_async.call_count)
+        self.assertListEqual([_call.args[0][1] for _call in apply_async.call_args_list], list(actual.values()))
+        for _entry, _call in zip(_entries, apply_async.call_args_list):
+            _exec_id = _call.args[0][1]
+            self.assertDictEqual(
+                {
+                    "handler_module_path": "geonode.upload.handlers.postgres.handler.PostgresUploadHandler",
+                    "files": {},
+                    "source_provider": "postgresql",
+                    "auth_config_id": _connection.pk,
+                    **dataclasses.asdict(_entry),
+                },
+                ExecutionRequest.objects.get(exec_id=_exec_id).input_params,
+            )
+            # the same start as the upload API: the importer names the layer in its import_resource step
+            self.assertTupleEqual(({}, _exec_id), _call.args[0])
+            expected = {
+                "handler": "geonode.upload.handlers.postgres.handler.PostgresUploadHandler",
+                "action": exa.UPLOAD.value,
+                "step": "start_import",
+            }
+            self.assertDictEqual(expected, _call.args[1])
+
+    @patch("geonode.sources.postgres.provider.import_orchestrator.apply_async")
+    def test_publish_should_skip_a_table_still_being_published(self, apply_async):
+        """A second execution would fail as a duplicate, and its rollback would remove the layer of the first"""
+        _connection = create_connection()
+        _entry = BrowseEntry(
+            uri=entry_uri("roads"), title="public.roads", details={"schema": "public", "table": "roads"}
+        )
+        _running = ExecutionRequest.objects.create(
+            func_name="start_import",
+            status=ExecutionRequest.STATUS_RUNNING,
+            input_params={"auth_config_id": _connection.pk, "uri": _entry.uri},
+        )
+        actual = source_provider_registry.get("postgresql").publish(
+            _connection, [_entry], get_user_model().objects.create(username="publisher")
+        )
+        apply_async.assert_not_called()
+        self.assertDictEqual({_entry.uri: str(_running.exec_id)}, actual)
+
+    @patch.object(PostgresUploadHandler, "remove_layer")
+    def test_unpublish_should_remove_the_layer_of_the_item(self, remove_layer):
+        _connection = create_connection()
+        _item = DataItem.objects.create(
+            source_provider="postgresql", uri=entry_uri("roads"), auth_config=_connection, layer="geonode:roads_9"
+        )
+        source_provider_registry.get("postgresql").unpublish(_item)
+        remove_layer.assert_called_once_with(_connection.pk, "geonode:roads_9")
+
+    @patch.object(PostgresUploadHandler, "remove_layer")
+    def test_unpublish_should_skip_an_item_without_layer(self, remove_layer):
+        _item = DataItem.objects.create(
+            source_provider="postgresql", uri=entry_uri("roads"), auth_config=create_connection()
+        )
+        source_provider_registry.get("postgresql").unpublish(_item)
+        remove_layer.assert_not_called()

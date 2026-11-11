@@ -43,4 +43,5 @@ SYSTEM_HANDLERS = [
     "geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler",
     "geonode.upload.handlers.empty_dataset.handler.EmptyDatasetHandler",
     "geonode.upload.handlers.xlsx.handler.XLSXFileHandler",
+    "geonode.upload.handlers.postgres.handler.PostgresUploadHandler",
 ]

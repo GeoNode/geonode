@@ -36,8 +36,10 @@ class DataItem(models.Model):
     # deleting a connection drops its items: only GeoNode rows, never the upstream data
     auth_config = models.ForeignKey(AuthConfig, on_delete=models.CASCADE, related_name="data_items")
     title = models.TextField(blank=True, default="")
-    # read from the source when the item is adopted, so that listing the items never reaches the provider
+    # read from the source when the item is published, so that listing the items never reaches the provider
     details = models.JSONField(blank=True, default=dict)
+    # the GeoServer layer serving the item, as workspace:name; empty when the provider publishes nothing
+    layer = models.CharField(max_length=255, blank=True, default="")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

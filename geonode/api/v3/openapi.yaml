@@ -1,0 +1,863 @@
+openapi: 3.0.3
+info:
+  title: GeoNode API v3
+  version: 3.0.0
+  description: 'Version 3 of the GeoNode REST API. Plain Django REST Framework: field
+    selection is the single `fields` query parameter, and a trailing slash is required
+    on every path.'
+paths:
+  /api/v3/data-items/:
+    get:
+      operationId: data_items_list
+      description: |-
+        Data items published from the connections: the API reads and removes them.
+        Removing one also removes its layer from the local GeoServer, never the upstream data
+
+        Stability: experimental.
+      parameters:
+      - in: query
+        name: connection
+        schema:
+          type: integer
+      - in: query
+        name: fields
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - capabilities
+            - connection
+            - created
+            - created_by
+            - details
+            - id
+            - layer
+            - source_provider
+            - title
+            - updated
+            - uri
+        description: 'Subset of the fields to return, unknown names are rejected with
+          400. Default: capabilities, connection, created, created_by, id, layer,
+          source_provider, title, updated, uri.'
+        explode: false
+        style: form
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: source_provider
+        schema:
+          type: string
+      tags:
+      - data-items
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDataItemList'
+          description: ''
+      x-stability: experimental
+  /api/v3/data-items/{id}/:
+    get:
+      operationId: data_items_retrieve
+      description: |-
+        Data items published from the connections: the API reads and removes them.
+        Removing one also removes its layer from the local GeoServer, never the upstream data
+
+        Stability: experimental.
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - capabilities
+            - connection
+            - created
+            - created_by
+            - details
+            - id
+            - layer
+            - source_provider
+            - title
+            - updated
+            - uri
+        description: 'Subset of the fields to return, unknown names are rejected with
+          400. Default: capabilities, connection, created, created_by, id, layer,
+          source_provider, title, updated, uri.'
+        explode: false
+        style: form
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this data item.
+        required: true
+      tags:
+      - data-items
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataItem'
+          description: ''
+      x-stability: experimental
+    delete:
+      operationId: data_items_destroy
+      description: |-
+        Data items published from the connections: the API reads and removes them.
+        Removing one also removes its layer from the local GeoServer, never the upstream data
+
+        Stability: experimental.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this data item.
+        required: true
+      tags:
+      - data-items
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+      x-stability: experimental
+  /api/v3/source-connections/:
+    get:
+      operationId: source_connections_list
+      description: |-
+        Connections to the sources: each one is an AuthConfig whose type is a provider key
+
+        Stability: experimental.
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - connection
+            - data_items_count
+            - id
+            - type
+        description: Subset of the fields to return, unknown names are rejected with
+          400.
+        explode: false
+        style: form
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - source-connections
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSourceConnectionList'
+          description: ''
+      x-stability: experimental
+    post:
+      operationId: source_connections_create
+      description: |-
+        Connections to the sources: each one is an AuthConfig whose type is a provider key
+
+        Stability: experimental.
+      tags:
+      - source-connections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SourceConnectionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SourceConnectionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SourceConnectionRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceConnection'
+          description: ''
+      x-stability: experimental
+  /api/v3/source-connections/{id}/:
+    get:
+      operationId: source_connections_retrieve
+      description: |-
+        Connections to the sources: each one is an AuthConfig whose type is a provider key
+
+        Stability: experimental.
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - connection
+            - data_items_count
+            - id
+            - type
+        description: Subset of the fields to return, unknown names are rejected with
+          400.
+        explode: false
+        style: form
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Authentication Configuration.
+        required: true
+      tags:
+      - source-connections
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceConnection'
+          description: ''
+      x-stability: experimental
+    patch:
+      operationId: source_connections_partial_update
+      description: |-
+        Connections to the sources: each one is an AuthConfig whose type is a provider key
+
+        Stability: experimental.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Authentication Configuration.
+        required: true
+      tags:
+      - source-connections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSourceConnectionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSourceConnectionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSourceConnectionRequest'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceConnection'
+          description: ''
+      x-stability: experimental
+    delete:
+      operationId: source_connections_destroy
+      description: |-
+        Connections to the sources: each one is an AuthConfig whose type is a provider key
+
+        Stability: experimental.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Authentication Configuration.
+        required: true
+      tags:
+      - source-connections
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+      x-stability: experimental
+  /api/v3/source-connections/{id}/browse/:
+    get:
+      operationId: source_connections_browse_list
+      description: |-
+        What the connection exposes right now, nothing is stored
+
+        Stability: experimental.
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - details
+            - published
+            - title
+            - uri
+        description: Subset of the fields to return, unknown names are rejected with
+          400.
+        explode: false
+        style: form
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Authentication Configuration.
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - source-connections
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBrowseEntryList'
+          description: ''
+      x-stability: experimental
+  /api/v3/source-connections/{id}/publish/:
+    post:
+      operationId: source_connections_publish_create
+      description: |-
+        Publish the chosen entries as data items: 201 with the items, or 202 when the provider publishes some first
+        (a PostgreSQL table becomes a data item once the local GeoServer serves it), listing each entry with its
+        data item or the execution still publishing it
+
+        Stability: experimental.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Authentication Configuration.
+        required: true
+      tags:
+      - source-connections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataItem'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublishResult'
+          description: ''
+      x-stability: experimental
+  /api/v3/source-connections/{id}/test/:
+    post:
+      operationId: source_connections_test_create
+      description: |-
+        Check that the source of the connection can be reached
+
+        Stability: experimental.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Authentication Configuration.
+        required: true
+      tags:
+      - source-connections
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceConnectionTest'
+          description: ''
+      x-stability: experimental
+  /api/v3/source-providers/:
+    get:
+      operationId: source_providers_list
+      description: |-
+        The installed providers, as known by the registry
+
+        Stability: experimental.
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - connection_fields
+            - declared_capabilities
+            - key
+            - label
+        description: Subset of the fields to return, unknown names are rejected with
+          400.
+        explode: false
+        style: form
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - source-providers
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSourceProviderList'
+          description: ''
+      x-stability: experimental
+  /api/v3/source-providers/{key}/:
+    get:
+      operationId: source_providers_retrieve
+      description: |-
+        The installed providers, as known by the registry
+
+        Stability: experimental.
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - connection_fields
+            - declared_capabilities
+            - key
+            - label
+        description: Subset of the fields to return, unknown names are rejected with
+          400.
+        explode: false
+        style: form
+      - in: path
+        name: key
+        schema:
+          type: string
+        required: true
+      tags:
+      - source-providers
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceProvider'
+          description: ''
+      x-stability: experimental
+components:
+  schemas:
+    BrowseEntry:
+      type: object
+      description: What a connection exposes right now, an entry is stored only when
+        published
+      properties:
+        uri:
+          type: string
+        title:
+          type: string
+        details:
+          type: object
+          additionalProperties: {}
+        published:
+          type: boolean
+      required:
+      - details
+      - published
+      - title
+      - uri
+    ConnectionField:
+      type: object
+      description: A parameter of the connection serializer, as the UI renders it
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        type:
+          $ref: '#/components/schemas/ConnectionFieldTypeEnum'
+        required:
+          type: boolean
+        choices:
+          type: array
+          items:
+            type: string
+        default: {}
+      required:
+      - label
+      - name
+      - required
+      - type
+    ConnectionFieldTypeEnum:
+      enum:
+      - string
+      - integer
+      - url
+      - password
+      - choice
+      type: string
+      description: |-
+        * `string` - string
+        * `integer` - integer
+        * `url` - url
+        * `password` - password
+        * `choice` - choice
+    DataItem:
+      type: object
+      description: Data items are created by publishing the entries of their connection,
+        the API only reads and removes them
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        source_provider:
+          type: string
+          readOnly: true
+        uri:
+          type: string
+          readOnly: true
+          description: Provider-owned location of the item inside its connection,
+            without secrets
+        title:
+          type: string
+          readOnly: true
+        layer:
+          type: string
+          readOnly: true
+        connection:
+          type: integer
+          readOnly: true
+        capabilities:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        created_by:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        updated:
+          type: string
+          format: date-time
+          readOnly: true
+    PaginatedBrowseEntryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrowseEntry'
+    PaginatedDataItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataItem'
+    PaginatedSourceConnectionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceConnection'
+    PaginatedSourceProviderList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceProvider'
+    PatchedSourceConnectionRequest:
+      type: object
+      description: |-
+        A connection is an AuthConfig whose type is a source provider key.
+        The payload is write only: secrets never leave the server
+      properties:
+        type:
+          type: string
+          minLength: 1
+          maxLength: 128
+        payload:
+          type: object
+          additionalProperties: {}
+          writeOnly: true
+    PublishRequest:
+      type: object
+      properties:
+        uris:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          maxItems: 100
+      required:
+      - uris
+    PublishResult:
+      type: object
+      description: 'A requested entry: its data item once published, or the execution
+        still publishing it'
+      properties:
+        uri:
+          type: string
+        data_item:
+          type: integer
+          nullable: true
+        execution_id:
+          type: string
+          nullable: true
+      required:
+      - data_item
+      - execution_id
+      - uri
+    SourceConnection:
+      type: object
+      description: |-
+        A connection is an AuthConfig whose type is a source provider key.
+        The payload is write only: secrets never leave the server
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: string
+          maxLength: 128
+        connection:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        data_items_count:
+          type: integer
+          readOnly: true
+      required:
+      - type
+    SourceConnectionRequest:
+      type: object
+      description: |-
+        A connection is an AuthConfig whose type is a source provider key.
+        The payload is write only: secrets never leave the server
+      properties:
+        type:
+          type: string
+          minLength: 1
+          maxLength: 128
+        payload:
+          type: object
+          additionalProperties: {}
+          writeOnly: true
+      required:
+      - payload
+      - type
+    SourceConnectionTest:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - message
+      - success
+    SourceProvider:
+      type: object
+      description: 'A provider is code: it is read from the registry, never from the
+        database'
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        declared_capabilities:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        connection_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionField'
+      required:
+      - connection_fields
+      - key
+      - label
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    oauth2:
+      type: oauth2
+      flows: {}

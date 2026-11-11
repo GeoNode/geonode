@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import dataclasses
 import logging
 import typing
 from urllib.parse import urlencode
@@ -25,11 +26,17 @@ from psycopg2.extensions import make_dsn
 from osgeo import gdal, ogr
 from django.utils.translation import gettext_lazy as _
 
+from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.resource.models import ExecutionRequest
 from geonode.security.auth_registry import auth_handler_registry
 from geonode.security.models import AuthConfig
 from geonode.sources.postgres.auth import PostgresAuthHandler
 from geonode.sources.postgres.serializers import PostgresConnectionSerializer
 from geonode.sources.base import BaseSourceProvider, BrowseEntry, Capability
+from geonode.sources.models import DataItem
+from geonode.upload.celery_tasks import import_orchestrator
+from geonode.upload.handlers.postgres.handler import PostgresUploadHandler
+from geonode.upload.orchestrator import orchestrator
 
 logger = logging.getLogger(__name__)
 
@@ -103,3 +110,45 @@ class PostgresSourceProvider(BaseSourceProvider):
             title=f"{schema}.{table}",
             details={"schema": schema, "table": table, "geometries": geometries},
         )
+
+    def publish(self, auth_config: AuthConfig, entries: typing.List[BrowseEntry], user) -> typing.Dict[str, str]:
+        """Publish each table in the local GeoServer through the importer, which stores it as a data item once done"""
+        _handler = PostgresUploadHandler()
+        _action = exa.UPLOAD.value
+        _step = _handler.get_task_list(_action)[0]
+        # a table still publishing keeps its execution: a duplicate one would roll back the first layer
+        _executions = dict(
+            ExecutionRequest.objects.filter(
+                input_params__auth_config_id=auth_config.pk,
+                input_params__uri__in=[_entry.uri for _entry in entries],
+                status__in=[ExecutionRequest.STATUS_READY, ExecutionRequest.STATUS_RUNNING],
+            ).values_list("input_params__uri", "exec_id")
+        )
+        for _entry in entries:
+            if _entry.uri in _executions:
+                continue
+            # one table per execution: without GeoNode resources the orchestrator closes it at the first finished layer
+            _exec_id = str(
+                orchestrator.create_execution_request(
+                    user=user,
+                    func_name=_step,
+                    step=_step,
+                    input_params={
+                        "handler_module_path": str(_handler),
+                        # nothing is uploaded: the importer steps still expect the key
+                        "files": {},
+                        "source_provider": self.key,
+                        "auth_config_id": auth_config.pk,
+                        **dataclasses.asdict(_entry),
+                    },
+                    action=_action,
+                    name=_entry.title,
+                )
+            )
+            import_orchestrator.s({}, _exec_id, handler=str(_handler), action=_action, step=_step).apply_async()
+            _executions[_entry.uri] = _exec_id
+        return {_uri: str(_exec_id) for _uri, _exec_id in _executions.items()}
+
+    def unpublish(self, data_item: DataItem) -> None:
+        if data_item.layer:
+            PostgresUploadHandler().remove_layer(data_item.auth_config_id, data_item.layer)

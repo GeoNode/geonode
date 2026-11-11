@@ -11,11 +11,11 @@ The `geonode.sources` app lets administrators connect GeoNode to external data s
 
 **Connection**: the parameters needed to reach one source. A connection is an `AuthConfig` (the existing GeoNode credential store) whose `type` is the provider key, and whose encrypted payload holds the connection parameters. No secret is ever stored elsewhere.
 
-**Data item**: a uniform handle on one thing a provider can read, e.g. one table. It stores the key of its provider, a provider-owned `uri` without secrets, relative to its connection (`auth_config`). The capabilities are not stored: they come from the provider. It also keeps the `title` and `details` read from the source when it was adopted, so listing the items never reaches the source.
+**Data item**: a uniform handle on one thing a provider can read, e.g. one table. It stores the key of its provider, a provider-owned `uri` without secrets, relative to its connection (`auth_config`). The capabilities are not stored: they come from the provider. It also keeps the `title` and `details` read from the source when it was published, so listing the items never reaches the source.
 
-**Browsing**: a live call that lists what a connection exposes right now. Nothing is stored: each entry only tells whether it is already a data item (`adopted`).
+**Browsing**: a live call that lists what a connection exposes right now. Nothing is stored: each entry only tells whether it is already a data item (`published`).
 
-**Adoption**: the moment of durable interest. An administrator picks some of the browsed entries and each one becomes a data item. The source is browsed again at that point, so `title` and `details` always come from the source and an entry the connection does not expose is refused, along with the whole request. Adopting an entry twice changes nothing. Creating a connection does not create any data item: it only checks that the source can be reached, and a connection that cannot be reached is not saved.
+**Publishing**: the moment of durable interest. An administrator picks some of the browsed entries and each one becomes a data item. The source is browsed again at that point, so `title` and `details` always come from the source and an entry the connection does not expose is refused, along with the whole request. Publishing an entry twice changes nothing. Creating a connection does not create any data item: it only checks that the source can be reached, and a connection that cannot be reached is not saved.
 
 ### Capabilities
 
@@ -58,7 +58,7 @@ Notes:
 - Every session is opened read-only, with a connect and a statement timeout.
 - Browsing goes through the OGR PostgreSQL driver, inside the request; testing or creating a connection only performs the handshake.
 - Access rights are enforced by PostgreSQL itself when the data is read.
-- The item uris do not carry the host, port and database: every parameter of a connection can be edited, and its items follow it. Nothing checks the adopted items after a change: an item whose table is not in the new database or schema stays, and cannot be read.
+- The item uris do not carry the host, port and database: every parameter of a connection can be edited, and its items follow it. Nothing checks the published items after a change: an item whose table is not in the new database or schema stays, and cannot be read.
 - Leaving a value blank when editing a connection keeps the stored one, so the password does not have to be sent again.
 
 ## The WMS provider
@@ -85,7 +85,7 @@ Notes:
 - The capabilities are fetched through `geonode.utils.safe_request_url`: only `http` and `https`, no credentials in the url, and no private, loopback or link-local host, checked on every redirect too. A service on such a host, e.g. a local GeoServer in development, must be listed in `SAFE_URL_TRUSTED_HOSTS` as `host:port`.
 - The document is parsed without resolving entities nor reaching the network, then read by owslib through `geonode.utils.WebMapService`.
 - Credentials are sent as basic authentication: prefer an `https` url when they are set.
-- Creating, testing, browsing and adopting each fetch the capabilities inside the request, with a 30 seconds timeout.
+- Creating, testing, browsing and publishing each fetch the capabilities inside the request, with a 30 seconds timeout.
 
 ## Administration
 
@@ -99,9 +99,9 @@ The pages are a temporary, thin client of the REST API below: they render an emp
 | --- | --- |
 | `/sources/` | list of the connections, with a button to create a connection for each installed provider |
 | `/sources/new/<provider>/` | connection form of a provider, built from its `connection_fields`; saving it checks that the source can be reached |
-| `/sources/<id>/` | connection detail: its parameters, a *Data items* tab, and a *Browse the source* tab listing what the source exposes, page by page, to select and adopt (adopted entries are marked); plus *Test connection* and *Delete* |
+| `/sources/<id>/` | connection detail: its parameters, a *Data items* tab, and a *Browse the source* tab listing what the source exposes, page by page, to select and publish (published entries are marked); plus *Test connection* and *Delete* |
 
-Connections can also be edited in the Django admin, under *Authentication Configurations*: the same validation applies there, but the source is not checked. Removing a data item through the API only removes the GeoNode row, the upstream table is never touched; it can be adopted again while the table exists. Deleting a connection also removes all its data items, again without touching the upstream tables. A connection also used to authenticate resources or URL patterns cannot be deleted.
+Connections can also be edited in the Django admin, under *Authentication Configurations*: the same validation applies there, but the source is not checked. Removing a data item through the API removes the GeoNode row and its GeoServer layer, the upstream table is never touched; it can be published again while the table exists. Deleting a connection also removes all its data items and their GeoServer layers (the connection store goes with the last one), again without touching the upstream tables; when GeoServer fails the connection stays, with a `502`. A connection also used to authenticate resources or URL patterns cannot be deleted.
 
 ### REST API
 
@@ -115,10 +115,10 @@ The API follows the API v3 conventions: a single object is returned as is, lists
 | `source-connections/` | `GET`, `POST` | connections, with the count of their data items (`data_items_count`); `payload` is write only. `POST` checks that the source can be reached: `502` when it cannot, and nothing is saved |
 | `source-connections/<id>/` | `GET`, `PATCH`, `DELETE` | `DELETE` also removes the data items of the connection; `409` while the connection authenticates resources or URL patterns |
 | `source-connections/<id>/test/` | `POST` | `{"success": true, "message": ""}` |
-| `source-connections/<id>/browse/` | `GET` | what the connection exposes right now, nothing is stored: a page of `{"uri", "title", "details", "adopted"}`. `502` when the source cannot be read |
-| `source-connections/<id>/adopt/` | `POST` | `{"uris": [...]}`, 1 to 100 uris taken from `browse/`: stores them as data items and returns them with a `201`, the ones already adopted are returned unchanged. `400` when one of the uris is not exposed by the connection, and nothing is stored; `502` when the source cannot be read |
+| `source-connections/<id>/browse/` | `GET` | what the connection exposes right now, nothing is stored: a page of `{"uri", "title", "details", "published"}`. `502` when the source cannot be read |
+| `source-connections/<id>/publish/` | `POST` | `{"uris": [...]}`, 1 to 100 uris taken from `browse/`: stores them as data items and returns them with a `201`, the ones already published are returned unchanged. A PostgreSQL table becomes a data item only once the importer has published it in the local GeoServer: the answer is then a `202` listing every requested entry as `{"uri", "data_item", "execution_id"}`: the data item when it is already published, otherwise the execution publishing it, to follow with `GET /api/v2/resource-service/execution-status/<execution_id>`. The data item keeps its GeoServer layer as `layer` (`workspace:name`), removed with it. `400` when one of the uris is not exposed by the connection, and nothing is stored; `502` when the source cannot be read |
 | `data-items/` | `GET` | data items, filtered with `?connection=<id>` and `?source_provider=<key>`; `400` for an unknown connection |
-| `data-items/<id>/` | `GET`, `DELETE` | |
+| `data-items/<id>/` | `GET`, `DELETE` | deleting also removes its layer from the local GeoServer (and the connection store once unused), never the upstream data; `502` when GeoServer refuses, and the item stays |
 
 Example:
 
@@ -131,7 +131,7 @@ curl -u admin:admin http://localhost:8000/api/v3/source-connections/1/browse/
 
 curl -u admin:admin -H "Content-Type: application/json" -X POST \
   -d '{"uris": ["postgresql:?schema=public&table=roads"]}' \
-  http://localhost:8000/api/v3/source-connections/1/adopt/
+  http://localhost:8000/api/v3/source-connections/1/publish/
 
 curl -u admin:admin "http://localhost:8000/api/v3/data-items/?connection=1"
 ```
@@ -142,7 +142,7 @@ A provider lives in its own package under `geonode/sources/<key>/`:
 
 - `auth.py`: a `geonode.sources.auth.SourceConnectionAuthHandler` subclass whose `handled_type` is the provider key. It validates the payload with the connection serializer of the provider: blank values keep the stored ones, unknown keys are refused.
 - `serializers.py`: the connection serializer, a DRF `Serializer`. It validates the payload and generates the fields the UI renders: a password field is a `CharField` with `style={"input_type": "password"}`.
-- `provider.py`: a `BaseSourceProvider` subclass defining `key`, `label`, `declared_capabilities`, `connection_serializer`, and implementing `test_connection` and `browse`. `browse` is called live, by browsing and by adoption. When the source cannot be read it raises a `RuntimeError`, e.g. `geonode.sources.base.SourceProviderError`: the API logs it and answers with a generic `502`.
+- `provider.py`: a `BaseSourceProvider` subclass defining `key`, `label`, `declared_capabilities`, `connection_serializer`, and implementing `test_connection` and `browse`. `browse` is called live, by browsing and by publishing. When the source cannot be read it raises a `RuntimeError`, e.g. `geonode.sources.base.SourceProviderError`: the API logs it and answers with a generic `502`. Its `publish` stores the new entries as data items; a provider publishing them somewhere first overrides it: the PostgreSQL provider starts there one importer execution per table (`geonode.upload.handlers.postgres.handler.PostgresUploadHandler`), which publishes the table in the local GeoServer and only then stores it as a data item. GeoServer reads the table through one store per connection (`postgis_<connection id>`), in read-only sessions. When publishing fails the execution is rolled back: its layer and data item are removed, the store only when no other layer uses it, the table never. A table whose publication is still running is not published again.
 
 Then register both classes in the settings:
 

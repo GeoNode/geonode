@@ -21,11 +21,12 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.db import connection as db_connection
 from django.test.utils import CaptureQueriesContext
+from geoserver.catalog import FailedRequestError
 from rest_framework.test import APITestCase
 
 from geonode.security.auth_handlers import BasicAuthHandler
 from geonode.security.models import AuthConfig, URLPatternAuthConfig
-from geonode.sources.base import BrowseEntry
+from geonode.sources.base import BaseSourceProvider, BrowseEntry
 from geonode.sources.models import DataItem
 from geonode.sources.postgres.provider import PostgresSourceProvider
 from geonode.sources.tests.utils import PAYLOAD, bad_gateway, create_connection, entry_uri
@@ -46,6 +47,15 @@ class SourcesApiTests(APITestCase):
         _patcher = patch.object(PostgresSourceProvider, "test_connection", return_value=(True, ""))
         self.test_connection = _patcher.start()
         self.addCleanup(_patcher.stop)
+        # with eager celery the importer would reach GeoServer: the items are stored right away as by the default hook
+        _patcher = patch.object(
+            PostgresSourceProvider, "publish", autospec=True, side_effect=BaseSourceProvider.publish
+        )
+        self.publish = _patcher.start()
+        self.addCleanup(_patcher.stop)
+        _patcher = patch.object(PostgresSourceProvider, "unpublish")
+        self.unpublish = _patcher.start()
+        self.addCleanup(_patcher.stop)
 
     def _browse_entries(self, *tables):
         return [BrowseEntry(uri=entry_uri(_table), title=f"public.{_table}") for _table in tables]
@@ -65,11 +75,11 @@ class SourcesApiTests(APITestCase):
         self.assertEqual(403, response.status_code)
         _browse.assert_not_called()
 
-    def test_user_cannot_adopt_the_entries_of_a_connection(self):
+    def test_user_cannot_publish_the_entries_of_a_connection(self):
         self.client.force_login(self.user)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads")) as _browse:
             response = self.client.post(
-                f"{CONNECTIONS_URL}{self.connection.pk}/adopt/", {"uris": [entry_uri("roads")]}, format="json"
+                f"{CONNECTIONS_URL}{self.connection.pk}/publish/", {"uris": [entry_uri("roads")]}, format="json"
             )
         self.assertEqual(403, response.status_code)
         _browse.assert_not_called()
@@ -167,7 +177,7 @@ class SourcesApiTests(APITestCase):
         self.assertEqual("db.example.com", _connection["connection"]["host"])
 
     def test_create_connection_should_not_store_any_data_item(self):
-        """Data items are created only when an entry is adopted"""
+        """Data items are created only when an entry is published"""
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads")) as _browse:
             response = self.client.post(CONNECTIONS_URL, {"type": "postgresql", "payload": PAYLOAD}, format="json")
@@ -228,6 +238,28 @@ class SourcesApiTests(APITestCase):
         self.assertFalse(AuthConfig.objects.filter(pk=self.connection.pk).exists())
         self.assertFalse(DataItem.objects.exists())
 
+    def test_delete_connection_should_remove_the_layers_of_its_data_items(self):
+        for _table in ("roads", "rivers"):
+            DataItem.objects.create(source_provider="postgresql", uri=entry_uri(_table), auth_config=self.connection)
+        self.client.force_login(self.staff)
+        self.assertEqual(204, self.client.delete(f"{CONNECTIONS_URL}{self.connection.pk}/").status_code)
+        self.assertListEqual(
+            [entry_uri("rivers"), entry_uri("roads")],
+            sorted(_call.args[0].uri for _call in self.unpublish.call_args_list),
+        )
+
+    def test_delete_connection_should_keep_it_when_geoserver_fails(self):
+        """Removing it anyway would leave layers and a store nobody points at"""
+        self.unpublish.side_effect = FailedRequestError("connection refused by 10.0.0.5")
+        DataItem.objects.create(source_provider="postgresql", uri=entry_uri("roads"), auth_config=self.connection)
+        self.client.force_login(self.staff)
+        with self.assertLogs("geonode.sources.api.v3.views", level="ERROR"):
+            response = self.client.delete(f"{CONNECTIONS_URL}{self.connection.pk}/")
+        self.assertEqual(502, response.status_code)
+        self.assertEqual("Could not remove the layer from GeoServer.", response.json()["detail"])
+        self.assertTrue(AuthConfig.objects.filter(pk=self.connection.pk).exists())
+        self.assertEqual(1, DataItem.objects.count())
+
     def test_delete_should_refuse_a_connection_used_elsewhere(self):
         """A connection also used by a url pattern must not disappear along with its pattern"""
         URLPatternAuthConfig.objects.create(auth_config=self.connection, pattern="https://data.example.com/.*")
@@ -238,7 +270,7 @@ class SourcesApiTests(APITestCase):
         self.assertTrue(URLPatternAuthConfig.objects.filter(auth_config=self.connection).exists())
 
     def test_data_items_should_not_be_created_through_the_api(self):
-        """Data items come from the adoption only: title and details are read from the source"""
+        """Data items come from the publishing only: title and details are read from the source"""
         self.client.force_login(self.staff)
         response = self.client.post(
             DATA_ITEMS_URL, {"connection": self.connection.pk, "uri": entry_uri("roads")}, format="json"
@@ -246,23 +278,23 @@ class SourcesApiTests(APITestCase):
         self.assertEqual(405, response.status_code)
         self.assertFalse(DataItem.objects.exists())
 
-    def _adopt(self, *tables):
+    def _publish(self, *tables):
         return self.client.post(
-            f"{CONNECTIONS_URL}{self.connection.pk}/adopt/",
+            f"{CONNECTIONS_URL}{self.connection.pk}/publish/",
             {"uris": [entry_uri(_table) for _table in tables]},
             format="json",
         )
 
     def test_browse_should_list_the_entries_without_storing_them(self):
-        """Browsing is live: the entries already adopted are only flagged"""
+        """Browsing is live: the entries already published are only flagged"""
         DataItem.objects.create(source_provider="postgresql", uri=entry_uri("roads"), auth_config=self.connection)
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads", "rivers")):
             response = self.client.get(f"{CONNECTIONS_URL}{self.connection.pk}/browse/")
         self.assertEqual(200, response.status_code, response.json())
         expected = [
-            {"uri": entry_uri("roads"), "title": "public.roads", "details": {}, "adopted": True},
-            {"uri": entry_uri("rivers"), "title": "public.rivers", "details": {}, "adopted": False},
+            {"uri": entry_uri("roads"), "title": "public.roads", "details": {}, "published": True},
+            {"uri": entry_uri("rivers"), "title": "public.rivers", "details": {}, "published": False},
         ]
         self.assertListEqual(expected, response.json()["results"])
         self.assertEqual(1, DataItem.objects.count())
@@ -279,10 +311,10 @@ class SourcesApiTests(APITestCase):
         """?fields= is validated against the entries, not against the connection"""
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads")):
-            response = self.client.get(f"{CONNECTIONS_URL}{self.connection.pk}/browse/", {"fields": "uri,adopted"})
+            response = self.client.get(f"{CONNECTIONS_URL}{self.connection.pk}/browse/", {"fields": "uri,published"})
             refused = self.client.get(f"{CONNECTIONS_URL}{self.connection.pk}/browse/", {"fields": "type"})
         self.assertEqual(200, response.status_code, response.json())
-        self.assertListEqual([{"uri": entry_uri("roads"), "adopted": False}], response.json()["results"])
+        self.assertListEqual([{"uri": entry_uri("roads"), "published": False}], response.json()["results"])
         self.assertEqual(400, refused.status_code)
 
     def test_browse_should_not_flag_the_items_of_other_connections(self):
@@ -292,7 +324,7 @@ class SourcesApiTests(APITestCase):
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads")):
             response = self.client.get(f"{CONNECTIONS_URL}{self.connection.pk}/browse/")
-        self.assertFalse(response.json()["results"][0]["adopted"])
+        self.assertFalse(response.json()["results"][0]["published"])
 
     def test_browse_should_not_expose_the_gdal_error(self):
         self.client.force_login(self.staff)
@@ -305,10 +337,10 @@ class SourcesApiTests(APITestCase):
         self.assertEqual(502, response.status_code)
         self.assertDictEqual(bad_gateway("Could not browse the connection."), response.json())
 
-    def test_adopt_should_store_only_the_chosen_entries(self):
+    def test_publish_should_store_only_the_chosen_entries(self):
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads", "rivers")):
-            response = self._adopt("roads")
+            response = self._publish("roads")
         self.assertEqual(201, response.status_code, response.json())
         self.assertListEqual([entry_uri("roads")], [_data["uri"] for _data in response.json()])
         _item = DataItem.objects.get()
@@ -317,54 +349,108 @@ class SourcesApiTests(APITestCase):
         self.assertEqual(self.staff, _item.created_by)
         self.assertListEqual(["READ"], response.json()[0]["capabilities"])
 
-    def test_adopt_should_not_grow_with_the_entries(self):
+    def test_publish_should_answer_with_the_executions_still_publishing(self):
+        """A PostgreSQL table becomes a data item only once GeoServer serves it, the known ones are listed too"""
+        _known = DataItem.objects.create(
+            source_provider="postgresql", uri=entry_uri("roads"), auth_config=self.connection
+        )
+        self.publish.side_effect = None
+        self.publish.return_value = {entry_uri("rivers"): "8a6f2d0e-5c1b-4a43-9a6e-1f2b3c4d5e6f"}
+        self.client.force_login(self.staff)
+        with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads", "rivers")):
+            response = self._publish("roads", "rivers")
+        self.assertEqual(202, response.status_code, response.json())
+        expected = [
+            {"uri": entry_uri("rivers"), "data_item": None, "execution_id": "8a6f2d0e-5c1b-4a43-9a6e-1f2b3c4d5e6f"},
+            {"uri": entry_uri("roads"), "data_item": _known.pk, "execution_id": None},
+        ]
+        self.assertListEqual(expected, response.json())
+        self.assertEqual(1, DataItem.objects.count())
+
+    def test_delete_data_item_should_remove_its_layer(self):
+        _item = DataItem.objects.create(
+            source_provider="postgresql", uri=entry_uri("roads"), auth_config=self.connection
+        )
+        self.client.force_login(self.staff)
+        response = self.client.delete(f"{DATA_ITEMS_URL}{_item.pk}/")
+        self.assertEqual(204, response.status_code)
+        # the deleted instance has lost its pk, it is told apart by its uri
+        self.assertEqual(_item.uri, self.unpublish.call_args.args[0].uri)
+        self.assertFalse(DataItem.objects.exists())
+
+    def test_delete_data_item_should_keep_it_when_geoserver_fails(self):
+        """Removing the row anyway would leave a layer nobody points at"""
+        self.unpublish.side_effect = FailedRequestError("connection refused by 10.0.0.5")
+        _item = DataItem.objects.create(
+            source_provider="postgresql", uri=entry_uri("roads"), auth_config=self.connection
+        )
+        self.client.force_login(self.staff)
+        with self.assertLogs("geonode.sources.api.v3.views", level="ERROR"):
+            response = self.client.delete(f"{DATA_ITEMS_URL}{_item.pk}/")
+        self.assertEqual(502, response.status_code)
+        self.assertEqual("Could not remove the layer from GeoServer.", response.json()["detail"])
+        self.assertTrue(DataItem.objects.filter(pk=_item.pk).exists())
+
+    def test_publish_should_publish_only_the_new_entries(self):
+        """A known entry is already published, GeoServer refuses a layer with the same name"""
+        DataItem.objects.create(source_provider="postgresql", uri=entry_uri("roads"), auth_config=self.connection)
+        self.client.force_login(self.staff)
+        with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads", "rivers")):
+            response = self._publish("roads", "rivers")
+        self.assertEqual(201, response.status_code, response.json())
+        _provider, _connection, _entries, _user = self.publish.call_args.args
+        self.assertEqual(self.connection, _connection)
+        self.assertListEqual([entry_uri("rivers")], [_entry.uri for _entry in _entries])
+        self.assertEqual(self.staff, _user)
+
+    def test_publish_should_not_grow_with_the_entries(self):
         self._login_for_query_budget()
         _tables = [f"table{_index}" for _index in range(4)]
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries(*_tables)):
             with CaptureQueriesContext(db_connection) as _one:
-                self.assertEqual(201, self._adopt(_tables[0]).status_code)
+                self.assertEqual(201, self._publish(_tables[0]).status_code)
             with CaptureQueriesContext(db_connection) as _more:
-                self.assertEqual(201, self._adopt(*_tables[1:]).status_code)
+                self.assertEqual(201, self._publish(*_tables[1:]).status_code)
         self.assertEqual(len(_one), len(_more))
 
-    def test_adopt_should_be_idempotent(self):
-        """Adopting a known entry again must not duplicate nor change it"""
+    def test_publish_should_be_idempotent(self):
+        """Publishing a known entry again must not duplicate nor change it"""
         _item = DataItem.objects.create(
             source_provider="postgresql", uri=entry_uri("roads"), auth_config=self.connection, title="kept"
         )
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads")):
-            response = self._adopt("roads")
+            response = self._publish("roads")
         self.assertEqual(201, response.status_code, response.json())
         self.assertListEqual([_item.pk], [_data["id"] for _data in response.json()])
         _item.refresh_from_db()
         self.assertEqual("kept", _item.title)
         self.assertEqual(1, DataItem.objects.count())
 
-    def test_adopt_should_refuse_an_entry_the_connection_does_not_expose(self):
+    def test_publish_should_refuse_an_entry_the_connection_does_not_expose(self):
         """Nothing is stored, not even the valid entries of the same request"""
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads")):
-            response = self._adopt("roads", "lakes")
+            response = self._publish("roads", "lakes")
         self.assertEqual(400, response.status_code, response.json())
         self.assertDictEqual({"uris": ["Some entries are not exposed by the connection."]}, response.json()["errors"])
         self.assertFalse(DataItem.objects.exists())
 
-    def test_adopt_should_refuse_an_empty_list(self):
+    def test_publish_should_refuse_an_empty_list(self):
         self.client.force_login(self.staff)
         with patch.object(PostgresSourceProvider, "browse", return_value=self._browse_entries("roads")) as _browse:
-            response = self._adopt()
+            response = self._publish()
         self.assertEqual(400, response.status_code, response.json())
         _browse.assert_not_called()
 
-    def test_adopt_should_not_expose_the_gdal_error(self):
+    def test_publish_should_not_expose_the_gdal_error(self):
         self.client.force_login(self.staff)
         _error = RuntimeError("PQconnectdb failed: db.example.com")
         with (
             patch.object(PostgresSourceProvider, "browse", side_effect=_error),
             self.assertLogs("geonode.sources.api.v3.views", level="ERROR"),
         ):
-            response = self._adopt("roads")
+            response = self._publish("roads")
         self.assertEqual(502, response.status_code)
         self.assertDictEqual(bad_gateway("Could not browse the connection."), response.json())
         self.assertFalse(DataItem.objects.exists())

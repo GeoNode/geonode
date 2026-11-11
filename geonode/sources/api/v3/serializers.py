@@ -117,20 +117,28 @@ class SourceConnectionSerializer(FieldSelectionModelSerializer):
 
 
 class BrowseEntrySerializer(FieldSelectionSerializer):
-    """What a connection exposes right now, an entry is stored only when adopted"""
+    """What a connection exposes right now, an entry is stored only when published"""
 
     uri = serializers.CharField()
     title = serializers.CharField()
     details = serializers.DictField()
-    adopted = serializers.BooleanField()
+    published = serializers.BooleanField()
 
 
-class AdoptSerializer(serializers.Serializer):
+class PublishSerializer(serializers.Serializer):
     uris = serializers.ListField(child=serializers.CharField(), allow_empty=False, max_length=100)
 
 
+class PublishResultSerializer(serializers.Serializer):
+    """A requested entry: its data item once published, or the execution still publishing it"""
+
+    uri = serializers.CharField()
+    data_item = serializers.IntegerField(allow_null=True)
+    execution_id = serializers.CharField(allow_null=True)
+
+
 class DataItemSerializer(FieldSelectionModelSerializer):
-    """Data items are created by adopting the entries of their connection, the API only reads and removes them"""
+    """Data items are created by publishing the entries of their connection, the API only reads and removes them"""
 
     connection = serializers.PrimaryKeyRelatedField(source="auth_config", read_only=True)
     capabilities = serializers.SerializerMethodField()
@@ -144,6 +152,7 @@ class DataItemSerializer(FieldSelectionModelSerializer):
             "uri",
             "title",
             "details",
+            "layer",
             "connection",
             "capabilities",
             "created_by",

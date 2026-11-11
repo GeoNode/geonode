@@ -345,6 +345,10 @@ class BaseHandler(ABC):
         """
         return NotImplementedError
 
+    def get_geoserver_store_parameters(self) -> dict:
+        """Connection parameters of a store the publisher creates, overriding the ones of the GeoNode database"""
+        return {}
+
     def overwrite_geoserver_resource(self, resource, catalog, store, workspace):
         """
         Base method for override the geoserver resource. For vector file usually

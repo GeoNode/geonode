@@ -1459,6 +1459,7 @@ def create_geoserver_db_featurestore(
     author_email="admin@geonode.org",
     charset="UTF-8",
     workspace=None,
+    connection_parameters=None,
 ):
     cat = gs_catalog
     dsname = store_name or ogc_server_settings.DATASTORE
@@ -1504,6 +1505,8 @@ def create_geoserver_db_featurestore(
                 "dbtype": db_engine,
             }
         )
+        # a store on a database other than the GeoNode one
+        ds.connection_parameters.update(connection_parameters or {})
 
     if ds_exists:
         ds.save_method = "PUT"

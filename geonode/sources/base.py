@@ -25,6 +25,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 from geonode.security.models import AuthConfig
+from geonode.sources.models import DataItem
 
 
 class Capability(enum.IntFlag):
@@ -48,7 +49,7 @@ class SourceProviderError(RuntimeError):
 
 @dataclasses.dataclass
 class BrowseEntry:
-    """An item found while browsing a connection, stored as a data item once adopted"""
+    """An item found while browsing a connection, stored as a data item once published"""
 
     uri: str
     title: str
@@ -109,3 +110,28 @@ class BaseSourceProvider(ABC):
     @abstractmethod
     def browse(self, auth_config: AuthConfig) -> typing.List[BrowseEntry]:
         """List what the connection exposes, live. Raises a RuntimeError when the source cannot be read"""
+
+    def publish(self, auth_config: AuthConfig, entries: typing.List[BrowseEntry], user) -> typing.Dict[str, str]:
+        """
+        Store the entries as data items. A provider publishing them somewhere first (e.g. in the local GeoServer)
+        overrides it, stores each item once its publication is done and returns the execution id of each uri
+        """
+        # publishing twice is a no-op: the unique constraint skips the known items
+        DataItem.objects.bulk_create(
+            [
+                DataItem(
+                    source_provider=self.key,
+                    uri=_entry.uri,
+                    auth_config=auth_config,
+                    title=_entry.title,
+                    details=_entry.details,
+                    created_by=user,
+                )
+                for _entry in entries
+            ],
+            ignore_conflicts=True,
+        )
+        return {}
+
+    def unpublish(self, data_item: DataItem) -> None:
+        """Hook run before a data item is removed, e.g. to remove its layer from the local GeoServer"""

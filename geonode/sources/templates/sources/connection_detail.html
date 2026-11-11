@@ -52,9 +52,9 @@
 </div>
 
 <div class="tab-body" id="browse-tab" hidden>
-  <p class="text-muted">{% trans "What the source exposes right now. Nothing is stored until you adopt it." %}</p>
+  <p class="text-muted">{% trans "What the source exposes right now. Nothing is stored until you publish it." %}</p>
   <div class="sources-toolbar">
-    <button id="adopt-button" class="btn btn-primary" disabled>{% trans "Adopt selected" %}</button>
+    <button id="publish-button" class="btn btn-primary" disabled>{% trans "Publish selected" %}</button>
     <input type="search" class="form-control input-sm" id="browse-filter" placeholder="{% trans "Filter this page" %}">
     <button id="refresh-button" class="btn btn-default btn-sm">{% trans "Refresh" %}</button>
   </div>
@@ -84,7 +84,7 @@
     const connectionId = {{ connection_id }};
     const connectionPath = `source-connections/${connectionId}/`;
     const listUrl = "{% url "sources_connection_list" %}";
-    const ADOPT_LABEL = "{% filter escapejs %}{% trans "Adopt selected" %}{% endfilter %}";
+    const PUBLISH_LABEL = "{% filter escapejs %}{% trans "Publish selected" %}{% endfilter %}";
 
     async function loadConnection() {
       const [connection, providers] = await Promise.all([sourcesApi(connectionPath), loadProviders()]);
@@ -159,10 +159,10 @@
       }
     });
 
-    // the adopt limit: a whole page can always be adopted at once
+    // the publish limit: a whole page can always be published at once
     const BROWSE_PAGE_SIZE = 100;
     let browsePage = 1;
-    const adoptButton = document.getElementById("adopt-button");
+    const publishButton = document.getElementById("publish-button");
 
     function selectableBoxes() {
       return [...document.querySelectorAll("#browse-entries tr:not([hidden]) input[type=checkbox]")];
@@ -171,8 +171,8 @@
     function updateSelection() {
       const boxes = selectableBoxes();
       const selected = document.querySelectorAll("#browse-entries input[type=checkbox]:checked").length;
-      adoptButton.disabled = !selected;
-      adoptButton.textContent = selected ? `${ADOPT_LABEL} (${selected})` : ADOPT_LABEL;
+      publishButton.disabled = !selected;
+      publishButton.textContent = selected ? `${PUBLISH_LABEL} (${selected})` : PUBLISH_LABEL;
       const selectAll = document.getElementById("select-all");
       selectAll.checked = boxes.length > 0 && boxes.every((box) => box.checked);
       selectAll.disabled = !boxes.length;
@@ -180,8 +180,8 @@
 
     function entryRow(entry) {
       const name = el("td", {}, [el("strong", {}, [entry.title || entry.uri])]);
-      if (entry.adopted) {
-        name.append(" ", el("span", { class: "label label-success" }, ["{% filter escapejs %}{% trans "Adopted" %}{% endfilter %}"]));
+      if (entry.published) {
+        name.append(" ", el("span", { class: "label label-success" }, ["{% filter escapejs %}{% trans "Published" %}{% endfilter %}"]));
         return el("tr", { class: "text-muted", "data-search": (entry.title || entry.uri).toLowerCase() }, [
           el("td", {}, []),
           name,
@@ -205,7 +205,7 @@
       return row;
     }
 
-    // live list of what the connection exposes, nothing is stored until an entry is adopted
+    // live list of what the connection exposes, nothing is stored until an entry is published
     async function loadEntries() {
       const body = document.getElementById("browse-entries");
       body.replaceChildren(el("tr", {}, [el("td", { colspan: "3", class: "text-muted" }, ["{% filter escapejs %}{% trans "Reading the source…" %}{% endfilter %}"])]));
@@ -247,18 +247,23 @@
       updateSelection();
     });
 
-    adoptButton.addEventListener("click", async () => {
+    publishButton.addEventListener("click", async () => {
       const uris = [...document.querySelectorAll("#browse-entries input[type=checkbox]:checked")].map((input) => input.value);
       if (!uris.length) {
         return;
       }
       try {
-        const items = await withBusy(adoptButton, () =>
-          sourcesApi(`${connectionPath}adopt/`, { method: "POST", body: { uris: uris } })
+        const items = await withBusy(publishButton, () =>
+          sourcesApi(`${connectionPath}publish/`, { method: "POST", body: { uris: uris } })
         );
         page = 1;
         await Promise.all([loadDataItems(), loadEntries()]);
-        showMessage(`{% filter escapejs %}{% trans "Adopted" %}{% endfilter %}: ${items.length}`);
+        // a 202 lists the entries still publishing with their execution, their data items appear once done
+        const publishing = items.filter((item) => item.execution_id).length;
+        const message = publishing
+          ? `{% filter escapejs %}{% trans "Publishing started" %}{% endfilter %}: ${publishing}`
+          : `{% filter escapejs %}{% trans "Published" %}{% endfilter %}: ${items.length}`;
+        showMessage(message);
       } catch (error) {
         showError(error);
         updateSelection();

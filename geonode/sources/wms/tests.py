@@ -209,7 +209,7 @@ class WmsApiTests(APITestCase):
         self.client.force_login(self.staff)
 
     @patch("geonode.sources.wms.provider.safe_request_url", return_value=response(CAPABILITIES_130))
-    def test_wms_layers_should_be_browsed_live_and_stored_once_adopted(self, safe_request_url):
+    def test_wms_layers_should_be_browsed_live_and_stored_once_published(self, safe_request_url):
         response_ = self.client.post(
             "/api/v3/source-connections/",
             {"type": "wms", "payload": {**PAYLOAD, "username": "reader", "password": "secret"}},
@@ -229,7 +229,7 @@ class WmsApiTests(APITestCase):
         self.assertFalse(DataItem.objects.exists())
 
         response_ = self.client.post(
-            f"/api/v3/source-connections/{_connection['id']}/adopt/",
+            f"/api/v3/source-connections/{_connection['id']}/publish/",
             {"uris": ["wms:?layer=ws%3Aroads"]},
             format="json",
         )
