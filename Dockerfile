@@ -1,11 +1,5 @@
 FROM geonode/geonode-base:latest-ubuntu-26.04
 
-# Some label best practices
-# https://www.docker.com/blog/docker-best-practices-using-tags-and-labels-to-manage-docker-image-sprawl/
-LABEL org.opencontainers.image.title="GeoNode" \
-    org.opencontainers.image.version=${GEONODE_VERSION} \
-    org.opencontainers.image.vendor="GeoNode Development Team"
-
 LABEL maintainer="GeoNode development team"
 
 ENV LC_ALL=C.UTF-8 \
@@ -27,23 +21,16 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 
 RUN python -m pip install --no-cache-dir -U pip setuptools wheel
 
-COPY celery-cmd /usr/local/bin/celery-cmd
-RUN chmod +x /usr/local/bin/celery-cmd
+COPY celery-cmd /usr/bin/celery-cmd
+RUN chmod +x /usr/bin/celery-cmd
 
 COPY . /usr/src/geonode/
 
-# Cleanup apt update lists
-# This is needed to reduce the size of the image, but it's better to move this RUN to geonode-base
-RUN apt-get autoremove --purge && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 RUN chmod +x /usr/src/geonode/tasks.py /usr/src/geonode/entrypoint.sh
 
-# Create specific log dir to geonode and statics and grant permissions to root group. 
-# This is needed to avoid permission issues
-RUN mkdir -p /var/log/geonode /mnt/volumes/statics && \
-    chmod -R g=u /var/log/geonode /mnt/volumes/statics
+# writable by group 0, so the services can also run as a non-root UID; a new volume copies the mount point mode
+RUN mkdir -p /var/log/geonode /mnt/volumes/statics /backup_restore /geoserver_data/data && \
+    chmod 2775 /var/log/geonode /mnt/volumes/statics /backup_restore /geoserver_data/data
 
 RUN pip install --no-cache-dir -e .
 

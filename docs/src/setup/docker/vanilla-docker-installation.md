@@ -106,7 +106,7 @@ With Docker it is also possible to run a shell in the container and follow the l
 ```bash
 docker exec -it django4geonode /bin/bash
 # Once logged in the GeoNode image, follow the logs by executing
-tail -F -n 300 /var/log/geonode.log
+tail -F -n 300 /var/log/geonode/geonode.log
 ```
 
 ### Override the ENV variables to deploy on a public IP or domain

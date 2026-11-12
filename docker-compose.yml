@@ -3,27 +3,46 @@ x-common-django:
   image: geonode/geonode:latest-ubuntu-26.04
   build:
       context: ./
-      args:
-        GEONODE_BASE_IMAGE: geonode/geonode-base:latest-ubuntu-22.04
-        GEONODE_VERSION: master
+      dockerfile: Dockerfile
   restart: unless-stopped
-  user: '${GEONODE_UID}'
+  user: "${GEONODE_UID_GID:-0}"
   env_file:
     - ${COMPOSE_ENV_FILES:-.env}
   volumes:
     - '.:/usr/src/geonode'
     - statics:/mnt/volumes/statics
-    - geoserver-data-dir:/geoserver_data/data
-    - backup-restore:/backup_restore
-    - data:/data
-    - tmp:/tmp
   depends_on:
+    permissions-init:
+      condition: service_completed_successfully
     db:
       condition: service_healthy
     redis:
       condition: service_healthy
 
 services:
+
+  # One-shot root container fixing the volumes ownership for the non-root services
+  permissions-init:
+    image: geonode/geonode:latest-ubuntu-26.04
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: permissions4${COMPOSE_PROJECT_NAME}
+    user: "0:0"
+    restart: "no"
+    entrypoint: ["/bin/bash", "/usr/src/geonode/docker/permissions/fix-permissions.sh"]
+    # only the variables of the script, not the whole env file
+    environment:
+      - PERMISSIONS_INIT_SKIP=${PERMISSIONS_INIT_SKIP:-}
+      - PERMISSIONS_INIT_FORCE=${PERMISSIONS_INIT_FORCE:-false}
+    volumes:
+      - statics:/volumes/statics
+      - geoserver-data-dir:/volumes/geoserver-data-dir
+      - backup-restore:/volumes/backup-restore
+      - nginx-confd:/volumes/nginx-confd
+      - nginx-certificates:/volumes/nginx-certificates
+      - dbdata:/volumes/dbdata
+      - dbbackups:/volumes/dbbackups
 
   # Our custom django application. It includes Geonode.
   django:
@@ -32,6 +51,12 @@ services:
       context: ./
       dockerfile: Dockerfile
     container_name: django4${COMPOSE_PROJECT_NAME}
+    # only django runs backup and restore, which need the GeoServer data directory
+    volumes:
+      - '.:/usr/src/geonode'
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+      - backup-restore:/backup_restore
     healthcheck:
       test: "curl -m 10 --fail --silent --output /dev/null http://django:8000/"
       start_period: 60s
@@ -40,7 +65,7 @@ services:
       retries: 2
     environment:
       - IS_CELERY=False
-    # entrypoint: ["/usr/src/geonode/entrypoint.sh"]
+    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
     command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
 
   # Celery worker that executes celery tasks created by Django.
@@ -49,7 +74,7 @@ services:
     container_name: celery4${COMPOSE_PROJECT_NAME}
     environment:
       - IS_CELERY=True
-    # entrypoint: ["/usr/src/geonode/entrypoint.sh"]
+    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
     command: "celery-cmd"
     healthcheck:
       test: "celery -b ${BROKER_URL} inspect ping"
@@ -60,22 +85,25 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:
-    image: geonode/nginx:1.31.8-latest
+    image: geonode/nginx:rootless
     container_name: nginx4${COMPOSE_PROJECT_NAME}
+    user: "${NGINX_UID_GID:-0}"
     env_file:
       - ${COMPOSE_ENV_FILES:-.env}
-    user: '${GEONODE_UID}'
     environment:
       - RESOLVER=127.0.0.11
     ports:
-      # change container ports to run rootless nginx (80->8080 and 443->8443)
-      - "${HTTP_PORT}:8080"
-      - "${HTTPS_PORT}:8443"
+      # the non-root Nginx image listens on 8080/8443, see NGINX_HTTP_LISTEN_PORT in .env.sample
+      - "${HTTP_PORT}:${NGINX_HTTP_LISTEN_PORT:-80}"
+      - "${HTTPS_PORT}:${NGINX_HTTPS_LISTEN_PORT:-443}"
     volumes:
       - nginx-confd:/etc/nginx
       - nginx-certificates:/geonode-certificates
-      - statics:/mnt/volumes/statics
+      - statics:/mnt/volumes/statics:ro
     restart: unless-stopped
+    depends_on:
+      permissions-init:
+        condition: service_completed_successfully
     healthcheck:
       test: "if ps -o pid | grep -w 1 > /dev/null; then echo 'nginx running'; else exit 1;fi"
       interval: 10s
@@ -87,7 +115,6 @@ services:
   letsencrypt:
     image: geonode/letsencrypt:2.6.0-latest
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
-    user: '${GEONODE_UID}'
     env_file:
       - ${COMPOSE_ENV_FILES:-.env}
     volumes:
@@ -99,29 +126,31 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.28.x-latest
+    image: geonode/geoserver:rootless-test
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
+    user: "${GEOSERVER_UID_GID:-0}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://geoserver:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png"]
       start_period: 30s
       interval: 30s
       timeout: 10s
       retries: 3
-    user: '${GEONODE_UID}'
     env_file:
       - ${COMPOSE_ENV_FILES:-.env}
     ports:
       - "8080:8080"
     volumes:
-      - statics:/mnt/volumes/statics
+      # GeoServer serves the uploaded rasters from statics, it never writes there
+      - statics:/mnt/volumes/statics:ro
       - geoserver-data-dir:/geoserver_data/data
       - backup-restore:/backup_restore
-      - data:/data
-      - tmp:/tmp
     restart: unless-stopped
     depends_on:
+      permissions-init:
+        condition: service_completed_successfully
       django:
         condition: service_healthy
+
 
   # PostGIS database.
   db:
@@ -133,6 +162,7 @@ services:
       - -c
       - config_file=/etc/postgresql/postgresql.conf
     container_name: db4${COMPOSE_PROJECT_NAME}
+    user: "${DB_UID_GID:-0}"
     env_file:
       - ${COMPOSE_ENV_FILES:-.env}
     volumes:
@@ -142,6 +172,9 @@ services:
       - ./docker/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ./docker/postgresql/conf.d:/etc/postgresql/conf.d:ro
     restart: unless-stopped
+    depends_on:
+      permissions-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
       interval: 10s
@@ -181,9 +214,5 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-dbbackups
   backup-restore:
     name: ${COMPOSE_PROJECT_NAME}-backup-restore
-  data:
-    name: ${COMPOSE_PROJECT_NAME}-data
-  tmp:
-    name: ${COMPOSE_PROJECT_NAME}-tmp
   redisdata:
     name: ${COMPOSE_PROJECT_NAME}-redisdata

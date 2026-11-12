@@ -14,6 +14,7 @@ nav:
             - Prerequisites: setup/docker/prerequisites.md
             - Vanilla Docker installation: setup/docker/vanilla-docker-installation.md
             - GeoNode project Docker installation: setup/docker/project-docker-installation.md
+            - Volume permissions: setup/docker/volume-permissions.md
       - Bare installation:
             - Prerequisites: setup/bare/prerequisites.md
             - Vanilla bare installation: setup/bare/vanilla-bare-installation.md

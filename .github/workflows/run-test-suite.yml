@@ -27,8 +27,35 @@ jobs:
       - name: Load Docker images
         run: docker load -i docker_images/django.tar
 
+      # the checkout is mounted in django, the non-root UID writes test files such as .coverage in it
+      - name: Make the checkout writable for the non-root services
+        run: sudo chown -R 1000:0 .
+
       - name: Start the stack
         run: COMPOSE_ENV_FILES=.env_test docker compose up -d --no-deps db geoserver django nginx
+
+      # services get a non-root user: through .env_test; none of them may keep a process running as root
+      - name: Check non-root services
+        run: |
+          _checked=0
+          for _container in $(COMPOSE_ENV_FILES=.env_test docker compose ps -q --status running); do
+            IFS='|' read -r _service _user <<< "$(docker inspect --format '{{index .Config.Labels "com.docker.compose.service"}}|{{.Config.User}}' "$_container")"
+            if [ -z "$_user" ] || [ "${_user%%:*}" = "0" ] || [ "${_user%%:*}" = "root" ]; then
+              continue
+            fi
+            # docker top lists the running processes, exec would only start a new one as the configured user
+            # a container that exited after the listing has no process left to check
+            _processes=$(docker top "$_container" -eo pid,uid,args) || continue
+            _root=$(awk 'NR > 1 && $2 == 0' <<< "$_processes")
+            if [ -n "$_root" ]; then
+              echo "::error::${_service} runs processes as root"
+              echo "$_root"
+              exit 1
+            fi
+            echo "${_service}: no process runs as root (user ${_user})"
+            _checked=$((_checked + 1))
+          done
+          echo "Non-root services checked: ${_checked}"
 
       - name: Setup test databases
         run: |

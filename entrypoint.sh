@@ -3,7 +3,9 @@
 # Exit script in case of error
 set -e
 
-# Parse bools
+# services share group 0, new files must stay writable by the group
+umask 0002
+
 parse_bool () {
     case $1 in
         [Tt][Rr][Uu][Ee]|[Yy][Ee][Ss]|[Oo][Nn]|1) echo 'true';;
@@ -12,69 +14,59 @@ parse_bool () {
 }
 
 INVOKE_LOG_STDOUT=${INVOKE_LOG_STDOUT:-false}
-
 invoke () {
-    if [ $(parse_bool $INVOKE_LOG_STDOUT) = 'true' ]; then
-        /usr/local/bin/invoke $@
+    if [ $(parse_bool $INVOKE_LOG_STDOUT) = 'true' ]
+    then
+        $(which invoke) $@
     else
-        /usr/local/bin/invoke $@ > /usr/src/geonode/invoke.log 2>&1
+        $(which invoke) $@ > /var/log/geonode/invoke.log 2>&1
     fi
     echo "$@ tasks done"
 }
-
-# Start cron && memcached services
-# Not necessary, because cron jobs coiuld be run by the docker host, or use a Cronjob in Kubernetes
-# Shoud be fine if we remove cron from base image.
-# service cron restart
 
 echo $"\n\n\n"
 echo "-----------------------------------------------------"
 echo "STARTING DJANGO ENTRYPOINT $(date)"
 echo "-----------------------------------------------------"
 
-# check if user exists in passwd file
-# if not, change HOME to /tmp
-HAS_USER=$(getent passwd $(id -u) | wc -l)
-if [ $HAS_USER -eq 1 ]; then
-    echo "User $_USER exists in passwd file"
-
-    if [ $HOME = "/" ]; then
-        echo "HOME is /, changing to /tmp"
-        export HOME=/tmp
-    fi
-else
-    echo "User does not exist in passwd file, changing HOME to /tmp"
+# an arbitrary UID may have no passwd entry and no writable home
+if [ ! -w "$HOME" ] || [ "$HOME" = "/" ]; then
+    echo "No usable home for UID $(id -u), using /tmp as HOME"
     export HOME=/tmp
 fi
-unset HAS_USER
+
+STATIC_ROOT="${STATIC_ROOT:-/mnt/volumes/statics/static/}"
+for _dir in "$(dirname "$STATIC_ROOT")" /var/log/geonode; do
+    if [ ! -w "$_dir" ]; then
+        echo "ERROR: UID $(id -u) cannot write to ${_dir}, fix the volumes ownership with:"
+        echo "    docker compose run --rm -e PERMISSIONS_INIT_FORCE=true permissions-init"
+        exit 1
+    fi
+done
 
 invoke update
 
-# Preserving the original behavior. 
 if [ ! -e $HOME/.bashrc ]; then
-    echo "No $HOME/.bashrc found, using skeleton"
     cp /etc/skel/.bashrc $HOME/.bashrc
 fi
-
 source $HOME/.bashrc
 
-# Load the environment variables, if exists
 if [ -e $HOME/.override_env ]; then
     source $HOME/.override_env
 fi
 
 cmd="$@"
 
-if [ $(parse_bool $IS_CELERY) = 'true' ]; then
+if [ $(parse_bool $IS_CELERY) = 'true' ]
+then
     echo "Executing Celery server $cmd for Production"
-
 else
+
     invoke migrations
     invoke prepare
 
-    STATIC_ROOT="${STATIC_ROOT:-/mnt/volumes/statics/static/}"
     LOCKFILE_DIR="$(dirname "$STATIC_ROOT")"
-    if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "${LOCKFILE_DIR}/geonode_init.lock" ]; then
+    if [ $(parse_bool $FORCE_REINIT) = 'true' ] || [ ! -e "${LOCKFILE_DIR}/geonode_init.lock" ]; then
         invoke fixtures
         invoke initialized
         invoke updateadmin
