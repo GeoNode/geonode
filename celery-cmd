@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # A configurable celery command.
 # Luca Pasquali <luca.pasquali@geosolutionsgroup.com>
 CELERY_BIN=${CELERY_BIN:-"$(which celery||echo celery)"}
@@ -8,22 +8,15 @@ CELERY__STATE_DB=${CELERY__STATE_DB:-"/mnt/volumes/statics/worker@%h.state"}
 CELERY__MAX_MEMORY_PER_CHILD=${CELERY__MAX_MEMORY_PER_CHILD:-"200000"}
 CELERY__AUTOSCALE_VALUES=${CELERY__AUTOSCALE_VALUES:-"10,5"}
 CELERY__MAX_TASKS_PER_CHILD=${CELERY__MAX_TASKS_PER_CHILD:-"10"}
-<<<<<<< HEAD
-CELERY__OPTS=${CELERY__OPTS:-"--without-gossip --without-mingle -Ofair -B -E"}
-CELERY__BEAT_SCHEDULE=${CELERY__BEAT_SCHEDULE:-"celery.beat:PersistentScheduler"}
-CELERY__LOG_LEVEL=${CELERY__LOG_LEVEL:-"INFO"}
-CELERY__LOG_FILE=${CELERY__LOG_FILE:-"/var/log/geonode/celery.log"}
-=======
 CELERY__OPTS=${CELERY__OPTS:-"--without-gossip --without-mingle -Ofair -E"}
 CELERY__LOG_LEVEL=${CELERY__LOG_LEVEL:-"ERROR"}
-CELERY__LOG_FILE=${CELERY__LOG_FILE:-"/var/log/celery.log"}
->>>>>>> c125d8f2231ce7b1a80b165656084a8d99dc9637
+CELERY__LOG_FILE=${CELERY__LOG_FILE:-"/var/log/geonode/celery.log"}
 CELERY__WORKER_NAME=${CELERY__WORKER_NAME:-"worker1@%h"}
 
 # Celery beat settings
 CELERY__BEAT_SCHEDULE=${CELERY__BEAT_SCHEDULE:-"celery.beat:PersistentScheduler"}
 CELERY__BEAT_DB=${CELERY__BEAT_DB:-"/mnt/volumes/statics/celerybeat-schedule"}
-CELERY__BEAT_LOG=${CELERY__BEAT_LOG:-"/var/log/celery_beat.log"}
+CELERY__BEAT_LOG=${CELERY__BEAT_LOG:-"/var/log/geonode/celery_beat.log"}
 
 # Harvester settings
 CELERY__HARVESTER_WORKER_NAME=${CELERY__HARVESTER_WORKER_NAME:-"harvesting_worker@%h"}
