@@ -32,14 +32,18 @@ def geonode_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
 
-    if response is not None and isinstance(exc, APIException):
-        # for the upload exception we need a custom response
-        detail = _extract_detail(exc)
-        response.data = {
-            "success": False,
-            "errors": [str(detail)],
-            "code": exc.code if hasattr(exc, "code") else exc.default_code,
-        }
+    if response is not None:
+        if response.status_code == 401:
+            response.headers.pop("WWW-Authenticate", None)
+
+        if isinstance(exc, APIException):
+            # for the upload exception we need a custom response
+            detail = _extract_detail(exc)
+            response.data = {
+                "success": False,
+                "errors": [str(detail)],
+                "code": exc.code if hasattr(exc, "code") else exc.default_code,
+            }
     return response
 
 

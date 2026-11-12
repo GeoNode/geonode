@@ -18,6 +18,7 @@
 #########################################################################
 
 """Harvesters for ArcGIS based remote servers."""
+
 import re
 import abc
 import enum
@@ -34,7 +35,6 @@ import urllib.parse
 import arcrest
 import requests
 from django.contrib.gis import geos
-from django.template.defaultfilters import slugify
 
 from geonode.layers.enumerations import GXP_PTYPES
 from geonode.layers.models import Dataset
@@ -204,7 +204,6 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
         _, service_name, service_type = parse_remote_url(harvestable_resource.unique_identifier)
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
         ows_url = harvestable_resource.harvester.remote_url
-        store = slugify(ows_url)
         name = layer_representation.get("id", layer_representation.get("name", "Undefined"))
         title = layer_representation.get("name", layer_representation.get("title", "Undefined"))
         workspace = "remoteWorkspace"
@@ -228,7 +227,10 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
             ),
             reference_systems=[epsg_code],
             additional_parameters={
-                "store": store,
+                # ArcGIS layer kind does not map to vector/raster
+                "subtype": "remote",
+                # store is a GeoServer grouping: remote datasets have none
+                "store": None,
                 "workspace": workspace,
                 "alternate": alternate,
                 "ows_url": ows_url,
@@ -306,7 +308,6 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
         _, service_name, service_type = parse_remote_url(harvestable_resource.unique_identifier)
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
         ows_url = harvestable_resource.harvester.remote_url
-        store = slugify(ows_url)
         name = layer_representation.get("id", layer_representation.get("name", "Undefined"))
         title = layer_representation.get("name", layer_representation.get("title", "Undefined"))
         workspace = "remoteWorkspace"
@@ -330,7 +331,10 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
             ),
             reference_systems=[epsg_code],
             additional_parameters={
-                "store": store,
+                # ArcGIS layer kind does not map to vector/raster
+                "subtype": "remote",
+                # store is a GeoServer grouping: remote datasets have none
+                "store": None,
                 "workspace": workspace,
                 "alternate": alternate,
                 "ows_url": ows_url,
@@ -398,10 +402,6 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
         self.service_names_filter = names_filter
         self._arc_catalog = None
         self._relevant_service_extractors = None
-
-    @property
-    def allows_copying_resources(self) -> bool:
-        return False
 
     @property
     def arc_catalog(self):

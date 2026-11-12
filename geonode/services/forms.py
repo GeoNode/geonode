@@ -22,40 +22,56 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-import taggit
+from taggit.forms import TagField
 
-from . import enumerations
-from .models import Service
-from .serviceprocessors import get_service_handler
-from geonode.services.serviceprocessors import get_available_service_types
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.auth_registry import auth_handler_registry
+from geonode.security.models import AuthConfig
+
+from geonode.services import enumerations
+from geonode.services.models import Service, get_service_type_choices
+from geonode.services.serviceprocessors import get_service_handler
+from geonode.utils import is_safe_url
 
 logger = logging.getLogger(__name__)
 
 
 class CreateServiceForm(forms.Form):
+
     url = forms.CharField(
         label=_("Service URL"),
         max_length=512,
         widget=forms.TextInput(
-            attrs={
-                "size": "65",
-                "class": "inputText",
-                "required": "",
-                "type": "url",
-            }
+            attrs={"size": "65", "class": "inputText", "required": "", "type": "url", "autocomplete": "off"}
         ),
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=[(k, v["label"]) for k, v in get_available_service_types().items()],  # from dictionary to tuple
+        choices=get_service_type_choices,
         initial="AUTO",
+    )
+
+    username = forms.CharField(
+        required=False,
+        initial=None,
+        label=_("Username (optional)"),
+        max_length=200,
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
+
+    password = forms.CharField(
+        required=False,
+        initial=None,
+        label=_("password (optional)"),
+        max_length=200,
+        widget=forms.PasswordInput(attrs={"autocomplete": "off"}),
     )
 
     def clean_url(self):
         proposed_url = self.cleaned_data["url"]
-        existing = Service.objects.filter(base_url=proposed_url).exists()
-        if existing:
-            raise ValidationError(_("Service %(url)s is already registered"), params={"url": proposed_url})
+
+        if not is_safe_url(proposed_url):
+            raise ValidationError(_("Invalid URL provided"))
         return proposed_url
 
     def clean(self):
@@ -63,9 +79,23 @@ class CreateServiceForm(forms.Form):
         super().clean()
         url = self.cleaned_data.get("url")
         service_type = self.cleaned_data.get("type")
+        username = self.cleaned_data.get("username", None)
+        password = self.cleaned_data.get("password", None)
         if url is not None and service_type is not None:
             try:
-                service_handler = get_service_handler(base_url=url, service_type=service_type)
+                auth_config = None
+                if username is not None or password is not None:
+                    payload = {"username": username, "password": password}
+                    auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+                    auth_handler_cls = auth_handler_registry.get_handler_class(auth_config.type)
+                    auth_handler_cls.validate(payload)
+                    auth_config.payload = payload
+
+                service_handler = get_service_handler(
+                    base_url=url,
+                    service_type=service_type,
+                    auth_config=auth_config,
+                )
             except Exception as e:
                 logger.error(f"CreateServiceForm cleaning error: {e}")
                 raise ValidationError(_("Could not connect to the service at %(url)s"), params={"url": url})
@@ -80,6 +110,14 @@ class CreateServiceForm(forms.Form):
             self.cleaned_data["service_handler"] = service_handler
             self.cleaned_data["type"] = service_handler.service_type
 
+    def clean_username(self):
+        # the form return empty string, we want None if is not provided
+        return self.cleaned_data["username"] or None
+
+    def clean_password(self):
+        # the form return empty string, we want None if is not provided
+        return self.cleaned_data["password"] or None
+
 
 class ServiceForm(forms.ModelForm):
     title = forms.CharField(
@@ -87,7 +125,7 @@ class ServiceForm(forms.ModelForm):
     )
     description = forms.CharField(label=_("Description"), widget=forms.Textarea(attrs={"cols": 60}))
     abstract = forms.CharField(label=_("Abstract"), widget=forms.Textarea(attrs={"cols": 60}))
-    keywords = taggit.forms.TagField(required=False)
+    keywords = TagField(required=False)
 
     class Meta:
         model = Service

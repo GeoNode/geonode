@@ -1,0 +1,24 @@
+<article id="doc-cover">
+    {% if cover_logo is defined %}
+        <div class="wrapper upper">
+            <img class="logo" src="{{ cover_logo | to_url }}" alt="logo" />
+        </div>
+    {% else %}
+        <div class="wrapper"></div>
+    {% endif %}
+    <div class="wrapper">
+        <h1>{{ (cover_title_localized if cover_title_localized is defined and cover_title_localized else cover_title) | e }}</h1>
+        <h2>{{ (cover_subtitle_localized if cover_subtitle_localized is defined and cover_subtitle_localized else cover_subtitle) | e }}</h2>
+        <h4>{{ geonode_version }}</h4>
+    </div>
+    <div class="properties">
+        <address>
+            {% if author is defined %}
+                <p id="author">{{ author | e }}</p>
+            {% endif %}
+            {% if copyright is defined %}
+                <p id="copyright">{{ copyright | e }}, {{ now | strftime('%Y') }}</p>
+            {% endif %}
+        </address>
+    </div>
+</article>

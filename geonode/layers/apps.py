@@ -26,6 +26,7 @@ class DatasetAppConfig(NotificationsAppConfigBase, AppConfig):
     name = "geonode.layers"
     verbose_name = "Dataset"
     verbose_name_plural = "Datasets"
+    default_auto_field = "django.db.models.BigAutoField"
     NOTIFICATIONS = (
         (
             "dataset_created",

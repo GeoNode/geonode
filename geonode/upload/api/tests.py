@@ -16,9 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import io
+import zipfile
+
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from geonode.layers.models import Dataset
+from django.test import override_settings
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
 
@@ -29,9 +33,40 @@ from django.http import HttpResponse, QueryDict
 
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.tests.utils import ImporterBaseTestSupport
-from geonode.upload.orchestrator import orchestrator
-from django.utils.module_loading import import_string
-from geonode.assets.models import LocalAsset
+from geonode.upload.utils import UploadLimitValidator
+
+
+def _build_gpkg_header():
+    """
+    Minimal 100-byte SQLite 3 / GeoPackage header, enough for libmagic to
+    identify the buffer as 'SQLite 3.x database (OGC GeoPackage file)'.
+    """
+    hdr = b"SQLite format 3\x00"
+    hdr += (0x1000).to_bytes(2, "big")  # page size
+    hdr += b"\x01\x01"  # write / read format versions
+    hdr += b"\x00"  # reserved space
+    hdr += b"\x40\x20\x20"  # payload fraction fields
+    hdr += (0).to_bytes(4, "big")  # file change counter
+    hdr += (1).to_bytes(4, "big")  # database size in pages
+    hdr += (0).to_bytes(4, "big")  # first freelist trunk
+    hdr += (0).to_bytes(4, "big")  # total freelist pages
+    hdr += (0).to_bytes(4, "big")  # schema cookie
+    hdr += (4).to_bytes(4, "big")  # schema format
+    hdr += (0).to_bytes(4, "big")  # default page cache size
+    hdr += (0).to_bytes(4, "big")  # largest root b-tree page
+    hdr += (1).to_bytes(4, "big")  # text encoding UTF-8
+    hdr += (0).to_bytes(4, "big")  # user version
+    hdr += (0).to_bytes(4, "big")  # incremental vacuum
+    hdr += b"GPKG"  # application id (GeoPackage)
+    hdr += b"\x00" * 20  # reserved
+    hdr += (1).to_bytes(4, "big")  # version-valid-for
+    hdr += (3039000).to_bytes(4, "big")  # sqlite version number
+    assert len(hdr) == 100
+    return hdr
+
+
+GPKG_VALID_HEADER = _build_gpkg_header()
+PE_LIKE_CONTENT = b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
 
 
 class TestImporterViewSet(ImporterBaseTestSupport):
@@ -39,6 +74,9 @@ class TestImporterViewSet(ImporterBaseTestSupport):
     def setUpClass(cls):
         super().setUpClass()
         cls.url = reverse("importer_upload")
+        cls.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
 
     def setUp(self):
         self.dataset = create_single_dataset(name="test_dataset_copy")
@@ -59,19 +97,217 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.patch(self.url)
         self.assertEqual(405, response.status_code)
 
+    def test_importer_upload_rejects_copy_action(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {"action": "copy", "resource_pk": self.dataset.pk, "title": "copy"}
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"use PUT /api/v2/resources/{id}/copy instead", response.content)
+
+    def test_importer_upload_rejects_document_copy_action(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {"action": "document_copy", "resource_pk": self.dataset.pk, "title": "copy"}
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"use PUT /api/v2/resources/{id}/copy instead", response.content)
+
     def test_raise_exception_if_file_is_not_a_handled(self):
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
         payload = {"base_file": SimpleUploadedFile(name="file.invalid", content=b"abc"), "action": "upload"}
         response = self.client.post(self.url, data=payload)
-        self.assertEqual(500, response.status_code)
+        # FileValidationUploadHandler rejects the extension before the view runs.
+        self.assertEqual(400, response.status_code)
 
-    def test_gpkg_raise_error_with_invalid_payload(self):
+    def test_importer_upload_rejects_disallowed_extension(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="malicious.exe", content=PE_LIKE_CONTENT),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertFalse(Dataset.objects.filter(name="malicious").exists())
+
+    def test_importer_upload_rejects_shapefile_with_mismatched_content(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="fake.shp", content=PE_LIKE_CONTENT),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertFalse(Dataset.objects.filter(name="fake").exists())
+
+    def test_importer_upload_rejects_gpkg_with_mismatched_content(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         payload = {
             "base_file": SimpleUploadedFile(
-                name="test.gpkg",
+                name="fake.gpkg",
                 content=b'{"type": "FeatureCollection", "content": "some-content"}',
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertFalse(Dataset.objects.filter(name="fake").exists())
+
+    def test_importer_upload_rejects_geojson_with_binary_content(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="fake.geojson", content=PE_LIKE_CONTENT),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertFalse(Dataset.objects.filter(name="fake").exists())
+
+    def test_importer_upload_rejects_unsafe_xml_file(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "xml_file": SimpleUploadedFile(
+                name="meta.xml",
+                content=b'<?xml version="1.0"?><!DOCTYPE x SYSTEM "http://evil.example.com/x.dtd"><x/>',
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe XML file", response.content)
+
+    def test_importer_upload_rejects_unsafe_sld_file(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "sld_file": SimpleUploadedFile(
+                name="style.sld",
+                content=b'<?xml version="1.0"?><StyledLayerDescriptor><x onload="alert(1)"/>'
+                b"</StyledLayerDescriptor>",
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe SLD file", response.content)
+
+    @patch("geonode.upload.api.views.import_orchestrator")
+    def test_importer_upload_accepts_safe_xml_and_sld(self, mock_orchestrator):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(name="test.gpkg", content=GPKG_VALID_HEADER),
+            "xml_file": SimpleUploadedFile(
+                name="meta.xml",
+                content=b'<?xml version="1.0"?><metadata><title>ok</title></metadata>',
+                content_type="application/xml",
+            ),
+            "sld_file": SimpleUploadedFile(
+                name="style.sld",
+                content=b'<?xml version="1.0"?><StyledLayerDescriptor version="1.0.0"/>',
+                content_type="application/xml",
+            ),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(201, response.status_code)
+
+    @patch("geonode.upload.api.views.import_orchestrator")
+    def test_importer_upload_accepts_iso_xml_without_xml_declaration(self, _orc):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        iso_xml_content = (
+            b'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"'
+            b' xmlns:gco="http://www.isotc211.org/2005/gco">\n'
+            b"  <gmd:fileIdentifier><gco:CharacterString>test-iso-uuid</gco:CharacterString></gmd:fileIdentifier>\n"
+            b"  <gmd:identificationInfo>\n"
+            b"    <gmd:MD_DataIdentification>\n"
+            b"      <gmd:abstract><gco:CharacterString>Test abstract.</gco:CharacterString></gmd:abstract>\n"
+            b"    </gmd:MD_DataIdentification>\n"
+            b"  </gmd:identificationInfo>\n"
+            b"</gmd:MD_Metadata>"
+        )
+        payload = {
+            "base_file": SimpleUploadedFile("metadata.xml", iso_xml_content, "application/xml"),
+            "action": "resource_metadata_upload",
+            "resource_pk": self.dataset.pk,
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(201, response.status_code)
+
+    def test_importer_upload_rejects_other_text_with_xml_extension(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile("fake.xml", b"This is plain text, not XML.", "text/plain"),
+            "action": "resource_metadata_upload",
+            "resource_pk": self.dataset.pk,
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(400, response.status_code)
+
+    def test_importer_upload_rejects_zip_with_path_traversal(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("../../etc/passwd", b"root:x:0:0")
+        payload = {
+            "base_file": SimpleUploadedFile(name="traversal.zip", content=buf.getvalue()),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe ZIP archive", response.content)
+        self.assertFalse(Dataset.objects.filter(name="traversal").exists())
+
+    def test_importer_upload_rejects_zip_bomb(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            info = zipfile.ZipInfo("bomb.bin")
+            info.compress_type = zipfile.ZIP_DEFLATED
+            zf.writestr(info, b"\x00" * (5 * 1024 * 1024))
+        payload = {
+            "base_file": SimpleUploadedFile(name="bomb.zip", content=buf.getvalue()),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn(b"Invalid or unsafe ZIP archive", response.content)
+        self.assertFalse(Dataset.objects.filter(name="bomb").exists())
+
+    def test_gpkg_raise_error_with_invalid_payload(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        # Use a valid GeoPackage header so that FileValidationUploadHandler's
+        # libmagic description check passes and the serializer reaches the
+        # boolean validation that is being tested.
+        payload = {
+            "base_file": SimpleUploadedFile(
+                name="test.gpkg",
+                content=GPKG_VALID_HEADER,
             ),
             "store_spatial_files": "invalid",
             "action": "upload",
@@ -87,6 +323,45 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertEqual(400, response.status_code)
         self.assertEqual(expected, response.json())
 
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    @patch("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler.is_valid_url")
+    @patch("geonode.upload.handlers.remote.cog.RemoteCOGResourceHandler.can_handle")
+    @patch("geonode.upload.api.views.import_orchestrator.s")
+    def test_remote_dataset_add_allowed_for_admin(
+        self,
+        mock_sig,
+        mock_can_handle,
+        mock_is_valid_url,
+    ):
+        mock_is_valid_url.return_value = True
+        mock_can_handle.return_value = True
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        payload = {
+            "url": "https://example.com/data.tif",
+            "title": "Remote dataset",
+            "type": "cog",
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(201, response.status_code)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_dataset_add_forbidden_for_regular_user_by_default(self):
+        self.client.force_login(self.test_user)
+
+        payload = {
+            "url": "https://example.com/data.tif",
+            "title": "Remote dataset denied",
+            "type": "cog",
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(403, response.status_code)
+
     @patch("geonode.upload.api.views.import_orchestrator")
     def test_gpkg_task_is_called(self, patch_upload):
         patch_upload.apply_async.side_effect = MagicMock()
@@ -95,7 +370,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         payload = {
             "base_file": SimpleUploadedFile(
                 name="test.gpkg",
-                content=b'{"type": "FeatureCollection", "content": "some-content"}',
+                content=GPKG_VALID_HEADER,
             ),
             "store_spatial_files": True,
             "action": "upload",
@@ -126,6 +401,29 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertTrue(201, response.status_code)
 
     @patch("geonode.upload.api.views.import_orchestrator")
+    def test_geojson_mixed_geometry_succed(self, patch_upload):
+        patch_upload.apply_async.side_effect = MagicMock()
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": SimpleUploadedFile(
+                name="test.geojson",
+                content=b'{"type": "FeatureCollection", "features": '
+                b'[{"type": "Feature", "properties": {}, "geometry": '
+                b'{"type": "Point", "coordinates": [1, 2]}}, '
+                b'{"type": "Feature", "properties": {}, "geometry": '
+                b'{"type": "Polygon", "coordinates": '
+                b"[[[1, 2], [1, 3], [2, 3], [2, 2], [1, 2]]]}}]}",
+            ),
+            "store_spatial_files": True,
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertEqual(201, response.status_code)
+
+    @patch("geonode.upload.api.views.import_orchestrator")
     def test_zip_file_is_unzip_and_the_handler_is_found(self, patch_upload):
         patch_upload.apply_async.side_effect = MagicMock()
 
@@ -140,6 +438,67 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.post(self.url, data=payload)
 
         self.assertEqual(201, response.status_code)
+
+    def test_total_upload_size_counts_zip_file_of_different_size(self):
+        validator = UploadLimitValidator(user=None)
+        files = {"base_file": MagicMock(size=10), "zip_file": MagicMock(size=1000)}
+        self.assertEqual(1010, validator._get_uploaded_files_total_size(files))
+
+    def test_total_upload_size_ignores_zip_file_matching_base_file(self):
+        validator = UploadLimitValidator(user=None)
+        files = {"base_file": MagicMock(size=500), "zip_file": MagicMock(size=500)}
+        self.assertEqual(500, validator._get_uploaded_files_total_size(files))
+
+    @patch("geonode.storage.manager.StorageManager.delete_retrieved_paths")
+    def test_cloned_files_removed_when_no_handler_is_found(self, mock_delete):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {
+            "base_file": open(f"{project_dir}/tests/fixture/valid.zip", "rb"),
+            "action": "upload",
+        }
+
+        response = self.client.post(self.url, data=payload)
+
+        self.assertNotEqual(201, response.status_code)
+        mock_delete.assert_called_with(force=True)
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    def test_remote_upload_rejects_unsafe_url(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        invalid_urls = [
+            "http://127.0.0.1/tileset.json",
+            "http://10.0.0.1/tileset.json",
+            "http://192.168.1.10/tileset.json",
+        ]
+
+        for invalid_url in invalid_urls:
+            with self.subTest(url=invalid_url):
+                payload = {
+                    "url": invalid_url,
+                    "title": "Remote Title",
+                    "type": "3dtiles",
+                    "action": "upload",
+                }
+
+                response = self.client.post(self.url, data=payload)
+                self.assertEqual(400, response.status_code)
+
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    def test_remote_upload_rejects_dns_resolving_to_private_ip(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        with patch("geonode.utils.socket.getaddrinfo") as mock_dns:
+            mock_dns.return_value = [(None, None, None, None, ("127.0.0.1", 0))]
+            payload = {
+                "url": "http://example.com/tileset.json",
+                "title": "Remote Title",
+                "type": "3dtiles",
+                "action": "upload",
+            }
+
+            response = self.client.post(self.url, data=payload)
+
+            self.assertEqual(400, response.status_code)
 
     def test_copy_method_not_allowed(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -181,53 +540,3 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertEqual(200, response.status_code)
         _orc.s.assert_called_once()
-
-    @patch("geonode.upload.api.views.import_orchestrator")
-    def test_asset_is_created_before_the_import_start(self, patch_upload):
-        patch_upload.apply_async.side_effect = MagicMock()
-
-        self.client.force_login(get_user_model().objects.get(username="admin"))
-        payload = {
-            "base_file": SimpleUploadedFile(
-                name="test.geojson",
-                content=b'{"type": "FeatureCollection", "content": "some-content"}',
-            ),
-            "store_spatial_files": True,
-            "action": "upload",
-        }
-
-        response = self.client.post(self.url, data=payload)
-
-        self.assertEqual(201, response.status_code)
-
-        self.assertTrue(201, response.status_code)
-
-        _exec = orchestrator.get_execution_object(response.json()["execution_id"])
-
-        asset_handler = import_string(_exec.input_params["asset_module_path"])
-        self.assertTrue(asset_handler.objects.filter(id=_exec.input_params["asset_id"]))
-
-        asset_handler.objects.filter(id=_exec.input_params["asset_id"]).delete()
-
-    @patch("geonode.upload.api.views.import_orchestrator")
-    @patch("geonode.upload.api.views.UploadLimitValidator.validate_parallelism_limit_per_user")
-    def test_asset_should_be_deleted_if_created_during_with_exception(
-        self, validate_parallelism_limit_per_user, patch_upload
-    ):
-        patch_upload.apply_async.s.side_effect = MagicMock()
-        validate_parallelism_limit_per_user.side_effect = Exception("random exception")
-
-        self.client.force_login(get_user_model().objects.get(username="admin"))
-        payload = {
-            "base_file": SimpleUploadedFile(
-                name="test.geojson",
-                content=b'{"type": "FeatureCollection", "content": "some-content"}',
-            ),
-            "store_spatial_files": True,
-            "action": "upload",
-        }
-
-        response = self.client.post(self.url, data=payload)
-
-        self.assertEqual(500, response.status_code)
-        self.assertFalse(LocalAsset.objects.exists())

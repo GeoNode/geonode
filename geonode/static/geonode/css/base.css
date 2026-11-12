@@ -7741,6 +7741,18 @@ nav.filter li a {
 .group-details .group-logo img {
   width: 100%;
 }
+.managers-list .media-left a img {
+  height: 32px !important;
+  width: 32px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+.group-profile-img {
+    margin-top: 0.5rem !important;
+    height: 80px !important;
+    object-fit: contain
+}
+
 /* Upload Layers
 ----------------------- */
 #drop-zone {
@@ -8130,6 +8142,9 @@ footer form {
 }
 #member_form_container .select2-container {
   padding: 0;
+}
+#member_form_container .select2-container .select2-selection.select2-selection--multiple {
+  height: 100%;
 }
 .table-user-profile-attribute {
   font-weight: bold;
@@ -8537,4 +8552,9 @@ form-inline {
   100% {
     -webkit-transform: rotate(360deg);
   }
+}
+
+.socialaccount_ballot a.btn {
+  font-weight: bold !important;
+  font-size: large !important;
 }

@@ -44,7 +44,6 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
-from django.core.exceptions import ImproperlyConfigured
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
@@ -100,6 +99,7 @@ def update_profile(sociallogin):
             "profile",
             "voice",
             "zipcode",
+            "language",
         )
         for field in profile_fields:
             try:
@@ -220,7 +220,8 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
     """
 
     def is_open_for_signup(self, request, sociallogin):
-        return _site_allows_signup(request)
+        # https://github.com/GeoNode/geonode/issues/12967
+        return settings.ACCOUNT_OPEN_SOCIALSIGNUP
 
     def populate_user(self, request, sociallogin, data):
         """This method is called when a new sociallogin is created"""
@@ -278,36 +279,54 @@ PROFILE_URL = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, 
 ID_TOKEN_ISSUER = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("ID_TOKEN_ISSUER", "")
 
 
-class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
+def _update_user_groups_from_social(sociallogin, user):
+
+    # Retrieve the strategy from settings, defaulting FULL_SYNC
+    sync_strategy = getattr(settings, "SOCIALACCOUNT_SYNC_USER_GROUPS_ON_LOGIN", "FULL_SYNC")
+
+    if sync_strategy == "NO_SYNC":
+        return user
+
+    extractor = get_data_extractor(sociallogin.account.provider)
+    group_role_mapper = get_group_role_mapper(sociallogin.account.provider)
+    try:
+        # Try groups first
+        groups = extractor.extract_groups(sociallogin.account.extra_data)
+
+        # If groups are missing, try roles
+        if not isinstance(groups, list):
+            groups = extractor.extract_roles(sociallogin.account.extra_data)
+
+        # If groups is STILL "", it means BOTH were missing.
+        # If groups is [], this check will be FALSE, and the wipe will happen.
+        if sync_strategy == "SAFE_SYNC" and groups == "":
+            return user
+
+        # Perform the "Wipe" for FULL_SYNC or SAFE_SYNC (if we have data)
+        for groupprofile in user.group_list_all():
+            groupprofile.leave(user)
+
+        if groups and not isinstance(groups, str):
+            for group_role_name in groups:
+                group_name, role_name = group_role_mapper.parse_group_and_role(group_role_name)
+                groupprofile = GroupProfile.objects.filter(slug=group_name).first()
+                if groupprofile:
+                    groupprofile.join(user)
+                    if group_role_mapper.is_manager(role_name):
+                        groupprofile.promote(user)
+    except (AttributeError, NotImplementedError):
+        pass  # extractor doesn't define a method for extracting field
+    return user
+
+
+class GenericOpenIDConnectOAuth2Adapter(OAuth2Adapter):
+    """OAuth2 protocol adapter for the ``geonode_openid_connect`` provider"""
+
     provider_id = PROVIDER_ID
     access_token_url = ACCESS_TOKEN_URL
     authorize_url = AUTHORIZE_URL
     profile_url = PROFILE_URL
     id_token_issuer = ID_TOKEN_ISSUER
-
-    def get_provider(self, request=None, provider=None):
-        """Looks up a `provider`, supporting subproviders by looking up by
-        `provider_id`.
-        """
-        from allauth.socialaccount.providers import registry
-
-        request = request or self.request
-        provider = provider or self.provider_id
-        provider_class = registry.get_class(provider)
-        if provider_class is None or provider_class.uses_apps:
-            app = self.get_app(request, provider=provider)
-            if not provider_class:
-                # In this case, the `provider` argument passed was a
-                # `provider_id`.
-                provider_class = registry.get_class(app.provider)
-            if not provider_class:
-                raise ImproperlyConfigured(f"unknown provider: {app.provider}")
-            return provider_class(request, app=app)
-        elif provider_class:
-            assert not provider_class.uses_apps
-            return provider_class(request, app=None)
-        else:
-            raise ImproperlyConfigured(f"unknown provider: {app.provider}")
 
     def complete_login(self, request, app, token, response, **kwargs):
         extra_data = {}
@@ -344,25 +363,18 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
         login = self.get_provider().sociallogin_from_response(request, extra_data)
         return login
 
-    def save_user(self, request, sociallogin, form=None):
-        user = super(SocialAccountAdapter, self).save_user(request, sociallogin, form=form)
-        extractor = get_data_extractor(sociallogin.account.provider)
-        group_role_mapper = get_group_role_mapper(sociallogin.account.provider)
-        try:
-            groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(
-                sociallogin.account.extra_data
-            )
 
-            # check here if user is member already of other groups and remove it form the ones that are not declared here...
-            for groupprofile in user.group_list_all():
-                groupprofile.leave(user)
-            for group_role_name in groups:
-                group_name, role_name = group_role_mapper.parse_group_and_role(group_role_name)
-                groupprofile = GroupProfile.objects.filter(slug=group_name).first()
-                if groupprofile:
-                    groupprofile.join(user)
-                    if group_role_mapper.is_manager(role_name):
-                        groupprofile.promote(user)
-        except (AttributeError, NotImplementedError):
-            pass  # extractor doesn't define a method for extracting field
+class GenericOpenIDConnectAdapter(SocialAccountAdapter):
+    """Social account adapter syncing GeoNode groups from the provider data"""
+
+    def save_user(self, request, sociallogin, form=None):
+        user = super().save_user(request, sociallogin, form=form)
+        user = _update_user_groups_from_social(sociallogin, user)
         return user
+
+    def pre_social_login(self, request, sociallogin):
+        """update user groups on each social login"""
+        super().pre_social_login(request, sociallogin)
+        user = sociallogin.user
+        if user.pk:
+            _update_user_groups_from_social(sociallogin, user)

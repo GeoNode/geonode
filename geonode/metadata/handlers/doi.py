@@ -37,6 +37,7 @@ class DOIHandler(MetadataHandler):
             "geonode:handler": "doi",
         }
 
+        self._localize_subschema_labels(context, doi_schema, lang, "doi")
         # add DOI after edition
         self._add_subschema(jsonschema, "doi", doi_schema, after_what="edition")
         return jsonschema
@@ -45,4 +46,6 @@ class DOIHandler(MetadataHandler):
         return resource.doi
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-        resource.doi = json_instance[field_name]
+        doi_value = json_instance.get(field_name, None)
+        resource.doi = doi_value
+        context.setdefault("base", {})[field_name] = doi_value

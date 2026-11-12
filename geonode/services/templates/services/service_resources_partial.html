@@ -1,0 +1,31 @@
+{% load i18n %}
+
+<h3>
+    {% trans "Service Resources" %}
+    <span class="badge">{{ total_resources }}</span>
+</h3>
+
+{% if total_resources == 0 %}
+    <p>{% trans "No resources have been imported yet." %}</p>
+{% else %}
+    <div class="row">
+        <table class="table">
+            <thead>
+                <th>{% trans "Title" %}</th>
+                <th>{% trans "Description" %}</th>
+            </thead>
+            {% for resource in resources %}
+                <tr>
+                    <td><a href="{{ resource.get_absolute_url }}">{{ resource.title|striptags }}</a></td>
+                    <td>
+                        <div class="row">
+                            <div class="col-md-9">
+                                {{ resource.abstract|striptags }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}

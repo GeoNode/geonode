@@ -31,7 +31,7 @@ import traceback
 from itertools import cycle
 from collections import defaultdict
 from os.path import basename, splitext, isfile
-from urllib.parse import urlparse, urlencode, urlsplit, urljoin
+from urllib.parse import urlparse, urlunparse, urlencode, urlsplit, urljoin, parse_qsl
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
@@ -66,6 +66,8 @@ from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.resource.utils import KeywordHandler
+from geonode.resource.utils import is_remote_resource
 
 from geonode.utils import (
     OGC_Servers_Handler,
@@ -73,6 +75,8 @@ from geonode.utils import (
     get_legend_url,
     is_monochromatic_image,
     set_resource_default_links,
+    normalize_bbox_to_float_list,
+    safe_request_url,
 )
 
 from .geofence import GeoFenceClient, GeoFenceUtils
@@ -98,9 +102,20 @@ WPS_ACCEPTABLE_FORMATS = [
     ("application/wfs-collection-1.1", "vector"),
     ("application/zip", "vector"),
     ("text/csv", "vector"),
+    ("text/csv", "tabular"),
 ]
 
 DEFAULT_STYLE_NAME = ["generic", "line", "point", "polygon", "raster"]
+
+
+def _sync_geoserver_keywords_to_instance(instance, keywords):
+    if not keywords:
+        return
+    try:
+        merged_keywords = set(keywords) | set(instance.keyword_list())
+        KeywordHandler(instance=instance, keywords=list(merged_keywords)).set_keywords()
+    except Exception:
+        logger.exception(f"Error while importing keywords from GeoServer for dataset {instance.name}")
 
 
 if not hasattr(settings, "OGC_SERVER"):
@@ -477,8 +492,6 @@ def cascading_delete(dataset_name=None, catalog=None):
     finally:
         # Let's reset the connections first
         cat._cache.clear()
-        cat.reset()
-        cat.reload()
 
     if resource is None:
         # If there is no associated resource,
@@ -594,6 +607,7 @@ def gs_slurp(
     filter=None,
     skip_unadvertised=False,
     skip_geonode_registered=False,
+    skip_keywords=False,
     remove_deleted=False,
     permissions=None,
     execute_signals=False,
@@ -602,7 +616,7 @@ def gs_slurp(
     It returns a list of dictionaries with the name of the layer,
     the result of the operation and the errors and traceback if it failed.
     """
-    from geonode.resource.manager import resource_manager
+    from geonode.resource.registry import resource_manager_registry, dataset_manager
 
     if console is None:
         console = open(os.devnull, "w")
@@ -715,7 +729,7 @@ def gs_slurp(
             created = False
             layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = resource_manager.create(
+                layer = dataset_manager.create(
                     str(uuid.uuid4()),
                     resource_type=Dataset,
                     defaults=dict(
@@ -746,17 +760,22 @@ def gs_slurp(
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
-            resource_manager.set_permissions(layer.uuid, permissions=perm_spec)
+            resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+            resolved_resource_manager.set_permissions(layer.uuid, instance=layer, permissions=perm_spec)
 
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
 
+            if not skip_keywords:
+                # import the keywords from GeoServer, merging them with the existing ones
+                _sync_geoserver_keywords_to_instance(layer, resource.keywords)
+
             # in some cases we need to explicitily save the resource to execute the signals
             # (for sure when running updatelayers)
-            resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
+            resolved_resource_manager.update(layer.uuid, instance=layer, notify=execute_signals)
 
             # Creating the Thumbnail
-            resource_manager.set_thumbnail(layer.uuid, overwrite=True, check_bbox=False)
+            resolved_resource_manager.set_thumbnail(layer.uuid, instance=layer, overwrite=True, check_bbox=False)
 
         except Exception as e:
             # Hide the resource until finished
@@ -979,12 +998,31 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
         logger.debug("No attributes found")
 
 
+def _resolve_wfs_attribute_type(element, xsd):
+    """Return the XSD type QName stored for a DescribeFeatureType element.
+
+    ``@type`` wins. Enumerated fields omit it and publish an anonymous simpleType
+    whose ``restriction/@base`` is the same QName (for example ``xsd:string``).
+    Enumeration values are left unread. Returns ``""`` when neither is present.
+    """
+    if "type" in element.attrib:
+        return element.attrib["type"]
+    restriction = element.find(f"{xsd}simpleType/{xsd}restriction")
+    if restriction is None:
+        return ""
+    return restriction.attrib.get("base") or ""
+
+
 def set_attributes_from_geoserver(layer, overwrite=False):
     """
     Retrieve layer attribute names & types from Geoserver,
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
+    if layer.subtype == "remote" and not layer.remote_service:
+        # avoid falling through to the local-GeoServer branches, which would wipe existing attributes
+        logger.debug(f"Dataset '{layer.alternate or layer.typename}' is remote but has no remote_service yet")
+        return
     if getattr(layer, "remote_service") and layer.remote_service:
         server_url = layer.remote_service.service_url
         if layer.remote_service.operations.get("GetCapabilities", None) and layer.remote_service.operations.get(
@@ -996,40 +1034,67 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                     break
     else:
         server_url = ogc_server_settings.LOCATION
-    if layer.subtype in ["tileStore", "remote"] and layer.remote_service.ptype == "gxp_arcrestsource":
-        dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
+    if layer.subtype == "remote" and layer.remote_service and layer.remote_service.ptype == "gxp_arcrestsource":
+        resource_identifier = layer.alternate or layer.typename
+        logger.info(f"Getting info for {layer.subtype} '{resource_identifier}'")
+        # `resource_identifier` is GeoNode's own "workspace:name" form (e.g. "remoteWorkspace:0"),
+        # not a real ArcGIS REST path: the actual layer id is whatever follows the last ':'.
+        arcgis_layer_id = resource_identifier.rsplit(":", 1)[-1]
+        # server_url may already carry a query string (e.g. an auth token via extra_queryparams):
+        # append the layer id to the path and merge f=json into the existing query, not the string.
+        parsed_server_url = urlparse(server_url)
+        query = dict(parse_qsl(parsed_server_url.query))
+        query["f"] = "json"
+        dft_url = urlunparse(
+            parsed_server_url._replace(
+                path=f"{parsed_server_url.path.rstrip('/')}/{arcgis_layer_id}",
+                query=urlencode(query),
+            )
+        )
         try:
-            # The code below will fail if http_client cannot be imported
-            req, body = http_client.get(dft_url, user=_user)
-            body = json.loads(body)
-            attribute_map = [
-                [n["name"], _esri_types[n["type"]]] for n in body["fields"] if n.get("name") and n.get("type")
-            ]
-        except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            body = _get_from_remote_service(layer.remote_service, dft_url).json()
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
+            for n in body["fields"]:
+                esri_type = _esri_types.get(n.get("type"))
+                if n.get("name") and esri_type:
+                    attribute_map.append([n["name"], esri_type])
+        except Exception:
+            logger.warning(f"Error while retrieving info for {layer.subtype} '{resource_identifier}'", exc_info=True)
+            attribute_map = []
+    elif layer.can_have_wps_links:
         typename = layer.alternate if layer.alternate else layer.typename
+        logger.info(f"Getting WFS info for {layer.subtype} '{typename}'")
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
         dft_query = urlencode(
             {"service": "wfs", "version": "1.0.0", "request": "DescribeFeatureType", "typename": typename}
         )
         dft_url = urljoin(dft_url_path, f"ows?{dft_query}")
+        logger.debug(f"WFS URL is {dft_url}")
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
-            req, body = http_client.get(dft_url, user=_user)
-            doc = dlxml.fromstring(body.encode())
+            if layer.remote_service:
+                doc = dlxml.fromstring(_get_from_remote_service(layer.remote_service, dft_url).content)
+            else:
+                doc = _get_xml(dft_url)
             xsd = "{http://www.w3.org/2001/XMLSchema}"
             path = f".//{xsd}extension/{xsd}sequence/{xsd}element"
-            attribute_map = [
-                [n.attrib["name"], n.attrib["type"]]
-                for n in doc.findall(path)
-                if n.attrib.get("name") and n.attrib.get("type")
-            ]
+            attribute_map = []
+            for element in doc.findall(path):
+                name = element.attrib.get("name") or ""
+                resolved_type = _resolve_wfs_attribute_type(element, xsd)
+                if name and resolved_type:
+                    attribute_map.append([name, resolved_type])
+                elif name:
+                    # Stay in this successful parse. Raising would clear attribute_map and
+                    # fall through to the WMS GetFeatureInfo fallback below.
+                    logger.warning(
+                        f"Skipping attribute '{name}' on '{typename}': "
+                        "DescribeFeatureType element has no type or restriction base"
+                    )
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(
+                f"Error while retrieving WFS info for {layer.subtype} '{typename}'... will try WMS", exc_info=True
+            )
             attribute_map = []
             # Try WMS instead
             dft_url = (
@@ -1054,7 +1119,12 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 )
             )
             try:
-                req, body = http_client.get(dft_url, user=_user)
+                logger.info(f"Getting WMS info for {layer.subtype} '{layer.alternate or layer.typename}'")
+                logger.debug(f"WMS URL is {dft_url}")
+                if layer.remote_service:
+                    body = _get_from_remote_service(layer.remote_service, dft_url).content
+                else:
+                    body = _get_from_catalog(dft_url)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll("th"):
                     if field.string is None:
@@ -1063,21 +1133,19 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                         field_name = field.string
                     attribute_map.append([field_name, "xsd:string"])
             except Exception:
-                tb = traceback.format_exc()
-                logger.debug(tb)
+                logger.warning(f"Error while retrieving WMS info for {layer.subtype} '{typename}'", exc_info=True)
                 attribute_map = []
     elif layer.subtype in ["raster"]:
         typename = layer.alternate if layer.alternate else layer.typename
+        logger.info(f"Getting WCS info for {layer.subtype} '{typename}'")
         dc_url = f"{server_url}wcs?{urlencode({'service': 'wcs', 'version': '1.1.0', 'request': 'DescribeCoverage', 'identifiers': typename})}"
         try:
-            req, body = http_client.get(dc_url, user=_user)
-            doc = dlxml.fromstring(body.encode())
+            doc = _get_xml(dc_url)
             wcs = "{http://www.opengis.net/wcs/1.1.1}"
             path = f".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key"
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
         except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.warning(f"Error while retrieving WCS info for {layer.subtype} '{typename}'", exc_info=True)
             attribute_map = []
     # Get attribute statistics & package for call to really_set_attributes()
     attribute_stats = defaultdict(dict)
@@ -1093,6 +1161,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             else:
                 result = None
             attribute_stats[layer.name][field] = result
+    logger.info(f"Found {len(attribute_map)} attributes for {layer.subtype}")
     set_attributes(layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats)
 
 
@@ -1886,9 +1955,27 @@ _esri_types = {
 
 # main entry point to create a thumbnail - will use implementation
 # defined in settings.THUMBNAIL_GENERATOR (see settings.py)
-def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
+def create_gs_thumbnail(
+    instance,
+    overwrite=False,
+    check_bbox=False,
+    bbox=None,
+    forced_crs=None,
+    styles=None,
+    background_zoom=None,
+    map_thumb_from_bbox=False,
+):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
-    return implementation(instance, overwrite, check_bbox)
+    return implementation(
+        instance,
+        overwrite,
+        check_bbox,
+        bbox=bbox,
+        forced_crs=forced_crs,
+        styles=styles,
+        background_zoom=background_zoom,
+        map_thumb_from_bbox=map_thumb_from_bbox,
+    )
 
 
 def sync_instance_with_geoserver(instance_id, *args, **kwargs):
@@ -1897,6 +1984,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
     """
     updatebbox = kwargs.get("updatebbox", True)
     updatemetadata = kwargs.get("updatemetadata", True)
+    importgskeywords = kwargs.get("importgskeywords", False)
 
     instance = None
     try:
@@ -1923,14 +2011,14 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
         # Don't run this signal handler if it is a tile layer or a remote store (Service)
         #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-        _is_remote_instance = hasattr(instance, "subtype") and getattr(instance, "subtype") in ["tileStore", "remote"]
+        _is_remote_instance = is_remote_resource(instance)
 
-        # Let's reset the connections first
-        gs_catalog._cache.clear()
-        gs_catalog.reset()
-
-        gs_resource = None
         if not _is_remote_instance:
+            # Let's reset the connections first
+            gs_catalog._cache.clear()
+            gs_catalog.reset()
+
+            gs_resource = None
             values = {"title": instance.title, "abstract": instance.raw_abstract}
             _tries = 0
 
@@ -1941,12 +2029,12 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                 instance.gs_resource = gs_resource
 
                 # Iterate over values from geoserver.
-                for key in ["alternate", "store", "subtype"]:
-                    # attr_name = key if 'typename' not in key else 'alternate'
-                    # print attr_name
-                    setattr(instance, key, get_dataset_storetype(values[key]))
+                instance = instance.fixup_store_type(["alternate", "store", "subtype"], values)
 
                 if updatemetadata:
+                    if importgskeywords:
+                        _sync_geoserver_keywords_to_instance(instance, gs_resource.keywords)
+
                     # Get metadata links
                     metadata_links = []
                     for link in instance.link_set.metadata():
@@ -2004,18 +2092,9 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     # are bypassed by custom create/updates we need to ensure the
                     # bbox is calculated properly.
                     srid = gs_resource.projection
-                    bbox = gs_resource.native_bbox
-                    ll_bbox = gs_resource.latlon_bbox
-                    try:
-                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-                    except GeoNodeException as e:
-                        if not ll_bbox:
-                            raise
-                        else:
-                            logger.exception(e)
-                            instance.srid = "EPSG:4326"
-                            Dataset.objects.filter(id=instance.id).update(srid=instance.srid)
-                    instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
+                    bbox = normalize_bbox_to_float_list(gs_resource.native_bbox)
+                    ll_bbox = normalize_bbox_to_float_list(gs_resource.latlon_bbox)
+                    instance.set_bbox_and_srid(bbox=bbox, ll_bbox=ll_bbox, srid=srid)
 
                     if instance.srid:
                         instance.srid_url = (
@@ -2033,7 +2112,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                         "alternate": instance.alternate,
                     }
 
-                if updatebbox and is_monochromatic_image(instance.thumbnail_url):
+                if updatebbox and is_monochromatic_image(instance.thumbnail_url, image_path=instance.thumbnail_path):
                     to_update["thumbnail_url"] = None
 
                 # Save all the modified information in the instance without triggering signals.
@@ -2051,7 +2130,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     # Refresh from DB
                     instance.refresh_from_db()
 
-                if updatemetadata:
+                if updatemetadata and instance.should_create_style:
                     # Save dataset styles
                     logger.debug(f"... Refresh Legend links for Dataset {instance.title}")
                     try:
@@ -2157,3 +2236,31 @@ def ows_endpoint_in_path(path):
         or re.match(r".*(?<!w[a-z]s)/(w.*s)/.*$", path, re.IGNORECASE)
         or re.match(r".*(?<!ows)/(ows)/.*$", path, re.IGNORECASE)
     )
+
+
+def _get_from_catalog(url):
+    resp = gs_catalog.http_request(url)
+    if resp.status_code == 200:
+        return resp.content
+    else:
+        logger.debug(f"Request at {url} returned code {resp.status_code} and content {resp.content}")
+        raise Exception(f"Request returned code {resp.status_code}")
+
+
+def _get_from_remote_service(service, url):
+    # Not gs_catalog/http_client: those would send our own GeoServer credentials to this third party.
+    auth = None
+    if service.needs_authentication:
+        from geonode.security.auth_registry import auth_handler_registry
+
+        auth = auth_handler_registry.build(service.auth_config).get_request_auth()
+    response = safe_request_url("GET", url, auth=auth, timeout=10)
+    response.raise_for_status()
+    return response
+
+
+def _get_xml(url):
+    content = _get_from_catalog(url)
+    if isinstance(content, bytes):
+        content = content.decode("UTF-8")
+    return dlxml.fromstring(content.encode())

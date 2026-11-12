@@ -19,8 +19,9 @@
 import os
 import logging
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
@@ -46,7 +47,9 @@ def csw_global_dispatch(request, dataset_filter=None, config_updater=None):
     if settings.CATALOGUE["default"]["ENGINE"] != "geonode.catalogue.backends.pycsw_local":
         return HttpResponseRedirect(settings.CATALOGUE["default"]["URL"])
 
-    mdict = dict(settings.PYCSW["CONFIGURATION"], **CONFIGURATION)
+    mdict = dict(CONFIGURATION, **settings.PYCSW["CONFIGURATION"])
+    if "server" in settings.PYCSW["CONFIGURATION"]:
+        mdict["server"] = dict(CONFIGURATION.get("server", {}), **settings.PYCSW["CONFIGURATION"]["server"])
     mdict = config_updater(mdict) if config_updater else mdict
 
     access_token = None
@@ -164,12 +167,12 @@ def opensearch_dispatch(request):
     """OpenSearch wrapper"""
 
     ctx = {
-        "shortname": settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_title"],
-        "description": settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_abstract"],
-        "developer": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_name"],
-        "contact": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_email"],
-        "attribution": settings.PYCSW["CONFIGURATION"]["metadata:main"]["provider_name"],
-        "tags": settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_keywords"].replace(",", " "),
+        "shortname": settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["title"],
+        "description": settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["description"],
+        "developer": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["name"],
+        "contact": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["email"],
+        "attribution": settings.PYCSW["CONFIGURATION"]["metadata"]["provider"]["name"],
+        "tags": " ".join(settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["keywords"]),
         "url": settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL,
     }
 
@@ -218,7 +221,12 @@ def get_keywords(resource):
 @csrf_exempt
 def csw_render_extra_format_txt(request, layeruuid, resname):
     """pycsw wrapper"""
-    resource = ResourceBase.objects.get(uuid=layeruuid)
+    resource = resolve_object(
+        request,
+        ResourceBase,
+        {"uuid": layeruuid},
+        permission="base.view_resourcebase",
+    )
     chrs = get_CSV_spec_char()
     s = chrs["separator"]
     c = chrs["carriage_return"]
@@ -297,7 +305,12 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
 
 
 def csw_render_extra_format_html(request, layeruuid, resname):
-    resource = ResourceBase.objects.get(uuid=layeruuid)
+    resource = resolve_object(
+        request,
+        ResourceBase,
+        {"uuid": layeruuid},
+        permission="base.view_resourcebase",
+    )
     extra_res_md = {}
     try:
         sprt = SpatialRepresentationType.objects.get(id=resource.spatial_representation_type_id)
@@ -331,4 +344,9 @@ def csw_render_extra_format_html(request, layeruuid, resname):
 
 def resolve_uuid(request, uuid):
     resource = resolve_object(request, ResourceBase, {"uuid": uuid})
-    return redirect(resource)
+    url = resource.get_absolute_url()
+    if request.GET:
+        url = f"{url}{'&' if '?' in url else '?'}{request.GET.urlencode()}"
+    if not url_has_allowed_host_and_scheme(url, {request.get_host()}, request.is_secure()):
+        return HttpResponseBadRequest("Invalid redirect")
+    return redirect(url)

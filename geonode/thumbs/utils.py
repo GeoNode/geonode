@@ -144,6 +144,8 @@ def get_map(
     height: int = 200,
     max_retries: int = 3,
     retry_delay: int = 1,
+    instance=None,
+    auth=None,
 ):
     """
     Function fetching an image from OGC server.
@@ -163,6 +165,7 @@ def get_map(
     :param height: height of the returned image
     :param max_retries: maximum number of retries before skipping retrieval
     :param retry_delay: number of seconds waited between retries
+    :param auth: optional auth object for remote service authentication
     :returns: retrieved image
     """
     from geonode.geoserver.helpers import ogc_server_settings
@@ -208,6 +211,7 @@ def get_map(
                 f"{thumbnail_url}{wms_endpoint}",
                 version=wms_version,
                 headers=headers,
+                auth=auth,
                 layers=layers,
                 styles=styles,
                 srs=bbox[-1] if bbox else None,
@@ -307,6 +311,7 @@ def getmap(
     base_url,
     version="1.3.0",
     headers={},
+    auth=None,
     layers=None,
     styles=None,
     srs=None,
@@ -383,7 +388,7 @@ def getmap(
     """
     from owslib.etree import etree
     from owslib.namespaces import Namespaces
-    from owslib.util import openURL, ServiceException, nspath
+    from owslib.util import Authentication, openURL, ServiceException, nspath
 
     n = Namespaces()
 
@@ -406,7 +411,8 @@ def getmap(
 
     data = urlencode(request)
 
-    u = openURL(base_url, data, method, timeout=timeout, auth=None, headers=headers)
+    auth = Authentication(auth_delegate=auth)
+    u = openURL(base_url, data, method, timeout=timeout, auth=auth, headers=headers)
 
     # need to handle casing in the header keys
     headers = {}

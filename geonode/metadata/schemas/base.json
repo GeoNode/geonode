@@ -4,36 +4,39 @@
     "title": "UUID",
     "maxLength": 36,
     "readOnly": true,
-    "NO_ui:widget": "hidden",
     "geonode:handler": "base"
   },
   "title": {
     "type": "string",
-    "title": "title",
+    "title": "Title",
     "description": "name by which the cited resource is known",
     "maxLength": 255,
-    "geonode:handler": "base"
+    "geonode:handler": "base",
+    "geonode:required": true
   },
   "abstract": {
     "type": "string",
-    "title": "abstract",
+    "title": "Abstract",
     "description": "brief narrative summary of the content of the resource(s)",
     "maxLength": 2000,
     "ui:options": {
       "widget": "textarea",
       "rows": 5
     },
-    "geonode:handler": "base"
+    "geonode:handler": "base",
+    "geonode:required": true
   },
   "date": {
     "type": "string",
     "format": "date-time",
-    "title": "Date"
+    "title": "Date",
+    "geonode:required": true
   },
   "date_type": {
     "type": "string",
     "title": "date type",
-    "maxLength": 255
+    "maxLength": 255,
+    "geonode:required": true
   },
   "category": {
      "type": "object",
@@ -52,9 +55,10 @@
   },
   "language": {
     "type": "string",
-    "title": "language",
+    "title": "Language",
     "description": "language used within the dataset",
-    "maxLength": 16
+    "maxLength": 16,
+    "geonode:required": true
   },
   "license": {
     "type": "object",
@@ -63,7 +67,7 @@
     "maxLength": 255,
      "properties": {
        "id": {
-         "type": "string"
+         "type": "integer"
        },
        "label": {
          "type": "string"
@@ -89,7 +93,7 @@
     }
   },
   "restriction_code_type": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "restrictions",
     "description": "limitation(s) placed upon the access or use of the data.",
     "maxLength": 255
@@ -144,13 +148,13 @@
     "description": "time period covered by the content of the dataset (end)"
   },
   "maintenance_frequency": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "maintenance frequency",
     "description": "frequency with which modifications and deletions are made to the data after it is first produced",
     "maxLength": 255
   },
   "spatial_representation_type": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "spatial representation type",
     "description": "method used to represent geographic information in the dataset.",
     "maxLength": 255

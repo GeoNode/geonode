@@ -16,8 +16,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from django.urls import re_path
-from . import views
-
-urlpatterns = [re_path(r"$", views.dataset_create, name="dataset_create")]

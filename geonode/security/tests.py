@@ -26,7 +26,9 @@ import os
 import requests
 import importlib
 import mock
+from uuid import uuid4
 
+from requests import Request
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
 from avatar.templatetags.avatar_tags import avatar_url
@@ -38,7 +40,7 @@ from django.http import HttpRequest
 from django.test.testcases import TestCase
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, Permission
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
@@ -48,17 +50,25 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.compat import ensure_string
-from geonode.security.handlers import BasePermissionsHandler
+from geonode.security.handlers import (
+    BasePermissionsHandler,
+    GroupManagersPermissionsHandler,
+    SpecialGroupsPermissionsHandler,
+    ResourceCreatorGroupsPermissionsHandler,
+)
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
 from geonode.security.registry import permissions_registry
+from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import _to_extended_perms
+from geonode.metadata.manager import metadata_manager
 
 from geonode.base.models import Configuration, UserGeoLimit, GroupGeoLimit
 from geonode.base.populate_test_data import (
@@ -79,6 +89,7 @@ from geonode.geoserver.security import (
     create_geofence_rules,
     delete_geofence_rules_for_layer,
 )
+from geonode.base import enumerations
 
 
 from .utils import (
@@ -87,6 +98,12 @@ from .utils import (
 )
 
 from .permissions import PermSpec, PermSpecCompact
+from django.core.cache import cache
+from geonode.base.models import ResourceBase
+from geonode.people.models import Profile
+from geonode.security.auth_handlers import AuthHandler, BasicAuthHandler, HashableAuthBase
+from geonode.security.auth_registry import AuthHandlerRegistry, auth_handler_registry
+from geonode.security.models import AuthConfig, URLPatternAuthConfig
 
 logger = logging.getLogger(__name__)
 
@@ -204,7 +221,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         middleware = LoginRequiredMiddleware(None)
 
-        black_listed_url = reverse("load_dataset_data")
+        black_listed_url = reverse("admin:index")
         white_listed_url = reverse("account_login")
 
         # unauthorized request to black listed URL should be redirected to `redirect_to` URL
@@ -235,7 +252,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
-        black_listed_url = reverse("load_dataset_data")
+        black_listed_url = reverse("admin:index")
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
@@ -261,6 +278,54 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_authenticated_api_request_with_login_middleware(self):
+        from geonode.people.models import Profile
+
+        with override_settings(
+            MIDDLEWARE=settings.MIDDLEWARE + ("geonode.security.middleware.LoginRequiredMiddleware",)
+        ):
+            response = self.client.get(reverse("users-list"))
+            self.assertEqual(response.status_code, 302, "LoginRequiredMiddleware redirects the anonymouse user")
+            self.assertTrue(reverse("account_login") in response.url, "LoginRequiredMiddleware login redirection")
+
+            admin = get_user_model().objects.filter(is_superuser=True).first()
+
+            response = self.client.get(
+                reverse("users-list"), HTTP_AUTHORIZATION=f"Basic {base64.b64encode(b'admin:admin').decode()}"
+            )
+            self.assertEqual(
+                response.status_code, 200, "LoginRequiredMiddleware passed the Basic Auth without any issues"
+            )
+
+            access_token = get_or_create_token(admin)
+            response = self.client.get(reverse("users-list"), HTTP_AUTHORIZATION=f"Bearer {access_token.token}")
+            self.assertEqual(
+                response.status_code, 200, "LoginRequiredMiddleware passed the Bearer token without any issues"
+            )
+
+            with override_settings(
+                ENABLE_APIKEY_LOGIN=True,
+            ):
+                response = self.client.get(f"{reverse('users-list')}?apikey={access_token.token}")
+                self.assertEqual(
+                    response.status_code, 200, "LoginRequiredMiddleware passed the API Ley param without any issues"
+                )
+
+                path = f"{reverse('users-list')}?apikey={access_token.token}"
+                response = self.client.post(
+                    path,
+                    data={
+                        "username": "user1withapyley",
+                        "password": "user1withapyley",
+                        "email": "user1withapyley@email.com",
+                    },
+                )
+                self.assertEqual(
+                    response.status_code, 201, "LoginRequiredMiddleware allowed the API Key to create a new user"
+                )
+                Profile.objects.get(username="user1withapyley").delete()  # cleanup
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_session_ctrl_middleware(self):
         """
         Tests the Geonode session control authentication middleware.
@@ -275,7 +340,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         request = HttpRequest()
         request.user = admin
         request.session = engine.SessionStore()
-        request.session["access_token"] = get_or_create_token(admin)
+        request.session["access_token"] = str(get_or_create_token(admin))
         request.session.save()
         middleware.process_request(request)
         self.assertFalse(request.session.is_empty())
@@ -466,6 +531,154 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Test user has permission with read_only=False
         self.assertFalse(dataset.user_can(bobby, "change_dataset_data"))
         self.assertTrue(dataset.user_can(bobby, "change_dataset_style"))
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=False,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
+    )
+    def test_special_groups_flags_disabled_only_admin_and_staff_receive(self):
+        """
+        - Only administrators and staff users receive both flags if is false.
+        - Editors and owners do not receive the flags.
+        """
+        admin = get_user_model().objects.get(username="admin")
+        bobby = get_user_model().objects.get(username="bobby")  # non-staff
+
+        dataset = Dataset.objects.filter(subtype="vector").first()
+        assign_perm("change_resourcebase", bobby, dataset.get_self_resource())
+        assign_perm("change_resourcebase_metadata", bobby, dataset.get_self_resource())
+
+        # Admin should have both flags
+        admin_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=admin)
+        self.assertIn("can_manage_anonymous_permissions", admin_perms)
+        self.assertIn("can_manage_registered_member_permissions", admin_perms)
+
+        # Editor (non-staff) should not have the flags when settings are False
+        editor_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=bobby)
+        self.assertNotIn("can_manage_anonymous_permissions", editor_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", editor_perms)
+
+        # Owner (non-staff) should also NOT have the flags when settings are False
+        owned_dataset = Dataset.objects.filter(owner=bobby).first()
+        owner_perms = permissions_registry.get_perms(instance=owned_dataset.get_self_resource(), user=bobby)
+        self.assertNotIn("can_manage_anonymous_permissions", owner_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", owner_perms)
+
+        # Staff user should receive both flags even without explicit edit perms
+        staff_user = get_user_model().objects.create_user(
+            username="staff_user", email="staff@example.com", password="staffpass"
+        )
+        try:
+            staff_user.is_staff = True
+            staff_user.save()
+            staff_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=staff_user)
+            self.assertIn("can_manage_anonymous_permissions", staff_perms)
+            self.assertIn("can_manage_registered_member_permissions", staff_perms)
+        finally:
+            staff_user.delete()
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=True,
+    )
+    def test_special_groups_flags_enabled_editors_and_owners_receive(self):
+        """
+        - Any API-permissions for a user who can edit (owner or with edit perms) include both flags by default(True/True).
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(subtype="vector").first()
+        assign_perm("change_resourcebase", bobby, dataset.get_self_resource())
+        assign_perm("change_resourcebase_metadata", bobby, dataset.get_self_resource())
+
+        editor_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", editor_perms)
+        self.assertIn("can_manage_registered_member_permissions", editor_perms)
+
+        # Owner should get both flags by default without needing explicit edit perms
+        owned_dataset = Dataset.objects.filter(owner=bobby).first()
+        owner_perms = permissions_registry.get_perms(instance=owned_dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", owner_perms)
+        self.assertIn("can_manage_registered_member_permissions", owner_perms)
+
+    @override_settings(
+        EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS=True,
+        EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS=False,
+    )
+    def test_special_groups_flags_per_setting_independence(self):
+        """
+        - If Anonymous=True and Registered=False, editors/owners receive only anonymous flag.
+        - Staff and admins still receive both due to privileged status.
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(subtype="vector").first()
+        assign_perm("change_resourcebase", bobby, dataset.get_self_resource())
+        assign_perm("change_resourcebase_metadata", bobby, dataset.get_self_resource())
+
+        editor_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", editor_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", editor_perms)
+
+        # Owner should receive only the allowed flag (anonymous) and not the other one
+        owned_dataset = Dataset.objects.filter(owner=bobby).first()
+        owner_perms = permissions_registry.get_perms(instance=owned_dataset.get_self_resource(), user=bobby)
+        self.assertIn("can_manage_anonymous_permissions", owner_perms)
+        self.assertNotIn("can_manage_registered_member_permissions", owner_perms)
+
+        # Staff user should receive both flags even when one flag is disabled for editors
+        staff_user = get_user_model().objects.create_user(
+            username="staff_indep", email="staff_indep@example.com", password="staffpass"
+        )
+        try:
+            staff_user.is_staff = True
+            staff_user.save()
+            staff_perms = permissions_registry.get_perms(instance=dataset.get_self_resource(), user=staff_user)
+            self.assertIn("can_manage_anonymous_permissions", staff_perms)
+            self.assertIn("can_manage_registered_member_permissions", staff_perms)
+        finally:
+            staff_user.delete()
+
+    def test_add_remote_resource_perm_admin_always_has_it(self):
+        """Superusers always have the add_remote_resource permission."""
+        admin = get_user_model().objects.get(username="admin")
+        perms = permissions_registry.get_perms(user=admin)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_add_remote_resource_perm_regular_user_default(self):
+        """Regular users do NOT have add_remote_resource when setting is False (default)."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_perms(user=bobby)
+        self.assertNotIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_add_remote_resource_perm_regular_user_enabled(self):
+        """Regular users DO have add_remote_resource when setting is True."""
+        bobby = get_user_model().objects.get(username="bobby")
+        perms = permissions_registry.get_perms(user=bobby)
+        self.assertIn("add_remote_resource", perms)
+
+    def test_user_has_perm_returns_false_when_perm_is_empty_string(self):
+        """Empty perm should never return True"""
+        user = get_user_model().objects.create_user(username="test")
+        result = permissions_registry.user_has_perm(user, perm="")
+        self.assertFalse(result)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_get_perms_without_instance_returns_global_perms_for_user(self):
+        username = f"global_perms_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        perms = permissions_registry.get_perms(user=user)
+        self.assertIsInstance(perms, list)
+        self.assertIn("add_remote_resource", perms)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_user_has_perm_accepts_instance_none(self):
+        username = f"global_perm_check_user_{uuid4()}"
+        user = get_user_model().objects.create_user(username=username, password="test", is_staff=True, is_active=True)
+
+        self.assertTrue(permissions_registry.user_has_perm(user, instance=None, perm="add_remote_resource"))
+        self.assertFalse(permissions_registry.user_has_perm(user, instance=None, perm=""))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
@@ -746,7 +959,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(rules_count, 0)
 
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
-    @override_settings(ASYNC_SIGNALS=False)
+    @override_settings(ASYNC_SIGNALS=False, IMPORTER_ENABLE_DYN_MODELS=False)
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_permissions(self):
         # Test permissions on a layer
@@ -755,12 +968,17 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         bobby = get_user_model().objects.get(username="bobby")
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
-        payload = {"base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"), "action": "upload"}
+        payload = {
+            "base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"),
+            "action": "upload",
+            "override_existing_layer": True,
+        }
         response = self.client.post(reverse("importer_upload"), data=payload)
+        self.assertEqual(201, response.status_code, response.json())
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource
         if layer is None:
             raise Exception("error during import")
-        layer = resource_manager.update(
+        layer = resource_manager_registry.get_for_instance(layer).update(
             layer.uuid, instance=layer, notify=False, vals=dict(owner=bobby, workspace=settings.DEFAULT_WORKSPACE)
         )
 
@@ -806,6 +1024,18 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertTrue(b"Could not find layer" in response.content)
         self.assertEqual(response.headers.get("Content-Type"), "application/vnd.ogc.se_xml;charset=UTF-8")
 
+        # In circleCI we load some sample data via paver, but is not a mandatory action
+        # in other cases when we dont have those layer, we have to rely on the one
+        # we upload earlier on line 763 (same test)
+        url = (
+            f"{settings.GEOSERVER_LOCATION}ows?"
+            f"LAYERS={layer.alternate}&STYLES="
+            "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"
+            "&SRS=EPSG%3A4326"
+            "&BBOX=-81.394599749999,13.316009005566,"
+            "-81.370560451855,13.372728455566"
+            "&WIDTH=217&HEIGHT=512"
+        )
         # test WMS with authenticated user that has access to the Dataset
         response = requests.get(
             url,
@@ -1090,18 +1320,25 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3. change_resourcebase_metadata
         # 3.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
-        response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
+        response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
         layer.set_permissions(
             {
-                "users": {"bobby": ["change_resourcebase", "change_resourcebase_metadata", "delete_resourcebase"]},
+                "users": {
+                    "bobby": [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "view_resourcebase",
+                    ]
+                },
                 "groups": [],
             }
         )
         self.assertTrue(bob.has_perm("change_resourcebase_metadata", layer.get_self_resource()))
-        response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
+        response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
         self.assertEqual(response.status_code, 200, response.status_code)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1174,8 +1411,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3. change_resourcebase_metadata
         # 3.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
-        response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (302, 403))
+        response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
+        self.assertTrue(response.status_code in (302, 401))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()
@@ -1202,7 +1439,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             actual = get_visible_resources(
                 queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user)
             )
-            self.assertEqual(1, actual.count())
+            # plus "dataset metadata true" from the fixtures
+            self.assertEqual(2, actual.count())
         finally:
             if dataset:
                 dataset.delete()
@@ -1234,7 +1472,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertIsNotNone(standard_user)
         admin_user.is_superuser = True
         admin_user.save()
-        layers = Dataset.objects.all()
+        # get_visible_resources only returns metadata_only=False resources
+        layers = Dataset.objects.filter(metadata_only=False)
 
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
@@ -1653,6 +1892,259 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _p.compact,
         )
 
+    def test_perm_spec_compact_diff(self):
+        """PermSpecCompact.diff reports added/removed/changed per bucket."""
+        standard_user = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(owner=standard_user).first()
+
+        def _user(uid, perm):
+            return {
+                "id": uid,
+                "username": f"u{uid}",
+                "first_name": "",
+                "last_name": "",
+                "avatar": "",
+                "permissions": perm,
+                "is_staff": False,
+                "is_superuser": False,
+            }
+
+        def _group(gid, perm, name="g"):
+            return {"id": gid, "title": name, "name": name, "permissions": perm}
+
+        empty_bucket = {"added": [], "removed": [], "changed": []}
+
+        # 1. Identical specs -> empty diff in every bucket.
+        current = PermSpecCompact(
+            {
+                "users": [_user(10, "view"), _user(11, "edit")],
+                "organizations": [_group(20, "view", "org")],
+                "groups": [_group(3, "view", "anonymous")],
+            },
+            dataset,
+        )
+        proposed = PermSpecCompact(
+            {
+                "users": [_user(10, "view"), _user(11, "edit")],
+                "organizations": [_group(20, "view", "org")],
+                "groups": [_group(3, "view", "anonymous")],
+            },
+            dataset,
+        )
+        diff = current.diff(proposed)
+        self.assertEqual(diff.users, empty_bucket)
+        self.assertEqual(diff.organizations, empty_bucket)
+        self.assertEqual(diff.groups, empty_bucket)
+
+        # 2. Mixed mutations across all buckets.
+        current = PermSpecCompact(
+            {
+                "users": [_user(10, "view"), _user(11, "edit")],
+                "organizations": [_group(20, "view", "org")],
+                "groups": [_group(3, "view", "anonymous")],
+            },
+            dataset,
+        )
+        proposed = PermSpecCompact(
+            {
+                # user 10 changed view -> manage, 11 removed, 12 added.
+                "users": [_user(10, "manage"), _user(12, "view")],
+                # org 21 added, 20 unchanged.
+                "organizations": [_group(20, "view", "org"), _group(21, "edit", "org2")],
+                # anonymous group view -> download.
+                "groups": [_group(3, "download", "anonymous")],
+            },
+            dataset,
+        )
+
+        diff = current.diff(proposed)
+
+        # users bucket
+        self.assertEqual([u["id"] for u in diff.users["added"]], [12])
+        self.assertEqual(diff.users["added"][0]["permissions"], "view")
+        self.assertEqual([u["id"] for u in diff.users["removed"]], [11])
+        self.assertEqual(diff.users["removed"][0]["permissions"], "edit")
+        self.assertEqual(len(diff.users["changed"]), 1)
+        changed_user = diff.users["changed"][0]
+        self.assertEqual(changed_user["id"], 10)
+        self.assertEqual(changed_user["from"], "view")
+        self.assertEqual(changed_user["to"], "manage")
+        # changed entries carry identifier fields but drop "permissions" in favor of from/to.
+        self.assertNotIn("permissions", changed_user)
+        self.assertEqual(changed_user["username"], "u10")
+
+        # organizations bucket
+        self.assertEqual([o["id"] for o in diff.organizations["added"]], [21])
+        self.assertEqual(diff.organizations["added"][0]["permissions"], "edit")
+        self.assertEqual(diff.organizations["removed"], [])
+        self.assertEqual(diff.organizations["changed"], [])
+
+        # groups bucket
+        self.assertEqual(diff.groups["added"], [])
+        self.assertEqual(diff.groups["removed"], [])
+        self.assertEqual(len(diff.groups["changed"]), 1)
+        self.assertEqual(diff.groups["changed"][0]["id"], 3)
+        self.assertEqual(diff.groups["changed"][0]["from"], "view")
+        self.assertEqual(diff.groups["changed"][0]["to"], "download")
+
+        # 3. "none" on both sides is a no-op (treated as a value, not absence).
+        current = PermSpecCompact({"users": [_user(10, "none")]}, dataset)
+        proposed = PermSpecCompact({"users": [_user(10, "none")]}, dataset)
+        self.assertEqual(current.diff(proposed).users, empty_bucket)
+
+        # 4. "none" -> value is reported as a transition, not as added.
+        proposed = PermSpecCompact({"users": [_user(10, "view")]}, dataset)
+        diff = current.diff(proposed)
+        self.assertEqual(diff.users["added"], [])
+        self.assertEqual(diff.users["removed"], [])
+        self.assertEqual(len(diff.users["changed"]), 1)
+        self.assertEqual(diff.users["changed"][0]["from"], "none")
+        self.assertEqual(diff.users["changed"][0]["to"], "view")
+
+        # 5. Missing buckets on either side do not blow up.
+        current = PermSpecCompact({"users": [_user(10, "view")]}, dataset)
+        proposed = PermSpecCompact({}, dataset)
+        diff = current.diff(proposed)
+        self.assertEqual([u["id"] for u in diff.users["removed"]], [10])
+        self.assertEqual(diff.users["added"], [])
+        self.assertEqual(diff.users["changed"], [])
+        self.assertEqual(diff.organizations, empty_bucket)
+        self.assertEqual(diff.groups, empty_bucket)
+
+        # 6. Duplicate ids in a bucket: first wins (consistent with merge()).
+        current = PermSpecCompact({"users": [_user(10, "view"), _user(10, "edit")]}, dataset)
+        proposed = PermSpecCompact({"users": [_user(10, "view")]}, dataset)
+        self.assertEqual(current.diff(proposed).users, empty_bucket)
+
+    def test_perm_spec_compact_diff_class(self):
+        """PermSpecCompactDiff supports is_empty / to_dict / from_dict."""
+        from geonode.security.permissions import PermSpecCompactDiff
+
+        empty = PermSpecCompactDiff()
+        self.assertTrue(empty.is_empty())
+        self.assertEqual(
+            empty.to_dict(),
+            {
+                "users": {"added": [], "removed": [], "changed": []},
+                "organizations": {"added": [], "removed": [], "changed": []},
+                "groups": {"added": [], "removed": [], "changed": []},
+            },
+        )
+
+        # Round-trip a populated diff.
+        payload = {
+            "users": {
+                "added": [{"id": 5, "username": "alice", "permissions": "view"}],
+                "removed": [],
+                "changed": [{"id": 3, "username": "carol", "from": "view", "to": "edit"}],
+            },
+            "organizations": {"added": [], "removed": [], "changed": []},
+            "groups": {"added": [], "removed": [], "changed": []},
+        }
+        diff = PermSpecCompactDiff.from_dict(payload)
+        self.assertFalse(diff.is_empty())
+        self.assertEqual(diff.to_dict(), payload)
+
+        # Missing/partial buckets normalize to empty lists.
+        partial = PermSpecCompactDiff.from_dict({"users": {"added": [{"id": 1, "permissions": "view"}]}})
+        self.assertEqual(partial.users["added"], [{"id": 1, "permissions": "view"}])
+        self.assertEqual(partial.users["removed"], [])
+        self.assertEqual(partial.users["changed"], [])
+        self.assertEqual(partial.organizations, {"added": [], "removed": [], "changed": []})
+        self.assertEqual(partial.groups, {"added": [], "removed": [], "changed": []})
+
+    def test_perm_spec_compact_diff_apply(self):
+        """PermSpecCompactDiff.apply materializes added/removed/changed onto a current spec."""
+        from geonode.security.permissions import PermSpecCompactDiff
+
+        standard_user = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(owner=standard_user).first()
+
+        def _user(uid, perm):
+            return {
+                "id": uid,
+                "username": f"u{uid}",
+                "first_name": "",
+                "last_name": "",
+                "avatar": "",
+                "permissions": perm,
+                "is_staff": False,
+                "is_superuser": False,
+            }
+
+        def _group(gid, perm, name="g"):
+            return {"id": gid, "title": name, "name": name, "permissions": perm}
+
+        current_compact = {
+            "users": [_user(10, "view"), _user(11, "edit")],
+            "organizations": [_group(20, "view", "org")],
+            "groups": [_group(3, "view", "anonymous")],
+        }
+        proposed_compact = {
+            "users": [_user(10, "manage"), _user(12, "view")],
+            "organizations": [_group(20, "view", "org"), _group(21, "edit", "org2")],
+            "groups": [_group(3, "download", "anonymous")],
+        }
+
+        current = PermSpecCompact(current_compact, dataset)
+        proposed = PermSpecCompact(proposed_compact, dataset)
+        diff = current.diff(proposed)
+
+        # Apply on a fresh copy and verify the result matches `proposed`.
+        applied = diff.apply(current_compact, dataset)
+
+        def _by_id(entries):
+            return {e.id: e.permissions for e in entries or []}
+
+        self.assertEqual(_by_id(applied.users), {10: "manage", 12: "view"})
+        self.assertEqual(_by_id(applied.organizations), {20: "view", 21: "edit"})
+        self.assertEqual(_by_id(applied.groups), {3: "download"})
+
+        # Applying an empty diff leaves the current state untouched.
+        unchanged = PermSpecCompactDiff().apply(current_compact, dataset)
+        self.assertEqual(_by_id(unchanged.users), {10: "view", 11: "edit"})
+        self.assertEqual(_by_id(unchanged.organizations), {20: "view"})
+        self.assertEqual(_by_id(unchanged.groups), {3: "view"})
+
+    def test_patch_perms_accepts_diff(self):
+        """patch_perms accepts both PermSpecCompactDiff and its dict form."""
+        from geonode.base.utils import patch_perms
+        from geonode.security.permissions import PermSpecCompactDiff
+
+        standard_user = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(owner=standard_user).first()
+
+        def _user(uid, perm):
+            return {
+                "id": uid,
+                "username": f"u{uid}",
+                "first_name": "",
+                "last_name": "",
+                "avatar": "",
+                "permissions": perm,
+                "is_staff": False,
+                "is_superuser": False,
+            }
+
+        current_compact = {"users": [_user(10, "view"), _user(11, "edit")]}
+        diff = PermSpecCompactDiff.from_dict(
+            {
+                "users": {
+                    "added": [_user(12, "view")],
+                    "removed": [_user(11, "edit")],
+                    "changed": [{"id": 10, "username": "u10", "from": "view", "to": "manage"}],
+                }
+            }
+        )
+
+        # Object form
+        result = patch_perms(current_compact, diff, dataset)
+        self.assertEqual({u.id: u.permissions for u in result.users}, {10: "manage", 12: "view"})
+
+        # Dict form (back-compat)
+        result_from_dict = patch_perms(current_compact, diff.to_dict(), dataset)
+        self.assertEqual({u.id: u.permissions for u in result_from_dict.users}, {10: "manage", 12: "view"})
+
     def test_admin_whitelisted_access_backend(self):
         from geonode.security.backends import AdminRestrictedAccessBackend
         from django.core.exceptions import PermissionDenied
@@ -1734,6 +2226,23 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 
+    def test_remote_dataset_must_have_change_dataset_data_permission(self):
+        """
+        Ref GeoNode#13011
+        Remote dataset should have "change_dataset_data" permission
+        """
+        dataset = create_single_dataset("remote_dataset")
+        dataset.subtype = "remote"
+        dataset.save()
+        url = reverse("datasets-detail", args=[dataset.id])
+        self.client.force_login(dataset.owner)
+        response = self.client.get(url)
+
+        perms = response.json().get("dataset", {}).get("perms", {})
+        self.assertNotEqual(perms, {})
+
+        self.assertIn("change_dataset_data", perms)
+
 
 class SecurityRulesTests(TestCase):
     """
@@ -1758,6 +2267,18 @@ class SecurityRulesTests(TestCase):
             clean_dataset = Dataset.objects.get(pk=self._l.id)
             # Check dirty state
             self.assertFalse(clean_dataset.dirty_state)
+
+    @patch("geonode.geoserver.security.create_geofence_rules")
+    def test_sync_resources_with_guardian_skips_remote_resources(self, mock_create_geofence_rules):
+        # Remote datasets have no local GeoFence rules to sync (#14524)
+        remote_dataset = create_single_dataset("test_remote_dataset", sourcetype=enumerations.SOURCE_TYPE_REMOTE)
+        remote_dataset.dirty_state = True
+        remote_dataset.save()
+
+        sync_resources_with_guardian(resource=remote_dataset)
+
+        mock_create_geofence_rules.assert_not_called()
+        self.assertFalse(Dataset.objects.get(pk=remote_dataset.id).dirty_state)
 
     # TODO: DELAYED SECURITY MUST BE REVISED
     def test_sync_resources_with_guardian_delay_true(self):
@@ -1853,6 +2374,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [],
                     self.group_member: [],
@@ -1880,8 +2403,22 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
-                    self.group_manager: ["view_resourcebase", "publish_resourcebase", "approve_resourcebase"],
+                    self.group_manager: [
+                        "view_resourcebase",
+                        "publish_resourcebase",
+                        "approve_resourcebase",
+                        "change_dataset_style",
+                        "change_dataset_data",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase",
+                        "feature_resourcebase",
+                        "change_resourcebase_permissions",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                    ],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
                         "change_resourcebase",
@@ -1891,6 +2428,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.anonymous_user: ["view_resourcebase"],
                 },
@@ -1928,6 +2467,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -1940,6 +2481,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -1959,6 +2503,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -1971,6 +2517,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2004,6 +2553,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     self.author: [
                         "download_resourcebase",
                         "view_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -2016,6 +2567,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2028,6 +2582,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     self.author: [
                         "download_resourcebase",
                         "view_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -2040,6 +2596,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "feature_resourcebase",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -2092,6 +2651,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
                     self.group_manager: [],
                     self.group_member: [],
@@ -2116,10 +2677,29 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "approve_resourcebase",
                         "change_dataset_style",
                         "change_dataset_data",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     ],
-                    self.group_manager: ["view_resourcebase", "approve_resourcebase", "publish_resourcebase"],
+                    self.group_manager: [
+                        "view_resourcebase",
+                        "approve_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_dataset_data",
+                        "change_dataset_style",
+                        "feature_resourcebase",
+                        "change_resourcebase_permissions",
+                        "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                        "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                    ],
                     self.group_member: ["view_resourcebase"],
-                    self.not_group_member: ["view_resourcebase", "change_resourcebase"],
+                    self.not_group_member: [
+                        "view_resourcebase",
+                        "change_resourcebase",
+                        "can_manage_anonymous_permissions",
+                        "can_manage_registered_member_permissions",
+                    ],  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
                     self.anonymous_user: ["view_resourcebase"],
                 },
             ),
@@ -2148,6 +2728,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.author: [
                 "download_resourcebase",
                 "view_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: [
                 "change_resourcebase",
@@ -2160,6 +2742,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2172,6 +2757,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
         }
         try:
@@ -2210,6 +2798,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.author: [
                 "download_resourcebase",
                 "view_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2243,6 +2833,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2276,6 +2868,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_manager: [
                 "change_resourcebase",
@@ -2289,6 +2883,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "publish_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2301,6 +2898,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "approve_resourcebase",
                 "change_dataset_style",
                 "change_dataset_data",
+                "feature_resourcebase",
+                "can_manage_anonymous_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
+                "can_manage_registered_member_permissions",  # if user has edit permission/owner, By default it will get this permission unless rule changed on settings.
             ],
         }
         for authorized_subject, expected_perms in expected.items():
@@ -2309,25 +2909,25 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     def test_if_anonymoys_default_download_perms_is_false_should_not_assign_perms_to_user_group(self):
         """
         if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
-    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on(self):
         """
@@ -2335,12 +2935,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
 
-    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none")
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on_moderate(
         self,
@@ -2350,7 +2950,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
          the user's group should get the view and download permission
         """
 
-        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        resource = dataset_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
 
         self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
         group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
@@ -2388,9 +2988,13 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             was_published=False,
             group=self.resource_group.group,
         )
-
         self.owner_perms = ["view_resourcebase", "download_resourcebase"]
-        self.edit_perms = ["change_resourcebase", "change_resourcebase_metadata"]
+        self.edit_perms = [
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "can_manage_anonymous_permissions",
+            "can_manage_registered_member_permissions",
+        ]  # By default(it is dynamic based on setting) editors/owner will get this("can_manage_anonymous_permissions","can_manage_registered_member_permissions") if it is not changed on settings
         self.dataset_perms = ["change_dataset_style", "change_dataset_data"]
         self.adv_owner_limit = ["delete_resourcebase", "change_resourcebase_permissions", "publish_resourcebase"]
         self.safe_perms = ["download_resourcebase", "view_resourcebase"]
@@ -2405,7 +3009,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             "dataset_attribute_set-TOTAL_FORMS": 0,
             "dataset_attribute_set-INITIAL_FORMS": 0,
         }
-        self.url = reverse("dataset_metadata", args=(self.resource.alternate,))
+        self.url = reverse("metadata-schema_instance", args=(self.resource.id,))
 
         # Assign manage perms to user member_with_perms
         for perm in self.dataset_perms:
@@ -2432,37 +3036,12 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertSetEqual(set(resource_perm_specs["groups"][self.owner_group.group]), set(self.safe_perms))
         self.assertSetEqual(set(resource_perm_specs["groups"][self.resource_group.group]), set(self.safe_perms))
 
-    def test_permissions_on_approve_and_publish_changes(self):
-        # Group manager approves a resource
-        self.group_manager.set_password("group_manager")
-        self.group_manager.save()
-        self.assertTrue(self.client.login(username="group_manager", password="group_manager"))
-        response = self.client.post(self.url, data=self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertions_for_approved_or_published_is_true()
-
-        # Un approve resource
-        self.data.pop("resource-is_approved")
-        response = self.client.post(self.url, data=self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertions_for_approved_and_published_is_false()
-
-        # Admin publishes and approves resource
-        response = self.admin_approve_and_publish_resource()
-        self.assertEqual(response.status_code, 200)
-        self.assertions_for_approved_or_published_is_true()
-
-        # Admin Un approves and un publishes resource
-        response = self.admin_unapprove_and_unpublish_resource()
-        self.assertEqual(response.status_code, 200)
-        self.assertions_for_approved_and_published_is_false()
-
     def test_owner_is_group_manager(self):
         try:
             GroupMember.objects.get(group=self.owner_group, user=self.author).promote()
             # Admin publishes and approves the resource
-            response = self.admin_approve_and_publish_resource()
-            self.assertEqual(response.status_code, 200)
+            self.admin_approve_and_publish_resource()
+            self.resource.refresh_from_db()
             resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
 
             # Once a resource has been published, the 'publish_resourcebase' permission should be removed anyway
@@ -2472,8 +3051,8 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             )
 
             # Admin un-approves and un-publishes the resource
-            response = self.admin_unapprove_and_unpublish_resource()
-            self.assertEqual(response.status_code, 200)
+            self.admin_unapprove_and_unpublish_resource()
+            self.resource.refresh_from_db()
             resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
 
             self.assertSetEqual(
@@ -2521,19 +3100,17 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
 
     def admin_approve_and_publish_resource(self):
         self.assertTrue(self.client.login(username="admin", password="admin"))
-        self.data["resource-is_approved"] = "on"
-        self.data["resource-is_published"] = "on"
-        response = self.client.post(self.url, data=self.data)
+        self.resource.is_approved = True
+        self.resource.is_published = True
+        self.resource.save()
         self.resource.refresh_from_db()
-        return response
 
     def admin_unapprove_and_unpublish_resource(self):
         self.assertTrue(self.client.login(username="admin", password="admin"))
-        self.data.pop("resource-is_approved")
-        self.data.pop("resource-is_published")
-        response = self.client.post(self.url, data=self.data)
+        self.resource.is_approved = False
+        self.resource.is_published = False
+        self.resource.save()
         self.resource.refresh_from_db()
-        return response
 
 
 class TestUserHasPerms(GeoNodeBaseTestSupport):
@@ -2638,6 +3215,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
         cls.admin = get_user_model().objects.filter(is_superuser=True).first()
         cls.non_admin = get_user_model().objects.filter(is_superuser=False).exclude(username="AnonymousUser").first()
 
+        cls.group_manager = get_user_model().objects.create_user("group_manager", is_active=True)
+        cls.second_group_manager = get_user_model().objects.create_user("second_group_manager", is_active=True)
+        cls.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="group profile 1")
+        cls.second_group_profile = GroupProfile.objects.create(title="second_testgroup_profile", slug="group profile 2")
+        GroupMember.objects.create(user=cls.group_manager, group=cls.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(
+            user=cls.second_group_manager, group=cls.second_group_profile, role=GroupMember.MANAGER
+        )
+
     def test_user_can_approve(self):
         try:
             self.assertTrue(self.admin.can_approve(self.dataset))
@@ -2655,6 +3241,15 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
         self.assertTrue(self.admin.can_feature(self.dataset))
         self.assertFalse(self.non_admin.can_feature(self.dataset))
 
+        # Test that a group manager is able to use the featured flag
+        self.dataset.group = self.group_profile.group
+        self.dataset.save()
+
+        self.assertTrue(self.group_manager.can_feature(self.dataset))
+
+        # Test that a group manager of another group is not able to use this featured flag
+        self.assertFalse(self.second_group_manager.can_feature(self.dataset))
+
     def test_user_can_publish(self):
         try:
             self.assertTrue(self.admin.can_publish(self.dataset))
@@ -2671,11 +3266,16 @@ class TestUserCanDo(GeoNodeBaseTestSupport):
 
 class DummyPermissionsHandler(BasePermissionsHandler):
     @staticmethod
-    def fixup_perms(instance, perms_payload, *args, **kwargs):
+    def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
         return {"perms": ["this", "is", "fake"]}
 
 
-@override_settings(PERMISSIONS_HANDLERS=["geonode.security.handlers.AdvancedWorkflowPermissionsHandler"])
+@override_settings(
+    PERMISSIONS_HANDLERS=[
+        "geonode.security.handlers.AdvancedWorkflowPermissionsHandler",
+        "geonode.security.handlers.GroupManagersPermissionsHandler",
+    ]
+)
 class TestPermissionsRegistry(GeoNodeBaseTestSupport):
     """
     Test to verify the permissions registry
@@ -2705,5 +3305,1145 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
         instance = create_single_dataset("fake_dataset")
         # adding the dummy at the end, means will win over the other handler
         permissions_registry.add("geonode.security.tests.DummyPermissionsHandler")
-        perms = permissions_registry.fixup_perms(instance, instance.get_all_level_info())
+        perms = permissions_registry.get_perms(instance, permissions=instance.get_all_level_info())
         self.assertDictEqual({"perms": ["this", "is", "fake"]}, perms)
+
+
+class TestPermissionsHandlers(GeoNodeBaseTestSupport):
+    """
+    Test to verify the GroupManagerPermissionsHandler
+    """
+
+    def setUp(self):
+
+        self.group_manager = get_user_model().objects.create_user(
+            "group_manager", "group_manager@fakemail.com", "group_manager_password", is_active=True
+        )
+
+        self.other_group_manager = get_user_model().objects.create_user(
+            "other_group_manager", "other_group_manager@fakemail.com", "other_group_manager_password", is_active=True
+        )
+
+        self.group_member = get_user_model().objects.create_user(
+            "group_member", "group_member@fakemail.com", "group_member_password", is_active=True
+        )
+        self.simple_user = get_user_model().objects.create_user(
+            "simple_user", "simple_user@fakemail.com", "simple_user_password", is_active=True
+        )
+
+        self.group_profile = GroupProfile.objects.create(title="testgroup_profile", slug="test group_profile 1")
+        self.other_group_profile = GroupProfile.objects.create(
+            title="other_testgroup_profile", slug="test group_profile 2"
+        )
+
+        # Assign roles in the main group
+        GroupMember.objects.create(user=self.group_manager, group=self.group_profile, role=GroupMember.MANAGER)
+        GroupMember.objects.create(user=self.group_member, group=self.group_profile, role=GroupMember.MEMBER)
+
+        # Assign roles in the second group
+        GroupMember.objects.create(
+            user=self.other_group_manager, group=self.other_group_profile, role=GroupMember.MANAGER
+        )
+
+    def test_group_managers_permissons_handler(self):
+        """
+        Test that GroupManagersPermissionsHandler adds extra permissions
+        to a group manager.
+        """
+
+        resource = create_single_dataset("test_dataset")
+        resource.group = self.group_profile.group
+        resource.save()
+
+        default_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+        ]
+
+        perms_payload = {
+            "users": {
+                self.group_manager: default_perms,
+                self.other_group_manager: default_perms,
+                self.group_member: ["view_resourcebase"],
+                self.simple_user: [],
+            },
+            "groups": {},
+        }
+
+        # Call your handler's get_perms method directly
+        handler = GroupManagersPermissionsHandler()
+        updated_perms = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Expected extra permissions added to manager_profile's perms
+        expected_manager_perms = [
+            "view_resourcebase",
+            "publish_resourcebase",
+            "approve_resourcebase",
+            "download_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_dataset_data",
+            "change_dataset_style",
+            "change_resourcebase_permissions",
+        ]
+
+        # Ensure that the permissions for the resource's group manager are updated
+        self.assertIn(self.group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.group_manager]), set(expected_manager_perms))
+
+        # Ensure that the permissions for a group manager from another group are unchanged
+        self.assertIn(self.other_group_manager, updated_perms["users"])
+        self.assertSetEqual(set(updated_perms["users"][self.other_group_manager]), set(default_perms))
+
+        # Others remain unchanged for the group member and simple user
+        self.assertListEqual(updated_perms["users"][self.group_member], ["view_resourcebase"])
+        self.assertListEqual(updated_perms["users"][self.simple_user], [])
+
+        # Test for empty perms list. This should not trigger extra perms
+        perms_payload["users"][self.group_manager] = []
+        updated_perms_empty = handler.get_perms(resource, perms_payload, include_virtual=True)
+
+        # Still empty, since user had no base perms
+        self.assertListEqual(updated_perms_empty["users"][self.group_manager], [])
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
+    )
+    def test_resource_creator_groups_permissions_handler_on_create(self):
+        from geonode.security.permissions import _to_extended_perms
+
+        owner = get_user_model().objects.create_user(
+            "creator_owner", "creator_owner@fakemail.com", "creator_owner_password", is_active=True
+        )
+        group_profile_1 = GroupProfile.objects.create(title="creator group 1", slug="creator_group_1")
+        group_profile_2 = GroupProfile.objects.create(title="creator group 2", slug="creator_group_2")
+        GroupMember.objects.create(user=owner, group=group_profile_1, role=GroupMember.MEMBER)
+        GroupMember.objects.create(user=owner, group=group_profile_2, role=GroupMember.MEMBER)
+
+        resource = create_single_dataset("creator_groups_dataset")
+        resource.owner = owner
+        resource.save()
+
+        metadata_manager.update_schema_instance_partial(
+            resource,
+            {"contacts": {"originator": [{"id": str(owner.id), "label": owner.username}]}},
+            user=None,
+        )
+
+        payload = {"users": {}, "groups": {}}
+        handler = ResourceCreatorGroupsPermissionsHandler()
+        updated_perms = handler.fixup_perms(resource, payload, created=True, include_virtual=False)
+
+        resource_type = getattr(resource, "resource_type", None) or resource.polymorphic_ctype.name
+        resource_subtype = (getattr(resource, "subtype", None) or "").lower()
+        expected_perms = sorted(_to_extended_perms("download", resource_type, resource_subtype))
+
+        self.assertIn(group_profile_1.group, updated_perms["groups"])
+        self.assertIn(group_profile_2.group, updated_perms["groups"])
+        self.assertListEqual(sorted(updated_perms["groups"][group_profile_1.group]), expected_perms)
+        self.assertListEqual(sorted(updated_perms["groups"][group_profile_2.group]), expected_perms)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS=True, RESOURCE_CREATOR_GROUPS_PERMISSIONS="download"
+    )
+    def test_resource_creator_groups_permissions_handler_skips_when_not_created(self):
+        owner = get_user_model().objects.create_user(
+            "creator_owner_no_create",
+            "creator_owner_no_create@fakemail.com",
+            "creator_owner_no_create_password",
+            is_active=True,
+        )
+        group_profile = GroupProfile.objects.create(title="creator group no create", slug="creator_group_no_create")
+        GroupMember.objects.create(user=owner, group=group_profile, role=GroupMember.MEMBER)
+
+        resource = create_single_dataset("creator_groups_dataset_no_create")
+        resource.owner = owner
+        resource.save()
+
+        payload = {"users": {}, "groups": {}}
+        handler = ResourceCreatorGroupsPermissionsHandler()
+        updated_perms = handler.fixup_perms(resource, payload, created=False, include_virtual=False)
+
+        self.assertDictEqual({"users": {}, "groups": {}}, updated_perms)
+
+
+@override_settings(
+    CACHES={
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "test-cache",
+            "TIMEOUT": 600,
+            "OPTIONS": {"MAX_ENTRIES": 10000},
+        }
+    }
+)
+class TestPermissionsCaching(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.admin_user = get_user_model().objects.get(username="admin")
+        cls.test_user = get_user_model().objects.create_user(
+            username=f"test_user{uuid4()}", email="test_user@example.com", password="testpass123"
+        )
+        cls.test_user_owner = get_user_model().objects.create_user(
+            username=f"test_user_owner{uuid4()}", email="test_user_owner@example.com", password="testpass123"
+        )
+        cls.test_group, _ = Group.objects.get_or_create(name="test-group")
+        cls.test_group.user_set.add(cls.admin_user)
+        cls.test_group_profile = GroupProfile.objects.create(
+            group=cls.test_group, title="Test Group", slug="test-group", access="public"
+        )
+        cls.anonymous, _ = Group.objects.get_or_create(name="anonymous")
+
+        cls.resources = []
+        for i in range(4):
+            resource = ResourceBase.objects.create(
+                title=f"test_dataset_{i:02d}",
+                uuid=str(uuid4()),
+                owner=cls.test_user_owner,
+                abstract=f"Test dataset {i:02d} by test_user",
+                subtype="vector",
+                is_approved=True,
+                is_published=True,
+            )
+            perm_spec = {
+                "users": {
+                    cls.test_user.username: [
+                        "view_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                    ]
+                },
+                "groups": {
+                    cls.test_group.name: [
+                        "view_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                    ],
+                    cls.anonymous.name: ["view_resourcebase"],
+                },
+            }
+            resource.set_permissions(perm_spec)
+            cls.resources.append(resource)
+
+    def setUp(self):
+        cache.clear()
+
+    def test_admin_user_permissions_caching(self):
+        test_resource = self.resources[0]
+
+        admin_perms_1 = permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        admin_perms_2 = permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+
+        self.assertEqual(admin_perms_1, admin_perms_2)
+
+        self.assertIn("view_resourcebase", admin_perms_1)
+        self.assertIn("download_resourcebase", admin_perms_1)
+        self.assertIn("change_resourcebase", admin_perms_1)
+        self.assertIn("change_resourcebase_metadata", admin_perms_1)
+        self.assertIn("change_resourcebase_permissions", admin_perms_1)
+        self.assertIn("delete_resourcebase", admin_perms_1)
+
+    def test_permission_anonymous_users(self):
+        test_resource = self.resources[0]
+        anonymous_user = AnonymousUser()
+
+        anon_perms_1 = permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        self.assertIn("view_resourcebase", anon_perms_1)
+
+        anon_perms_2 = permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        self.assertIn("view_resourcebase", anon_perms_2)
+        self.assertEqual(anon_perms_1, anon_perms_2)
+
+    def test_owner_user_permissions_caching(self):
+        test_resource = self.resources[0]
+
+        user_perms_1 = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        user_perms_2 = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+
+        self.assertEqual(user_perms_1, user_perms_2)
+
+        expected_owner_perms = [
+            "view_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_resourcebase_permissions",
+            "delete_resourcebase",
+        ]
+
+        for perm in expected_owner_perms:
+            self.assertIn(perm, user_perms_1)
+
+    def test_group_permissions_caching(self):
+        """Test that group permissions are cached correctly"""
+        test_resource = self.resources[0]
+
+        group_perms_1 = permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        group_perms_2 = permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+
+        self.assertEqual(list(group_perms_1), list(group_perms_2))
+
+        expected_group_perms = [
+            "view_resourcebase",
+            "change_resourcebase",
+            "change_resourcebase_metadata",
+            "change_resourcebase_permissions",
+            "delete_resourcebase",
+        ]
+
+        for perm in expected_group_perms:
+            self.assertIn(perm, group_perms_1)
+
+    def test_user_and_group_permissions_combined(self):
+        """Test getting both user and group permissions in one call"""
+        test_resource = self.resources[0]
+
+        combined_perms = permissions_registry.get_perms(
+            instance=test_resource, user=self.test_user, group=self.test_group, use_cache=True
+        )
+
+        self.assertIn("users", combined_perms)
+        self.assertIn("groups", combined_perms)
+        self.assertIn(self.test_user, combined_perms["users"])
+        self.assertIn(self.test_group, combined_perms["groups"])
+
+    def test_cache_keys_are_different(self):
+        test_resource = self.resources[0]
+        anonymous_user = AnonymousUser()
+
+        # Generate permissions to populate cache
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+
+        # Updated cache key formats
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+
+        # Verify all cache keys exist
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(admin_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(group_key))
+
+        # Verify cached values are different
+        anon_cached = cache.get(anonymous_key)
+        admin_cached = cache.get(admin_key)
+        user_cached = cache.get(test_user_key)
+        group_cached = cache.get(group_key)
+
+        self.assertNotEqual(anon_cached, admin_cached)
+        self.assertNotEqual(anon_cached, user_cached)
+        self.assertNotEqual(admin_cached, user_cached)
+        self.assertNotEqual(user_cached, group_cached)
+
+    def test_multiple_resources_independent_caching(self):
+
+        resource_1 = self.resources[0]
+        resource_2 = self.resources[1]
+
+        perms_r1 = permissions_registry.get_perms(instance=resource_1, user=self.test_user, use_cache=True)
+        perms_r2 = permissions_registry.get_perms(instance=resource_2, user=self.test_user, use_cache=True)
+
+        self.assertEqual(perms_r1, perms_r2)
+
+        # Updated cache key format
+        cache_key_r1 = f"resource_perms:{resource_1.pk}:user:{self.test_user.pk}"
+        cache_key_r2 = f"resource_perms:{resource_2.pk}:user:{self.test_user.pk}"
+
+        self.assertIsNotNone(cache.get(cache_key_r1))
+        self.assertIsNotNone(cache.get(cache_key_r2))
+
+    def test_cache_key_resolves_user_identifier_once_per_user(self):
+        """Cache key generation must not query the anonymous user for every resource/user pair."""
+        resource_pks = [resource.pk for resource in self.resources]
+        users = [self.admin_user, self.test_user, self.test_user_owner]
+
+        with patch("geonode.security.registry.get_anonymous_user", wraps=get_anonymous_user) as _get_anonymous_user:
+            cache_keys = permissions_registry._get_cache_key(resource_pks, users=users)
+
+        self.assertEqual(_get_anonymous_user.call_count, 1)
+        self.assertEqual(len(cache_keys), len(resource_pks) * len(users))
+        self.assertIn(f"resource_perms:{resource_pks[-1]}:user:{self.test_user.pk}", cache_keys)
+
+    def test_joining_group_clears_only_member_cache(self):
+        """Joining a group must clear only the joining user's cache, not the other members' or the group's."""
+        test_resource = self.resources[0]
+        member_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        joining_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        try:
+            self.test_group_profile.join(self.test_user, role=GroupMember.MEMBER)
+
+            self.assertIsNone(cache.get(joining_key))
+            self.assertIsNotNone(cache.get(member_key))
+            self.assertIsNotNone(cache.get(group_key))
+        finally:
+            self.test_group_profile.leave(self.test_user)
+
+    def test_cache_key_generation_consistency(self):
+        """
+        Test that the _get_cache_key method generates consistent and correct cache keys
+        for different user types, groups, and scenarios.
+        """
+        test_resource = self.resources[0]
+        anonymous_user = AnonymousUser()
+
+        # Test authenticated user cache key
+        expected_admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        actual_admin_key = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
+        self.assertEqual(actual_admin_key, expected_admin_key)
+
+        # Test test user cache key
+        expected_test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        actual_test_user_key = permissions_registry._get_cache_key([test_resource.pk], users=[self.test_user])
+        self.assertEqual(actual_test_user_key, expected_test_user_key)
+
+        # Test anonymous user cache key
+        expected_anon_key = f"resource_perms:{test_resource.pk}:anonymous"
+        actual_anon_key = permissions_registry._get_cache_key([test_resource.pk], users=[anonymous_user])
+        self.assertEqual(actual_anon_key, expected_anon_key)
+
+        # Test group cache key
+        expected_group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        actual_group_key = permissions_registry._get_cache_key([test_resource.pk], groups=[self.test_group])
+        self.assertEqual(actual_group_key, expected_group_key)
+
+        # Test __ALL__ cache key (when both user and group are None)
+        expected_all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+        actual_all_key = permissions_registry._get_cache_key([test_resource.pk], users=None, groups=None)
+        self.assertEqual(actual_all_key, expected_all_key)
+
+        # Test that keys are unique for different users and groups
+        cache_keys = [actual_admin_key, actual_test_user_key, actual_anon_key, actual_group_key, actual_all_key]
+        self.assertEqual(len(cache_keys), len(set(cache_keys)), "All cache keys should be unique")
+
+        # Test consistency across multiple calls
+        key_call_1 = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
+        key_call_2 = permissions_registry._get_cache_key([test_resource.pk], users=[self.admin_user])
+        self.assertEqual(key_call_1, key_call_2, "Cache key generation should be consistent")
+
+        # Test that the cache keys match what's actually used in caching
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+
+        # Verify the generated keys match what's in cache
+        self.assertIsNotNone(cache.get(actual_admin_key), "Admin cache key should exist in cache")
+        self.assertIsNotNone(cache.get(actual_anon_key), "Anonymous cache key should exist in cache")
+        self.assertIsNotNone(cache.get(actual_group_key), "Group cache key should exist in cache")
+
+    def test_cache_invalidation_on_permission_change(self):
+        """Test that cache is properly invalidated when permissions are actually changed"""
+        test_resource = self.resources[0]
+        cache_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+
+        initial_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+
+        self.assertIsNotNone(cache.get(cache_key))
+        self.assertIn("view_resourcebase", initial_perms)
+        self.assertIn("change_resourcebase", initial_perms)
+        self.assertIn("delete_resourcebase", initial_perms)
+
+        new_perm_spec = {
+            "users": {
+                f"{self.test_user.username}": [
+                    "view_resourcebase",
+                ]
+            },
+            "groups": {
+                f"{self.test_group.name}": [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "change_resourcebase_permissions",
+                    "delete_resourcebase",
+                ],
+                f"{self.anonymous.name}": ["view_resourcebase"],
+            },
+        }
+
+        test_resource.set_permissions(new_perm_spec)
+
+        self.assertIsNone(cache.get(cache_key), "Cache should be cleared after permission change")
+
+        updated_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+
+        self.assertIsNotNone(cache.get(cache_key), "Cache should be populated after fresh permission fetch")
+
+        self.assertIn("view_resourcebase", updated_perms)
+        self.assertNotIn("change_resourcebase", updated_perms)
+        self.assertNotIn("delete_resourcebase", updated_perms)
+
+        cached_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        self.assertEqual(updated_perms, cached_perms)
+
+        restored_perm_spec = {
+            "users": {
+                self.test_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",  # Add back change permission
+                    "delete_resourcebase",  # Add back delete permission
+                ]
+            },
+            "groups": {
+                self.test_group.name: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "change_resourcebase_permissions",
+                    "delete_resourcebase",
+                ],
+                self.anonymous.name: ["view_resourcebase"],
+            },
+        }
+
+        test_resource.set_permissions(restored_perm_spec)
+
+        self.assertIsNone(cache.get(cache_key), "Cache should be cleared after second permission change")
+
+        final_perms = permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(cache_key), "Cache should be populated after final permission fetch")
+
+        self.assertIn("view_resourcebase", final_perms)
+        self.assertIn("change_resourcebase", final_perms)
+        self.assertIn("delete_resourcebase", final_perms)
+
+        self.assertNotEqual(
+            updated_perms, final_perms, "Final permissions should be different from updated permissions"
+        )
+
+    def test_all_permissions_caching(self):
+        """Test caching when getting all permissions (no user or group specified)"""
+        test_resource = self.resources[0]
+
+        all_perms_1 = permissions_registry.get_perms(instance=test_resource, use_cache=True)
+        all_perms_2 = permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        self.assertEqual(all_perms_1, all_perms_2)
+
+        # Verify structure contains both users and groups
+        self.assertIn("users", all_perms_1)
+        self.assertIn("groups", all_perms_1)
+
+    def test_user_deletion_cache_invalidation(self):
+        """Test that cache is properly cleared when a user is deleted"""
+
+        # Create a temporary user for deletion testing
+        temp_user = get_user_model().objects.create_user(
+            username=f"temp_user_{uuid4()}", email="temp@example.com", password="temppass123"
+        )
+
+        for resource in self.resources[:2]:  # Use first 2 resources
+            perm_spec = {"users": {temp_user.username: ["view_resourcebase", "change_resourcebase"]}, "groups": {}}
+            resource.set_permissions(perm_spec)
+
+        cached_perms = []
+        cache_keys = []
+
+        for resource in self.resources[:2]:
+            perms = permissions_registry.get_perms(instance=resource, user=temp_user, use_cache=True)
+            cached_perms.append(perms)
+            cache_key = f"resource_perms:{resource.pk}:user:{temp_user.pk}"
+            cache_keys.append(cache_key)
+
+            # Verify permissions are cached
+            self.assertIsNotNone(cache.get(cache_key))
+            self.assertIn("view_resourcebase", perms)
+
+        other_user_cache_keys = []
+        for resource in self.resources[:2]:
+            permissions_registry.get_perms(instance=resource, user=self.test_user, use_cache=True)
+            other_key = f"resource_perms:{resource.pk}:user:{self.test_user.pk}"
+            other_user_cache_keys.append(other_key)
+            self.assertIsNotNone(cache.get(other_key))
+
+        temp_user.delete()
+
+        for cache_key in cache_keys:
+            self.assertIsNone(cache.get(cache_key), f"Cache key {cache_key} should be cleared after user deletion")
+
+        for other_key in other_user_cache_keys:
+            self.assertIsNotNone(cache.get(other_key), f"Cache key {other_key} should not be affected by user deletion")
+
+    def test_group_deletion_cache_invalidation(self):
+        """Test that cache is properly cleared when a group is deleted"""
+        temp_group, created = Group.objects.get_or_create(name=f"temp_group_{uuid4()}")
+
+        temp_group_profile, created = GroupProfile.objects.get_or_create(
+            group_id=temp_group.id,
+        )
+
+        temp_group, _ = Group.objects.get_or_create(name="test-group-2")
+        temp_group_profile = GroupProfile.objects.create(
+            group=temp_group, title="Test Group 2 ", slug="test-group-2", access="public"
+        )
+
+        temp_group_profile.refresh_from_db()
+
+        self.assertEqual(
+            temp_group_profile.group.id,
+            temp_group.id,
+            f"GroupProfile.group ({temp_group_profile.group}) should equal temp_group ({temp_group})",
+        )
+
+        temp_group.user_set.add(self.test_user, self.admin_user)
+
+        for resource in self.resources[:2]:  # Use first 2 resources
+            perm_spec = {"users": {}, "groups": {temp_group.name: ["view_resourcebase", "change_resourcebase"]}}
+            resource.set_permissions(perm_spec)
+
+        group_cache_keys = []
+        for resource in self.resources[:2]:
+            perms = permissions_registry.get_perms(instance=resource, group=temp_group, use_cache=True)
+            cache_key = f"resource_perms:{resource.pk}:group:{temp_group.pk}"
+            group_cache_keys.append(cache_key)
+
+            self.assertIsNotNone(cache.get(cache_key))
+            self.assertIn("view_resourcebase", perms)
+
+        user_cache_keys = []
+        for resource in self.resources[:2]:
+            for user in [self.test_user, self.admin_user]:
+                permissions_registry.get_perms(instance=resource, user=user, use_cache=True)
+                cache_key = f"resource_perms:{resource.pk}:user:{user.pk}"
+                user_cache_keys.append(cache_key)
+                self.assertIsNotNone(cache.get(cache_key))
+
+        unrelated_user = get_user_model().objects.create_user(
+            username=f"unrelated_user_{uuid4()}", email="unrelated@example.com", password="unrelated123"
+        )
+
+        unrelated_cache_keys = []
+        for resource in self.resources[:2]:
+            permissions_registry.get_perms(instance=resource, user=unrelated_user, use_cache=True)
+            cache_key = f"resource_perms:{resource.pk}:user:{unrelated_user.pk}"
+            unrelated_cache_keys.append(cache_key)
+            self.assertIsNotNone(cache.get(cache_key))
+
+        temp_group.delete()
+
+        for cache_key in group_cache_keys:
+            self.assertIsNone(
+                cache.get(cache_key), f"Group cache key {cache_key} should be cleared after group deletion"
+            )
+
+    def test_resource_deletion_cache_invalidation(self):
+        """Test that cache is properly cleared when a resource is deleted"""
+
+        # Create a temporary resource for deletion testing
+        temp_resource = ResourceBase.objects.create(
+            title=f"temp_resource_{uuid4()}",
+            uuid=str(uuid4()),
+            owner=self.test_user,
+            abstract="Temporary resource for deletion testing",
+            subtype="vector",
+            is_approved=True,
+            is_published=True,
+        )
+
+        # Set permissions on the temporary resource
+        perm_spec = {
+            "users": {
+                self.test_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                    "delete_resourcebase",
+                ],
+                self.admin_user.username: [
+                    "view_resourcebase",
+                    "change_resourcebase",
+                ],
+            },
+            "groups": {
+                self.test_group.name: ["view_resourcebase"],
+                self.anonymous.name: ["view_resourcebase"],
+            },
+        }
+        temp_resource.set_permissions(perm_spec)
+
+        cache_keys_to_check = []
+
+        user_perms = permissions_registry.get_perms(instance=temp_resource, user=self.test_user, use_cache=True)
+        test_user_key = f"resource_perms:{temp_resource.pk}:user:{self.test_user.pk}"
+        cache_keys_to_check.append(test_user_key)
+
+        admin_perms = permissions_registry.get_perms(instance=temp_resource, user=self.admin_user, use_cache=True)
+        admin_user_key = f"resource_perms:{temp_resource.pk}:user:{self.admin_user.pk}"
+        cache_keys_to_check.append(admin_user_key)
+
+        anonymous_user = AnonymousUser()
+        anon_perms = permissions_registry.get_perms(instance=temp_resource, user=anonymous_user, use_cache=True)
+        anon_key = f"resource_perms:{temp_resource.pk}:anonymous"
+        cache_keys_to_check.append(anon_key)
+
+        group_perms = permissions_registry.get_perms(instance=temp_resource, group=self.test_group, use_cache=True)
+        group_key = f"resource_perms:{temp_resource.pk}:group:{self.test_group.pk}"
+        cache_keys_to_check.append(group_key)
+
+        permissions_registry.get_perms(instance=temp_resource, use_cache=True)
+        all_key = f"resource_perms:{temp_resource.pk}:__ALL__"
+        cache_keys_to_check.append(all_key)
+
+        for cache_key in cache_keys_to_check:
+            self.assertIsNotNone(cache.get(cache_key), f"Cache key {cache_key} should exist before deletion")
+
+        self.assertIn("view_resourcebase", user_perms)
+        self.assertIn("change_resourcebase", user_perms)
+        self.assertIn("delete_resourcebase", user_perms)
+
+        self.assertIn("view_resourcebase", admin_perms)
+        self.assertIn("change_resourcebase", admin_perms)
+
+        self.assertIn("view_resourcebase", anon_perms)
+        self.assertIn("view_resourcebase", group_perms)
+
+        other_resource = self.resources[0]
+        other_resource_key = f"resource_perms:{other_resource.pk}:user:{self.test_user.pk}"
+        permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        temp_resource.delete()
+
+        for cache_key in cache_keys_to_check:
+            self.assertIsNone(cache.get(cache_key), f"Cache key {cache_key} should be cleared after resource deletion")
+
+        self.assertIsNotNone(
+            cache.get(other_resource_key), "Cache keys for other resources should not be affected by resource deletion"
+        )
+
+    def test_delete_resource_permissions_cache_function(self):
+        """Test the delete_resource_permissions_cache function directly"""
+        test_resource = self.resources[0]
+
+        temp_user = get_user_model().objects.create_user(
+            username=f"temp_user_{uuid4()}", email="temp@example.com", password="temppass123"
+        )
+
+        temp_group, _ = Group.objects.get_or_create(name=f"temp_group_{uuid4()}")
+        temp_group_profile = GroupProfile.objects.create(
+            group=temp_group, title="Temp Group", slug="temp-group", access="public"
+        )
+        anonymous_user = Profile.objects.get(username="AnonymousUser")
+
+        perm_spec = {
+            "users": {
+                temp_user.username: ["view_resourcebase", "change_resourcebase"],
+                self.test_user.username: ["view_resourcebase", "change_resourcebase"],
+            },
+            "groups": {
+                temp_group.name: ["view_resourcebase"],
+                self.test_group.name: ["view_resourcebase"],
+                self.anonymous.name: ["view_resourcebase"],
+            },
+        }
+        test_resource.set_permissions(perm_spec)
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(
+            instance=test_resource, user=self.test_user, group=self.test_group, use_cache=True
+        )
+
+        temp_user_key = f"resource_perms:{test_resource.pk}:user:{temp_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        temp_group_key = f"resource_perms:{test_resource.pk}:group:{temp_group.pk}"
+        test_group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_user, group_clear_cache=False)
+
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        self.assertIsNotNone(cache.get(temp_user_key))
+
+        permissions_registry.delete_resource_permissions_cache(anonymous_user, group_clear_cache=False)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        self.assertIsNotNone(cache.get(anonymous_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(temp_group_key))
+        self.assertIsNotNone(cache.get(test_group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.delete_resource_permissions_cache(test_resource)
+
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(temp_group_key))
+        self.assertIsNone(cache.get(test_group_key))
+        self.assertIsNone(cache.get(all_key))
+
+        other_resource = self.resources[1]
+        permissions_registry.get_perms(instance=other_resource, user=self.test_user, use_cache=True)
+        other_resource_key = f"resource_perms:{other_resource.pk}:user:{self.test_user.pk}"
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        permissions_registry.delete_resource_permissions_cache(test_resource)
+        self.assertIsNotNone(cache.get(other_resource_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=temp_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, group=temp_group, use_cache=True)
+
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.delete_resource_permissions_cache(temp_user, group_clear_cache=False)
+        self.assertIsNone(cache.get(temp_user_key))
+        self.assertIsNotNone(cache.get(temp_group_key))
+
+        permissions_registry.get_perms(instance=test_resource, user=temp_user, use_cache=True)
+        permissions_registry.delete_resource_permissions_cache(temp_group, user_clear_cache=False)
+        self.assertIsNotNone(cache.get(temp_user_key))
+        self.assertIsNone(cache.get(temp_group_key))
+
+        temp_user.delete()
+        temp_group_profile.delete()
+        temp_group.delete()
+
+    def test_clear_permissions_cache(self):
+        """Test that clear_permissions_cache removes all cache entries."""
+        test_resource = self.resources[0]
+        anonymous_user = Profile.objects.get(username="AnonymousUser")
+
+        admin_key = f"resource_perms:{test_resource.pk}:user:{self.admin_user.pk}"
+        test_user_key = f"resource_perms:{test_resource.pk}:user:{self.test_user.pk}"
+        anonymous_key = f"resource_perms:{test_resource.pk}:anonymous"
+        group_key = f"resource_perms:{test_resource.pk}:group:{self.test_group.pk}"
+        all_key = f"resource_perms:{test_resource.pk}:__ALL__"
+
+        permissions_registry.get_perms(instance=test_resource, user=self.admin_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=self.test_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, user=anonymous_user, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, group=self.test_group, use_cache=True)
+        permissions_registry.get_perms(instance=test_resource, use_cache=True)
+
+        self.assertIsNotNone(cache.get(admin_key))
+        self.assertIsNotNone(cache.get(test_user_key))
+        self.assertIsNotNone(cache.get(anonymous_key))
+        self.assertIsNotNone(cache.get(group_key))
+        self.assertIsNotNone(cache.get(all_key))
+
+        permissions_registry.clear_permissions_cache()
+
+        self.assertIsNone(cache.get(admin_key))
+        self.assertIsNone(cache.get(test_user_key))
+        self.assertIsNone(cache.get(anonymous_key))
+        self.assertIsNone(cache.get(group_key))
+        self.assertIsNone(cache.get(all_key))
+
+    def test_configuration_read_only_change_clears_permissions_cache(self):
+        """Permissions cache is cleared when read_only flag changes."""
+        test_resource = self.resources[0]
+        user = self.admin_user
+
+        config = Configuration.load()
+        original_read_only = config.read_only
+
+        try:
+            cache.clear()
+
+            config.read_only = False
+            config.save()
+
+            permissions_registry.get_perms(instance=test_resource, user=user, use_cache=True)
+            cache_key = permissions_registry._get_cache_key([test_resource.pk], users=[user])
+            self.assertIsNotNone(cache.get(cache_key))
+
+            config.read_only = True
+            config.save()
+
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            config.read_only = original_read_only
+            config.save()
+
+    def test_global_perms_caching(self):
+        """Global (no-instance) perms are cached and returned from cache on the second call."""
+        cache_key = permissions_registry._get_global_cache_key(self.test_user)
+        self.assertIsNone(cache.get(cache_key))
+
+        perms_1 = permissions_registry.get_perms(user=self.test_user, use_cache=True)
+        self.assertIsInstance(perms_1, list)
+        # cache is now populated
+        self.assertEqual(cache.get(cache_key), perms_1)
+
+        perms_2 = permissions_registry.get_perms(user=self.test_user, use_cache=True)
+        self.assertEqual(perms_1, perms_2)
+
+    def test_global_perms_not_cached_without_use_cache(self):
+        """Without use_cache the global perms are not written to the cache."""
+        cache_key = permissions_registry._get_global_cache_key(self.test_user)
+        permissions_registry.get_perms(user=self.test_user)
+        self.assertIsNone(cache.get(cache_key))
+
+    def test_global_perms_cache_cleared_on_profile_activity(self):
+        """delete_resource_permissions_cache invalidates the user's global perms cache."""
+        cache_key = permissions_registry._get_global_cache_key(self.test_user)
+        permissions_registry.get_perms(user=self.test_user, use_cache=True)
+        self.assertIsNotNone(cache.get(cache_key))
+
+        permissions_registry.delete_resource_permissions_cache(self.test_user)
+        self.assertIsNone(cache.get(cache_key))
+
+    def test_global_perms_cache_cleared_on_group_activity(self):
+        """delete_resource_permissions_cache on a group invalidates its members' global perms cache."""
+        # admin_user is a member of test_group (see setUpClass)
+        cache_key = permissions_registry._get_global_cache_key(self.admin_user)
+        permissions_registry.get_perms(user=self.admin_user, use_cache=True)
+        self.assertIsNotNone(cache.get(cache_key))
+
+        permissions_registry.delete_resource_permissions_cache(self.test_group)
+        self.assertIsNone(cache.get(cache_key))
+
+    def test_global_perms_cache_cleared_on_superuser_flag_change(self):
+        """Toggling is_superuser invalidates the cached global perms immediately."""
+        user = get_user_model().objects.create_user(
+            username=f"promoted_user_{uuid4()}", password="testpass123", is_superuser=False
+        )
+        try:
+            cache_key = permissions_registry._get_global_cache_key(user)
+            perms_before = permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertNotIn("add_remote_resource", perms_before)
+            self.assertIsNotNone(cache.get(cache_key))
+
+            user.is_superuser = True
+            user.save()
+            self.assertIsNone(cache.get(cache_key))
+
+            perms_after = permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertIn("add_remote_resource", perms_after)
+        finally:
+            user.delete()
+
+    def test_global_perms_cache_cleared_on_user_permissions_change(self):
+        """Adding a Permission to a user's user_permissions invalidates the cached global perms."""
+        user = get_user_model().objects.create_user(username=f"perm_user_{uuid4()}", password="testpass123")
+        try:
+            cache_key = permissions_registry._get_global_cache_key(user)
+            permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertIsNotNone(cache.get(cache_key))
+
+            perm = Permission.objects.first()
+            user.user_permissions.add(perm)
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            user.delete()
+
+    def test_global_perms_cache_cleared_on_group_permissions_change(self):
+        """Changing a Group's permissions invalidates the cached global perms of its members."""
+        group, _ = Group.objects.get_or_create(name=f"perm_group_{uuid4()}")
+        user = get_user_model().objects.create_user(username=f"group_perm_user_{uuid4()}", password="testpass123")
+        user.groups.add(group)
+        try:
+            cache_key = permissions_registry._get_global_cache_key(user)
+            permissions_registry.get_perms(user=user, use_cache=True)
+            self.assertIsNotNone(cache.get(cache_key))
+
+            perm = Permission.objects.first()
+            group.permissions.add(perm)
+            self.assertIsNone(cache.get(cache_key))
+
+            permissions_registry.get_perms(user=user, use_cache=True)
+            group.permissions.remove(perm)
+            self.assertIsNone(cache.get(cache_key))
+        finally:
+            user.delete()
+            group.delete()
+
+
+class TestSpecialGroupsPermissionsHandler(GeoNodeBaseTestSupport):
+    @override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="view", DEFAULT_REGISTERED_MEMBERS_PERMISSIONS="download")
+    def test_handler_sets_default_groups_on_create(self):
+        resource = create_single_dataset("test_default_special_groups")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=True)
+
+        anonymous_group = Group.objects.get(name="anonymous")
+        registered_group, _ = Group.objects.get_or_create(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        expected_anonymous = _to_extended_perms("view", resource.resource_type, resource.subtype)
+        expected_registered = _to_extended_perms("download", resource.resource_type, resource.subtype)
+
+        self.assertSetEqual(set(updated["groups"][anonymous_group]), set(expected_anonymous))
+        self.assertSetEqual(set(updated["groups"][registered_group]), set(expected_registered))
+
+    def test_handler_skips_when_not_created(self):
+        resource = create_single_dataset("test_default_special_groups_skip")
+        handler = SpecialGroupsPermissionsHandler()
+        perms_payload = {"users": {}, "groups": {}}
+
+        updated = handler.fixup_perms(resource, perms_payload, created=False)
+
+        self.assertDictEqual(perms_payload, updated)
+
+
+class AuthConfigTests(TestCase):
+    def test_auth_config_string_representation(self):
+        auth_config = AuthConfig.objects.create(type="basic", _payload="encrypted-payload")
+        self.assertEqual(str(auth_config), f"basic:{auth_config.pk}")
+
+    def test_url_pattern_auth_config_string_representation(self):
+        auth_config = AuthConfig.objects.create(type="basic", _payload="encrypted-payload")
+        url_pattern_auth_config = URLPatternAuthConfig.objects.create(
+            auth_config=auth_config,
+            pattern="https://example.com/*",
+        )
+        self.assertEqual(str(url_pattern_auth_config), "https://example.com/*")
+
+    def test_basic_auth_payload_round_trip(self):
+        auth_config = BasicAuthHandler.create_auth_config({"username": "test_user", "password": "test_password"})
+
+        self.assertEqual(auth_config.type, "basic")
+        self.assertNotIn("test_user", auth_config._payload)
+        self.assertNotIn("test_password", auth_config._payload)
+        self.assertEqual(auth_config.payload, {"username": "test_user", "password": "test_password"})
+
+        handler = BasicAuthHandler(auth_config)
+        self.assertEqual(handler.get_credentials(), ("test_user", "test_password"))
+
+
+class AuthHandlerTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.auth_config = AuthConfig.objects.create(type="basic")
+        self.auth_config.payload = {"username": "test_user", "password": "test_password"}
+        self.auth_config.save()
+
+    def test_build_returns_basic_auth_handler(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        self.assertIsInstance(auth_handler, BasicAuthHandler)
+        self.assertEqual(auth_handler.username, "test_user")
+        self.assertEqual(auth_handler.password, "test_password")
+
+    def test_build_raises_for_unsupported_type(self):
+        unsupported_auth_config = AuthConfig.objects.create(type="unsupported", _payload="opaque")
+        with self.assertRaises(ValueError):
+            auth_handler_registry.build(unsupported_auth_config)
+
+    def test_basic_auth_handler_get_request_auth(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        request_auth = auth_handler.get_request_auth()
+        self.assertIsInstance(request_auth, HashableAuthBase)
+        self.assertEqual(request_auth.auth.username, "test_user")
+        self.assertEqual(request_auth.auth.password, "test_password")
+
+    def test_basic_auth_handler_auth_request_sets_request_auth(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        request = Request("GET", "https://example.com/data")
+        request = auth_handler.auth_request(request)
+        self.assertIsInstance(request.auth, HashableAuthBase)
+        self.assertEqual(request.auth.auth.username, "test_user")
+        self.assertEqual(request.auth.auth.password, "test_password")
+
+    def test_basic_auth_handler_get_extra_config(self):
+        auth_handler = auth_handler_registry.build(self.auth_config)
+        expected_token = base64.b64encode(b"test_user:test_password").decode()
+        config = auth_handler.get_extra_config(url="https://example.com/data.tif")
+        self.assertEqual("https://example.com/data.tif", config["url"])
+        self.assertEqual({"GDAL_HTTP_HEADERS": f"Authorization: Basic {expected_token}"}, config["gdal"])
+
+
+class AuthHandlerRegistryTests(TestCase):
+    class SampleAuthHandler(AuthHandler):
+        handled_type = "sample"
+
+        def _init_from_config(self):
+            self.payload = self.config.payload
+
+        def get_request_auth(self):
+            return None
+
+        def auth_request(self, request, **kwargs):
+            return request
+
+        def get_credentials(self):
+            return self.payload
+
+    def test_register_adds_handler_class(self):
+        registry = AuthHandlerRegistry()
+        registry.register(BasicAuthHandler)
+        self.assertEqual(registry.registry["basic"], BasicAuthHandler)
+
+    def test_register_and_build_sample_handler(self):
+        auth_config = AuthConfig.objects.create(type="sample")
+        auth_config.payload = {"value": "demo"}
+        auth_config.save()
+        registry = AuthHandlerRegistry()
+        registry.register(self.SampleAuthHandler)
+        auth_handler = registry.build(auth_config)
+        self.assertIsInstance(auth_handler, self.SampleAuthHandler)
+        self.assertEqual(auth_handler.config, auth_config)
+
+    def test_register_raises_when_handled_type_is_missing(self):
+        class MissingHandledTypeAuthHandler(AuthHandler):
+            handled_type = None
+
+            def _init_from_config(self):
+                pass
+
+        registry = AuthHandlerRegistry()
+        with self.assertRaises(ValueError):
+            registry.register(MissingHandledTypeAuthHandler)
+
+    def test_build_returns_handler_instance(self):
+        auth_config = AuthConfig.objects.create(type="basic")
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        auth_config.save()
+        registry = AuthHandlerRegistry()
+        registry.register(BasicAuthHandler)
+        auth_handler = registry.build(auth_config)
+        self.assertIsInstance(auth_handler, BasicAuthHandler)
+        self.assertEqual(auth_handler.username, "test_user")
+        self.assertEqual(auth_handler.password, "test_password")

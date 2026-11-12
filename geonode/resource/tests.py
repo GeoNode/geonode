@@ -20,23 +20,40 @@ import io
 import os
 
 from uuid import uuid4
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
+from django.test import SimpleTestCase, override_settings
 
+from geonode.base import enumerations
+from geonode.resource.utils import get_alternate_name
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import ResourceManager
-from geonode.base.models import LinkedResource, ResourceBase
+from geonode.resource.manager import BaseResourceManager
+from geonode.base.models import LinkedResource, ResourceBase, Region, Thesaurus, ThesaurusKeyword
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.maps.models import Map, MapLayer
+from geonode.geoapps.models import GeoApp
 from geonode.resource import settings as rm_settings
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import create_single_doc, create_single_map, create_single_dataset
 from geonode.thumbs.utils import ThumbnailAlgorithms
+from geonode.security.registry import permissions_registry
+from geonode.resource.registry import (
+    resource_manager_registry,
+    document_manager,
+    dataset_manager,
+    map_manager,
+    geoapp_manager,
+)
+from geonode.layers.manager import DatasetResourceManager
+from geonode.geoapps.manager import GeoAppResourceManager
+from geonode.maps.manager import MapResourceManager
+from geonode.documents.manager import DocumentResourceManager
+from geonode.resource.registry import ResourceManagerRegistry
 
 from gisdata import GOOD_DATA
 
@@ -45,20 +62,65 @@ class ResourceManagerClassTest:
     pass
 
 
+class GetAlternateNameTestCase(SimpleTestCase):
+    """get_alternate_name must key off is_remote_resource(), not a bespoke sourcetype check (#14524)."""
+
+    def _make_dataset(self, **attrs):
+        instance = MagicMock(spec=Dataset)
+        instance.remote_service = None
+        instance.remote_service_id = None
+        instance.sourcetype = enumerations.SOURCE_TYPE_LOCAL
+        instance.workspace = None
+        instance.name = "layer"
+        for key, value in attrs.items():
+            setattr(instance, key, value)
+        return instance
+
+    def test_local_dataset_falls_back_to_default_workspace(self):
+        instance = self._make_dataset()
+        self.assertEqual(get_alternate_name(instance), "geonode:layer")
+
+    def test_remote_dataset_without_remote_service_uses_workspace_as_is(self):
+        # WMS/ArcGIS-harvested datasets have no remote_service.method to key off of, so
+        # detection falls through to this branch and must still recognize them as remote.
+        instance = self._make_dataset(sourcetype=enumerations.SOURCE_TYPE_REMOTE, workspace="remoteWorkspace")
+        self.assertEqual(get_alternate_name(instance), "remoteWorkspace:layer")
+
+    def test_leftover_remote_service_without_sourcetype_is_still_remote(self):
+        # A row with remote_service set but sourcetype not yet REMOTE (pre-#14524 data, or any
+        # code path that only set one of the two) must still be treated as remote.
+        instance = self._make_dataset(remote_service_id=7, workspace="remoteWorkspace")
+        self.assertEqual(get_alternate_name(instance), "remoteWorkspace:layer")
+
+
 class TestResourceManager(GeoNodeBaseTestSupport):
-    def setUp(self):
+    """
+    Tests for the GeoNode ResourceManager.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         create_models(b"dataset")
         create_models(b"map")
         create_models(b"document")
-        User = get_user_model()
-        self.user = User.objects.create(username="test", email="test@test.com")
-        self.rm = ResourceManager()
+
+        cls.User = get_user_model()
+
+    def setUp(self):
+        super().setUp()
+        self.user = self.User.objects.create_user(
+            username="test",
+            email="test@test.com",
+        )
+
+        self.rm = BaseResourceManager()
 
     def test_get_concrete_manager(self):
         original_r_m_c_c = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS
         # mock class
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = "geonode.resource.tests.ResourceManagerClassTest"
-        rm = ResourceManager()
+        rm = BaseResourceManager()
         self.assertEqual(rm._concrete_resource_manager.__class__.__name__, "ResourceManagerClassTest")
         # re assign class to original
         rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = original_r_m_c_c
@@ -108,6 +170,100 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
         self.assertEqual(res, Dataset.objects.get(uuid=new_uuid))
 
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=False,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_keeps_uploader_as_owner_when_auto_assign_disabled(self):
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_parity_feature_off"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, self.user)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_assigns_admin_owner_and_grants_uploader_manage(self):
+        admin = get_user_model().objects.get(username="admin")
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_auto_assign_admin"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, admin)
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "delete_resourcebase",
+                include_virtual=True,
+            )
+        )
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="resource_owner_not_admin",
+    )
+    def test_create_fallbacks_to_first_superuser_when_configured_owner_not_superuser(self):
+        non_admin = get_user_model().objects.create_user(
+            username="resource_owner_not_admin",
+            email="resource_owner_not_admin@test.com",
+        )
+        new_uuid = str(uuid4())
+        map_defaults = {"owner": self.user, "title": "create_owner_fallback_not_admin"}
+        resource = self.rm.create(new_uuid, resource_type=Map, defaults=map_defaults)
+        self.assertNotEqual(resource.owner, non_admin)
+        self.assertTrue(resource.owner.is_superuser)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="   ",
+    )
+    def test_create_fallbacks_to_admin_when_username_setting_blank(self):
+        admin = get_user_model().objects.get(username="admin")
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_blank_username"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner, admin)
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_handler_applies_only_on_creation_flag(self):
+        new_uuid = str(uuid4())
+        dataset_defaults = {"owner": self.user, "title": "create_owner_creation_only_handler"}
+        resource = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
+        self.assertEqual(resource.owner.username, "admin")
+        self.assertNotEqual(resource.owner, self.user)
+
+        # On non-creation updates, uploader perms should follow the explicit payload and not be auto-forced to manage.
+        perm_spec = {"users": {self.user.username: ["view_resourcebase"]}, "groups": {}}
+        self.assertTrue(self.rm.set_permissions(resource.uuid, instance=resource, permissions=perm_spec, created=False))
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                self.user,
+                resource.get_self_resource(),
+                "delete_resourcebase",
+                include_virtual=True,
+            )
+        )
+
     def test_update(self):
         dt = create_single_dataset("test_update_dataset")
         vals = {"name": "new_name_test_update_dataset"}
@@ -139,12 +295,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res.delete()
 
     def test_dataset_copy(self):
+        trigger_user = self.User.objects.create_user(username="test_dataset_copy_trigger", email="trigger@test.com")
+
         def _copy_assert_resource(res, title):
             dataset_copy = None
             try:
-                dataset_copy = self.rm.copy(res, defaults=dict(title=title))
+                dataset_copy = self.rm.copy(res, owner=trigger_user, defaults=dict(title=title))
                 self.assertIsNotNone(dataset_copy)
                 self.assertEqual(dataset_copy.title, title)
+                self.assertEqual(dataset_copy.owner, trigger_user)
             finally:
                 if dataset_copy:
                     dataset_copy.delete()
@@ -196,7 +355,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         def _copy_assert_resource(res, title):
             dataset_copy = None
             try:
-                dataset_copy = self.rm.copy(res, defaults=dict(title=title))
+                dataset_copy = self.rm.copy(res, owner=self.user, defaults=dict(title=title))
                 self.assertIsNotNone(dataset_copy)
                 self.assertEqual(dataset_copy.title, title)
             finally:
@@ -212,13 +371,125 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(isinstance(res, Map))
         _copy_assert_resource(res, "A Test Map 2")
 
+    def test_resource_copy_carries_over_metadata_and_permissions(self):
+        res = create_single_map("A Test Map With Metadata")
+        try:
+            region = Region.objects.first()
+            vals = {
+                "abstract": "test abstract",
+                "purpose": "test purpose",
+                "supplemental_information": "test supplemental information",
+                "data_quality_statement": "test data quality statement",
+            }
+            res = self.rm.update(res.uuid, instance=res, vals=vals, keywords=["foo", "bar"], regions=[region.name])
+
+            thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_copy", title="Test Thesaurus")
+            tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
+            res.tkeywords.add(tkeyword)
+
+            custom_group, _ = GroupProfile.objects.get_or_create(
+                slug="test_copy_group", title="test_copy_group", access="private"
+            )
+            custom_perms = {
+                "users": {self.user.username: ["view_resourcebase", "change_resourcebase"]},
+                "groups": {custom_group.slug: ["view_resourcebase"]},
+            }
+            self.rm.set_permissions(res.uuid, instance=res, permissions=custom_perms)
+
+            # owner must be whoever triggers the clone (self.user), not res's own owner
+            self.assertNotEqual(res.owner, self.user)
+            dataset_copy = self.rm.copy(res, owner=self.user, defaults=dict(title="A Test Map With Metadata Copy"))
+            try:
+                self.assertIsNotNone(dataset_copy)
+                self.assertEqual(dataset_copy.owner, self.user)
+                self.assertEqual(res.abstract, dataset_copy.abstract)
+                self.assertEqual(res.purpose, dataset_copy.purpose)
+                self.assertEqual(res.supplemental_information, dataset_copy.supplemental_information)
+                self.assertEqual(res.data_quality_statement, dataset_copy.data_quality_statement)
+                self.assertCountEqual(
+                    [k.name for k in res.keywords.all()], [k.name for k in dataset_copy.keywords.all()]
+                )
+                self.assertCountEqual(list(res.regions.all()), list(dataset_copy.regions.all()))
+                self.assertCountEqual(list(res.tkeywords.all()), list(dataset_copy.tkeywords.all()))
+
+                source_perms = permissions_registry.get_perms(instance=res, include_virtual=False)
+                copy_perms = permissions_registry.get_perms(instance=dataset_copy, include_virtual=False)
+                # self.user is the copy's new owner, so the permission engine promotes it to full
+                # owner perms on top of whatever custom perms it already had (AdvancedSecurityWorkflowManager
+                # always grants the owner admin+view perms) - it's the one entry expected to differ.
+                for perm_key in ("users", "groups"):
+                    source_entries = {
+                        profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()
+                    }
+                    copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                    if perm_key == "users":
+                        source_entries.pop(self.user.pk, None)
+                        copy_entries.pop(self.user.pk, None)
+                    self.assertEqual(source_entries, copy_entries)
+                # sanity: our own custom entries actually landed (owner promotion is a superset, not a replacement)
+                copy_user_perms = {profile.username: set(perms) for profile, perms in copy_perms["users"].items()}
+                self.assertTrue(
+                    set(custom_perms["users"][self.user.username]).issubset(copy_user_perms[self.user.username])
+                )
+                copy_group_perms = {group.name: perms for group, perms in copy_perms["groups"].items()}
+                self.assertCountEqual(copy_group_perms[custom_group.slug], custom_perms["groups"][custom_group.slug])
+            finally:
+                if dataset_copy:
+                    dataset_copy.delete()
+        finally:
+            res.delete()
+
     def test_exec(self):
         map = create_single_map("test_exec_map")
         self.assertIsNone(self.rm.exec("set_style", None, instance=None))
         self.assertEqual(self.rm.exec("set_style", map.uuid, instance=map), map)
 
+    def test_transfer_ownership(self):
+        previous_owner = get_user_model().objects.create(username="previous_owner")
+        new_owner = get_user_model().objects.create(username="new_owner")
+        doc = create_single_doc("test_transfer_ownership_doc", owner=previous_owner)
+
+        self.assertEqual(doc.owner, previous_owner)
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                previous_owner, doc.get_self_resource(), "change_resourcebase", include_virtual=True
+            )
+        )
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                new_owner, doc.get_self_resource(), "change_resourcebase", include_virtual=True
+            )
+        )
+
+        self.rm.transfer_ownership(doc, new_owner, previous_owner)
+
+        doc.refresh_from_db()
+        self.assertEqual(doc.owner, new_owner)
+
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                new_owner, doc.get_self_resource(), "change_resourcebase", include_virtual=True
+            )
+        )
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                new_owner, doc.get_self_resource(), "delete_resourcebase", include_virtual=True
+            )
+        )
+
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                previous_owner, doc.get_self_resource(), "change_resourcebase", include_virtual=True
+            )
+        )
+        self.assertFalse(
+            permissions_registry.user_has_perm(
+                previous_owner, doc.get_self_resource(), "delete_resourcebase", include_virtual=True
+            )
+        )
+
     def test_remove_permissions(self):
-        with self.settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
+        with self.settings(DEFAULT_ANONYMOUS_PERMISSIONS="view"):
             dt = create_single_dataset("test_dataset")
             map = create_single_map("test_exec_map")
             self.assertFalse(self.rm.remove_permissions("invalid", instance=None))
@@ -256,7 +527,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         # Test with no specified permissions
         with patch("geonode.security.utils.skip_registered_members_common_group") as mock_v:
             mock_v.return_value = True
-            with self.settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False, DEFAULT_ANONYMOUS_VIEW_PERMISSION=False):
+            with self.settings(DEFAULT_ANONYMOUS_PERMISSIONS="none"):
                 self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
                 self.assertFalse(anonymous.has_perm("view_resourcebase", dt.get_self_resource()))
                 self.assertFalse(anonymous.has_perm("download_resourcebase", dt.get_self_resource()))
@@ -288,6 +559,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(self.rm.set_thumbnail(dt.uuid, instance=dt))
         self.assertTrue(self.rm.set_thumbnail(doc.uuid, instance=doc))
 
+    @patch("geonode.documents.tasks.create_document_thumbnail.apply")
+    def test_set_thumbnail_skips_remote_document(self, create_thumb):
+        doc = create_single_doc("test_remote_thumb_doc")
+        doc.doc_url = "http://example.com/test.pdf"
+        doc.save()
+
+        self.assertFalse(self.rm.set_thumbnail(doc.uuid, instance=doc))
+        create_thumb.assert_not_called()
+
     def test_set_thumbnail_algo(self):
         thumb_path = os.path.join(os.path.dirname(__file__), "../tests/data/thumb_sample.png")
         image = io.open(thumb_path, "rb").read()
@@ -304,3 +584,71 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             ),
             "Error in using SCALE image algo",
         )
+
+
+class DummyDocumentManager(BaseResourceManager):
+    handled_model = Document
+
+
+class TestResourceManagerRegistry(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(b"dataset")
+        create_models(b"map")
+        create_models(b"document")
+
+    def setUp(self):
+        super().setUp()
+        self.registry = ResourceManagerRegistry()
+        self.registry.reset()
+        resource_manager_registry.init_registry()
+
+    def tearDown(self):
+        self.registry.reset()
+        super().tearDown()
+
+    def test_get_for_model_real_managers(self):
+        self.assertIsInstance(resource_manager_registry.get_for_model(Document), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Map), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(Dataset), DatasetResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_model(GeoApp), GeoAppResourceManager)
+
+    def test_lazy_loader_real_managers(self):
+        self.assertIsInstance(document_manager.get_instance(), DocumentResourceManager)
+        self.assertIsInstance(map_manager.get_instance(), MapResourceManager)
+        self.assertIsInstance(dataset_manager.get_instance(), DatasetResourceManager)
+        self.assertIsInstance(geoapp_manager.get_instance(), GeoAppResourceManager)
+
+    def test_get_for_instance_from_objects(self):
+        doc = Document.objects.first()
+        map_obj = Map.objects.first()
+        ds = Dataset.objects.first()
+        self.assertIsInstance(resource_manager_registry.get_for_instance(doc), DocumentResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(map_obj), MapResourceManager)
+        self.assertIsInstance(resource_manager_registry.get_for_instance(ds), DatasetResourceManager)
+
+    def test_add_and_get_for_instance(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_model(Document), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_instance(doc), mgr)
+
+    def test_remove_missing_manager_raises(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.registry.remove(Document)
+        with self.assertRaises(ValueError):
+            self.registry.get_for_model(Document)
+
+    def test_get_for_type_and_uuid(self):
+        mgr = DummyDocumentManager()
+        self.registry.add(mgr)
+        self.assertIs(self.registry.get_for_type("document"), mgr)
+        doc = Document.objects.first()
+        self.assertIs(self.registry.get_for_uuid(doc.uuid), mgr)
+
+    def test_get_for_instance_none_raises(self):
+        with self.assertRaises(ValueError):
+            self.registry.get_for_instance(None)

@@ -29,7 +29,6 @@ from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -76,6 +75,13 @@ class DateTypeSubHandler(SubHandler):
         subschema["default"] = "Publication"
 
 
+class TitleSubHandler(SubHandler):
+    @classmethod
+    def deserialize(cls, field_value):
+        # ref https://github.com/GeoNode/geonode/issues/8198
+        return field_value.replace(",", "_")
+
+
 class DateSubHandler(SubHandler):
     @classmethod
     def serialize(cls, value):
@@ -88,12 +94,14 @@ class FrequencySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key, "title": val} for key, val in dict(UPDATE_FREQUENCIES).items()]
+        MetadataHandler._add_oneof_null_option(subschema)
 
 
 class LanguageSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key, "title": val} for key, val in dict(ALL_LANGUAGES).items()]
+        MetadataHandler._add_oneof_null_option(subschema)
 
 
 class LicenseSubHandler(SubHandler):
@@ -108,14 +116,14 @@ class LicenseSubHandler(SubHandler):
         if db_value is None:
             return None
         elif isinstance(db_value, License):
-            return {"id": db_value.identifier, "label": _(db_value.name)}
+            return {"id": db_value.id, "label": _(db_value.name)}
         else:
             logger.warning(f"License: can't decode <{type(db_value)}>'{db_value}'")
             return None
 
     @classmethod
     def deserialize(cls, field_value):
-        return License.objects.get(identifier=field_value["id"]) if field_value else None
+        return License.objects.get(id=field_value["id"]) if field_value else None
 
 
 class RestrictionsSubHandler(SubHandler):
@@ -125,6 +133,7 @@ class RestrictionsSubHandler(SubHandler):
             {"const": tc.identifier, "title": tc.identifier, "description": tc.description}
             for tc in RestrictionCodeType.objects.order_by("identifier")
         ]
+        MetadataHandler._add_oneof_null_option(subschema)
 
     @classmethod
     def serialize(cls, db_value):
@@ -144,6 +153,7 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
             {"const": tc.identifier, "title": tc.identifier, "description": tc.description}
             for tc in SpatialRepresentationType.objects.order_by("identifier")
         ]
+        MetadataHandler._add_oneof_null_option(subschema)
 
     @classmethod
     def serialize(cls, db_value):
@@ -157,6 +167,7 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
 
 
 SUBHANDLERS = {
+    "title": TitleSubHandler,
     "category": CategorySubHandler,
     "date_type": DateTypeSubHandler,
     "date": DateSubHandler,
@@ -184,10 +195,8 @@ class BaseHandler(MetadataHandler):
             self.base_schema = json.load(f)
         # building the full base schema
         for property_name, subschema in self.base_schema.items():
-            self._localize_subschema_label(context, subschema, lang, "title")
-            self._localize_subschema_label(context, subschema, lang, "description")
-
-            jsonschema["properties"][property_name] = subschema
+            self._localize_subschema_labels(context, subschema, lang, property_name)
+            self._add_subschema(jsonschema, property_name, subschema)
 
             # add the base handler info to the dictionary if it doesn't exist
             if "geonode:handler" not in subschema:
@@ -220,6 +229,11 @@ class BaseHandler(MetadataHandler):
                 field_value = SUBHANDLERS[field_name].deserialize(field_value)
 
             setattr(resource, field_name, field_value)
+            context.setdefault("base", {})[field_name] = field_value
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-            self._set_error(errors, [field_name], "Error while storing field. Contact your administrator")
+            self._set_error(
+                errors,
+                [field_name],
+                self.localize_message(context, "metadata_error_store", {"fieldname": field_name, "exc": e}),
+            )

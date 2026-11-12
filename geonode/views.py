@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from geonode.client.hooks import hookset
 import json
 
+from django.shortcuts import render
 from django import forms
 from django.apps import apps
 from django.db.models import Q
@@ -33,6 +34,9 @@ from django.contrib.auth import authenticate, login, get_user_model
 from geonode import get_version
 from geonode.groups.models import GroupProfile
 from geonode.geoapps.models import GeoApp
+from urllib.parse import urlencode
+
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 class AjaxLoginForm(forms.Form):
@@ -94,20 +98,33 @@ def ajax_lookup(request):
 
 def err403(request, exception):
     if not request.user.is_authenticated:
-        return HttpResponseRedirect(f"{reverse('account_login')}?next={request.get_full_path()}")
+        next_url = request.get_full_path()
+
+        if not url_has_allowed_host_and_scheme(
+            url=next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            next_url = "/"
+
+        return HttpResponseRedirect(f"{reverse('account_login')}?{urlencode({'next': next_url})}")
     else:
         return TemplateResponse(request, "401.html", {}, status=401).render()
+
+
+def err500(request):
+    return render(request, "500.html", status=500)
 
 
 def ident_json(request):
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     json_data = {}
     json_data["siteurl"] = site_url
-    json_data["name"] = settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_title"]
+    json_data["name"] = settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["title"]
 
     json_data["poc"] = {
-        "name": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_name"],
-        "email": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_email"],
+        "name": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["name"],
+        "email": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["email"],
         "twitter": f"https://twitter.com/{settings.TWITTER_SITE}",
     }
 
@@ -157,7 +174,7 @@ def moderator_contacted(request, inactive_user=None):
 
 
 def moderator_needed(request):
-    """Used when a user signs in with an invalid or empty email if ACCOUNT_EMAIL_REQUIRED is True."""
+    """Used when a user signs in with an invalid or empty required email."""
     return TemplateResponse(request, template="account/admin_approval_needed.html")
 
 

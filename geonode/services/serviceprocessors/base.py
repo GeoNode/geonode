@@ -22,14 +22,14 @@
 import logging
 
 from django.conf import settings
+from django.db import IntegrityError
 
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.harvesting.tasks import harvest_resources
-from geonode.harvesting.models import AsynchronousHarvestingSession
+from geonode.harvesting.models import AsynchronousHarvestingSession, Harvester
 
-from .. import models
-from .. import enumerations
+from geonode.services import models, enumerations
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog as catalog
@@ -49,6 +49,42 @@ def get_geoserver_cascading_workspace(create=True):
         uri = f"http://www.geonode.org/{name}"
         workspace = catalog.create_workspace(name, uri)
     return workspace
+
+
+def build_unique_resource_name(name, max_length=255):
+    """Return a Service/Harvester name that is unique in both models."""
+    max_length = max(1, int(max_length))
+    candidate = (name or "service")[:max_length]
+    base_name = candidate
+    idx = 1
+    while models.Service.objects.filter(name=candidate).exists() or Harvester.objects.filter(name=candidate).exists():
+        suffix = f"-{idx}"
+        if len(suffix) >= max_length:
+            # When max_length is tiny, keep the most specific part of the suffix.
+            candidate = suffix[-max_length:]
+        else:
+            prefix_len = max_length - len(suffix)
+            candidate = f"{base_name[:prefix_len]}{suffix}"
+        idx += 1
+    return candidate
+
+
+def create_with_unique_name(name, create_fn, max_length=255, max_attempts=3):
+    """Call create_fn(unique_name), retrying with a fresh candidate on IntegrityError.
+
+    build_unique_resource_name's check isn't atomic with the caller's create(),
+    so two concurrent registrations can still race for the same name.
+
+    :arg create_fn: creates the object(s); must raise IntegrityError if the
+        name turned out to already be taken.
+    """
+    for attempt in range(max_attempts):
+        candidate = build_unique_resource_name(name, max_length=max_length)
+        try:
+            return create_fn(candidate)
+        except IntegrityError:
+            if attempt == max_attempts - 1:
+                raise
 
 
 class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style classes

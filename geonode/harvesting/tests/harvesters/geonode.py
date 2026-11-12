@@ -71,12 +71,6 @@ class TestGeonodeHarvester(GeoNodeBaseTestSupport):
         """
         self.assertEqual(self.worker.base_api_url, f"{self.remote_url}/api")
 
-    def test_allows_copying_resources(self):
-        """
-        Test the return of allows_copying_resources
-        """
-        self.assertTrue(self.worker.allows_copying_resources)
-
     @patch("geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester._get_total_records", geonode_get_total_records)
     def test_get_num_available_resources_by_type(self):
         """

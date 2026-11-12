@@ -22,6 +22,7 @@ import uuid
 from datetime import datetime
 from functools import lru_cache
 from urllib.parse import unquote, urlparse, urlencode, parse_qsl, ParseResult
+from owslib.util import Authentication
 
 import requests
 from lxml import etree
@@ -31,12 +32,11 @@ from owslib.util import clean_ows_url
 
 from django.conf import settings
 from django.contrib.gis import geos
-from django.template.defaultfilters import slugify
-
 from geonode.layers.models import Dataset
-from geonode.base.models import ResourceBase
+from geonode.base.models import Link, ResourceBase
 from geonode.layers.enumerations import GXP_PTYPES
-from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.resource.registry import resource_manager_registry
+from geonode.thumbs.exceptions import ThumbnailError
 
 from .. import models
 from geonode.utils import (
@@ -52,7 +52,15 @@ logger = logging.getLogger(__name__)
 
 @lru_cache()
 def WebMapService(
-    url, version="1.3.0", xml=None, username=None, password=None, parse_remote_metadata=False, timeout=30, headers=None
+    url,
+    version="1.3.0",
+    xml=None,
+    username=None,
+    password=None,
+    parse_remote_metadata=False,
+    timeout=30,
+    headers=None,
+    auth=None,
 ):
     """
     API for Web Map Service (WMS) methods and metadata.
@@ -71,6 +79,7 @@ def WebMapService(
 
     clean_url = clean_ows_url(url)
     base_ows_url = clean_url
+    auth = Authentication(auth_delegate=auth)
 
     if version in ["1.1.1"]:
         return (
@@ -80,6 +89,7 @@ def WebMapService(
                 version=version,
                 xml=xml,
                 parse_remote_metadata=parse_remote_metadata,
+                auth=auth,
                 username=username,
                 password=password,
                 timeout=timeout,
@@ -94,6 +104,7 @@ def WebMapService(
                 version=version,
                 xml=xml,
                 parse_remote_metadata=parse_remote_metadata,
+                auth=auth,
                 username=username,
                 password=password,
                 timeout=timeout,
@@ -119,10 +130,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         self.http_session = requests.Session()
         self.http_session.headers = {"Content-Type": "application/xml"}
         self.dataset_title_filter = dataset_title_filter
-
-    @property
-    def allows_copying_resources(self) -> bool:
-        return False
 
     @classmethod
     def from_django_record(cls, record: models.Harvester):
@@ -184,27 +191,40 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             logger.exception(e)
         return ogc_wms_url
 
-    def get_capabilities(self) -> requests.Response:
+    def wms_call(self, kind="GetCapabilities", override_version=None, additional_params={}) -> requests.Response:
         params = self._base_wms_parameters.copy()
         params.update(
             {
-                "request": "GetCapabilities",
+                "request": kind,
             }
         )
-        (wms_url, _service, _version, _request) = self._get_cleaned_url_params(self.remote_url)
+        wms_url, _service, _version, _request = self._get_cleaned_url_params(self.remote_url)
         if _service:
             params["service"] = _service
-        if _version:
-            params["version"] = _version
+        if override_version or _version:
+            params["version"] = override_version or _version
         if wms_url.query:
             for _param in parse_qsl(wms_url.query):
                 params[_param[0]] = _param[1]
+        # updating default params with custom ones
+        params = {**params, **additional_params}
 
-        get_capabilities_response = self.http_session.get(
-            self.get_ogc_wms_url(wms_url, version=_version), params=params
+        # checking if the services is under basic auth
+        # getting the service
+        from geonode.services.models import Service
+
+        basic_auth = None
+        service = Service.objects.filter(harvester__pk=self.harvester_id).select_related("auth_config").first()
+        if service and service.needs_authentication:
+            from geonode.security.auth_registry import auth_handler_registry
+
+            basic_auth = auth_handler_registry.build(service.auth_config).get_request_auth()
+
+        response = self.http_session.get(
+            self.get_ogc_wms_url(wms_url, version=_version), params=params, auth=basic_auth
         )
-        get_capabilities_response.raise_for_status()
-        return get_capabilities_response
+        response.raise_for_status()
+        return response
 
     def get_num_available_resources(self) -> int:
         data = self._get_data()
@@ -237,7 +257,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         try:
-            response = self.get_capabilities()
+            response = self.wms_call()
         except (requests.HTTPError, requests.ConnectionError):
             result = False
         else:
@@ -288,7 +308,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             # WMS does not provide the date of the resource.
             # Use current time for the date stamp and resource time.
             time = datetime.now()
-            service_name = slugify(self.remote_url)[:255]
             contact = resourcedescriptor.RecordDescriptionContact(**data["contact"])
             result = base.HarvestedResourceInfo(
                 resource_descriptor=resourcedescriptor.RecordDescription(
@@ -314,7 +333,9 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                     reference_systems=[relevant_layer["crs"]],
                     additional_parameters={
                         "alternate": relevant_layer["name"],
-                        "store": service_name,
+                        # WMS does not tell whether the layer is vector or raster
+                        "subtype": "remote",
+                        "store": None,
                         "workspace": "remoteWorkspace",
                         "ows_url": relevant_layer["wms_url"],
                         "ptype": GXP_PTYPES["WMS"],
@@ -326,7 +347,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def _get_data(self) -> typing.Dict:
         """Return data from the harvester URL in JSON format."""
-        get_capabilities_response = self.get_capabilities()
+        get_capabilities_response = self.wms_call()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
         nsmap = _get_nsmap(root.nsmap)
 
@@ -427,7 +448,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         except (IndexError, KeyError):
             legend_url = ""
         params = {}
-        (wms_url, _service, _version, _request) = self._get_cleaned_url_params(self.remote_url)
+        wms_url, _service, _version, _request = self._get_cleaned_url_params(self.remote_url)
         if _service:
             params["service"] = _service
         if _version:
@@ -525,13 +546,37 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             target_crs = geonode_resource.srid
         else:
             target_crs = f"EPSG:{geonode_resource.srid}"
-        create_thumbnail(
+        success = resource_manager_registry.get_for_instance(geonode_resource).set_thumbnail(
+            geonode_resource.uuid,
             instance=geonode_resource,
-            # wms_version=harvested_info.resource_descriptor,
             bbox=geonode_resource.bbox,
             forced_crs=target_crs,
             overwrite=True,
         )
+        if not success:
+            raise ThumbnailError("Thumbnail generation failed.")
+        # ref GeoNode #13010
+        # A describeLayer is perfomed to see if we can add the WDS link
+        # to the resource
+        response = self.wms_call(
+            kind="DescribeLayer", override_version="1.1.1", additional_params={"layers": geonode_resource.alternate}
+        )
+        # check if the owsType is WFS
+        description = etree.fromstring(response.content, parser=XML_PARSER).find("LayerDescription")
+        if response and description:
+            url = description.attrib.get("owsUrl") or description.attrib.get("wfs") or geonode_resource.ows_url
+            if description.attrib.get("owsType") == "WFS":
+                Link.objects.get_or_create(
+                    resource=geonode_resource,
+                    url=url,
+                    name=f"OGC WFS: {geonode_resource.workspace} Service",
+                    defaults=dict(
+                        extension="html",
+                        url=url,
+                        mime="text/html",
+                        link_type="OGC:WFS",
+                    ),
+                )
 
 
 def _get_nsmap(original: typing.Dict):

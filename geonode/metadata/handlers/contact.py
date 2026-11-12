@@ -24,8 +24,10 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 
+from geonode.base.i18n import labelResolver
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.people import Roles
+from geonode.resource.registry import resource_manager_registry
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +67,7 @@ class ContactHandler(MetadataHandler):
             if role.is_multivalue:
                 contact = {
                     "type": "array",
-                    "title": self._localize_label(context, lang, role.label) + card,
+                    "title": labelResolver.gettext(role.label, lang) + card,
                     "minItems": minitems,
                     "items": {
                         "type": "object",
@@ -85,7 +87,7 @@ class ContactHandler(MetadataHandler):
             else:
                 contact = {
                     "type": "object",
-                    "title": self._localize_label(context, lang, role.label) + card,
+                    "title": labelResolver.gettext(role.label, lang) + card,
                     "properties": {
                         "id": {
                             "type": "string",
@@ -103,14 +105,17 @@ class ContactHandler(MetadataHandler):
 
             contacts[rolename] = contact
 
-            jsonschema["properties"]["contacts"] = {
+            subschema = {
                 "type": "object",
-                "title": self._localize_label(context, lang, "contacts"),
+                "title": "contacts",
                 "properties": contacts,
                 "required": required,
                 "geonode:required": bool(required),
                 "geonode:handler": "contact",
             }
+
+            self._localize_subschema_labels(context, subschema, lang, "contacts")
+            self._add_subschema(jsonschema, "contacts", subschema)
 
         return jsonschema
 
@@ -142,9 +147,25 @@ class ContactHandler(MetadataHandler):
             if rolename == Roles.OWNER.name:
                 if not users:
                     logger.warning(f"User not specified for role '{rolename}'")
-                    self._set_error(errors, ["contacts", rolename], f"User not specified for role '{rolename}'")
+                    self._set_error(
+                        errors,
+                        ["contacts", rolename],
+                        self.localize_message(
+                            context, "metadata_contact_error_missing_role", {"fieldname": field_name, "role": rolename}
+                        ),
+                    )
                 else:
-                    resource.owner = get_user_model().objects.get(pk=users["id"])
+                    try:
+                        user = get_user_model().objects.get(pk=users["id"])
+
+                        if user != resource.owner:
+                            logger.warning(f"Changing owner from {resource.owner} to {user}")
+                            resource_manager_registry.get_for_instance(resource).transfer_ownership(
+                                resource, user, resource.owner
+                            )
+                    except get_user_model().DoesNotExist:
+                        logger.warning(f"User with id {users['id']} not found for role '{rolename}'")
+                        self._set_error(errors, ["contacts", rolename], f"User with id {users['id']} does not exist.")
             else:
                 ids = [u["id"] for u in users]
                 profiles = get_user_model().objects.filter(pk__in=ids)

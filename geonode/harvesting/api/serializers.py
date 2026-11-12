@@ -31,7 +31,6 @@ from rest_framework import (
 )
 from rest_framework.fields import (
     get_error_detail,
-    set_value,
     SkipField,
 )
 from rest_framework.reverse import reverse
@@ -312,7 +311,7 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
             except SkipField:
                 pass
             else:
-                set_value(ret, field.source_attrs, validated_value)
+                ret[field.source] = validated_value
 
         if errors:
             raise exceptions.ValidationError(errors)

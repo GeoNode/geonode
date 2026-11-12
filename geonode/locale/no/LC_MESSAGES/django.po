@@ -5092,7 +5092,7 @@ msgstr ""
 msgid "Log in"
 msgstr ""
 
-msgid "Log in to an existing account"
+msgid "Log in to your account"
 msgstr ""
 
 #, python-format

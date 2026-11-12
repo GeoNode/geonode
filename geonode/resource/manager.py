@@ -25,6 +25,7 @@ import itertools
 
 from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
+from typing import Optional, Union
 
 from guardian.models import UserObjectPermission, GroupObjectPermission
 from guardian.shortcuts import assign_perm, get_anonymous_user
@@ -39,11 +40,13 @@ from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 
-
-from geonode.base.models import ResourceBase, LinkedResource
+from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links, create_link
+from geonode.base.models import ResourceBase, LinkedResource, ContactRole, UserGeoLimit, GroupGeoLimit
+from geonode.documents.tasks import create_document_thumbnail
+from geonode.metadata.manager import metadata_manager
+from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.thumbs.utils import ThumbnailAlgorithms
-from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
 from geonode.security.utils import (
     perms_as_set,
@@ -51,10 +54,17 @@ from geonode.security.utils import (
     skip_registered_members_common_group,
 )
 from geonode.security.registry import permissions_registry
+from django.contrib.gis.geos import Polygon
+from geonode.base.api.exceptions import InvalidResourceException
+from geonode.base.api.serializers import api_bbox_settable_resource_models
 
 from . import settings as rm_settings
-from .utils import update_resource, resourcebase_post_save
-from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links, create_link
+from .utils import (
+    update_resource,
+    resourcebase_post_save,
+    is_remote_resource,
+    infer_default_metadata,
+)
 
 from ..base import enumerations
 from ..security.utils import AdvancedSecurityWorkflowManager
@@ -123,6 +133,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         keywords: dict = {},
         custom: dict = {},
         notify: bool = True,
+        user: settings.AUTH_USER_MODEL = None,
     ) -> ResourceBase:
         """The method will update an existing 'resource_type' on the DB model and invoke the 'post save' triggers.
 
@@ -157,6 +168,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         created: bool = False,
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
+        **kwargs,
     ) -> bool:
         """Sets the permissions of a resource.
 
@@ -167,13 +179,23 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
     @abstractmethod
     def set_thumbnail(
-        self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True
+        self,
+        uuid: str,
+        /,
+        instance: ResourceBase = None,
+        overwrite: bool = True,
+        check_bbox: bool = True,
+        bbox: Optional[Union[list, tuple]] = None,
+        forced_crs: Optional[str] = None,
+        styles: Optional[list] = None,
+        background_zoom: Optional[int] = None,
+        map_thumb_from_bbox: bool = False,
     ) -> bool:
         """Allows to generate or re-generate the Thumbnail of a Resource."""
         pass
 
 
-class ResourceManager(ResourceManagerInterface):
+class BaseResourceManager(ResourceManagerInterface):
     def __init__(self, concrete_manager=None):
         self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
@@ -184,6 +206,56 @@ class ResourceManager(ResourceManagerInterface):
     def _get_instance(cls, uuid: str) -> ResourceBase:
         return ResourceBase.objects.filter(uuid=uuid).first()
 
+    def resolve_creation_owner(self, initial_user: settings.AUTH_USER_MODEL = None):
+        """
+        Resolve the owner for resource creation.
+
+        Returns the configured admin when auto-assignment is enabled and valid;
+        otherwise falls back to the first superuser or the uploader.
+        """
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            return initial_user
+
+        UserModel = get_user_model()
+        configured_username = getattr(settings, "RESOURCE_OWNERSHIP_ADMIN_USERNAME", "admin")
+        configured_owner = UserModel.objects.filter(username=configured_username).first()
+        if configured_owner and configured_owner.is_superuser:
+            return configured_owner
+
+        if configured_owner and not configured_owner.is_superuser:
+            logger.error(
+                f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' is not a superuser. "
+                "Falling back to the first available superuser for resource ownership assignment."
+            )
+        else:
+            logger.error(
+                f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' does not exist. "
+                "Falling back to the first available superuser for resource ownership assignment."
+            )
+
+        fallback_owner = UserModel.objects.filter(is_superuser=True).order_by("id").first()
+        if fallback_owner:
+            return fallback_owner
+
+        logger.error(
+            "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN is enabled but no superuser is available. "
+            "Falling back to the original uploader as owner."
+        )
+        return initial_user
+
+    def finalize_creation_permissions(
+        self,
+        instance: ResourceBase,
+        owner: settings.AUTH_USER_MODEL = None,
+    ) -> bool:
+        """
+        Finalize default permissions for newly created resources,
+        """
+        if not instance:
+            return False
+        instance.set_default_permissions(owner=owner or instance.owner, created=True)
+        return True
+
     def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
         _class = resource_type or ResourceBase
         _resources_queryset = _class.objects.filter(**filter)
@@ -193,18 +265,21 @@ class ResourceManager(ResourceManagerInterface):
         return _resources_queryset
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
             return self._concrete_resource_manager.exists(uuid, instance=_resource)
         return False
 
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         uuid = uuid or _resource.uuid
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
+                permissions_registry.delete_resource_permissions_cache(instance=_resource)
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
+                _resource.set_dirty_state()
                 try:
+
                     if isinstance(_resource.get_real_instance(), Dataset):
                         """
                         - Remove any associated style to the dataset, if it is not used by other datasets.
@@ -267,37 +342,61 @@ class ResourceManager(ResourceManagerInterface):
         if resource_type.objects.filter(uuid=uuid).exists():
             return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid4())
+        originator = defaults.get("owner", None)
+        resolved_owner = self.resolve_creation_owner(originator)
         resource_dict = {  # TODO: cleanup params and dicts
             k: v
             for k, v in defaults.items()
             if k not in ("data_title", "data_type", "description", "files", "link_type", "extension", "asset")
         }
+        if resolved_owner:
+            resource_dict["owner"] = resolved_owner
         _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
-            try:
-                # if files exist: create an Asset out of them and link it to the Resource
-                asset, link = (None, None)  # safe init in case of exception
-                if defaults.get("files", None):
-                    logger.debug(f"Found files when creating resource {_resource}: {defaults['files']}")
-                    asset, link = create_asset_and_link_dict(_resource, defaults, clone_files=True)
-                elif defaults.get("asset", None):
-                    logger.debug(f"Found asset when creating resource {_resource}: {defaults['asset']}")
-                    link = create_link(_resource, **defaults)
+            # One creation is one metadata change, by whoever is uploading: the owner may have
+            # been reassigned to an admin, which says nothing about who is doing this
+            with metadata_tracker(originator) as operation:
+                if operation:
+                    # The row is already there, carrying the defaults: taking the state now would
+                    # make them look pre-existing. A resource being created has no metadata yet
+                    operation.snapshot(_resource, dict)
+                try:
+                    # if files exist: create an Asset out of them and link it to the Resource
+                    asset, link = (None, None)  # safe init in case of exception
+                    if defaults.get("files", None):
+                        logger.debug(f"Found files when creating resource {_resource}: {defaults['files']}")
+                        asset, link = create_asset_and_link_dict(_resource, defaults, clone_files=True)
+                    elif defaults.get("asset", None):
+                        logger.debug(f"Found asset when creating resource {_resource}: {defaults['asset']}")
+                        link = create_link(_resource, **defaults)
 
-                with transaction.atomic():
-                    _resource.set_missing_info()
-                    _resource = self._concrete_resource_manager.create(
-                        uuid, resource_type=resource_type, defaults=resource_dict
+                    with transaction.atomic():
+                        _resource.set_missing_info()
+                        _resource = self._concrete_resource_manager.create(
+                            uuid, resource_type=resource_type, defaults=resource_dict
+                        )
+                    _resource.save()
+                    metadata_dict = infer_default_metadata(_resource.get_real_instance())
+                    # Store the resource creator as metadata Originator contact
+                    if originator:
+                        metadata_dict.setdefault("contacts", {}).setdefault(
+                            "originator",
+                            [{"id": str(originator.id), "label": originator.username}],
+                        )
+                    metadata_manager.update_schema_instance_partial(
+                        _resource,
+                        metadata_dict,
+                        user=None,  # who is creating the resource is told to the tracker, above
                     )
-                _resource.save()
-                resourcebase_post_save(_resource.get_real_instance())
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-            except Exception as e:
-                logger.exception(e)
-                rollback_asset_and_link(asset, link)  # we are not removing the Asset passed in defaults
-                self.delete(_resource.uuid, instance=_resource)
-                raise e
+                    resourcebase_post_save(_resource.get_real_instance())
+                    self.finalize_creation_permissions(_resource, owner=resolved_owner)
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                except Exception as e:
+                    logger.exception(e)
+                    rollback_asset_and_link(asset, link)  # we are not removing the Asset passed in defaults
+                    self.delete(_resource.uuid, instance=_resource)
+                    raise e
         return _resource
 
     def update(
@@ -312,113 +411,157 @@ class ResourceManager(ResourceManagerInterface):
         keywords: list = [],
         custom: dict = {},
         notify: bool = True,
-        extra_metadata: list = [],
+        user: settings.AUTH_USER_MODEL = None,
         *args,
         **kwargs,
     ) -> ResourceBase:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
-            _resource.set_processing_state(enumerations.STATE_RUNNING)
-            _resource.set_missing_info()
-            _resource.metadata_uploaded = metadata_uploaded
-            logger.debug(f"Look for xml and finalize Dataset metadata {_resource}")
-            try:
-                with transaction.atomic():
-                    if metadata_uploaded and xml_file:
-                        _md_file = None
-                        try:
-                            _md_file = storage_manager.open(xml_file, mode="r")
-                        except Exception as e:
-                            logger.exception(e)
-                            if os.path.exists(xml_file) and os.path.isfile(xml_file):
-                                _md_file = open(xml_file, mode="r")
-                        if _md_file:
-                            _md_file_content = _md_file.read()
-                            _resource.metadata_xml = _md_file_content
-                            _uuid, vals, regions, keywords, custom = parse_metadata(_md_file_content)
-                            if uuid and uuid != _uuid:
-                                raise ValidationError(
-                                    "The UUID identifier from the XML Metadata is different from the {_resource} one."
-                                )
-                            else:
-                                uuid = _uuid
-
-                    logger.debug(f"Update Dataset with information coming from XML File if available {_resource}")
-
-                    if not kwargs.get("store_spatial_files", True) and vals.get("files", []):
-                        vals.update({"files": []})
-
-                    _resource.save()
-                    _resource = update_resource(
-                        instance=_resource.get_real_instance(),
-                        regions=regions,
-                        keywords=keywords,
-                        vals=vals,
-                        extra_metadata=extra_metadata,
-                    )
-                    _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-
-                    # The following is only a demo proof of concept for a pluggable WF subsystem
-                    from geonode.resource.processing.models import ProcessingWorkflow
-
-                    _p = ProcessingWorkflow.objects.first()
-                    if _p and _p.is_enabled:
-                        for _task in _p.get_tasks():
-                            _task.execute(_resource)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-            except Exception as e:
-                logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                raise
-            finally:
+            # One update is one metadata change, however many saves it takes. Entered before any
+            # of them: set_missing_info() writes contacts of its own, which are part of the change
+            with metadata_tracker(user, resource=_resource):
+                _resource.set_processing_state(enumerations.STATE_RUNNING)
+                _resource.set_missing_info()
+                _resource.metadata_uploaded = metadata_uploaded
+                logger.debug(f"Look for xml and finalize Dataset metadata {_resource}")
                 try:
-                    _resource.save(notify=notify)
-                    resourcebase_post_save(_resource.get_real_instance(), kwargs={**kwargs, **custom})
-                    _resource.set_permissions(
-                        created=False,
-                        approval_status_changed=(
-                            vals is not None and any([x in vals for x in ["is_approved", "is_published"]])
-                        ),
-                        group_status_changed=(vals is not None and "group" in vals),
-                    )
-                    if kwargs.get("sld_file", False) and kwargs.get("sld_uploaded", False):
-                        self._concrete_resource_manager.set_style(
-                            method="",
-                            uuid=_resource.uuid,
-                            resource=_resource,
-                            sld_file=kwargs.get("sld_file", False),
-                            sld_uploaded=kwargs.get("sld_uploaded", False),
+                    with transaction.atomic():
+                        if metadata_uploaded and xml_file:
+                            _md_file = None
+                            try:
+                                _md_file = storage_manager.open(xml_file, mode="r")
+                            except Exception as e:
+                                logger.exception(e)
+                                if os.path.exists(xml_file) and os.path.isfile(xml_file):
+                                    _md_file = open(xml_file, mode="r")
+                            if _md_file:
+                                _md_file_content = _md_file.read()
+                                _resource.metadata_xml = _md_file_content
+                                _uuid, vals, regions, keywords, custom = parse_metadata(_md_file_content)
+                                if uuid and uuid != _uuid:
+                                    raise ValidationError(
+                                        "The UUID identifier from the XML Metadata is different from the {_resource} one."
+                                    )
+                                else:
+                                    uuid = _uuid
+
+                        logger.debug(f"Update Dataset with information coming from XML File if available {_resource}")
+
+                        if not kwargs.get("store_spatial_files", True) and vals.get("files", []):
+                            vals.update({"files": []})
+
+                        _resource.save()
+                        _resource = update_resource(
+                            instance=_resource.get_real_instance(),
+                            regions=regions,
+                            keywords=keywords,
+                            vals=vals,
                         )
-                        _resource.set_permissions()
-                    if _resource.state != enumerations.STATE_INVALID:
-                        _resource.set_processing_state(enumerations.STATE_PROCESSED)
+
+                        ji = custom.get("jsoninstance", None)
+                        if not ji:
+                            ji = infer_default_metadata(_resource.get_real_instance())
+                        metadata_manager.update_schema_instance_partial(_resource, ji, user=None)
+
+                        _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
+
+                        # The following is only a demo proof of concept for a pluggable WF subsystem
+                        from geonode.resource.processing.models import ProcessingWorkflow
+
+                        _p = ProcessingWorkflow.objects.first()
+                        if _p and _p.is_enabled:
+                            for _task in _p.get_tasks():
+                                _task.execute(_resource)
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 except Exception as e:
                     logger.exception(e)
+                    _resource.set_processing_state(enumerations.STATE_INVALID)
+                    raise
                 finally:
-                    _resource.clear_dirty_state()
+                    try:
+                        _resource.save(notify=notify)
+                        resourcebase_post_save(_resource.get_real_instance(), kwargs={**kwargs, **custom})
+                        _resource.set_permissions(
+                            created=False,
+                            approval_status_changed=(
+                                vals is not None and any([x in vals for x in ["is_approved", "is_published"]])
+                            ),
+                            group_status_changed=(vals is not None and "group" in vals),
+                        )
+                        if kwargs.get("sld_file", False) and kwargs.get("sld_uploaded", False):
+                            self._concrete_resource_manager.set_style(
+                                method="",
+                                uuid=_resource.uuid,
+                                resource=_resource,
+                                sld_file=kwargs.get("sld_file", False),
+                                sld_uploaded=kwargs.get("sld_uploaded", False),
+                            )
+                            _resource.set_permissions()
+                        if _resource.state != enumerations.STATE_INVALID:
+                            _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                    except Exception as e:
+                        logger.exception(e)
+                    finally:
+                        _resource.clear_dirty_state()
         return _resource
 
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
     ) -> ResourceBase:
+        """Clone a resource under a new pk/uuid, owned by `owner`.
+
+        Scalar/FK fields (title, abstract, license, ...) come along via copy.copy().
+        Everything else lives in a join table keyed by the old pk and needs re-linking by
+        hand: keywords/regions/tkeywords, contacts (ContactRole), geolimits (own new rows,
+        not shared with the source), linked resources, dataset attributes/maplayers, assets,
+        and the source's permission spec (re-applied after update(), which resets to defaults).
+        """
+        if owner is None:
+            raise ValueError("copy() requires an explicit 'owner': the user who triggered the clone")
         _resource = None
         if instance:
             try:
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
                     _resource = copy.copy(instance.get_real_instance())
-                    _resource.owner = owner or instance.get_real_instance().owner
+                    _resource.owner = owner
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
+                    # Ensure that the featured flag is set to False
+                    _resource.featured = False
                     try:
-                        # Avoid Integrity errors...
                         _resource.get_real_instance()._meta.get_field("name")
-                        _name = defaults.get("name", _resource.get_real_instance().name)
-                        _resource.get_real_instance().name = defaults["name"] = f"{_name}_{uuid1().hex[:8]}"
+                        if "name" in defaults:
+                            _resource.get_real_instance().name = defaults["name"]
+                        else:
+                            _name = _resource.get_real_instance().name
+                            _resource.get_real_instance().name = defaults["name"] = f"{_name}_{uuid1().hex[:8]}"
                     except FieldDoesNotExist:
                         if "name" in defaults:
                             defaults.pop("name")
                     _resource.save()
+                    _src = instance.get_real_instance()
+                    _dst = _resource.get_real_instance()
+                    # M2M fields live in join tables keyed by pk, not carried by copy.copy()
+                    for _field in ("keywords", "regions", "tkeywords"):
+                        getattr(_dst, _field).set(getattr(_src, _field).all())
+                    # contacts goes through ContactRole (has a "role" field), plain .set() doesn't work
+                    for _contact_role in ContactRole.objects.filter(resource=instance):
+                        ContactRole.objects.get_or_create(
+                            resource=_dst, contact=_contact_role.contact, role=_contact_role.role
+                        )
+                    # UserGeoLimit/GroupGeoLimit own a `resource` FK (CASCADE), reusing the source's
+                    # rows via .set() would tie the clone's limits to the source resource's lifetime
+                    for _geolimit in UserGeoLimit.objects.filter(resource=instance):
+                        _new_geolimit = UserGeoLimit.objects.create(
+                            user=_geolimit.user, resource=_dst, wkt=_geolimit.wkt
+                        )
+                        _dst.users_geolimits.add(_new_geolimit)
+                    for _geolimit in GroupGeoLimit.objects.filter(resource=instance):
+                        _new_geolimit = GroupGeoLimit.objects.create(
+                            group=_geolimit.group, resource=_dst, wkt=_geolimit.wkt
+                        )
+                        _dst.groups_geolimits.add(_new_geolimit)
                     for lr in LinkedResource.get_linked_resources(source=instance.pk, is_internal=False):
                         LinkedResource.objects.get_or_create(
                             source_id=_resource.pk, target_id=lr.target.pk, internal=False
@@ -450,15 +593,6 @@ class ResourceManager(ResourceManagerInterface):
                     if files:
                         to_update = {"files": files}
 
-                    assets_and_links = copy_assets_and_links(instance, target=_resource)
-                    # we're just merging all the files together: it won't work once we have multiple assets per resource
-                    # TODO: get the files from the proper Asset, or make the _concrete_resource_manager.copy use assets
-                    to_update = {}
-
-                    files = list(itertools.chain.from_iterable([asset.location for asset, _ in assets_and_links]))
-                    if files:
-                        to_update = {"files": files}
-
             except Exception as e:
                 logger.exception(e)
                 _resource = None
@@ -470,7 +604,10 @@ class ResourceManager(ResourceManagerInterface):
                     to_update.update(defaults)
                     # Refresh from DB
                     _resource.refresh_from_db()
-                    return self.update(_resource.uuid, _resource, vals=to_update)
+                    _resource = self.update(_resource.uuid, _resource, vals=to_update)
+                    _source_perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+                    self.set_permissions(_resource.uuid, instance=_resource, permissions=_source_perms)
+                    return _resource
                 except Exception as e:
                     logger.exception(e)
                 finally:
@@ -479,24 +616,40 @@ class ResourceManager(ResourceManagerInterface):
 
     @transaction.atomic
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
             if hasattr(self._concrete_resource_manager, method):
                 _method = getattr(self._concrete_resource_manager, method)
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
+    def transfer_ownership(self, instance, new_owner, previous_owner):
+        """
+        This method updates the resource’s ownership and adjusts permissions accordingly removing the previous owner's access and assigning it to the new owner.
+        """
+        try:
+            instance.set_dirty_state()
+            perms = permissions_registry.get_perms(instance=instance, include_virtual=False)
+            if previous_owner and not previous_owner.is_superuser:
+                perms["users"].pop(previous_owner, None)
+            self.set_permissions(instance.uuid, instance, owner=new_owner, permissions=perms)
+        except Exception as e:
+            logger.exception(e)
+        finally:
+            instance.clear_dirty_state()
+
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         """Remove object permissions on given resource.
         If is a layer removes the layer specific permissions then the
         resourcebase permissions.
         """
-        _resource = instance or ResourceManager._get_instance(uuid)
+
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
-                    logger.debug(f"Removing all permissions on {_resource}")
                     from geonode.layers.models import Dataset
 
                     _dataset = (
@@ -522,8 +675,16 @@ class ResourceManager(ResourceManagerInterface):
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
                         object_pk=_resource.id,
                     ).delete()
-                    if not self._concrete_resource_manager.remove_permissions(uuid, instance=_resource):
-                        raise Exception("Could not complete concrete manager operation successfully!")
+                    if is_remote_resource(_resource):
+                        # Remote resources live on external GeoServers, no GeoFence rules to remove
+                        logger.debug("Skipping remove_permissions for remote resource %s", _resource)
+                    else:
+                        success = self._concrete_resource_manager.remove_permissions(
+                            uuid,
+                            instance=_resource,
+                        )
+                        if not success:
+                            raise Exception(f"Could not remove permissions for local resource {_resource}")
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
@@ -543,9 +704,11 @@ class ResourceManager(ResourceManagerInterface):
         created: bool = False,
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
+        **kwargs,
     ) -> bool:
-        _resource = instance or ResourceManager._get_instance(uuid)
+        _resource = instance or BaseResourceManager._get_instance(uuid)
         if _resource:
+            permissions_registry.delete_resource_permissions_cache(instance=_resource)
             _resource = _resource.get_real_instance()
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             logger.debug(f"Finalizing (permissions and notifications) on resource {instance}")
@@ -589,6 +752,7 @@ class ResourceManager(ResourceManagerInterface):
                         approval_status_changed=approval_status_changed,
                         group_status_changed=group_status_changed,
                         include_virtual=False,
+                        **kwargs,
                     )
 
                     """
@@ -797,15 +961,20 @@ class ResourceManager(ResourceManagerInterface):
                         )
 
                     # Fixup GIS Backend Security Rules Accordingly
-                    if not self._concrete_resource_manager.set_permissions(
-                        uuid,
-                        instance=_resource,
-                        owner=owner,
-                        permissions=permissions_registry.get_perms(instance=_resource),
-                        created=created,
-                    ):
-                        # This might not be a severe error. E.g. for datasets outside of local GeoServer
-                        logger.error(Exception("Could not complete concrete manager operation successfully!"))
+                    if is_remote_resource(_resource):
+                        # Remote resources live on external GeoServers, no GeoFence sync needed
+                        logger.debug("Skipping set_permissions for remote resource %s", _resource)
+                    else:
+                        # Local resources need GeoFence / GeoServer permission sync
+                        success = self._concrete_resource_manager.set_permissions(
+                            uuid,
+                            instance=_resource,
+                            owner=owner,
+                            permissions=permissions_registry.get_perms(instance=_resource),
+                            created=created,
+                        )
+                        if not success:
+                            logger.warning("Could not sync permissions to GeoServer for resource %s", _resource)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
@@ -824,25 +993,82 @@ class ResourceManager(ResourceManagerInterface):
         check_bbox: bool = True,
         thumbnail=None,
         thumbnail_algorithm=ThumbnailAlgorithms.fit,
+        bbox: Optional[Union[list, tuple]] = None,
+        forced_crs: Optional[str] = None,
+        styles: Optional[list] = None,
+        background_zoom: Optional[int] = None,
+        map_thumb_from_bbox: bool = False,
     ) -> bool:
-        _resource = instance or ResourceManager._get_instance(uuid)
-        if _resource:
+        _resource = instance or BaseResourceManager._get_instance(uuid)
+        if _resource and _resource.can_set_thumbnail(thumbnail):
             try:
                 with transaction.atomic():
                     if thumbnail:
                         file_name = _generate_thumbnail_name(_resource.get_real_instance())
                         _resource.save_thumbnail(file_name, thumbnail, thumbnail_algorithm=thumbnail_algorithm)
                     else:
-                        if instance and isinstance(instance.get_real_instance(), Document):
-                            if overwrite or not instance.thumbnail_url:
-                                create_document_thumbnail.apply((instance.id,))
+                        if instance:
+                            doc = instance.get_real_instance()
+                            if isinstance(doc, Document):
+                                if not doc.is_local:
+                                    logger.info(f"Skipping thumbnail generation for remote document: {doc.doc_url}")
+                                    return False
+                                if overwrite or not instance.thumbnail_url:
+                                    create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(
-                            uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox
+                            uuid,
+                            instance=_resource,
+                            overwrite=overwrite,
+                            check_bbox=check_bbox,
+                            bbox=bbox,
+                            forced_crs=forced_crs,
+                            styles=styles,
+                            background_zoom=background_zoom,
+                            map_thumb_from_bbox=map_thumb_from_bbox,
                         )
                 return True
             except Exception as e:
                 logger.exception(e)
         return False
 
+    def user_can_copy(self, instance: ResourceBase, /, user=None) -> bool:
+        """
+        Whether ``user`` is allowed to clone ``instance``.
+        """
+        if user is None or not user.has_perm("base.add_resourcebase"):
+            return False
+        _resource = instance.get_real_instance()
+        if not _resource.is_copyable:
+            return False
+        if _resource.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+            if user == _resource.owner:
+                return True
+            remote_service = getattr(_resource, "remote_service", None)
+            has_auth_config = _resource.auth_config_id or (remote_service and remote_service.auth_config_id)
+            if not has_auth_config and user.is_superuser:
+                return True
+            else:
+                return False
+        return True
 
-resource_manager = ResourceManager()
+    def _apply_extent_and_role_defaults(
+        self, instance: ResourceBase, extent: dict = None, user: settings.AUTH_USER_MODEL = None
+    ) -> None:
+        if extent and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models:
+            srid = extent.get("srid", "EPSG:4326")
+            coords = extent.get("coords")
+            if not coords:
+                logger.warning("BBOX was sent, but no coords were supplied. Skipping")
+            else:
+                try:
+                    Polygon.from_bbox(coords)
+                except Exception as e:
+                    logger.exception(e)
+                    raise InvalidResourceException("The standard bbox provided is invalid")
+                instance.set_bbox_polygon(coords, srid)
+
+        if user:
+            for field in instance.ROLE_BASED_MANAGED_FIELDS:
+                if not user.can_change_resource_field(instance, field):
+                    logger.debug("User can perform the action, the default value is set")
+                    setattr(user, field, getattr(ResourceBase, field).field.default)

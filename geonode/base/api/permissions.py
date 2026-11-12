@@ -30,12 +30,12 @@ from geonode.security.permissions import (
     EDIT_PERMISSIONS,
     VIEW_PERMISSIONS,
 )
-from distutils.util import strtobool
 from geonode.security.utils import get_users_with_perms, get_visible_resources
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
 from geonode.security.registry import permissions_registry
+from geonode.utils import strtobool
 
 logger = logging.getLogger(__name__)
 
@@ -191,6 +191,19 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
             return True
 
         return False
+
+
+class IsGroupMember(permissions.BasePermission):
+    """
+    Least-privilege check for group membership listings.
+    """
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated)
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return isinstance(obj, GroupProfile) and (obj.user_is_role(user, "member") or obj.user_is_role(user, "manager"))
 
 
 class ResourceBasePermissionsFilter(BaseFilterBackend):

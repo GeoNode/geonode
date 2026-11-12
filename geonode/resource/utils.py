@@ -30,13 +30,13 @@ from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from django.utils.module_loading import import_string
+from django.contrib.auth import get_user_model
 
 from geonode.assets.utils import get_default_asset
 from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
 from ..base.models import (
-    ExtraMetadata,
     Link,
     License,
     ResourceBase,
@@ -141,7 +141,6 @@ def update_resource(
     regions: list = [],
     keywords: list = [],
     vals: dict = {},
-    extra_metadata: list = [],
 ):
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
@@ -170,15 +169,18 @@ def update_resource(
     if vals:
         for key, value in vals.items():
             if key == "spatial_representation_type":
-                defaults[key] = SpatialRepresentationType.objects.filter(identifier=value).first() if value else None
+                value = SpatialRepresentationType.objects.filter(identifier=value).first() if value else None
             elif key == "topic_category":
                 value, created = TopicCategory.objects.get_or_create(
                     identifier=value, defaults={"description": "", "gn_description": value}
                 )
                 key = "category"
-                defaults[key] = value
-            else:
-                defaults[key] = value
+            elif key == "maintenance_frequency":
+                if value not in dict(enumerations.UPDATE_FREQUENCIES).keys():
+                    logger.warning(f"Bad frequency parsed: {value}")
+                    value = "unknown"
+
+            defaults[key] = value
 
     contact_roles = {
         contact_role.name: defaults.pop(contact_role.name, getattr(instance, contact_role.name))
@@ -256,30 +258,47 @@ def update_resource(
         raise
 
     # Check for "remote services" availability
-    from ..services.models import Service
-    from ..harvesting.models import HarvestableResource
+    if is_remote_resource(instance):
+        from ..services.models import Service
+        from ..harvesting.models import HarvestableResource
 
-    if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
-        _h = HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).get().harvester
-        if Service.objects.filter(harvester=_h).exists():
-            _s = Service.objects.filter(harvester=_h).get()
-            _to_update = {
-                "remote_typename": _s.name,
-            }
-            if hasattr(instance, "remote_service"):
-                _to_update["remote_service"] = _s
-            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**_to_update)
+        if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
+            _h = (
+                HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid)
+                .select_related("harvester")
+                .get()
+                .harvester
+            )
+            if Service.objects.filter(harvester=_h).exists():
+                _s = Service.objects.filter(harvester=_h).select_related("auth_config").get()
+                _to_update = {
+                    "remote_typename": _s.name,
+                }
+                if hasattr(instance, "remote_service"):
+                    _to_update["remote_service"] = _s
+                if not instance.auth_config_id and _s.auth_config:
+                    _to_update["auth_config"] = _s.auth_config
+                instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**_to_update)
 
     # Refresh from DB
     instance.refresh_from_db()
 
-    if extra_metadata:
-        instance.metadata.all().delete()
-        for _m in extra_metadata:
-            new_m = ExtraMetadata.objects.create(resource=instance, metadata=_m)
-            instance.metadata.add(new_m)
-
     return instance
+
+
+def infer_default_metadata(instance):
+    title = getattr(instance, "title", None)
+    if not title:
+        title = getattr(instance, "name", None)
+
+    if not title and isinstance(instance, Document):
+        asset = get_default_asset(instance)
+        if asset and asset.location:
+            title = os.path.basename(asset.location[0])
+
+    abstract = getattr(instance, "abstract", None) or str(_("No abstract provided"))
+
+    return {"title": str(title or ""), "abstract": str(abstract or "")}
 
 
 def call_storers(instance, custom={}):
@@ -316,7 +335,7 @@ def get_alternate_name(instance):
                 _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
                 result = f"{_ws}:{instance.name}"
             else:
-                if hasattr(instance, "sourcetype") and instance.sourcetype != enumerations.SOURCE_TYPE_LOCAL:
+                if is_remote_resource(instance):
                     _ws = instance.workspace
                 else:
                     # we are not dealing with a service-related instance
@@ -333,7 +352,7 @@ def document_post_save(instance, *args, **kwargs):
     asset = get_default_asset(instance)
     if asset:
         _, extension = os.path.splitext(os.path.basename(asset.location[0]))
-        instance.extension = extension[1:]
+        instance.extension = extension[1:].lower()
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, "DOCUMENT_TYPE_MAP", {}))
         if doc_type_map is None:
@@ -470,15 +489,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     if instance:
         instance = call_storers(instance.get_real_instance(), kwargs.get("custom", {}))
-        if hasattr(instance, "abstract") and not getattr(instance, "abstract", None):
-            instance.abstract = _("No abstract provided")
-        if hasattr(instance, "title") and not getattr(instance, "title", None) or getattr(instance, "title", "") == "":
-            asset = get_default_asset(instance)
-            files = asset.location if asset else []
-            if isinstance(instance, Document) and files:
-                instance.title = os.path.basename(files[0])
-            if hasattr(instance, "name") and getattr(instance, "name", None):
-                instance.title = instance.name
         if (
             hasattr(instance, "alternate")
             and not getattr(instance, "alternate", None)
@@ -492,3 +502,53 @@ def resourcebase_post_save(instance, *args, **kwargs):
             dataset_post_save(instance, *args, **kwargs)
 
         metadata_post_save(instance, *args, **kwargs)
+
+
+def resolve_resource_owner(initial_user):
+    """
+    Resolve the owner to assign during resource creation.
+    """
+    if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+        return initial_user
+
+    UserModel = get_user_model()
+    configured_username = getattr(settings, "RESOURCE_OWNERSHIP_ADMIN_USERNAME", "admin")
+    configured_owner = UserModel.objects.filter(username=configured_username).first()
+    if configured_owner and configured_owner.is_superuser:
+        return configured_owner
+
+    if configured_owner and not configured_owner.is_superuser:
+        logger.error(
+            f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' is not a superuser. "
+            "Falling back to the first available superuser for resource ownership assignment."
+        )
+    else:
+        logger.error(
+            f"RESOURCE_OWNERSHIP_ADMIN_USERNAME='{configured_username}' does not exist. "
+            "Falling back to the first available superuser for resource ownership assignment."
+        )
+
+    fallback_owner = UserModel.objects.filter(is_superuser=True).order_by("id").first()
+    if fallback_owner:
+        return fallback_owner
+
+    logger.error(
+        "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN is enabled but no superuser is available. "
+        "Falling back to the original uploader as owner."
+    )
+    return initial_user
+
+
+def is_remote_resource(resource):
+    """Whether the resource data lives on a remote service, i.e. not in the local GeoServer.
+
+    Keyed on sourcetype: subtype describes the data, and harvesters set it to the remote's own
+    value, so it cannot answer this question (see #14524).
+    """
+    if getattr(resource, "sourcetype", None) == enumerations.SOURCE_TYPE_REMOTE:
+        return True
+    if getattr(resource, "remote_service_id", None):
+        # Left over from before #14524: the resource is remote but was not flagged as such.
+        logger.warning("Resource %s has a remote service but sourcetype is not REMOTE", resource)
+        return True
+    return False

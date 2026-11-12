@@ -57,3 +57,24 @@ def get_thesaurus_localized_label(tkeyword):
     if not translation:
         return tkeyword.alt_label
     return translation.first()
+
+
+@register.filter
+def with_localized_labels(keywords):
+    lang = get_language()
+    lang = remove_country_from_languagecode(lang)
+
+    keyword_list = list(keywords)
+    if not keyword_list:
+        return []
+
+    keyword_ids = [k.id for k in keyword_list]
+
+    labels = ThesaurusKeywordLabel.objects.filter(keyword_id__in=keyword_ids, lang=lang).values("keyword_id", "label")
+
+    labels_map = {item["keyword_id"]: item["label"] for item in labels}
+
+    for k in keyword_list:
+        k.localized_label = labels_map.get(k.id, k.alt_label)
+
+    return keyword_list

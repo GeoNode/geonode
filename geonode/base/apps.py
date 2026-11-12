@@ -24,6 +24,7 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
     name = "geonode.base"
+    default_auto_field = "django.db.models.BigAutoField"
     NOTIFICATIONS = (
         (
             "request_download_resourcebase",
@@ -35,4 +36,17 @@ class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
             _("Request resource change"),
             _("Owner has requested permissions to modify a resource"),
         ),
+        (
+            "resourcebase_created",
+            _("Resource is created"),
+            _("Resource is created"),
+        ),
     )
+
+    def ready(self):
+        """Finalize setup"""
+        from geonode.base.signals import connect_signals
+
+        connect_signals()
+
+        super(BaseAppConfig, self).ready()

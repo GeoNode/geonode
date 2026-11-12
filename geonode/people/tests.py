@@ -16,8 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from datetime import datetime, timedelta
 import django
+from django.test import RequestFactory
 from django.test.utils import override_settings
+from django.utils import translation
 from mock import MagicMock, PropertyMock, patch
 from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupMember, GroupProfile
@@ -35,9 +38,13 @@ from geonode.layers import utils
 from geonode.layers.models import Dataset
 from geonode.people import profileextractors
 
-from geonode.base.populate_test_data import all_public, create_models, remove_models
-from django.db.models import Q
+from geonode.base.populate_test_data import all_public, create_models, create_single_dataset, remove_models
 from geonode.security.registry import permissions_registry
+from geonode.people.hashers import SHA1PasswordHasher
+from geonode.people.hashers import PBKDF2SHA1WrappedSHA1PasswordHasher
+from geonode.base.middleware import ProfileLanguageMiddleware
+from guardian.shortcuts import assign_perm
+from geonode.documents.models import Document
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
@@ -218,6 +225,70 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             perm_spec = permissions_registry.get_perms(instance=layer)
             self.assertTrue(user not in perm_spec["users"])
 
+    def test_user_subresources_respect_request_user_visibility(self):
+        caller = get_user_model().objects.create_user(username="caller", password="caller")
+        target = get_user_model().objects.create_user(username="target", password="target")
+
+        public_group, _ = Group.objects.get_or_create(name="user-subresources-public-group")
+        public_profile, _ = GroupProfile.objects.get_or_create(
+            group=public_group,
+            defaults={
+                "slug": "user-subresources-public-group",
+                "title": "User Subresources Public Group",
+                "access": "public",
+            },
+        )
+        public_profile.access = "public"
+        public_profile.save()
+        GroupMember.objects.get_or_create(group=public_profile, user=caller)
+        GroupMember.objects.get_or_create(group=public_profile, user=target)
+
+        private_group, _ = Group.objects.get_or_create(name="user-subresources-private-group")
+        private_profile, _ = GroupProfile.objects.get_or_create(
+            group=private_group,
+            defaults={
+                "slug": "user-subresources-private-group",
+                "title": "User Subresources Private Group",
+                "access": "private",
+            },
+        )
+        private_profile.access = "private"
+        private_profile.save()
+        GroupMember.objects.get_or_create(group=private_profile, user=target)
+
+        resource = Document.objects.create(
+            title="Target Private Document",
+            owner=target,
+            resource_type="document",
+        )
+        resource.set_permissions({"users": {}, "groups": {}})
+        assign_perm("base.view_resourcebase", target, resource.get_self_resource())
+
+        self.client.login(username="caller", password="caller")
+
+        resources_url = f"{reverse('users-list')}/{target.pk}/resources/"
+        groups_url = f"{reverse('users-list')}/{target.pk}/groups/"
+
+        response = self.client.get(resources_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(str(resource.uuid), [item["uuid"] for item in response.json()["resources"]])
+
+        response = self.client.get(groups_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(private_profile.pk, [item["pk"] for item in response.json()])
+
+        assign_perm("base.view_resourcebase", caller, resource.get_self_resource())
+        GroupMember.objects.get_or_create(group=private_profile, user=caller)
+        private_group.user_set.add(caller)
+
+        response = self.client.get(resources_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(str(resource.uuid), [item["uuid"] for item in response.json()["resources"]])
+
+        response = self.client.get(groups_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(private_profile.pk, [item["pk"] for item in response.json()])
+
     def test_forgot_username(self):
         url = reverse("forgot_username")
 
@@ -288,6 +359,38 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             content = content.decode("UTF-8")
         self.assertIn("Profile of bobby", content)
         self.assertIn(bobby.voice, content)
+
+    def test_profile_edit_rejects_disallowed_characters(self):
+        admin = get_user_model().objects.get(username="admin")
+        previous_last_name = admin.last_name
+        payload = "{{7*6}}"
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        response = self.client.post(
+            reverse("profile_edit", args=[admin.username]),
+            data={
+                "first_name": admin.first_name,
+                "last_name": payload,
+                "email": admin.email,
+                "organization": admin.organization or "",
+                "profile": admin.profile or "",
+                "position": admin.position or "",
+                "voice": admin.voice or "",
+                "fax": admin.fax or "",
+                "delivery": admin.delivery or "",
+                "city": admin.city or "",
+                "area": admin.area or "",
+                "zipcode": admin.zipcode or "",
+                "country": admin.country or "",
+                "language": admin.language,
+                "keywords": "",
+                "timezone": admin.timezone or "",
+            },
+        )
+
+        self.assertContains(response, "This field contains characters that are not allowed.")
+        admin.refresh_from_db()
+        self.assertEqual(admin.last_name, previous_last_name)
 
     def _facebook_extractor_init(self):
         data = {
@@ -609,10 +712,10 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         self.assertEqual(response.json()["user"]["first_name"], "Robert Baratheon")
 
-    @override_settings(ACCOUNT_EMAIL_REQUIRED=True)
+    @override_settings(ACCOUNT_SIGNUP_FIELDS=["email*", "username*", "password1*", "password2*"])
     def test_users_api_empty_email(self):
         """
-        If the environment variable ACCOUNT_EMAIL_REQUIRED is set to True,
+        If the email field is required in ACCOUNT_SIGNUP_FIELDS,
         the email will be mandatory in the payload.
         """
         data = {
@@ -1134,6 +1237,34 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         for group in self.group_profiles:
             self.assertTrue(f"{group.title}" in response.json()["success"])
 
+    def test_transfer_resource_with_non_admin_user(self):
+        """
+        non-admin user wants to transfer resources to target
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+
+        # Login as non-admin (non-admin should not be able to transfer resources)
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+
+        # check bobbys resources
+        resource_to_transfer = ResourceBase.objects.filter(owner=bobby).first()
+        second_resource = create_single_dataset("test for api", owner=bobby)
+        new_owner = get_user_model().objects.exclude(username__in=["bobby", "AnonymousUser"]).first()
+
+        # call api to transfer bobby resource to the other user
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={
+                "newOwner": new_owner.pk,
+                "currentOwner": bobby.pk,
+                "resources": [resource_to_transfer.pk, second_resource.pk],
+            },
+        )
+
+        # Since Bobby is not an admin, the response should be 403 Forbidden
+        self.assertEqual(response.status_code, 403)
+
     def test_transfer_resources_all(self):
         """
         user wants to transfer resources to target
@@ -1142,15 +1273,17 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         norman = get_user_model().objects.get(username="norman")
         # group = GroupProfile.objects.get(slug="bar")
 
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
         prior_bobby_resources = bobby_resources.all()
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": norman.id}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"currentOwner": bobby.id, "newOwner": norman.id},
         )
         # check that bobby owns the resources no more
         self.assertFalse(bobby_resources.exists())
@@ -1166,15 +1299,17 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         bobby = get_user_model().objects.get(username="bobby")
         invalid_user_id = get_user_model().objects.last().id + 1
 
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
         prior_bobby_resources = bobby_resources.all()
         self.assertTrue(bobby_resources.exists())
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby}/transfer_resources", data={"owner": invalid_user_id}
+            path=f"{reverse('users-list')}/{bobby}/transfer_resources",
+            data={"currentOwner": bobby.id, "newOwner": invalid_user_id},
         )
         # response should be 404
         self.assertEqual(response.status_code, 404)
@@ -1184,71 +1319,14 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # and no change has happened to them
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
 
-    def test_transfer_resources_default(self):
-        """
-        user wants to transfer resources to target
-        """
-        bobby = get_user_model().objects.get(username="bobby")
-        admin = get_user_model().objects.get(username="admin")
-
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
-
-        # check bobbys resources
-        bobby_resources = ResourceBase.objects.filter(owner=bobby)
-        prior_bobby_resources = bobby_resources.all()
-        self.assertTrue(bobby_resources.exists())
-        # call api
-        response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": "DEFAULT"}
-        )
-        self.assertTrue(response.status_code == 200)
-        # check that bobby owns the resources no more
-        self.assertFalse(bobby_resources.exists())
-        # check that the resources have been transfered to admin
-        admin_resources = ResourceBase.objects.filter(owner=admin).all()
-        self.assertTrue(set(prior_bobby_resources).issubset(set(admin_resources)))
-
-    def test_transfer_resources_to_missing_default(self):
-        """
-        user wants to transfer resources to principal,
-        but a principal account is missing
-        """
-        bobby = get_user_model().objects.get(username="bobby")
-        admin = get_user_model().objects.get(username="admin")
-
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.client.force_login(bobby)
-        self.assertTrue(bobby.is_authenticated)
-        # removal of admin accounts
-        admin.is_superuser = False
-        admin.is_staff = False
-        admin.save()
-        self.assertFalse(get_user_model().objects.filter(Q(is_superuser=True) | Q(is_staff=True)).exists())
-
-        # check bobbys resources
-        bobby_resources = ResourceBase.objects.filter(owner=bobby)
-        prior_bobby_resources = bobby_resources.all()
-        self.assertTrue(bobby_resources.exists())
-        # call api
-        response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": "DEFAULT"}
-        )
-        self.assertTrue(response.status_code == 500)
-        self.assertEqual(response.data, "Principal User not found")
-        # check that bobby still owns the resources
-        later_bobby_resources = bobby_resources.all()
-        # check that the resources havent changed
-        self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
-
     def test_transfer_resources_to_self(self):
         """
         user wants to transfer resources to self but should be unable to
         """
         bobby = get_user_model().objects.get(username="bobby")
 
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
 
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
@@ -1257,7 +1335,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         # call api
         response = self.client.post(
-            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={"owner": bobby.pk}
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"previousOwner": bobby.pk, "newOwner": bobby.pk},
         )
         self.assertTrue(response.status_code == 400)
         self.assertEqual(response.data, "Cannot reassign to self")
@@ -1271,18 +1350,232 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         user wants to transfer resources to target
         """
         bobby = get_user_model().objects.get(username="bobby")
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        self.assertTrue(bobby.is_authenticated)
+
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
         # check bobbys resources
         bobby_resources = ResourceBase.objects.filter(owner=bobby)
         prior_bobby_resources = bobby_resources.all()
         self.assertTrue(bobby_resources.exists())
-
         # call api
         response = self.client.post(path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources", data={})
-        # response should be 404
-        self.assertEqual(response.status_code, 404)
+        # a missing newOwner is a bad request, not a missing object
+        self.assertEqual(response.status_code, 400)
         # check that bobby still owns the resources
         self.assertTrue(bobby_resources.exists())
         later_bobby_resources = ResourceBase.objects.filter(owner=bobby).all()
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
+
+    def test_transfer_resources_without_current_owner(self):
+        """
+        currentOwner is optional: it defaults to the user the resources are read from.
+        Sent as JSON, so `resources` is absent rather than an empty list.
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        norman = get_user_model().objects.get(username="norman")
+
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        bobby_resources = ResourceBase.objects.filter(owner=bobby)
+        prior_bobby_resources = set(bobby_resources.all())
+        self.assertTrue(bobby_resources.exists())
+
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"newOwner": norman.id},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(bobby_resources.exists())
+        self.assertTrue(prior_bobby_resources.issubset(set(ResourceBase.objects.filter(owner=norman).all())))
+
+    def test_transfer_resource_subset(self):
+        """
+        user wants to transfer resources to target
+        """
+
+        bobby = get_user_model().objects.get(username="bobby")
+
+        # check bobbys resources
+        resource_to_transfer = ResourceBase.objects.filter(owner=bobby).first()
+        second_resource = create_single_dataset("test for api", owner=bobby)
+        new_owner = get_user_model().objects.exclude(username__in=["bobby", "AnonymousUser"]).first()
+
+        # login as admin user
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        # Call the API again as admin to transfer Bobby's resources
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={
+                "newOwner": new_owner.pk,
+                "currentOwner": bobby.pk,
+                "resources": [resource_to_transfer.pk, second_resource.pk],
+            },
+        )
+        # response should be 200
+        self.assertEqual(response.status_code, 200)
+
+        resource_to_transfer.refresh_from_db()
+        second_resource.refresh_from_db()
+        # Check that bobby does not own the resource anymore
+        self.assertTrue(resource_to_transfer.owner != bobby)
+        self.assertTrue(second_resource.owner != bobby)
+        # since the payload say "default"
+        self.assertTrue(resource_to_transfer.owner == new_owner)
+        self.assertTrue(second_resource.owner == new_owner)
+
+    def test_migrate_sha1_passwords(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="sha1user", password="password")
+        # Manually hash the password using SHA1 and save it directly to the database
+        hasher = SHA1PasswordHasher()
+        encoded_password = hasher.encode("password", "salt")
+        User.objects.filter(pk=user.pk).update(password=encoded_password)
+        user.refresh_from_db()
+        self.assertTrue(user.password.startswith("sha1"))
+        # forward function logic on migration to pbkdf2sha1_wrapped_sha1
+        new_hasher = PBKDF2SHA1WrappedSHA1PasswordHasher()
+        algorithm, salt, sha1_hash = user.password.split("$", 2)
+        user.password = new_hasher.encode_sha1_hash(sha1_hash, salt)
+        user.save(update_fields=["password"])
+        user.refresh_from_db()
+        self.assertFalse(user.password.startswith("sha1"))
+        self.assertTrue(user.password.startswith("pbkdf2sha1_wrapped_sha1"))
+        # Check that the user can still log in with their original password
+        self.assertTrue(user.check_password("password"))
+        # after checking it should be migrated to default hash
+        self.assertTrue(user.password.startswith("pbkdf2_sha1"))
+
+    def test_language_switcher_sets_session_override(self):
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it", "next": "/"},
+            follow=False,
+        )
+        self.assertEqual(response.status_code, 302)
+        session = self.client.session
+        self.assertEqual(session["language_override"], "it")
+
+    def test_authenticated_user_language_switch_updates_session_and_db(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it", "next": "/"},
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.client.session["language_override"], "it")
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "it")
+
+    @override_settings(
+        LANGUAGES=(
+            ("en-us", "English"),
+            ("it-it", "Italiano"),
+        ),
+    )
+    def test_authenticated_user_language_switch_stores_profile_code_from_runtime_code(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it-it", "next": "/"},
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.client.session["language_override"], "it")
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "it")
+
+    @override_settings(
+        LANGUAGES=(
+            ("en-us", "English"),
+            ("it-it", "Italiano"),
+        ),
+    )
+    def test_profile_language_middleware_uses_runtime_language_code(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "it"
+
+        request = RequestFactory().get("/")
+        request.user = user
+        request.LANGUAGE_CODE = "en-us"
+        request.session = {
+            "config": {
+                "configuration": {
+                    "read_only": False,
+                    "maintenance": False,
+                },
+                "expiration": (datetime.utcnow() + timedelta(seconds=60)).isoformat(),
+            }
+        }
+
+        try:
+            ProfileLanguageMiddleware(lambda request: None).process_request(request)
+            self.assertEqual(request.LANGUAGE_CODE, "it-it")
+        finally:
+            translation.deactivate()
+
+    def test_logout_and_next_login_keep_updated_db_language(self):
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        self.client.post("/i18n/setlang/", data={"language": "fr", "next": "/"})
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "fr")
+        self.assertEqual(self.client.session.get("language_override"), "fr")
+
+        self.client.logout()
+        self.client.login(username="bobby", password="bob")
+
+        user.refresh_from_db()
+        self.assertEqual(user.language, "fr")
+
+    @patch("geonode.people.views.Configuration.load")
+    def test_language_switch_does_not_update_profile_when_read_only(self, mock_config_load):
+        config = MagicMock()
+        config.read_only = True
+        # We should define mainenance, otherwise, the set_language view is blocked by the MaintenanceMiddleware
+        config.maintenance = False
+        mock_config_load.return_value = config
+
+        user = get_user_model().objects.get(username="bobby")
+        user.language = "en"
+        user.save(update_fields=["language"])
+
+        self.client.login(username="bobby", password="bob")
+
+        response = self.client.post(
+            "/i18n/setlang/",
+            data={"language": "it-it", "next": "/"},
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        # Session is updated, so the language switch can still apply for the current session.
+        self.assertEqual(self.client.session.get("language_override"), "it")
+
+        # DB is not updated because the instance is read-only.
+        user.refresh_from_db()
+        self.assertEqual(user.language, "en")

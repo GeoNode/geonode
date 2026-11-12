@@ -16,9 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 import shutil
+
 from django.test import TestCase, override_settings
-from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
 from geonode.upload import project_dir
@@ -26,11 +27,10 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
+from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
-from django_celery_results.models import TaskResult
-from geonode.assets.handlers import asset_handler_registry
 
-from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
+from geonode.upload.celery_tasks import UpdateTaskClass
 
 
 class TestGPKGHandler(TestCase):
@@ -41,6 +41,7 @@ class TestGPKGHandler(TestCase):
         super().setUpClass()
         cls.handler = GPKGFileHandler()
         cls.valid_gpkg = f"{project_dir}/tests/fixture/valid.gpkg"
+        cls.multiple_layer = f"{project_dir}/tests/fixture/multiple_layers.gpkg"
         cls.invalid_gpkg = f"{project_dir}/tests/fixture/invalid.gpkg"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_gpkg}
@@ -68,13 +69,6 @@ class TestGPKGHandler(TestCase):
         )
         self.assertEqual(len(self.handler.TASKS["copy"]), 5)
         self.assertTupleEqual(expected, self.handler.TASKS["copy"])
-
-    def test_is_valid_should_raise_exception_if_the_gpkg_is_invalid(self):
-        with self.assertRaises(InvalidGeopackageException) as _exc:
-            self.handler.is_valid(files=self.invalid_files, user=self.user)
-
-        self.assertIsNotNone(_exc)
-        self.assertTrue("Error layer: INVALID LAYER_name" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
@@ -122,21 +116,8 @@ class TestGPKGHandler(TestCase):
 
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_single_message_error_handler(self):
-        # lets copy the file to the temporary folder
-        # later will be removed
+        # Copy the file to the temporary folder
         shutil.copy(self.valid_gpkg, "/tmp")
-
-        user = get_user_model().objects.first()
-        asset_handler = asset_handler_registry.get_default_handler()
-
-        asset = asset_handler.create(
-            title="Original",
-            owner=user,
-            description=None,
-            type="gpkg",
-            files=["/tmp/valid.gpkg"],
-            clone_files=False,
-        )
 
         exec_id = orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
@@ -147,23 +128,74 @@ class TestGPKGHandler(TestCase):
                 "skip_existing_layer": True,
                 "store_spatial_file": False,
                 "handler_module_path": str(self.handler),
-                "asset_id": asset.id,
-                "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
             },
         )
 
-        started_entry = TaskResult.objects.create(task_id=str(exec_id), status="STARTED", task_args=str(exec_id))
+        celery_task_handler = UpdateTaskClass()
+        celery_task_handler.name = "funct1"
 
-        celery_task_handler = SingleMessageErrorHandler()
         """
         The progress evaluation will raise and exception
         """
+        # Simulate layer creation for the test
+        layer_key = "layer_1"
+        kwargs = {"kwargs": {"layer_key": layer_key}}
+        action = "test_action"
+        handler_module_path = str(self.handler)
+        fake_task_id = "test-task-id"  # simulate a Celery task ID
+
+        # Simulate task failure
         celery_task_handler.on_failure(
             exc=Exception("exception raised"),
-            task_id=started_entry.task_id,
-            args=[str(exec_id), "other_args"],
-            kwargs={},
+            task_id=fake_task_id,
+            args=(str(exec_id), handler_module_path, action),
+            kwargs=kwargs,
             einfo=None,
         )
 
-        self.assertEqual("FAILURE", TaskResult.objects.get(task_id=str(exec_id)).status)
+        # Fetch the ExecutionRequest object from DB
+        exec_request_obj = ExecutionRequest.objects.get(exec_id=exec_id)
+
+        # Assert overall execution status
+        assert exec_request_obj.status == "failed"
+
+        # Assert task-level status
+        tasks_status = exec_request_obj.tasks
+        assert tasks_status[layer_key]["funct1"] == "FAILED"
+
+        # Assert the error was recorded
+        errors = exec_request_obj.output_params.get("errors", [])
+        assert any("exception raised" in str(e) for e in errors)
+
+    def test_select_valid_layers(self):
+        """
+        The function should return only the datasets with a geometry
+        The other one are discarded
+        """
+        # Copy the file to the temporary folder
+        shutil.copy(self.multiple_layer, "/tmp")
+
+        exec_id = orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="funct1",
+            step="step",
+            action="replace",
+            input_params={
+                "files": {"base_file": "/tmp/multiple_layers.gpkg"},
+                "skip_existing_layer": True,
+                "store_spatial_file": False,
+                "handler_module_path": str(self.handler),
+            },
+        )
+
+        all_layers = GPKGFileHandler().open_source_file({"base_file": ("/tmp/multiple_layers.gpkg")})
+
+        with self.assertRaises(Exception) as exp:
+            GPKGFileHandler()._select_valid_layers(all_layers, execution_id=str(exec_id))
+
+        self.assertIn(
+            "For Upsert and Replace, only one layer is allowed in the GPKG",
+            exp.exception.args[0],
+        )
+
+        os.remove("/tmp/multiple_layers.gpkg")

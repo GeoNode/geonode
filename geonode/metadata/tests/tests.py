@@ -17,20 +17,24 @@
 #
 #########################################################################
 
+import copy
 import os
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 from uuid import uuid4
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.test import RequestFactory
+from django.test import RequestFactory, TestCase, override_settings
 from rest_framework import status
 from django.utils.translation import gettext as _
 
 from rest_framework.test import APITestCase
+
+from geonode.metadata.handlers.multilang import MultiLangHandler
 from geonode.metadata.settings import MODEL_SCHEMA
-from geonode.metadata.manager import metadata_manager
+from geonode.metadata.manager import metadata_manager, CACHE_KEY_SCHEMA
+from geonode.metadata.handlers.meta import CleanupHandler
 from geonode.metadata.api.views import (
     ProfileAutocomplete,
     MetadataLinkedResourcesAutocomplete,
@@ -38,9 +42,14 @@ from geonode.metadata.api.views import (
     MetadataHKeywordAutocomplete,
     MetadataGroupAutocomplete,
 )
-from geonode.metadata.settings import METADATA_HANDLERS
+from geonode.metadata.settings import (
+    INITIAL_METADATA_HANDLERS,
+    METADATA_HANDLERS,
+    FINAL_METADATA_HANDLERS,
+)
 from geonode.base.models import ResourceBase
 from geonode.settings import PROJECT_ROOT
+from geonode.base.i18n import I18nCache, i18nCache
 from geonode.base.models import (
     TopicCategory,
     License,
@@ -51,13 +60,16 @@ from geonode.base.models import (
     Thesaurus,
 )
 from geonode.groups.models import GroupProfile, GroupMember
+from geonode.metadata.models import SparseField
 
 
 class MetadataApiTests(APITestCase):
 
     def setUp(self):
+        i18nCache.clear()
+
         # set Json schemas
-        self.model_schema = MODEL_SCHEMA
+        self.model_schema = copy.deepcopy(MODEL_SCHEMA)
         self.lang = None
 
         self.test_user_1 = get_user_model().objects.create_user(
@@ -89,8 +101,8 @@ class MetadataApiTests(APITestCase):
         # Setup the database
         TopicCategory.objects.create(identifier="cat1", gn_description="fake category 1")
         TopicCategory.objects.create(identifier="cat2", gn_description="fake category 2")
-        License.objects.create(identifier="license1", name="fake license 1")
-        License.objects.create(identifier="license2", name="fake license 2")
+        self.license1 = License.objects.create(identifier="license1", name="fake license 1")
+        self.license2 = License.objects.create(identifier="license2", name="fake license 2")
         Region.objects.create(code="fake_code_1", name="fake name 1")
         Region.objects.create(code="fake_code_2", name="fake name 2")
         HierarchicalKeyword.objects.create(name="fake_keyword_1", slug="fake keyword 1")
@@ -218,6 +230,7 @@ class MetadataApiTests(APITestCase):
 
         url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
         fake_payload = {"field": "value"}
+        lang = "en"
 
         # set the returned value of the mocked update_schema_instance with an empty dict
         errors = {}
@@ -228,7 +241,7 @@ class MetadataApiTests(APITestCase):
         self.assertJSONEqual(
             response.content, {"message": "The resource was updated successfully", "extraErrors": errors}
         )
-        mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
+        mock_update_schema_instance.assert_called_with(self.resource, ANY, lang)
 
     @patch("geonode.metadata.manager.metadata_manager.update_schema_instance")
     @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
@@ -239,18 +252,31 @@ class MetadataApiTests(APITestCase):
 
         url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
         fake_payload = {"field": "value"}
+        lang = "en"
 
         # Set fake errors
         errors = {"fake_error_1": "Field 'title' is required", "fake_error_2": "Invalid value for 'type'"}
         mock_update_schema_instance.return_value = errors
 
         response = self.client.put(url, data=fake_payload, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertJSONEqual(
             response.content,
             {"message": "Some errors were found while updating the resource", "extraErrors": errors},
         )
-        mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
+        mock_update_schema_instance.assert_called_with(self.resource, ANY, lang)
+
+    @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
+    def test_put_patch_schema_instance_with_bad_payload(self, mock_has_permission):
+        """
+        Test the PUT method with an invalid json payload
+        """
+
+        url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
+        fake_payload = "I_AM_BAD"
+
+        response = self.client.put(url, data=fake_payload, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
 
     @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
     def test_resource_not_found(self, mock_has_permission):
@@ -336,8 +362,8 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license1.id, "label": _("fake license 1")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query(self):
         """
@@ -350,8 +376,8 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license1.id, "label": _("fake license 1")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query_one_match(self):
         """
@@ -364,7 +390,7 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
-        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+        self.assertIn({"id": self.license2.id, "label": _("fake license 2")}, results)
 
     def test_license_autocomplete_with_query_no_match(self):
         """
@@ -785,9 +811,10 @@ class MetadataApiTests(APITestCase):
 
     def test_registry_and_add_handler(self):
 
-        self.assertEqual(set(metadata_manager.handlers.keys()), set(METADATA_HANDLERS.keys()))
-        for handler_id in METADATA_HANDLERS.keys():
-            self.assertIn(handler_id, metadata_manager.handlers)
+        # no equality check: an external module may have registered its own handlers on top
+        for declared in (INITIAL_METADATA_HANDLERS, METADATA_HANDLERS, FINAL_METADATA_HANDLERS):
+            for handler_id in declared:
+                self.assertIn(handler_id, metadata_manager.handlers)
 
     @patch(
         "geonode.metadata.manager.metadata_manager.root_schema",
@@ -823,43 +850,49 @@ class MetadataApiTests(APITestCase):
             self.handler3.update_schema.assert_called()
 
     @patch("geonode.metadata.manager.metadata_manager.build_schema")
-    @patch("cachetools.FIFOCache.get")
-    # Mock FIFOCache's __setitem__ method (cache setting)
-    @patch("cachetools.FIFOCache.__setitem__")
-    def test_get_schema(self, mock_setitem, mock_get, mock_build_schema):
+    @patch.object(I18nCache, "set")
+    @patch.object(I18nCache, "get_entry")
+    def test_get_schema(self, mock_get_entry, mock_set, mock_build_schema):
 
         lang = "en"
         expected_schema = self.fake_schema
+        thesaurus_date = "some_date_value"
 
-        # Case when the schema is already in cache
-        mock_get.return_value = expected_schema
+        # Schema is already cached
+        mock_get_entry.return_value = (thesaurus_date, expected_schema)
         result = metadata_manager.get_schema(lang)
 
-        # Assert that the schema was retrieved from the cache
-        mock_get.assert_called_once_with(str(lang), None)
+        mock_get_entry.assert_called_once_with(str(lang), CACHE_KEY_SCHEMA)
         mock_build_schema.assert_not_called()
+        mock_set.assert_not_called()
         self.assertEqual(result, expected_schema)
 
-        # Reset mock calls to test the second case
-        mock_get.reset_mock()
+        # Reset mock calls
+        mock_get_entry.reset_mock()
         mock_build_schema.reset_mock()
-        mock_setitem.reset_mock()
+        mock_set.reset_mock()
 
         # Case when the schema is not in cache
-        mock_get.return_value = None
+        mock_get_entry.return_value = (thesaurus_date, None)
         mock_build_schema.return_value = expected_schema
+
         result = metadata_manager.get_schema(lang)
 
-        mock_get.assert_called_once_with(str(lang), None)
+        mock_get_entry.assert_called_once_with(str(lang), CACHE_KEY_SCHEMA)
         mock_build_schema.assert_called_once_with(lang)
-        mock_setitem.assert_called_once_with(str(lang), expected_schema)
+        mock_set.assert_called_once_with(str(lang), CACHE_KEY_SCHEMA, expected_schema, thesaurus_date)
         self.assertEqual(result, expected_schema)
 
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
-    def test_build_schema_instance_no_errors(self, mock_get_schema):
+    @patch("geonode.metadata.manager.metadata_manager._init_schema_context")
+    def test_build_schema_instance_no_errors(self, mock_init_schema_context, mock_get_schema):
 
         self.lang = "en"
         mock_get_schema.return_value = self.fake_schema
+
+        # Create and return a fake context from the mocked method
+        fake_context = {"some": "context"}
+        mock_init_schema_context.return_value = fake_context
 
         with patch.dict(metadata_manager.handlers, self.fake_handlers, clear=True):
 
@@ -871,9 +904,15 @@ class MetadataApiTests(APITestCase):
             instance = metadata_manager.build_schema_instance(self.resource, self.lang)
 
             # Assert that the handlers were called and instance was built correctly
-            self.handler1.get_jsonschema_instance.assert_called_once_with(self.resource, "field1", {}, {}, self.lang)
-            self.handler2.get_jsonschema_instance.assert_called_once_with(self.resource, "field2", {}, {}, self.lang)
-            self.handler3.get_jsonschema_instance.assert_called_once_with(self.resource, "field3", {}, {}, self.lang)
+            self.handler1.get_jsonschema_instance.assert_called_once_with(
+                self.resource, "field1", fake_context, {}, self.lang
+            )
+            self.handler2.get_jsonschema_instance.assert_called_once_with(
+                self.resource, "field2", fake_context, {}, self.lang
+            )
+            self.handler3.get_jsonschema_instance.assert_called_once_with(
+                self.resource, "field3", fake_context, {}, self.lang
+            )
 
             self.assertEqual(instance["field1"], {"data from fake handler 1"})
             self.assertEqual(instance["field2"], {"data from fake handler 2"})
@@ -883,13 +922,14 @@ class MetadataApiTests(APITestCase):
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
     def test_update_schema_instance_no_errors(self, mock_get_schema):
 
-        # json_instance is the payload from the client.
-        # In this test is used only to call the update_schema_instance
-        json_instance = {"field1": "new_value1", "new_field2": "new_value2"}
+        # Fake request with data and user
+        mock_request = MagicMock()
+        mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
+        mock_request.user = self.test_user_1
+
+        expected_context = {"user": self.test_user_1, "errors": {}}
 
         mock_get_schema.return_value = self.fake_schema
-        # Mock the save method
-        self.resource.save = MagicMock()
 
         with patch.dict(metadata_manager.handlers, self.fake_handlers, clear=True):
 
@@ -899,33 +939,35 @@ class MetadataApiTests(APITestCase):
             self.handler3.update_resource.return_value = None
 
             # Call the update_schema_instance method
-            errors = metadata_manager.update_schema_instance(self.resource, json_instance)
+            errors = metadata_manager.update_schema_instance(self.resource, mock_request)
 
             # Assert that handlers were called to update the resource with the correct data
-            self.handler1.update_resource.assert_called_once_with(self.resource, "field1", json_instance, {}, {})
-            self.handler2.update_resource.assert_called_once_with(self.resource, "field2", json_instance, {}, {})
-            self.handler3.update_resource.assert_called_once_with(self.resource, "field3", json_instance, {}, {})
+            self.handler1.update_resource.assert_called_once_with(
+                self.resource, "field1", mock_request.data, expected_context, {}
+            )
+            self.handler2.update_resource.assert_called_once_with(
+                self.resource, "field2", mock_request.data, expected_context, {}
+            )
+            self.handler3.update_resource.assert_called_once_with(
+                self.resource, "field3", mock_request.data, expected_context, {}
+            )
 
             # Assert no errors were raised
             self.assertEqual(errors, {})
 
-            # Check that resource.save() is called
-            self.resource.save.assert_called_once()
-
-            # Assert that there were no extra errors in the response
-            self.assertNotIn("extraErrors", errors)
-
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
-    def test_update_schema_instance_with_handler_error(self, mock_get_schema):
+    @patch("geonode.metadata.manager.MetadataHandler.localize_message")
+    def test_update_schema_instance_with_handler_error(self, mock_localize_message, mock_get_schema):
 
-        # json_instance is the payload from the client.
-        # In this test is used only to call the update_schema_instance
-        json_instance = {}
+        # Fake request with data and user
+        mock_request = MagicMock()
+        mock_request.data = {"field1": "new_value1", "new_field2": "new_value2"}
+        mock_request.user = self.test_user_1
 
         mock_get_schema.return_value = self.fake_schema
 
-        # Mock the save method
-        self.resource.save = MagicMock()
+        # Mock localize_message to return a custom error message
+        mock_localize_message.side_effect = lambda context, msg_id, data: f"Error in handler: {data['exc']}"
 
         with patch.dict(metadata_manager.handlers, self.fake_handlers, clear=True):
 
@@ -935,51 +977,240 @@ class MetadataApiTests(APITestCase):
             self.handler3.update_resource.side_effect = None
 
             # Call the method under test
-            errors = metadata_manager.update_schema_instance(self.resource, json_instance)
+            errors = metadata_manager.update_schema_instance(self.resource, mock_request)
+
+            # Ensure errors contain the expected error message for field2
+            self.assertIn("__errors", errors)
+            # Check if the specific error related to "field2" is in the error message
+            self.assertIn("Error in handler: Error in handler2", errors["__errors"][0])
 
             # Assert that update_resource was called for each handler
             self.handler1.update_resource.assert_called()
             self.handler2.update_resource.assert_called()
             self.handler3.update_resource.assert_called()
 
-            # Assert that resource.save() was called
-            self.resource.save.assert_called_once()
 
-            # Verify that errors are collected for handler2
-            self.assertIn("field2", errors)
-            self.assertEqual(errors["field2"]["__errors"], ["Error while processing this field: Error in handler2"])
+class SparseFieldApiTests(APITestCase):
+    """Tests for the sparse field GET/PUT endpoints"""
 
-            # Verify that no other errors were added for handler1 and handler3
-            self.assertNotIn("field1", errors)
-            self.assertNotIn("field3", errors)
+    def setUp(self):
+        i18nCache.clear()
+
+        self.owner = get_user_model().objects.create_user(
+            "sparse_owner", "sparse_owner@fakemail.com", "sparse_owner_password", is_active=True
+        )
+        self.other_user = get_user_model().objects.create_user(
+            "sparse_other", "sparse_other@fakemail.com", "sparse_other_password", is_active=True
+        )
+        self.resource = ResourceBase.objects.create(title="Sparse Test Resource", uuid=str(uuid4()), owner=self.owner)
+
+    def tearDown(self):
+        SparseField.objects.filter(resource=self.resource).delete()
+        self.resource.delete()
+        self.owner.delete()
+        self.other_user.delete()
+
+    def _url(self, pk, sparsekey):
+        return reverse("metadata-sparse_field", kwargs={"pk": pk, "sparsekey": sparsekey})
+
+    # --- GET tests ---
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_get_existing_sparse_field(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="my_key", value="my_value")
+        url = self._url(self.resource.pk, "my_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["value"], "my_value")
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_get_missing_sparse_field_returns_404(self, mock_perm):
+        url = self._url(self.resource.pk, "nonexistent_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=False)
+    def test_get_no_read_permission_returns_404(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="my_key", value="my_value")
+        url = self._url(self.resource.pk, "my_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_nonexistent_resource_returns_404(self):
+        url = self._url(99999, "some_key")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # --- PUT tests ---
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_put_creates_new_sparse_field(self, mock_get_schema, mock_perm):
+        mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
+        url = self._url(self.resource.pk, "custom_key")
+        response = self.client.put(url, data={"value": "custom_value"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        field = SparseField.objects.get(resource=self.resource, name="custom_key")
+        self.assertEqual(field.value, "custom_value")
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_put_updates_existing_sparse_field(self, mock_get_schema, mock_perm):
+        mock_get_schema.return_value = {"properties": {"title": {}}}
+        SparseField.objects.create(resource=self.resource, name="existing_key", value="old_value")
+        url = self._url(self.resource.pk, "existing_key")
+        response = self.client.put(url, data={"value": "new_value"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        field = SparseField.objects.get(resource=self.resource, name="existing_key")
+        self.assertEqual(field.value, "new_value")
+
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=False)
+    def test_put_no_read_permission_returns_404(self, mock_perm):
+        url = self._url(self.resource.pk, "custom_key")
+        response = self.client.put(url, data={"value": "val"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_put_nonexistent_resource_returns_404(self):
+        url = self._url(99999, "some_key")
+        response = self.client.put(url, data={"value": "val"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @patch("geonode.metadata.manager.metadata_manager.get_schema")
-    def test_update_schema_instance_with_db_error(self, mock_get_schema):
+    def test_put_schema_conflict_returns_409(self, mock_get_schema):
+        mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
+        with patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True):
+            url = self._url(self.resource.pk, "title")
+            response = self.client.put(url, data={"value": "some_title"}, format="json")
+            self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
-        # json_instance is the payload from the client.
-        # In this test is used only to call the update_schema_instance
-        json_instance = {}
+    def test_put_no_write_permission_returns_403(self):
+        def has_view_only_perm(user, resource, perm):
+            return perm == "view_resourcebase"
 
-        mock_get_schema.return_value = self.fake_schema
+        with patch(
+            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", side_effect=has_view_only_perm
+        ):
+            with patch(
+                "geonode.metadata.manager.metadata_manager.get_schema",
+                return_value={"properties": {"title": {}}},
+            ):
+                url = self._url(self.resource.pk, "custom_key")
+                response = self.client.put(url, data={"value": "val"}, format="json")
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # Mock save method with an exception
-        self.resource.save = MagicMock(side_effect=Exception("Error during the resource save"))
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_put_sparse_key_too_long_returns_400(self, mock_perm):
+        long_key = "k" * 65
+        url = self._url(self.resource.pk, long_key)
+        response = self.client.put(url, data={"value": "val"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        with patch.dict(metadata_manager.handlers, self.fake_handlers, clear=True):
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_put_value_too_long_returns_400(self, mock_perm):
+        long_value = "v" * 1025
+        url = self._url(self.resource.pk, "custom_key")
+        response = self.client.put(url, data={"value": long_value}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-            self.handler1.update_resource.side_effect = None
-            self.handler2.update_resource.side_effect = None
-            self.handler3.update_resource.side_effect = None
+    # --- DELETE tests ---
 
-            # Call the method under test
-            errors = metadata_manager.update_schema_instance(self.resource, json_instance)
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_delete_existing_sparse_field(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        url = self._url(self.resource.pk, "del_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(SparseField.objects.filter(resource=self.resource, name="del_key").exists())
 
-            # Assert that update_resource was called for each handler
-            self.handler1.update_resource.assert_called()
-            self.handler2.update_resource.assert_called()
-            self.handler3.update_resource.assert_called()
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True)
+    def test_delete_missing_sparse_field_returns_404(self, mock_perm):
+        url = self._url(self.resource.pk, "nonexistent_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-            # Assert that save raised an error and was recorded
-            self.resource.save.assert_called_once()
-            self.assertIn("__errors", errors)
-            self.assertEqual(errors["__errors"], ["Error while saving the resource: Error during the resource save"])
+    @patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=False)
+    def test_delete_no_read_permission_returns_404(self, mock_perm):
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        url = self._url(self.resource.pk, "del_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_nonexistent_resource_returns_404(self):
+        url = self._url(99999, "some_key")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_no_write_permission_returns_403(self):
+        def has_view_only_perm(user, resource, perm):
+            return perm == "view_resourcebase"
+
+        SparseField.objects.create(resource=self.resource, name="del_key", value="del_value")
+        with patch(
+            "geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", side_effect=has_view_only_perm
+        ):
+            url = self._url(self.resource.pk, "del_key")
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @patch("geonode.metadata.manager.metadata_manager.get_schema")
+    def test_delete_schema_conflict_returns_409(self, mock_get_schema):
+        mock_get_schema.return_value = {"properties": {"title": {}, "abstract": {}}}
+        with patch("geonode.security.registry.PermissionsHandlerRegistry.user_has_perm", return_value=True):
+            url = self._url(self.resource.pk, "title")
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+
+class CleanupHandlerTests(TestCase):
+    def setUp(self):
+        self.handler = CleanupHandler()
+        self.owner = get_user_model().objects.create_user(
+            "cleanup_owner", "cleanup_owner@fakemail.com", "cleanup_owner_password", is_active=True
+        )
+        self.resource = ResourceBase.objects.create(title="Cleanup Test Resource", uuid=str(uuid4()), owner=self.owner)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_pre_deserialization_sanitizes_nested_values_and_logs_warnings(self):
+        instance = {
+            "title": "<i>xss</i><img src=/ onerror=\"alert('XSS');\" />",
+            "details": {
+                "summary": "plain text",
+                "body": "<script>alert(1)</script>safe",
+            },
+            "items": ["ok", "<b>bad</b>"],
+            "count": 3,
+        }
+
+        with self.assertLogs("geonode.metadata.handlers.meta", level="WARNING") as cm:
+            context = {"errors": {}}
+            self.handler.pre_deserialization(self.resource, {}, instance, partial=set(), context=context)
+
+        self.assertEqual(instance["title"], "xss")
+        self.assertEqual(instance["details"]["body"], "safe")
+        self.assertEqual(instance["items"][1], "bad")
+        self.assertEqual(instance["count"], 3)
+
+        logs = "\n".join(cm.output)
+        self.assertIn("Sanitized potentially unsafe metadata field 'title'", logs)
+        self.assertIn("Sanitized potentially unsafe metadata field 'details.body'", logs)
+        self.assertIn("Sanitized potentially unsafe metadata field 'items.[1]'", logs)
+
+        self.assertIn("title", context["errors"])
+        self.assertIn("__errors", context["errors"]["title"])
+        self.assertIn("metadata_error_sanitized", context["errors"]["title"]["__errors"])
+
+    @override_settings(LANGUAGE_CODE="en", MULTILANG_FIELDS=["title"])
+    def test_pre_deserialization_copies_sanitized_default_lang_value(self):
+        instance = {
+            "title_multilang_en": '<span>Hello</span><img src=x onerror="alert(1)" />',
+        }
+        context = {"errors": {}}
+
+        ml_handler = MultiLangHandler()
+        with self.assertLogs("geonode.metadata.handlers.meta", level="WARNING") as cm:
+            self.handler.pre_deserialization(self.resource, {}, instance, partial=set(), context=context)
+            ml_handler.pre_deserialization(self.resource, {}, instance, partial=set(), context=context)
+
+        self.assertEqual(instance["title_multilang_en"], "Hello")
+        self.assertEqual(instance["title"], "Hello")
+        self.assertIn("Sanitized potentially unsafe metadata field 'title_multilang_en'", "\n".join(cm.output))

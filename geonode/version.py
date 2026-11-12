@@ -52,6 +52,9 @@ def version(request, version=None):
     from django.http import HttpResponse
     from django.utils.html import escape
 
+    if not request.user.is_superuser:
+        return HttpResponse(status=403)
+
     _v = get_version(version=version)
     return HttpResponse(escape(_v))
 

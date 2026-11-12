@@ -30,12 +30,14 @@ from django.db import models
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-
+from django.core.cache import caches
 from geonode import celery_app
 
 from .config import get_setting
 
 logger = logging.getLogger(__name__)
+
+service_cache = caches["services"]
 
 
 class Harvester(models.Model):
@@ -368,7 +370,7 @@ class AsynchronousHarvestingSession(models.Model):
             raise RuntimeError("Invalid selection")
         self.status = self.STATUS_PENDING
         self.save()
-        task_signature.apply_async(args=(), expiration=30)
+        task_signature.apply_async(args=())
 
     def abort(self):
         """Abort a pending or on-going session."""

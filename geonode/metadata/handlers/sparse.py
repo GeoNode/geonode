@@ -20,19 +20,23 @@ import copy
 import json
 import logging
 
+from rest_framework.reverse import reverse
+
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.models import SparseField
 
-logger = logging.getLogger(__name__)
+from geonode.base.i18n import get_localized_tkeywords, labelResolver
 
+logger = logging.getLogger(__name__)
 
 CONTEXT_ID = "sparse"
 
 
 class SparseFieldRegistry:
 
-    sparse_fields = {}
+    def __init__(self):
+        self.sparse_fields = {}
 
     def register(self, field_name: str, schema: dict, after: str = None, init_func=None):
         self.sparse_fields[field_name] = {"schema": schema, "after": after, "init_func": init_func}
@@ -49,55 +53,97 @@ class SparseHandler(MetadataHandler):
     Handles sparse in fields in the SparseField table
     """
 
-    def _recurse_localization(self, context, schema, lang):
-        self._localize_subschema_label(context, schema, lang, "title")
-        self._localize_subschema_label(context, schema, lang, "description")
+    def __init__(self, **kwargs):
+        self.registry = kwargs.get("registry", sparse_field_registry)
+
+    def _recurse_localization(self, context, schema, lang, field_name=None):
+        self._localize_subschema_labels(context, schema, lang, field_name)
 
         match schema["type"]:
             case "object":
-                for subschema in schema["properties"].values():
-                    self._recurse_localization(context, subschema, lang)
+                for prop_name, subschema in schema["properties"].items():
+                    self._recurse_localization(context, subschema, lang, prop_name)
             case "array":
-                self._recurse_localization(context, schema["items"], lang)
+                self._recurse_localization(context, schema["items"], lang, None)
             case _:
                 pass
 
+        # some heuristics for finding stuff to be localized
+        for sub in (
+            "then",
+            "else",
+        ):
+            properties = schema.get(sub, {}).get("properties", {})
+            for prop_name, subschema in properties.items():
+                self._recurse_localization(context, subschema, lang, prop_name)
+        for item in schema.get("oneOf", []):
+            if title := item.get("title", None):
+                item["title"] = labelResolver.gettext(title, lang)
+
+    def _recurse_thesauri_autocomplete(self, d, lang):
+        if isinstance(d, dict):
+            # Check if target_key is in the current dict
+            if thesaurus_id := d.get("geonode:thesaurus", None):
+                d.setdefault("ui:options", {})["geonode-ui:autocomplete"] = reverse(
+                    "metadata_autocomplete_tkeywords", kwargs={"thesaurusid": thesaurus_id}
+                )
+            elif thesaurus_id := d.get("geonode:thesaurus-embed", None):
+                self._add_thesaurus_options(d, thesaurus_id, lang)
+
+            # Recurse into each value
+            for value in d.values():
+                self._recurse_thesauri_autocomplete(value, lang)
+        elif isinstance(d, list):
+            # Recurse into each item of the list
+            for item in d:
+                self._recurse_thesauri_autocomplete(item, lang)
+
+    def _add_thesaurus_options(self, d, thesaurus_id, lang):
+        d["oneOf"] = [
+            {"const": keyword["about"], "title": keyword["label"] or keyword["default"]}
+            for keyword in get_localized_tkeywords(lang, thesaurus_id)
+        ]
+        self._add_oneof_null_option(d)
+
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
-        for field_name, field_info in sparse_field_registry.fields().items():
+        for field_name, field_info in self.registry.fields().items():
             subschema = copy.deepcopy(field_info["schema"])
-            self._recurse_localization(context, subschema, lang)
+            self._recurse_localization(context, subschema, lang, field_name)
+            self._recurse_thesauri_autocomplete(subschema, lang)
             self._add_subschema(jsonschema, field_name, subschema, after_what=field_info["after"])
 
             # add the handler info to the dictionary if it doesn't exist
             if "geonode:handler" not in subschema:
                 subschema.update({"geonode:handler": "sparse"})
 
-            # # perform further specific initializations
-            # if init_func := field_info["init_func"]:
-            #     logger.debug(f"Running init for sparse field {field_name}")
-            #     init_func(field_name, subschema, lang)
+            # perform further specific initializations
+            if init_func := field_info["init_func"]:
+                logger.debug(f"Running init for sparse field {field_name}")
+                init_func(field_name, subschema, jsonschema, lang)
 
         return jsonschema
 
     def load_serialization_context(self, resource, jsonschema: dict, context: dict):
-        logger.debug(f"Preloading sparse fields {sparse_field_registry.fields().keys()}")
+        logger.debug(f"Preloading sparse fields {self.registry.fields().keys()}")
         context[CONTEXT_ID] = {
-            "fields": {
-                f.name: f.value for f in SparseField.get_fields(resource, names=sparse_field_registry.fields().keys())
-            },
+            "fields": {f.name: f.value for f in SparseField.get_fields(resource, names=self.registry.fields().keys())},
             "schema": jsonschema,
         }
 
     @staticmethod
-    def _check_type(declared, checked):
-        return declared == checked or (type(declared) is list and checked in declared)
+    def get_sparse_field(context, fieldname):
+        return context[CONTEXT_ID]["fields"].get(fieldname, None)
+
+    @staticmethod
+    def set_sparse_field(context, fieldname, value):
+        context[CONTEXT_ID]["fields"][fieldname] = value
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
-        field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
         field_value = context[CONTEXT_ID]["fields"].get(field_name, None)
-
-        is_nullable = self._check_type(field_type, "null")
+        subschema = context[CONTEXT_ID]["schema"]["properties"][field_name]
+        is_nullable = self._is_nullable(subschema)
+        field_type = subschema["type"]
 
         if field_name not in context[CONTEXT_ID]["fields"] and not is_nullable:
             raise UnsetFieldException()
@@ -147,11 +193,10 @@ class SparseHandler(MetadataHandler):
         context[CONTEXT_ID] = {"schema": jsonschema}
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-
         bare_value = json_instance.get(field_name, None)
-        field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
-
-        is_nullable = self._check_type(field_type, "null")
+        subschema = context[CONTEXT_ID]["schema"]["properties"][field_name]
+        field_type = subschema["type"]
+        is_nullable = self._is_nullable(subschema)
 
         if self._check_type(field_type, "string"):
             field_value = bare_value
@@ -160,14 +205,32 @@ class SparseHandler(MetadataHandler):
                 field_value = str(float(bare_value)) if bare_value is not None else None
             except ValueError as e:
                 logger.warning(f"Error parsing sparse field '{field_name}'::'{field_type}'='{bare_value}': {e}")
-                self._set_error(errors, [field_name], f"Error parsing number '{bare_value}'")
+                self._set_error(
+                    errors,
+                    [field_name],
+                    self.localize_message(
+                        context,
+                        "metadata_sparse_error_parse",
+                        {"fieldname": field_name, "type": "number", "value": bare_value},
+                    ),
+                )
+
                 return
         elif self._check_type(field_type, "integer"):
             try:
                 field_value = str(int(bare_value)) if bare_value is not None else None
             except ValueError as e:
                 logger.warning(f"Error parsing sparse field '{field_name}'::'{field_type}'='{bare_value}': {e}")
-                self._set_error(errors, [field_name], f"Error parsing integer '{bare_value}'")
+                self._set_error(
+                    errors,
+                    [field_name],
+                    self.localize_message(
+                        context,
+                        "metadata_sparse_error_parse",
+                        {"fieldname": field_name, "type": "integer", "value": bare_value},
+                    ),
+                )
+
                 return
         elif field_type == "array":
             field_value = json.dumps(bare_value) if bare_value is not None else "[]"
@@ -175,7 +238,13 @@ class SparseHandler(MetadataHandler):
             field_value = json.dumps(bare_value) if bare_value is not None else "{}"
         else:
             logger.warning(f"Unhandled type '{field_type}' for sparse field '{field_name}'")
-            self._set_error(errors, [field_name], f"Unhandled type {field_type}. Contact your administrator")
+            self._set_error(
+                errors,
+                [field_name],
+                self.localize_message(
+                    context, "metadata_sparse_error_type", {"fieldname": field_name, "type": field_type}
+                ),
+            )
             return
 
         try:
@@ -186,8 +255,16 @@ class SparseHandler(MetadataHandler):
             elif is_nullable:
                 SparseField.objects.filter(resource=resource, name=field_name).delete()
             else:
-                self._set_error(errors, [field_name], f"Empty value not stored for field '{field_name}'")
+                self._set_error(
+                    errors,
+                    [field_name],
+                    self.localize_message(context, "metadata_error_empty_field", {"fieldname": field_name}),
+                )
                 logger.debug(f"Not setting null value for {field_name}")
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-            self._set_error(errors, [field_name], f"Error setting value: {e}")
+            self._set_error(
+                errors,
+                [field_name],
+                self.localize_message(context, "metadata_error_store", {"fieldname": field_name, "exc": e}),
+            )

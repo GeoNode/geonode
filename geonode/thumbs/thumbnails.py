@@ -41,7 +41,16 @@ logger = logging.getLogger(__name__)
 
 
 # this is the original implementation of create_gs_thumbnail()
-def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
+def create_gs_thumbnail_geonode(
+    instance,
+    overwrite=False,
+    check_bbox=False,
+    bbox: Optional[Union[List, Tuple]] = None,
+    forced_crs: Optional[str] = None,
+    styles: Optional[List] = None,
+    background_zoom: Optional[int] = None,
+    map_thumb_from_bbox: bool = False,
+):
     """
     Create a thumbnail with a GeoServer request.
     """
@@ -50,7 +59,12 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     create_thumbnail(
         instance,
         wms_version=wms_version,
+        bbox=bbox,
+        forced_crs=forced_crs,
+        styles=styles,
         overwrite=overwrite,
+        background_zoom=background_zoom,
+        map_thumb_from_bbox=map_thumb_from_bbox,
     )
 
 
@@ -62,6 +76,7 @@ def create_thumbnail(
     styles: Optional[List] = None,
     overwrite: bool = False,
     background_zoom: Optional[int] = None,
+    map_thumb_from_bbox: bool = False,
 ) -> None:
     """
     Function generating and saving a thumbnail of the given instance (Dataset or Map), which is composed of
@@ -83,7 +98,6 @@ def create_thumbnail(
     """
 
     instance.refresh_from_db()
-
     default_thumbnail_name = _generate_thumbnail_name(instance)
     mime_type = "image/png"
     width = settings.THUMBNAIL_SIZE["width"]
@@ -111,7 +125,7 @@ def create_thumbnail(
 
     if isinstance(instance, Map):
         is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).exists()
-        if is_map_with_datasets:
+        if is_map_with_datasets and not map_thumb_from_bbox:
             compute_bbox_from_datasets = True
     if bbox:
         bbox = bbox_utils.clean_bbox(bbox, target_crs)
@@ -142,7 +156,7 @@ def create_thumbnail(
     # --- fetch WMS datasets ---
     partial_thumbs = []
 
-    for ogc_server, datasets, _styles in locations:
+    for ogc_server, datasets, _styles, auth in locations:
         if isinstance(instance, Map):
             styles = []
             if len(datasets) == len(_styles):
@@ -158,6 +172,8 @@ def create_thumbnail(
                     styles=styles,
                     width=width,
                     height=height,
+                    instance=instance,
+                    auth=auth,
                 )
             )
         except Exception as e:
@@ -246,6 +262,16 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp, Res
     return file_name
 
 
+def _get_auth(dataset: "Dataset"):
+    """Gets an auth object for a dataset if it's a remote service requiring auth."""
+    auth = None
+    if dataset.auth_config:
+        from geonode.security.auth_registry import auth_handler_registry
+
+        auth = auth_handler_registry.build(dataset.auth_config).get_request_auth()
+    return auth
+
+
 def _datasets_locations(
     instance: Union[Dataset, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
 ) -> Tuple[List[List], List]:
@@ -268,7 +294,9 @@ def _datasets_locations(
     locations = []
     bbox = []
     if isinstance(instance, Dataset):
-        locations.append([instance.ows_url or ogc_server_settings.LOCATION, [instance.alternate], []])
+        # Check if dataset has remote service with authentication
+        auth = _get_auth(instance)
+        locations.append([instance.ows_url or ogc_server_settings.LOCATION, [instance.alternate], [], auth])
         if compute_bbox:
             if instance.ll_bbox_polygon:
                 bbox = bbox_utils.clean_bbox(instance.ll_bbox, target_crs)
@@ -282,7 +310,7 @@ def _datasets_locations(
             else:
                 bbox = bbox_utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
-        for maplayer in instance.maplayers.filter(visibility=True).order_by("order").iterator():
+        for maplayer in instance.maplayers.filter(visibility=True).order_by("order", "pk").iterator():
             if maplayer.dataset and maplayer.dataset.sourcetype == SOURCE_TYPE_REMOTE and not maplayer.dataset.ows_url:
                 logger.warning(
                     "Incorrectly defined remote dataset encountered (no OWS URL defined)."
@@ -306,6 +334,8 @@ def _datasets_locations(
                 continue
 
             if dataset.subtype in ["tileStore", "remote"]:
+                # Check if remote service requires authentication
+                auth = _get_auth(dataset)
                 # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
                     # if previous dataset's location is the same as the current one - append current dataset there
@@ -316,9 +346,10 @@ def _datasets_locations(
                 else:
                     locations.append(
                         [
-                            dataset.remote_service.service_url,
+                            dataset.dataset_ows_url,
                             [dataset.alternate],
                             [map_dataset_style] if map_dataset_style else [],
+                            auth,
                         ]
                     )
             else:
@@ -335,6 +366,7 @@ def _datasets_locations(
                             settings.OGC_SERVER["default"]["LOCATION"],
                             [dataset.alternate],
                             [map_dataset_style] if map_dataset_style else [],
+                            None,
                         ]
                     )
 

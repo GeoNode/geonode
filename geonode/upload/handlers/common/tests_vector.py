@@ -23,17 +23,31 @@ from celery.canvas import Signature
 from celery import group
 from django.conf import settings
 from django.test import TestCase
+from django.urls import reverse
 from mock import MagicMock, patch
+from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_with_ogr2ogr
 from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
+from geonode.upload.handlers.geojson.handler import GeoJsonFileHandler
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
+from geonode.upload.handlers.shapefile.handler import ShapeFileHandler
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
 from dynamic_models.models import ModelSchema
 from osgeo import ogr
 from django.test.utils import override_settings
+from geonode.upload.utils import ImporterRequestAction as ira
+from geoserver.catalog import Catalog
+from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
+from geonode.utils import OGC_Servers_Handler
+from geonode.upload.utils import create_vrt_file, has_incompatible_field_names
+from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.resource.registry import dataset_manager
+from geonode.security.registry import permissions_registry
+from geonode.groups.models import GroupProfile
+from geonode.base.models import ResourceBase, Region, Thesaurus, ThesaurusKeyword
 
 
 class TestBaseVectorFileHandler(TestCase):
@@ -56,6 +70,80 @@ class TestBaseVectorFileHandler(TestCase):
         shutil.copy(self.valid_gpkg, "/tmp")
         super().setUp()
 
+    def test_copy_geonode_resource_should_copy_metadata_and_permissions(self):
+        dataset = create_single_dataset(name="dataset_to_clone_metadata", owner=self.owner)
+        region, _ = Region.objects.get_or_create(code="test_vector_copy_region", defaults={"name": "Test Region"})
+        dataset = dataset_manager.update(
+            dataset.uuid,
+            instance=dataset,
+            vals={"abstract": "test abstract", "purpose": "test purpose"},
+            keywords=["foo", "bar"],
+            regions=[region.name],
+        )
+        thesaurus = Thesaurus.objects.create(identifier="test_thesaurus_vector_copy", title="Test Thesaurus")
+        tkeyword = ThesaurusKeyword.objects.create(thesaurus=thesaurus, alt_label="test_tkeyword")
+        dataset.tkeywords.add(tkeyword)
+
+        other_user, _ = get_user_model().objects.get_or_create(username="vector_copy_other_user")
+        custom_group, _ = GroupProfile.objects.get_or_create(
+            slug="vector_copy_group", title="vector_copy_group", access="private"
+        )
+        custom_perms = {
+            "users": {other_user.username: ["view_resourcebase", "change_resourcebase"]},
+            "groups": {custom_group.slug: ["view_resourcebase"]},
+        }
+        dataset_manager.set_permissions(dataset.uuid, instance=dataset, permissions=custom_perms)
+
+        resource = ResourceBase.objects.get(pk=dataset.pk)
+        # distinct from self.owner (the dataset's owner) so the owner assertion below actually
+        # proves the clone follows the trigger, not just falls back to the source's owner
+        trigger_user, _ = get_user_model().objects.get_or_create(username="vector_copy_trigger")
+        exec_id = orchestrator.create_execution_request(
+            user=trigger_user,
+            func_name="start_import",
+            step="start_import",
+            action=exa.COPY.value,
+            input_params={"title": "cloned dataset metadata"},
+        )
+        _exec = orchestrator.get_execution_object(str(exec_id))
+
+        new_resource = self.handler.copy_geonode_resource(
+            alternate=dataset.alternate,
+            resource=resource,
+            _exec=_exec,
+            data_to_update={"title": "cloned dataset metadata"},
+            new_alternate="dataset_to_clone_metadata_copy",
+            kwargs={"original_dataset_alternate": dataset.alternate},
+        )
+
+        try:
+            self.assertNotEqual(dataset.pk, new_resource.pk)
+            self.assertEqual(trigger_user, new_resource.owner)
+            self.assertEqual(dataset.abstract, new_resource.abstract)
+            self.assertEqual(dataset.purpose, new_resource.purpose)
+            self.assertCountEqual(
+                [k.name for k in dataset.keywords.all()], [k.name for k in new_resource.keywords.all()]
+            )
+            self.assertCountEqual(list(dataset.regions.all()), list(new_resource.regions.all()))
+            self.assertCountEqual(list(dataset.tkeywords.all()), list(new_resource.tkeywords.all()))
+
+            # read via the plain ResourceBase, like production does (resource, not the downcast
+            # dataset) - get_all_level_info() only merges in the dataset-specific perms when
+            # called on a ResourceBase with a '.dataset' accessor, not on an already-downcast Dataset
+            source_perms = permissions_registry.get_perms(instance=resource, include_virtual=False)
+            copy_perms = permissions_registry.get_perms(instance=new_resource, include_virtual=False)
+            for perm_key in ("users", "groups"):
+                source_entries = {profile.pk: set(perms) for profile, perms in source_perms.get(perm_key, {}).items()}
+                copy_entries = {profile.pk: set(perms) for profile, perms in copy_perms.get(perm_key, {}).items()}
+                # trigger_user is the clone's new owner, always granted full owner perms on top
+                # of the reapplied source perm_spec, on top of whatever the source spec granted
+                copy_entries.pop(trigger_user.pk, None)
+                self.assertEqual(source_entries, copy_entries)
+            self.assertIn("change_resourcebase_permissions", copy_perms["users"][trigger_user])
+        finally:
+            new_resource.delete()
+            dataset.delete()
+
     def test_create_error_log(self):
         """
         Should return the formatted way for the log of the handler
@@ -67,6 +155,124 @@ class TestBaseVectorFileHandler(TestCase):
         )
         expected = "Task: foo_task_name raised an error during actions for layer: alternate: my exception"
         self.assertEqual(expected, actual)
+
+    def test_create_vrt_file_with_special_chars(self):
+        """
+        Test that create_vrt_file correctly sanitizes layer and field names
+        with spaces and special characters, and generates a valid VRT file.
+        """
+        source_filepath = "source file.shp"
+
+        mock_layer = MagicMock(spec=ogr.Layer)
+        mock_layer.GetName.return_value = "Layer With Spaces"
+        mock_layer.GetGeomType.return_value = ogr.wkbPolygon
+
+        mock_field_1 = MagicMock()
+        mock_field_1.GetName.return_value = "Field 1 (m)"
+        mock_field_1.GetTypeName.return_value = "String"
+
+        mock_field_2 = MagicMock()
+        mock_field_2.GetName.return_value = "another-field"
+        mock_field_2.GetTypeName.return_value = "Real"
+
+        mock_field_3 = MagicMock()
+        mock_field_3.GetName.return_value = "field/with/slash"
+        mock_field_3.GetTypeName.return_value = "Integer"
+
+        mock_layer_defn = MagicMock()
+        mock_layer_defn.GetFieldCount.return_value = 3
+        mock_layer_defn.GetFieldDefn.side_effect = [mock_field_1, mock_field_2, mock_field_3].__getitem__
+
+        mock_layer.GetLayerDefn.return_value = mock_layer_defn
+
+        vrt_filename, vrt_layer_name = None, None
+        try:
+            vrt_filename, vrt_layer_name = create_vrt_file(mock_layer, source_filepath)
+
+            self.assertIsNotNone(vrt_filename)
+            self.assertTrue(os.path.exists(vrt_filename))
+            self.assertEqual(vrt_layer_name, "layer_with_spaces")
+
+            with open(vrt_filename, "r") as f:
+                vrt_content = f.read()
+
+            self.assertIn('<OGRVRTLayer name="layer_with_spaces">', vrt_content)
+            self.assertIn(f"<SrcDataSource>{source_filepath}</SrcDataSource>", vrt_content)
+            self.assertIn("<SrcLayer>Layer With Spaces</SrcLayer>", vrt_content)
+
+            self.assertIn('<Field name="field_1_m" src="Field 1 (m)" type="String" />', vrt_content)
+            self.assertIn('<Field name="another_field" src="another-field" type="Real" />', vrt_content)
+            self.assertIn('<Field name="fieldwithslash" src="field/with/slash" type="Integer" />', vrt_content)
+
+        finally:
+            if vrt_filename and os.path.exists(vrt_filename):
+                os.remove(vrt_filename)
+
+    def test_has_incompatible_field_names(self):
+        """
+        Test that has_incompatible_field_names correctly identifies layers
+        with field names that need sanitization.
+        """
+
+        # layer with incompatible field names
+        mock_layer_incompatible = MagicMock(spec=ogr.Layer)
+        mock_layer_incompatible.GetName.return_value = "Layer With Spaces"
+
+        mock_field_1 = MagicMock()
+        mock_field_1.GetName.return_value = "Field 1 (m)"
+
+        mock_field_2 = MagicMock()
+        mock_field_2.GetName.return_value = "another-#field"
+
+        mock_layer_defn_incompatible = MagicMock()
+        mock_layer_defn_incompatible.GetFieldCount.return_value = 2
+        mock_layer_defn_incompatible.GetFieldDefn.side_effect = [mock_field_1, mock_field_2].__getitem__
+
+        mock_layer_incompatible.GetLayerDefn.return_value = mock_layer_defn_incompatible
+
+        self.assertTrue(has_incompatible_field_names(mock_layer_incompatible))
+
+        # layer with compatible field names
+        mock_layer_compatible = MagicMock(spec=ogr.Layer)
+        mock_layer_compatible.GetName.return_value = "compatible_layer"
+
+        mock_field_3 = MagicMock()
+        mock_field_3.GetName.return_value = "field_one"
+
+        mock_field_4 = MagicMock()
+        mock_field_4.GetName.return_value = "field_two"
+
+        mock_layer_defn_compatible = MagicMock()
+        mock_layer_defn_compatible.GetFieldCount.return_value = 2
+        mock_layer_defn_compatible.GetFieldDefn.side_effect = [mock_field_3, mock_field_4].__getitem__
+
+        mock_layer_compatible.GetLayerDefn.return_value = mock_layer_defn_compatible
+
+        self.assertFalse(has_incompatible_field_names(mock_layer_compatible))
+
+    def test_define_dynamic_layer_schema_with_unknown_type(self):
+        """
+        Test that _define_dynamic_layer_schema correctly handles mixed geometry types.
+        """
+        handler = BaseVectorFileHandler()
+        handler.identify_authority = MagicMock(return_value="EPSG:4326")
+
+        mock_layer = MagicMock(spec=ogr.Layer)
+        mock_layer.GetGeomType.return_value = ogr.wkbUnknown
+        mock_layer.GetGeometryColumn.return_value = "geom"
+        mock_layer.GetFIDColumn.return_value = None
+        mock_layer.schema = []
+        mock_layer.GetName.return_value = "test_layer"
+        schema = handler._define_dynamic_layer_schema(mock_layer)
+        self.assertEqual(len(schema), 1)
+        geom_field = schema[0]
+        self.assertEqual(geom_field["name"], "geom")
+        self.assertEqual(
+            geom_field["class_name"],
+            "django.contrib.gis.db.models.fields.GeometryField",
+        )
+        self.assertEqual(geom_field["dim"], 2)
+        self.assertEqual(geom_field["authority"], "EPSG:4326")
 
     def test_create_dynamic_model_fields(self):
         try:
@@ -132,6 +338,16 @@ class TestBaseVectorFileHandler(TestCase):
                 input_params={"files": self.valid_files, "skip_existing_layer": True},
             )
 
+            if overwrite:
+                resource = self.handler.create_geonode_resource(
+                    "layer_name",
+                    "layer_alternate",
+                    str(exec_id),
+                )
+                ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                    input_params={"files": self.valid_files, "skip_existing_layer": True, "resource_pk": resource.pk}
+                )
+
             layers = ogr.Open(self.valid_gpkg)
 
             # starting the tests
@@ -161,6 +377,9 @@ class TestBaseVectorFileHandler(TestCase):
         If the resource exists and should be skept, the celery task
         is not going to be called and the layer is skipped
         """
+        mocked_obj = MagicMock()
+        mocked_obj.ShortName = "DUAIAI"
+        ogr2ogr_driver.return_value = mocked_obj
         exec_id = None
         try:
             # create the executionId
@@ -175,9 +394,9 @@ class TestBaseVectorFileHandler(TestCase):
                 # start the resource import
                 self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
             self.assertIn(
-                "No valid layers found",
+                "not recognized as being in a supported file format",
                 exception.exception.args[0],
-                "No valid layers found.",
+                "not recognized as being in a supported file format",
             )
 
             celery_chord.assert_not_called()
@@ -240,28 +459,34 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
+
+        # Build the expected list to match the "Actual" output in your trace
+        expected_cmd_list = [
+            "/usr/bin/ogr2ogr",
+            "--config",
+            "PG_USE_COPY",
+            "YES",
+            "-f",
+            "PostgreSQL",
+            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
+            self.valid_files.get("base_file"),
+            "-lco",
+            "FID=fid",
+            "-nln",
+            "alternate",
+            "dataset",
+        ]
+
         _open.assert_called_once()
-        _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_files.get("base_file")
-            + '" -nln alternate "dataset"',
-            stdout=-1,
-            stderr=-1,
-            shell=True,  # noqa
-        )
+        _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)  # Changed from True to False
 
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_with_errors_should_raise_exception(self, _open):
         _uuid = uuid.uuid4()
 
         comm = MagicMock()
-        comm.communicate.return_value = b"", b"ERROR: some error here"
+        # Mocking the communicate to return an error in stderr
+        comm.communicate.return_value = (b"", b"ERROR: some error here")
         _open.return_value = comm
 
         with self.assertRaises(Exception):
@@ -274,29 +499,31 @@ class TestBaseVectorFileHandler(TestCase):
                 alternate="alternate",
             )
 
-        _datastore = settings.DATABASES["datastore"]
-
+        # Verification of the NEW secure call
         _open.assert_called_once()
-        _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_files.get("base_file")
-            + '" -nln alternate "dataset"',
-            stdout=-1,
-            stderr=-1,
-            shell=True,  # noqa
-        )
 
-    @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"}, clear=True)
+        # Get the actual call arguments to inspect them
+        args, kwargs = _open.call_args
+        cmd_list = args[0]
+
+        # Check that it's a list (not a string)
+        self.assertIsInstance(cmd_list, list)
+
+        # Check for specific safe flags in the list
+        self.assertIn("--config", cmd_list)
+        self.assertIn("PG_USE_COPY", cmd_list)
+        self.assertIn("alternate", cmd_list)
+        self.assertIn("dataset", cmd_list)
+
+        # Verify shell=False is now the standard (either explicitly False or not present)
+        self.assertFalse(kwargs.get("shell", False))
+
+    @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"})
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command_if_dump_is_enabled(self, _open):
         _uuid = uuid.uuid4()
 
+        # We need the second process (psql) to return the communicate values
         comm = MagicMock()
         comm.communicate.return_value = b"", b""
         _open.return_value = comm
@@ -314,19 +541,63 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual(alternate, "alternate")
         self.assertEqual(str(_uuid), execution_id)
 
-        _open.assert_called_once()
-        _call_as_string = _open.mock_calls[0][1][0]
+        # 1. Verify Popen was called twice (once for ogr2ogr, once for psql)
+        self.assertEqual(_open.call_count, 2)
 
-        self.assertTrue("-f PGDump /vsistdout/" in _call_as_string)
-        self.assertTrue("psql -d" in _call_as_string)
-        self.assertFalse("-f PostgreSQL PG" in _call_as_string)
+        # 2. Check the first call (ogr2ogr)
+        # mock_calls[0] = ((args), {kwargs})
+        ogr_args = _open.mock_calls[0][1][0]
+        self.assertIn("-f", ogr_args)
+        self.assertIn("PGDump", ogr_args)
+        self.assertIn("/vsistdout/", ogr_args)
+        self.assertNotIn("PostgreSQL", ogr_args)
+
+        # 3. Check the second call (psql)
+        psql_args = _open.mock_calls[1][1][0]
+        psql_kwargs = _open.mock_calls[1][2]
+
+        self.assertIn("psql", psql_args)
+        self.assertIn("-d", psql_args)
+
+        # 4. Verify the password is passed securely in 'env', not in the command list
+        self.assertIn("PGPASSWORD", psql_kwargs["env"])
+
+        self.assertFalse(any("PGPASSWORD" in str(arg) for arg in psql_args))
+
+    @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"})
+    @patch("geonode.upload.handlers.common.vector.Popen")
+    def test_copy_with_ogr2ogr_without_errors_should_call_the_right_command_if_dump_is_enabled(self, _open):
+        # We need the second process (psql) to return the communicate values
+        comm = MagicMock()
+        comm.communicate.return_value = b"", b""
+        _open.return_value = comm
+
+        BaseVectorFileHandler.copy_table_with_ogr2ogr("original_table", "new_table", "datastore")
+
+        self.assertEqual(_open.call_count, 2)
+
+        ogr_args = _open.mock_calls[0][1][0]
+        self.assertIn("-f", ogr_args)
+        self.assertIn("PGDump", ogr_args)
+        self.assertIn("/vsistdout/", ogr_args)
+        self.assertNotIn("PostgreSQL", ogr_args)
+
+        psql_args = _open.mock_calls[1][1][0]
+        psql_kwargs = _open.mock_calls[1][2]
+
+        self.assertIn("psql", psql_args)
+        self.assertIn("-d", psql_args)
+
+        self.assertIn("PGPASSWORD", psql_kwargs["env"])
+
+        self.assertFalse(any("PGPASSWORD" in str(arg) for arg in psql_args))
 
     def test_select_valid_layers(self):
         """
         The function should return only the datasets with a geometry
         The other one are discarded
         """
-        all_layers = GPKGFileHandler().get_ogr2ogr_driver().Open(self.no_crs_gpkg)
+        all_layers = GPKGFileHandler().open_source_file({"base_file": self.no_crs_gpkg})
 
         with self.assertLogs(level="ERROR") as _log:
             valid_layer = GPKGFileHandler()._select_valid_layers(all_layers)
@@ -366,3 +637,296 @@ class TestBaseVectorFileHandler(TestCase):
         expected_output = {"resources": [{"id": resource.pk, "detail_url": resource.detail_url}]}
         exec_obj.refresh_from_db()
         self.assertDictEqual(expected_output, exec_obj.output_params)
+
+    @override_settings(IMPORTER_ENABLE_DYN_MODELS=False)
+    def test_upsert_validation_should_fail(self):
+        """
+        The test should fail since the dynamic model generation is not enabled
+        """
+        handler = ShapeFileHandler()
+        with self.assertRaises(Exception) as exept:
+            handler.upsert_validation(["files"], 123)
+
+        self.assertIsNotNone(exept)
+        self.assertEqual(
+            str(exept.exception),
+            "The Dynamic model generation must be enabled to perform the upsert IMPORTER_ENABLE_DYN_MODELS=True",
+        )
+
+    def test_get_error_file_csv_headers(self):
+        handler = BaseVectorFileHandler()
+        mock_validator = MagicMock()
+        mock_validator.restrictions = {"type": {"restrictions": {"enumeration": ["type1"]}}}
+        with patch("geonode.upload.handlers.common.vector.feature_validators_registry.HANDLERS", [mock_validator]):
+            headers = handler._BaseVectorFileHandler__get_csv_headers()
+            self.assertEqual(headers, ["fid", "type", "error"])
+
+    @patch("geonode.upload.handlers.common.vector.Popen")
+    def test_copy_table_with_ogr2ogr(self, mock_popen):
+        comm = MagicMock()
+        comm.communicate.return_value = b"", b""
+        mock_popen.return_value = comm
+
+        BaseVectorFileHandler.copy_table_with_ogr2ogr("original_table", "new_table", "datastore")
+
+        mock_popen.assert_called_once()
+        call_args = mock_popen.call_args[0][0]
+
+        self.assertIn("ogr2ogr", call_args[0])
+        self.assertIn("-nln", call_args)
+        self.assertIn("new_table", call_args)
+        self.assertIn("original_table", call_args)
+
+    def test_setup_dynamic_model_non_owner_with_edit_permission_can_replace(self):
+        """
+        A non-owner user with 'edit' permission should be allowed to replace
+        the dataset. The dataset lookup must not be scoped by owner.
+        """
+        exec_id = None
+        try:
+            non_owner, _ = get_user_model().objects.get_or_create(username="non_owner_editor")
+            exec_id = orchestrator.create_execution_request(
+                user=non_owner,
+                func_name="funct1",
+                step="step",
+                input_params={"files": self.valid_files, "skip_existing_layer": False},
+            )
+            resource = self.handler.create_geonode_resource(
+                "stazioni_metropolitana",
+                "stazioni_metropolitana",
+                str(exec_id),
+            )
+            ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                input_params={"files": self.valid_files, "skip_existing_layer": False, "resource_pk": resource.pk}
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["edit"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    layers = ogr.Open(self.valid_gpkg)
+                    dynamic_model, layer_name, celery_group = self.handler.setup_dynamic_model(
+                        layer=[x for x in layers][0],
+                        execution_id=str(exec_id),
+                        should_be_overwritten=True,
+                        username=non_owner,
+                    )
+                    self.assertIsNotNone(dynamic_model)
+                    self.assertIsNotNone(layer_name)
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    def test_setup_dynamic_model_user_without_permission_cannot_replace(self):
+        """
+        A user without 'edit' or 'manage' permission should get an ImportException
+        when trying to replace a dataset they don't own.
+        """
+        exec_id = None
+        try:
+            stranger, _ = get_user_model().objects.get_or_create(username="stranger_user")
+            exec_id = orchestrator.create_execution_request(
+                user=stranger,
+                func_name="funct1",
+                step="step",
+                input_params={"files": self.valid_files, "skip_existing_layer": False},
+            )
+            resource = self.handler.create_geonode_resource(
+                "stazioni_metropolitana",
+                "stazioni_metropolitana",
+                str(exec_id),
+            )
+            ExecutionRequest.objects.filter(exec_id=exec_id).update(
+                input_params={"files": self.valid_files, "skip_existing_layer": False, "resource_pk": resource.pk}
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["view"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    layers = ogr.Open(self.valid_gpkg)
+                    with self.assertRaises(ImportException):
+                        self.handler.setup_dynamic_model(
+                            layer=[x for x in layers][0],
+                            execution_id=str(exec_id),
+                            should_be_overwritten=True,
+                            username=stranger,
+                        )
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    def test_setup_dynamic_model_get_or_create_prevents_unique_constraint_crash(self):
+        """
+        If a ModelSchema already exists but is not found by the iexact lookup
+        (e.g. name normalization mismatch between .shp and .zip), the second
+        branch must not crash with a unique constraint violation.
+        """
+        exec_id = None
+        schema = None
+        try:
+            exec_id = orchestrator.create_execution_request(
+                user=self.user,
+                func_name="funct1",
+                step="step",
+                input_params={"files": self.valid_files, "skip_existing_layer": False},
+            )
+            # Pre-create the schema to simulate a stale/orphaned entry
+            schema, _ = ModelSchema.objects.get_or_create(name="stazioni_metropolitana", db_name="datastore")
+            layers = ogr.Open(self.valid_gpkg)
+            # Should not raise IntegrityError — get_or_create absorbs the collision
+            dynamic_model, layer_name, celery_group = self.handler.setup_dynamic_model(
+                layer=[x for x in layers][0],
+                execution_id=str(exec_id),
+                should_be_overwritten=False,
+                username=self.user,
+            )
+            self.assertIsNotNone(dynamic_model)
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+            if schema:
+                schema.delete()
+
+    def test_overwrite_geonode_resource_non_owner_with_manage_permission_can_overwrite(self):
+        """
+        A non-owner with 'manage' permission should be able to overwrite
+        a dataset via overwrite_geonode_resource.
+        """
+        exec_id = None
+        try:
+            non_owner, _ = get_user_model().objects.get_or_create(username="non_owner_manager")
+            exec_id = orchestrator.create_execution_request(
+                user=non_owner,
+                func_name="funct1",
+                step="step",
+                action=ira.REPLACE.value,
+                input_params={
+                    "files": self.valid_files,
+                    "resource_pk": self.layer.pk,
+                },
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["manage"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    with patch.object(
+                        self.handler, "refresh_geonode_resource", return_value=self.layer
+                    ) as mock_refresh:
+                        result = self.handler.overwrite_geonode_resource(
+                            layer_name="stazioni_metropolitana",
+                            alternate="stazioni_metropolitana",
+                            execution_id=str(exec_id),
+                        )
+                        mock_refresh.assert_called_once()
+                        self.assertIsNotNone(result)
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    def test_overwrite_geonode_resource_user_without_permission_returns_none(self):
+        """
+        A user without 'edit' or 'manage' permission should get None returned
+        from overwrite_geonode_resource without touching the dataset.
+        """
+        exec_id = None
+        try:
+            stranger, _ = get_user_model().objects.get_or_create(username="stranger_overwrite")
+            exec_id = orchestrator.create_execution_request(
+                user=stranger,
+                func_name="funct1",
+                step="step",
+                action=ira.REPLACE.value,
+                input_params={
+                    "files": self.valid_files,
+                    "resource_pk": self.layer.pk,
+                },
+            )
+
+            with patch("geonode.upload.handlers.common.vector._to_compact_perms", return_value=["view"]):
+                with patch("geonode.upload.handlers.common.vector.permissions_registry") as mock_registry:
+                    mock_registry.get_perms.return_value = MagicMock()
+                    with patch.object(self.handler, "refresh_geonode_resource"):
+                        with self.assertRaises(ImportException):
+                            self.handler.overwrite_geonode_resource(
+                                layer_name="stazioni_metropolitana",
+                                alternate="stazioni_metropolitana",
+                                execution_id=str(exec_id),
+                            )
+        finally:
+            if exec_id:
+                ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+
+class TestUpsertBaseVectorHandler(TransactionImporterBaseTestSupport):
+    """
+    Tests for the basic functionality of the upsert methods
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.handler = BaseVectorFileHandler()
+        cls.json_handler = GeoJsonFileHandler()
+        cls.user = get_user_model().objects.exclude(username="Anonymous").first()
+        cls.original = {
+            "base_file": f"{project_dir}/tests/fixture/upsert/original.json",
+        }
+        cls.upsert_geojson = {
+            "base_file": f"{project_dir}/tests/fixture/upsert/upsert.json",
+        }
+
+        cls.url = reverse("importer_upload")
+        ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
+
+        _user, _password = ogc_server_settings.credentials
+
+        cls.cat = Catalog(service_url=ogc_server_settings.rest, username=_user, password=_password)
+
+    def setUp(self) -> None:
+        self.admin, _ = get_user_model().objects.get_or_create(username="admin")
+        self.admin.is_superuser = True
+        self.admin.is_staff = True
+        self.admin.save()
+
+    def test_upsert_data_without_dynamic_model_schema(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.original, "skip_existing_layer": True, "resource_pk": data.pk},
+        )
+        with self.assertRaises(UpsertException) as exp:
+            self.handler.upsert_data(self.original, exec_id)
+
+        self.assertEqual(
+            str(exp.exception),
+            "This dataset does't support updates. Please upload the dataset again to have the upsert operations enabled",
+        )
+
+    def test_validate_single_feature_raise_error(self):
+        """
+        Should raise error if the dynamic model schema is not present
+        """
+        data = create_single_dataset("example_upsert_dataset")
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": self.original,
+                "skip_existing_layer": True,
+                "resource_pk": data.pk,
+                "upsert_key": "id",
+            },
+        )
+        ModelSchema.objects.create(name="example_upsert_dataset", db_name="datastore", managed=True)
+
+        with self.assertRaises(Exception) as exp:
+            self.json_handler.upsert_data(self.original, exec_id)
+        self.assertEqual(
+            str(exp.exception),
+            "Error found during the upsert process. Errors are reported inside a CSV file that can be found inside the assets panel.",
+        )

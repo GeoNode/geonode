@@ -29,4 +29,5 @@ class ExecutionRequestAction(enum.Enum):
     PERMISSIONS = _("permissions")
     UPDATE = _("update")
     INGEST = _("ingest")
+    HARVEST = _("harvest")
     UNKNOWN = _("unknown")

@@ -37,13 +37,12 @@ from . import views
 from . import version
 
 from geonode.api.urls import api, router
-from geonode.api.views import verify_token, user_info, roles, users, admin_role
+from geonode.api.views import verify_token, roles, users, admin_role
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.base import register_url_event
-from geonode.messaging.urls import urlpatterns as msg_urls
-from .people.views import CustomSignupView, CustomLoginView
+from .people.views import CustomSignupView, CustomLoginView, set_session_language
 from oauth2_provider.urls import app_name as oauth2_app_name, base_urlpatterns, oidc_urlpatterns
 
 admin.autodiscover()
@@ -64,10 +63,6 @@ urlpatterns = [
     re_path(r"^sitemap\.xml$", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     re_path(r"^robots\.txt$", TemplateView.as_view(template_name="robots.txt"), name="robots"),
     re_path(r"(.*version\.txt)$", version.version, name="version"),
-    re_path(r"^messages/", include(msg_urls)),
-]
-
-urlpatterns += [
     # ResourceBase views
     re_path(r"^base/", include("geonode.base.urls")),
     re_path(r"^resources/", include("geonode.base.base_urls")),
@@ -97,11 +92,9 @@ urlpatterns += [
     re_path(r"^account/", include("allauth.urls")),
     re_path(r"^invitations/", include("geonode.invitations.urls", namespace="geonode.invitations")),
     re_path(r"^people/", include("geonode.people.urls")),
-    re_path(r"^api/v2/users/", include("geonode.people.api.urls")),
     re_path(r"^avatar/", include("avatar.urls")),
     re_path(r"^activity/", include("actstream.urls")),
     re_path(r"^announcements/", include("announcements.urls")),
-    re_path(r"^messages/", include("user_messages.urls")),
     re_path(r"^social/", include("geonode.social.urls")),
     re_path(r"^security/", include("geonode.security.urls")),
     # Accounts
@@ -120,7 +113,6 @@ urlpatterns += [
     # OAuth2/OIDC Provider
     re_path(r"^o/", include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace="oauth2_provider")),
     re_path(r"^api/o/v4/tokeninfo", verify_token, name="tokeninfo"),
-    re_path(r"^api/o/v4/userinfo", user_info, name="userinfo"),
     # Api Views
     re_path(r"^api/roles", roles, name="roles"),
     re_path(r"^api/adminRole", admin_role, name="adminRole"),
@@ -130,27 +122,24 @@ urlpatterns += [
         ResourceImporter.as_view({"put": "copy"}),
         name="importer_resource_copy",
     ),
-    re_path(r"^api/v2/", include(router.urls)),
+    # API v2 (resource, harvesting used to self-register from AppConfig.ready(); hardcoded now, like every other app)
+    re_path(r"^api/v2/users/", include("geonode.people.api.urls")),
+    re_path(r"^api/v2/", include("geonode.resource.api.urls")),
+    re_path(r"^api/v2/", include("geonode.harvesting.api.urls")),
     re_path(r"^api/v2/", include("geonode.api.urls")),
-    re_path(r"^api/v2/", include("geonode.management_commands_http.urls")),
+    re_path(r"^api/v2/management/", include("geonode.management_commands_http.urls")),
     re_path(r"^api/v2/api-auth/", include("rest_framework.urls", namespace="geonode_rest_framework")),
-    re_path(r"^api/v2/", include("geonode.facets.urls")),
+    re_path(r"^api/v2/facets", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
-    # metadata views
-    re_path(r"^api/v2/", include("geonode.metadata.urls")),
+    re_path(r"^api/v2/metadata/", include("geonode.metadata.api.urls")),
     re_path(r"", include(api.urls)),
     re_path(
         r"uploads/upload",
         ImporterViewSet.as_view({"post": "create"}),
         name="importer_upload",
     ),
+    path("i18n/setlang/", set_session_language, name="set_language"),
 ]
-
-# tinymce WYSIWYG HTML Editor
-if "tinymce" in settings.INSTALLED_APPS:
-    urlpatterns += [
-        re_path(r"^tinymce/", include("tinymce.urls")),
-    ]
 
 # django-select2 Widgets
 if "django_select2" in settings.INSTALLED_APPS:
@@ -159,7 +148,6 @@ if "django_select2" in settings.INSTALLED_APPS:
     ]
 
 urlpatterns += i18n_patterns(
-    re_path(r"^grappelli/", include("grappelli.urls")),
     re_path(r"^admin/", admin.site.urls, name="admin"),
 )
 
@@ -167,18 +155,10 @@ urlpatterns += i18n_patterns(
 urlpatterns += [
     re_path(r"^i18n/", include(django.conf.urls.i18n), name="i18n"),
     re_path(r"^jsi18n/$", JavaScriptCatalog.as_view(), js_info_dict, name="javascript-catalog"),
-]
-
-urlpatterns += [  # '',
     re_path(r"^showmetadata/", include("geonode.catalogue.metadataxsl.urls")),
 ]
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    if settings.CREATE_LAYER:
-        urlpatterns += [  # '',
-            re_path(r"^createlayer/", include("geonode.geoserver.createlayer.urls")),
-        ]
-
     from geonode.geoserver.views import get_capabilities
 
     # GeoServer Helper Views
@@ -192,6 +172,11 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         re_path(r"^capabilities/category/(?P<category>\w+)/$", get_capabilities, name="capabilities_category"),
         re_path(r"^gs/", include("geonode.geoserver.urls")),
     ]
+
+# router.urls is a cached property: keep this after every router.register()-triggering include above.
+urlpatterns += [
+    re_path(r"^api/v2/", include(router.urls)),
+]
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
     notifications_urls = f"{settings.NOTIFICATIONS_MODULE}.urls"
@@ -210,14 +195,8 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
-if settings.MONITORING_ENABLED:
-    urlpatterns += [
-        re_path(r"^monitoring/", include(("geonode.monitoring.urls", "geonode.monitoring"), namespace="monitoring"))
-    ]
-
-
-# Internationalization Javascript
 urlpatterns += [
     re_path(r"^metadata_update_redirect$", views.metadata_update_redirect, name="metadata_update_redirect"),
 ]
+
+handler500 = "geonode.views.err500"

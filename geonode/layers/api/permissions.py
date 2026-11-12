@@ -16,9 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from distutils.util import strtobool
 from django.conf import settings
 from rest_framework.filters import BaseFilterBackend
+from geonode.utils import strtobool
 
 
 class DatasetPermissionsFilter(BaseFilterBackend):
@@ -49,9 +49,9 @@ class DatasetPermissionsFilter(BaseFilterBackend):
             polymorphic_ctype__model="dataset"
         )
         try:
-            include_dirty = strtobool(request.query_params.get("include_dirty", "False"))
+            include_dirty = strtobool(request.query_params.get("include_dirty", "True"))
         except Exception:
-            include_dirty = False
+            include_dirty = True
 
         obj_with_perms = get_visible_resources(
             resources,

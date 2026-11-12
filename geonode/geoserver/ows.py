@@ -354,16 +354,3 @@ def _wms_link(wms_url, identifier, mime, height, width, srid=None, bbox=None):
         wms_params["bbox"] = bbox
     _query_separator = "?" if not wms_url.endswith("?") else ""
     return f"{wms_url}{_query_separator}{urlencode(wms_params)}"
-
-
-def wms_links(wms_url, identifier, bbox, srid, height, width):
-    types = [
-        ("jpg", _("JPEG"), "image/jpeg"),
-        ("pdf", _("PDF"), "application/pdf"),
-        ("png", _("PNG"), "image/png"),
-    ]
-    output = []
-    for ext, name, mime in types:
-        url = _wms_link(wms_url, identifier, mime, height, width, srid, bbox)
-        output.append((ext, name, mime, url))
-    return output

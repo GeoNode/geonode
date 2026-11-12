@@ -20,19 +20,26 @@
 import re
 import uuid
 
+from io import BytesIO
+from PIL import Image
+
 from unittest.mock import patch, PropertyMock, MagicMock
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
+from django.core.files.base import ContentFile
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, document_manager, geoapp_manager
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
 from geonode.layers.models import Dataset
-from geonode.utils import DisableDjangoSignals
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.auth_registry import auth_handler_registry
+from geonode.storage.manager import storage_manager
+from geonode.utils import DisableDjangoSignals, is_monochromatic_image
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
 
@@ -101,6 +108,46 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
         self.assertEqual(height / width, ratio, "Expected ratio to be equal target ratio after transformation")
         self.assertEqual(center, new_center, "Expected center to be preserved after transformation")
 
+    def _save_blank_thumb(self):
+        with BytesIO() as buffer:
+            Image.new("RGB", (10, 10), "white").save(buffer, format="JPEG")
+            return storage_manager.save(
+                f"{settings.THUMBNAIL_LOCATION}/blank-{uuid.uuid4()}.jpg", ContentFile(buffer.getvalue())
+            )
+
+    def test_monochromatic_check_with_image_path_reads_from_storage(self):
+        """A thumbnail with a stored path is read from storage, not via HTTP."""
+        _path = self._save_blank_thumb()
+        try:
+            with patch("geonode.utils.http_client.get") as _mck:
+                self.assertTrue(is_monochromatic_image("http://example.com/foo.jpg", image_path=_path))
+                _mck.assert_not_called()
+        finally:
+            storage_manager.delete(_path)
+
+    def test_monochromatic_check_local_media_url_reads_from_storage(self):
+        """A local media thumbnail url is read from storage, not via HTTP."""
+        _path = self._save_blank_thumb()
+        try:
+            with patch("geonode.utils.http_client.get") as _mck:
+                self.assertTrue(is_monochromatic_image(storage_manager.url(_path)))
+                _mck.assert_not_called()
+        finally:
+            storage_manager.delete(_path)
+
+    def test_monochromatic_check_missing_local_file_falls_back_to_http(self):
+        """A missing stored thumbnail falls back to fetching the url."""
+        with BytesIO() as buffer:
+            Image.new("RGB", (10, 10), "white").save(buffer, format="JPEG")
+            _content = buffer.getvalue()
+        with patch("geonode.utils.http_client.get", return_value=(None, _content)) as _mck:
+            self.assertTrue(
+                is_monochromatic_image(
+                    "http://example.com/foo.jpg", image_path=f"{settings.THUMBNAIL_LOCATION}/missing.jpg"
+                )
+            )
+            _mck.assert_called_once()
+
 
 class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
     fixtures = GeoNodeBaseTestSupport.fixtures.copy() + [
@@ -131,7 +178,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_resourcebase(self):
-        base_resource = resource_manager.create(
+        base_resource = resource_manager_registry.get_for_model(ResourceBase).create(
             None, ResourceBase, defaults={"owner": get_user_model().objects.get(username="admin")}
         )
         thumbnail_name = thumbnails._generate_thumbnail_name(base_resource)
@@ -166,7 +213,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_document(self):
-        doc = resource_manager.create(
+        doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -181,7 +228,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_geoapp(self):
-        geo_app = resource_manager.create(
+        geo_app = geoapp_manager.create(
             None,
             resource_type=GeoApp,
             defaults=dict(
@@ -196,25 +243,35 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_datasets_locations_dataset(self):
-        dataset = Dataset.objects.get(title_en="theaters_nyc")
+        dataset = Dataset.objects.get(title="theaters_nyc")
 
         locations, bbox = thumbnails._datasets_locations(dataset)
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], None]])
+
+    def test_get_auth_should_use_dataset_auth_config(self):
+        dataset = Dataset.objects.get(title="theaters_nyc")
+        auth_config = BasicAuthHandler.create_auth_config({"username": "dataset_user", "password": "dataset_password"})
+        dataset.auth_config = auth_config
+        dataset.save()
+
+        auth = thumbnails._get_auth(dataset)
+
+        self.assertEqual(auth_handler_registry.build(auth_config).get_request_auth(), auth)
 
     def test_datasets_locations_dataset_default_bbox(self):
         expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.0930337105, 4984363.884452854, "EPSG:3857"]
-        dataset = Dataset.objects.get(title_en="theaters_nyc")
+        dataset = Dataset.objects.get(title="theaters_nyc")
 
         locations, bbox = thumbnails._datasets_locations(dataset, compute_bbox=True)
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], None]])
 
     def test_datasets_locations_dataset_bbox(self):
-        dataset = Dataset.objects.get(title_en="theaters_nyc")
+        dataset = Dataset.objects.get(title="theaters_nyc")
 
         locations, bbox = thumbnails._datasets_locations(dataset, compute_bbox=True, target_crs="EPSG:4326")
 
@@ -222,11 +279,11 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(
             bbox[-1].lower(), dataset.bbox[-1].lower(), "Expected calculated BBOX's CRS to match dataset's"
         )
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], [], None]])
 
     def test_datasets_locations_simple_map(self):
-        dataset = Dataset.objects.get(title_en="theaters_nyc")
-        map = Map.objects.get(title_en="theaters_nyc_map")
+        dataset = Dataset.objects.get(title="theaters_nyc")
+        map = Map.objects.get(title="theaters_nyc_map")
         MapLayer(
             map=map,
             name="Meteorite_Landings_from_NASA_Open_Data_Portal1",
@@ -243,6 +300,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
                     settings.OGC_SERVER["default"]["LOCATION"],
                     [dataset.alternate, "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1"],
                     ["theaters_nyc", "test_style"],
+                    None,
                 ]
             ],
         )
@@ -250,15 +308,15 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
     def test_datasets_locations_simple_map_default_bbox(self):
         expected_bbox = [-20037397.023298446, 20037397.023298446, -20048966.104014594, 20048966.104014594, "EPSG:3857"]
 
-        dataset = Dataset.objects.get(title_en="theaters_nyc")
-        map = Map.objects.get(title_en="theaters_nyc_map")
+        dataset = Dataset.objects.get(title="theaters_nyc")
+        map = Map.objects.get(title="theaters_nyc_map")
 
         locations, bbox = thumbnails._datasets_locations(map, compute_bbox=True)
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
         self.assertEqual(
-            locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"]]]
+            locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"], None]]
         )
 
     def test_datasets_locations_composition_map_default_bbox(self):
@@ -271,17 +329,18 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
                     "rt_geologia.dbg_risorse_minerarie",
                 ],
                 [],
+                None,
             ]
         ]
 
-        map = Map.objects.get(title_en="composition_map")
+        map = Map.objects.get(title="composition_map")
         locations, bbox = thumbnails._datasets_locations(map, compute_bbox=True)
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(locations, expected_locations, "Expected calculated locations to match pre-computed.")
 
     def test_create_map_thumbnail_using_ll_bbox_polygon(self):
-        map = Map.objects.get(title_en="theaters_nyc_map")
+        map = Map.objects.get(title="theaters_nyc_map")
 
         with patch("geonode.thumbs.thumbnails._datasets_locations") as _mck:
             _mck.return_value = [MagicMock(), MagicMock()]

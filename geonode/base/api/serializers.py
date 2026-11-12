@@ -27,8 +27,9 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
-from django.db.models.query import QuerySet
+
 from geonode.assets.utils import get_default_asset
+from geonode.metadata.multilang.serializers import MultiLangOutputMixin
 from geonode.people import Roles
 from django.http import QueryDict
 from deprecated import deprecated
@@ -56,7 +57,6 @@ from geonode.base.models import (
     SpatialRepresentationType,
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
-    ExtraMetadata,
     LinkedResource,
 )
 from geonode.documents.models import Document
@@ -67,9 +67,11 @@ from geonode.layers.utils import get_download_handlers, get_default_dataset_down
 from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
+from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataField
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
 from geonode.security.registry import permissions_registry
+from geonode.people.utils import contains_disallowed_template_tokens
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +133,40 @@ class GroupSerializer(DynamicModelSerializer):
         name = "group"
         fields = ("pk", "name")
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+
+        # Check if 'group' is being updated
+        new_group = validated_data.get("group", None)
+
+        if new_group is None:
+            # Handle clearing the group field
+            instance.group = None
+            # Remove 'group' from validated_data so super().update() won't process it again
+            validated_data.pop("group", None)
+            return instance
+
+        if not GroupProfile.objects.filter(group=new_group).exists():
+            logger.warning(f"Group {new_group.pk} does not have an associated GroupProfile.")
+            raise serializers.ValidationError("The selected group does not have a valid group profile.")
+
+        gp = new_group
+
+        if not (user.is_superuser or user.is_staff):
+            qs = user.groups.filter(pk=new_group.pk)
+            # check if the group exists and if it has a group profile
+            if qs.exists():
+                gp = qs.first()
+            else:
+                logger.warning(f"User {user.username} does not have permission for this group: {new_group.pk}")
+                raise serializers.ValidationError("You do not have permission to use this group.")
+
+        # If the user is a member of the group, we can proceed to update
+        validated_data["group"] = gp
+
+        # Call the super class's update method to continue with the default behavior
+        return super().update(instance, validated_data)
+
 
 class GroupProfileSerializer(BaseDynamicModelSerializer):
     class Meta:
@@ -142,6 +178,18 @@ class GroupProfileSerializer(BaseDynamicModelSerializer):
     group = DynamicRelationField(GroupSerializer, embed=True, many=False)
     keywords = serializers.SlugRelatedField(many=True, slug_field="slug", read_only=True)
     categories = serializers.SlugRelatedField(many=True, slug_field="slug", queryset=GroupCategory.objects.all())
+
+    def validate(self, data):
+        field_errors = {
+            field_name: "This field contains characters that are not allowed."
+            for field_name, value in data.items()
+            if contains_disallowed_template_tokens(value)
+        }
+
+        if field_errors:
+            raise serializers.ValidationError(field_errors)
+
+        return data
 
 
 class SimpleHierarchicalKeywordSerializer(DynamicModelSerializer):
@@ -247,23 +295,6 @@ class DetailUrlField(DynamicComputedField):
         return build_absolute_uri(instance.detail_url)
 
 
-class ExtraMetadataSerializer(DynamicModelSerializer):
-    class Meta:
-        model = ExtraMetadata
-        name = "ExtraMetadata"
-        fields = ("pk", "metadata")
-
-    def to_representation(self, obj):
-        if isinstance(obj, QuerySet):
-            out = []
-            for el in obj:
-                out.append({**{"id": el.id}, **el.metadata})
-            return out
-        elif isinstance(obj, list):
-            return obj
-        return {**{"id": obj.id}, **obj.metadata}
-
-
 class ThumbnailUrlField(DynamicComputedField):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -333,7 +364,7 @@ class DownloadArrayLinkField(DynamicComputedField):
                     download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
 
             if asset:
-                download_urls.append({"url": asset_url, "ajax_safe": True, "default": False if download_urls else True})
+                download_urls.append({"url": asset_url, "ajax_safe": True, "default": False})
 
             return download_urls
         else:
@@ -544,20 +575,10 @@ class LinksSerializer(DynamicModelSerializer):
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
-            if lnk.asset:
-                extras = {
-                    "type": "asset",
-                    "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
-                }
-                extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
-                    lnk.asset
-                )
-                formatted_link["extras"] = extras
-
         return ret
 
 
-class ResourceBaseSerializer(DynamicModelSerializer):
+class ResourceBaseSerializer(MultiLangOutputMixin, DynamicModelSerializer):
     pk = serializers.CharField(read_only=True)
     uuid = serializers.CharField(read_only=True)
     resource_type = serializers.CharField(required=False)
@@ -623,15 +644,16 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     license = ComplexDynamicRelationField(LicenseSerializer, embed=True)
     spatial_representation_type = ComplexDynamicRelationField(SpatialRepresentationTypeSerializer, embed=True)
     blob = serializers.JSONField(required=False, write_only=True)
-    is_copyable = serializers.BooleanField(read_only=True)
+    is_copyable = serializers.SerializerMethodField(read_only=True)
     download_url = DownloadLinkField(read_only=True)
     favorite = FavoriteField(read_only=True)
     download_urls = DownloadArrayLinkField(read_only=True)
-    perms = DynamicRelationField(PermsSerializer, source="id", read_only=True)
+    perms = serializers.SerializerMethodField(read_only=True)
     links = DynamicRelationField(LinksSerializer, source="id", read_only=True)
 
     # Deferred fields
-    metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, many=True, deferred=True)
+    # Deprecated: use the sparse fields API instead of ``metadata``.
+    metadata = DeprecatedExtraMetadataField(deferred=True, read_only=True)
     data = DataBlobField(DataBlobSerializer, source="id", deferred=True, required=False)
     executions = DynamicRelationField(
         ResourceExecutionRequestSerializer, source="id", deferred=True, required=False, read_only=True
@@ -713,7 +735,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             "sourcetype",
             "is_copyable",
             "blob",
-            "metadata",
+            "metadata",  # Deprecated: use sparse fields API instead
             "executions",
             "linked_resources",
             "download_url",
@@ -742,10 +764,41 @@ class ResourceBaseSerializer(DynamicModelSerializer):
 
     def update(self, instance, validated_data):
         user = self.context["request"].user
+
+        # Handle group update from the GroupSerializer
+        if "group" in validated_data:
+            # Call GroupSerializer's update method
+            group_serializer = GroupSerializer(context=self.context)
+            group_serializer.update(instance, validated_data)
+
         for field in instance.ROLE_BASED_MANAGED_FIELDS:
             if not user.can_change_resource_field(instance, field) and field in validated_data:
                 validated_data.pop(field)
         return super().update(instance, validated_data)
+
+    def get_perms(self, instance):
+        """
+        Returns the permissions for the resource instance using Django cache.
+        """
+        request = self.context.get("request")
+        permissions = (
+            permissions_registry.get_perms(instance=instance, user=request.user, use_cache=True)
+            if request and request.user and instance
+            else []
+        )
+        return permissions
+
+    def get_is_copyable(self, instance):
+        from geonode.resource.registry import resource_manager_registry
+
+        request = self.context.get("request")
+        try:
+            return resource_manager_registry.get_for_instance(instance).user_can_copy(
+                instance, user=request.user if request else None
+            )
+        except Exception as e:
+            logger.warning(f"Cannot evaluate is_copyable for resource {instance.pk}: {e}")
+            return False
 
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)

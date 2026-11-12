@@ -1,0 +1,78 @@
+{
+  "type": "FeatureCollection",
+  "features":
+  [
+      {
+          "type": "Feature",
+          "geometry":
+          {
+              "type": "Point",
+              "coordinates":
+              [
+                  -47.20138110814478,
+                  -13.8281037379215
+              ]
+          },
+          "properties":
+          {
+              "fid": 999,
+              "id": 999,
+              "st_area_shape": 192656942.39615256,
+              "st_length_shape": 117499.50756699985,
+              "ra_cira": 9,
+              "ra_nome": "THIS IS A CREATE",
+              "ra_codigo": "THIS IS A CREATE",
+              "ra_path": "http://localhost:8080",
+              "ra_areakm2": 192.65694240000002
+          }
+      },
+      {
+          "type": "Feature",
+          "geometry":
+          {
+              "type": "Point",
+              "coordinates":
+              [
+                  -47.20138110814478,
+                  -13.8281037379215
+              ]
+          },
+          "properties":
+          {
+              "fid": 123,
+              "id": 123,
+              "st_area_shape": 192656942.39615256,
+              "st_length_shape": 117499.50756699985,
+              "ra_cira": 9,
+              "ra_nome": "THIS IS A CREATE",
+              "ra_codigo": "THIS IS A CREATE",
+              "ra_path": "http://localhost:8080",
+              "ra_areakm2": 192.65694240000002
+          }
+      },
+      {
+          "type": "Feature",
+          "geometry":
+          {
+              "type": "Point",
+              "coordinates":
+              [
+                  -47.20138110814478,
+                  -13.8281037379215
+              ]
+          },
+          "properties":
+          {
+              "fid": 1,
+              "id": 1,
+              "st_area_shape": 192656942.39615256,
+              "st_length_shape": 117499.50756699985,
+              "ra_cira": 9,
+              "ra_nome": "THIS IS A CREATE",
+              "ra_codigo": "THIS IS A CREATE",
+              "ra_path": "http://localhost:8080",
+              "ra_areakm2": 192.65694240000002
+          }
+      }
+  ]
+}

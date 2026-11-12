@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import enum
 
 from django.utils.translation import gettext_lazy as _
 
@@ -490,12 +491,27 @@ PROCESSING_STATES = (
 
 SOURCE_TYPE_LOCAL = "LOCAL"
 SOURCE_TYPE_REMOTE = "REMOTE"
-SOURCE_TYPE_COPYREMOTE = "COPYREMOTE"
 
 SOURCE_TYPES = (
     (SOURCE_TYPE_LOCAL, "LOCAL"),
     (SOURCE_TYPE_REMOTE, "REMOTE"),
-    (SOURCE_TYPE_COPYREMOTE, "COPYREMOTE"),
 )
 
 LAYER_TYPES = ["vector", "raster", "remote", "vector_time"]
+
+
+class EventType(enum.Enum):
+    EVENT_DOWNLOAD = "download"
+    EVENT_CREATE = "create"
+    EVENT_CHANGE = "change"
+    EVENT_CHANGE_METADATA = "change_metadata"
+    EVENT_REMOVE = "remove"
+    EVENT_VIEW = "view"
+    EVENT_VIEW_METADATA = "view_metadata"
+    EVENT_PUBLISH = "publish"
+    EVENT_UPLOAD = "upload"
+    EVENT_GEOSERVER = "geoserver"  # other event from GS
+    # special event types
+    EVENT_OWS = "OWS:ALL"  # any ows event
+    EVENT_OTHER = "other"  # non-ows event
+    EVENT_ALL = "all"  # all events - baseline: ows + non-ows

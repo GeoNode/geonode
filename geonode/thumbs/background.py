@@ -352,9 +352,12 @@ class GenericXYZBackground(BaseThumbBackground):
                 for retries in range(self.max_retries):
                     try:
                         resp, content = http_client.request(imgurl)
+                        if resp is None:
+                            # HttpClient swallows request exceptions and returns their message as content
+                            raise requests.exceptions.RequestException(content)
                         if resp.status_code > 400:
                             retries = self.max_retries - 1
-                            raise Exception(f"{strip_tags(content)}")
+                            resp.raise_for_status()
                         im = BytesIO(content)
                         Image.open(im).verify()  # verify that it is, in fact an image
                         break

@@ -22,11 +22,12 @@ from tastypie.test import ResourceTestCaseMixin, TestApiClient
 from unittest.mock import patch
 from urllib.parse import urlencode
 from uuid import uuid4
-
+import json
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.test import SimpleTestCase
 from django.test.utils import override_settings
 
 from guardian.shortcuts import get_anonymous_user
@@ -37,12 +38,12 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.base.models import (
-    ExtraMetadata,
     Thesaurus,
     ThesaurusLabel,
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
     ResourceBase,
+    License,
 )
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
@@ -50,7 +51,14 @@ from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_models, remove_models
-
+from geonode.security.registry import permissions_registry
+from geonode.metadata.models import SparseField
+from geonode.assets.models import Asset
+from django.core.files.uploadedfile import SimpleUploadedFile
+from geonode.base.models import Link
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+from geonode.upload.models import UploadSizeLimit
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +220,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 self.client.login(username=self.user, password=self.passwd)
                 resp = self.client.get(list_url)
-                self.assertEqual(len(self.deserialize(resp)["objects"]), 7)  # admin can't see resources in dirty_state
+                self.assertEqual(len(self.deserialize(resp)["objects"]), 8)  # admin can see resources in dirty_state
 
                 self.client.logout()
                 resp = self.client.get(list_url)
@@ -253,7 +261,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 with self.settings(
                     DELAYED_SECURITY_SIGNALS=True,
                     OGC_SERVER=_ogc_geofence_enabled,
-                    DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
+                    DEFAULT_ANONYMOUS_PERMISSIONS="view",
                 ):
                     layer = Dataset.objects.first()
                     layer.set_default_permissions()
@@ -332,12 +340,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)["objects"]), 6)
-        # Returns limitted info about other users
+        # Returns limited info about other users
         bobby = get_user_model().objects.get(username="bobby")
         profiles = self.deserialize(resp)["objects"]
         for profile in profiles:
             if profile["username"] == "bobby":
-                self.assertEquals(profile.get("email"), bobby.email)
+                self.assertEqual(profile.get("email"), bobby.email)
             else:
                 self.assertIsNone(profile.get("email"))
 
@@ -356,12 +364,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)["objects"]), 6)
-        # Returns limitted info about other users
+        # Returns limited info about other users
         bobby = get_user_model().objects.get(username="bobby")
         owners = self.deserialize(resp)["objects"]
         for owner in owners:
             if owner["username"] == "bobby":
-                self.assertEquals(owner.get("email"), bobby.email)
+                self.assertEqual(owner.get("email"), bobby.email)
             else:
                 self.assertIsNone(owner.get("email"))
                 self.assertIsNone(owner.get("first_name"))
@@ -528,35 +536,49 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(len(self.deserialize(resp)["objects"]), 5)
 
     def test_metadata_filters(self):
-        """Test category filtering"""
+        """Test metadata filtering against sparse fields."""
         _r = Dataset.objects.first()
-        _m = ExtraMetadata.objects.create(
+
+        # Create sparse field using migrated ExtraMetadata format.
+        SparseField.objects.update_or_create(
             resource=_r,
-            metadata={
-                "name": "metadata-updated",
-                "slug": "metadata-slug-updated",
-                "help_text": "this is the help text-updated",
-                "field_type": "str-updated",
-                "value": "my value-updated",
-                "category": "category",
-            },
+            name="extra_1",
+            defaults={"value": json.dumps({"category": "category"})},
         )
 
+        # Verify sparse field was created
+        _sf_check = SparseField.objects.filter(resource=_r, name="extra_1")
+        self.assertTrue(_sf_check.exists(), "SparseField should have been created")
+        self.assertEqual(_sf_check.first().value, json.dumps({"category": "category"}))
+
         list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "datasets"})
-        _r.metadata.add(_m)
-        # check we get the correct layers number returnered filtering on one
-        # and then two different categories
+
+        # Test 1: Filter for existing category value
         filter_url = f"{list_url}?metadata__category=category"
-
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)["objects"]), 1)
 
+        result = self.deserialize(resp)
+        result_count = len(result["objects"])
+        logger.debug(f"Test 1 - Filter metadata__category=category: Got {result_count} results (expected 1)")
+        logger.debug(f"Result PKs: {[obj['id'] for obj in result['objects']]}")
+        logger.debug(f"Created resource PK: {_r.pk}")
+
+        self.assertEqual(result_count, 1, f"Expected 1 result, got {result_count}")
+        self.assertEqual(result["objects"][0]["id"], _r.pk)
+
+        # Test 2: Filter for non-existing category value
         filter_url = f"{list_url}?metadata__category=not-existing-category"
-
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)["objects"]), 0)
+
+        result = self.deserialize(resp)
+        result_count = len(result["objects"])
+        logger.debug(
+            f"Test 2 - Filter metadata__category=not-existing-category: Got {result_count} results (expected 0)"
+        )
+
+        self.assertEqual(result_count, 0, f"Expected 0 results, got {result_count}")
 
     def test_tag_filters(self):
         """Test keywords filtering"""
@@ -944,7 +966,7 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
 
     @classmethod
     def _create_resources(self):
-        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
+        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {}}
 
         for x in range(20):
             d: ResourceBase = ResourceBase.objects.create(
@@ -1027,3 +1049,509 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
             url = f"{list_url}?{urlencode(filter + [('force_and', True)])}"
             resp = self.api_client.get(url).json()
             self.assertEqual(exp_and, resp["total"], f"Unexpected number of resources for FORCE_AND filter {tks}")
+
+
+class OwnershipTransferTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.user1 = get_user_model().objects.create_user(username="user1", password="password1")
+        self.user2 = get_user_model().objects.create_user(username="user2", password="password2")
+        self.user3 = get_user_model().objects.create_user(username="user3", password="password3")
+        self.client.login(username="user1", password="password1")
+
+    def _get_updated_metadata(self, resource, old_owner, new_owner):
+        return {
+            "date_type": "publication",
+            "hkeywords": [],
+            "license": {"id": License.objects.get(identifier="not_specified").id, "label": "Not Specified"},
+            "regions": [],
+            "supplemental_information": "No information provided",
+            "linkedresources": [],
+            "contacts": {
+                "owner": {"id": str(new_owner.id), "label": new_owner.username},
+                "author": [{"id": str(old_owner.id), "label": old_owner.username}],
+                "pointOfContact": [{"id": str(old_owner.id), "label": old_owner.username}],
+            },
+            "uuid": str(resource.uuid),
+            "title": "test5",
+            "abstract": "sasa",
+            "date": "2025-08-13T15:30:18.724722+00:00",
+            "tkeywords": {},
+            "language": "eng",
+        }
+
+    def test_owner_change_permission_transfer(self):
+        map_data = {"title": "Test Map", "abstract": "Test abstract", "owner": self.user1}
+        map_resource = Map.objects.create(**map_data)
+        map_resource.set_permissions({"users": {self.user1.username: ["change_resourcebase_metadata"]}})
+        perms_user_1 = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertIn("change_resourcebase_metadata", perms_user_1)
+        metadata_url = f"/api/v2/metadata/instance/{map_resource.pk}/"
+
+        updated_metadata = self._get_updated_metadata(map_resource, self.user1, self.user2)
+
+        response = self.client.put(metadata_url, data=json.dumps(updated_metadata), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        map_resource.refresh_from_db()
+
+        perms_user_2 = permissions_registry.get_perms(instance=map_resource, user=self.user2)
+        self.assertIn("change_resourcebase_metadata", perms_user_2)
+        perms_user_1 = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertNotIn("change_resourcebase_metadata", perms_user_1)
+
+    def test_owner_change_does_not_affect_other_users_permissions(self):
+        map_data = {"title": "Test Map", "abstract": "Test abstract", "owner": self.user1}
+        map_resource = Map.objects.create(**map_data)
+        map_resource.set_permissions(
+            {
+                "users": {
+                    self.user1.username: ["change_resourcebase_metadata"],
+                    self.user3.username: ["change_resourcebase_metadata"],
+                }
+            }
+        )
+
+        perms_user_1 = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertIn("change_resourcebase_metadata", perms_user_1)
+        perms_user_3 = permissions_registry.get_perms(instance=map_resource, user=self.user3)
+        self.assertIn("change_resourcebase_metadata", perms_user_3)
+
+        metadata_url = f"/api/v2/metadata/instance/{map_resource.pk}/"
+        updated_metadata = self._get_updated_metadata(map_resource, self.user1, self.user2)
+
+        response = self.client.put(metadata_url, data=json.dumps(updated_metadata), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        map_resource.refresh_from_db()
+
+        perms_user_1_after = permissions_registry.get_perms(instance=map_resource, user=self.user1)
+        self.assertNotIn("change_resourcebase_metadata", perms_user_1_after)
+
+        perms_user_2_after = permissions_registry.get_perms(instance=map_resource, user=self.user2)
+        self.assertIn("change_resourcebase_metadata", perms_user_2_after)
+
+        perms_user_3_after = permissions_registry.get_perms(instance=map_resource, user=self.user3)
+        self.assertIn("change_resourcebase_metadata", perms_user_3_after)
+
+
+class AssetApiTests(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
+        self.resource = ResourceBase.objects.create(
+            title="Test Resource for Assets",
+            owner=self.admin_user,
+            uuid=str(uuid4()),
+        )
+        content_type = ContentType.objects.get_for_model(ResourceBase)
+        permission = Permission.objects.get(
+            codename="add_resourcebase",
+            content_type=content_type,
+        )
+        self.test_user.user_permissions.add(permission)
+        self.resource.set_permissions(
+            {"users": {self.test_user.username: ["view_resourcebase", "change_resourcebase"]}}
+        )
+
+    def _create_dummy_file(self, filename="test_file.txt", content=b"test content"):
+        return SimpleUploadedFile(filename, content, content_type="text/plain")
+
+    def test_asset_creation_and_link(self):
+        """
+        Tests that a user with correct permissions can upload an asset
+        and that it is correctly linked to the specified resource.
+        """
+        self.client.force_login(self.test_user)
+        url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
+        file = self._create_dummy_file()
+        data = {"files": file, "title": "My Linked Asset"}
+
+        initial_asset_count = Asset.objects.count()
+        initial_link_count = Link.objects.count()
+
+        response = self.client.post(url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        self.assertEqual(Link.objects.count(), initial_link_count + 1)
+
+        new_asset = Asset.objects.latest("created")
+        self.assertEqual(new_asset.title, "My Linked Asset")
+        self.assertTrue(Link.objects.filter(asset=new_asset, resource=self.resource).exists())
+
+    def test_upload_asset_large_file(self):
+        """
+        Ensure that when a file upload exceeds the size limit,
+        no asset is created and a 400 error is returned.
+        """
+        initial_asset_count = Asset.objects.count()
+
+        uploadsizelimit_obj, _ = UploadSizeLimit.objects.update_or_create(
+            slug="asset_upload_size",
+            defaults={
+                "description": "Max size for the uploaded assets file via API",
+                "max_size": 5,
+            },
+        )
+        limit = uploadsizelimit_obj.max_size
+        big_file_content = b"a" * (int(limit * 1024 * 1024) + 1)
+        big_file = self._create_dummy_file(filename="big_file.txt", content=big_file_content)
+
+        url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
+        response = self.client.post(
+            url,
+            {
+                "files": big_file,
+                "title": "Big Asset",
+            },
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        self.assertEqual(Asset.objects.count(), initial_asset_count)
+
+    def test_upload_wrong_document_type(self):
+        """
+        Tests that uploading a file with a disallowed extension fails.
+        """
+        self.client.force_login(self.test_user)
+        url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
+
+        disallowed_file = self._create_dummy_file(filename="malicious_file.exe", content=b"malicious content")
+        data = {"files": disallowed_file}
+
+        response = self.client.post(url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("The uploaded file type exe is not allowed.", str(response.content))
+
+    def test_create_asset_no_add_permission(self):
+        no_perm_user = get_user_model().objects.create_user(username="no_perm_user", password="password")
+        self.client.force_login(no_perm_user)
+
+        url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
+        file = self._create_dummy_file()
+        data = {"files": file}
+
+        response = self.client.post(url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_asset_with_and_without_permission(self):
+        """
+        Test that a asset can be created with resource also with permission.
+        """
+        temp_user = get_user_model().objects.create_user(
+            username="test_user_no_perms", email="noperms@example.com", password="testpass123"
+        )
+
+        url = reverse("base-resources-assets", kwargs={"pk": self.resource.pk})
+
+        content_type = ContentType.objects.get_for_model(ResourceBase)
+        # permission to post assets
+        permission = Permission.objects.get(
+            codename="add_resourcebase",
+            content_type=content_type,
+        )
+        temp_user.user_permissions.add(permission)
+
+        perm_spec = {
+            "users": {
+                temp_user.username: ["view_resourcebase"],
+                self.admin_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"],
+            },
+            "groups": {},
+        }
+        self.resource.set_permissions(perm_spec)
+
+        self.client.force_login(temp_user)
+        initial_asset_count = Asset.objects.count()
+
+        file = self._create_dummy_file(filename="unauthorized_file.txt")
+        data = {"files": file, "resource_id": self.resource.pk, "title": "Unauthorized Asset"}
+
+        response = self.client.post(url, data, format="multipart")
+
+        self.assertEqual(response.status_code, 403)
+
+        self.assertEqual(Asset.objects.count(), initial_asset_count)
+
+        # with admin user
+        self.client.force_login(self.admin_user)
+        admin_file = self._create_dummy_file(filename="admin_file.txt")
+        admin_data = {"files": admin_file, "resource_id": self.resource.pk, "title": "Admin Asset"}
+
+        admin_response = self.client.post(url, admin_data, format="multipart")
+        self.assertEqual(admin_response.status_code, 201)
+        self.assertEqual(Asset.objects.count(), initial_asset_count + 1)
+        admin_asset = Asset.objects.latest("created")
+        link = Link.objects.get(asset=admin_asset)
+        self.assertEqual(link.asset.owner, self.admin_user)
+
+        # with regular user and permission
+        self.client.force_login(temp_user)
+        perm_spec = {
+            "users": {
+                temp_user.username: ["change_resourcebase"],
+                self.admin_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"],
+            },
+            "groups": {},
+        }
+        self.resource.set_permissions(perm_spec)
+        changed_asset_count = Asset.objects.count()
+        changed_file = self._create_dummy_file(filename="new_change_file.txt")
+        new_data = {"files": changed_file, "resource_id": self.resource.pk, "title": "Changed Asset"}
+        changed_response = self.client.post(url, new_data, format="multipart")
+        self.assertEqual(changed_response.status_code, 201)
+        self.assertEqual(Asset.objects.count(), changed_asset_count + 1)
+        new_asset = Asset.objects.latest("created")
+        link = Link.objects.get(asset=new_asset)
+        self.assertEqual(link.asset.owner, temp_user)
+
+
+class AssetDeleteApiTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
+        self.resource1 = ResourceBase.objects.create(
+            title="Test Resource 1",
+            owner=self.admin_user,
+            uuid=str(uuid4()),
+        )
+        self.resource2 = ResourceBase.objects.create(
+            title="Test Resource 2",
+            owner=self.admin_user,
+            uuid=str(uuid4()),
+        )
+
+        content_type = ContentType.objects.get_for_model(ResourceBase)
+        permission = Permission.objects.get(
+            codename="add_resourcebase",
+            content_type=content_type,
+        )
+        self.test_user.user_permissions.add(permission)
+
+        permission = Permission.objects.get(
+            codename="delete_resourcebase",
+            content_type=content_type,
+        )
+        self.test_user.user_permissions.add(permission)
+
+        self.resource1.set_permissions(
+            {"users": {self.test_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"]}}
+        )
+        self.resource2.set_permissions(
+            {"users": {self.test_user.username: ["view_resourcebase", "change_resourcebase", "delete_resourcebase"]}}
+        )
+
+        self.client.force_login(self.test_user)
+        # Create asset 1 linked to resource 1
+        self.asset1 = self._create_asset_via_api(self.resource1, "Asset 1")
+        # Create asset 2 linked to resource 1 and 2
+        self.asset2 = self._create_asset_via_api(self.resource1, "Asset 2")
+        Link.objects.create(resource=self.resource2, asset=self.asset2)
+
+    def _create_asset_via_api(self, resource, title):
+        url = reverse("base-resources-assets", kwargs={"pk": resource.pk})
+        file = SimpleUploadedFile("test_file.txt", b"test content", content_type="text/plain")
+        data = {"files": file, "title": title}
+        response = self.client.post(url, data, format="multipart")
+        self.assertEqual(response.status_code, 201)
+        return Asset.objects.get(pk=response.data["asset_id"])
+
+    def test_delete_asset_as_owner(self):
+        self.client.force_login(self.admin_user)
+        url = reverse("base-resources-delete-asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Asset.objects.filter(pk=self.asset1.pk).exists())
+
+    def test_delete_asset_with_permission(self):
+        self.client.force_login(self.test_user)
+        url = reverse("base-resources-delete-asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Asset.objects.filter(pk=self.asset1.pk).exists())
+
+    def test_delete_asset_no_permission(self):
+        no_perm_user = get_user_model().objects.create_user(username="no_perm", password="password")
+        self.client.force_login(no_perm_user)
+        url = reverse("base-resources-delete-asset", kwargs={"pk": self.resource1.pk, "asset_id": self.asset1.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Asset.objects.filter(pk=self.asset1.pk).exists())
+
+
+class AssetGetApiTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        self.admin_user = get_user_model().objects.get(username="admin")
+        self.owner_user = get_user_model().objects.create_user(
+            username="asset_owner", email="owner@example.com", password="password123"
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="other_user", email="other@example.com", password="password123"
+        )
+        self.no_perm_user = get_user_model().objects.create_user(
+            username="no_perm_user", email="noperm@example.com", password="password123"
+        )
+
+        self.resource = ResourceBase.objects.create(
+            title="Test Resource for Asset Retrieval",
+            owner=self.owner_user,
+            uuid=str(uuid4()),
+        )
+
+        self.resource.set_permissions(
+            {
+                "users": {
+                    self.owner_user.username: ["view_resourcebase", "change_resourcebase"],
+                    self.other_user.username: ["view_resourcebase"],
+                },
+                "groups": {
+                    "anonymous": ["view_resourcebase"],
+                },
+            }
+        )
+
+        self.asset_owner = Asset.objects.create(
+            title="Owner Asset.pdf",
+            description="Created by owner",
+            type="file",
+            owner=self.owner_user,
+        )
+        self.owner_link = Link.objects.create(
+            resource=self.resource,
+            asset=self.asset_owner,
+            name=self.asset_owner.title,
+            link_type="uploaded",
+            extension="pdf",
+            url="http://example.com/owner_asset.pdf",
+        )
+
+        self.asset_admin = Asset.objects.create(
+            title="Admin Asset.png",
+            description="Created by admin",
+            type="image",
+            owner=self.admin_user,
+        )
+        self.admin_link = Link.objects.create(
+            resource=self.resource,
+            asset=self.asset_admin,
+            name=self.asset_admin.title,
+            link_type="image",
+            extension="png",
+            url="http://example.com/admin_asset.png",
+        )
+
+        self.url = reverse("base-resources-asset", kwargs={"pk": self.resource.pk})
+
+    def assert_asset_response(self, response):
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 2)
+
+        returned_ids = {item["id"] for item in response.data}
+        self.assertEqual(returned_ids, {self.asset_owner.id, self.asset_admin.id})
+
+        returned_links = {item["urls"]["link"] for item in response.data}
+        self.assertEqual(returned_links, {self.owner_link.url, self.admin_link.url})
+
+        for item in response.data:
+            self.assertIn("id", item)
+            self.assertIn("title", item)
+            self.assertIn("description", item)
+            self.assertIn("type", item)
+            self.assertIn("created", item)
+            self.assertIn("deletable", item)
+            self.assertIn("urls", item)
+            self.assertIn("download_url", item["urls"])
+            self.assertIn("link", item["urls"])
+
+    def test_admin_can_get_resource_assets(self):
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(self.url)
+
+        self.assert_asset_response(response)
+
+    def test_resource_viewer_can_get_resource_assets(self):
+        self.client.force_login(self.other_user)
+
+        response = self.client.get(self.url)
+
+        self.assert_asset_response(response)
+
+    def test_anonymous_with_view_permission_can_get_resource_assets(self):
+        self.client.logout()
+
+        response = self.client.get(self.url)
+
+        self.assert_asset_response(response)
+
+    def test_user_without_view_permission_cannot_get_resource_assets(self):
+        self.resource.set_permissions(
+            {
+                "users": {
+                    self.owner_user.username: ["view_resourcebase", "change_resourcebase"],
+                },
+                "groups": {},
+            }
+        )
+
+        self.client.force_login(self.no_perm_user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 403)
+
+
+class RouterUrlpatternsCompletenessTest(SimpleTestCase):
+    """Guards the shared /api/v2/ router against app-loading-order regressions."""
+
+    def test_router_is_complete(self):
+        from geonode.api.urls import router
+
+        names = {getattr(pattern, "name", None) for pattern in router.urls}
+
+        # first 5 were previously only reachable via a ready() hook or a stale router.urls read;
+        # base-resources-list is a baseline that was never affected
+        for expected in (
+            "executionrequest-list",
+            "upload-size-limits-list",
+            "upload-parallelism-limits-list",
+            "assets-list",
+            "metadata-list",
+            "base-resources-list",
+        ):
+            with self.subTest(name=expected):
+                self.assertIn(expected, names)
+
+    def test_resource_and_harvesting_no_longer_inject_urls_from_ready(self):
+        import inspect
+
+        import geonode.harvesting.apps
+        import geonode.resource.apps
+
+        for module in (geonode.resource.apps, geonode.harvesting.apps):
+            with self.subTest(module=module.__name__):
+                source = inspect.getsource(module)
+                self.assertNotIn("geonode.urls", source)
+                self.assertNotIn("urlpatterns", source)
+
+    def test_upload_no_longer_has_the_dead_override_mechanism(self):
+        import inspect
+
+        import geonode.upload.apps
+
+        source = inspect.getsource(geonode.upload.apps)
+        self.assertNotIn("run_setup_hooks", source)
+        self.assertNotIn("url_already_injected", source)

@@ -20,42 +20,42 @@ import logging
 from uuid import uuid4
 
 from django.db import transaction
-from drf_spectacular.utils import extend_schema
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from dynamic_rest.viewsets import DynamicModelViewSet
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from geonode.base import register_event
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.mixins import AdvertisedListMixin
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
+from geonode.base.enumerations import EventType
 from geonode.layers.api.serializers import DatasetSerializer
 from geonode.maps.api.exception import GeneralMapsException
 from geonode.maps.api.permissions import MapPermissionsFilter
 from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
-from geonode.maps.signals import map_changed_signal
-from geonode.monitoring.models import EventType
-from geonode.resource.manager import resource_manager
+from geonode.metadata.multilang.views import MultiLangViewMixin
+from geonode.metadata.tracking.operation import metadata_tracker
+from geonode.resource.registry import resource_manager_registry, map_manager
 from geonode.utils import resolve_object
+from geonode.security.utils import get_visible_resources
+from django.conf import settings
+from geonode.base.models import ResourceBase
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
 
-class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class MapViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows maps to be viewed or edited.
     """
 
     http_method_names = ["get", "patch", "post", "put"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
@@ -64,10 +64,12 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        AdvertisedFilter,
         ExtentFilter,
         MapPermissionsFilter,
     ]
     queryset = Map.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -92,50 +94,53 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
         """
         return super(MapViewSet, self).create(request, *args, **kwargs)
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: MapLayerSerializer(many=True)},
-        description="API endpoint allowing to retrieve the MapLayers list.",
-    )
     @action(detail=True, methods=["get"])
     def maplayers(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve the MapLayers list."""
         map = self.get_object()
-        resources = map.maplayers
+        resources = map.maplayers.select_related("dataset")
+
+        if not request.user.is_superuser:
+            visible_dataset_ids = get_visible_resources(
+                ResourceBase.objects.filter(id__in=map.maplayers.filter(dataset__isnull=False).values("dataset_id")),
+                request.user,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            ).values("id")
+
+            resources = resources.filter(Q(dataset_id__isnull=True) | Q(dataset_id__in=visible_dataset_ids))
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: DatasetSerializer(many=True)},
-        description="API endpoint allowing to retrieve the local MapLayers.",
-    )
     @action(detail=True, methods=["get"])
     def datasets(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve the local MapLayers."""
         map = self.get_object()
-        resources = map.datasets
+        resources = get_visible_resources(
+            map.datasets,
+            request.user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
-        # Thumbnail will be handled later
-        post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
-
-        instance = serializer.save(
-            owner=self.request.user,
-            resource_type="map",
-            uuid=str(uuid4()),
+        payload = serializer.validated_data.copy()
+        request_user = self.request.user
+        payload["owner"] = request_user
+        payload["resource_type"] = "map"
+        payload["uuid"] = str(uuid4())
+        instance = map_manager.create(
+            payload["uuid"],
+            resource_type=Map,
+            defaults=payload,
+            user=request_user,
         )
-
-        # events and resouce routines
-        self._post_change_routines(
-            instance=instance,
-            create_action_perfomed=True,
-            additional_data=post_creation_data,
-        )
-
-        # Handle thumbnail generation
-        resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
+        serializer.instance = instance
+        register_event(self.request, EventType.EVENT_CREATE, instance)
 
     def perform_update(self, serializer):
-        # Check instance permissions with resolve_object
         mapid = serializer.instance.id
         key = "urlsuffix" if Map.objects.filter(urlsuffix=mapid).exists() else "pk"
         map_obj = resolve_object(
@@ -144,30 +149,18 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
         instance = serializer.instance
         if instance != map_obj:
             raise GeneralMapsException(detail="serializer instance and object are different")
-        # Thumbnail will be handled later
-        post_change_data = {
-            "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
-            "dataset_names_before_changes": [lyr.alternate for lyr in instance.datasets],
-        }
 
-        instance = serializer.save()
-
-        # thumbnail, events and resouce routines
-        self._post_change_routines(
-            instance=instance,
-            create_action_perfomed=False,
-            additional_data=post_change_data,
-        )
-
-    def _post_change_routines(self, instance: Map, create_action_perfomed: bool, additional_data: dict):
-        # Step 1: Handle Maplayers signals if this is and update action
-        if not create_action_perfomed:
-            dataset_names_before_changes = additional_data.pop("dataset_names_before_changes", [])
-            dataset_names_after_changes = [lyr.alternate for lyr in instance.datasets]
-            if dataset_names_before_changes != dataset_names_after_changes:
-                map_changed_signal.send_robust(sender=instance, what_changed="datasets")
-        # Step 2: Register Event
-        event_type = EventType.EVENT_CREATE if create_action_perfomed else EventType.EVENT_CHANGE
-        register_event(self.request, event_type, instance)
-        # Step 3: Resource Manager
-        resource_manager.update(instance.uuid, instance=instance, notify=True)
+        dataset_names_before_changes = [lyr.alternate for lyr in instance.datasets]
+        # one edit is one metadata change: the serializer writes before the manager gets to
+        with metadata_tracker(self.request.user, resource=instance):
+            # Preserve serializer-side validation and group/role logic before manager hooks.
+            instance = serializer.save()
+            instance = resource_manager_registry.get_for_instance(instance).update(
+                instance.uuid,
+                instance=instance,
+                dataset_names_before_changes=dataset_names_before_changes,
+                notify=True,
+                user=self.request.user,
+            )
+        serializer.instance = instance
+        register_event(self.request, EventType.EVENT_CHANGE, instance)

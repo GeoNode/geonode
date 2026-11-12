@@ -18,7 +18,6 @@
 #########################################################################
 import logging
 
-from dynamic_rest.fields.fields import DynamicComputedField
 from rest_framework import serializers
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.documents.models import Document
@@ -26,20 +25,8 @@ from geonode.documents.models import Document
 logger = logging.getLogger(__name__)
 
 
-class GeonodeFilePathField(DynamicComputedField):
-    def get_attribute(self, instance):
-        return instance.files
-
-
-class DocumentFieldField(DynamicComputedField):
-    def get_attribute(self, instance):
-        return instance.files
-
-
 class DocumentSerializer(ResourceBaseSerializer):
     title = serializers.CharField(required=False)
-    file_path = GeonodeFilePathField(required=False, write_only=True)
-    doc_file = DocumentFieldField(required=False, write_only=True)
 
     class Meta:
         model = Document
@@ -55,9 +42,11 @@ class DocumentSerializer(ResourceBaseSerializer):
                     "subtype",
                     "extension",
                     "mime_type",
-                    "file_path",
-                    "doc_file",
                     "doc_url",
                 )
             )
         )
+        # name and extension determine where the document file lives on disk
+        # and how it is served. POST/PUT are blocked at the http_method_names
+        # layer; making them read-only locks them down on PATCH too.
+        read_only_fields = ("name", "extension")

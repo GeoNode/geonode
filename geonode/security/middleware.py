@@ -34,7 +34,6 @@ from geonode.base.auth import (
     is_ipaddress_in_whitelist,
 )
 
-
 # make sure login_url can be mapped to redirection URL and will match request.path
 login_url = settings.LOGIN_URL.replace(settings.SITEURL.rstrip("/"), "")
 if not login_url.startswith("/"):
@@ -48,7 +47,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         reverse("dataset_acls"),
         reverse("dataset_acls_dep"),
         reverse("dataset_resolve_user_dep"),
-        reverse("proxy"),
         "/account/(?!.*(?:signup))",
         # block unauthenticated users from creating new accounts.
         "/static/*",
@@ -84,6 +82,8 @@ class LoginRequiredMiddleware(MiddlewareMixin):
     redirect_to = login_url
 
     def __init__(self, get_response):
+        if get_response:
+            super().__init__(get_response)
         self.get_response = get_response
 
     def process_request(self, request):
@@ -92,26 +92,23 @@ class LoginRequiredMiddleware(MiddlewareMixin):
                 return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
 
 
-class LoginFromApiKeyMiddleware(MiddlewareMixin):
-    def __init__(self, get_response):
-        self.get_response = get_response
-
+class AuthenticateBasicAuthOrApiKeyMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """
-        If an api key is provided and validated, the user can access to the page even without the login
-        This middleware is deactivated by default, to activate it set ENABLE_APIKEY_LOGIN=True
+        Bearer token  authentication is already coverde by OAuth2TokenMiddleware.
+        This middleware is used to extract user from headers in case of Basic Auth or API Key.
         """
-        if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-            request.user = extract_user_from_headers(request)
-
-            if request.user and not request.user.is_anonymous and request.user.is_authenticated:
-                return
+        user = extract_user_from_headers(request)
+        if user and not user.is_anonymous:
+            request.user = user
 
 
 class SessionControlMiddleware(MiddlewareMixin):
     """
     Middleware that checks if session variables have been correctly set.
     """
+
+    async_mode = False
 
     redirect_to = getattr(settings, "LOGIN_URL", reverse("account_login"))
 

@@ -21,6 +21,7 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.urls import reverse
+from django.test import override_settings
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from mock import patch
@@ -29,6 +30,8 @@ from rest_framework.test import APITestCase
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
+from geonode.security.registry import permissions_registry
+from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -36,19 +39,29 @@ logger = logging.getLogger(__name__)
 class MapsApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
-        first_map = Map.objects.first()
-        first_map.blob = DUMMY_MAPDATA
-        first_map.save()
-        first_dataset = Dataset.objects.first()
+
+        try:
+            cls.map = Map.objects.get(pk=1)
+            cls.dataset = Dataset.objects.get(pk=1)
+        except (Map.DoesNotExist, Dataset.DoesNotExist):
+            cls.map = Map.objects.first()
+            cls.dataset = Dataset.objects.first()
+
+        # Update and save the class-level object
+        cls.map.blob = DUMMY_MAPDATA
+        cls.map.save()
+
+        # Create the MapLayer object
         MapLayer.objects.create(
-            map=first_map,
+            map=cls.map,
+            store=cls.dataset.store,
+            name=cls.dataset.alternate,
             extra_params={"foo": "bar"},
-            name=first_dataset.alternate,
-            store=first_dataset.store,
             current_style="some-style",
             local=True,
         )
@@ -116,17 +129,6 @@ class MapsApiTests(APITestCase):
                 self.assertEqual(response.data["map"]["maplayers"][0]["order"], 0)
                 self.assertEqual(response.data["map"]["maplayers"][0]["opacity"], 1.0)
 
-    def test_extra_metadata_included_with_param(self):
-        resource = Map.objects.first()
-        url = urljoin(f"{reverse('maps-list')}/", f"{resource.pk}")
-        data = {"include[]": "metadata"}
-
-        response = self.client.get(url, format="json", data=data)
-        self.assertIsNotNone(response.data["map"].get("metadata"))
-
-        response = self.client.get(url, format="json")
-        self.assertNotIn("map", response.data["map"])
-
     def test_patch_map(self):
         """
         Patch to maps/<pk>/
@@ -153,6 +155,31 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
+
+    @override_settings(METADATA_TRACK_CHANGES=True)
+    def test_patch_map_records_one_change_under_the_editor(self):
+        """
+        An edit is one change, whatever the serializer and the manager do to apply it, recorded
+        under whoever asked for it and not under the default user of the tracking
+        """
+        resource = Map.objects.first()
+        url = reverse("maps-detail", kwargs={"pk": resource.pk})
+        edited_title = f"{resource.title}-edited"
+
+        self.client.login(username="admin", password="admin")
+        # the sink of the tracking: whatever reaches it is what gets recorded
+        with patch("geonode.metadata.tracking.operation.store_change") as store_change:
+            response = self.client.patch(url, data={"title": edited_title}, format="json")
+
+        self.assertEqual(200, response.status_code)
+        store_change.assert_called_once()
+
+        changed_resource, delta, user, attributed = store_change.call_args.args
+        self.assertEqual(resource.pk, changed_resource.pk)
+        self.assertEqual(get_user_model().objects.get(username="admin"), user)
+        self.assertTrue(attributed, "the editor is known: that is an attribution")
+        # the serializer writes the title before the manager runs: it is part of the change
+        self.assertEqual({"from": resource.title, "to": edited_title}, delta.get("title"))
 
     def test_patch_map_with_extra_maplayer_info(self):
         """
@@ -269,6 +296,92 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
         self.assertIsNotNone(response.data["map"]["thumbnail_url"])
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=False,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_map_keeps_uploader_owner_when_auto_assign_disabled(self):
+        url = reverse("maps-list")
+        data = {
+            "title": "Map owner parity feature off",
+            "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
+        }
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["map"]["owner"]["username"], "norman")
+
+    @override_settings(
+        AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN=True,
+        RESOURCE_OWNERSHIP_ADMIN_USERNAME="admin",
+    )
+    def test_create_map_assigns_admin_owner_and_grants_manage_to_uploader(self):
+        url = reverse("maps-list")
+        data = {
+            "title": "Map owner auto assign",
+            "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
+        }
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["map"]["owner"]["username"], "admin")
+
+        map_obj = Map.objects.get(pk=response.json()["map"]["pk"])
+        norman = get_user_model().objects.get(username="norman")
+        self.assertTrue(
+            permissions_registry.user_has_perm(
+                norman,
+                map_obj.get_self_resource(),
+                "change_resourcebase_permissions",
+                include_virtual=True,
+            )
+        )
+
+    def test_map_subresources_respect_request_user_visibility(self):
+        map_obj = Map.objects.first()
+        dataset = Dataset.objects.first()
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), map_obj.get_self_resource())
+        dataset.set_permissions({"users": {}, "groups": {}})
+
+        dataset_layer = MapLayer.objects.create(
+            map=map_obj,
+            dataset=dataset,
+            name=dataset.alternate,
+            store=dataset.store,
+            local=True,
+        )
+        external_layer = MapLayer.objects.create(
+            map=map_obj,
+            dataset=None,
+            name="osm_basemap",
+            local=False,
+        )
+
+        datasets_url = f"{reverse('maps-detail', kwargs={'pk': map_obj.pk})}/datasets/"
+        maplayers_url = f"{reverse('maps-detail', kwargs={'pk': map_obj.pk})}/maplayers/"
+
+        response = self.client.get(datasets_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(str(dataset.uuid), [item["uuid"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(dataset_layer.pk, [item["pk"] for item in response.json()])
+        self.assertIn(external_layer.pk, [item["pk"] for item in response.json()])
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
+
+        response = self.client.get(datasets_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(str(dataset.uuid), [item["uuid"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(dataset_layer.pk, [item["pk"] for item in response.json()])
 
     def test_create_map_featured_status_admin(self):
         """

@@ -59,6 +59,16 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
         ),
     }
 
+    @staticmethod
+    def can_do(action) -> bool:
+        """
+        Evaluate if the handler can take care of a specific action.
+        Each action (import/copy/etc...) can define different step so
+        the Handler must be ready to handle them. If is not in the actual
+        flow the already in place flow is followd
+        """
+        return action in GeoTiffFileHandler.TASKS
+
     @property
     def supported_file_extension_config(self):
         return {
@@ -87,6 +97,15 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
             ],
             "actions": list(self.TASKS.keys()),
             "type": "raster",
+        }
+
+    @property
+    def upload_validation_config(self):
+        return {
+            "tiff": {"mimes": {"image/tiff"}},
+            "tif": {"mimes": {"image/tiff"}},
+            "geotiff": {"mimes": {"image/tiff"}},
+            "geotif": {"mimes": {"image/tiff"}},
         }
 
     @staticmethod

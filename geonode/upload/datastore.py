@@ -16,10 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
+
 from django.utils.module_loading import import_string
 from django.contrib.auth import get_user_model
 
 from geonode.upload.orchestrator import orchestrator
+
+logger = logging.getLogger("importer")
 
 
 class DataStoreManager:
@@ -44,19 +48,35 @@ class DataStoreManager:
         """
         Perform basic validation steps
         """
-        if self.files:
-            return self.handler.is_valid(self.files, self.user, execution_id=self.execution_id)
         url = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("url")
         if url:
-            return self.handler.is_valid_url(url)
-        return False
+            return self.handler.is_valid_url(url, execution_id=self.execution_id)
+        return self.handler.is_valid(self.files, self.user, execution_id=self.execution_id)
+
+    def _import_and_register(self, execution_id, task_name, **kwargs):
+        """
+        Private method to handle resource import and register task status.
+        """
+        layer_names, _, _ = self.handler().import_resource(self.files, execution_id, **kwargs)
+        orchestrator.register_task_status(execution_id, layer_names, task_name, status="RUNNING")
+
+    def pre_processing(self, **kwargs):
+        self.handler().pre_processing(self.files, self.execution_id, **kwargs)
+        # always update the files after the pre-processing
+        self.files = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("files")
 
     def pre_validation(self, **kwargs):
         """
-        Hook for let the handler prepare the data before the validation.
-        Maybe a file rename, assign the resource to the execution_id
+        Deprecated compatibility hook.
+
+        The pre_validation hook is deprecated. Handlers should use
+        pre_processing() instead. This fallback is kept temporarily for custom
+        handlers that still implement pre_validation().
         """
-        return self.handler().pre_validation(self.files, self.execution_id, **kwargs)
+        handler = self.handler()
+        if getattr(handler, "pre_validation", None):
+            logger.warning("Calling deprecated handler method pre_validation()", exc_info=True)
+            return handler.pre_validation(self.files, self.execution_id, **kwargs)
 
     def prepare_import(self, **kwargs):
         """
@@ -64,8 +84,34 @@ class DataStoreManager:
         """
         return self.handler().prepare_import(self.files, self.execution_id, **kwargs)
 
-    def start_import(self, execution_id, **kwargs):
+    def start_import(self, execution_id, task_name, **kwargs):
         """
         call the resource handler object to perform the import phase
         """
-        return self.handler().import_resource(self.files, execution_id, **kwargs)
+        self._import_and_register(execution_id, task_name, **kwargs)
+        return
+
+    def upsert_validation(self, execution_id, **kwargs):
+        """
+        Call the resource handler to validate files for an upsert operation.
+        """
+        return self.handler().upsert_validation(self.files, execution_id, **kwargs)
+
+    def upsert_data(self, execution_id, task_name, **kwargs):
+        """
+        Call the resource handler to perform the upsert operation.
+        """
+        result = self.handler().upsert_data(self.files, execution_id, **kwargs)
+
+        # register the task as RUNNING
+        layer_name = result.get("layer_name", None)
+
+        orchestrator.register_task_status(execution_id, layer_name, task_name, status="RUNNING")
+
+        return result
+
+    def refresh_geonode_resource(self, execution_id, **kwargs):
+        """
+        Call the resource handler to refresh the GeoNode resource after an update.
+        """
+        return self.handler().refresh_geonode_resource(execution_id, **kwargs)

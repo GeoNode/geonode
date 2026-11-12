@@ -19,7 +19,9 @@
 import ast
 import functools
 import json
+import logging
 import re
+import os
 
 from uuid import uuid4
 from urllib.parse import urljoin, urlparse
@@ -33,12 +35,10 @@ from django.conf import settings
 from django.db.models import Subquery, QuerySet
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 
-from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
-
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -49,64 +49,73 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from guardian.shortcuts import get_objects_for_group
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
+from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.thumbs.thumbnails import create_thumbnail
-from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
+from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN, remove_thumb
 from geonode.groups.conf import settings as groups_settings
-from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
+from geonode.base.models import (
+    HierarchicalKeyword,
+    Region,
+    ResourceBase,
+    TopicCategory,
+    ThesaurusKeyword,
+    Configuration,
+    LinkedResource,
+)
 from geonode.base.api.filters import (
     DynamicSearchFilter,
     ExtentFilter,
     FacetVisibleResourceFilter,
     FavoriteFilter,
     TKeywordsFilter,
+    AdvertisedFilter,
 )
-from geonode.groups.models import GroupProfile
+from geonode.indexing.api.filters import ResourceIndexFilter
+from geonode.groups.models import GroupProfile, Group
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
     get_user_visible_groups,
 )
-
+from geonode.security.registry import permissions_registry
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 
-
-from geonode.base.api.mixins import AdvertisedListMixin
 from .permissions import (
-    IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
     UserHasPerms,
+    IsGroupMember,
 )
 
 from .serializers import (
     FavoriteSerializer,
-    PermSpecSerialiazer,
     GroupProfileSerializer,
     ResourceBaseSerializer,
-    ResourceBaseTypesSerializer,
     OwnerSerializer,
     HierarchicalKeywordSerializer,
     TopicCategorySerializer,
     RegionSerializer,
     ThesaurusKeywordSerializer,
-    ExtraMetadataSerializer,
     LinkedResourceSerializer,
 )
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
-from geonode.base.utils import validate_extra_metadata
-
-import logging
+from geonode.base.utils import patch_perms
+from geonode.base.api.deprecated_extra_metadata import DeprecatedExtraMetadataMixin
+from geonode.assets.models import Asset
+from geonode.base.models import Link
+from geonode.assets.utils import create_asset_and_link, unlink_asset, is_asset_deletable
+from geonode.assets.handlers import asset_handler_registry
+from geonode.utils import get_supported_datasets_file_types
+from geonode.utils import assert_safe_xml, UnsafeXMLError
 
 logger = logging.getLogger(__name__)
 
@@ -116,14 +125,20 @@ class GroupViewSet(DynamicModelViewSet):
     API endpoint that allows gropus to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         IsManagerEditOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    search_fields = ["title", "slug"]
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_permissions(self):
+        if self.action in ("members", "managers"):
+            return [IsGroupMember()]
+
+        return super().get_permissions()
 
     def get_queryset(self):
         """
@@ -135,40 +150,43 @@ class GroupViewSet(DynamicModelViewSet):
         queryset = GroupProfile.objects.filter(id__in=[_g.id for _g in metadata_author_groups])
         return queryset.order_by("title")
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: UserSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Group members.",
-    )
     @action(detail=True, methods=["get"])
     def members(self, request, pk=None):
+        """API endpoint allowing to retrieve the Group members."""
         group = self.get_object()
         members = get_user_model().objects.filter(id__in=group.member_queryset().values_list("user", flat=True))
         return Response(UserSerializer(embed=True, many=True).to_representation(members))
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: UserSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Group managers.",
-    )
     @action(detail=True, methods=["get"])
     def managers(self, request, pk=None):
+        """API endpoint allowing to retrieve the Group managers."""
         group = self.get_object()
         managers = group.get_managers()
         return Response(UserSerializer(embed=True, many=True).to_representation(managers))
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Group specific resources.",
-    )
     @action(detail=True, methods=["get"])
     def resources(self, request, pk=None):
+        """API endpoint allowing to retrieve the Group specific resources."""
         group = self.get_object()
-        resources = group.resources()
+
+        group_resources = get_objects_for_group(
+            group.group,
+            ["base.view_resourcebase", "base.change_resourcebase"],
+            any_perm=True,
+        )
+
+        resources = get_visible_resources(
+            queryset=group_resources,
+            user=request.user,
+            request=request,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
+
         paginator = GeoNodeApiPagination()
         paginator.page_size = request.GET.get("page_size", 10)
-        result_page = paginator.paginate_queryset(list(resources), request)
+        result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
         return paginator.get_paginated_response({"resources": serializer.data})
 
@@ -246,7 +264,6 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
     API endpoint that lists all possible owners.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         AllowAny,
     ]
@@ -297,15 +314,16 @@ class ApiPresetsInitializer(APIView):
             request.GET._mutable = False
 
 
-class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedExtraMetadataMixin, DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         TKeywordsFilter,
+        ResourceIndexFilter,
+        AdvertisedFilter,
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
@@ -313,7 +331,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         ResourceBasePermissionsFilter,
         FavoriteFilter,
     ]
-    queryset = ResourceBase.objects.all().order_by("-created")
+    queryset = ResourceBase.objects.select_related("owner").order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -325,38 +344,21 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the approved Resources.",
-    )
     @action(detail=False, methods=["get"])
     def approved(self, request, *args, **kwargs):
+        """API endpoint allowing to retrieve the approved Resources."""
         return self._filtered(request, {"is_approved": True})
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the published Resources.",
-    )
     @action(detail=False, methods=["get"])
     def published(self, request, *args, **kwargs):
+        """API endpoint allowing to retrieve the published Resources."""
         return self._filtered(request, {"is_published": True})
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the featured Resources.",
-    )
     @action(detail=False, methods=["get"])
     def featured(self, request, *args, **kwargs):
+        """API endpoint allowing to retrieve the featured Resources."""
         return self._filtered(request, {"featured": True})
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: FavoriteSerializer(many=True)},
-        description="API endpoint allowing to retrieve the favorite Resources.",
-    )
     @action(
         detail=False,
         methods=["get"],
@@ -365,6 +367,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         ],
     )
     def favorites(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve the favorite Resources."""
         paginator = GeoNodeApiPagination()
         paginator.page_size = request.GET.get("page_size", 10)
         favorites = Favorite.objects.favorites_for_user(user=request.user)
@@ -372,13 +375,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         serializer = FavoriteSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"favorites": serializer.data})
 
-    @extend_schema(
-        methods=["post", "delete"],
-        responses={200: FavoriteSerializer(many=True)},
-        description="API endpoint allowing to retrieve the favorite Resources.",
-    )
     @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to add or remove a resource from favorites."""
         resource = self.get_object()
         user = request.user
 
@@ -397,10 +396,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             except Favorite.DoesNotExist:
                 return Response({"message": "Resource not in favorites"}, status=404)
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseTypesSerializer()},
-        description="""
+    @action(detail=False, methods=["get"])
+    def resource_types(self, request, *args, **kwargs):
+        """
         Returns the list of available ResourceBase polymorphic_ctypes.
 
         the mapping looks like:
@@ -426,10 +424,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             ]
         }
         ```
-        """,
-    )
-    @action(detail=False, methods=["get"])
-    def resource_types(self, request, *args, **kwargs):
+        """
+
         def _to_compact_perms_list(
             allowed_perms: dict, resource_type: str, resource_subtype: str, compact_perms_labels: dict = {}
         ) -> list:
@@ -504,11 +500,15 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             )
         return Response({"resource_types": resource_types})
 
-    @extend_schema(
+    @action(
+        detail=True,
+        url_path="permissions",  # noqa
+        url_name="perms-spec",
         methods=["get", "put", "patch", "delete"],
-        request=PermSpecSerialiazer(),
-        responses={200: None},
-        description="""
+        permission_classes=[IsAuthenticated],
+    )
+    def resource_service_permissions(self, request, pk, *args, **kwargs):
+        """
         Sets an object's the permission levels based on the perm_spec JSON.
 
         the mapping looks like:
@@ -527,17 +527,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             }
         }
         ```
-        """,
-    )
-    @action(
-        detail=True,
-        url_path="permissions",  # noqa
-        url_name="perms-spec",
-        methods=["get", "put", "patch", "delete"],
-        permission_classes=[IsAuthenticated],
-    )
-    def resource_service_permissions(self, request, pk, *args, **kwargs):
-        """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
+
+        Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
 
         - GET input_params: {
             id: "<str: ID>"
@@ -570,11 +561,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         - Removes all the permissions (except owner and admin ones) from a Resource:
         curl -v -X DELETE -u admin:admin -H "Content-Type: application/json" http://localhost:8000/api/v2/resources/<id>/permissions
 
-        - Changes the owner of a Resource:
-            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
-                --header 'Content-Type: application/json' \
-                --data-raw '{"groups": [],"organizations": [],"users": [{"id": 1001,"permissions": "owner"}]}'
-
         - Assigns View permissions to some users:
             curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
                 --header 'Content-Type: application/json' \
@@ -593,7 +579,9 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         """
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
-        _user_can_manage = request.user.has_perm("change_resourcebase_permissions", resource.get_self_resource())
+        _user_can_manage = permissions_registry.user_has_perm(
+            request.user, resource.get_self_resource(), "change_resourcebase_permissions", include_virtual=True
+        )
         if (
             config.read_only
             or config.maintenance
@@ -606,6 +594,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
             request_params = request.data
+
             if request.method == "GET":
                 return Response(perms_spec.compact)
             elif request.method == "DELETE":
@@ -614,34 +603,48 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                     func_name="remove_permissions",
                     geonode_resource=resource,
                     action="permissions",
-                    input_params={"uuid": request_params.get("uuid", resource.uuid)},
+                    input_params={"uuid": resource.uuid},
                 )
-            elif request.method == "PUT":
-                perms_spec_compact = PermSpecCompact(request.data, resource)
+            elif request.method in ["PUT", "PATCH"]:
+                user_perms = permissions_registry.get_perms(instance=resource, user=request.user)
+                current_compact = PermSpecCompact(perms_spec.compact, resource)
+                if request.method == "PATCH":
+                    proposed_compact = PermSpecCompact(perms_spec.compact, resource)
+                    proposed_compact.merge(PermSpecCompact(request.data, resource))
+                else:
+                    proposed_compact = PermSpecCompact(request.data, resource)
+
+                perms_diff = current_compact.diff(proposed_compact)
+                excluded_group_ids = []
+                if "can_manage_anonymous_permissions" not in user_perms:
+                    anonymous_group = Group.objects.get(name="anonymous")
+                    excluded_group_ids.append(anonymous_group.id)
+                    logger.info(
+                        f"User {request.user.username} cannot manage anonymous permissions on resource {resource.pk}"
+                    )
+                if "can_manage_registered_member_permissions" not in user_perms:
+                    registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+                    excluded_group_ids.append(registered_group.id)
+                    logger.info(
+                        f"User {request.user.username} cannot manage registered members permissions on resource {resource.pk}"
+                    )
+                if excluded_group_ids:
+                    for diff_action in ("added", "removed", "changed"):
+                        perms_diff.groups[diff_action] = [
+                            item for item in perms_diff.groups[diff_action] if item.get("id") not in excluded_group_ids
+                        ]
+                perms_spec_compact_resource = patch_perms(perms_spec.compact, perms_diff, resource)
+
+                if resource.dirty_state:
+                    raise Exception("Cannot update if the resource is in dirty state")
+                resource.set_dirty_state()
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name="set_permissions",
                     geonode_resource=resource,
                     action="permissions",
                     input_params={
-                        "uuid": request_params.get("uuid", resource.uuid),
-                        "owner": request_params.get("owner", resource.owner.username),
-                        "permissions": perms_spec_compact.extended,
-                        "created": request_params.get("created", False),
-                    },
-                )
-            elif request.method == "PATCH":
-                perms_spec_compact_patch = PermSpecCompact(request.data, resource)
-                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
-                perms_spec_compact_resource.merge(perms_spec_compact_patch)
-                _exec_request = ExecutionRequest.objects.create(
-                    user=request.user,
-                    func_name="set_permissions",
-                    geonode_resource=resource,
-                    action="permissions",
-                    input_params={
-                        "uuid": request_params.get("uuid", resource.uuid),
-                        "owner": request_params.get("owner", resource.owner.username),
+                        "uuid": resource.uuid,
                         "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get("created", False),
                     },
@@ -661,30 +664,38 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
-    @extend_schema(
-        methods=["post"],
-        responses={200},
-        description="API endpoint allowing to set the thumbnail url for an existing dataset.",
-    )
     @action(
         detail=False,
-        url_path="(?P<resource_id>\d+)/set_thumbnail_from_bbox",  # noqa
+        url_path=r"(?P<resource_id>\d+)/set_thumbnail_from_bbox",
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
     def set_thumbnail_from_bbox(self, request, resource_id, *args, **kwargs):
+        """API endpoint allowing to set the thumbnail url for an existing dataset."""
         import traceback
         from django.utils.datastructures import MultiValueDictKeyError
 
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
+            # Check if the current user has the permissions to set the thumbnail
+            if not request.user.has_perm("change_resourcebase", resource.get_self_resource()):
+                return Response(
+                    {"message": "You do not have permission to set this thumbnail.", "success": False},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            map_thumb_from_bbox = False
+            if isinstance(resource.get_real_instance(), Map):
+                map_thumb_from_bbox = True
+
             if not isinstance(resource.get_real_instance(), (Dataset, Map)):
                 raise NotImplementedError("Not implemented: Endpoint available only for Dataset and Maps")
 
             request_body = request.data if request.data else json.loads(request.body)
             try:
+                # bbox format: (xmin, xmax, ymin, ymax)
                 bbox = request_body["bbox"] + [request_body["srid"]]
                 zoom = request_body.get("zoom", None)
             except MultiValueDictKeyError:
@@ -694,9 +705,18 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 bbox = request_body["bbox"] + [request_body["srid"]]
                 zoom = request_body.get("zoom", None)
 
-            thumbnail_url = create_thumbnail(
-                resource.get_real_instance(), bbox=bbox, background_zoom=zoom, overwrite=True
+            success = resource_manager_registry.get_for_instance(resource).set_thumbnail(
+                resource.uuid,
+                instance=resource,
+                bbox=bbox,
+                background_zoom=zoom,
+                overwrite=True,
+                map_thumb_from_bbox=map_thumb_from_bbox,
             )
+            if not success:
+                raise ThumbnailError("Thumbnail generation failed.")
+            resource.refresh_from_db()
+            thumbnail_url = resource.thumbnail_url
             return Response(
                 {"message": "Thumbnail correctly created.", "success": True, "thumbnail_url": thumbnail_url}, status=200
             )
@@ -721,120 +741,68 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             logger.error(e)
             return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
 
-    @extend_schema(
-        methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'INGEST' operation."
-    )
     @action(
         detail=False,
-        url_path="ingest/(?P<resource_type>\w+)",  # noqa
-        url_name="resource-service-ingest",
+        url_path=r"(?P<resource_id>\d+)/delete_thumbnail",
+        url_name="delete-thumbnail",
         methods=["post"],
-        permission_classes=[IsAuthenticated],
+        permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
-    def resource_service_ingest(self, request, resource_type: str = None, *args, **kwargs):
-        """Instructs the Async dispatcher to execute a 'INGEST' operation
-
-        - POST input_params: {
-            uuid: "<str: UUID>",
-            files: "<list(str) path>",
-            defaults: "{\"owner\":\"<str: username>\",<list: str>}",  # WARNING: 'owner' is mandatory
-            resource_type: "<enum: ['dataset', 'document', 'map', '<GeoApp: name>']>"
-        }
-
-        - output_params: {
-            output: <int: number of resources deleted / 0 if none>
-        }
-
-        - output: {
-                "status": "ready",
-                "execution_id": "<str: execution ID>",
-                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
-            }
-
-        Sample Request:
-
-        1. curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d 'defaults={"owner":"admin","title":"pippo"}' -d 'files=["/mnt/c/Data/flowers.jpg"]'
-            http://localhost:8000/api/v2/resources/ingest/document
-            OUTPUT: {
-                "status": "ready",
-                "execution_id": "90ca670d-df60-44b6-b358-d792c6aecc58",
-                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58"
-            }
-
-        2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58
-            OUTPUT: {
-                "user": "admin",
-                "status": "finished",
-                "func_name": "create",
-                "created": "2021-07-22T15:32:09.096075Z",
-                "finished": "2021-07-22T15:32:26.936683Z",
-                "last_updated": "2021-07-22T15:32:09.096129Z",
-                "input_params": {
-                    "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb",
-                    "files": "[\"/mnt/c/Data/flowers.jpg\"]",
-                    "defaults": "{\"owner\":\"admin\",\"title\":\"pippo\"}",
-                    "resource_type": "dataset"
-                },
-                "output_params": {
-                    "output": {
-                        "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb"
-                    }
-                }
-            }
-        """
-        config = Configuration.load()
-        if (
-            config.read_only
-            or config.maintenance
-            or request.user.is_anonymous
-            or not request.user.is_authenticated
-            or not request.user.has_perm("base.add_resourcebase")
-        ):
-            return Response(status=status.HTTP_403_FORBIDDEN)
+    def delete_thumbnail(self, request, resource_id, *args, **kwargs):
+        """API endpoint allowing to delete a thumbnail for an existing dataset."""
         try:
-            request_params = self._get_request_params(request)
-            uuid = request_params.get("uuid", str(uuid4()))
-            resource_filter = ResourceBase.objects.filter(uuid=uuid)
-            _exec_request = ExecutionRequest.objects.create(
-                user=request.user,
-                func_name="ingest",
-                geonode_resource=resource_filter.get() if resource_filter.exists() else None,
-                action="ingest",
-                input_params={
-                    "uuid": uuid,
-                    "files": request_params.get("files", "[]"),
-                    "resource_type": resource_type,
-                    "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
-                },
-            )
-            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
-            return Response(
-                {
-                    "status": _exec_request.status,
-                    "execution_id": _exec_request.exec_id,
-                    "status_url": urljoin(
-                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
-                    ),
-                },
-                status=status.HTTP_200_OK,
-            )
-        except Exception as e:
-            logger.exception(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+            resource = ResourceBase.objects.get(id=int(resource_id))
 
-    @extend_schema(
-        methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'CREATE' operation."
-    )
+            # Check if the current user has the permissions to delete the thumbnail
+            if not request.user.has_perm("change_resourcebase", resource.get_self_resource()):
+                return Response(
+                    {"message": "You do not have permission to delete this thumbnail.", "success": False},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            # Check if thumbnail exists
+            if not resource.thumbnail_url:
+                return Response(
+                    {"message": "The thumbnail URL field is already empty.", "success": False},
+                    status=status.HTTP_200_OK,
+                )
+
+            thumb_parsed_url = urlparse(resource.thumbnail_url)
+            thumb_filename = thumb_parsed_url.path.split("/")[-1]
+            if thumb_filename.rsplit(".")[-1] not in ["png", "jpeg", "jpg"]:
+                return Response(
+                    "The file name is not a valid image with a format png, jpeg or jpg",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # remove_thumb will call the thumb_path function and then the storage_manager which will delete it
+            remove_thumb(thumb_filename)
+
+            # Clear the related fields in the database
+            resource.thumbnail_url = None
+            resource.thumbnail_path = None
+            resource.save(update_fields=["thumbnail_url", "thumbnail_path"])
+
+            return Response({"message": "Thumbnail deleted successfully.", "success": True}, status=status.HTTP_200_OK)
+
+        except ResourceBase.DoesNotExist:
+            return Response({"message": "Resource not found.", "success": False}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(e)
+            return Response(
+                {"message": "Unexpected error occurred.", "success": False},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
     @action(
         detail=False,
-        url_path="create/(?P<resource_type>\w+)",  # noqa
+        url_path=r"create/(?P<resource_type>\w+)",
         url_name="resource-service-create",
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
     def resource_service_create(self, request, resource_type: str = None, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
-        **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
 
         - POST input_params: {
             uuid: "<str: UUID>",
@@ -922,11 +890,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
-    @extend_schema(
-        methods=["delete"],
-        responses={200},
-        description="Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'.",
-    )
     @action(
         detail=True,
         url_path="delete",  # noqa
@@ -1006,11 +969,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
-    @extend_schema(
-        methods=["put"],
-        responses={200},
-        description="Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'.",
-    )
     @action(
         detail=True,
         url_path="update",  # noqa
@@ -1102,7 +1060,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
                 geonode_resource=resource,
                 action="update",
                 input_params={
-                    "uuid": request_params.get("uuid", resource.uuid),
+                    "uuid": resource.uuid,
                     "xml_file": request_params.get("xml_file", None),
                     "metadata_uploaded": request_params.get("metadata_uploaded", False),
                     "vals": request_params.get("vals", "{}"),
@@ -1127,11 +1085,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
-    @extend_schema(
-        methods=["put"],
-        responses={200},
-        description="Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'uuid'.",
-    )
     @action(
         detail=True,
         url_path="copy",  # noqa
@@ -1208,10 +1161,11 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             or not request.user.has_perm("view_resourcebase", resource.get_self_resource())
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if not resource.is_copyable:
+        if not resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=request.user):
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = self._get_request_params(request)
+
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name="copy",
@@ -1238,9 +1192,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
-    @extend_schema(
-        methods=["put"], responses={200}, description="API endpoint allowing to set thumbnail of the Resource."
-    )
     @action(
         detail=True,
         url_path="set_thumbnail",
@@ -1250,6 +1201,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         parser_classes=[JSONParser, MultiPartParser],
     )
     def set_thumbnail(self, request, pk, *args, **kwargs):
+        """API endpoint allowing to set thumbnail of the Resource."""
         resource = get_object_or_404(ResourceBase, pk=pk)
 
         if not request.data.get("file"):
@@ -1295,89 +1247,36 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             except Exception:
                 raise ValidationError(detail="Invalid data provided")
         if thumbnail:
-            resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
+            resource_manager_registry.get_for_instance(resource).set_thumbnail(
+                resource.uuid, instance=resource, thumbnail=thumbnail
+            )
             return Response({"thumbnail_url": resource.thumbnail_url})
         return Response("Unable to set thumbnail", status=status.HTTP_400_BAD_REQUEST)
 
-    @extend_schema(
-        methods=["get", "put", "delete", "post"], description="Get/Update/Delete/Add extra metadata for resource"
-    )
     @action(
         detail=True,
-        methods=["get", "put", "delete", "post"],
-        permission_classes=[IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
-        url_path=r"extra_metadata",  # noqa
-        url_name="extra-metadata",
+        methods=["get"],
+        permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
+        url_path="iso_metadata_xml",
     )
-    def extra_metadata(self, request, pk, *args, **kwargs):
-        _obj = get_object_or_404(ResourceBase, pk=pk)
+    def iso_metadata_xml(self, request, pk=None):
+        """
+        Returns the resource's metadata XML document.
+        """
+        resource = self.get_object()
 
-        if request.method == "GET":
-            # get list of available metadata
-            queryset = _obj.metadata.all()
-            _filters = [{f"metadata__{key}": value} for key, value in request.query_params.items()]
-            if _filters:
-                queryset = queryset.filter(**_filters[0])
-            return Response(ExtraMetadataSerializer().to_representation(queryset))
-        if not request.method == "DELETE":
-            try:
-                extra_metadata = validate_extra_metadata(request.data, _obj)
-            except Exception as e:
-                return Response(status=500, data=e.args[0])
+        if not resource.metadata_xml:
+            return Response(
+                {"message": "Metadata XML not available for this resource."}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        if request.method == "PUT":
-            """
-            update specific metadata. The ID of the metadata is required to perform the update
-            [
-                {
-                        "id": 1,
-                        "name": "foo_name",
-                        "slug": "foo_sug",
-                        "help_text": "object",
-                        "field_type": "int",
-                        "value": "object",
-                        "category": "object"
-                }
-            ]
-            """
-            for _m in extra_metadata:
-                _id = _m.pop("id")
-                ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id=_id).update(metadata=_m)
-            logger.info("metadata updated for the selected resource")
-            _obj.refresh_from_db()
-            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
-        elif request.method == "DELETE":
-            # delete single metadata
-            """
-            Expect a payload with the IDs of the metadata that should be deleted. Payload be like:
-            [4, 3]
-            """
-            ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id__in=request.data).delete()
-            _obj.refresh_from_db()
-            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
-        elif request.method == "POST":
-            # add new metadata
-            """
-            [
-                {
-                        "name": "foo_name",
-                        "slug": "foo_sug",
-                        "help_text": "object",
-                        "field_type": "int",
-                        "value": "object",
-                        "category": "object"
-                }
-            ]
-            """
-            for _m in extra_metadata:
-                new_m = ExtraMetadata.objects.create(resource=_obj, metadata=_m)
-                new_m.save()
-                _obj.metadata.add(new_m)
-            _obj.refresh_from_db()
-            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()), status=201)
+        return HttpResponse(resource.metadata_xml, content_type="application/xml")
 
     def _get_request_params(self, request, encode=False):
         try:
+            if "application/json" in request.content_type:
+                # Handle JSON explicitly
+                return request.data if isinstance(request.data, dict) else json.loads(request.body)
             return (
                 QueryDict(request.body, mutable=True, encoding="UTF-8")
                 if encode
@@ -1392,7 +1291,6 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             logger.debug(e)
             return request.data
 
-    @extend_schema(methods=["get", "post", "delete"], description="Get Linked Resources")
     @action(
         detail=True,
         methods=["get", "post", "delete"],
@@ -1401,6 +1299,7 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         url_name="linked_resources",
     )
     def linked_resources(self, request, pk, *args, **kwargs):
+        """Get Linked Resources"""
         resource = self.get_object()
         if request.method in ("POST", "DELETE"):
             success_var = []
@@ -1421,6 +1320,14 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             for t_id in valid_ids:
                 try:
                     target = get_object_or_404(ResourceBase, pk=t_id)
+                    if not permissions_registry.user_has_perm(
+                        request.user,
+                        target.get_self_resource(),
+                        "view_resourcebase",
+                        include_virtual=True,
+                    ):
+                        error_var.append(t_id)
+                        continue
 
                     if request.method == "POST":
                         _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
@@ -1447,6 +1354,156 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
             return Response(payload, status=200)
 
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path=r"assets",
+        permission_classes=[UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
+        parser_classes=[JSONParser, MultiPartParser],
+        url_name="assets",
+    )
+    def asset(self, request, pk=None, *args, **kwargs):
+        """Handles uploading a new file, creating an asset, and linking it to the resource."""
+
+        files = request.FILES.getlist("files")
+        if not files:
+            return Response({"message": "File(s) not provided."}, status=status.HTTP_400_BAD_REQUEST)
+        resource = get_object_or_404(ResourceBase, pk=pk)
+        user = request.user
+        title = request.data.get("title", None)
+        description = request.data.get("description", None)
+
+        forbidden_titles = {"Original", "Files"}
+        # Temporary solution to prevent reserved assets titles.
+        # A proper flag will be added later to handle this restriction more robustly.
+        if title in forbidden_titles:
+            return Response(
+                {"message": f"'{title}' is a reserved title and cannot be used."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not permissions_registry.user_has_perm(user, resource, "change_resourcebase", include_virtual=True):
+            return Response(
+                {"message": "You do not have permission to add an asset to this resource."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        allowed_extensions = []
+        for _type in get_supported_datasets_file_types():
+            for val in _type["formats"]:
+                allowed_extensions.extend(val["required_ext"])
+        allowed_extensions = list(settings.ALLOWED_DOCUMENT_TYPES) + allowed_extensions
+        for file in files:
+            file_ext = os.path.splitext(file.name)[1].lower()[1:]
+            if file_ext not in allowed_extensions:
+                logger.debug(f"{file_ext} file type is not allowed")
+                return Response(
+                    {"message": f"The uploaded file type {file_ext} is not allowed."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if file_ext in ("xml", "sld"):
+                try:
+                    assert_safe_xml(file.read())
+                except UnsafeXMLError:
+                    logger.warning("XML validation failed for uploaded asset.", exc_info=True)
+                    return Response(
+                        {"message": f"The uploaded {file_ext} file is invalid or unsafe."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                finally:
+                    file.seek(0)
+        try:
+            handler = asset_handler_registry.get_default_handler()
+            asset, link = create_asset_and_link(
+                resource, user, files, handler=handler, title=title, description=description
+            )
+            if asset and link:
+                return Response(
+                    {"message": "Asset created and linked successfully.", "asset_id": asset.id, "link_id": link.id},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "Error creating asset or link."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        except Exception as e:
+            logger.exception(e)
+            return Response({"message": "Error creating asset."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path=r"asset",
+        url_name="asset",
+        permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
+    )
+    def get_asset(self, request, pk=None, *args, **kwargs):
+        """
+        Returns assets linked to the resource.
+        GET /api/v2/resources/<pk>/asset
+        """
+        resource = self.get_object()
+
+        asset_links = Link.objects.filter(
+            resource=resource,
+            asset__isnull=False,
+        ).select_related("asset")
+
+        can_have_download_url = permissions_registry.user_has_perm(
+            request.user,
+            resource.get_self_resource(),
+            "download_resourcebase",
+            include_virtual=True,
+        )
+
+        data = []
+        for asset_link in asset_links:
+            asset = asset_link.asset.get_real_instance()
+            handler = asset_handler_registry.get_handler(asset)
+            download_url = handler.create_download_url(asset) if handler and can_have_download_url else None
+
+            data.append(
+                {
+                    "id": asset.id,
+                    "title": asset.title,
+                    "description": asset.description,
+                    "type": asset.type,
+                    "created": asset.created,
+                    "deletable": is_asset_deletable(asset),
+                    "urls": {
+                        "download_url": download_url,
+                        "link": asset_link.url,
+                    },
+                }
+            )
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["delete"], url_path=r"assets/(?P<asset_id>\d+)", url_name="delete-asset")
+    def delete_asset(self, request, pk=None, asset_id=None, *args, **kwargs):
+        """Deletes an asset and its link to the resource."""
+        resource = self.get_object()
+        if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase", include_virtual=True):
+            return Response(
+                {"message": "You do not have permission to delete an asset from this resource."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            asset = Asset.objects.get(pk=asset_id)
+            success, message = unlink_asset(resource, asset)
+
+            if success:
+                return Response({"message": message}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": message}, status=status.HTTP_403_FORBIDDEN)
+
+        except Asset.DoesNotExist:
+            return Response({"message": f"The requested {asset_id} does not exists"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.exception(e)
+            return Response(
+                {"message": f"Error deleting asset {asset_id}."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 def base_linked_resources(instance, user, params):

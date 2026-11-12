@@ -37,6 +37,10 @@ from . import (
     models,
 )
 
+from django.core.cache import caches
+
+service_cache = caches["services"]
+
 logger = logging.getLogger(__name__)
 
 
@@ -85,6 +89,7 @@ class HarvesterAdmin(admin.ModelAdmin):
     ]
 
     def save_model(self, request, harvester: models.Harvester, form, change):
+        service_cache.delete(harvester.remote_url)
         super().save_model(request, harvester, form, change)
         if _worker_config_changed(form):
             self.message_user(
@@ -190,6 +195,7 @@ class HarvesterAdmin(admin.ModelAdmin):
                 if harvester.update_availability():
                     harvester.initiate_abort_perform_harvesting()
                     being_aborted.append(harvester)
+                    service_cache.delete(harvester.remote_url)
                 else:
                     raise RuntimeError(f"Harvester {harvester!r} is not available")
             except RuntimeError as exc:
@@ -208,6 +214,7 @@ class HarvesterAdmin(admin.ModelAdmin):
     def reset_harvester_status(self, request, queryset):
         for harvester in queryset:
             if harvester.status != models.Harvester.STATUS_READY:
+                service_cache.delete(harvester.remote_url)
                 harvester.status = models.Harvester.STATUS_READY
                 harvester.save()
                 self.message_user(request, _("Resetting status for harvester %(name)s...") % {"name": harvester.name})
@@ -337,13 +344,13 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "remote_resource_type",
         "last_harvesting_succeeded",
     )
-    search_fields = ("title",)
+    search_fields = (
+        "title",
+        "unique_identifier",
+    )
     list_editable = ("should_be_harvested",)
 
-    actions = [
-        "toggle_should_be_harvested",
-        "initiate_harvest_selected_resources",
-    ]
+    actions = ["initiate_harvest_selected_resources", "mark_all_should_be_harvested", "unmark_all_should_be_harvested"]
 
     def delete_queryset(self, request, queryset):
         """
@@ -364,14 +371,15 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
             harvestable_resource.delete()
         self.message_user(request, "Harvestable resources have been deleted")
 
-    @admin.action(description="Toggle selected resources' `should_be_harvested` property")
-    def toggle_should_be_harvested(self, request, queryset):
-        for harvestable_resource in queryset:
-            harvestable_resource: models.HarvestableResource
-            harvestable_resource.should_be_harvested = not harvestable_resource.should_be_harvested
-            harvestable_resource.save()
+    @admin.action(description="Mark all the resources as 'should be harvested'")
+    def mark_all_should_be_harvested(self, request, queryset):
+        updated = queryset.update(should_be_harvested=True)
+        self.message_user(request, f"{updated} resources were marked as 'should be harvested'.")
 
-        self.message_user(request, "Toggled harvestable resources' `should_be_harvested` attribute")
+    @admin.action(description="Unmark all the resources as 'should be harvested'")
+    def unmark_all_should_be_harvested(self, request, queryset):
+        updated = queryset.update(should_be_harvested=False)
+        self.message_user(request, f"{updated} resources were unmarked as 'should be harvested'.")
 
     @admin.action(description="Harvest selected resources")
     def initiate_harvest_selected_resources(self, request, queryset):

@@ -17,6 +17,7 @@
 #
 #########################################################################
 import uuid
+import shutil
 from unittest.mock import MagicMock, patch
 import os
 from django.conf import settings
@@ -30,6 +31,9 @@ from geonode.upload.handlers.common.vector import import_with_ogr2ogr
 from geonode.upload.handlers.csv.exceptions import InvalidCSVException
 from geonode.upload.handlers.csv.handler import CSVFileHandler
 from osgeo import ogr
+
+from geonode.upload.utils import ExecutionRequest
+from geonode.geoserver.createlayer.utils import BBOX
 
 
 class TestCSVHandler(TestCase):
@@ -78,12 +82,25 @@ class TestCSVHandler(TestCase):
         self.assertIsNotNone(_exc)
         self.assertTrue("The CSV provided is invalid, no layers found" in str(_exc.exception.detail))
 
-    def test_is_valid_should_raise_exception_if_the_csv_missing_geom(self):
-        with self.assertRaises(InvalidCSVException) as _exc:
-            self.handler.is_valid(files={"base_file": self.missing_geom}, user=self.user)
+    def test_is_valid_should_set_as_tabular_if_the_csv_miss_geom(self):
+        exec_obj = ExecutionRequest.objects.create(
+            user=self.user,
+            func_name="test",
+            geonode_resource=self.layer,
+            input_params={
+                "uuid": self.layer.uuid,
+                "owner": self.layer.owner.username,
+                "resource_type": self.layer.resource_type,
+                "defaults": f'{{"owner":"{self.layer.owner.username}"}}',
+            },
+        )
+        self.handler.is_valid(
+            files={"base_file": self.missing_geom}, user=self.user, execution_id=str(exec_obj.exec_id)
+        )
 
-        self.assertIsNotNone(_exc)
-        self.assertTrue("Not enough geometry field are set" in str(_exc.exception.detail))
+        exec_obj.refresh_from_db()
+
+        self.assertTrue(exec_obj.input_params.get("is_tabular", False))
 
     def test_is_valid_should_raise_exception_if_the_csv_missing_lat(self):
         with self.assertRaises(InvalidCSVException) as _exc:
@@ -143,6 +160,10 @@ class TestCSVHandler(TestCase):
         actual = self.handler.can_handle({"base_file": "random.file"})
         self.assertFalse(actual)
 
+    def test_csv_allowed_lat_long_column_names(self):
+        self.assertListEqual(["latitude", "lat", "y"], self.handler.possible_lat_column)
+        self.assertListEqual(["longitude", "long", "lon", "x"], self.handler.possible_long_column)
+
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
@@ -150,6 +171,9 @@ class TestCSVHandler(TestCase):
         comm = MagicMock()
         comm.communicate.return_value = b"", b""
         _open.return_value = comm
+
+        # We pass the valid_csv path here to match your expected call
+        self.valid_files["base_file"] = self.valid_csv
 
         _task, alternate, execution_id = import_with_ogr2ogr(
             execution_id=str(_uuid),
@@ -165,18 +189,49 @@ class TestCSVHandler(TestCase):
         self.assertEqual(str(_uuid), execution_id)
 
         _datastore = settings.DATABASES["datastore"]
+
+        # This list reflects how shlex.split() breaks down your command string
+        expected_cmd_list = [
+            shutil.which("ogr2ogr") or "ogr2ogr",
+            "--config",
+            "PG_USE_COPY",
+            "YES",
+            "-f",
+            "PostgreSQL",
+            f"PG: dbname='{_datastore['NAME']}' host={os.getenv('DATABASE_HOST', 'localhost')} port=5432 user='{_datastore['USER']}' password='{_datastore['PASSWORD']}' ",
+            self.valid_csv,
+            "-lco",
+            "FID=fid",
+            "-nln",
+            "alternate",
+            "dataset",
+            "-oo",
+            "KEEP_GEOM_COLUMNS=NO",
+            "-lco",
+            "GEOMETRY_NAME=geom",
+            "-oo",
+            "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom",
+            "-oo",
+            "X_POSSIBLE_NAMES=x,lon,long*",
+            "-oo",
+            "Y_POSSIBLE_NAMES=y,lat*",
+            "-oo",
+            "AUTODETECT_TYPE=YES",
+        ]
         _open.assert_called_once()
-        _open.assert_called_with(
-            "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
-            + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='"
-            + _datastore["USER"]
-            + "' password='"
-            + _datastore["PASSWORD"]
-            + '\' " "'
-            + self.valid_csv
-            + '" -nln alternate "dataset" -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME=geometry  -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"',  # noqa
-            stdout=-1,
-            stderr=-1,
-            shell=True,  # noqa
-        )
+        _open.assert_called_with(expected_cmd_list, stdout=-1, stderr=-1, shell=False)
+
+    @patch("geonode.upload.handlers.csv.handler.orchestrator.get_execution_object")
+    @patch("geonode.upload.handlers.csv.handler.BaseVectorFileHandler.create_geonode_resource")
+    def test_create_geonode_resource_sets_default_bbox_for_tabular_csv_only(self, create_resource, get_execution):
+        resource = MagicMock()
+        create_resource.return_value = resource
+
+        get_execution.return_value.input_params = {"is_tabular": True}
+        self.handler.create_geonode_resource("layer", "alternate", "execution-id")
+        resource.set_bbox_polygon.assert_called_once_with(BBOX, resource.srid)
+
+        resource.set_bbox_polygon.reset_mock()
+        get_execution.return_value.input_params = {}
+        self.handler.create_geonode_resource("layer", "alternate", "execution-id")
+        resource.set_bbox_polygon.assert_not_called()

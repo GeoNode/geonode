@@ -14,12 +14,7 @@ The following are required only for core and extension modules (they are welcome
 - [ ] There is a ticket in https://github.com/GeoNode/geonode/issues describing the issue/improvement/feature (a notable exemption is, changes not visible to end-users)
 - [ ] The issue connected to the PR must have Labels and Milestone assigned
 - [ ] PR for bug fixes and small new features are presented as a single commit
-- [ ] Commit message must be in the form "[Fixes #<issue_number>] Title of the Issue"
 - [ ] PR title must be in the form "[Fixes #<issue_number>] Title of the PR"
 - [ ] New unit tests have been added covering the changes, unless there is an explanation on why the tests are not necessary/implemented
-- [ ] This PR passes all existing unit tests (test results will be reported by travis-ci after opening this PR)
-- [ ] This PR passes the QA checks: black geonode && flake8 geonode
-- [ ] Commits changing the **settings**, **UI**, **existing user workflows**, or adding **new functionality**, need to include documentation updates
-- [ ] Commits adding **new texts** do use gettext and have updated .po / .mo files (without location infos)
 
 **Submitting the PR does not require you to check all items, but by the time it gets merged, they should be either satisfied or inapplicable.**

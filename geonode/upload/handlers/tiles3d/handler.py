@@ -21,6 +21,8 @@ import logging
 import os
 from pathlib import Path
 import math
+import zipfile
+from geonode.assets.models import LocalAsset
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.utils import UploadLimitValidator
@@ -32,6 +34,7 @@ from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.base.models import ResourceBase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
+from geonode.resource.registry import resource_manager_registry
 
 logger = logging.getLogger("importer")
 
@@ -59,6 +62,10 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     }
 
     @property
+    def have_table(self):
+        return False
+
+    @property
     def supported_file_extension_config(self):
         return {
             "id": "3dtiles",
@@ -72,6 +79,20 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             "type": "vector",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "zip": {"mimes": {"application/zip", "application/octet-stream"}},
+        }
+
+    @staticmethod
+    def can_do(action) -> bool:
+        """
+        This endpoint will return True or False if with the info provided
+        the handler is able to handle the file or not
+        """
+        return action in Tiles3DFileHandler.TASKS
+
     @staticmethod
     def can_handle(_data) -> bool:
         """
@@ -84,7 +105,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             if not base:
                 return False
             ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
-            if ext in ["json"] and Tiles3DFileHandler.is_3dtiles_json(base):
+            if ext in ["json"] and Tiles3DFileHandler.is_3dtiles_json(base, **_data):
                 return True
         except Exception:
             return False
@@ -123,9 +144,15 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return True
 
     @staticmethod
-    def is_3dtiles_json(_file):
-        with open(_file, "r") as _readed_file:
-            _file = json.loads(_readed_file.read())
+    def is_3dtiles_json(_file, **kwargs):
+        if "zip_file" in kwargs:
+            # if we have a zipfile we need to read the file content before proceed
+            with zipfile.ZipFile(kwargs["zip_file"], "r") as z:
+                with z.open(_file.name) as inner_file:
+                    _file = json.loads(inner_file.read().decode("utf-8"))
+        else:
+            with open(_file, "r") as _readed_file:
+                _file = json.loads(_readed_file.read())
             # required key described in the specification of 3dtiles
             # https://docs.ogc.org/cs/22-025r4/22-025r4.html#toc92
         is_valid = all(key in _file.keys() for key in ("asset", "geometricError", "root"))
@@ -158,15 +185,16 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
             "original_zip_name": _data.pop("original_zip_name", None),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
@@ -180,7 +208,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         filename = _exec.input_params.get("original_zip_name") or Path(files.get("base_file")).stem
         # start looping on the layers available
         layer_name = self.fixup_name(filename)
-        should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
+        should_be_overwritten = _exec.action == ira.REPLACE.value
         # should_be_imported check if the user+layername already exists or not
         if should_be_imported(
             layer_name,
@@ -216,36 +244,88 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         )
         return layer_name, alternate, execution_id
 
+    def pre_processing(self, files, execution_id, **kwargs):
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        if _exec_obj.action in (ira.REPLACE.value, ira.UPSERT.value):
+            raise Invalid3DTilesException("Upsert and replace are not available for 3dtiles")
+        _data, execution_id = super().pre_processing(files, execution_id, **kwargs)
+        # removing the content file from the files location
+        if "content_file" in _data["files"]:
+            _data["files"].pop("content_file")
+
+        _exec_obj = orchestrator.get_execution_object(execution_id)
+        orchestrator.update_execution_request_obj(_exec_obj, {"input_params": _data})
+
+        return _data, execution_id
+
     def create_geonode_resource(
-        self,
-        layer_name: str,
-        alternate: str,
-        execution_id: str,
-        resource_type: Dataset = ...,
-        asset=None,
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = ..., asset=None, **kwargs
     ):
-        # we want just the tileset.json as location of the asset
-        asset.location = [path for path in asset.location if path.endswith(".json")]
-        asset.save()
+        exec_obj = orchestrator.get_execution_object(execution_id)
 
-        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
-
-        # fixing-up bbox for the 3dtile object
+        files = exec_obj.input_params["files"]
+        # a ".json" file isn't necessarily the tileset (e.g. a stray metadata file), so validate
+        # each candidate against the 3dtiles schema
         js_file = None
-        with open(asset.location[0]) as _file:
-            js_file = json.loads(_file.read())
+        for candidate in sorted(x for x in files.values() if str(x).endswith(".json")):
+            try:
+                js_file = Tiles3DFileHandler.is_3dtiles_json(candidate)
+                break
+            except Invalid3DTilesException:
+                continue
+        if js_file is None:
+            raise Invalid3DTilesException("tileset.json file is missing")
 
-        if not js_file:
-            return resource
+        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset, **kwargs)
 
-        if self._has_region(js_file):
-            resource = self.set_bbox_from_region(js_file, resource=resource)
-        elif self._has_sphere(js_file):
-            resource = self.set_bbox_from_boundingVolume_sphere(js_file, resource=resource)
-        else:
-            resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
+        if js_file:
+            files = {"base_file": files.get("base_file")}
+
+        asset = self.create_asset_and_link(
+            resource,
+            files=files,
+            action=exec_obj.action,
+            asset_type="3dtiles",
+            extension="3dtiles",
+        )
+
+        if isinstance(asset, LocalAsset) and js_file:
+            if self._has_region(js_file):
+                resource = self.set_bbox_from_region(js_file, resource=resource)
+            elif self._has_sphere(js_file):
+                resource = self.set_bbox_from_boundingVolume_sphere(js_file, resource=resource)
+            else:
+                resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
 
         return resource
+
+    def copy_geonode_resource(self, alternate, resource, _exec, data_to_update, new_alternate, **kwargs):
+        defaults = {
+            "alternate": new_alternate,
+        }
+
+        if data_to_update.get("title"):
+            defaults["title"] = data_to_update["title"]
+
+        if resource.subtype:
+            defaults["subtype"] = resource.subtype
+
+        return resource_manager_registry.get_for_instance(resource).copy(
+            resource,
+            owner=_exec.user,
+            defaults=defaults,
+        )
+
+    def create_asset_and_link(self, resource, files, action=None, asset_name=None, asset_type=None, **kwargs):
+        """
+        Overrides the base handler to prevent double asset creation for 3D tiles.
+
+        This handler's `create_geonode_resource` method already creates the necessary asset.
+        This override ensures that the subsequent generic call from the celery task does not create a duplicate asset.
+        The asset is only created by calling the parent method if both `asset_type` and `extension` are explicitly provided.
+        """
+        if asset_type and kwargs.get("extension", None):
+            return super().create_asset_and_link(resource, files, action, asset_name, asset_type, **kwargs)
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace):
         return dict(

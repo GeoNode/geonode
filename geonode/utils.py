@@ -30,11 +30,13 @@ import requests
 import tempfile
 import ipaddress
 import traceback
+import socket
 
 from lxml import etree
 from osgeo import ogr
 from PIL import Image
 from urllib3 import Retry
+from urllib3.util import parse_url
 from io import BytesIO
 from decimal import Decimal
 from threading import local
@@ -45,11 +47,12 @@ from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, tan
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.upload.api.exceptions import GeneralUploadException
+from typing import List, Literal, Optional, Union
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
 from django.http import HttpResponse
@@ -73,7 +76,6 @@ from geonode.base.auth import (
     get_token_from_auth_header,
     get_token_object_from_session,
 )
-
 from urllib.parse import (
     urljoin,
     unquote,
@@ -94,6 +96,80 @@ FORWARDED_HEADERS = ["content-type", "content-disposition"]
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
 XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
+
+
+class UnsafeXMLError(Exception):
+    """Raised when an uploaded XML carries active content (XSLT, scripts, PIs, DTD)."""
+
+
+_XSLT_NAMESPACES: typing.Final = frozenset(
+    {
+        "http://www.w3.org/1999/XSL/Transform",
+        "http://www.w3.org/TR/WD-xsl",
+    }
+)
+
+_DANGEROUS_LOCAL_NAMES: typing.Final = frozenset(
+    {
+        "script",
+        "iframe",
+        "object",
+        "embed",
+        "applet",
+        "foreignobject",
+        "handler",
+    }
+)
+
+# only data:text/html is blocked, so legitimate data:image/... keeps working
+_ACTIVE_URI_SCHEMES: typing.Final = ("javascript:", "vbscript:", "data:text/html")
+
+
+def _safe_xml_parser() -> etree.XMLParser:
+    return etree.XMLParser(
+        resolve_entities=False,
+        no_network=True,
+        load_dtd=False,
+        dtd_validation=False,
+        huge_tree=False,
+    )
+
+
+def assert_safe_xml(data):
+    """Raise UnsafeXMLError if the XML carries active content; return the root element."""
+    if isinstance(data, str):
+        data = data.encode("utf-8", "surrogatepass")
+
+    try:
+        root = etree.fromstring(data, parser=_safe_xml_parser())
+    except etree.XMLSyntaxError as err:
+        raise UnsafeXMLError(f"Document is not well-formed XML: {err}")
+
+    docinfo = root.getroottree().docinfo
+    if docinfo is not None and docinfo.doctype:
+        raise UnsafeXMLError("DOCTYPE/DTD declarations are not allowed in uploaded XML")
+
+    for proins in root.xpath("//processing-instruction()"):
+        raise UnsafeXMLError(f"Processing instruction '<?{proins.target} ...?>' is not allowed")
+
+    for el in root.iter():
+        if not isinstance(el.tag, str):
+            continue
+        qname = etree.QName(el)
+        if qname.namespace in _XSLT_NAMESPACES:
+            raise UnsafeXMLError(f"Embedded XSLT element '<{qname.localname}>' is not allowed")
+        if qname.localname.lower() in _DANGEROUS_LOCAL_NAMES:
+            raise UnsafeXMLError(f"Disallowed element '<{qname.localname}>' found")
+        for name, value in el.attrib.items():
+            local = etree.QName(name).localname if name.startswith("{") else name
+            if len(local) > 2 and local.lower().startswith("on"):
+                raise UnsafeXMLError(f"Event-handler attribute '{local}' is not allowed")
+            v = "".join((value or "").split()).lower()
+            if v.startswith(_ACTIVE_URI_SCHEMES):
+                raise UnsafeXMLError("Active URI scheme (javascript:/vbscript:/data:text/html) is not allowed")
+
+    return root
+
 
 requests.packages.urllib3.disable_warnings()
 
@@ -329,45 +405,49 @@ def get_dataset_workspace(dataset):
     return workspace
 
 
+def is_local_host(hostname, allowed_hosts=[]):
+    """True if hostname is GeoNode, the local GeoServer or one of allowed_hosts."""
+    local_hosts = [urlsplit(settings.SITEURL).hostname, urlsplit(settings.OGC_SERVER["default"]["LOCATION"]).hostname]
+    return hostname in local_hosts + allowed_hosts
+
+
 def get_headers(request, url, raw_url, allowed_hosts=[]):
     cookies = None
     csrftoken = None
     headers = {}
+    site_url = urlsplit(settings.SITEURL)
 
     for _header_key, _header_value in dict(request.headers.copy()).items():
         if _header_key.lower() in FORWARDED_HEADERS:
             headers[_header_key] = _header_value
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and url_has_allowed_host_and_scheme(
-        url=raw_url, allowed_hosts=url.hostname
-    ):
-        cookies = request.META["HTTP_COOKIE"]
 
-    for cook in request.COOKIES:
-        name = str(cook)
-        value = request.COOKIES.get(name)
-        if name == "csrftoken":
-            csrftoken = value
-        cook = f"{name}={value}"
-        cookies = cook if not cookies else (f"{cookies}; {cook}")
+    # Cookies are sent only to GeoNode and the local GeoServer
+    if is_local_host(url.hostname, allowed_hosts):
+        for cook in request.COOKIES:
+            name = str(cook)
+            value = request.COOKIES.get(name)
+            if name == "csrftoken":
+                csrftoken = value
+            cook = f"{name}={value}"
+            cookies = cook if not cookies else (f"{cookies}; {cook}")
 
-    csrftoken = get_token(request) if not csrftoken else csrftoken
+        csrftoken = get_token(request) if not csrftoken else csrftoken
 
-    if csrftoken:
-        headers["X-Requested-With"] = "XMLHttpRequest"
-        headers["X-CSRFToken"] = csrftoken
-        cook = f"csrftoken={csrftoken}"
-        cookies = cook if not cookies else (f"{cookies}; {cook}")
+        if csrftoken:
+            headers["X-Requested-With"] = "XMLHttpRequest"
+            headers["X-CSRFToken"] = csrftoken
+            cook = f"csrftoken={csrftoken}"
+            cookies = cook if not cookies else (f"{cookies}; {cook}")
 
-    if cookies and request and hasattr(request, "session"):
-        if "JSESSIONID" in request.session and request.session["JSESSIONID"]:
-            cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
-        headers["Cookie"] = cookies
+        if cookies and request and hasattr(request, "session"):
+            if "JSESSIONID" in request.session and request.session["JSESSIONID"]:
+                cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
+            headers["Cookie"] = cookies
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-    site_url = urlsplit(settings.SITEURL)
     # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
     if site_url.hostname in (allowed_hosts + [url.hostname]):
         # we give precedence to obtained from Aithorization headers
@@ -420,6 +500,37 @@ def _get_basic_auth_info(request):
 def bbox_swap(bbox):
     _bbox = [float(o) for o in bbox]
     return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+
+def check_bbox_validity(value: List[Union[int, float]]) -> bool:
+    """
+    Validate that a bounding box value is a non-empty list of at least 4 numeric values.
+
+    Args:
+        value: Bounding box to validate, expected as [minx, maxx, miny, maxy].
+               Accepts int or float values. None is treated as invalid.
+
+    Returns:
+        True if `value` is a list with at least 4 numeric (int or float) elements, False otherwise.
+    """
+    if (
+        not value
+        or not isinstance(value, list)
+        or len(value) < 4
+        or not all(isinstance(x, (int, float)) for x in value)
+    ):
+        return False
+    return True
+
+
+def normalize_bbox_to_float_list(value) -> Optional[List[float]]:
+    """Normalize bbox input to a 4-item float list or return None when invalid."""
+    if not value or len(value) < 4:
+        return None
+    try:
+        return [float(x) for x in value[:4]]
+    except (TypeError, ValueError):
+        return None
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
@@ -967,13 +1078,17 @@ class HttpClient:
         url,
         method="GET",
         data=None,
-        headers={},
+        headers=None,
         stream=False,
         timeout=None,
         retries=None,
         user=None,
         verify=False,
+        allow_redirects=True,
+        redirect_validator=None,
+        max_redirects=None,
     ):
+        headers = dict(headers or {})
         if (
             (user or self.username != "admin")
             and check_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -994,10 +1109,16 @@ class HttpClient:
                 valid_uname_pw = base64.b64encode(f"{self.username}:{self.password}".encode()).decode()
                 headers["Authorization"] = f"Basic {valid_uname_pw}"
 
-        headers["User-Agent"] = "GeoNode"
+        headers["User-Agent"] = getattr(settings, "GEONODE_USER_AGENT", "GeoNode")
         response = None
         content = None
-        session = requests.Session()
+        # redirect_validator is checked against every redirect target before it is requested
+        if redirect_validator:
+            session = RedirectValidatingSession(redirect_validator)
+        else:
+            session = requests.Session()
+        if max_redirects is not None:
+            session.max_redirects = max_redirects
         retry = Retry(
             total=retries or self.retries,
             read=retries or self.retries,
@@ -1015,14 +1136,22 @@ class HttpClient:
         if action:
             _req_tout = timeout or self.timeout
             try:
-                response = action(url=url, data=data, headers=headers, timeout=_req_tout, stream=stream, verify=verify)
+                response = action(
+                    url=url,
+                    data=data,
+                    headers=headers,
+                    timeout=_req_tout,
+                    stream=stream,
+                    verify=verify,
+                    allow_redirects=allow_redirects,
+                )
             except (
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.RequestException,
                 ValueError,
                 RetryError,
             ) as e:
-                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
+                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url}"
                 logger.exception(Exception(msg))
                 response = None
                 content = str(e)
@@ -1036,7 +1165,7 @@ class HttpClient:
 
         return (response, content)
 
-    def get(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
+    def get(self, url, data=None, headers=None, stream=False, timeout=None, user=None, verify=False):
         return self.request(
             url,
             method="GET",
@@ -1048,7 +1177,7 @@ class HttpClient:
             verify=verify,
         )
 
-    def post(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
+    def post(self, url, data=None, headers=None, stream=False, timeout=None, user=None, verify=False):
         return self.request(
             url,
             method="POST",
@@ -1200,7 +1329,9 @@ def get_legend_url(
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
     from django.utils.translation import gettext_lazy
+    from geonode.resource.utils import is_remote_resource
 
+    is_remote = is_remote_resource(instance)
     # Prune old links
     if prune:
         logger.debug(" -- Resource Links[Prune old links]...")
@@ -1209,7 +1340,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         logger.debug(" -- Resource Links[Prune old links]...done!")
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
+        from geonode.geoserver.ows import wcs_links, wfs_links
         from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
 
         # Compute parameters for the new links
@@ -1220,7 +1351,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Parse Dataset BBOX and SRID
         bbox = None
         srid = instance.srid if instance.srid else getattr(settings, "DEFAULT_MAP_CRS", "EPSG:4326")
-        if not prune and instance.srid and instance.bbox_polygon:
+
+        if is_remote or (not prune and instance.srid and instance.bbox_polygon):
             bbox = instance.bbox_string
         else:
             try:
@@ -1260,6 +1392,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     width = int(height * dataAspect)
                     # Rewriting BBOX as a plain string
                     bbox = ",".join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
+
                 else:
                     bbox = instance.bbox_string
             except Exception as e:
@@ -1269,7 +1402,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Set download links for WMS, WCS or WFS and KML
         logger.debug(" -- Resource Links[Set download links for WMS, WCS or WFS and KML]...")
         instance_ows_url = f"{instance.ows_url}?" if instance.ows_url else f"{ogc_server_settings.public_url}ows?"
-        links = wms_links(instance_ows_url, instance.alternate, bbox, srid, height, width)
+        links = instance.prepare_wms_links(instance_ows_url, instance.alternate, bbox, srid, height, width)
 
         for ext, name, mime, wms_url in links:
             try:
@@ -1289,7 +1422,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     resource=instance.resourcebase_ptr, name=gettext_lazy(name), link_type="image"
                 ).update(**_d)
 
-        if instance.subtype == "vector":
+        if instance.can_have_wfs_links:
             links = wfs_links(
                 instance_ows_url,
                 instance.alternate,
@@ -1299,18 +1432,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             for ext, name, mime, wfs_url in links:
                 if mime == "SHAPE-ZIP":
                     name = "Zipped Shapefile"
-                if (
-                    Link.objects.filter(
-                        resource=instance.resourcebase_ptr, url=wfs_url, name=name, link_type="data"
-                    ).count()
-                    < 2
-                ):
+                if Link.objects.filter(resource=instance.resourcebase_ptr, name=name, link_type="data").count() < 2:
                     Link.objects.update_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=wfs_url,
                         name=name,
                         link_type="data",
                         defaults=dict(
+                            url=wfs_url,
                             extension=ext,
                             mime=mime,
                         ),
@@ -1327,18 +1455,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             """
             links = wcs_links(instance_ows_url, instance.alternate)
             for ext, name, mime, wcs_url in links:
-                if (
-                    Link.objects.filter(
-                        resource=instance.resourcebase_ptr, url=wcs_url, name=name, link_type="data"
-                    ).count()
-                    < 2
-                ):
+                if Link.objects.filter(resource=instance.resourcebase_ptr, name=name, link_type="data").count() < 2:
                     Link.objects.update_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=wcs_url,
                         name=name,
                         link_type="data",
                         defaults=dict(
+                            url=wcs_url,
                             extension=ext,
                             mime=mime,
                         ),
@@ -1348,17 +1471,15 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         html_link_url = f"{site_url}{instance.get_absolute_url()}"
 
         if (
-            Link.objects.filter(
-                resource=instance.resourcebase_ptr, url=html_link_url, name=instance.alternate, link_type="html"
-            ).count()
+            Link.objects.filter(resource=instance.resourcebase_ptr, name=instance.alternate, link_type="html").count()
             < 2
         ):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
-                url=html_link_url,
                 name=instance.alternate or instance.name,
                 link_type="html",
                 defaults=dict(
+                    url=html_link_url,
                     extension="html",
                     mime="text/html",
                 ),
@@ -1368,7 +1489,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         try:
-            if instance.subtype not in ["tileStore", "remote"]:
+            if instance.can_have_style:
                 for style in set(
                     list(instance.styles.all())
                     + [
@@ -1378,11 +1499,10 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     if style:
                         style_name = os.path.basename(urlparse(style.sld_url).path).split(".")[0]
                         legend_url = get_legend_url(instance, style_name)
-                        if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
+                        if Link.objects.filter(resource=instance.resourcebase_ptr, name="Legend").count() < 2:
                             Link.objects.update_or_create(
                                 resource=instance.resourcebase_ptr,
                                 name="Legend",
-                                url=legend_url,
                                 defaults=dict(
                                     extension="png",
                                     url=legend_url,
@@ -1394,7 +1514,10 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 from geonode.services.serviceprocessors import get_service_handler
 
                 handler = get_service_handler(
-                    instance.remote_service.service_url, service_type=instance.remote_service.type
+                    instance.remote_service.service_url,
+                    service_type=instance.remote_service.type,
+                    service_id=instance.remote_service.id,
+                    auth_config=instance.remote_service.auth_config,
                 )
                 if handler and hasattr(handler, "_create_dataset_legend_link"):
                     handler._create_dataset_legend_link(instance)
@@ -1406,17 +1529,12 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Thumbnail link
         if instance.get_thumbnail_url():
             logger.debug(" -- Resource Links[Thumbnail link]...")
-            if (
-                Link.objects.filter(
-                    resource=instance.resourcebase_ptr, url=instance.get_thumbnail_url(), name="Thumbnail"
-                ).count()
-                < 2
-            ):
+            if Link.objects.filter(resource=instance.resourcebase_ptr, name="Thumbnail").count() < 2:
                 Link.objects.update_or_create(
                     resource=instance.resourcebase_ptr,
-                    url=instance.get_thumbnail_url(),
                     name="Thumbnail",
                     defaults=dict(
+                        url=instance.get_thumbnail_url(),
                         extension="png",
                         mime="image/png",
                         link_type="image",
@@ -1432,13 +1550,9 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ):
                 ogc_wms_url = instance.ows_url or urljoin(ogc_server_settings.public_url, "ows")
                 ogc_wms_name = f"OGC WMS: {instance.workspace} Service"
-                if (
-                    Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count()
-                    < 2
-                ):
+                if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name).count() < 2:
                     Link.objects.get_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=ogc_wms_url,
                         name=ogc_wms_name,
                         defaults=dict(
                             extension="html",
@@ -1448,18 +1562,18 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         ),
                     )
 
-                if instance.subtype == "vector":
+                if instance.can_have_wfs_links:
                     ogc_wfs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, "ows")
                     ogc_wfs_name = f"OGC WFS: {instance.workspace} Service"
                     if (
                         Link.objects.filter(
-                            resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url
+                            resource=instance.resourcebase_ptr,
+                            name=ogc_wfs_name,
                         ).count()
                         < 2
                     ):
                         Link.objects.get_or_create(
                             resource=instance.resourcebase_ptr,
-                            url=ogc_wfs_url,
                             name=ogc_wfs_name,
                             defaults=dict(
                                 extension="html",
@@ -1472,15 +1586,9 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 if instance.subtype == "raster":
                     ogc_wcs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, "ows")
                     ogc_wcs_name = f"OGC WCS: {instance.workspace} Service"
-                    if (
-                        Link.objects.filter(
-                            resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url
-                        ).count()
-                        < 2
-                    ):
+                    if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name).count() < 2:
                         Link.objects.get_or_create(
                             resource=instance.resourcebase_ptr,
-                            url=ogc_wcs_url,
                             name=ogc_wcs_name,
                             defaults=dict(
                                 extension="html",
@@ -1494,15 +1602,9 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 ptype_link = dict((v, k) for k, v in GXP_PTYPES.items()).get(instance.get_real_instance().ptype)
                 ptype_link_name = get_available_service_types().get(ptype_link)
                 ptype_link_url = instance.ows_url
-                if (
-                    Link.objects.filter(
-                        resource=instance.resourcebase_ptr, name=ptype_link_name, url=ptype_link_url
-                    ).count()
-                    < 2
-                ):
+                if Link.objects.filter(resource=instance.resourcebase_ptr, name=ptype_link_name).count() < 2:
                     Link.objects.get_or_create(
                         resource=instance.resourcebase_ptr,
-                        url=ptype_link_url,
                         name=ptype_link_name,
                         defaults=dict(
                             extension="html",
@@ -1585,20 +1687,22 @@ def json_serializer_producer(dictionary):
     return output
 
 
-def is_monochromatic_image(image_url, image_data=None):
-    def is_local_static(url):
-        if url.startswith(settings.STATIC_URL) or (url.startswith(settings.SITEURL) and settings.STATIC_URL in url):
-            return True
-        return False
+def is_monochromatic_image(image_url, image_data=None, image_path=None):
+    def is_local_media(url):
+        return url.startswith(settings.MEDIA_URL) or (url.startswith(settings.SITEURL) and settings.MEDIA_URL in url)
 
     def is_absolute(url):
         return bool(urlparse(url).netloc)
 
-    def get_thumb_handler(url):
-        _index = url.find(settings.STATIC_URL)
-        _thumb_path = urlparse(url[_index + len(settings.STATIC_URL) :]).path
-        if storage_manager.exists(_thumb_path):
-            return storage_manager.open(_thumb_path)
+    def get_thumb_handler(url, image_path=None):
+        # prefer the stored path, parsing the url is unreliable with an absolute MEDIA_URL
+        if image_path and storage_manager.exists(image_path):
+            return storage_manager.open(image_path)
+        if is_local_media(url):
+            _index = url.find(settings.MEDIA_URL)
+            _thumb_path = urlparse(url[_index + len(settings.MEDIA_URL) :]).path
+            if storage_manager.exists(_thumb_path):
+                return storage_manager.open(_thumb_path)
         return None
 
     def verify_image(stream):
@@ -1623,13 +1727,13 @@ def is_monochromatic_image(image_url, image_data=None):
         elif image_url:
             logger.debug(f"...Checking if '{image_url}' is a blank image")
             url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
-            if not is_local_static(url):
-                req, stream_content = http_client.get(url, timeout=5)
-                with BytesIO(stream_content) as stream:
+            _handler = get_thumb_handler(url, image_path)
+            if _handler:
+                with _handler as stream:
                     return verify_image(stream)
-            else:
-                with get_thumb_handler(url) as stream:
-                    return verify_image(stream)
+            req, stream_content = http_client.get(url, timeout=5)
+            with BytesIO(stream_content) as stream:
+                return verify_image(stream)
         return True
     except Exception as e:
         logger.debug(e)
@@ -1665,7 +1769,8 @@ def remove_credentials_from_url(url):
 
 
 ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
-domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
+# anchor the host to a delimiter so a trailing path/query isn't folded into the match
+domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)(?:[:/?#]|$)")
 
 
 def extract_ip_or_domain(url):
@@ -1715,7 +1820,7 @@ def get_supported_datasets_file_types():
     _available_settings = [
         module().supported_file_extension_config
         for module in orchestrator.get_handler_registry()
-        if module().supported_file_extension_config
+        if module().supported_file_extension_config and module().handler_type == "dataset"
     ]
     # injecting the new config required for FE
     default_types = [
@@ -1764,13 +1869,184 @@ def get_supported_datasets_file_types():
     return ordered_resource_types + other_resource_types
 
 
-def get_allowed_extensions():
+def get_allowed_extensions(kind: Literal["dataset", "document", "all"] = "dataset"):
     """
     The main extension is rappresented by the position 0 of the configuration
     that the handlers returns
     """
-    allowed_extention = []
-    for _type in get_supported_datasets_file_types():
-        for val in _type["formats"]:
-            allowed_extention.append(val["required_ext"][0])
-    return list(set(allowed_extention))
+    match kind:
+        case "dataset":
+            return list(set(get_dataset_extensions()))
+        case "document":
+            return list(set(get_document_extensions()))
+        case "all":
+            return list(set(get_dataset_extensions() + get_document_extensions()))
+        case _:
+            return []
+
+
+def get_dataset_extensions():
+    return [val["required_ext"][0] for _type in get_supported_datasets_file_types() for val in _type["formats"]]
+
+
+def get_document_extensions():
+    return list(DOCUMENT_TYPE_MAP.keys())
+
+
+def strtobool(value):
+    """Convert common string/int boolean representations to bool.
+
+    Raises ValueError when the input is not a recognized truth value.
+    """
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        raise ValueError("invalid truth value None")
+
+    normalized = str(value).strip().lower()
+    if normalized in {"y", "yes", "t", "true", "on", "1"}:
+        return True
+    if normalized in {"n", "no", "f", "false", "off", "0"}:
+        return False
+    raise ValueError(f"invalid truth value {value!r}")
+
+
+# backslash, whitespace and control chars make urllib.parse and urllib3 disagree on the host
+_UNSAFE_URL_CHARS = re.compile(r"[\\\s\x00-\x1f\x7f]")
+
+
+def parse_safe_proxy_url(raw_url):
+    """Parse with the engine requests/urllib3 dispatch with, rejecting anything ambiguous.
+
+    Returns a urllib3 Url or raises ValueError. Parsing the target once here, with the
+    same parser used to send the request, keeps validation and egress on the same host.
+    """
+    if _UNSAFE_URL_CHARS.search(raw_url):
+        raise ValueError("illegal character in URL")
+    try:
+        u = parse_url(raw_url)
+    except Exception:
+        raise ValueError("malformed URL")
+    if u.scheme not in ("http", "https"):
+        raise ValueError("scheme not allowed")
+    if not u.host:
+        raise ValueError("missing host")
+    if u.auth:
+        raise ValueError("userinfo not allowed")
+    return u
+
+
+def url_origin(url):
+    """(scheme, host, port) of a URL as urllib3 parses it, or None if it has no host."""
+    try:
+        u = parse_url(url)
+    except Exception:
+        return None
+    if not u.host:
+        return None
+    return (u.scheme, u.host, u.port or {"http": 80, "https": 443}.get(u.scheme))
+
+
+def is_safe_url(url: str) -> bool:
+    # Required to let tests disable the safe url check via settings orerride
+    if not getattr(settings, "SAFE_URL_CHECK_ENABLED", True):
+        return True
+
+    def _is_ip_allowed(ip: str) -> bool:
+        obj = ipaddress.ip_address(ip.split("%")[0])
+        return not (obj.is_loopback or obj.is_private or obj.is_link_local or obj.is_multicast or obj.is_reserved)
+
+    def _resolve_hostname(hostname: str) -> set:
+        try:
+            return {info[4][0] for info in socket.getaddrinfo(hostname, None)}
+        except socket.gaierror:
+            return set()
+
+    # parse with urllib3 (what requests dispatches with) and reject userinfo, so this
+    # check reads the same host the request will connect to, on every hop
+    try:
+        parsed = parse_url(url)
+    except Exception:
+        return False
+    if parsed.scheme not in {"http", "https"} or not parsed.host or parsed.auth:
+        return False
+    _default_ports = {"http": 80, "https": 443}
+    _port = parsed.port or _default_ports.get(parsed.scheme)
+    _trusted_hosts = [h.lower() for h in getattr(settings, "SAFE_URL_TRUSTED_HOSTS", [])]
+    if _port and f"{parsed.host}:{_port}" in _trusted_hosts:
+        return True
+    ips = _resolve_hostname(parsed.host)
+    if not ips:
+        return False
+    return all(_is_ip_allowed(ip) for ip in ips)
+
+
+def is_safe_url_with_redirects(url: str, max_redirects: int = 3):
+    """
+    Checks if a URL and all its redirect hops are safe.
+    """
+    visited: set[str] = set()
+    current_url = url
+    session = requests.Session()
+
+    for i in range(max_redirects + 1):
+
+        if not is_safe_url(current_url):
+            return False, current_url
+
+        if current_url in visited:
+            return False, current_url
+        visited.add(current_url)
+
+        try:
+            response = session.head(current_url, allow_redirects=False, timeout=5)
+
+            if response.is_redirect:
+                next_url = response.headers.get("Location")
+                if not next_url:
+                    return False, current_url
+
+                current_url = urljoin(current_url, next_url)
+            else:
+                return True, None  # No redirect
+
+        except requests.RequestException:
+            return False, current_url
+
+    return False, current_url
+
+
+class SafeSession(requests.Session):
+    """requests Session that validates the target host of every request it
+    dispatches, including each redirect hop, before the socket is opened.
+    """
+
+    def send(self, request, **kwargs):
+        # request.url is the fully-resolved absolute URL of this hop.
+        if not is_safe_url(request.url):
+            # Keep the raised message generic: the URL may carry tokens or credentials.
+            logger.debug("Rejected request to disallowed host: %s", urlparse(request.url).hostname)
+            raise requests.exceptions.InvalidURL("The requested URL is not allowed.")
+        return super().send(request, **kwargs)
+
+
+class RedirectValidatingSession(requests.Session):
+    """requests Session that checks each redirect target with ``validator`` before following it."""
+
+    def __init__(self, validator):
+        super().__init__()
+        self.redirect_validator = validator
+
+    def rebuild_auth(self, prepared_request, response):
+        # resolve_redirects calls this for every hop, with the final URL set, right before sending it
+        if not self.redirect_validator(prepared_request.url):
+            logger.debug("Rejected redirect to disallowed host: %s", urlparse(prepared_request.url).hostname)
+            raise requests.exceptions.InvalidURL("The redirect target is not allowed.")
+        super().rebuild_auth(prepared_request, response)
+
+
+def safe_request_url(method, url, max_redirects=3, **kwargs):
+    kwargs.setdefault("timeout", 10)
+    with SafeSession() as session:
+        session.max_redirects = max_redirects
+        return session.request(method, url, **kwargs)

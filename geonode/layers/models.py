@@ -19,18 +19,18 @@
 import itertools
 import re
 import logging
+from typing import List, Union
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
-from tinymce.models import HTMLField
-
 from geonode.client.hooks import hookset
-from geonode.utils import build_absolute_uri, check_shp_columnnames
+from geonode import GeoNodeException
+from geonode.utils import build_absolute_uri, check_shp_columnnames, check_bbox_validity, normalize_bbox_to_float_list
 from geonode.security.models import PermissionLevelMixin
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import (
@@ -116,7 +116,8 @@ class Dataset(ResourceBase):
     # internal fields
     objects = DatasetManager()
     workspace = models.CharField(_("Workspace"), max_length=255)
-    store = models.CharField(_("Store"), max_length=255)
+    # Store is nullable for remote layers
+    store = models.CharField(_("Store"), max_length=255, null=True, blank=True)
     name = models.CharField(_("Name"), max_length=255)
     typename = models.CharField(_("Typename"), max_length=255, null=True, blank=True)
     ows_url = models.URLField(
@@ -144,25 +145,16 @@ class Dataset(ResourceBase):
 
     charset = models.CharField(max_length=255, default="UTF-8")
 
-    use_featureinfo_custom_template = models.BooleanField(
-        _("use featureinfo custom template?"),
-        help_text=_("specifies wether or not use a custom GetFeatureInfo template."),
-        default=False,
-    )
-    featureinfo_custom_template = HTMLField(
-        _("featureinfo custom template"),
-        help_text=_("the custom GetFeatureInfo template HTML contents."),
-        unique=False,
-        blank=True,
-        null=True,
-    )
-
     def is_vector(self):
         return self.subtype in ["vector", "vector_time"]
 
     @property
     def is_raster(self):
         return self.subtype == "raster"
+
+    @property
+    def is_tabular(self):
+        return self.subtype == "tabular"
 
     @property
     def supports_time(self):
@@ -277,6 +269,11 @@ class Dataset(ResourceBase):
 
     @property
     def dataset_ows_url(self):
+        if self.remote_service:
+            return self.remote_service.service_url
+        elif self.subtype == "remote" and self.ows_url:
+            return self.ows_url
+
         from geonode.geoserver.helpers import get_layer_ows_url
 
         return get_layer_ows_url(self)
@@ -301,10 +298,92 @@ class Dataset(ResourceBase):
                 "displayTypes": {lyr.attribute: lyr.featureinfo_type for lyr in visible_attributes},
             }
 
-        if self.use_featureinfo_custom_template:
-            cfg["ftInfoTemplate"] = self.featureinfo_custom_template
-
         return cfg
+
+    def recalc_bbox_on_geoserver(self, force_bbox=None):
+        """
+        Delegate BBOX recalculation/update to the GeoServer layer object,
+        then refresh the Dataset's bbox fields from the updated resource.
+
+        This wraps the Layer.recalc_bbox() method (works for both raster + vector).
+        """
+
+        from geonode.geoserver.helpers import gs_catalog
+
+        # GeoServer layer object (has .resource)
+        gs_layer = gs_catalog.get_layer(self.name)
+        if gs_layer is None:
+            logger.error(f"GeoServer layer not found: {self.name}")
+            return False
+
+        # Call recalc_bbox method from the geoserver-restconfig library
+        ok = gs_layer.recalc_bbox(force_bbox=force_bbox)
+        if not ok:
+            logger.error(f"GeoServer refused bbox update for layer {self.name}")
+            return False
+
+        # Let's reset the connections first
+        gs_catalog._cache.clear()
+        gs_catalog.reset()
+        # Fetch the updated resource again from GeoServer
+        resource = gs_catalog.get_resource(
+            name=self.name, store=gs_layer.resource.store, workspace=gs_layer.resource.workspace
+        )
+
+        if not resource:
+            logger.error("No resource returned from GeoServer after bbox update")
+            return False
+
+        bbox = normalize_bbox_to_float_list(resource.native_bbox)
+        ll = normalize_bbox_to_float_list(resource.latlon_bbox)
+        srid = resource.projection
+
+        if not bbox or not ll:
+            logger.error("GeoServer did not return updated bbox values")
+            return False
+
+        with transaction.atomic():
+            self.set_bbox_and_srid(bbox=bbox, ll_bbox=ll, srid=srid)
+            self.save(update_fields=["srid"])
+
+        return True
+
+    def set_bbox_and_srid(
+        self,
+        bbox: List[Union[int, float]],
+        ll_bbox: List[Union[int, float]],
+        srid: str,
+    ) -> None:
+        """
+        Set dataset bbox, ll_bbox and spatial reference identifier.
+        Args:
+            bbox: Bounding box as [minx, maxx, miny, maxy], each element is int or float.
+                  If invalid or unavailable, the method falls back to ll_bbox with EPSG:4326.
+            ll_bbox: Lat/Lon bounding box as [minx, maxx, miny, maxy], each element is int or float.
+                     Must be valid, otherwise a GeoNodeException is raised.
+            srid: Spatial Reference Identifier (string).
+        Returns:
+            None
+        """
+        if not check_bbox_validity(ll_bbox):
+            raise GeoNodeException("Lat/Lon BBox was not provided or is invalid")
+
+        ll_bbox_gn = [ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]]
+        # Try to use native bbox if available
+        if check_bbox_validity(bbox) and srid:
+            try:
+                native_bbox_gn = [bbox[0], bbox[2], bbox[1], bbox[3]]
+                self.set_bbox_polygon(native_bbox_gn, srid)
+                self.set_ll_bbox_polygon(ll_bbox_gn)
+                self.srid = srid
+                return
+            except GeoNodeException as e:
+                logger.warning(f"Failed to set bbox with SRID {srid}, falling back to EPSG:4326: {e}")
+
+        # Fallback to lat/lon bbox
+        self.set_bbox_polygon(ll_bbox_gn, "EPSG:4326")
+        self.set_ll_bbox_polygon(ll_bbox_gn)
+        self.srid = "EPSG:4326"
 
     def __str__(self):
         return str(self.alternate)
@@ -343,10 +422,14 @@ class Dataset(ResourceBase):
 
     @property
     def download_url(self):
-        if self.subtype not in ["vector", "raster", "vector_time"]:
+        if self.can_be_downloaded:
             logger.info("Download URL is available only for datasets that have been harvested and copied locally")
             return None
         return build_absolute_uri(reverse("dataset_download", args=(self.alternate,)))
+
+    @property
+    def download_format(self):
+        return "application/zip" if self.is_vector() else "image/tiff"
 
     @property
     def maplayers(self):
@@ -379,11 +462,6 @@ class Dataset(ResourceBase):
         """
         if user == self.owner or user.is_superuser:
             return
-        if not do_local:
-            from geonode.messaging import producer
-
-            producer.viewing_dataset(str(user), str(self.owner), self.id)
-
         else:
             Dataset.objects.filter(id=self.id).update(popular_count=models.F("popular_count") + 1)
 

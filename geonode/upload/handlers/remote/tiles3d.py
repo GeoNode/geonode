@@ -18,7 +18,6 @@
 #########################################################################
 import logging
 
-import requests
 from geonode.layers.models import Dataset
 from geonode.upload.handlers.common.remote import BaseRemoteResourceHandler
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
@@ -27,6 +26,7 @@ from geonode.upload.orchestrator import orchestrator
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.base.models import ResourceBase
+from geonode.utils import is_safe_url_with_redirects, safe_request_url
 
 logger = logging.getLogger("importer")
 
@@ -53,11 +53,20 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
             return True
         return False
 
+    @property
+    def have_table(self):
+        return False
+
     @staticmethod
     def is_valid_url(url, **kwargs):
-        BaseRemoteResourceHandler.is_valid_url(url)
+        # Reject disallowed URLs early, before running the remaining validity checks.
+        is_safe, _ = is_safe_url_with_redirects(url)
+        if not is_safe:
+            raise Invalid3DTilesException("The requested URL is not allowed.")
+        BaseRemoteResourceHandler.is_valid_url(url, **kwargs)
         try:
-            payload = requests.get(url, timeout=10).json()
+            auth = BaseRemoteResourceHandler.get_request_auth_from_execution(kwargs.get("execution_id"))
+            payload = safe_request_url("GET", url, timeout=10, auth=auth).json()
             # required key described in the specification of 3dtiles
             # https://docs.ogc.org/cs/22-025r4/22-025r4.html#toc92
             is_valid = all(key in payload.keys() for key in ("asset", "geometricError", "root"))
@@ -81,11 +90,16 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
         execution_id: str,
         resource_type: Dataset = ResourceBase,
         asset=None,
+        **kwargs,
     ):
-        resource = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
+        resource = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, **kwargs)
         _exec = orchestrator.get_execution_object(exec_id=execution_id)
+
+        url = _exec.input_params.get("url")
+
         try:
-            js_file = requests.get(_exec.input_params.get("url"), timeout=10).json()
+            auth = self.get_request_auth_from_execution(execution_id)
+            js_file = safe_request_url("GET", url, timeout=10, auth=auth).json()
         except Exception as e:
             raise Invalid3DTilesException(e)
 
@@ -102,7 +116,7 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
         return resource
 
     def generate_resource_payload(self, layer_name, alternate, asset, _exec, workspace, **kwargs):
-        return dict(
+        payload = dict(
             resource_type="dataset",
             subtype=kwargs.get("type"),
             sourcetype=SOURCE_TYPE_REMOTE,
@@ -111,3 +125,6 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
             title=kwargs.get("title", layer_name),
             owner=_exec.user,
         )
+        if kwargs.get("auth_config_id"):
+            payload["auth_config_id"] = kwargs.get("auth_config_id")
+        return payload

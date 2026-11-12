@@ -73,6 +73,22 @@ class KMLFileHandler(BaseVectorFileHandler):
         }
 
     @property
+    def upload_validation_config(self):
+        return {
+            "kml": {
+                "mimes": {
+                    "application/xml",
+                    "text/xml",
+                    "application/vnd.google-earth.kml+xml",
+                    "text/plain",
+                },
+            },
+            "kmz": {
+                "mimes": {"application/zip", "application/vnd.google-earth.kmz", "application/octet-stream"},
+            },
+        }
+
+    @property
     def can_handle_xml_file(self) -> bool:
         """
         True or false if the handler is able to handle XML file
@@ -113,9 +129,13 @@ class KMLFileHandler(BaseVectorFileHandler):
         actual_upload = upload_validator._get_parallel_uploads_count()
         max_upload = upload_validator._get_max_parallel_uploads()
 
-        layers = KMLFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
+        try:
+            layers = KMLFileHandler().get_ogr2ogr_driver().Open(files.get("base_file"))
 
-        if not layers:
+            if not layers:
+                raise InvalidKmlException("The kml provided is invalid")
+        except Exception as e:
+            logger.exception(e)
             raise InvalidKmlException("The kml provided is invalid")
 
         layers_count = len(layers)
@@ -149,11 +169,11 @@ class KMLFileHandler(BaseVectorFileHandler):
         pass
 
     @staticmethod
-    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate):
+    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file
         """
 
         base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
-        return f"{base_command } -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} --config OGR_SKIP LibKML"
+        return f"{base_command} -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} --config OGR_SKIP LibKML"

@@ -18,10 +18,9 @@
 #########################################################################
 import logging
 
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.sld.exceptions import InvalidSldException
-from owslib.etree import etree as dlxml
 from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
@@ -41,6 +40,16 @@ class SLDFileHandler(MetadataFileHandler):
         ),
     }
 
+    @staticmethod
+    def can_do(action) -> bool:
+        """
+        Evaluate if the handler can take care of a specific action.
+        Each action (import/copy/etc...) can define different step so
+        the Handler must be ready to handle them. If is not in the actual
+        flow the already in place flow is followd
+        """
+        return action in SLDFileHandler.TASKS
+
     @property
     def supported_file_extension_config(self):
         return {
@@ -53,6 +62,12 @@ class SLDFileHandler(MetadataFileHandler):
             ],
             "actions": list(self.TASKS.keys()),
             "type": "metadata",
+        }
+
+    @property
+    def upload_validation_config(self):
+        return {
+            "sld": {"mimes": {"text/plain", "application/xml", "text/xml"}},
         }
 
     @staticmethod
@@ -73,10 +88,16 @@ class SLDFileHandler(MetadataFileHandler):
         """
         Define basic validation steps
         """
+        from geonode.utils import assert_safe_xml, UnsafeXMLError
+
         # calling base validation checks
         try:
             with open(files.get("base_file")) as _xml:
-                dlxml.fromstring(_xml.read().encode())
+                content = _xml.read()
+                assert_safe_xml(content)
+        except UnsafeXMLError as err:
+            logger.warning("Unsafe SLD content rejected: %s", err)
+            raise InvalidSldException("Uploaded document contains unsafe content")
         except Exception as err:
             raise InvalidSldException(f"Uploaded document is not SLD or is invalid: {str(err)}")
         return True
@@ -86,7 +107,7 @@ class SLDFileHandler(MetadataFileHandler):
             original_handler.handle_sld_file(dataset, _exec)
         else:
             _path = _exec.input_params.get("files", {}).get("sld_file", _exec.input_params.get("base_file", {}))
-            resource_manager.exec(
+            resource_manager_registry.get_for_instance(dataset).exec(
                 "set_style",
                 None,
                 instance=dataset,

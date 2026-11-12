@@ -20,15 +20,14 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.mixins import AdvertisedListMixin
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
 from geonode.geoapps.models import GeoApp
+from geonode.metadata.multilang.views import MultiLangViewMixin
+
 
 from .serializers import GeoAppSerializer
 from .permissions import GeoAppPermissionsFilter
@@ -38,13 +37,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class GeoAppViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class GeoAppViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows geoapps to be viewed or edited.
     """
 
     http_method_names = ["get", "patch", "post", "put"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
@@ -53,10 +51,12 @@ class GeoAppViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMi
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        AdvertisedFilter,
         ExtentFilter,
         GeoAppPermissionsFilter,
     ]
     queryset = GeoApp.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = GeoAppSerializer
     pagination_class = GeoNodeApiPagination
 

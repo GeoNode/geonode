@@ -1,0 +1,13 @@
+/* reduces the max height of the charts
+   to fit the page better */
+img {
+    max-height: 500px;
+    display: block;
+    margin: 0 auto;
+}
+/* fix icons in admonitions */
+.md-typeset .admonition-title:before{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}

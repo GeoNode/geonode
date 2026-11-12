@@ -18,14 +18,13 @@
 #########################################################################
 
 from django.contrib import admin
-from modeltranslation.admin import TranslationAdmin
 from geonode.base.admin import set_user_and_group_dataset_permission
 
 from . import models
 
 
 @admin.register(models.GroupCategory)
-class GroupCategoryAdmin(TranslationAdmin):
+class GroupCategoryAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "slug",

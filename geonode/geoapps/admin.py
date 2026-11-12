@@ -19,10 +19,9 @@
 
 from django.contrib import admin
 
-from modeltranslation.admin import TabbedTranslationAdmin
-
 from geonode.geoapps.models import GeoApp
 from geonode.base.admin import ResourceBaseAdminForm
+from geonode.metadata.admin import download_validation_report, validate_metadata
 
 
 class GeoAppAdminForm(ResourceBaseAdminForm):
@@ -31,7 +30,8 @@ class GeoAppAdminForm(ResourceBaseAdminForm):
         fields = "__all__"
 
 
-class GeoAppAdmin(TabbedTranslationAdmin):
+class GeoAppAdmin(admin.ModelAdmin):
+    actions = [validate_metadata, download_validation_report]
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display_links = ("title",)
     list_display = (
@@ -75,9 +75,9 @@ class GeoAppAdmin(TabbedTranslationAdmin):
         through the admin batch action
         """
         for obj in queryset:
-            from geonode.resource.manager import resource_manager
+            from geonode.resource.registry import resource_manager_registry
 
-            resource_manager.delete(obj.uuid, instance=obj)
+            resource_manager_registry.get_for_instance(obj).delete(obj.uuid, instance=obj)
 
 
 admin.site.register(GeoApp, GeoAppAdmin)

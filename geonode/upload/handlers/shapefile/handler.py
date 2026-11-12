@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import ast
 import json
 import logging
 import codecs
@@ -29,6 +28,7 @@ from pathlib import Path
 
 from geonode.upload.handlers.shapefile.exceptions import InvalidShapeFileException
 from geonode.upload.handlers.shapefile.serializer import OverwriteShapeFileSerializer, ShapeFileSerializer
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -54,6 +54,29 @@ class ShapeFileHandler(BaseVectorFileHandler):
             "type": "vector",
         }
 
+    @property
+    def upload_validation_config(self):
+        # libmagic reports application/octet-stream for shp/shx/dbf, so we
+        # match against the descriptive string libmagic emits instead.
+        return {
+            "shp": {"description_contains": {"ESRI Shapefile"}},
+            "shx": {"description_contains": {"ESRI Shapefile"}},
+            "dbf": {"description_contains": {"dBase", "FoxPro", "Xbase"}},
+            "prj": {"mimes": {"text/plain"}},
+            "cpg": {"mimes": {"text/plain"}},
+            "cst": {"mimes": {"text/plain"}},
+        }
+
+    @staticmethod
+    def can_do(action) -> bool:
+        """
+        Evaluate if the handler can take care of a specific action.
+        Each action (import/copy/etc...) can define different step so
+        the Handler must be ready to handle them. If is not in the actual
+        flow the already in place flow is followd
+        """
+        return action in ShapeFileHandler.TASKS
+
     @staticmethod
     def can_handle(_data) -> bool:
         """
@@ -71,11 +94,10 @@ class ShapeFileHandler(BaseVectorFileHandler):
         _base = data.get("base_file")
         if not _base:
             return False
+        if data.get("action") == ira.UPSERT.value:
+            return False
         if _base.endswith("shp") if isinstance(_base, str) else _base.name.endswith("shp"):
-            is_overwrite_flow = data.get("overwrite_existing_layer", False)
-            if isinstance(is_overwrite_flow, str):
-                is_overwrite_flow = ast.literal_eval(is_overwrite_flow.title())
-            return OverwriteShapeFileSerializer if is_overwrite_flow else ShapeFileSerializer
+            return OverwriteShapeFileSerializer if data.get("action") == ira.REPLACE.value else ShapeFileSerializer
         return False
 
     @staticmethod
@@ -85,15 +107,17 @@ class ShapeFileHandler(BaseVectorFileHandler):
         all the other are returned
         """
         if action == exa.COPY.value:
-            title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title"), "store_spatial_file": True}, _data
+            data = _data.get("defaults")
+            if isinstance(data, str):
+                data = json.loads(data)
+            return {"title": data.pop("title"), "store_spatial_file": True}, _data
 
         additional_params = {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "action": _data.pop("action", "upload"),
+            "upsert_key": _data.pop("upsert_key", None),
         }
 
         return additional_params, _data
@@ -134,7 +158,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         )
         if not is_valid:
             raise InvalidShapeFileException(
-                detail=f"Some file is missing files with the same name and with the following extension are required: {_shp_ext_needed}"
+                detail=f"Some files are missing. The files need to have the same name with all extensions: {', '.join(ShapeFileHandler._get_ext_needed())}"
             )
 
         return True
@@ -150,25 +174,20 @@ class ShapeFileHandler(BaseVectorFileHandler):
         return ogr.GetDriverByName("ESRI Shapefile")
 
     @staticmethod
-    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate):
+    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file
         """
         base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
-        layers = ogr.Open(files.get("base_file"))
-        layer = layers.GetLayer(original_name)
-
+        additional_options = []
         encoding = ShapeFileHandler._get_encoding(files)
 
-        additional_options = []
-        if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
-            additional_options.append("-nlt PROMOTE_TO_MULTI")
         if encoding:
-            additional_options.append(f"-lco ENCODING={encoding}")
+            additional_options.append(f"--config SHAPE_ENCODING {encoding}")
 
         return (
-            f"{base_command } -lco precision=no -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
+            f"{base_command} -lco precision=no -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
             + " ".join(additional_options)
         )
 
@@ -196,7 +215,30 @@ class ShapeFileHandler(BaseVectorFileHandler):
         If needed change the name of the geometry, by promoting it to Multi
         example if is Point -> MultiPoint
         Needed for the shapefiles
+        Later this is used to map the geometry coming from ogr2ogr with a django class
         """
-        if "Multi" not in geometry_name and "Point" not in geometry_name:
+        if "Multi" not in geometry_name and "Point" not in geometry_name and "3D" not in geometry_name:
             return f"Multi {geometry_name.title()}"
         return geometry_name
+
+    def promote_geom_to_multi(self, geom):
+        """
+        Convert the GetGeometryType object into Multi
+        example if is Point -> MultiPoint
+        Needed for the shapefiles
+        """
+        match geom.GetGeometryType():
+            case ogr.wkbMultiLineString | ogr.wkbMultiPolygon:
+                # if is already multi, we dont need to do anything
+                return geom
+            case ogr.wkbLineString:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiLineString)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case ogr.wkbPolygon:
+                new_multi_geom = ogr.Geometry(ogr.wkbMultiPolygon)
+                new_multi_geom.AddGeometry(geom)
+                return new_multi_geom
+            case _:
+                # we dont convert points
+                return geom

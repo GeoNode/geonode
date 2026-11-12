@@ -19,10 +19,9 @@
 from __future__ import absolute_import, unicode_literals
 
 import json
-import pytest
 from datetime import datetime, timedelta
-from importlib import import_module
-from unittest.mock import Mock, patch
+from importlib import import_module, reload
+from inspect import getclosurevars
 
 from django.conf import settings
 from django.core import mail
@@ -30,31 +29,22 @@ from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.middleware import SessionMiddleware
 
 from allauth.account import app_settings as account_settings
 from allauth.account.adapter import get_adapter
-from allauth.socialaccount.models import SocialAccount
 from allauth.account.models import EmailAddress, EmailConfirmation
 from allauth.account.signals import user_signed_up
 
 # from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.apple.client import jwt_encode
-from allauth.socialaccount.tests import OAuth2TestsMixin
-from allauth.tests import TestCase, mocked_response
 
+from geonode.people.adapters import GenericOpenIDConnectAdapter, GenericOpenIDConnectOAuth2Adapter
+from django.test import TestCase
+from unittest import mock
 
-@pytest.fixture
-def settings_with_google_provider(settings):
-    settings.SOCIALACCOUNT_PROVIDERS = {
-        "geonode_openid_connect": {
-            "APP": {
-                "client_id": "app123id",
-                "key": "google",
-                "secret": "dummy",
-            }
-        }
-    }
-    return settings
+from .allauth_test_utils import OAuth2TestsMixin
 
 
 @override_settings(
@@ -159,6 +149,31 @@ class GoogleTests(OAuth2TestsMixin, TestCase):
         self.assertFalse(EmailConfirmation.objects.filter(email_address__email=self.email).exists())
         account = email_address.user.socialaccount_set.all()[0]
         self.assertEqual(account.extra_data["given_name"], "Raymond")
+
+    def test_login_syncs_groups(self):
+        with mock.patch(
+            "geonode.people.adapters._update_user_groups_from_social", side_effect=lambda sl, user: user
+        ) as mock_sync:
+            self.login(resp_mock=None)
+        user = get_user_model().objects.get(email=self.email)
+        mock_sync.assert_called_once_with(mock.ANY, user)
+
+    @override_settings(SOCIALACCOUNT_ADAPTER="geonode.people.adapters.SocialAccountAdapter")
+    def test_login_with_base_social_account_adapter(self):
+        self.login(resp_mock=None)
+        self.assertTrue(get_user_model().objects.filter(email=self.email).exists())
+
+    @override_settings(SOCIALACCOUNT_ADAPTER="geonode.people.adapters.SocialAccountAdapter")
+    def test_login_view_does_not_depend_on_socialaccount_adapter(self):
+        # views are built at import time, reload them with the overridden setting
+        from geonode.people.socialaccount.providers.geonode_openid_connect import views
+
+        request = RequestFactory().post(self.provider.get_login_url(self.request))
+        SessionMiddleware(lambda r: None).process_request(request)
+        request.user = AnonymousUser()
+        resp = reload(views).oauth2_login(request)
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(resp["location"].startswith("https://accounts.google.com/o/oauth2/v2/auth"))
 
     def test_user_signed_up_signal(self):
         sent_signals = []
@@ -268,40 +283,49 @@ class AppInSettingsTests(GoogleTests):
     pass
 
 
-def test_login_by_token(db, client, settings_with_google_provider):
-    client.cookies.load({"g_csrf_token": "csrf"})
-    with patch("allauth.socialaccount.providers.google.views.jwt.get_unverified_header") as g_u_h:
-        with mocked_response({"dummykid": "-----BEGIN CERTIFICATE-----"}):
-            with patch("allauth.socialaccount.providers.google.views.load_pem_x509_certificate") as load_pem:
-                with patch("allauth.socialaccount.providers.google.views.jwt.decode") as decode:
-                    decode.return_value = {
-                        "iss": "https://accounts.google.com",
-                        "aud": "client_id",
-                        "sub": "123sub",
-                        "hd": "example.com",
-                        "email": "raymond@example.com",
-                        "email_verified": True,
-                        "at_hash": "HK6E_P6Dh8Y93mRNtsDB1Q",
-                        "name": "Raymond Penners",
-                        "picture": "https://lh5.googleusercontent.com/photo.jpg",
-                        "given_name": "Raymond",
-                        "family_name": "Penners",
-                        "locale": "en",
-                        "iat": 123,
-                        "exp": 456,
-                    }
-                    g_u_h.return_value = {
-                        "alg": "RS256",
-                        "kid": "dummykid",
-                        "typ": "JWT",
-                    }
-                    pem = Mock()
-                    load_pem.return_value = pem
-                    pem.public_key.return_value = "key"
-                    resp = client.post(
-                        reverse("google_login_by_token"),
-                        {"credential": "dummy", "g_csrf_token": "csrf"},
-                    )
-                    assert resp.status_code == 302
-                    socialaccount = SocialAccount.objects.get(uid="123sub")
-                    assert socialaccount.user.email == "raymond@example.com"
+class CustomOAuth2Adapter(GenericOpenIDConnectOAuth2Adapter):
+    pass
+
+
+class LegacyAdapter(GenericOpenIDConnectAdapter):
+    def complete_login(self, request, app, token, response, **kwargs):
+        pass
+
+
+class OAuth2AdapterClassSettingTests(TestCase):
+    def _reload(self):
+        from geonode.people.socialaccount.providers.geonode_openid_connect import provider, views
+
+        reload(provider)
+        reload(views)
+        return provider, views
+
+    def tearDown(self):
+        # restore the module state built from the default settings
+        self._reload()
+
+    def _assert_adapter(self, expected):
+        provider, views = self._reload()
+        self.assertIs(provider.GenericOpenIDConnectProvider.oauth2_adapter_class, expected)
+        for view in (views.oauth2_login, views.oauth2_callback):
+            self.assertIs(getclosurevars(view).nonlocals["adapter"], expected)
+
+    def test_default_oauth2_adapter_class(self):
+        self._assert_adapter(GenericOpenIDConnectOAuth2Adapter)
+
+    def test_custom_oauth2_adapter_class(self):
+        providers = {
+            settings.SOCIALACCOUNT_OIDC_PROVIDER: {
+                **(settings.SOCIALACCOUNT_PROVIDERS.get(settings.SOCIALACCOUNT_OIDC_PROVIDER) or {}),
+                "OAUTH2_ADAPTER_CLASS": f"{__name__}.CustomOAuth2Adapter",
+            }
+        }
+        with override_settings(SOCIALACCOUNT_PROVIDERS=providers):
+            self._assert_adapter(CustomOAuth2Adapter)
+
+    def test_warns_on_legacy_socialaccount_adapter(self):
+        with override_settings(SOCIALACCOUNT_ADAPTER=f"{__name__}.LegacyAdapter"):
+            with self.assertLogs("geonode.people.socialaccount.providers.geonode_openid_connect.views", "WARNING"):
+                self._reload()
+        with self.assertNoLogs("geonode.people.socialaccount.providers.geonode_openid_connect.views", "WARNING"):
+            self._reload()

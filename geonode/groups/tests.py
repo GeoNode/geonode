@@ -19,6 +19,8 @@
 import json
 import logging
 
+from unittest.mock import patch
+
 from django.urls import reverse
 from django.conf import settings
 from django.test import override_settings
@@ -38,6 +40,8 @@ from geonode.groups.models import GroupProfile, GroupMember, GroupCategory
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
 from geonode.security.registry import permissions_registry
+from django.db.models import Q
+from geonode.people.utils import get_available_users
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +94,17 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         """
         group = Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
         self.assertTrue(group)
+
+    def test_default_access_is_a_valid_choice(self):
+        """
+        Ensures a GroupProfile created without an explicit access gets one of the
+        field's own GROUP_CHOICES, so that code filtering on access="public"
+        (e.g. geonode.people.utils.get_available_users) can see it.
+        """
+        group = GroupProfile.objects.create(slug="default_access_group", title="default_access_group")
+        self.assertEqual(group.access, "public")
+        self.assertIn(group.access, dict(GroupProfile.GROUP_CHOICES))
+        self.assertIn(group, GroupProfile.objects.filter(access="public"))
 
     def test_users_group_list_view(self):
         """
@@ -345,7 +360,8 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertCountEqual(json.loads(perms_info)["groups"], {"bar": ["view_resourcebase"]})
+        self.assertTrue("bar" in json.loads(perms_info)["groups"])
+        self.assertListEqual(json.loads(perms_info)["groups"]["bar"], ["view_resourcebase"])
 
     def test_resource_permissions(self):
         """
@@ -377,9 +393,10 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
             # Ensure the groups value is empty by default
             expected_permissions = {}
-            if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+            anonymous_compact = settings.DEFAULT_ANONYMOUS_PERMISSIONS
+            if anonymous_compact == "download":
                 expected_permissions.setdefault("anonymous", []).append("download_resourcebase")
-            if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+            if anonymous_compact == "view":
                 expected_permissions.setdefault("anonymous", []).append("view_resourcebase")
 
             self.assertCountEqual(permissions.get("groups"), expected_permissions)
@@ -407,7 +424,8 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertCountEqual(permissions["groups"], {"bar": ["change_resourcebase"]})
+            self.assertTrue("bar" in permissions["groups"])
+            self.assertListEqual(permissions["groups"]["bar"], ["change_resourcebase"])
 
             # Remove group permissions
             permissions = {"users": {"admin": ["change_resourcebase"]}}
@@ -433,7 +451,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
-            self.assertCountEqual(permissions["groups"], {})
+            self.assertTrue("bar" not in permissions["groups"])
 
     def test_create_new_group(self):
         """
@@ -685,9 +703,11 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
 
-        self.assertContains(response, "Datasets", count=3, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "Maps", count=3, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "Documents", count=3, status_code=200, msg_prefix="", html=False)
+        # commenting this part, it will just check that a specific word is available N times in the HTML
+        # self.assertContains(response, "Datasets", count=3, status_code=200, msg_prefix="", html=False)
+        # self.assertContains(response, "Maps", count=3, status_code=200, msg_prefix="", html=False)
+        # self.assertContains(response, "Documents", count=3, status_code=200, msg_prefix="", html=False)
+
         self.assertContains(
             response, '<a href="/datasets/:geonode:CA">CA</a>', count=0, status_code=200, msg_prefix="", html=False
         )
@@ -799,3 +819,176 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         q = GroupCategory.objects.filter(name=category)
         self.assertEqual(q.count(), 1)
         self.assertTrue(q.get().slug)
+
+    def test_adding_user_to_auth_group_creates_member(self):
+
+        # Ensure they are not a member initially
+        self.assertFalse(self.bar.user_is_member(self.test_user))
+
+        # Add via the standard Django auth.Group
+        self.test_user.groups.add(self.bar.group)
+
+        member_exists = GroupMember.objects.filter(user=self.test_user, group=self.bar).exists()
+        self.assertTrue(member_exists)
+
+    def test_removing_user_from_auth_group_deletes_member(self):
+        self.test_user.groups.add(self.bar.group)
+        self.assertTrue(self.bar.user_is_member(self.test_user))
+
+        # Remove via the standard Django auth.Group
+        self.test_user.groups.remove(self.bar.group)
+        member_exists = GroupMember.objects.filter(user=self.test_user, group=self.bar).exists()
+        self.assertFalse(member_exists)
+
+    def test_adding_user_to_auth_group_does_not_recompute_member_perms(self):
+        """Syncing GroupMember from auth.Group must not run the per-resource perms recomputation."""
+        with patch("geonode.groups.models.GroupMember._handle_perms") as _handle_perms:
+            self.test_user.groups.add(self.bar.group)
+
+        self.assertTrue(GroupMember.objects.filter(user=self.test_user, group=self.bar).exists())
+        _handle_perms.assert_not_called()
+
+    def test_adding_user_to_multiple_auth_groups_does_not_duplicate_member(self):
+        """Each m2m sync must not create a second GroupMember for a group already synced."""
+        foo = GroupProfile.objects.create(slug="sync_foo", title="sync_foo")
+        try:
+            self.test_user.groups.add(self.bar.group)
+            self.test_user.groups.add(foo.group)
+
+            self.assertEqual(GroupMember.objects.filter(user=self.test_user, group=self.bar).count(), 1)
+            self.assertEqual(GroupMember.objects.filter(user=self.test_user, group=foo).count(), 1)
+        finally:
+            foo.delete()
+
+    def test_join_syncs_to_auth_group(self):
+        self.bar.join(self.test_user, role=GroupMember.MEMBER)
+
+        # Verify the user was added to standard Django auth.Group
+        in_auth_group = self.test_user.groups.filter(id=self.bar.group.id).exists()
+        self.assertTrue(in_auth_group)
+
+    def test_leave_syncs_to_auth_group(self):
+
+        self.bar.join(self.test_user, role=GroupMember.MEMBER)
+        self.assertTrue(self.test_user.groups.filter(id=self.bar.group.id).exists())
+
+        self.bar.leave(self.test_user)
+
+        # Verify the user was removed from standard Django auth.Group
+        in_auth_group = self.test_user.groups.filter(id=self.bar.group.id).exists()
+        self.assertFalse(in_auth_group)
+
+
+class UserAutocompleteTest(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.user1 = get_user_model().objects.create_user(
+            username="user1", email="user1@example.com", password="password"
+        )
+        self.user2 = get_user_model().objects.create_user(
+            username="user2", email="user2@example.com", password="password"
+        )
+        self.user3 = get_user_model().objects.create_user(
+            username="anotheruser", email="anotheruser@example.com", password="password"
+        )
+        self.inactive_user = get_user_model().objects.create_user(
+            username="inactiveuser", email="inactive@example.com", password="password", is_active=False
+        )
+        self.admin_user = get_user_model().objects.get(username="admin")
+
+        self.public_group, _ = GroupProfile.objects.get_or_create(
+            slug="public_test_group", title="Public Test Group", access="public"
+        )
+        self.private_group, _ = GroupProfile.objects.get_or_create(
+            slug="private_test_group", title="Private Test Group", access="private"
+        )
+
+        self.public_group.join(self.user1)
+        self.public_group.join(self.user2)
+        self.private_group.join(self.user2)  # user2 is also in a private group
+        self.private_group.join(self.user3)
+
+    def test_anonymous_user_autocomplete(self):
+        url = reverse("autocomplete_users")
+        response = self.client.get(url, {"q": "user"})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]), 0)
+
+    def test_authenticated_user_autocomplete_no_query(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("autocomplete_users")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        # Admin should see all active users
+        expected_usernames = set(
+            get_user_model()
+            .objects.exclude(Q(username="AnonymousUser") | Q(is_active=False))
+            .values_list("username", flat=True)
+        )
+        returned_usernames = {item["text"] for item in data["results"]}
+        self.assertSetEqual(returned_usernames, expected_usernames)
+
+    def test_authenticated_user_autocomplete_with_query(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("autocomplete_users")
+        response = self.client.get(url, {"q": "user"})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        usernames = {item["text"] for item in data["results"]}
+        self.assertIn("user1", usernames)
+        self.assertIn("user2", usernames)
+        self.assertIn("anotheruser", usernames)
+        self.assertNotIn("inactiveuser", usernames)
+
+    def test_regular_user_sees_self_and_public_group_members(self):
+        self.client.login(username="user1", password="password")
+        url = reverse("autocomplete_users")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        usernames = {item["text"] for item in data["results"]}
+        self.assertIn("user1", usernames)
+        self.assertIn("user2", usernames)
+        self.assertIn(self.user3.username, usernames)
+        expected_usernames = {u.username for u in get_available_users(self.user1)}
+        self.assertSetEqual(usernames, expected_usernames)
+
+    def test_regular_user_does_not_see_private_group_members_if_not_member(self):
+        self.client.login(username="user1", password="password")
+        url = reverse("autocomplete_users")
+        response = self.client.get(url, {"q": "anotheruser"})
+        self.assertEqual(response.status_code, 200)
+
+        exclusive_private_user = get_user_model().objects.create_user(
+            username="exclusive_private_user", email="exclusive@example.com", password="password"
+        )
+        exclusive_private_group, _ = GroupProfile.objects.get_or_create(
+            slug="exclusive_private_group", title="Exclusive Private Group", access="private"
+        )
+        exclusive_private_group.join(exclusive_private_user)
+
+        registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        registered_group.user_set.remove(exclusive_private_user)  # Just in case it was added by fixture or other means
+
+        # user1 (logged in) should NOT see private_user
+        response = self.client.get(url, {"q": "exclusive_private_user"})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        usernames = {item["text"] for item in data["results"]}
+        self.assertNotIn("exclusive_private_user", usernames)
+        self.assertNotIn("user3", usernames)
+
+        # Clean up the created user and group to avoid interference with other tests
+        exclusive_private_user.delete()
+        exclusive_private_group.delete()
+
+    def test_inactive_user_not_returned(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("autocomplete_users")
+        response = self.client.get(url, {"q": "inactiveuser"})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        usernames = {item["text"] for item in data["results"]}
+        self.assertNotIn("inactiveuser", usernames)

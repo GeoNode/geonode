@@ -19,11 +19,9 @@
 import rest_framework.permissions
 
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from .. import models
@@ -35,25 +33,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class IsAdminOrListOnly(rest_framework.permissions.BasePermission):
+class IsSuperUser(rest_framework.permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_superuser:
-            result = True
-        elif view.action == "list":
-            result = True
-        else:
-            result = False
-        return result
+        return request.user and request.user.is_superuser
 
 
 class HarvesterViewSet(NestedViewSetMixin, DynamicModelViewSet):
-    authentication_classes = [
-        BasicAuthentication,
-        SessionAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
-        IsAdminOrListOnly,
+        IsSuperUser,
     ]
     queryset = models.Harvester.objects.all()
     serializer_class = serializers.HarvesterSerializer
@@ -74,6 +61,9 @@ class HarvestableResourceViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
+    permission_classes = [
+        IsSuperUser,
+    ]
     queryset = models.HarvestableResource.objects.all()
     pagination_class = GeoNodeApiPagination
     serializer_class = serializers.HarvestableResourceSerializer

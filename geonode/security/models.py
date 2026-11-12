@@ -18,14 +18,24 @@
 #########################################################################
 
 import copy
+import json
 import logging
 import operator
 import traceback
+import base64
+import hashlib
 
 from functools import reduce
+from cryptography.fernet import Fernet
 
-from django.db.models import Q
 from django.conf import settings
+from django.db import models
+from django.db.models import Q
+from geonode.security.permissions import (
+    get_default_anonymous_compact_permission,
+    VIEW_RIGHTS,
+    DOWNLOAD_RIGHTS,
+)
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group, Permission
@@ -47,10 +57,15 @@ from .permissions import (
     DATASET_EDIT_STYLE_PERMISSIONS,
 )
 
-from .utils import get_users_with_perms, get_user_obj_perms_model, skip_registered_members_common_group
+from .utils import get_users_with_perms, skip_registered_members_common_group
 from geonode.security.registry import permissions_registry
+from guardian.utils import get_user_obj_perms_model
 
 logger = logging.getLogger(__name__)
+
+SECRET_KEY = settings.SECRET_KEY
+ENCRYPTION_KEY = base64.urlsafe_b64encode(hashlib.sha256(SECRET_KEY.encode()).digest())
+cipher = Fernet(ENCRYPTION_KEY)
 
 
 class PermissionLevelError(Exception):
@@ -173,12 +188,12 @@ class PermissionLevelMixin:
 
         return list(set(obj_groups)), list(set(obj_group_managers))
 
-    def set_default_permissions(self, owner=None, created=False):
+    def set_default_permissions(self, owner=None, created=False, **kwargs):
         """
         Removes all the permissions except for the owner and assign the
         view permission to the anonymous group.
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
         # default permissions for anonymous users
         anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
@@ -197,7 +212,8 @@ class PermissionLevelMixin:
         user_groups = Group.objects.filter(name__in=_owner.groupmember_set.values_list("group__slug", flat=True))
 
         # Anonymous
-        anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+        anonymous_compact = get_default_anonymous_compact_permission()
+        anonymous_can_view = anonymous_compact == VIEW_RIGHTS
         if anonymous_can_view:
             perm_spec["groups"][anonymous_group] = ["view_resourcebase"]
         else:
@@ -210,7 +226,7 @@ class PermissionLevelMixin:
                 ):
                     perm_spec["groups"][user_group] = ["view_resourcebase"]
 
-        anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+        anonymous_can_download = anonymous_compact == DOWNLOAD_RIGHTS
         if anonymous_can_download:
             perm_spec["groups"][anonymous_group] = ["view_resourcebase", "download_resourcebase"]
         else:
@@ -224,8 +240,8 @@ class PermissionLevelMixin:
                     perm_spec["groups"][user_group] = ["view_resourcebase", "download_resourcebase"]
 
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
-        return resource_manager.set_permissions(
-            self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created
+        return resource_manager_registry.get_for_instance(self).set_permissions(
+            self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created, **kwargs
         )
 
     def set_permissions(self, perm_spec=None, created=False, approval_status_changed=False, group_status_changed=False):
@@ -247,9 +263,9 @@ class PermissionLevelMixin:
             ]
         }
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
-        return resource_manager.set_permissions(
+        return resource_manager_registry.get_for_instance(self).set_permissions(
             self.uuid,
             instance=self,
             permissions=perm_spec,
@@ -372,6 +388,7 @@ class PermissionLevelMixin:
         def calculate_perms(instance, user):
             # To avoid circular import
             from geonode.base.models import Configuration
+            from geonode.layers.models import Dataset
 
             config = Configuration.load()
             ctype = ContentType.objects.get_for_model(instance)
@@ -379,10 +396,13 @@ class PermissionLevelMixin:
 
             PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
             # include explicit permissions appliable to "subtype == 'vector'"
-            if instance.subtype in ["vector", "vector_time"]:
-                PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
-            elif instance.subtype == "raster":
+
+            if instance.subtype == "raster":
                 PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
+            elif isinstance(instance.get_real_instance(), Dataset):
+                # remote layers are included, since https://github.com/GeoNode/geonode/issues/13011
+                # introduces an "optimistic" approach to editing remote layers
+                PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
 
             resource_perms = Permission.objects.filter(
                 codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]
@@ -451,11 +471,38 @@ class PermissionLevelMixin:
         """
         Checks if a has a given permission to the resource.
         """
-        user_perms = permissions_registry.get_perms(instance=self, user=user)
+        return permissions_registry.user_has_perm(user, self, permission)
 
-        if permission not in user_perms:
-            # TODO cater for permissions with syntax base.permission_codename
-            # eg 'base.change_resourcebase'
-            return False
 
-        return True
+class AuthConfig(models.Model):
+    type = models.CharField(max_length=128)
+    _payload = models.CharField(max_length=4096, db_column="payload")
+
+    class Meta:
+        verbose_name = "Authentication Configuration"
+        verbose_name_plural = "Authentication Configurations"
+
+    def __str__(self):
+        return f"{self.type}:{self.pk}"
+
+    @property
+    def payload(self):
+        if not self._payload:
+            return {}
+        return json.loads(cipher.decrypt(self._payload.encode()).decode())
+
+    @payload.setter
+    def payload(self, value):
+        self._payload = cipher.encrypt(json.dumps(value).encode()).decode()
+
+
+class URLPatternAuthConfig(models.Model):
+    auth_config = models.ForeignKey(AuthConfig, on_delete=models.CASCADE, related_name="url_patterns")
+    pattern = models.CharField(max_length=2048)
+
+    class Meta:
+        verbose_name = "URL Pattern Authentication Configuration"
+        verbose_name_plural = "URL Pattern Authentication Configurations"
+
+    def __str__(self):
+        return self.pattern

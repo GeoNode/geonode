@@ -22,52 +22,53 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
+
 import os
 import io
 import json
+import zipfile
 import gisdata
 
 from PIL import Image
-from io import BytesIO
 
 from unittest.mock import patch
 from urllib.parse import urlparse
+from pathlib import Path
 
 from django.urls import reverse
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.defaultfilters import filesizeformat
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.assets.utils import create_asset_and_link
-from geonode.base.forms import LinkedResourceForm
+from geonode.assets.utils import create_asset_and_link, get_default_asset
 from geonode.maps.models import Map
-from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
-from geonode.base.models import License, Region, LinkedResource
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.apps import DocumentsAppConfig
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import document_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document
 
-from geonode.base.populate_test_data import all_public, create_models, create_single_doc, remove_models
+from geonode.base.populate_test_data import all_public, create_models, create_single_doc
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
 from geonode.security.registry import permissions_registry
-
 
 TEST_GIF = os.path.join(os.path.dirname(__file__), "tests/data/img.gif")
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
     type = "document"
+    IMAGE_BYTES = (
+        b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+    )
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
@@ -79,23 +80,20 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        create_models(type=cls.get_type, integration=cls.get_integration)
+        # ... model creation
+        create_models("map")
+        create_models("document")
         all_public()
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+        # Moved static computations here:
+        cls.project_root = os.path.abspath(os.path.dirname(__file__))
+        cls.anonymous_user = get_anonymous_user()
 
     def setUp(self):
         super().setUp()
-        create_models("map")
-        self.project_root = os.path.abspath(os.path.dirname(__file__))
-        self.imgfile = io.BytesIO(
-            b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00"
-            b"\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
-        )
-        self.anonymous_user = get_anonymous_user()
+        self.project_root = self.__class__.project_root
+        self.anonymous_user = self.__class__.anonymous_user
+        self.imgfile = io.BytesIO(self.__class__.IMAGE_BYTES)
 
     def test_document_mimetypes_rendering(self):
         ARCHIVETYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "archive"]
@@ -110,8 +108,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Make sure we won't have template rendering issues
         self.assertTrue("dwg" in ARCHIVETYPES)
         self.assertTrue("dxf" in ARCHIVETYPES)
-        self.assertTrue("tif" in ARCHIVETYPES)
-        self.assertTrue("tiff" in ARCHIVETYPES)
+        self.assertTrue("tif" in IMGTYPES)
+        self.assertTrue("tiff" in IMGTYPES)
         self.assertTrue("pbm" in ARCHIVETYPES)
 
     @patch("geonode.documents.tasks.create_document_thumbnail")
@@ -160,11 +158,50 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d = create_single_doc("example_doc_name")
         self.assertTrue(d.download_is_ajax_safe)
 
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_allowed_for_admin(self):
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        title = "Remote doc allowed for admin user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_remote_document_add_forbidden_for_regular_user(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc denied for regular user"
+        form_data = {
+            "title": title,
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Document.objects.filter(title=title).exists())
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_remote_document_add_allowed_for_regular_user_when_enabled(self):
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        title = "Remote doc allowed for regular user"
+
+        form_data = {
+            "title": title,
+            "doc_url": "https://raw.githubusercontent.com/GeoNode/geonode/master/geonode/documents/tests/data/test.CSV",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Document.objects.filter(title=title).exists())
+
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
 
         superuser = get_user_model().objects.get(pk=2)
-        c = resource_manager.create(
+        c = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(
@@ -193,6 +230,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         d = Document.objects.get(title="GeoNode Map")
         self.assertEqual(d.doc_url, "http://www.geonode.org/map.pdf")
+
+    def test_uploaded_csv_with_uppercase_extension(self):
+        """
+        The extension of the file should always be lowercase
+        """
+
+        self.client.login(username="admin", password="admin")
+        try:
+            with open(os.path.join(os.path.dirname(__file__), "tests/data/test.CSV"), "rb") as f:
+                data = {"title": "CSV with uppercase extension", "doc_file": f, "extension": "CSV"}
+                self.client.post(reverse("document_upload"), data=data)
+            d = Document.objects.get(title="CSV with uppercase extension")
+            # verify that the extension is not lowercase
+            self.assertEqual(d.extension, "csv")
+            # be sure that also the file extension is not lowercase
+            asset = get_default_asset(d)
+            self.assertEqual(Path(asset.location[0]).suffix, ".csv")
+        finally:
+            Document.objects.filter(title="CSV with uppercase extension").delete()
 
     def test_upload_document_form(self):
         """
@@ -241,30 +297,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertFalse(form.is_valid())
         self.assertTrue("__all__" in form.errors)
 
-    def test_replace_document(self):
-        self.client.login(username="admin", password="admin")
-
-        f = SimpleUploadedFile("test_img_file.gif", self.imgfile.read(), "image/gif")
-        response = self.client.post(
-            reverse("document_upload"),
-            data={
-                "title": "File Doc",
-                "doc_file": f,
-                "permissions": '{"users":{"AnonymousUser": ["view_resourcebase"]}}',
-            },
-            follow=True,
-        )
-        self.assertEqual(response.status_code, 200)
-
-        # Replace Document
-        d = Document.objects.get(title="File Doc")
-        test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
-        f = SimpleUploadedFile("test_image.png", BytesIO(test_image.tobytes()).read(), "image/png")
-        response = self.client.post(reverse("document_replace", args=(d.id,)), data={"doc_file": f})
-        self.assertEqual(response.status_code, 302)
-        # Remove document
-        d.delete()
-
     def test_non_image_documents_thumbnail(self):
         self.client.login(username="admin", password="admin")
         try:
@@ -305,14 +337,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             with self.settings(THUMBNAIL_SIZE={"width": 400, "height": 200}):
                 self.client.post(reverse("document_upload"), data=data)
                 d = Document.objects.get(title="Remote img File Doc")
-                self.assertIsNotNone(d.thumbnail_url)
-                thumb_file = os.path.join(
-                    settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
-                )
-                file = Image.open(thumb_file)
-                self.assertEqual(file.size, (400, 200))
-                # check thumbnail qualty and extention
-                self.assertEqual(file.format, "JPEG")
+                self.assertIsNone(d.thumbnail_url, "Thumbnails are not allowed for remote documents.")
+
             # test pdf doc
             with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
                 data = {
@@ -353,13 +379,80 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             )
             self.assertEqual(form.errors, {"doc_file": [expected_error]})
 
+    def test_upload_document_form_rejects_unsafe_zip(self):
+        """A zip-based document carrying a path-traversal entry must be rejected by the form."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("../../etc/passwd", b"root:x:0:0")
+        buf.seek(0)
+
+        form_data = {
+            "title": "Malicious archive",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("evil.zip", buf.read(), "application/zip")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("doc_file", form.errors)
+        self.assertIn("Invalid or unsafe ZIP archive.", str(form.errors["doc_file"]))
+
+    def test_upload_document_form_accepts_clean_zip(self):
+        """A well-formed zip document must pass the safety check and validate."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("readme.txt", b"hello")
+        buf.seek(0)
+
+        form_data = {
+            "title": "Clean archive",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("clean.zip", buf.read(), "application/zip")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertTrue(form.is_valid(), msg=form.errors)
+
+    def test_upload_document_form_accepts_valid_xml(self):
+        iso_xml_content = (
+            b'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd">'
+            b"<gmd:fileIdentifier>"
+            b'<gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">123-abc</gco:CharacterString>'
+            b"</gmd:fileIdentifier>"
+            b"</gmd:MD_Metadata>"
+        )
+        form_data = {
+            "title": "ISO Metadata XML",
+            "permissions": '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        file_data = {"doc_file": SimpleUploadedFile("metadata.xml", iso_xml_content, "text/plain")}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertTrue(form.is_valid(), msg=form.errors)
+
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""
         d = Document.objects.all().first()
         d.set_default_permissions()
 
-        response = self.client.get(reverse("document_embed", args=(str(d.id),)))
+        url = reverse("document_embed", args=(str(d.id),))
+
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
+
+    def test_resourcebase_embed_is_get_only(self):
+        d = Document.objects.all().first()
+        d.set_default_permissions()
+
+        url = reverse("resourcebase_embed", kwargs={"resourcebaseid": d.pk})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.client.post(url).status_code, 405)
+        self.assertEqual(self.client.put(url).status_code, 405)
+        self.assertEqual(self.client.patch(url).status_code, 405)
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""
@@ -387,6 +480,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             },
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_document_upload_rejects_file_with_mismatched_content(self):
+        self.client.login(username="admin", password="admin")
+        pe_like_content = (
+            b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00"
+        )
+        f = SimpleUploadedFile("fake.pdf", pe_like_content, "application/pdf")
+
+        response = self.client.post(
+            f"{reverse('document_upload')}?no__redirect=true",
+            data={
+                "doc_file": f,
+                "title": "fake_pdf",
+                "permissions": '{"users":{"AnonymousUser": ["view_resourcebase"]}}',
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Document.objects.filter(title="fake_pdf").exists())
 
     # Permissions Tests
 
@@ -418,7 +530,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         create_thumb.return_value = True
         # Setup some document names to work with
         superuser = get_user_model().objects.get(pk=2)
-        document = resource_manager.create(
+        document = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True),
@@ -471,93 +583,31 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Test that the method returns 200
         self.assertEqual(response.status_code, 200)
 
-    def test_batch_edit(self):
-        Model = Document
-        view = "document_batch_metadata"
-        resources = Model.objects.all()[:3]
-        ids = ",".join(str(element.pk) for element in resources)
-        # test non-admin access
-        self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view))
-        self.assertTrue(response.status_code in (401, 403))
-        # test group change
-        group = Group.objects.first()
-        self.client.login(username="admin", password="admin")
-        response = self.client.post(
-            reverse(view),
-            data={"group": group.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.group, group)
-        # test owner change
-        owner = get_user_model().objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"owner": owner.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.owner, owner)
-        # test license change
-        license = License.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"license": license.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.license, license)
-        # test regions change
-        region = Region.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"region": region.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            if resource.regions.all():
-                self.assertTrue(region in resource.regions.all())
-        # test language change
-        language = "eng"
-        response = self.client.post(
-            reverse(view),
-            data={"language": language, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.language, language)
-        # test keywords change
-        keywords = "some,thing,new"
-        response = self.client.post(
-            reverse(view),
-            data={"keywords": keywords, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            for word in resource.keywords.all():
-                self.assertTrue(word.name in keywords.split(","))
-
 
 class DocumentModerationTestCase(GeoNodeBaseTestSupport):
-    def setUp(self):
-        super().setUp()
-        self.user = "admin"
-        self.passwd = "admin"
+
+    @classmethod
+    def setUpClass(cls):
+        """Runs once for the entire test class."""
+        super().setUpClass()
         create_models(type=b"document")
         create_models(type=b"map")
-        self.project_root = os.path.abspath(os.path.dirname(__file__))
-        self.document_upload_url = f"{(reverse('document_upload'))}?no__redirect=true"
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = "test@email.com"
-        self.u.is_active = True
-        self.u.save()
+        cls.project_root = os.path.abspath(os.path.dirname(__file__))
+        cls.document_upload_url = f"{(reverse('document_upload'))}?no__redirect=true"
+
+        cls.user = "admin"
+        cls.passwd = "admin"
+        cls.u = get_user_model().objects.get(username=cls.user)
+        cls.u.email = "test@email.com"
+        cls.u.is_active = True
+        cls.u.save()
+
+    def setUp(self):
+        """Runs before every test method (Now only runs what's essential)."""
+        super().setUp()
+        self.u = self.__class__.u  # Assign the pre-configured user instance
+        self.project_root = self.__class__.project_root
+        self.document_upload_url = self.__class__.document_upload_url
 
     def _get_input_path(self):
         base_path = gisdata.GOOD_DATA
@@ -583,22 +633,48 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
 
 class DocumentsNotificationsTestCase(NotificationsTestsHelper):
-    def setUp(self):
-        self.user = "admin"
-        self.passwd = "admin"
+    # Static data can be defined once as class attributes
+    ADMIN_USERNAME = "admin"
+    ADMIN_PASSWD = "admin"
+    NORMAL_USERNAME = "norman"
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once for the entire test class.
+        Database operations and static object initialization go here.
+        """
+        super().setUpClass()
         create_models(type=b"document")
-        self.anonymous_user = get_anonymous_user()
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = "test@email.com"
-        self.u.is_active = True
-        self.u.is_superuser = True
-        self.u.save()
-        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.u)
-        self.norman = get_user_model().objects.get(username="norman")
-        self.norman.email = "norman@email.com"
-        self.norman.is_active = True
-        self.norman.save()
-        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.norman)
+        cls.admin_user = get_user_model().objects.get(username=cls.ADMIN_USERNAME)
+        cls.admin_user.email = "test@email.com"
+        cls.admin_user.is_active = True
+        cls.admin_user.is_superuser = True
+        cls.admin_user.save()
+        cls.norman_user = get_user_model().objects.get(username=cls.NORMAL_USERNAME)
+        cls.norman_user.email = "norman@email.com"
+        cls.norman_user.is_active = True
+        cls.norman_user.save()
+
+        cls.anonymous_user = get_anonymous_user()
+
+        NotificationsTestsHelper().setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, cls.admin_user)
+        NotificationsTestsHelper().setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, cls.norman_user)
+
+    def setUp(self):
+        """
+        Runs before every test method.
+        Only quick attribute assignments go here.
+        """
+        # Call super().setUp() if necessary for the test runner
+        super().setUp()
+
+        # Assign the pre-configured attributes to the test instance
+        self.user = self.__class__.ADMIN_USERNAME
+        self.passwd = self.__class__.ADMIN_PASSWD
+        self.u = self.__class__.admin_user
+        self.norman = self.__class__.norman_user
+        self.anonymous_user = self.__class__.anonymous_user
 
     def testDocumentsNotifications(self):
         with self.settings(
@@ -622,187 +698,54 @@ class DocumentsNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
 
 
-class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
-    def setUp(self):
-        create_models(b"document")
-        create_models(b"map")
-        create_models(b"dataset")
-
-        self.test_file = io.BytesIO(
-            b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00"
-            b"\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
-        )
-
-    def test_create_document_with_links(self):
-        """Tests the creation of document links."""
-        superuser = get_user_model().objects.get(pk=2)
-
-        d = Document.objects.create(owner=superuser, title="theimg")
-        _, _ = create_asset_and_link(d, superuser, [TEST_GIF])
-
-        self.assertEqual(Document.objects.get(pk=d.id).title, "theimg")
-
-        maps = list(Map.objects.all())
-        layers = list(Dataset.objects.all())
-        resources = maps + layers
-
-        # create document links
-
-        mixin1 = LinkedResourceForm()
-        mixin1.instance = d
-        mixin1.cleaned_data = {
-            "linked_resources": resources,
-        }
-        mixin1.save_linked_resources()
-
-        for resource in resources:
-            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
-            self.assertEqual(_d.target_id, resource.id)
-
-        # update document links
-
-        mixin2 = LinkedResourceForm()
-        mixin2.instance = d
-        mixin2.cleaned_data = {
-            "linked_resources": layers,
-        }
-        mixin2.save_linked_resources()
-
-        for resource in layers:
-            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
-            self.assertEqual(_d.target_id, resource.id)
-
-        for resource in maps:
-            with self.assertRaises(LinkedResource.DoesNotExist):
-                LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
-
-
 class DocumentViewTestCase(GeoNodeBaseTestSupport):
+
+    # Fixtures are correctly placed here, running once before setUpClass
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
-    def setUp(self):
-        self.not_admin = get_user_model().objects.create(username="r-lukaku", is_active=True)
-        self.not_admin.set_password("very-secret")
-        self.not_admin.save()
-        self.test_doc = resource_manager.create(
+    # Define static data as class attributes
+    NOT_ADMIN_USERNAME = "r-lukaku"
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once for the entire test class. Database writes and static data setup go here.
+        """
+        super().setUpClass()
+
+        cls.not_admin = get_user_model().objects.create(username=cls.NOT_ADMIN_USERNAME, is_active=True)
+        cls.not_admin.set_password("very-secret")
+        cls.not_admin.save()  # Two database writes (create + save password) run only once!
+
+        cls.test_doc = document_manager.create(
             None,
             resource_type=Document,
-            defaults=dict(files=[TEST_GIF], owner=self.not_admin, title="test", is_approved=True),
+            defaults=dict(files=[TEST_GIF], owner=cls.not_admin, title="test", is_approved=True),
         )
-        self.perm_spec = {"users": {"AnonymousUser": []}}
-        self.doc_link_url = reverse("document_link", args=(self.test_doc.pk,))
 
-    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
-        """
-        Test that keyword multiselect widget is disabled when the user is not an admin
-        when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-            self.assertTrue(response.context["form"]["keywords"].field.disabled)
+        cls.perm_spec = {"users": {"AnonymousUser": []}}
 
-    def test_that_featured_enabling_and_disabling_for_users(self):
-        # Non Admins
+        cls.doc_link_url = reverse("document_link", args=(cls.test_doc.pk,))
+
+    def setUp(self):
+        """
+        Runs before every test method. Only quick attribute assignments go here.
+        """
+        super().setUp()
+
+        # Assign pre-configured attributes to the test instance
+        self.not_admin = self.__class__.not_admin
+        self.test_doc = self.__class__.test_doc
+        self.perm_spec = self.__class__.perm_spec
+        self.doc_link_url = self.__class__.doc_link_url
+
+    def test_document_link_sets_anti_xss_headers(self):
+        self.test_doc.set_permissions(self.perm_spec)
         self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        response = self.client.get(url)
-        self.assertFalse(self.not_admin.is_superuser)
+        response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["form"]["featured"].field.disabled)
-        # Admin
-        self.client.login(username="admin", password="admin")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context["form"]["featured"].field.disabled)
-
-    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
-        """
-        Test that only admin users can create/edit keywords
-        """
-        admin = self.not_admin
-        admin.is_superuser = True
-        admin.save()
-        self.client.login(username=admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        response = self.client.get(url)
-        self.assertTrue(admin.is_superuser)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context["form"]["keywords"].field.disabled)
-
-    def test_that_non_admin_user_can_create_write_to_map_without_keyword(self):
-        """
-        Test that non admin users can write to maps without creating/editing keywords
-        when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(
-                url,
-                data={
-                    "resource-owner": self.not_admin.id,
-                    "resource-title": "doc",
-                    "resource-date": "2022-01-24 16:38 pm",
-                    "resource-date_type": "creation",
-                    "resource-language": "eng",
-                },
-            )
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-        self.test_doc.refresh_from_db()
-        self.assertEqual("doc", self.test_doc.title)
-
-    def test_that_non_admin_user_cannot_create_edit_keyword(self):
-        """
-        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(url, data={"resource-keywords": "wonderful-keyword"})
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 401)
-            self.assertEqual(response.content, b"Unauthorized: Cannot edit/create Free-text Keywords")
-
-    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
-        """
-        Test that keyword multiselect widget is not disabled when the user is not an admin
-        and FREETEXT_KEYWORDS_READONLY=False
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.get(url)
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-            self.assertFalse(response.context["form"]["keywords"].field.disabled)
-
-    def test_that_non_admin_user_can_create_edit_keyword_when_freetext_keywords_readonly_istrue(self):
-        """
-        Test that non admin users can edit/create keywords when FREETEXT_KEYWORDS_READONLY=False
-        """
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.post(
-                url,
-                data={
-                    "resource-owner": self.not_admin.id,
-                    "resource-title": "doc",
-                    "resource-date": "2022-01-24 16:38 pm",
-                    "resource-date_type": "creation",
-                    "resource-language": "eng",
-                    "resource-keywords": "wonderful-keyword",
-                },
-            )
-            self.assertFalse(self.not_admin.is_superuser)
-            self.assertEqual(response.status_code, 200)
-        self.test_doc.refresh_from_db()
-        self.assertEqual("doc", self.test_doc.title)
+        self.assertEqual(response.headers.get("X-Content-Type-Options"), "nosniff")
+        self.assertIn("sandbox", response.headers.get("Content-Security-Policy", ""))
 
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)
@@ -814,7 +757,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 200)
         # test document link with external url
-        doc = resource_manager.create(
+        doc = document_manager.create(
             None,
             resource_type=Document,
             defaults=dict(

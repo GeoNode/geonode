@@ -19,11 +19,9 @@
 
 from django.contrib import admin
 
-from modeltranslation.admin import TabbedTranslationAdmin
-
-from geonode.base.admin import ResourceBaseAdminForm
+from geonode.base.admin import ResourceBaseAdminForm, SparseInline, LinkInline
 from geonode.layers.models import Dataset, Attribute, Style
-from geonode.base.admin import metadata_batch_edit
+from geonode.metadata.admin import download_validation_report, validate_metadata
 
 
 class AttributeInline(admin.TabularInline):
@@ -36,7 +34,8 @@ class DatasetAdminForm(ResourceBaseAdminForm):
         fields = "__all__"
 
 
-class DatasetAdmin(TabbedTranslationAdmin):
+class DatasetAdmin(admin.ModelAdmin):
+    actions = [validate_metadata, download_validation_report]
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display = (
         "id",
@@ -67,12 +66,15 @@ class DatasetAdmin(TabbedTranslationAdmin):
         "dirty_state",
     )
     search_fields = ("alternate", "title", "abstract", "purpose", "is_approved", "is_published", "state")
-    filter_horizontal = ("contacts",)
+    # filter_horizontal = ("contacts",)
     date_hierarchy = "date"
     readonly_fields = ("uuid", "alternate", "workspace", "geographic_bounding_box")
-    inlines = [AttributeInline]
+    inlines = (
+        AttributeInline,
+        LinkInline,
+        SparseInline,
+    )
     form = DatasetAdminForm
-    actions = [metadata_batch_edit]
 
     def delete_queryset(self, request, queryset):
         """
@@ -80,9 +82,9 @@ class DatasetAdmin(TabbedTranslationAdmin):
         through the admin batch action
         """
         for obj in queryset:
-            from geonode.resource.manager import resource_manager
+            from geonode.resource.registry import resource_manager_registry
 
-            resource_manager.delete(obj.uuid, instance=obj)
+            resource_manager_registry.get_for_instance(obj).delete(obj.uuid, instance=obj)
 
 
 class AttributeAdmin(admin.ModelAdmin):

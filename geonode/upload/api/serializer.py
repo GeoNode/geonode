@@ -16,14 +16,79 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
 from geonode.base.models import ResourceBase
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
+from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
+from geonode.utils import assert_safe_xml, UnsafeXMLError
+
+logger = logging.getLogger(__name__)
 
 
-class ImporterSerializer(DynamicModelSerializer):
+class BaseImporterSerializer(DynamicModelSerializer):
+    """
+    Base for every serializer wired into the importer endpoint.
+
+    Holds the zip-safety check that must run for any ``base_file`` capable of
+    carrying a zip-based archive (.zip / .kmz / .xlsx). DRF only invokes
+    ``validate_base_file`` when the subclass declares a ``base_file`` field,
+    so subclasses without one (e.g. RemoteResourceSerializer,
+    EmptyDatasetSerializer) inherit harmlessly.
+    """
+
+    def validate_base_file(self, f):
+        """
+        Inspect the central directory of zip-based uploads (.zip for 3D Tiles
+        and zipped shapefiles, .kmz, .xlsx) to reject path-traversal entries,
+        symlinks, oversized archives and zip-bomb compression ratios before
+        any handler extracts the file.
+        """
+        if not is_zip_extension(getattr(f, "name", None)):
+            return f
+        source = f.temporary_file_path() if hasattr(f, "temporary_file_path") else f
+        try:
+            validate_safe_zip(source)
+        except ZipValidationError:
+            logger.warning("ZIP validation failed for uploaded file.", exc_info=True)
+            raise serializers.ValidationError("Invalid or unsafe ZIP archive.")
+        finally:
+            # Rewind any in-memory file-like we read so downstream code sees
+            # the full stream.
+            if hasattr(f, "seek"):
+                try:
+                    f.seek(0)
+                except (OSError, ValueError):
+                    pass
+        return f
+
+    def _validate_xml_payload(self, f, label):
+        if f is None:
+            return f
+        try:
+            assert_safe_xml(f.read())
+        except UnsafeXMLError:
+            logger.warning("%s validation failed for uploaded file.", label, exc_info=True)
+            raise serializers.ValidationError(f"Invalid or unsafe {label} file.")
+        finally:
+            if hasattr(f, "seek"):
+                try:
+                    f.seek(0)
+                except (OSError, ValueError):
+                    pass
+        return f
+
+    def validate_xml_file(self, value):
+        return self._validate_xml_payload(value, "XML")
+
+    def validate_sld_file(self, value):
+        return self._validate_xml_payload(value, "SLD")
+
+
+class ImporterSerializer(BaseImporterSerializer):
     class Meta:
         ref_name = "ImporterSerializer"
         model = ResourceBase
@@ -42,7 +107,7 @@ class ImporterSerializer(DynamicModelSerializer):
     sld_file = serializers.FileField(required=False)
     store_spatial_files = serializers.BooleanField(required=False, default=True)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
-    action = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.UPLOAD.value)
 
 
 class OverwriteImporterSerializer(ImporterSerializer):
@@ -50,13 +115,21 @@ class OverwriteImporterSerializer(ImporterSerializer):
         ref_name = "OverwriteImporterSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ImporterSerializer.Meta.fields + (
-            "overwrite_existing_layer",
-            "resource_pk",
-        )
+        fields = ImporterSerializer.Meta.fields + ("resource_pk",)
 
-    overwrite_existing_layer = serializers.BooleanField(required=True)
     resource_pk = serializers.IntegerField(required=True)
+
+
+class ResourceCopySerializer(BaseImporterSerializer):
+    class Meta:
+        ref_name = "ResourceCopySerializer"
+        model = ResourceBase
+        view_name = "importer_copy"
+        fields = ("resource_pk", "title", "action")
+
+    resource_pk = serializers.IntegerField(required=True)
+    title = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, default=exa.COPY.value)
 
 
 class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
@@ -83,3 +156,17 @@ class UploadParallelismLimitSerializer(BaseDynamicModelSerializer):
             "max_number",
         )
         read_only_fields = ("slug",)
+
+
+class UpsertImporterSerializer(ImporterSerializer):
+    class Meta:
+        ref_name = "UpsertImporterSerializer"
+        model = ResourceBase
+        view_name = "importer_upload"
+        fields = ImporterSerializer.Meta.fields + (
+            "upsert_key",
+            "resource_pk",
+        )
+
+    upsert_key = serializers.CharField(required=False, default="fid")
+    resource_pk = serializers.IntegerField(required=True)

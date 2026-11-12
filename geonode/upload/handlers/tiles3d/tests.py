@@ -301,8 +301,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(resource.bbox_y0, 40.03610390613993)
         self.assertEqual(resource.bbox_y1, 40.04895731654794)
 
-        os.remove("/tmp/tileset.json")
-
     def test_set_bbox_from_bounding_volume_without_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L147-L180
         tilesetjson_file = {
@@ -346,8 +344,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(resource.bbox_x1, 0.0004463052796897286)
         self.assertEqual(resource.bbox_y0, 86.81078622278615)
         self.assertEqual(resource.bbox_y1, 86.81124587650872)
-
-        os.remove("/tmp/tileset.json")
 
     def test_set_bbox_from_bounding_volume_sphere_with_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L102-L146
@@ -396,8 +392,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertAlmostEqual(resource.bbox_y0, 40.042485645323616)
         self.assertAlmostEqual(resource.bbox_y1, 40.042575577526556)
 
-        os.remove("/tmp/tileset.json")
-
     def test_set_bbox_from_bounding_volume_sphere_without_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L53C4-L79C8
         tilesetjson_file = {
@@ -425,8 +419,6 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(resource.bbox_y0, 86.81097108354597)
         self.assertEqual(resource.bbox_y1, 86.8110610157489)
 
-        os.remove("/tmp/tileset.json")
-
     def test_set_bbox_from_bounding_volume_sphere_with_center_zero_without_transform(self):
         # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L53C4-L79C8
         # This test should not extract bbox from boundingVolume sphere with center 0, 0, 0
@@ -450,15 +442,86 @@ class TestTiles3DFileHandler(TestCase):
         )
         self.assertTrue(resource.bbox == self.default_bbox)
 
-        os.remove("/tmp/tileset.json")
-
-    def _generate_execid_asset(self):
+    def test_create_geonode_resource_should_raise_exception_if_tileset_json_is_missing(self):
         exec_id = orchestrator.create_execution_request(
             user=self.owner,
             func_name="funct1",
             step="step",
             input_params={
-                "files": {"base_file": "/tmp/tileset.json"},
+                "files": {"base_file": "/tmp/model.glb"},
+                "skip_existing_layer": True,
+            },
+        )
+
+        with self.assertRaises(Invalid3DTilesException) as _exc:
+            self.handler.create_geonode_resource(
+                "layername",
+                "layeralternate",
+                execution_id=exec_id,
+                resource_type="ResourceBase",
+                asset=None,
+            )
+
+        self.assertTrue("tileset.json file is missing" in str(_exc.exception))
+
+    def test_create_geonode_resource_should_skip_invalid_json_and_pick_the_actual_tileset(self):
+        # a stray/decoy ".json" file must not be mistaken for the tileset: the file is only
+        # accepted once its content passes the 3dtiles schema check, regardless of its name
+        # or of where it sorts among the other files
+        shutil.copy(self.valid_tileset_with_region, "/tmp/tileset.json")
+        with open("/tmp/aaa_decoy.json", "w") as _f:
+            _f.write(json.dumps({"not": "a tileset"}))
+
+        exec_id, asset = self._generate_execid_asset(
+            files={"base_file": "/tmp/aaa_decoy.json", "json_file": "/tmp/tileset.json"},
+            asset_files=["/tmp/aaa_decoy.json", "/tmp/tileset.json"],
+        )
+
+        try:
+            resource = self.handler.create_geonode_resource(
+                "layername",
+                "layeralternate",
+                execution_id=exec_id,
+                resource_type="ResourceBase",
+                asset=asset,
+            )
+            self.assertFalse(resource.bbox == self.default_bbox)
+        finally:
+            os.remove("/tmp/aaa_decoy.json")
+
+    def test_create_geonode_resource_should_read_bbox_from_tileset_regardless_of_asset_file_order(self):
+        # the bbox must be extracted from the tileset.json file explicitly,
+        # not from asset.location[0], which is not guaranteed to be the json file
+        shutil.copy(self.valid_tileset_with_region, "/tmp/tileset.json")
+        with open("/tmp/model.glb", "wb") as _f:
+            _f.write(b"\x00\x01\x02not-a-json-file")
+
+        exec_id, asset = self._generate_execid_asset(
+            files={"base_file": "/tmp/tileset.json", "glb_file": "/tmp/model.glb"},
+            asset_files=["/tmp/model.glb", "/tmp/tileset.json"],
+        )
+
+        try:
+            resource = self.handler.create_geonode_resource(
+                "layername",
+                "layeralternate",
+                execution_id=exec_id,
+                resource_type="ResourceBase",
+                asset=asset,
+            )
+            self.assertFalse(resource.bbox == self.default_bbox)
+        finally:
+            os.remove("/tmp/model.glb")
+
+    def _generate_execid_asset(self, files=None, asset_files=None):
+        files = files or {"base_file": "/tmp/tileset.json"}
+        asset_files = asset_files or ["/tmp/tileset.json"]
+        exec_id = orchestrator.create_execution_request(
+            user=self.owner,
+            func_name="funct1",
+            step="step",
+            input_params={
+                "files": files,
                 "skip_existing_layer": True,
             },
         )
@@ -467,7 +530,7 @@ class TestTiles3DFileHandler(TestCase):
             owner=self.owner,
             description=None,
             type=str(self.handler),
-            files=["/tmp/tileset.json"],
+            files=asset_files,
             clone_files=False,
         )
 

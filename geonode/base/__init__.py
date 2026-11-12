@@ -18,8 +18,6 @@
 #########################################################################
 from functools import wraps
 
-from django.conf import settings
-
 
 def register_url_event(event_type=None):
     """
@@ -33,9 +31,6 @@ def register_url_event(event_type=None):
     def _register_url_event(view):
         @wraps(view)
         def inner(*args, **kwargs):
-            if settings.MONITORING_ENABLED:
-                request = args[0]
-                register_event(request, event_type or "view", request.path)
             return view(*args, **kwargs)
 
         return inner
@@ -55,8 +50,6 @@ def register_event(request, event_type, resource):
     >>> def view(request):
             register_event(request, 'view', layer)
     """
-    if not settings.MONITORING_ENABLED:
-        return
 
     from geonode.base.models import ResourceBase
 

@@ -6,17 +6,73 @@ CELERY_APP=${CELERY_APP:-"geonode.celery_app:app"}
 CELERY__STATE_DB=${CELERY__STATE_DB:-"/mnt/volumes/statics/worker@%h.state"}
 # expressed in KB
 CELERY__MAX_MEMORY_PER_CHILD=${CELERY__MAX_MEMORY_PER_CHILD:-"200000"}
-CELERY__AUTOSCALE_VALUES=${CELERY__AUTOSCALE_VALUES:-"15,10"}
+CELERY__AUTOSCALE_VALUES=${CELERY__AUTOSCALE_VALUES:-"10,5"}
 CELERY__MAX_TASKS_PER_CHILD=${CELERY__MAX_TASKS_PER_CHILD:-"10"}
+<<<<<<< HEAD
 CELERY__OPTS=${CELERY__OPTS:-"--without-gossip --without-mingle -Ofair -B -E"}
 CELERY__BEAT_SCHEDULE=${CELERY__BEAT_SCHEDULE:-"celery.beat:PersistentScheduler"}
 CELERY__LOG_LEVEL=${CELERY__LOG_LEVEL:-"INFO"}
 CELERY__LOG_FILE=${CELERY__LOG_FILE:-"/var/log/geonode/celery.log"}
+=======
+CELERY__OPTS=${CELERY__OPTS:-"--without-gossip --without-mingle -Ofair -E"}
+CELERY__LOG_LEVEL=${CELERY__LOG_LEVEL:-"ERROR"}
+CELERY__LOG_FILE=${CELERY__LOG_FILE:-"/var/log/celery.log"}
+>>>>>>> c125d8f2231ce7b1a80b165656084a8d99dc9637
 CELERY__WORKER_NAME=${CELERY__WORKER_NAME:-"worker1@%h"}
-CELERY__WORKER_CONCURRENCY=${CELERY__WORKER_CONCURRENCY:-"4"}
 
+# Celery beat settings
+CELERY__BEAT_SCHEDULE=${CELERY__BEAT_SCHEDULE:-"celery.beat:PersistentScheduler"}
+CELERY__BEAT_DB=${CELERY__BEAT_DB:-"/mnt/volumes/statics/celerybeat-schedule"}
+CELERY__BEAT_LOG=${CELERY__BEAT_LOG:-"/var/log/celery_beat.log"}
+
+# Harvester settings
+CELERY__HARVESTER_WORKER_NAME=${CELERY__HARVESTER_WORKER_NAME:-"harvesting_worker@%h"}
+CELERY__HARVESTER_CONCURRENCY=${CELERY__HARVESTER_CONCURRENCY:-"10"}
+CELERY__HARVESTER_AUTOSCALE_VALUES=${CELERY__HARVESTER_AUTOSCALE_VALUES:-"15,10"}
+CELERY__HARVESTER_MAX_MEMORY_PER_CHILD=${CELERY__HARVESTER_MAX_MEMORY_PER_CHILD:-"500000"}
+
+# --- FIX: Remove stale Beat pidfile before starting beat ---
+BEAT_PIDFILE="/tmp/celerybeat.pid"
+
+if [ -f "$BEAT_PIDFILE" ]; then
+    PID=$(cat "$BEAT_PIDFILE" 2>/dev/null)
+
+    # If PID exists and is running → warn but continue (avoid killing)
+    if kill -0 "$PID" 2>/dev/null; then
+        echo "WARNING: Celery Beat seems to be running already (PID $PID). Removing stale pidfile anyway."
+    else
+        echo "Removing stale Celery Beat pidfile: $BEAT_PIDFILE"
+    fi
+
+    rm -f "$BEAT_PIDFILE"
+fi
+# --- END FIX ---
+
+echo "Starting Celery Beat..."
+$CELERY_BIN -A $CELERY_APP beat --scheduler=$CELERY__BEAT_SCHEDULE \
+    --schedule=$CELERY__BEAT_DB \
+    --loglevel=$CELERY__LOG_LEVEL -f $CELERY__BEAT_LOG --pidfile=/tmp/celerybeat.pid &
+
+echo "Starting Default Celery Worker..."
 $CELERY_BIN -A $CELERY_APP worker --autoscale=$CELERY__AUTOSCALE_VALUES \
     --max-memory-per-child=$CELERY__MAX_MEMORY_PER_CHILD $CELERY__OPTS \
-    --statedb=$CELERY__STATE_DB --scheduler=$CELERY__BEAT_SCHEDULE \
+    --statedb=$CELERY__STATE_DB \
     --loglevel=$CELERY__LOG_LEVEL -n $CELERY__WORKER_NAME -f $CELERY__LOG_FILE \
-    --concurrency=$CELERY__WORKER_CONCURRENCY --max-tasks-per-child=$CELERY__MAX_TASKS_PER_CHILD
+    --prefetch-multiplier=1 --max-tasks-per-child=$CELERY__MAX_TASKS_PER_CHILD \
+    -X harvesting &
+
+echo "Starting Harvester Celery Worker..."
+$CELERY_BIN -A $CELERY_APP worker -Q harvesting \
+    --autoscale=$CELERY__HARVESTER_AUTOSCALE_VALUES \
+    --max-memory-per-child=$CELERY__HARVESTER_MAX_MEMORY_PER_CHILD \
+    --loglevel=$CELERY__LOG_LEVEL \
+    -n $CELERY__HARVESTER_WORKER_NAME \
+    --concurrency=$CELERY__HARVESTER_CONCURRENCY \
+    -f $CELERY__LOG_FILE &
+
+# Wait for any process to exit
+wait -n
+
+# Exit with the status of the process that exited first
+# Docker will restart the container if this is non-zero (i.e., a failure)
+exit $?

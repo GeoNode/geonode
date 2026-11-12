@@ -30,9 +30,13 @@ from oauth2_provider.models import AccessToken
 from oauth2_provider.exceptions import OAuthToolkitError, FatalClientError
 from allauth.account.utils import user_field, user_email, user_username
 
+from geonode.security.registry import permissions_registry
 from ..utils import json_response
 from ..decorators import superuser_or_apiauth
 from ..base.auth import get_token_object_from_session, get_auth_token
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 def verify_access_token(request, key):
@@ -53,22 +57,21 @@ def verify_access_token(request, key):
     return token
 
 
-@csrf_exempt
-def user_info(request):
-    user = request.user
+class UserInfoView(APIView):
 
-    if not user or user.is_anonymous:
-        out = {"success": False, "status": "error", "errors": {"user": ["User is not authenticated"]}}
-        return json_response(out, status=401)
+    def get(self, request):
+        user = request.user
 
-    access_token = get_auth_token(user)
+        if not user or user.is_anonymous:
+            out = {"success": False, "status": "error", "errors": {"user": ["User is not authenticated"]}}
+            return json_response(out, status=401)
 
-    groups = [group.name for group in user.groups.all()]
-    if user.is_superuser:
-        groups.append("admin")
+        access_token = get_auth_token(user)
+        groups = [group.name for group in user.groups.all()]
+        if user.is_superuser:
+            groups.append("admin")
 
-    user_info = json.dumps(
-        {
+        user_info = {
             "sub": str(user.id),
             "name": " ".join([user_field(user, "first_name"), user_field(user, "last_name")]),
             "given_name": user_field(user, "first_name"),
@@ -77,14 +80,13 @@ def user_info(request):
             "preferred_username": user_username(user),
             "groups": groups,
             "access_token": str(access_token),
+            "perms": permissions_registry.get_perms(user=user, use_cache=True),
         }
-    )
 
-    response = HttpResponse(user_info, content_type="application/json")
-    response["Cache-Control"] = "no-store"
-    response["Pragma"] = "no-cache"
-
-    return response
+        response = Response(user_info)
+        response["Cache-Control"] = "no-store"
+        response["Pragma"] = "no-cache"
+        return response
 
 
 @csrf_exempt

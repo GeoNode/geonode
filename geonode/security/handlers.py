@@ -17,8 +17,21 @@
 #
 #########################################################################
 from abc import ABC
+import logging
+from django.conf import settings
+from geonode.security.permissions import (
+    _to_extended_perms,
+    get_default_anonymous_compact_permission,
+    get_default_registered_members_compact_permission,
+    MANAGE_RIGHTS,
+    VIEW_RIGHTS,
+    DOWNLOAD_RIGHTS,
+    EDIT_RIGHTS,
+)
+from geonode.groups.conf import settings as groups_settings
+from django.contrib.auth.models import Group
 
-from geonode.security.utils import AdvancedSecurityWorkflowManager
+logger = logging.getLogger(__name__)
 
 
 class BasePermissionsHandler(ABC):
@@ -48,6 +61,87 @@ class BasePermissionsHandler(ABC):
         return perms_payload
 
 
+class SpecialGroupsPermissionsHandler(BasePermissionsHandler):
+    """
+    Adds two computed permissions to the user's permissions list for a resource:
+    - can_manage_anonymous_permissions
+    - can_manage_registered_member_permissions
+    """
+
+    @staticmethod
+    def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
+        from geonode.security.permissions import EDIT_PERMISSIONS
+
+        if not include_virtual:
+            return perms_payload
+
+        perms_copy = perms_payload.copy()
+        users = perms_payload.get("users", {})
+
+        def _has_edit(perms_list, u):
+            if not perms_list:
+                return False
+            # Basic check via explicit change permissions or ownership
+            if u == instance.owner:
+                return True
+            edit_markers = EDIT_PERMISSIONS
+            return any(p in edit_markers for p in perms_list)
+
+        for u, perms in users.items():
+            updated = set(perms or [])
+            # CONDITIONS
+            allow_editors_anonymous = getattr(settings, "EDITORS_CAN_MANAGE_ANONYMOUS_PERMISSIONS", True)
+            allow_editors_registered = getattr(settings, "EDITORS_CAN_MANAGE_REGISTERED_MEMBERS_PERMISSIONS", True)
+            is_admin_or_staff = getattr(u, "is_superuser", False) or getattr(u, "is_staff", False)
+            can_edit = _has_edit(perms, u)
+
+            grant_anonymous = is_admin_or_staff or (allow_editors_anonymous and can_edit)
+            grant_registered = is_admin_or_staff or (allow_editors_registered and can_edit)
+
+            if grant_anonymous:
+                updated.add("can_manage_anonymous_permissions")
+            if grant_registered:
+                updated.add("can_manage_registered_member_permissions")
+
+            perms_copy["users"][u] = list(updated)
+
+        return perms_copy
+
+    @staticmethod
+    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        """
+        Auto-assign configured permissions to anonymous and registered members groups on creation.
+        """
+        if not kwargs.get("created", False):
+            return perms_payload
+
+        payload = perms_payload or {}
+        payload.setdefault("groups", {})
+
+        _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
+        _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
+
+        anonymous_compact = get_default_anonymous_compact_permission()
+        anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
+        if anonymous_group not in payload["groups"]:
+            payload["groups"][anonymous_group] = sorted(
+                _to_extended_perms(anonymous_compact, _resource_type, _resource_subtype)
+            )
+
+        registered_compact = get_default_registered_members_compact_permission()
+        try:
+            registered_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        except Group.DoesNotExist:
+            registered_group = None
+
+        if registered_group and registered_group not in payload["groups"]:
+            payload["groups"][registered_group] = sorted(
+                _to_extended_perms(registered_compact, _resource_type, _resource_subtype)
+            )
+
+        return payload
+
+
 class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
     """
     Handler that takes care of adjusting the permissions for the advanced workflow
@@ -55,6 +149,8 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
 
     @staticmethod
     def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+
         # Fixup Advanced Workflow permissions
         return AdvancedSecurityWorkflowManager.get_permissions(
             instance.uuid,
@@ -64,3 +160,130 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
             approval_status_changed=kwargs.get("approval_status_changed"),
             group_status_changed=kwargs.get("group_status_changed"),
         )
+
+
+class AutoAssignResourceOwnershipHandler(BasePermissionsHandler):
+    """
+    When auto-assignment is enabled, ensure uploader keeps "manage" permissions on creation.
+    """
+
+    @staticmethod
+    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_OWNERSHIP_TO_ADMIN", False):
+            return perms_payload
+
+        if not kwargs.get("created", False):
+            return perms_payload
+
+        originators = getattr(instance, "originator", None) or []
+        originator = originators[0] if originators else None
+        if not originator:
+            return perms_payload
+
+        originator_username = originator if isinstance(originator, str) else getattr(originator, "username", None)
+        if not originator_username or originator_username == getattr(instance.owner, "username", None):
+            return perms_payload
+
+        _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
+        _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
+        manage_perms = _to_extended_perms(MANAGE_RIGHTS, _resource_type, _resource_subtype)
+
+        payload = perms_payload or {}
+        if "users" not in payload:
+            payload["users"] = {}
+        payload["users"][originator_username] = sorted(manage_perms)
+        return payload
+
+
+class ResourceCreatorGroupsPermissionsHandler(BasePermissionsHandler):
+    """
+    Auto-assign configured permissions to all groups of the resource creator on creation.
+    """
+
+    VALID_COMPACT_PERMISSIONS = {VIEW_RIGHTS, DOWNLOAD_RIGHTS, EDIT_RIGHTS, MANAGE_RIGHTS}
+
+    @staticmethod
+    def _get_valid_resource_creator_groups_permission(raw_value):
+        default_value = VIEW_RIGHTS
+        normalized_value = str(raw_value or default_value).strip().lower() or default_value
+
+        if normalized_value not in ResourceCreatorGroupsPermissionsHandler.VALID_COMPACT_PERMISSIONS:
+            logger.warning(
+                "RESOURCE_CREATOR_GROUPS_PERMISSIONS contains unsupported value '%s'. Defaulting to 'view'.",
+                normalized_value,
+            )
+            return default_value
+
+        return normalized_value
+
+    @staticmethod
+    def fixup_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
+        from geonode.security.utils import get_user_groups
+
+        if not kwargs.get("created", False):
+            return perms_payload
+
+        if not getattr(settings, "AUTO_ASSIGN_RESOURCE_CREATOR_GROUPS_PERMISSIONS", False):
+            return perms_payload
+
+        originators = getattr(instance, "originator", None) or []
+        originator = originators[0] if originators else None
+        if not originator:
+            return perms_payload
+
+        # Skip when uploader is a superuser to avoid granting permissions to all admin groups.
+        # Superusers can belong to every groups by default, which could assign this resource to every group.
+        if originator.is_superuser:
+            return perms_payload
+
+        payload = perms_payload or {}
+        payload.setdefault("users", {})
+        payload.setdefault("groups", {})
+
+        _resource_type = getattr(instance, "resource_type", None) or instance.polymorphic_ctype.name
+        _resource_subtype = (getattr(instance, "subtype", None) or "").lower()
+
+        compact_permission = ResourceCreatorGroupsPermissionsHandler._get_valid_resource_creator_groups_permission(
+            getattr(settings, "RESOURCE_CREATOR_GROUPS_PERMISSIONS", VIEW_RIGHTS)
+        )
+        extended_permissions = set(_to_extended_perms(compact_permission, _resource_type, _resource_subtype) or [])
+
+        if not extended_permissions:
+            extended_permissions = set(_to_extended_perms("view", _resource_type, _resource_subtype) or [])
+
+        for user_group in get_user_groups(originator):
+            payload["groups"][user_group] = sorted(extended_permissions)
+        return payload
+
+
+class GroupManagersPermissionsHandler(BasePermissionsHandler):
+    """
+    Grants 'edit' permissions to group managers if the resource is in a group
+    """
+
+    # Define the extra permissions granted to group managers
+    EXTRA_MANAGER_PERMS = [
+        "change_resourcebase",
+        "change_resourcebase_metadata",
+        "change_dataset_data",
+        "change_dataset_style",
+        "change_resourcebase_permissions",
+    ]
+
+    @staticmethod
+    def get_perms(instance, perms_payload, user=None, include_virtual=True, *args, **kwargs):
+
+        from geonode.people.utils import user_is_manager_of_group
+
+        if include_virtual:
+            perms_copy = perms_payload.copy()
+            users = perms_payload.get("users", {})
+
+            for user, perms in users.items():
+                # add the permissions if user is the resource's group manager and the permissions list is not empty
+                if perms and user_is_manager_of_group(user, instance.group):
+                    perms_copy["users"][user] = list(set(perms + GroupManagersPermissionsHandler.EXTRA_MANAGER_PERMS))
+
+            return perms_copy
+
+        return perms_payload

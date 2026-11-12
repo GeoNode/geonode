@@ -23,12 +23,9 @@ from django.shortcuts import get_object_or_404
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.serializers import AssetSerializer
@@ -39,8 +36,20 @@ from geonode.base.api.filters import (
     DynamicSearchFilter,
 )
 from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.security.registry import permissions_registry
+from rest_framework import permissions
 
 logger = logging.getLogger(__name__)
+
+
+class UserHasAssetPerms(permissions.BasePermission):
+    """
+    Thin DRF adapter: the actual decision is delegated to the permissions registry,
+    which knows how to resolve an Asset's perms through its linked ResourceBase(s).
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return permissions_registry.user_has_asset_perm(request.user, obj, method=request.method)
 
 
 class AssetViewSet(DynamicModelViewSet):
@@ -48,8 +57,8 @@ class AssetViewSet(DynamicModelViewSet):
     API endpoint that allows Assets to be viewed or edited.
     """
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasAssetPerms]
+    http_method_names = ["get", "put", "patch", "delete"]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -67,7 +76,7 @@ class AssetViewSet(DynamicModelViewSet):
         queryset = self.filter_queryset(self.get_queryset())
 
         user = request.user
-        is_admin = user.is_superuser if user and user.is_authenticated else False
+        is_admin = user and user.is_authenticated and user.is_superuser
 
         if is_admin:
             pass
@@ -94,7 +103,7 @@ class AssetViewSet(DynamicModelViewSet):
 
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/download(/(?P<path>.*))?",  # noqa
+        url_path=r"(?P<pk>\d+)/download(?:/(?P<path>.*))?",
         # url_name="asset-download",
         methods=["get"],
     )
@@ -103,10 +112,10 @@ class AssetViewSet(DynamicModelViewSet):
 
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/link(?:/(?P<path>.*))?",  # noqa
+        url_path=r"(?P<pk>\d+)/link(?:/(?P<path>.*))?",
         # url_name="asset-link",
         methods=["get"],
     )
     def link(self, request, pk=None, path=None, *args, **kwargs):
-        logger.warning(f"REQUESTED ASSET LINK FOR PK:{pk} PATH:{path}")
+        logger.debug(f"REQUESTED ASSET LINK FOR PK:{pk} PATH:{path}")
         return self._get_file(request, pk, attachment=False, path=path)

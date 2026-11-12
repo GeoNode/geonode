@@ -17,21 +17,16 @@
 #
 #########################################################################
 
-"""Utilities for managing GeoNode base models
-"""
+"""Utilities for managing GeoNode base models"""
 
 # Standard Modules
 import re
-import json
 import logging
-from schema import Schema
 from dateutil.parser import isoparse
 from datetime import datetime, timedelta
 
 # Django functionality
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 
 # Geonode functionality
 from geonode.layers.models import Dataset
@@ -39,6 +34,7 @@ from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.security.utils import AdvancedSecurityWorkflowManager
 from geonode.thumbs.utils import get_thumbs, remove_thumb
 from geonode.utils import get_legend_url
+from geonode.security.permissions import PermSpecCompactDiff
 
 logger = logging.getLogger("geonode.base.utils")
 
@@ -176,33 +172,6 @@ class OwnerRightsRequestViewUtils:
         return resource_base.get_real_instance()
 
 
-def validate_extra_metadata(data, instance):
-    if not data:
-        return data
-
-    # starting validation of extra metadata passed via JSON
-    # if schema for metadata validation is not defined, an error is raised
-    resource_type = instance.polymorphic_ctype.model if instance.polymorphic_ctype else instance.class_name.lower()
-    extra_metadata_validation_schema = settings.EXTRA_METADATA_SCHEMA.get(resource_type, None)
-    if not extra_metadata_validation_schema:
-        raise ValidationError(f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {resource_type}")
-    # starting json structure validation. The Field can contain multiple metadata
-    try:
-        if isinstance(data, str):
-            data = json.loads(data)
-    except Exception:
-        raise ValidationError("The value provided for the Extra metadata field is not a valid JSON")
-
-    # looping on all the single metadata provided. If it doen't match the schema an error is raised
-    for _index, _metadata in enumerate(data):
-        try:
-            Schema(extra_metadata_validation_schema).validate(_metadata)
-        except Exception as e:
-            raise ValidationError(f"{e} at index {_index} for input json: {json.dumps(_metadata)}")
-    # conerted because in this case, we can store a well formated json instead of the user input
-    return data
-
-
 def remove_country_from_languagecode(language: str):
     """Remove country code (us) from language name (en-us)
     >>> remove_country_from_lanugecode("en-us")
@@ -213,3 +182,16 @@ def remove_country_from_languagecode(language: str):
 
     lang, _, _ = language.lower().partition("-")
     return lang
+
+
+def patch_perms(current_perms_compact, perms_diff, resource):
+    """
+    Apply a permission diff to a current compact spec.
+
+    ``perms_diff`` may be a :class:`PermSpecCompactDiff` instance or its dict
+    representation (as produced by :meth:`PermSpecCompactDiff.to_dict` or
+    :meth:`PermSpecCompact.diff`). Returns the resulting ``PermSpecCompact``.
+    """
+    if not isinstance(perms_diff, PermSpecCompactDiff):
+        perms_diff = PermSpecCompactDiff.from_dict(perms_diff)
+    return perms_diff.apply(current_perms_compact, resource)

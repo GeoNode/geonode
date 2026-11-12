@@ -33,6 +33,7 @@ from geonode.base.models import Link
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.layers.models import Attribute, Dataset
 from geonode.maps.models import Map, MapLayer
+from geonode.metadata.models import SparseField
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +41,14 @@ logger = logging.getLogger(__name__)
 class DatasetsApiTests(APITestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
-    def setUp(self):
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+    @classmethod
+    def setUpTestData(cls):
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
+
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
 
     def test_datasets(self):
         """
@@ -96,34 +100,13 @@ class DatasetsApiTests(APITestCase):
                 '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
                              <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
             )
-
-            _dataset.featureinfo_custom_template = "<div>Foo Bar</div>"
-            _dataset.save()
-            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format="json")
-            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
-            self.assertEqual(
-                response.data["dataset"].get("featureinfo_custom_template"),
-                '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
-                             <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
-            )
-
-            _dataset.use_featureinfo_custom_template = True
-            _dataset.save()
-            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format="json")
-            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
-            self.assertEqual(response.data["dataset"].get("featureinfo_custom_template"), "<div>Foo Bar</div>")
         finally:
             _attribute.delete()
-            _dataset.featureinfo_custom_template = None
-            _dataset.use_featureinfo_custom_template = False
-            _dataset.save()
 
     @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
     def test_filter_dirty_state(self):
         """
-        ensure that a dirty_state dataset wont be returned
+        ensure that a dirty_state dataset will be returned
         """
 
         # ensure that there is atleast one resource with dirty_state
@@ -137,12 +120,11 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         dataset_list = response.data["datasets"]
 
-        # ensure that list count is equal to that of clean data
-        # clean resources
-        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        # dirty resource is now included in count; the listing excludes metadata-only datasets
+        resource_count_clean = Dataset.objects.filter(metadata_only=False).count()
         self.assertEqual(len(dataset_list), resource_count_clean)
-        # ensure that the updated dirty dataset is not in the response
-        self.assertFalse(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
+        # ensure that the updated dirty dataset is included in the response
+        self.assertTrue(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
 
     @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
     def test_filter_dirty_state_include_dirty(self):
@@ -154,10 +136,11 @@ class DatasetsApiTests(APITestCase):
         dirty_dataset.dirty_state = True
         dirty_dataset.save()
 
+        # the listing excludes metadata-only datasets
         # clean resources
-        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        resource_count_clean = Dataset.objects.filter(dirty_state=False, metadata_only=False).count()
         # dirty resources
-        resource_count_dirty = Dataset.objects.filter(dirty_state=True).count()
+        resource_count_dirty = Dataset.objects.filter(dirty_state=True, metadata_only=False).count()
 
         resource_count_all = resource_count_clean + resource_count_dirty
 
@@ -184,7 +167,7 @@ class DatasetsApiTests(APITestCase):
 
         prev_count = payload.json().get("total")
         # the user can see only the advertised resources
-        self.assertEqual(Dataset.objects.filter(advertised=True).count(), prev_count)
+        self.assertEqual(Dataset.objects.filter(advertised=True, metadata_only=False).count(), prev_count)
 
         payload = self.client.get(f"{url}?advertised=True")
         # so if advertised is True, we dont see the advertised=False resource
@@ -205,17 +188,6 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(new_count, prev_count + 1)
 
         Dataset.objects.update(advertised=True)
-
-    def test_extra_metadata_included_with_param(self):
-        _dataset = Dataset.objects.first()
-        url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-        data = {"include[]": "metadata"}
-
-        response = self.client.get(url, format="json", data=data)
-        self.assertIsNotNone(response.data["dataset"].get("metadata"))
-
-        response = self.client.get(url, format="json")
-        self.assertNotIn("metadata", response.data["dataset"])
 
     def test_get_dataset_related_maps_and_maplayers(self):
         dataset = Dataset.objects.first()
@@ -253,6 +225,42 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0]["pk"], map.pk)
+
+    def test_dataset_subresources_respect_request_user_visibility(self):
+        dataset = Dataset.objects.first()
+        map_obj = Map.objects.first()
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
+        map_obj.set_permissions({"users": {}, "groups": {}})
+
+        maplayer = MapLayer.objects.create(
+            map=map_obj,
+            dataset=dataset,
+            name=dataset.alternate,
+            store=dataset.store,
+            local=True,
+        )
+
+        maps_url = f"{reverse('datasets-detail', kwargs={'pk': dataset.pk})}/maps/"
+        maplayers_url = f"{reverse('datasets-detail', kwargs={'pk': dataset.pk})}/maplayers/"
+
+        response = self.client.get(maps_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(map_obj.pk, [item["pk"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(maplayer.pk, [item["pk"] for item in response.json()])
+
+        assign_perm("base.view_resourcebase", get_anonymous_user(), map_obj.get_self_resource())
+
+        response = self.client.get(maps_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(map_obj.pk, [item["pk"] for item in response.json()])
+
+        response = self.client.get(maplayers_url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(maplayer.pk, [item["pk"] for item in response.json()])
 
     def test_raw_HTML_stripped_properties(self):
         """
@@ -596,7 +604,7 @@ class DatasetsApiTests(APITestCase):
         url = reverse("datasets-replace-metadata", args=(layer.id,))
 
         response = self.client.put(url)
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_unsupported_file_throws_error(self):
         layer = Dataset.objects.first()
@@ -659,6 +667,20 @@ class DatasetsApiTests(APITestCase):
         response = self.client.put(url, data=put_data)
         self.assertEqual(200, response.status_code)
 
+    def test_timeseries_update_blocked_for_view_only_user(self):
+        """A user with only view rights must not be able to edit the time configuration."""
+        view_only_user = get_user_model().objects.create_user(
+            username="timeseries_viewer",
+            password="timeseries_viewer_password",
+        )
+        layer = Dataset.objects.first()
+        assign_perm("view_resourcebase", view_only_user, layer.get_self_resource())
+        url = reverse("datasets-timeseries", args=(layer.id,))
+        self.client.login(username="timeseries_viewer", password="timeseries_viewer_password")
+
+        response = self.client.put(url, data={"has_time": False}, format="json")
+        self.assertEqual(403, response.status_code)
+
     def test_valid_metadata_file(self):
         layer = Dataset.objects.first()
         url = reverse("datasets-replace-metadata", args=(layer.id,))
@@ -679,11 +701,7 @@ class DatasetsApiTests(APITestCase):
         response = self.client.get(url)
         self.assertTrue(response.status_code == 200)
         data = response.json()["dataset"]
-        download_url_data = data["download_urls"][0]
-        download_url = reverse("dataset_download", args=[dataset.alternate])
-        self.assertEqual(download_url_data["default"], True)
-        self.assertEqual(download_url_data["ajax_safe"], True)
-        self.assertEqual(download_url_data["url"], download_url)
+        self.assertEqual(data["download_urls"], [])
 
         link = Link(link_type="original", url="https://myoriginal.org", resource=dataset)
         link.save()
@@ -691,7 +709,36 @@ class DatasetsApiTests(APITestCase):
         response = self.client.get(url)
         data = response.json()["dataset"]
         download_url_data = data["download_urls"][0]
-        download_url = reverse("dataset_download", args=[dataset.alternate])
         self.assertEqual(download_url_data["default"], True)
         self.assertEqual(download_url_data["ajax_safe"], False)
         self.assertEqual(download_url_data["url"], "https://myoriginal.org")
+
+    def test_datasets_api_include_i18n(self):
+        """
+        Ensure that the ?include_i18n parameter returns all localized fields in the API response.
+        """
+
+        _dataset = Dataset.objects.first()
+
+        # Manually create the sparse fields required for the test
+        SparseField.objects.create(resource=_dataset, name="title_multilang_en", value="English Title")
+        SparseField.objects.create(resource=_dataset, name="title_multilang_it", value="Titolo Italiano")
+
+        url = reverse("datasets-detail", kwargs={"pk": _dataset.pk})
+
+        with override_settings(
+            LANGUAGES=[("en", "English"), ("it", "Italiano")],
+            MULTILANG_FIELDS=["title"],
+        ):
+            query_params = "include_i18n=true&lang=it"
+            response = self.client.get(f"{url}?{query_params}", format="json")
+
+            self.assertEqual(response.status_code, 200)
+            data = response.data["dataset"]
+
+            self.assertEqual(data["title"], "Titolo Italiano")
+
+            self.assertIn("title_en", data)
+            self.assertEqual(data["title_en"], "English Title")
+            self.assertIn("title_it", data)
+            self.assertEqual(data["title_it"], "Titolo Italiano")

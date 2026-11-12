@@ -27,7 +27,6 @@ from django.utils.translation import gettext as _
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.metadata.handlers.abstract import MetadataHandler
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -118,7 +117,7 @@ class TKeywordsHandler(MetadataHandler):
             thesaurus.update(ct["card"])
             thesauri[id] = thesaurus
 
-        tkeywords = {
+        subschema = {
             "type": "object",
             "title": _("Keywords from Thesaurus"),
             "description": _("List of keywords from Thesaurus"),
@@ -126,13 +125,20 @@ class TKeywordsHandler(MetadataHandler):
             "properties": thesauri,
         }
 
+        # minItems is not enough: it only constrains a thesaurus that is in the instance already.
+        # Same for tkeywords itself, hence the requiredness bubbling up
+        if mandatory_thesauri := [id for id, ct in collected_thesauri.items() if ct["card"]["minItems"] > 0]:
+            subschema["required"] = mandatory_thesauri  # the thesauri to be found inside tkeywords
+            subschema["geonode:required"] = True  # tkeywords itself, to be found in the resource
+
         # We are going to hide the tkeywords property if there's no thesaurus configured
         # We can't remove the property altogether, since hkeywords relies on tkeywords for positioning
         if not thesauri:
-            tkeywords["ui:widget"] = "hidden"
+            subschema["ui:widget"] = "hidden"
 
         # add thesauri after category
-        self._add_subschema(jsonschema, TKEYWORDS, tkeywords, after_what="category")
+        self._add_subschema(jsonschema, TKEYWORDS, subschema, after_what="category")
+        self._localize_subschema_labels(context, subschema, lang, TKEYWORDS)
 
         return jsonschema
 

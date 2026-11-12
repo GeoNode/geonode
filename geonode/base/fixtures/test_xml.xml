@@ -251,9 +251,18 @@
            </gmd:role>
          </gmd:CI_ResponsibleParty>
        </gmd:pointOfContact>
-       
 
-       
+       <gmd:resourceMaintenance>
+         <gmd:MD_MaintenanceInformation>
+           <gmd:maintenanceAndUpdateFrequency>
+             <gmd:MD_MaintenanceFrequencyCode
+                     codeSpace="ISOTC211/19115"
+                     codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode"
+                     codeListValue="daily">daily</gmd:MD_MaintenanceFrequencyCode>
+           </gmd:maintenanceAndUpdateFrequency>
+         </gmd:MD_MaintenanceInformation>
+       </gmd:resourceMaintenance>
+
        <gmd:graphicOverview>
          <gmd:MD_BrowseGraphic>
            <gmd:fileName>

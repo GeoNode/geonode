@@ -1,2 +1,2 @@
 . $HOME/.override_env
-/usr/local/bin/python /usr/src/geonode/manage.py $@
+/usr/src/venv/bin/python /usr/src/geonode/manage.py $@

@@ -29,7 +29,7 @@ from django.utils.translation import gettext_lazy as _
 
 from geonode.celery_app import app
 from geonode.base.models import ResourceBase
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.tasks.tasks import AcquireLock, FaultTolerantTask
 
 from .utils import resolve_type_serializer
@@ -48,10 +48,11 @@ def _get_param_value(_param, _input_value):
         _param_value = get_user_model().objects.get(username=_input_value)
     elif _param.annotation in (dict, list, tuple) and isinstance(_input_value, str):
         _param_value = _param.annotation(ast.literal_eval(_input_value))
-        for _key in ["user", "owner"]:
-            _username = _param_value.pop(_key, None)
-            if _username:
-                _param_value[_key] = get_user_model().objects.get(username=_username)
+        if isinstance(_param_value, dict):
+            for _key in ["user", "owner"]:
+                _username = _param_value.pop(_key, None)
+                if _username:
+                    _param_value[_key] = get_user_model().objects.get(username=_username)
     else:
         try:
 
@@ -92,68 +93,82 @@ def resouce_service_dispatcher(self, execution_id: str):
     A client is able to query the `status_url` endpoint in order to get the current `status` other than
     the `output_params`.
     """
-    with AcquireLock(execution_id) as lock:
-        if lock.acquire() is True:
-            try:
-                _exec_request = ExecutionRequest.objects.filter(exec_id=execution_id)
-                if _exec_request.exists():
-                    _request = _exec_request.get()
-                    if _request.status == ExecutionRequest.STATUS_READY:
-                        _exec_request.update(status=ExecutionRequest.STATUS_RUNNING)
-                        _request.refresh_from_db()
-                        if hasattr(resource_manager, _request.func_name):
-                            try:
-                                _signature = signature(getattr(resource_manager, _request.func_name))
-                                _args = []
-                                _kwargs = {}
-                                for _param_name in _signature.parameters:
-                                    if _request.input_params and _request.input_params.get(_param_name, None):
-                                        _param = _signature.parameters.get(_param_name)
-                                        _param_value = _get_param_value(_param, _request.input_params.get(_param_name))
-                                        if _param.kind == Parameter.POSITIONAL_ONLY:
-                                            _args.append(_param_value)
-                                        else:
-                                            _kwargs[_param_name] = _param_value
-
-                                _bindings = _signature.bind(*_args, **_kwargs)
-                                _bindings.apply_defaults()
-
-                                _output = getattr(resource_manager, _request.func_name)(
-                                    *_bindings.args, **_bindings.kwargs
-                                )
-                                _output_params = {}
-                                if _output is not None and _signature.return_annotation != Signature.empty:
-                                    if _signature.return_annotation.__module__ == "builtins":
-                                        _output_params = {"output": _output}
-                                    elif _signature.return_annotation == ResourceBase or isinstance(
-                                        _output, ResourceBase
-                                    ):
-                                        _output_params = {"output": {"uuid": _output.uuid}}
-                                else:
-                                    _output_params = {"output": None}
-                                _exec_request.update(
-                                    status=ExecutionRequest.STATUS_FINISHED,
-                                    finished=datetime.now(),
-                                    output_params=_output_params,
-                                )
-                                _request.refresh_from_db()
-                            except Exception as e:
-                                logger.exception(e)
-                                _exec_request.update(
-                                    status=ExecutionRequest.STATUS_FAILED,
-                                    finished=datetime.now(),
-                                    output_params={
-                                        "error": _(
-                                            f"Error occurred while executin the operation: '{_request.func_name}'"
-                                        ),
-                                        "exception": str(e),
-                                    },
-                                )
-                                _request.refresh_from_db()
-                        else:
-                            logger.warning(_(f"Could not find the operation name: '{_request.func_name}'"))
+    _exec_request = None
+    try:
+        with AcquireLock(execution_id) as lock:
+            if lock.acquire() is True:
+                try:
+                    _exec_request = ExecutionRequest.objects.filter(exec_id=execution_id)
+                    if _exec_request.exists():
+                        _request = _exec_request.get()
+                        if _request.status == ExecutionRequest.STATUS_READY:
+                            _exec_request.update(status=ExecutionRequest.STATUS_RUNNING)
                             _request.refresh_from_db()
-            finally:
-                lock.release()
+                            if _request.geonode_resource:
+                                _manager = resource_manager_registry.get_for_instance(_request.geonode_resource)
+                            else:
+                                resource_type = _request.input_params.get("resource_type")
+                                _manager = resource_manager_registry.get_for_type(resource_type)
+                            if hasattr(_manager, _request.func_name):
+                                try:
+                                    _signature = signature(getattr(_manager, _request.func_name))
+                                    _args = []
+                                    _kwargs = {}
+                                    for _param_name in _signature.parameters:
+                                        if _request.input_params and _request.input_params.get(_param_name, None):
+                                            _param = _signature.parameters.get(_param_name)
+                                            _param_value = _get_param_value(
+                                                _param, _request.input_params.get(_param_name)
+                                            )
+                                            if _param.kind == Parameter.POSITIONAL_ONLY:
+                                                _args.append(_param_value)
+                                            else:
+                                                _kwargs[_param_name] = _param_value
 
-            logger.debug(f"WARNING: The requested ExecutionRequest with 'exec_id'={execution_id} was not found!")
+                                    _bindings = _signature.bind(*_args, **_kwargs)
+                                    _bindings.apply_defaults()
+
+                                    _output = getattr(_manager, _request.func_name)(*_bindings.args, **_bindings.kwargs)
+                                    _output_params = {}
+                                    if _output is not None and _signature.return_annotation != Signature.empty:
+                                        if _signature.return_annotation.__module__ == "builtins":
+                                            _output_params = {"output": _output}
+                                        elif _signature.return_annotation == ResourceBase or isinstance(
+                                            _output, ResourceBase
+                                        ):
+                                            _output_params = {"output": {"uuid": _output.uuid}}
+                                    else:
+                                        _output_params = {"output": None}
+                                    _exec_request.update(
+                                        status=ExecutionRequest.STATUS_FINISHED,
+                                        finished=datetime.now(),
+                                        output_params=_output_params,
+                                    )
+                                    _request.refresh_from_db()
+                                except Exception as e:
+                                    logger.exception(e)
+                                    _exec_request.update(
+                                        status=ExecutionRequest.STATUS_FAILED,
+                                        finished=datetime.now(),
+                                        output_params={
+                                            "error": str(
+                                                _(
+                                                    f"Error occurred while executin the operation: '{_request.func_name}'"
+                                                )
+                                            ),
+                                            "exception": str(e),
+                                        },
+                                    )
+                                    _request.refresh_from_db()
+                            else:
+                                logger.warning(_(f"Could not find the operation name: '{_request.func_name}'"))
+                                _request.refresh_from_db()
+                finally:
+                    lock.release()
+
+                logger.debug(f"WARNING: The requested ExecutionRequest with 'exec_id'={execution_id} was not found!")
+    except Exception as e:
+        logger.exception(e)
+        ExecutionRequest.objects.filter(exec_id=execution_id).update(status=ExecutionRequest.STATUS_FAILED, log=str(e))
+
+        raise "Error durng the resource dispatcher run, please verify the log"

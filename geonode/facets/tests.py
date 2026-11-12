@@ -151,7 +151,7 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     @classmethod
     def _create_resources(self):
-        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
+        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {}}
         for x in range(20):
             d: ResourceBase = ResourceBase.objects.create(
                 title=f"dataset_{x:02}",
@@ -403,6 +403,24 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertEqual("T0_K0_ALT", obj["topics"]["items"][0]["label"])  # check for the alternate label
         self.assertFalse(obj["topics"]["items"][0]["is_localized"])  # check for the localization flag
 
+    def test_thesaurus_facets_are_filtered_by_words(self):
+        # topic_contains matching a keyword's localized label should return just that keyword
+        # T0_K0 matches both the "en" and "it" translations: make sure the resource count
+        # isn't doubled by joining both matching translations
+        url = f"{reverse('get_facet', args=['t_0'])}?topic_contains=T0_K0"
+        response = self.client.get(url)
+
+        self.assertEqual(200, response.status_code, response.json())
+        self.assertEqual(1, response.json().get("topics", {}).get("total", 0))
+        self.assertEqual(10, response.json()["topics"]["items"][0]["count"])
+
+        # topic_contains with a random string to be searched for should be 0
+        url = f"{reverse('get_facet', args=['t_0'])}?topic_contains=abc123scfuqbrwefbasascgiu"
+        response = self.client.get(url)
+
+        self.assertEqual(200, response.status_code, response.json())
+        self.assertEqual(0, response.json().get("topics", {}).get("total", 0))
+
     def test_prefiltering(self):
         reginfo = RegionFacetProvider().get_info()
         regfilter = reginfo["filter"]
@@ -649,8 +667,8 @@ class TestFacets(GeoNodeBaseTestSupport):
             },
         }
 
-        url_filtered = f"{reverse('get_facet',args=['group'])}?filter{{group.in}}={self.group_admin.id}&include_topics=true&key={self.group_admin.id}"
-        url_base = f"{reverse('get_facet',args=['group'])}"
+        url_filtered = f"{reverse('get_facet', args=['group'])}?filter{{group.in}}={self.group_admin.id}&include_topics=true&key={self.group_admin.id}"
+        url_base = f"{reverse('get_facet', args=['group'])}"
 
         response_filtered = self.client.get(url_filtered)
         response_dict_filtered = response_filtered.json()
@@ -672,7 +690,7 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     def test_group_facets_are_filtered_by_words(self):
         # there are some groups and the facets return them
-        url = f"{reverse('get_facet',args=['group'])}"
+        url = f"{reverse('get_facet', args=['group'])}"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code, response.json())
@@ -680,7 +698,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertTrue(response.json().get("topics", {}).get("total", 0) > 0)
 
         # topic_contains with real name should return 1
-        url = f"{reverse('get_facet',args=['group'])}?topic_contains=UserAdmin"
+        url = f"{reverse('get_facet', args=['group'])}?topic_contains=UserAdmin"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code, response.json())
@@ -688,9 +706,51 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertEqual(1, response.json().get("topics", {}).get("total", 0))
 
         # topic_contains with a random string to be searched for should be 0
-        url = f"{reverse('get_facet',args=['group'])}?topic_contains=abc123scfuqbrwefbasascgiu"
+        url = f"{reverse('get_facet', args=['group'])}?topic_contains=abc123scfuqbrwefbasascgiu"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code, response.json())
 
         self.assertEqual(0, response.json().get("topics", {}).get("total", 0))
+
+    def test_anonymous_user_behaviour_with_no_filter_and_advertised_false(self):
+        # make sure the user authorization pre-filters the visible resources,
+        # including the advertised default behavior for anonymous users.
+        self.client.logout()
+        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {}}
+
+        hidden_adv = ResourceBase.objects.create(
+            title="dataset_hidden_advertised",
+            uuid=str(uuid4()),
+            owner=self.user,
+            abstract="Should not be counted for anonymous default listing",
+            subtype="vector",
+            category=self.cats["C0"],
+            advertised=False,  # advertised false
+            is_approved=True,
+            is_published=True,
+        )
+        hidden_adv.set_permissions(public_perm_spec)
+
+        # Category facet without extra filters (dropdown use-case)
+        facet_url = f"{reverse('get_facet', args=['category'])}"
+        facet_response = self.client.get(facet_url)
+        self.assertEqual(200, facet_response.status_code, facet_response.json())
+
+        facet_items = facet_response.json()["topics"]["items"]
+        c0_item = next((item for item in facet_items if item["key"] == "C0"), None)
+        self.assertIsNotNone(c0_item, f"C0 not found in facet payload: {facet_items}")
+
+        # Resources API is the source of truth for visible resources list.
+        resources_url = (
+            f"{reverse('base-resources-list')}?filter{{category.identifier.in}}=C0&filter{{metadata_only}}=false"
+        )
+        resources_response = self.client.get(resources_url)
+        self.assertEqual(200, resources_response.status_code, resources_response.json())
+        resources_total = resources_response.json()["total"]
+
+        self.assertEqual(
+            resources_total,
+            c0_item["count"],
+            "Facet count must match resources list count for anonymous users when no facet filters are applied.",
+        )

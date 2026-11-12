@@ -25,6 +25,7 @@ from geonode.upload.handlers.utils import (
     drop_dynamic_model_schema,
     should_be_imported,
 )
+from geonode.upload.handlers.base import BaseHandler
 
 
 class TestHandlersUtils(TestCase):
@@ -81,3 +82,19 @@ class TestHandlersUtils(TestCase):
         drop_dynamic_model_schema(schema_model=_model_schema)
 
         self.assertFalse(ModelSchema.objects.filter(name="model_schema").exists())
+
+    def test_fixup_name_replace_digits_with_underscore(self):
+        """
+        Ref https://github.com/GeoNode/geonode/issues/12749
+        If the layer start with a digit, we should translate as a string
+        """
+        layer_name = "1layername"
+        expected_name = "layername"
+        actual = BaseHandler().fixup_name(layer_name)
+        self.assertEqual(expected_name, actual)
+
+    def test_fixup_name_replace_digits_with_special_character(self):
+        layer_name = "5Test-Name# \\&.()!$%*+@[]~end"
+        expected_name = "test_name_end"
+        actual = BaseHandler().fixup_name(layer_name)
+        self.assertEqual(expected_name, actual)

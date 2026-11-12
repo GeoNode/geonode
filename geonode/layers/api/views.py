@@ -16,20 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from drf_spectacular.utils import extend_schema
-
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.response import Response
 
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.mixins import AdvertisedListMixin
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, AdvertisedFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import ApiPresetsInitializer
@@ -37,9 +31,15 @@ from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatase
 from geonode.layers.metadata import parse_metadata
 from geonode.layers.models import Dataset
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
+from geonode.metadata.multilang.views import MultiLangViewMixin
 from geonode.resource.utils import update_resource
-from geonode.resource.manager import resource_manager
-from rest_framework.exceptions import NotFound
+from geonode.resource.registry import resource_manager_registry
+from geonode.security.registry import permissions_registry
+from geonode.security.permissions import _to_compact_perms
+from geonode.security.utils import get_visible_resources
+from django.conf import settings
+
+from rest_framework.exceptions import NotFound, PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 
@@ -64,13 +64,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
+class DatasetViewSet(ApiPresetsInitializer, MultiLangViewMixin, DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
 
     http_method_names = ["get", "patch", "put"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
@@ -79,10 +78,12 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        AdvertisedFilter,
         ExtentFilter,
         DatasetPermissionsFilter,
     ]
     queryset = Dataset.objects.all().order_by("-created")
+    search_fields = ["title", "abstract"]
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -97,19 +98,13 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         result = super().partial_update(request, *args, **kwargs)
 
         dataset = self.get_object()
-        resource_manager.update(dataset.uuid, instance=dataset, notify=True),
+        resource_manager_registry.get_for_instance(dataset).update(dataset.uuid, instance=dataset, notify=True),
 
         return result
 
-    @extend_schema(
-        request=DatasetMetadataSerializer,
-        methods=["put"],
-        responses={200},
-        description="API endpoint to upload metadata file.",
-    )
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/metadata",  # noqa
+        url_path=r"(?P<pk>\d+)/metadata",
         url_name="replace-metadata",
         methods=["put"],
         serializer_class=DatasetMetadataSerializer,
@@ -177,26 +172,35 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
             if storage_manager:
                 storage_manager.delete_retrieved_paths()
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: SimpleMapLayerSerializer(many=True)},
-        description="API endpoint allowing to retrieve the MapLayers list.",
-    )
     @action(detail=True, methods=["get"])
     def maplayers(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve the MapLayers list."""
         dataset = self.get_object()
-        resources = dataset.maplayers
+        resources = dataset.maplayers.select_related("map")
+
+        if not request.user.is_superuser:
+            visible_map_ids = get_visible_resources(
+                dataset.maps,
+                request.user,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            ).values("id")
+
+            resources = resources.filter(map_id__in=visible_map_ids)
         return Response(SimpleMapLayerSerializer(many=True).to_representation(resources))
 
-    @extend_schema(
-        methods=["get"],
-        responses={200: SimpleMapSerializer(many=True)},
-        description="API endpoint allowing to retrieve maps using the dataset.",
-    )
     @action(detail=True, methods=["get"])
     def maps(self, request, pk=None, *args, **kwargs):
+        """API endpoint allowing to retrieve maps using the dataset."""
         dataset = self.get_object()
-        resources = dataset.maps
+        resources = get_visible_resources(
+            dataset.maps,
+            request.user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
 
     @action(
@@ -223,6 +227,13 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         """
 
         layer = get_object_or_404(Dataset, id=pk)
+        access = _to_compact_perms(permissions_registry.get_perms(instance=layer, user=request.user))
+        if request.method == "GET":
+            if access not in ("owner", "edit", "manage", "view", "download"):
+                raise PermissionDenied("You do not have permission to view this dataset")
+        else:  # PUT
+            if access not in ("owner", "edit", "manage"):
+                raise PermissionDenied("You do not have permission to edit this dataset")
 
         if layer.supports_time is False:
             return JsonResponse({"message": "The time dimension is not supported for this dataset."}, status=200)
@@ -269,7 +280,8 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                 layer.has_time = True
                 layer.save()
 
-                resource_manager.exec(
+                resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+                resolved_resource_manager.exec(
                     "set_time_info",
                     None,
                     instance=layer,
@@ -283,10 +295,11 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                     },
                 )
 
-                resource_manager.update(
+                resolved_resource_manager.update(
                     layer.uuid,
                     instance=layer,
                     notify=True,
+                    user=request.user,
                 )
                 return JsonResponse({"message": "the time information data was updated successfully"}, status=200)
             else:
@@ -295,3 +308,28 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                 layer.save()
 
                 return JsonResponse({"message": "The time dimension information for this layer was disabled"})
+
+    @action(
+        detail=True,
+        methods=["put"],
+        url_path="recalc-bbox",
+        url_name="recalc_bbox",
+        permission_classes=[IsAuthenticated],
+    )
+    def recalc_bbox(self, request, pk=None, *args, **kwargs):
+        dataset = self.get_object()
+
+        # Permissions check
+        access = _to_compact_perms(permissions_registry.get_perms(instance=dataset, user=request.user))
+        if access not in ("owner", "edit", "manage"):
+            raise PermissionDenied("You do not have permission to edit this dataset")
+
+        # Safely get bbox from request
+        force_bbox = getattr(request, "data", {}) or {}
+        force_bbox = force_bbox.get("bbox", None)
+
+        success = dataset.recalc_bbox_on_geoserver(force_bbox=force_bbox)
+
+        if success:
+            return Response({"success": True})
+        return Response({"success": False}, status=500)

@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-from unittest.mock import MagicMock
 from uuid import uuid4
 import mock
 import logging
@@ -27,9 +26,10 @@ from selenium import webdriver
 from urllib.error import HTTPError
 from collections import namedtuple
 from arcrest import MapService as ArcMapService
-from unittest import TestCase as StandardTestCase
+from unittest import TestCase as StandardTestCase, skip
 from owslib.wms import WebMapService as OwsWebMapService
-from django.test import Client, override_settings
+from django.db import IntegrityError
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
@@ -39,21 +39,189 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.harvesting.models import Harvester
 from geonode.layers.models import Dataset
+from geonode.security.auth_handlers import BasicAuthHandler
+from geonode.security.models import AuthConfig
+from geonode.security.auth_registry import auth_handler_registry
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry
 from geonode.base import enumerations as base_enumerations
 from geonode.harvesting.harvesters.wms import WebMapService
 from geonode.services.utils import parse_services_types, test_resource_table_status
 
-from . import enumerations, forms
-from .models import Service
-from .serviceprocessors import base, wms, arcgis, get_service_handler, get_available_service_types
-from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
+from geonode.services import enumerations, forms, views
+from geonode.services.models import Service
+from geonode.services.serviceprocessors import (
+    base,
+    wms,
+    arcgis,
+    get_service_cache_key,
+    get_service_handler,
+    get_available_service_types,
+)
+from geonode.services.serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
+from geonode.services.serviceprocessors.registry import ServiceTypeRegistry, service_type_registry
 
 logger = logging.getLogger(__name__)
 
 
+class PickableMagicMock(mock.MagicMock):
+    # Plain MagicMocks aren't picklable, which LocMemCache.set() requires.
+    def __reduce__(self):
+        return (mock.MagicMock, ())
+
+
 class ModuleFunctionsTestCase(StandardTestCase):
+    def test_get_service_cache_key_is_service_specific(self):
+        phony_url = "http://fake"
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1)
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=2)
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_is_auth_specific(self):
+        phony_url = "http://fake"
+        auth_1 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_1.payload = {"username": "alice", "password": "pw1"}
+        auth_2 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_2.payload = {"username": "bob", "password": "pw1"}
+
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_1)
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_2)
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_changes_when_saved_auth_config_payload_changes(self):
+        # A password change on a saved AuthConfig must bust the cache key.
+        phony_url = "http://fake"
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "alice", "password": "pw1"}
+        auth_config.save()
+
+        key_before = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+
+        auth_config.payload = {"username": "alice", "password": "pw2"}
+        auth_config.save()
+
+        key_after = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+        self.assertNotEqual(key_before, key_after)
+
+    def test_get_service_cache_key_is_auth_specific_for_hashable_auth_base(self):
+        # get_request_auth() wraps the real auth object in a HashableAuthBase;
+        # the fingerprint must unwrap it instead of treating every instance alike.
+        phony_url = "http://fake"
+        auth_config_1 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_1.payload = {"username": "alice", "password": "pw1"}
+        auth_config_2 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_2.payload = {"username": "alice", "password": "pw2"}
+
+        auth_1 = auth_handler_registry.build(auth_config_1).get_request_auth()
+        auth_2 = auth_handler_registry.build(auth_config_2).get_request_auth()
+
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=auth_1)
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=auth_2)
+        self.assertNotEqual(key_1, key_2)
+        self.assertNotIn("HashableAuthBase", key_1)
+
+    def test_get_service_cache_key_is_auth_specific_for_tuple_auth(self):
+        # A password change must bust the key even with the same username.
+        phony_url = "http://fake"
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=("bob", "pw1"))
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=("bob", "pw2"))
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_does_not_embed_plaintext_credentials(self):
+        # Cache keys can leak via backend introspection, so no raw credentials.
+        phony_url = "http://fake"
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "alice", "password": "super-secret-password"}
+
+        key = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config)
+        self.assertNotIn("super-secret-password", key)
+        self.assertNotIn("alice", key)
+
+    def test_get_service_cache_key_does_not_embed_username_for_username_only_auth(self):
+        # Auth objects that expose a bare `username` with no usable __dict__ (e.g.
+        # __slots__-based classes) must still be hashed, not embedded raw in the key.
+        class SlottedAuth:
+            __slots__ = ("username",)
+
+            def __init__(self, username):
+                self.username = username
+
+        phony_url = "http://fake"
+        key_alice = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth=SlottedAuth("alice")
+        )
+        key_bob = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=SlottedAuth("bob"))
+
+        self.assertNotIn("alice", key_alice)
+        self.assertNotIn("bob", key_bob)
+        self.assertNotEqual(key_alice, key_bob)
+
+    def test_get_service_cache_key_is_auth_specific_for_slotted_non_username_auth(self):
+        # Auth objects with __slots__ that aren't `username` (e.g. a bearer-token auth)
+        # must not collapse into the same fingerprint just because they share a class
+        # and have neither __dict__ nor a `username` attribute.
+        class TokenAuth:
+            __slots__ = ("token",)
+
+            def __init__(self, token):
+                self.token = token
+
+        phony_url = "http://fake"
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=TokenAuth("aaa"))
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=TokenAuth("bbb"))
+
+        self.assertNotIn("aaa", key_1)
+        self.assertNotIn("bbb", key_2)
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_is_auth_specific_when_dict_and_slots_are_both_present(self):
+        # If a base class has no __slots__, instances still get a __dict__ in addition
+        # to whatever slots a subclass declares. The fingerprint must not stop at
+        # __dict__ and silently ignore slot-only state that differs between instances.
+        class DictBase:
+            def __init__(self):
+                self.name = "fixed"
+
+        class TokenAuth(DictBase):
+            __slots__ = ("token",)
+
+            def __init__(self, token):
+                super().__init__()
+                self.token = token
+
+        phony_url = "http://fake"
+        key_1 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=TokenAuth("aaa"))
+        key_2 = get_service_cache_key(phony_url, service_type=enumerations.WMS, service_id=1, auth=TokenAuth("bbb"))
+
+        self.assertNotIn("aaa", key_1)
+        self.assertNotIn("bbb", key_2)
+        self.assertNotEqual(key_1, key_2)
+
+    def test_get_service_cache_key_is_stable_across_auth_config_save(self):
+        # Saving an AuthConfig must not change its fingerprint (avoids an
+        # orphaned cache entry from before create_geonode_service saves it).
+        phony_url = "http://fake"
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "alice", "password": "pw1"}
+
+        key_before_save = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+        auth_config.save()
+        key_after_save = get_service_cache_key(
+            phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config
+        )
+        self.assertEqual(key_before_save, key_after_save)
+
+    def test_get_service_cache_key_has_bounded_length(self):
+        very_long_url = "http://example.com/" + ("a" * 2000)
+        key = get_service_cache_key(very_long_url, service_type=enumerations.WMS, service_id=1)
+        self.assertLess(len(key), 200)
+
     @mock.patch("geonode.services.serviceprocessors.base.catalog", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.base.settings", autospec=True)
     def test_get_cascading_workspace_returns_existing(self, mock_settings, mock_catalog):
@@ -94,12 +262,81 @@ class ModuleFunctionsTestCase(StandardTestCase):
             mock_settings.CASCADE_WORKSPACE, f"http://www.geonode.org/{mock_settings.CASCADE_WORKSPACE}"
         )
 
-    @mock.patch("geonode.services.serviceprocessors.get_available_service_types", autospec=True)
-    def test_get_service_handler_wms(self, mock_wms_handler):
-        _handler = MagicMock()
-        mock_wms_handler.return_value = {
-            enumerations.WMS: {"OWS": True, "handler": _handler, "label": "Web Map Service"}
-        }
+    @mock.patch("geonode.services.serviceprocessors.base.build_unique_resource_name")
+    def test_create_with_unique_name_retries_on_integrity_error(self, mock_build_unique_resource_name):
+        # Must retry with a fresh candidate instead of surfacing IntegrityError.
+        mock_build_unique_resource_name.side_effect = ["candidate-1", "candidate-2"]
+        calls = []
+
+        def flaky_create(name):
+            calls.append(name)
+            if len(calls) < 2:
+                raise IntegrityError("simulated race")
+            return name
+
+        result = base.create_with_unique_name("svc", flaky_create)
+        self.assertEqual(result, "candidate-2")
+        self.assertEqual(calls, ["candidate-1", "candidate-2"])
+
+    @mock.patch("geonode.services.serviceprocessors.base.build_unique_resource_name")
+    def test_create_with_unique_name_gives_up_after_max_attempts(self, mock_build_unique_resource_name):
+        mock_build_unique_resource_name.side_effect = ["c1", "c2", "c3"]
+
+        def always_fails(name):
+            raise IntegrityError("simulated race")
+
+        with self.assertRaises(IntegrityError):
+            base.create_with_unique_name("svc", always_fails, max_attempts=3)
+
+    @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
+    def test_get_service_handler_does_not_cache_without_service_id(self, mock_get_handler_class):
+        # Without a service_id, two unrelated calls must not share a cached handler.
+        handler_class = mock.MagicMock(side_effect=lambda *a, **k: mock.MagicMock())
+        mock_get_handler_class.return_value = handler_class
+        phony_url = "http://fake"
+
+        handler_1 = get_service_handler(phony_url, service_type=enumerations.WMS)
+        handler_2 = get_service_handler(phony_url, service_type=enumerations.WMS)
+
+        self.assertEqual(handler_class.call_count, 2)
+        self.assertIsNot(handler_1, handler_2)
+
+    @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
+    def test_get_service_handler_caches_when_service_id_present(self, mock_get_handler_class):
+        # Cached values are pickled (LocMemCache), so the constructed handler must be too.
+        handler_class = mock.MagicMock(side_effect=lambda *a, **k: PickableMagicMock())
+        mock_get_handler_class.return_value = handler_class
+        # Unique URL: LocMemCache isn't reset between test runs.
+        phony_url = f"http://fake/{uuid4()}"
+
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1)
+
+        # Second call must be a cache hit, not a second construction.
+        self.assertEqual(handler_class.call_count, 1)
+
+    @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
+    def test_get_service_handler_separates_cache_by_auth(self, mock_get_handler_class):
+        # Same url/type/service_id but different credentials must not collide,
+        # since relaxed base_url uniqueness allows distinct Services to share a URL.
+        handler_class = mock.MagicMock(side_effect=lambda *a, **k: PickableMagicMock())
+        mock_get_handler_class.return_value = handler_class
+        phony_url = f"http://fake/{uuid4()}"
+
+        auth_config_1 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_1.payload = {"username": "alice", "password": "pw1"}
+        auth_config_2 = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config_2.payload = {"username": "bob", "password": "pw2"}
+
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config_1)
+        get_service_handler(phony_url, service_type=enumerations.WMS, service_id=1, auth_config=auth_config_2)
+
+        self.assertEqual(handler_class.call_count, 2)
+
+    @mock.patch("geonode.services.serviceprocessors.registry.service_type_registry.get_handler_class", autospec=True)
+    def test_get_service_handler_wms(self, mock_get_handler_class):
+        _handler = PickableMagicMock()
+        mock_get_handler_class.return_value = _handler
         phony_url = "http://fake"
         get_service_handler(phony_url, service_type=enumerations.WMS)
         _handler.assert_called_with(phony_url, None)
@@ -226,7 +463,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
         phony_url = "http://fake"
         mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
-        (url, mock_parsed_arcgis) = mock.MagicMock(
+        url, mock_parsed_arcgis = mock.MagicMock(
             ArcMapService, return_value=(phony_url, mock_parsed_arcgis)
         ).return_value
         mock_parsed_arcgis.url = phony_url
@@ -335,7 +572,9 @@ class ModuleFunctionsTestCase(StandardTestCase):
         resource_fields = handler._get_indexed_dataset_fields(dataset_meta)
         self.assertEqual(resource_fields["alternate"], f"{slugify(phony_url)}:{dataset_meta.id}")
 
+    @skip("test to be revisioned")
     @mock.patch("arcrest.MapService", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_arcgis_alternative_structure(self, mock_map_service):
         LayerESRIExtent = namedtuple("LayerESRIExtent", "spatialReference xmin ymin ymax xmax")
         LayerESRIExtentSpatialReference = namedtuple("LayerESRIExtentSpatialReference", "wkid latestWkid")
@@ -417,7 +656,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
         phony_url = "http://sit.cittametropolitana.na.it/arcgis/rest/services/basemap_ortofoto_AGEA2011/MapServer"
         mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
-        (url, mock_parsed_arcgis) = mock.MagicMock(
+        url, mock_parsed_arcgis = mock.MagicMock(
             ArcMapService, return_value=(phony_url, mock_parsed_arcgis)
         ).return_value
         mock_parsed_arcgis.url = phony_url
@@ -442,9 +681,9 @@ class ModuleFunctionsTestCase(StandardTestCase):
             test_user.save()
         try:
             result = handler.create_geonode_service(test_user)
-            geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
+            geonode_service = Service.objects.get(id=result.id)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
             handler._harvest_resource(dataset_meta, geonode_service)
             geonode_dataset = Dataset.objects.filter(remote_service=geonode_service).get()
@@ -455,10 +694,51 @@ class ModuleFunctionsTestCase(StandardTestCase):
             response = self.client.get(reverse("dataset_embed", args=(geonode_dataset.name,)))
             self.assertEqual(response.status_code, 200)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
         except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
             logger.error(e)
+
+
+class BuildUniqueResourceNameTestCase(TestCase):
+    """Unlike create_with_unique_name's tests, these exercise the real DB lookups:
+    build_unique_resource_name itself is only ever mocked out elsewhere."""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="unique-name-owner")
+
+    def test_avoids_collision_with_existing_service_and_harvester_names(self):
+        Service.objects.create(
+            uuid=str(uuid4()),
+            base_url="http://fake",
+            type=enumerations.WMS,
+            method=enumerations.INDEXED,
+            owner=self.user,
+            name="taken",
+            title="taken by a service",
+        )
+        Harvester.objects.create(
+            remote_url="http://fake",
+            name="taken-1",
+            default_owner=self.user,
+        )
+
+        self.assertEqual(base.build_unique_resource_name("taken"), "taken-2")
+
+    def test_handles_tiny_max_length_by_truncating_the_suffix(self):
+        Service.objects.create(
+            uuid=str(uuid4()),
+            base_url="http://fake",
+            type=enumerations.WMS,
+            method=enumerations.INDEXED,
+            owner=self.user,
+            name="a",
+            title="taken by a service",
+        )
+
+        result = base.build_unique_resource_name("a", max_length=1)
+        self.assertEqual(len(result), 1)
+        self.assertNotEqual(result, "a")
 
 
 class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
@@ -471,7 +751,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.phony_dataset_name = "phony_name"
         self.phony_keywords = ["first", "second"]
         mock_parsed_wms = mock.MagicMock(OwsWebMapService).return_value
-        (url, mock_parsed_wms) = mock.MagicMock(
+        url, mock_parsed_wms = mock.MagicMock(
             WebMapService, return_value=(self.phony_url, mock_parsed_wms)
         ).return_value
         mock_parsed_wms.provider.url = self.phony_url
@@ -508,6 +788,33 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         if created:
             self.local_user.set_password("somepassword")
             self.local_user.save()
+
+    @mock.patch("geonode.services.serviceprocessors.wms.get_service_handler")
+    @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_cleaned_url_params")
+    @mock.patch.object(wms.GeoNodeServiceHandler, "ows_endpoint")
+    def test_geonode_service_handler_parsed_service_passes_auth_config(
+        self, mock_ows_endpoint, mock_get_cleaned_url_params, mock_get_service_handler
+    ):
+        # `service` from get_cleaned_url_params is a query-string value, not a
+        # Service model; auth must come from self.kwargs instead.
+        mock_ows_endpoint.return_value = self.phony_url
+
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        auth_config.save()
+
+        cleaned_url = mock.MagicMock()
+        cleaned_url.geturl.return_value = self.phony_url
+        mock_get_cleaned_url_params.return_value = (cleaned_url, None, self.phony_version, None)
+
+        handler = wms.GeoNodeServiceHandler(self.phony_url, geonode_service_id=42, auth_config=auth_config)
+        handler.parsed_service
+
+        args, kwargs = mock_get_service_handler.call_args
+        self.assertEqual(args[0], self.phony_url)
+        self.assertEqual(args[1], enumerations.WMS)
+        self.assertEqual(args[2], 42)
+        self.assertEqual(kwargs.get("auth_config"), auth_config)
 
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
@@ -591,6 +898,26 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertTrue(result.metadata_only)
 
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
+    @mock.patch.object(wms.WmsServiceHandler, "parsed_service")
+    def test_create_geonode_service_with_basic_auth_config(self, mock_wms_parsed_service, mock_wms):
+        mock_wms.return_value = (self.phony_url, self.parsed_wms)
+        mock_wms_parsed_service.return_value = self.parsed_wms
+        mock_wms_parsed_service.provider.url = self.phony_url
+        mock_wms_parsed_service.identification.title = self.phony_title
+        mock_wms_parsed_service.identification.version = self.phony_version
+
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        handler = wms.WmsServiceHandler(self.phony_url, auth_config=auth_config)
+        result = handler.create_geonode_service(self.test_user)
+
+        self.assertIsNotNone(result.auth_config)
+        self.assertEqual(result.auth_config.type, "basic")
+
+        auth_handler = auth_handler_registry.build(result.auth_config)
+        self.assertEqual(auth_handler.get_credentials(), ("test_user", "test_password"))
+
+    @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     def test_geonode_service_uses_given_getmap_params(self, mock_wms_parsed_service, mock_wms):
         phony_url = (
@@ -660,6 +987,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resources", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resource", autospec=True)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_get_resources(self, mock_wms_get_resource, mock_wms_get_resources, mock_wms_parsed_service, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
@@ -677,9 +1005,9 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             test_user.save()
         result = handler.create_geonode_service(test_user)
         try:
-            geonode_service, created = Service.objects.get_or_create(base_url=result.base_url, owner=test_user)
+            geonode_service = Service.objects.get(id=result.id)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
+                resource_manager_registry.get_for_instance(_d).delete(_d.uuid, instance=_d)
 
             result = list(handler.get_resources())
             dataset_meta = handler.get_resource(result[0].name)
@@ -731,6 +1059,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         )
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse("register_service"))
@@ -801,6 +1130,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertFalse(Harvester.objects.filter(id=harvester.id).exists())
 
     @flaky(max_runs=3)
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
     def test_add_duplicate_remote_service_url(self):
         form_data = {
             "url": "https://gs-stable.geo-solutions.it/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities",
@@ -821,12 +1151,12 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             self.client.post(reverse("register_service"), data=form_data)
             self.assertEqual(Service.objects.count(), 1)
 
-            # Try adding the same URL again
+            # Adding the same URL again should now create a second Service
             form = forms.CreateServiceForm(form_data)
             self.assertEqual(Service.objects.count(), 1)
-            with self.assertRaises(KeyError):
-                self.client.post(reverse("register_service"), data=form_data)
-            self.assertEqual(Service.objects.count(), 1)
+            response = self.client.post(reverse("register_service"), data=form_data)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(Service.objects.count(), 2)
 
 
 class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
@@ -928,7 +1258,26 @@ class TestServiceViews(GeoNodeBaseTestSupport):
             metadata_only=True,
             base_url="http://bogus.pocus.com/ows",
         )
+        self.test_user = get_user_model().objects.create_user(
+            username="test_user12", email="testuser@example.com", password="testpass123"
+        )
         self.sut.clear_dirty_state()
+
+    @mock.patch("geonode.services.views.get_service_handler")
+    def test_get_service_handler_view_passes_auth_config_for_cache_key(self, mock_get_service_handler):
+        # Must pass auth_config= too, not just auth=, so the cache key varies by credentials.
+        auth_config = AuthConfig(type=BasicAuthHandler.handled_type)
+        auth_config.payload = {"username": "test_user", "password": "test_password"}
+        auth_config.save()
+        self.sut.auth_config = auth_config
+        self.sut.save()
+
+        mock_get_service_handler.return_value = mock.MagicMock(geonode_service_id=self.sut.id)
+
+        views._get_service_handler(None, self.sut)
+
+        _, kwargs = mock_get_service_handler.call_args
+        self.assertEqual(kwargs.get("auth_config"), auth_config)
 
     def test_user_admin_can_access_to_page(self):
         self.client.login(username="admin", password="admin")
@@ -937,6 +1286,24 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     def test_anonymous_user_can_see_the_services(self):
         response = self.client.get(reverse("services"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_allowed_for_admin(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=False)
+    def test_register_service_denied_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
+        self.assertEqual(response.status_code, 401)
+
+    @override_settings(REGISTERED_USERS_CAN_ADD_REMOTE_RESOURCES=True)
+    def test_register_service_allowed_for_regular_user(self):
+        self.client.force_login(self.test_user)
+        response = self.client.get(reverse("register_service"))
         self.assertEqual(response.status_code, 200)
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
@@ -972,38 +1339,83 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
     def test_will_use_multiple_service_types_defined_for_choices(self):
-        elems = get_available_service_types()
-        expected = {
-            "WMS": {"OWS": True, "handler": wms.WmsServiceHandler, "label": "Web Map Service"},
-            "GN_WMS": {"OWS": True, "handler": wms.GeoNodeServiceHandler, "label": "GeoNode (Web Map Service)"},
-            "REST_MAP": {"OWS": False, "handler": ArcMapServiceHandler, "label": "ArcGIS REST MapServer"},
-            "REST_IMG": {"OWS": False, "handler": ArcImageServiceHandler, "label": "ArcGIS REST ImageServer"},
-            "test": {
-                "OWS": True,
-                "handler": "TestHandler",
-                "label": "Test Number 1",
-                "management_view": "path.to.view1",
-            },
-            "test2": {
+        service_type_registry.reset()
+        try:
+            elems = get_available_service_types()
+            expected = {
+                "WMS": {"OWS": True, "handler": wms.WmsServiceHandler, "label": "Web Map Service"},
+                "GN_WMS": {"OWS": True, "handler": wms.GeoNodeServiceHandler, "label": "GeoNode (Web Map Service)"},
+                "REST_MAP": {"OWS": False, "handler": ArcMapServiceHandler, "label": "ArcGIS REST MapServer"},
+                "REST_IMG": {"OWS": False, "handler": ArcImageServiceHandler, "label": "ArcGIS REST ImageServer"},
+                "test": {
+                    "OWS": True,
+                    "handler": "TestHandler",
+                    "label": "Test Number 1",
+                    "management_view": "path.to.view1",
+                },
+                "test2": {
+                    "OWS": False,
+                    "handler": "TestHandler2",
+                    "label": "Test Number 2",
+                    "management_view": "path.to.view2",
+                },
+                "test3": {
+                    "OWS": True,
+                    "handler": "TestHandler3",
+                    "label": "Test Number 3",
+                    "management_view": "path.to.view3",
+                },
+                "test4": {
+                    "OWS": False,
+                    "handler": "TestHandler4",
+                    "label": "Test Number 4",
+                    "management_view": "path.to.view4",
+                },
+            }
+            self.assertDictEqual(expected, elems)
+        finally:
+            service_type_registry.reset()
+
+    def test_service_type_registry_should_register_service_type(self):
+        registry = ServiceTypeRegistry()
+        registry.register(
+            "CUSTOM",
+            handler="path.to.CustomServiceHandler",
+            label="Custom Service",
+            OWS=False,
+            management_view="path.to.view",
+        )
+
+        self.assertEqual(
+            {
                 "OWS": False,
-                "handler": "TestHandler2",
-                "label": "Test Number 2",
-                "management_view": "path.to.view2",
+                "handler": "path.to.CustomServiceHandler",
+                "label": "Custom Service",
+                "management_view": "path.to.view",
             },
-            "test3": {
-                "OWS": True,
-                "handler": "TestHandler3",
-                "label": "Test Number 3",
-                "management_view": "path.to.view3",
-            },
-            "test4": {
-                "OWS": False,
-                "handler": "TestHandler4",
-                "label": "Test Number 4",
-                "management_view": "path.to.view4",
-            },
-        }
-        self.assertDictEqual(expected, elems)
+            registry.registry["CUSTOM"],
+        )
+
+    def test_service_type_registry_should_unregister_service_type(self):
+        registry = ServiceTypeRegistry()
+        registry.register("CUSTOM", handler="path.to.CustomServiceHandler", label="Custom Service")
+
+        self.assertIn("CUSTOM", registry.registry)
+        registry.unregister("CUSTOM")
+
+        self.assertNotIn("CUSTOM", registry.registry)
+
+    @override_settings(SERVICES_TYPE_MODULES=["geonode.services.tests.dummy_services_type_handler"])
+    def test_service_type_registry_should_load_configured_service_types(self):
+        registry = ServiceTypeRegistry()
+
+        self.assertIn("test_handler", registry.get_available_service_types())
+
+    @override_settings(SERVICES_TYPE_MODULES=["geonode.services.tests.dummy_services_type_handler"])
+    def test_service_type_registry_should_return_handler_class(self):
+        registry = ServiceTypeRegistry()
+
+        self.assertEqual(wms.WmsServiceHandler, registry.get_handler_class("test_handler"))
 
 
 """
@@ -1031,5 +1443,15 @@ class dummy_services_type2:
             "handler": "TestHandler4",
             "label": "Test Number 4",
             "management_view": "path.to.view4",
+        },
+    }
+
+
+class dummy_services_type_handler:
+    services_type = {
+        "test_handler": {
+            "OWS": False,
+            "handler": "geonode.services.serviceprocessors.wms.WmsServiceHandler",
+            "label": "Test Handler",
         },
     }

@@ -287,8 +287,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
         with override_settings(
             RESOURCE_PUBLISHING=False,
             ADMIN_MODERATE_UPLOADS=False,
-            DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
-            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,
+            DEFAULT_ANONYMOUS_PERMISSIONS="view",
         ):
             self.client.login(username="norman", password="norman")
 
@@ -325,7 +324,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 # Cleanup
                 saved_dataset.delete()
 
-        with override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False, DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True):
+        with override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="download"):
             saved_dataset = create_dataset(
                 name="san_andres_y_providencia_poi_by_norman",
                 title="san_andres_y_providencia_poi",
@@ -339,7 +338,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             # Cleanup
             saved_dataset.delete()
 
-        with override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False, DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
+        with override_settings(DEFAULT_ANONYMOUS_PERMISSIONS="none"):
             saved_dataset = create_dataset(
                 name="san_andres_y_providencia_poi_by_norman",
                 title="san_andres_y_providencia_poi",

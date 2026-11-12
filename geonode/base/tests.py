@@ -21,6 +21,8 @@ import json
 import logging
 import os
 import requests
+import importlib
+from django.apps import apps
 from PIL import Image
 from io import BytesIO
 from uuid import uuid4
@@ -36,7 +38,6 @@ from django.contrib.auth import get_user_model
 from geonode.storage.manager import storage_manager
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
-from django.utils import translation
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -51,7 +52,6 @@ from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.templatetags.base_tags import display_change_perms_button
-from geonode.base.templatetags.sanitize_html import sanitize_html
 from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.base.models import (
     HierarchicalKeyword,
@@ -65,7 +65,10 @@ from geonode.base.models import (
     Thesaurus,
     ThesaurusKeyword,
     generate_thesaurus_reference,
+    Link,
 )
+from geonode.assets.tests import ONE_JSON
+from geonode.assets.utils import create_asset
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
@@ -79,8 +82,7 @@ from geonode.base.templatetags.thesaurus import (
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
-from geonode.base.forms import ThesaurusAvailableForm, THESAURUS_RESULT_LIST_SEPERATOR
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import dataset_manager
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
@@ -143,6 +145,35 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         # cleanup: remove saved thumbnail
         thumb_utils.remove_thumbs(filename)
         self.assertFalse(thumb_utils.thumb_exists(filename))
+
+    def test_save_thumbnail_creates_a_single_file(self):
+        """
+        A single save_thumbnail call must create exactly one thumbnail file
+        """
+        image = Image.new("RGB", (100, 100))
+        for x in range(100):
+            image.putpixel((x, x), (x + 1, (x * 2) % 256, (x * 3) % 256))
+        with BytesIO() as output:
+            image.save(output, format="PNG")
+            content = output.getvalue()
+
+        name_prefix = f"dataset-{self.rb.uuid}-thumb"
+        thumbs_before = set(thumb_utils.get_thumbs())
+
+        self.rb.save_thumbnail(f"{name_prefix}-{uuid4()}.png", image=content)
+
+        new_thumbs = set(thumb_utils.get_thumbs()) - thumbs_before
+        try:
+            # exactly one file must have been created (no suffixed duplicate) ...
+            self.assertEqual(
+                len(new_thumbs),
+                1,
+                msg=f"Expected a single thumbnail file, found: {sorted(new_thumbs)}",
+            )
+            # ... and it must be the one referenced by the resource
+            self.assertIn(os.path.basename(self.rb.thumbnail_path), new_thumbs)
+        finally:
+            thumb_utils.remove_thumbs(name_prefix)
 
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
@@ -591,6 +622,8 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
                 response = web_client.post(reverse("admin:login"))
             elif url_name == "logout":
                 response = web_client.post(reverse("admin:logout"))
+            elif url_name == "token":
+                response = web_client.post(reverse("oauth2_provider:token"))
             else:
                 response = web_client.post(reverse(url_name))
 
@@ -728,14 +761,6 @@ class TestOwnerRightsRequestUtils(TestCase):
         user_perms = display_change_perms_button(self.la, self.user, {})
         self.assertTrue(admin_perms)
         self.assertTrue(user_perms)
-
-
-class SanitizedHtmlTest(TestCase):
-    def test_sanitized_html(self):
-        test_html = "<script>alert('XSS');</script><b>Allowed Text</b>"
-        expected_output = "<b>Allowed Text</b>"
-        sanitized_output = sanitize_html(test_html)
-        self.assertEqual(sanitized_output, expected_output)
 
 
 class TestGetVisibleResource(TestCase):
@@ -897,79 +922,6 @@ class TestTagThesaurus(TestCase):
     @staticmethod
     def __get_last_thesaurus():
         return Thesaurus.objects.all().order_by("id")[0]
-
-
-@override_settings(THESAURUS_DEFAULT_LANG="en")
-class TestThesaurusAvailableForm(TestCase):
-    #  loading test thesausurs
-    fixtures = ["test_thesaurus.json"]
-
-    def setUp(self):
-        self.sut = ThesaurusAvailableForm
-
-    def test_form_is_valid_if_all_fields_are_missing(self):
-        #  is now always true since the required is moved to the UI
-        #  (like the other fields)
-        actual = self.sut(data={})
-        self.assertTrue(actual.is_valid())
-
-    def test_form_is_invalid_if_fileds_send_unexpected_values(self):
-        actual = self.sut(data={"1": [1, 2]})
-        self.assertFalse(actual.is_valid())
-
-    def test_form_is_valid_if_fileds_send_expected_values(self):
-        actual = self.sut(data={"1": 1})
-        self.assertTrue(actual.is_valid())
-
-    def test_field_class_treq_is_correctly_set_when_field_is_required(self):
-        actual = self.sut(data={"1": 1})
-        required = actual.fields.get("1")
-        obj_class = required.widget.attrs.get("class")
-        self.assertTrue(obj_class == "treq")
-
-    def test_field_class_treq_is_not_set_when_field_is_optional(self):
-        actual = self.sut(data={"1": 1})
-        required = actual.fields.get("2")
-        obj_class = required.widget.attrs.get("class")
-        self.assertTrue(obj_class == "")
-
-    def test_will_return_thesaurus_with_the_expected_defined_order(self):
-        actual = self.sut(data={"1": 1})
-        fields = list(actual.fields.items())
-        #  will check if the first element of the tuple is the thesaurus_id = 2
-        self.assertEqual(fields[0][0], "2")
-        #  will check if the second element of the tuple is the thesaurus_id = 1
-        self.assertEqual(fields[1][0], "1")
-
-    def test_will_return_thesaurus_with_the_defaul_order_as_0(self):
-        # Update thesaurus order to 0 in order to check if the default order by id is observed
-        t = Thesaurus.objects.get(identifier="inspire-theme")
-        t.order = 0
-        t.save()
-        actual = ThesaurusAvailableForm(data={"1": 1})
-        fields = list(actual.fields.items())
-        #  will check if the first element of the tuple is the thesaurus_id = 2
-        self.assertEqual(fields[0][0], "1")
-        #  will check if the second element of the tuple is the thesaurus_id = 1
-        self.assertEqual(fields[1][0], "2")
-
-    def test_get_thesuro_key_label_with_cmd_language_code(self):
-        # in python test language code look like 'en' this test checks if key label result function
-        # returns correct results
-        tid = 1
-        translation.activate("en")
-        t_available_form = ThesaurusAvailableForm(data={"1": tid})
-        results = t_available_form._get_thesauro_keyword_label(tid, translation.get_language())
-        self.assertNotEqual(results[1], THESAURUS_RESULT_LIST_SEPERATOR)
-
-    def test_get_thesuro_key_label_with_browser_language_code(self):
-        # in browser scenario language does not look like "it", but rather include coutry code
-        # like "it-it" this test checks if _get_thesauro_keyword_label can handle this
-        tid = 1
-        translation.activate("en-us")
-        t_available_form = ThesaurusAvailableForm(data={"1": tid})
-        results = t_available_form._get_thesauro_keyword_label(tid, translation.get_language())
-        self.assertNotEqual(results[1], THESAURUS_RESULT_LIST_SEPERATOR)
 
 
 class TestFacets(TestCase):
@@ -1283,7 +1235,7 @@ class TestRegions(GeoNodeBaseTestSupport):
 
     @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
     def test_regions_are_assigned_if_handler_is_used(self):
-        dataset = resource_manager.create(
+        dataset = dataset_manager.create(
             None,
             resource_type=Dataset,
             defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),
@@ -1334,3 +1286,106 @@ class LinkedResourcesTest(GeoNodeBaseTestSupport):
         finally:
             for _ in d:
                 _.delete()
+
+
+class TestResourceBaseViewSetQueryset(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_user = get_user_model().objects.create_user(
+            username="test_queryset_user", email="test@example.com", password="testpass123"
+        )
+
+        cls.admin_user = get_user_model().objects.create_user(
+            username="admin_queryset_user", email="admin@example.com", password="adminpass123", is_staff=True
+        )
+
+        cls.test_resources = []
+        for i in range(5):
+            resource = ResourceBase.objects.create(
+                title=f"test_resource_queryset_{i}",
+                uuid=str(uuid4()),
+                owner=cls.test_user if i % 2 == 0 else cls.admin_user,
+                abstract=f"Test resource {i} for queryset",
+                subtype="vector",
+                is_approved=True,
+                is_published=True,
+            )
+            cls.test_resources.append(resource)
+
+    def test_original_queryset_vs_optimized_queryset(self):
+        """Test that original and optimized querysets return the same results"""
+
+        original_queryset = ResourceBase.objects.all().order_by("-created")
+
+        optimized_queryset = ResourceBase.objects.select_related("owner").order_by("-created")
+
+        original_list = list(original_queryset)
+        optimized_list = list(optimized_queryset)
+
+        self.assertEqual(len(original_list), len(optimized_list))
+
+        self.assertEqual(original_list, optimized_list)
+
+        original_pks = [obj.pk for obj in original_list]
+        optimized_pks = [obj.pk for obj in optimized_list]
+        self.assertEqual(original_pks, optimized_pks)
+
+
+class FixOtherRestrictionsTest(GeoNodeBaseTestSupport):
+
+    def test_fix_otherrestrictions_codetype(self):
+        from geonode.base.models import RestrictionCodeType
+        from django.db.models import Q
+
+        migration_module = importlib.import_module(
+            "geonode.base.migrations.0094_fix_otherrestrictions_codetype"
+        )  # importing migration module to test
+        fix_otherrestrictions_codetype = migration_module.fix_otherrestrictions_codetype
+
+        updated = RestrictionCodeType.objects.filter(
+            Q(identifier="limitation not listed") | Q(identifier="otherRestrictions")
+        ).update(
+            identifier="limitation not listed", description="otherRestrictions", gn_description="otherRestrictions"
+        )
+
+        self.assertEqual(updated, 1, "Expected one record to be updated")
+
+        fix_otherrestrictions_codetype(apps=apps, schema_editor=None)  # calling the migration function to correct
+
+        with self.assertRaises(RestrictionCodeType.DoesNotExist):
+            RestrictionCodeType.objects.get(identifier="limitation not listed")
+
+        fixed_obj = RestrictionCodeType.objects.get(identifier="otherRestrictions")
+        self.assertEqual(fixed_obj.description, "limitation not listed")
+        self.assertEqual(fixed_obj.gn_description, "limitation not listed")
+
+
+class TestDeletableAssetKey(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.resource = create_single_dataset("test_resource")
+        self.asset1 = create_asset(self.user, asset_type="document", title="Test Asset for Deletion", files=[ONE_JSON])
+        self.asset2 = create_asset(self.user, asset_type="document", title="Original", files=[ONE_JSON])
+        self.link = Link.objects.create(resource=self.resource, asset=self.asset1, name="test_link")
+        self.link2 = Link.objects.create(resource=self.resource, asset=self.asset2, name="test_link_2")
+        self.url = reverse("base-resources-asset", kwargs={"pk": self.resource.pk})
+
+    def test_deletable_property(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        # Create a mapping from asset title to the deletable status
+        deletable_status_by_title = {
+            item.get("title"): item.get("deletable") for item in response.data if item.get("title")
+        }
+        self.assertIn("Test Asset for Deletion", deletable_status_by_title)
+        self.assertTrue(
+            deletable_status_by_title["Test Asset for Deletion"],
+            "Asset with title 'Test Asset for Deletion' should have deletable=True",
+        )
+        self.assertIn("Original", deletable_status_by_title)
+        self.assertFalse(
+            deletable_status_by_title["Original"],
+            "Asset with title 'Original' should have deletable=False",
+        )

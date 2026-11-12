@@ -1,6 +1,0 @@
-{% extends "metadata_detail.html" %}
-{% load i18n %}
-{% block metaget_absolute_url %}
-    <dt>{% trans "Metadata Page" %}</dt>
-    <dd><a href="{% url "dataset_metadata_detail" resource.alternate %}">{% url "dataset_metadata_detail" resource.alternate %}</a></dd>
-{% endblock metaget_absolute_url %}

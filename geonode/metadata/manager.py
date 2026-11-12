@@ -19,50 +19,76 @@
 
 import logging
 import copy
-from cachetools import FIFOCache
+from types import SimpleNamespace
 
 from django.utils.translation import gettext as _
 
-from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.models import ResourceBase
+from geonode.indexing.manager import index_manager
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
-from geonode.metadata.i18n import get_localized_labels, I18N_THESAURUS_IDENTIFIER
+from geonode.metadata.tracking.operation import CONTEXT_PRE_INSTANCE
+from geonode.base.i18n import i18nCache
 from geonode.metadata.settings import MODEL_SCHEMA
 
 logger = logging.getLogger(__name__)
+
+CACHE_KEY_SCHEMA = "schema"
+
+# Handlers are called in order: the lower the value, the earlier the handler runs
+HANDLER_ORDER_INITIAL = 0
+HANDLER_ORDER_DEFAULT = 100
+HANDLER_ORDER_FINAL = 1000
 
 
 class MetadataManager:
     """
     The metadata manager is the bridge between the API and the geonode model.
-    The metadata manager will loop over all of the registered metadata handlers,
+    The metadata manager will loop over all the registered metadata handlers,
     calling their update_schema(jsonschema) which will add the subschemas of the
     fields handled by each handler. At the end of the loop, the schema will be ready
     to be delivered to the caller.
     """
 
-    # FIFO bc we want to renew the data once in a while
-    _schema_cache = FIFOCache(32)
-
     def __init__(self):
         self.root_schema = MODEL_SCHEMA
         self.handlers = {}
+        self.handler_orders = {}
+        self.initialized = False
 
-    @classmethod
-    def clear_schema_cache(cls):
-        logger.info("Clearing schema cache")
-        while True:
-            try:
-                MetadataManager._schema_cache.popitem()
-            except KeyError:
-                return
+    def add_handler(self, handler_id, handler, order=HANDLER_ORDER_DEFAULT):
+        """
+        Register a handler. Handlers are expected to be added while the apps are being loaded.
+        `order` puts the handler in its group, the registration sequence orders it within the group
+        """
+        self.handler_orders[handler_id] = order
+        instance = handler()
+        self.handlers[handler_id] = instance
 
-    def add_handler(self, handler_id, handler):
-        self.handlers[handler_id] = handler()
+        # sorted() is stable: same order means the registration sequence is preserved.
+        # Handlers put in place without add_handler() have no order of their own: they sit in the middle
+        self.handlers = {
+            hid: self.handlers[hid]
+            for hid in sorted(self.handlers, key=lambda hid: self.handler_orders.get(hid, HANDLER_ORDER_DEFAULT))
+        }
+
+        if self.initialized:
+            # registered after the app setup: it missed post_init(), and the schemas built so far
+            # know nothing about the fields it adds
+            logger.info(f"Metadata handler '{handler_id}' registered after the setup")
+            instance.post_init()
+            i18nCache.clear()
+
+    def post_init(self):
+        """
+        To be called once all the handlers have been added to the MetadataManager
+        """
+        for handler in self.handlers.values():
+            handler.post_init()
+        self.initialized = True
 
     def _init_schema_context(self, lang):
-        # todo: cache localizations
-        return {"labels": get_localized_labels(lang)}
+        return {"lang": lang} if lang else {}
 
     def build_schema(self, lang=None):
         logger.debug(f"build_schema {lang}")
@@ -73,7 +99,6 @@ class MetadataManager:
         context = self._init_schema_context(lang)
 
         for key, handler in self.handlers.items():
-            # logger.debug(f"build_schema: update schema -> {key}")
             schema = handler.update_schema(schema, context, lang)
 
         # Set required fields.
@@ -87,19 +112,20 @@ class MetadataManager:
         return schema
 
     def get_schema(self, lang=None):
-        cache_key = str(lang)
-        ret = MetadataManager._schema_cache.get(cache_key, None)
-        if not ret:
-            logger.info(f"Building schema for {cache_key}")
-            ret = self.build_schema(lang)
-            MetadataManager._schema_cache[cache_key] = ret
-            logger.info("Schema built")
-        return ret
+        lang = str(lang)
+        thesaurus_date, schema = i18nCache.get_entry(lang, CACHE_KEY_SCHEMA)
+        if schema is None:
+            logger.info(f"Building schema for {lang}")
+            schema = self.build_schema(lang)
+            logger.debug("Schema built")
+            i18nCache.set(lang, CACHE_KEY_SCHEMA, schema, thesaurus_date)
+        return schema
 
     def build_schema_instance(self, resource, lang=None):
         schema = self.get_schema(lang)
 
-        context = {}
+        context = self._init_schema_context(lang)
+
         for handler in self.handlers.values():
             handler.load_serialization_context(resource, schema, context)
 
@@ -118,8 +144,11 @@ class MetadataManager:
             except UnsetFieldException:
                 pass
 
+        for handler in self.handlers.values():
+            handler.post_serialization(resource, schema, instance, context)
+
         # TESTING ONLY
-        if "error" in resource.title.lower():
+        if resource and "error" in resource.title.lower():
             for fieldname in schema["properties"]:
                 MetadataHandler._set_error(
                     errors, [fieldname], f"TEST: test msg for field '{fieldname}' in GET request"
@@ -128,33 +157,118 @@ class MetadataManager:
 
         return instance
 
-    def update_schema_instance(self, resource, json_instance) -> dict:
+    def update_schema_instance(self, resource, request_obj, lang=None, partial=None, context=None) -> dict:
+        # Definition of the json instance
+        json_instance = request_obj.data
+
         logger.debug(f"RECEIVED INSTANCE {json_instance}")
         resource = resource.get_real_instance()
         schema = self.get_schema()
-        context = {}
+        # whatever the caller already knows and the handlers may make use of
+        context = self._init_schema_context(lang) | (context or {})
+
+        # We pass the request.user to the context, since it is used by the GroupHandler
+        context["user"] = request_obj.user
+
         for handler in self.handlers.values():
             handler.load_deserialization_context(resource, schema, context)
 
         errors = {}
+        context["errors"] = errors
+
+        for handler in self.handlers.values():
+            handler.pre_deserialization(resource, schema, json_instance, partial, context)
 
         for fieldname, subschema in schema["properties"].items():
+            if partial:
+                if fieldname not in partial:
+                    continue
+                logger.debug(f"Storing partial field {fieldname}")
             handler = self.handlers[subschema["geonode:handler"]]
             try:
                 handler.update_resource(resource, fieldname, json_instance, context, errors)
             except Exception as e:
-                MetadataHandler._set_error(errors, [fieldname], f"Error while processing this field: {e}")
+                MetadataHandler._set_error(
+                    errors,
+                    [],
+                    MetadataHandler.localize_message(
+                        context,
+                        "metadata_error_update",
+                        {"fieldname": fieldname, "handler": handler.__class__.__name__, "exc": e},
+                    ),
+                )
+        for handler in self.handlers.values():
+            try:
+                handler.pre_save(resource, json_instance, context, errors)
+            except Exception as e:
+                logger.error(f"Error in pre_save: handler {handler.__class__.__name__}", exc_info=e)
+                MetadataHandler._set_error(
+                    errors,
+                    [],
+                    MetadataHandler.localize_message(
+                        context, "metadata_error_pre_save", {"handler": handler.__class__.__name__, "exc": e}
+                    ),
+                )
         try:
-            resource.save()
+            if basefields := context.get("base", None):
+                ResourceBase.objects.filter(id=resource.id).update(**basefields)
+                resource.get_real_concrete_instance_class().objects.filter(id=resource.id).update(**basefields)
+                resource.refresh_from_db()
         except Exception as e:
-            logger.warning(f"Error while updating schema instance: {e}")
-            MetadataHandler._set_error(errors, [], f"Error while saving the resource: {e}")
+            logger.warning(f"Error while updating schema instance: {e}", exc_info=e)
+            MetadataHandler._set_error(
+                errors, [], MetadataHandler.localize_message(context, "metadata_error_save", {"exc": e})
+            )
+
+        for handler in self.handlers.values():
+            try:
+                handler.post_save(resource, json_instance, context, errors)
+            except Exception as e:
+                logger.error(f"Error in post_save: handler {handler.__class__.__name__}", exc_info=e)
+                MetadataHandler._set_error(
+                    errors,
+                    [],
+                    MetadataHandler.localize_message(
+                        context, "metadata_error_post_save", {"handler": handler.__class__.__name__, "exc": e}
+                    ),
+                )
+
+        try:
+            index_manager.update_index(resource.id, json_instance)
+        except Exception as e:
+            logger.error("Error while indexing", exc_info=e)
+            MetadataHandler._set_error(
+                errors,
+                [],
+                MetadataHandler.localize_message(context, "metadata_error_indexing", {"exc": e}),
+            )
 
         # TESTING ONLY
-        if "error" in resource.title.lower():
+        if "_error_" in resource.title.lower():
             _create_test_errors(schema, errors, [], "TEST: field <{schema_type}>'{path}' PUT request")
 
         return errors
+
+    def update_schema_instance_partial(self, resource, json_instance, user, lang=None) -> dict:
+        if not json_instance:
+            return {}
+        # We can't loop on the payload's field, since post_ or pre_ methods may rely on the whole instance
+        # Let's create a full instance by using the old one, merged with the payload
+        old_instance = self.build_schema_instance(resource, lang)
+
+        # The handlers edit the payload in place, so it has to be a copy of its own: the old
+        # instance is handed over as the state preceding the change, and has to stay untouched
+        payload = copy.deepcopy(old_instance)
+        payload.update(json_instance)
+
+        fake_req = SimpleNamespace(data=payload, user=user)
+        return self.update_schema_instance(
+            resource,
+            fake_req,
+            lang,
+            partial=set(json_instance.keys()),
+            context={CONTEXT_PRE_INSTANCE: old_instance},
+        )
 
 
 def _create_test_errors(schema, errors, path, msg_template, create_message=True):
@@ -167,20 +281,6 @@ def _create_test_errors(schema, errors, path, msg_template, create_message=True)
             _create_test_errors(subschema, errors, path + [field], msg_template)
     elif schema["type"] == "array":
         _create_test_errors(schema["items"], errors, path, msg_template, create_message=False)
-
-
-# signals for invalidating cached data
-def thesaurus_changed(sender, instance, **kwargs):
-    base = f"Thesaurus changed: class {sender.__class__.__name__} -->"
-    if sender == Thesaurus and instance.identifier == I18N_THESAURUS_IDENTIFIER:
-        logger.debug(f"{base} {instance.identifier}")
-        MetadataManager.clear_schema_cache()
-    elif sender == ThesaurusKeyword and instance.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
-        logger.debug(f"{base} {instance.about} ALT:{instance.alt_label}")
-        MetadataManager.clear_schema_cache()
-    elif sender == ThesaurusKeywordLabel and instance.keyword.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
-        logger.debug(f"{base} {instance.keyword.about} ALT:{instance.keyword.alt_label} L:{instance.lang}")
-        MetadataManager.clear_schema_cache()
 
 
 metadata_manager = MetadataManager()

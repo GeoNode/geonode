@@ -205,7 +205,7 @@ class StorageManager(StorageManagerInterface):
                     new_file = f"{new_path}/{old_file_name}_{random_suffix}{ext}"
                 _new_path = self.copy_single_file(open_file, new_file)
                 out.append(_new_path)
-            if _new_path:
+            if _new_path and settings.FILE_UPLOAD_PERMISSIONS is not None:
                 os.chmod(_new_path, settings.FILE_UPLOAD_PERMISSIONS)
         return out
 
@@ -243,12 +243,16 @@ class StorageManager(StorageManagerInterface):
     def generate_filename(self, filename):
         return self._concrete_storage_manager.generate_filename(filename)
 
-    def clone_remote_files(self, cloning_directory=None, prefix=None, create_tempdir=True) -> Mapping:
+    def clone_remote_files(self, cloning_directory=None, prefix=None, create_tempdir=True, unzip=True) -> Mapping:
         """
         Using the data retriever object clone the remote path into a local temporary storage
         """
         return self.data_retriever.get_paths(
-            allow_transfer=True, cloning_directory=cloning_directory, prefix=prefix, create_tempdir=create_tempdir
+            allow_transfer=True,
+            cloning_directory=cloning_directory,
+            prefix=prefix,
+            create_tempdir=create_tempdir,
+            unzip=unzip,
         )
 
     def get_retrieved_paths(self) -> Mapping:
@@ -268,12 +272,12 @@ class StorageManager(StorageManagerInterface):
         return self.data_retriever.delete_files(force=force)
 
 
-class DefaultStorageManager(StorageManagerInterface):
+class FileSystemStorageManager(StorageManagerInterface):
     def __init__(self, **kwargs):
         self._fsm = FileSystemStorage(**kwargs)
 
     def _get_concrete_manager(self):
-        return DefaultStorageManager()
+        return FileSystemStorageManager()
 
     def delete(self, name):
         return self._fsm.delete(name)

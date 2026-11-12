@@ -23,7 +23,9 @@ import html
 import math
 import uuid
 import logging
+import tempfile
 import traceback
+from io import BytesIO
 from typing import List, Optional, Union, Tuple
 from sequences.models import Sequence
 from sequences import get_next_value
@@ -31,14 +33,13 @@ from PIL import Image
 
 from django.db import transaction
 from django.db import models
-from django.db.models import Max
 from django.conf import settings
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
 from django.db.utils import IntegrityError, OperationalError
 from django.contrib.auth.models import Group
-from django.core.files.base import ContentFile
+from django.core.files import File
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.db.models.fields.json import JSONField
@@ -63,6 +64,7 @@ from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 from geonode import GeoNodeException
 
 from geonode.base import enumerations
+from geonode.geoserver.ows import _wms_link
 from geonode.singleton import SingletonModel
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
@@ -71,13 +73,12 @@ from geonode.utils import (
     find_by_attr,
     bbox_to_projection,
     bbox_swap,
-    get_allowed_extensions,
     is_monochromatic_image,
 )
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
-from geonode.security.models import PermissionLevelMixin
+from geonode.security.models import PermissionLevelMixin, AuthConfig
 from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS
 
 from geonode.notifications_helper import send_notification, get_notification_recipients
@@ -225,7 +226,7 @@ class RestrictionCodeType(models.Model):
 
 
 class License(models.Model):
-    identifier = models.CharField(max_length=255, editable=False)
+    identifier = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -463,7 +464,7 @@ class Thesaurus(models.Model):
     # read from the RDF file
     description = models.TextField(max_length=255, default="")
 
-    slug = models.CharField(max_length=64, default="")
+    slug = models.CharField(max_length=64, default="", null=True, blank=True)
 
     about = models.CharField(max_length=255, null=True, blank=True)
 
@@ -679,9 +680,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement_help_text = _(
         "general explanation of the data producer's knowledge about the lineage of a" " dataset"
     )
-    extra_metadata_help_text = _(
-        'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]'
-    )
     # internal fields
     uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
     title = models.CharField(_("title"), max_length=255, help_text=_("name by which the cited resource is known"))
@@ -857,7 +855,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=False,
         default=enumerations.SOURCE_TYPE_LOCAL,
         choices=enumerations.SOURCE_TYPES,
-        help_text=_('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".'),
+        help_text=_('The resource source type, which can be one of "LOCAL" or "REMOTE".'),
     )
 
     remote_typename = models.CharField(
@@ -884,16 +882,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
 
     blob = JSONField(null=True, default=dict, blank=True)
+    auth_config = models.ForeignKey(
+        AuthConfig,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="authconfigresources",
+    )
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
-
-    metadata = models.ManyToManyField(
-        "ExtraMetadata", verbose_name=_("Extra Metadata"), null=True, blank=True, help_text=extra_metadata_help_text
-    )
 
     objects = ResourceBaseManager()
 
     class Meta:
+        base_manager_name = "objects"
         # custom permissions,
         # add, change and delete are standard in django-guardian
         permissions = (
@@ -917,6 +919,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __str__(self):
         return str(self.title)
+
+    def get_real_instance(self):
+        real_model = self.get_real_instance_class()
+        if real_model is self.__class__:
+            return self
+        return real_model.objects.db_manager(self._state.db).get(pk=self.pk)
 
     def _remove_html_tags(self, attribute_str):
         _attribute_str = attribute_str
@@ -954,6 +962,38 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return self._remove_html_tags(self.abstract)
 
     @property
+    def can_be_downloaded(self):
+        return self.subtype in {"vector", "raster", "vector_time", "tabular"}
+
+    @property
+    def can_have_wfs_links(self):
+        return self.subtype in {"vector", "tabular"}
+
+    @property
+    def can_have_wps_links(self):
+        return self.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time", "tabular"}
+
+    @property
+    def should_create_style(self):
+        return self.subtype != "tabular"
+
+    @property
+    def can_have_style(self):
+        return self.subtype not in {"tabular", "tileStore", "remote", "tabular"}
+
+    def can_set_thumbnail(self, thumbnail_data=None):
+        """
+        Decide whether the resource allows setting a thumbnail.
+        Manual uploads are allowed; otherwise, only subtypes that
+        support auto-generated thumbnails are permitted.
+        """
+        if thumbnail_data:
+            return True
+
+        # No thumbnail data provided: allow only subtypes that support auto-generation.
+        return self.subtype not in {"tabular", "3dtiles", "cog", "flatgeobuf"}
+
+    @property
     def raw_purpose(self):
         return self._remove_html_tags(self.purpose)
 
@@ -973,6 +1013,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def detail_url(self):
         return self.get_absolute_url()
 
+    def fixup_store_type(self, keys, values):
+        from geonode.geoserver.helpers import get_dataset_storetype
+
+        if self.subtype == "tabular":
+            return self
+        for key in keys:
+            setattr(self, key, get_dataset_storetype(values[key]))
+        return self
+
     def clean(self):
         if self.title:
             self.title = self.title.replace(",", "_")
@@ -989,16 +1038,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _notification_sent = False
         _group_status_changed = False
         _approval_status_changed = False
-
+        send_create_notification = False
         if hasattr(self, "class_name") and (self.pk is None or notify):
-            if self.pk is None and (self.title or getattr(self, "name", None)):
-                # Resource Created
-                if not self.title and getattr(self, "name", None):
-                    self.title = getattr(self, "name", None)
-                notice_type_label = f"{self.class_name.lower()}_created"
-                recipients = get_notification_recipients(notice_type_label, resource=self)
-                send_notification(recipients, notice_type_label, {"resource": self})
-            elif self.pk:
+            # if self.pk is None and (self.title or getattr(self, "name", None)):
+            #    # Resource Created
+            #    if not self.title and getattr(self, "name", None):
+            #        self.title = getattr(self, "name", None)
+            #    notice_type_label = f"{self.class_name.lower()}_created"
+            #    recipients = get_notification_recipients(notice_type_label, resource=self)
+            #    send_notification(recipients, notice_type_label, {"resource": self})
+            if self.pk:
                 # Group has changed
                 _group_status_changed = self.group != ResourceBase.objects.get(pk=self.get_self_resource().pk).group
 
@@ -1031,15 +1080,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     send_notification(recipients, notice_type_label, {"resource": self})
 
         if self.pk is None:
-            _initial_value = ResourceBase.objects.aggregate(Max("pk"))["pk__max"]
-            if not _initial_value:
-                _initial_value = 1
-            else:
-                _initial_value += 1
+            # behaviour changed with Djagno 5.2
+            base = ResourceBase.objects
+            _initial_value = 1 if not base.exists() else base.order_by("pk").last().id + 1
             _next_value = get_next_value("ResourceBase", initial_value=_initial_value)  # type(self).__name__,
             if _initial_value > _next_value:
                 Sequence.objects.filter(name="ResourceBase").update(last=_initial_value)
                 _next_value = _initial_value
+            send_create_notification = True
 
             self.pk = self.id = _next_value
 
@@ -1049,6 +1097,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.uuid = str(uuid.uuid4())
         super().save(*args, **kwargs)
 
+        if send_create_notification:
+            # changed in Django 5.2, the we can get the title via the assets only if the resource is saved
+            if not self.title and hasattr(self, "name") and getattr(self, "name", None):
+                self.title = getattr(self, "name", None)
+            notice_type_label = f"{self.__class__.__name__.lower()}_created"
+            recipients = get_notification_recipients(notice_type_label, resource=self)
+            send_notification(recipients, notice_type_label, {"resource": self})
         # Update workflow permissions
         if _approval_status_changed or _group_status_changed:
             self.set_permissions(
@@ -1059,9 +1114,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a layer, map or document is deleted
         """
-        from geonode.resource.manager import resource_manager
+        from geonode.resource.registry import resource_manager_registry
 
-        resource_manager.remove_permissions(self.uuid, instance=self.get_real_instance())
+        resource_manager_registry.get_for_instance(self).remove_permissions(
+            self.uuid, instance=self.get_real_instance()
+        )
 
         # delete assets. TODO: when standalone Assets will be allowed, only dependable Assets shall be removed
         links_with_assets = Link.objects.filter(resource=self, asset__isnull=False).prefetch_related("asset")
@@ -1231,7 +1288,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             "regions",
             "title",
         ]
-        if self.restriction_code_type == "otherRestrictions":
+        if self.restriction_code_type and self.restriction_code_type.identifier == "otherRestrictions":
             required_fields.append("constraints_other")
         filled_fields = []
         for required_field in required_fields:
@@ -1260,14 +1317,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def is_copyable(self):
-        if self.resource_type == "dataset":
-            from geonode.assets.utils import get_default_asset
-            from geonode.geoserver.helpers import select_relevant_files
+        from geonode.assets.models import Asset
 
-            asset = get_default_asset(self)  # TODO: maybe we need to filter by original files
-            allowed_file = select_relevant_files(get_allowed_extensions(), asset.location) if asset else []
-            return len(allowed_file) != 0
-        return True
+        if self.sourcetype == enumerations.SOURCE_TYPE_REMOTE:
+            return True
+        if self.resource_type == "dataset":
+            if self.subtype in ["vector", "vector_time"]:
+                return True
+            if self.subtype == "raster":
+                return Asset.objects.filter(
+                    link__resource=self,
+                    title="Original",
+                ).exists()
+
+            # for tabular/local 3dtiles etc.
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type == "document":
+            return Asset.objects.filter(link__resource=self).exists()
+        if self.resource_type in ["map", "dashboard", "geostory"]:
+            return True
+        return False
 
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
@@ -1504,7 +1573,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def get_ows_url(self):
         """Return URL for OGC WMS server None if it does not exist."""
         try:
-            ows_link = self.link_set.get(name="OGC:WMS")
+            ows_link = self.link_set.get(name="OGC:WMS") or self.link_set.get(name="OGC:WFS")
         except Link.DoesNotExist:
             return None
         else:
@@ -1544,28 +1613,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     image = None
 
             if image:
-                actual_name = storage_manager.save(upload_path, ContentFile(image))
-                actual_file_name = os.path.basename(actual_name)
-
-                if filename != actual_file_name:
-                    upload_path = upload_path.replace(filename, actual_file_name)
                 url = storage_manager.url(upload_path)
                 try:
-                    # Optimize the Thumbnail size and resolution
-                    im = Image.open(storage_manager.open(actual_name))
+                    im = Image.open(BytesIO(image))
                     im = thumbnail_algorithm(im, **kwargs)
 
-                    # Saving the thumb into a temporary directory on file system
-                    tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
-                    im.save(tmp_location, quality="high")
-
-                    with open(tmp_location, "rb+") as img:
-                        # Saving the img via storage manager
-                        storage_manager.save(storage_manager.path(upload_path), img)
-
-                    # If we use a remote storage, the local img is deleted
-                    if tmp_location != storage_manager.path(upload_path):
-                        os.remove(tmp_location)
+                    with tempfile.NamedTemporaryFile(suffix=".jpg") as optimized_tmp:
+                        im.save(optimized_tmp, format="JPEG", quality="high")
+                        optimized_tmp.seek(0)
+                        storage_manager.save(upload_path, File(optimized_tmp))
                 except Exception as e:
                     logger.exception(e)
 
@@ -1686,25 +1742,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             _description: list of names
         """
         return [role.name for role in (set(Roles.get_toggled_ones()) & set(Roles.get_toggled_ones()))]
-
-    # typing not possible due to: from geonode.base.forms import ResourceBaseForm; unable due to circular ...
-    def set_contact_roles_from_metadata_edit(self, resource_base_form) -> bool:
-        """gets a ResourceBaseForm and extracts the Contact Role elements from it
-
-        Args:
-            resource_base_form (ResourceBaseForm): ResourceBaseForm with contact roles set
-
-        Returns:
-            bool: true if all contact roles could be set, else false
-        """
-        failed = False
-        for role in self.get_multivalue_role_property_names():
-            try:
-                self.__setattr__(role, resource_base_form.cleaned_data[role])
-            except AttributeError:
-                logger.warning(f"unable to set contact role {role} for {self} ...")
-                failed = True
-        return failed
 
     def __get_contact_role_elements__(self, role: str) -> Optional[List[settings.AUTH_USER_MODEL]]:
         """general getter of for all contact roles except owner
@@ -1928,6 +1965,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             else LinkedResource.get_linked_resources(source=self)
         )
 
+    def prepare_wms_links(self, wms_url, identifier, bbox, srid, height, width):
+        types = [
+            ("jpg", _("JPEG"), "image/jpeg"),
+            ("pdf", _("PDF"), "application/pdf"),
+            ("png", _("PNG"), "image/png"),
+        ]
+        output = []
+        for ext, name, mime in types:
+            url = _wms_link(wms_url, identifier, mime, height, width, srid, bbox)
+            output.append((ext, name, mime, url))
+        return output
+
 
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type"""
@@ -2014,7 +2063,7 @@ class Link(models.Model):
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
     mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
     url = models.TextField(max_length=1000)
-    asset = models.ForeignKey("assets.Asset", null=True, on_delete=models.CASCADE)
+    asset = models.ForeignKey("assets.Asset", blank=True, null=True, on_delete=models.CASCADE)
 
     objects = LinkManager()
 
@@ -2099,6 +2148,15 @@ class Configuration(SingletonModel):
     read_only = models.BooleanField(default=False)
     maintenance = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        previous_read_only = Configuration.objects.filter(pk=self.pk).values_list("read_only", flat=True).first()
+        super().save(*args, **kwargs)
+
+        if previous_read_only != self.read_only:
+            from geonode.security.registry import permissions_registry
+
+            permissions_registry.clear_permissions_cache()
+
     class Meta:
         verbose_name_plural = "Configuration"
 
@@ -2116,8 +2174,3 @@ class GroupGeoLimit(models.Model):
     group = models.ForeignKey(GroupProfile, null=False, blank=False, on_delete=models.CASCADE)
     resource = models.ForeignKey(ResourceBase, null=False, blank=False, on_delete=models.CASCADE)
     wkt = models.TextField(db_column="wkt", blank=True)
-
-
-class ExtraMetadata(models.Model):
-    resource = models.ForeignKey(ResourceBase, null=False, blank=False, on_delete=models.CASCADE)
-    metadata = JSONField(null=True, default=dict, blank=True)

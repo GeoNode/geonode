@@ -10,7 +10,7 @@
   {% if user == profile %}
     <h2 class="page-title">{% trans "Edit Your Profile" %}</h2>
   {% else %}
-    <h2 class="page-title">{% trans "Edit Profile for" %} {{ profile.username }}</h2>
+    <h2 class="page-title" ng-non-bindable>{% trans "Edit Profile for" %} {{ profile.username }}</h2>
   {% endif %}
 </div>
 
@@ -22,16 +22,30 @@
 </div>
 
 <div class="col-xs-9 col-md-7">
-  <form action="" method="post">
+  <form action="" method="post" ng-non-bindable>
     {% csrf_token %}
     <div class="form-controls">
       {# form|as_bootstrap #}
       {% for field in form %}
         {% if field.name not in PROFILE_EDIT_EXCLUDE_FIELD  %}
         <div id="div_{{ field.auto_id }}" class="form-group">
-            <label for="{{ field.auto_id }}" class="control-label">{{ field.label }}</label>
+            <label for="{{ field.auto_id }}" class="control-label">
+              {{ field.label }}
+              {% if field.name == 'language' %}
+                <span class="text-info" 
+                      data-toggle="tooltip" 
+                      data-placement="top" 
+                      title="{% trans 'Your preferred interface language. Changing this here or via the top-bar menu will permanently update your profile settings across all devices.' %}">
+                  <i class="glyphicon glyphicon-info-sign"></i>
+                </span>
+              {% endif %}
+            
+            </label>
             <div class="">
                 {% render_field field class="form-control" %}
+                {% for error in field.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                {% endfor %}
             </div>
         </div>
         {% endif %}

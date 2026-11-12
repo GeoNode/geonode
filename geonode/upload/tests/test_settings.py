@@ -17,9 +17,6 @@
 #
 #########################################################################
 import os
-import re
-import ast
-from datetime import timedelta
 from urllib.parse import urlparse
 from geonode import settings
 
@@ -148,59 +145,6 @@ UPLOADER = {
     "SUPPORTED_CRS": ["EPSG:4326", "EPSG:3785", "EPSG:3857", "EPSG:32647", "EPSG:32736"],
     "SUPPORTED_EXT": [".shp", ".csv", ".kml", ".kmz", ".json", ".geojson", ".tif", ".tiff", ".geotiff", ".gml", ".xml"],
 }
-
-# Settings for MONITORING plugin
-MONITORING_ENABLED = ast.literal_eval(os.environ.get("MONITORING_ENABLED", "False"))
-USER_ANALYTICS_ENABLED = ast.literal_eval(
-    os.getenv("USER_ANALYTICS_ENABLED", os.environ.get("MONITORING_ENABLED", "False"))
-)
-USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv("USER_ANALYTICS_GZIP", os.environ.get("MONITORING_ENABLED", "False")))
-
-MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
-MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", "local-geonode")
-
-# how long monitoring data should be stored
-MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 7)))
-
-# this will disable csrf check for notification config views,
-# use with caution - for dev purpose only
-MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get("MONITORING_DISABLE_CSRF", "False"))
-
-if MONITORING_ENABLED:
-    if "geonode.monitoring.middleware.MonitoringMiddleware" not in settings.MIDDLEWARE:
-        settings.MIDDLEWARE += ("geonode.monitoring.middleware.MonitoringMiddleware",)
-
-    # skip certain paths to not to mud stats too much
-    MONITORING_SKIP_PATHS = (
-        "/api/o/",
-        "/monitoring/",
-        "/admin",
-        "/jsi18n",
-        settings.STATIC_URL,
-        settings.MEDIA_URL,
-        re.compile("^/[a-z]{2}/admin/"),
-    )
-
-    # configure aggregation of past data to control data resolution
-    # list of data age, aggregation, in reverse order
-    # for current data, 1 minute resolution
-    # for data older than 1 day, 1-hour resolution
-    # for data older than 2 weeks, 1 day resolution
-    MONITORING_DATA_AGGREGATION = (
-        (
-            timedelta(seconds=0),
-            timedelta(minutes=1),
-        ),
-        (
-            timedelta(days=1),
-            timedelta(minutes=60),
-        ),
-        (
-            timedelta(days=14),
-            timedelta(days=1),
-        ),
-    )
 
 LOGGING = {
     "version": 1,

@@ -2,12 +2,15 @@ import logging
 import os.path
 
 from django.http import HttpResponse
-
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
+from geonode.security.permissions import DOWNLOAD_PERMISSIONS
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.models import Asset
 from geonode.base.models import ResourceBase, Link
 from geonode.security.utils import get_visible_resources
-
+from geonode.security.registry import permissions_registry
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +24,22 @@ def get_perms_response(request, asset: Asset):
         logger.debug("Asset: access allowed by user")
         return None
 
-    visibile_res = get_visible_resources(queryset=ResourceBase.objects.filter(link__asset=asset), user=request.user)
+    visibile_res = get_visible_resources(
+        queryset=ResourceBase.objects.filter(link__asset=asset),
+        user=request.user,
+        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+    )
 
-    logger.warning("TODO: implement permission check")
     if visibile_res.exists():
-        logger.debug("Asset: access allowed by Resource")
-        return None
+        # retrieving the resource permissions for the given user
+        resource_perms = permissions_registry.get_perms(instance=visibile_res.first(), user=user)
+        # check if download perms is available
+        if set(DOWNLOAD_PERMISSIONS).issubset(resource_perms):
+            logger.debug("Asset: access allowed by Resource")
+            return None
+        raise PermissionDenied
     elif user and user.is_authenticated:
         return HttpResponse(status=403)
     else:
@@ -47,7 +60,7 @@ def get_default_asset(resource: ResourceBase, link_type=None) -> Asset or None:
     return asset.get_real_instance() if asset else None
 
 
-DEFAULT_TYPES = {"image": ["jpg", "jpeg", "gif", "png", "bmp", "svg"]}
+DEFAULT_TYPES = {"image": ["jpg", "jpeg", "gif", "png", "svg"]}
 
 
 def find_type(ext):
@@ -79,10 +92,36 @@ def create_link(resource, asset, link_type=None, extension=None, name=None, mime
     return link
 
 
+def create_asset(
+    owner,
+    files,
+    handler=None,
+    title=None,
+    description=None,
+    asset_type=None,
+    clone_files: bool = True,
+) -> Asset:
+    asset_handler = handler or asset_handler_registry.get_default_handler()
+    asset = None
+    try:
+        asset = asset_handler.create(
+            title=title or "Unknown",
+            description=description or asset_type or "Unknown",
+            type=asset_type or "Unknown",
+            owner=owner,
+            files=files,
+            clone_files=clone_files,
+        )
+        return asset
+    except Exception as e:
+        logger.error(f"Error creating Asset: {e}", exc_info=e)
+        raise
+
+
 def create_asset_and_link(
     resource,
     owner,
-    files: list,
+    files,
     handler=None,
     title=None,
     description=None,
@@ -92,21 +131,26 @@ def create_asset_and_link(
     mime=None,
     clone_files: bool = True,
 ) -> tuple[Asset, Link]:
-
     asset_handler = handler or asset_handler_registry.get_default_handler()
     asset = link = None
     try:
-        default_title, default_ext = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
+        first_file = next(iter(files)) if len(files) else None
+        filename = (
+            first_file
+            if isinstance(first_file, (str, Path))
+            else getattr(first_file, "name", None) if first_file else None
+        )
+        default_title, default_ext = os.path.splitext(filename) if filename else ("Unknown", None)
         if default_ext:
             default_ext = default_ext.lstrip(".")
         link_type = link_type or find_type(default_ext) if default_ext else None
-
-        asset = asset_handler.create(
-            title=title or default_title or "Unknown",
-            description=description or asset_type or "Unknown",
-            type=asset_type or "Unknown",
+        asset = create_asset(
             owner=owner,
             files=files,
+            handler=asset_handler,
+            title=title or default_title,
+            description=description,
+            asset_type=asset_type,
             clone_files=clone_files,
         )
 
@@ -162,3 +206,60 @@ def rollback_asset_and_link(asset, link):
             asset.delete()  # TODO: make sure we are only deleting from DB and not also the stored data
     except Exception as e:
         logger.error(f"Could not rollback asset[{asset}] and link[{link}]", exc_info=e)
+
+
+def is_asset_deletable(asset: Asset):
+    """
+    Checks if an asset can be deleted.
+    currently Assets with titles "Original" or "Files" are protected and cannot be deleted.
+    Further logics can be added here.
+    """
+    if asset.title in ["Original", "Files"]:
+        return False
+    return True
+
+
+def unlink_asset(resource: ResourceBase, asset: Asset, remove_asset: bool = True):
+    """
+    Unlinks an asset from a resource. By default, the asset is deleted.
+
+    Behavior:
+    - If the asset title is "Original" or "Files", it will not be unlinked or deleted.
+    - If remove_asset=False:
+        * Only the link between the resource and asset is removed.
+    - If remove_asset=True(default):
+        * If the asset is linked to other resources, only the link is removed.
+        * If the asset is only linked to the provided resource, the asset itself is deleted,
+          which in turn triggers the deletion of the associated files.
+    """
+    if not is_asset_deletable(asset):
+        return False, "Asset is protected and will not be unlinked or deleted."
+
+    link = Link.objects.filter(resource=resource, asset=asset).first()
+    if not link:
+        return False, "Link between resource and asset not found."
+
+    if not remove_asset:
+        # Always just remove the link
+        link.delete()
+        msg = f"Asset {asset.pk} was unlinked from resource {resource.pk} but not deleted."
+        logger.info(msg)
+        return True, msg
+
+    # Check if the asset is linked to other resources
+    other_links_count = Link.objects.filter(asset=asset).exclude(pk=link.pk).count()
+
+    if other_links_count > 0:
+        # Only delete the link
+        link.delete()
+        msg = f"Asset {asset.pk} was unlinked but not deleted, because still linked to {other_links_count} resources"
+        logger.info(msg)
+        return True, msg
+    else:
+        # Delete the link and the asset. Post delete signal call the handler to remove the file eg: LocalAsset which will handle the deletion of the physical file.
+        asset_pk = asset.pk
+        link.delete()
+        asset.delete()
+        msg = f"Asset {asset_pk} was unlinked and deleted from resource {resource.pk}."
+        logger.info(msg)
+        return True, msg

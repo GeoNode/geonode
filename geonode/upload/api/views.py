@@ -17,11 +17,10 @@
 #
 #########################################################################
 import logging
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.urls import reverse
-from pathlib import Path
 from geonode.resource.enumerator import ExecutionRequestAction
 from django.utils.translation import gettext_lazy as _
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -33,26 +32,25 @@ from geonode.base.api.permissions import (
     ResourceBasePermissionsFilter,
     UserHasPerms,
 )
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, APIException
 from rest_framework import status
-from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import StorageManager
 from geonode.upload.api.permissions import UploadPermissionsFilter
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
+from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.upload.utils import UploadLimitValidator
-from geonode.upload.api.exceptions import HandlerException, ImportException
-from geonode.upload.api.serializer import ImporterSerializer
+from geonode.upload.api.exceptions import CopyResourceException, HandlerException, ImportException
+from geonode.upload.api.serializer import ResourceCopySerializer, ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from geonode.assets.handlers import asset_handler_registry
-from geonode.assets.local import LocalAssetHandler
+from geonode.proxy.utils import proxy_urls_registry
+from geonode.storage.manager import FileSystemStorageManager
+from geonode.security.utils import check_add_remote_resource_perm
 
 from geonode.upload.api.serializer import (
     UploadParallelismLimitSerializer,
@@ -64,7 +62,6 @@ logger = logging.getLogger("importer")
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
     http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadSizeLimit.objects.all()
     serializer_class = UploadSizeLimitSerializer
@@ -86,7 +83,6 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
 
 class UploadParallelismLimitViewSet(DynamicModelViewSet):
     http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadParallelismLimit.objects.all()
     serializer_class = UploadParallelismLimitSerializer
@@ -114,11 +110,6 @@ class ImporterViewSet(DynamicModelViewSet):
 
     parser_class = [JSONParser, FileUploadParser, MultiPartParser]
 
-    authentication_classes = [
-        BasicAuthentication,
-        SessionAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
@@ -147,13 +138,19 @@ class ImporterViewSet(DynamicModelViewSet):
         It clone on the local repo the file that the user want to upload
         """
         _file = request.FILES.get("base_file") or request.data.get("base_file")
+        validation_error = getattr(request, "upload_validation_error", None)
+        if validation_error:
+            raise ValidationError(detail=validation_error, code="invalid_file_type")
+        action = request.data.get("action")
+        if action in (ExecutionRequestAction.COPY.value, ira.DOCUMENT_COPY.value):
+            raise ValidationError(
+                detail=f"Action '{action}' is not supported on this endpoint, use PUT /api/v2/resources/{{id}}/copy instead.",
+                code="invalid_action",
+            )
         execution_id = None
-        asset_handler = LocalAssetHandler()
-        asset_dir = asset_handler._create_asset_dir()
-
+        storage_manager = None
         serializer = self.get_serializer_class()
         data = serializer(data=request.data)
-        storage_manager = None
         # serializer data validation
         data.is_valid(raise_exception=True)
         _data = {
@@ -161,113 +158,85 @@ class ImporterViewSet(DynamicModelViewSet):
             **{key: value[0] if isinstance(value, list) else value for key, value in request.FILES.items()},
         }
 
-        if "zip_file" in _data or "kmz_file" in _data:
-            # if a zipfile is provided, we need to unzip it before searching for an handler
-            zipname = Path(_data["base_file"].name).stem
-            storage_manager = StorageManager(remote_files={"base_file": _data.get("zip_file", _data.get("kmz_file"))})
-            # cloning and unzip the base_file
-            storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
-            # update the payload with the unziped paths
-            _data.update(
-                {
-                    **{"original_zip_name": zipname},
-                    **storage_manager.get_retrieved_paths(),
-                }
-            )
+        if "url" in _data:
+            check_add_remote_resource_perm(request.user)
 
-        handler = orchestrator.get_handler(_data)
-        # not file but handler means that is a remote resource
-        if handler:
-            asset = None
-            files = []
-            try:
-                # cloning data into a local folder
-                extracted_params, _data = handler.extract_params_from_data(_data)
-                if _file:
-                    storage_manager, asset, files = self._handle_asset(
-                        request, asset_dir, storage_manager, _data, handler
-                    )
+        try:
+            # clone the memory files into local file system
+            if "url" not in _data and not _data.get("is_empty", False):
+                storage_manager = StorageManager(
+                    remote_files={k: v for k, v in _data.items() if k.endswith("_file")},
+                    concrete_storage_manager=FileSystemStorageManager(),
+                )
+                storage_manager.clone_remote_files(create_tempdir=True, unzip=False)
+                # validate the upload
+                self.validate_upload(request, storage_manager)
+                # merging the new local path with the input payload
+                _data = _data | storage_manager.get_retrieved_paths()
+            # checking the correct handler for the uploaded files
+            handler = orchestrator.get_handler(_data)
+            # not file but handler means that is a remote resource
+            action = _data.get("action")
 
-                    self.validate_upload(request, storage_manager)
+            if handler and handler.can_do(action):
+                extracted_params, _files = handler.extract_params_from_data(_data)
+                if "url" in extracted_params:
+                    # we should register the hosts for the proxy
+                    proxy_urls_registry.register_host(urlsplit(extracted_params["url"]).hostname)
 
                 input_params = {
-                    **{"files": files, "handler_module_path": str(handler)},
+                    **{"files": _files, "handler_module_path": str(handler)},
+                    **{"temporary_files": _files},
                     **extracted_params,
                 }
 
-                if asset:
-                    input_params.update(
-                        {
-                            "asset_id": asset.id,
-                            "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
-                        }
-                    )
                 action = input_params.get("action")
+                first_step = next(iter(handler.get_task_list(action=action)))
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
-                    func_name=next(iter(handler.get_task_list(action=action))),
-                    step=_(next(iter(handler.get_task_list(action=action)))),
+                    func_name=first_step,
+                    step=_(first_step),
                     input_params=input_params,
+                    resource=extracted_params.get("resource_pk", None),
                     action=action,
                     name=_file.name if _file else extracted_params.get("title", None),
                 )
 
-                sig = import_orchestrator.s(files, str(execution_id), handler=str(handler), action=action)
+                # the first step of the action is not always the start_import, a clone starts with the copy
+                sig = import_orchestrator.s(
+                    _data, str(execution_id), handler=str(handler), action=action, step=first_step
+                )
                 sig.apply_async()
                 return Response(data={"execution_id": execution_id}, status=201)
-            except Exception as e:
-                # in case of any exception, is better to delete the
-                # cloned files to keep the storage under control
-                if asset:
-                    try:
-                        asset.delete()
-                    except Exception as _exc:
-                        logger.warning(_exc)
-                elif storage_manager is not None:
-                    storage_manager.delete_retrieved_paths(force=True)
-                if execution_id:
-                    orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
-                logger.exception(e)
-                raise ImportException(detail=e.args[0] if len(e.args) > 0 else e)
+        except Exception as e:
+            # in case of any exception, is better to delete the
+            # cloned files to keep the storage under control
+            self._cleanup_cloned_files(storage_manager)
+            if execution_id:
+                orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
+            logger.exception(e)
+            if isinstance(e, APIException):
+                raise
+            raise ImportException(detail=_("An internal error occurred while processing the upload."))
 
+        self._cleanup_cloned_files(storage_manager)
         raise ImportException(detail="No handlers found for this dataset type/action")
 
-    def _handle_asset(self, request, asset_dir, storage_manager, _data, handler):
-        if storage_manager is None:
-            # means that the storage manager is not initialized yet, so
-            # the file is not a zip
-            storage_manager = StorageManager(remote_files=_data)
-            storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
-            # get filepath
-        asset, files = self.generate_asset_and_retrieve_paths(request, storage_manager, handler)
-        return storage_manager, asset, files
+    def _cleanup_cloned_files(self, storage_manager):
+        """Remove the locally cloned upload files"""
+        if storage_manager:
+            try:
+                storage_manager.delete_retrieved_paths(force=True)
+            except Exception as _exc:
+                logger.warning(_exc)
 
     def validate_upload(self, request, storage_manager):
         upload_validator = UploadLimitValidator(request.user)
         upload_validator.validate_parallelism_limit_per_user()
         upload_validator.validate_files_sum_of_sizes(storage_manager.data_retriever)
 
-    def generate_asset_and_retrieve_paths(self, request, storage_manager, handler):
-        asset_handler = asset_handler_registry.get_default_handler()
-        _files = storage_manager.get_retrieved_paths()
-        asset = asset_handler.create(
-            title="Original",
-            owner=request.user,
-            description=None,
-            type=handler.id,
-            files=list(set(_files.values())),
-            clone_files=False,
-        )
-
-        return asset, _files
-
 
 class ResourceImporter(DynamicModelViewSet):
-    authentication_classes = [
-        SessionAuthentication,
-        BasicAuthentication,
-        OAuth2Authentication,
-    ]
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(
@@ -293,16 +262,21 @@ class ResourceImporter(DynamicModelViewSet):
         FavoriteFilter,
     ]
     queryset = ResourceBase.objects.all().order_by("-last_updated")
-    serializer_class = ResourceBaseSerializer
+    serializer_class = ResourceCopySerializer
     pagination_class = GeoNodeApiPagination
 
     def copy(self, request, *args, **kwargs):
+        from geonode.resource.registry import resource_manager_registry
+
         try:
             resource = self.get_object()
+            execution_id = None
+            if not resource_manager_registry.get_for_instance(resource).user_can_copy(resource, user=request.user):
+                return Response({"message": "Resource can not be cloned."}, status=400)
             if resource.resourcehandlerinfo_set.exists():
                 handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path
 
-                action = ExecutionRequestAction.COPY.value
+                action = request.data.get("action", ExecutionRequestAction.COPY.value)
 
                 handler = orchestrator.load_handler(handler_module_path)
 
@@ -314,12 +288,23 @@ class ResourceImporter(DynamicModelViewSet):
                 step = next(iter(handler.get_task_list(action=action)))
 
                 extracted_params, _data = handler.extract_params_from_data(request.data, action=action)
+                extracted_params["resource_pk"] = resource.pk
+                serializer = self.get_serializer_class()
+                data = serializer(data=extracted_params)
+                data.is_valid(raise_exception=True)
+                resource = self.get_object()
+
+                serializer = self.get_serializer_class()
+                data = serializer(data={**extracted_params, **{"resource_pk": resource.pk}})
+                # serializer data validation
+                data.is_valid(raise_exception=True)
 
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
                     func_name=step,
                     step=step,
                     action=action,
+                    resource=resource.pk,
                     input_params={
                         **{"handler_module_path": handler_module_path},
                         **extracted_params,
@@ -349,6 +334,11 @@ class ResourceImporter(DynamicModelViewSet):
                     },
                     status=200,
                 )
+        except ValidationError as e:
+            if execution_id:
+                orchestrator.set_as_failed(execution_id=str(execution_id), reason=e)
+            logger.exception(e)
+            raise CopyResourceException(detail=_("Invalid request data."))
         except (Exception, Http404) as e:
             logger.error(e)
             return HttpResponse(status=404, content=e)

@@ -24,7 +24,7 @@ from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 from geonode.catalogue.backends.generic import METADATA_FORMATS
-from shapely.errors import WKBReadingError, WKTReadingError
+from shapely.errors import ShapelyError
 
 true_value = "true"
 false_value = "false"
@@ -52,13 +52,14 @@ CONFIGURATION = {
         "pretty_print": "true",
         "domainquerytype": "range",
         "domaincounts": "true",
-        "profiles": "apiso,ebrim",
     },
+    "profiles": {"apiso", "ebrim"},
     "repository": {
         "source": "geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository",
         "filter": "uuid IS NOT NULL",
         "mappings": os.path.join(os.path.dirname(__file__), "pycsw_local_mappings.py"),
     },
+    "logging": {"level": "ERROR"},
 }
 
 
@@ -123,10 +124,9 @@ class CatalogueBackend(GenericCatalogueBackend):
         HTTP-less CSW
         """
 
-        mdict = dict(settings.PYCSW["CONFIGURATION"], **CONFIGURATION)
+        mdict = dict(CONFIGURATION, **settings.PYCSW["CONFIGURATION"])
         if "server" in settings.PYCSW["CONFIGURATION"]:
-            # override server system defaults with user specified directives
-            mdict["server"].update(settings.PYCSW["CONFIGURATION"]["server"])
+            mdict["server"] = dict(CONFIGURATION.get("server", {}), **settings.PYCSW["CONFIGURATION"]["server"])
 
         # fake HTTP environment variable
         os.environ["QUERY_STRING"] = ""
@@ -169,7 +169,7 @@ class CatalogueBackend(GenericCatalogueBackend):
             # https://gist.github.com/ingenieroariel/717bb720a201030e9b3a
             try:
                 response = csw.dispatch()
-            except (WKBReadingError, WKTReadingError):
+            except ShapelyError:
                 return []
 
         if isinstance(response, list):  # pycsw 2.0+

@@ -19,10 +19,15 @@
 import re
 import time
 import logging
+import requests
 
 from urllib.parse import urljoin
 
+from owslib.etree import etree as dlxml
+
 from django.conf import settings
+from django.test import TestCase
+from django.test.utils import override_settings
 from django.urls import reverse
 
 from geonode import geoserver
@@ -43,10 +48,15 @@ from geonode.geoserver.helpers import (
     get_dataset_capabilities_url,
     get_layer_ows_url,
     get_time_info,
+    set_attributes_from_geoserver,
+    _sync_geoserver_keywords_to_instance,
+    ogc_server_settings,
 )
+from geonode.proxy.utils import ProxyUrlsRegistry
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
+from geonode.services.models import Service
+from geonode.services.enumerations import REST_MAP, INDEXED, WMS
 from unittest.mock import patch, Mock
-
 
 logger = logging.getLogger(__name__)
 
@@ -207,6 +217,189 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         el = get_dataset_storetype("remoteStore")
         self.assertEqual("remote", el)
 
+    def _create_arcgis_dataset(self):
+        service = Service.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            type=REST_MAP,
+            method=INDEXED,
+            base_url="https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer",
+            name="arcgis-test-service",
+            title="ArcGIS test service",
+        )
+        return Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="usa_states",
+            store="arcgis-test-service",
+            subtype="remote",
+            workspace="remoteWorkspace",
+            typename="remoteWorkspace:0",
+            alternate="remoteWorkspace:0",
+            remote_service=service,
+        )
+
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_arcgis_remote_dataset(self, mock_safe_request_url):
+        dataset = self._create_arcgis_dataset()
+        mock_response = Mock()
+        mock_response.json.return_value = {
+            "fields": [
+                {"name": "STATE_NAME", "type": "esriFieldTypeString"},
+                {"name": "POPULATION", "type": "esriFieldTypeDouble"},
+                {"name": "SOME_FIELD", "type": "esriFieldTypeNotSupported"},
+            ]
+        }
+        mock_safe_request_url.return_value = mock_response
+
+        set_attributes_from_geoserver(dataset)
+
+        method, called_url = mock_safe_request_url.call_args[0]
+        self.assertEqual(method, "GET")
+        self.assertTrue(
+            called_url.startswith("https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0")
+        )
+        self.assertIn("f=json", called_url)
+        attributes = set(dataset.attribute_set.values_list("attribute", "attribute_type"))
+        self.assertIn(("STATE_NAME", "xsd:string"), attributes)
+        self.assertIn(("POPULATION", "xsd:double"), attributes)
+        self.assertFalse(dataset.attribute_set.filter(attribute="SOME_FIELD").exists())
+
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_arcgis_preserves_existing_query_string(self, mock_safe_request_url):
+        dataset = self._create_arcgis_dataset()
+        dataset.remote_service.extra_queryparams = "token=abc123"
+        dataset.remote_service.save()
+        mock_response = Mock()
+        mock_response.json.return_value = {"fields": [{"name": "STATE_NAME", "type": "esriFieldTypeString"}]}
+        mock_safe_request_url.return_value = mock_response
+
+        set_attributes_from_geoserver(dataset)
+
+        called_url = mock_safe_request_url.call_args[0][1]
+        self.assertIn("token=abc123", called_url)
+        self.assertIn("f=json", called_url)
+
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_arcgis_http_error(self, mock_safe_request_url):
+        dataset = self._create_arcgis_dataset()
+        mock_response = Mock()
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("500 error")
+        mock_safe_request_url.return_value = mock_response
+
+        set_attributes_from_geoserver(dataset)
+
+        self.assertFalse(dataset.attribute_set.exists())
+
+    def test_set_attributes_from_geoserver_arcgis_no_remote_service_yet(self):
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="usa_states_pending",
+            store="arcgis-test-service",
+            subtype="remote",
+            workspace="remoteWorkspace",
+            typename="remoteWorkspace:1",
+            alternate="remoteWorkspace:1",
+        )
+        Attribute.objects.create(dataset=dataset, attribute="STATE_NAME", attribute_type="xsd:string")
+
+        set_attributes_from_geoserver(dataset, overwrite=True)
+
+        self.assertTrue(dataset.attribute_set.filter(attribute="STATE_NAME").exists())
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    @patch("geonode.geoserver.helpers.safe_request_url")
+    def test_set_attributes_from_geoserver_wms_remote_dataset(self, mock_safe_request_url, mock_gs_catalog):
+        service = Service.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            type=WMS,
+            method=INDEXED,
+            base_url="https://remote.example.com/wms",
+            name="wms-test-service",
+            title="WMS test service",
+            operations={"GetCapabilities": {"methods": [{"type": "Get", "url": "https://advertised.example.com/wms"}]}},
+        )
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="roads",
+            store="wms-test-service",
+            subtype="remote",
+            workspace="remoteWorkspace",
+            typename="remoteWorkspace:roads",
+            alternate="remoteWorkspace:roads",
+            remote_service=service,
+        )
+        mock_safe_request_url.side_effect = [
+            Mock(content=b"not xml"),
+            Mock(content=b"<table><tr><th>NAME</th></tr></table>"),
+        ]
+
+        set_attributes_from_geoserver(dataset)
+
+        mock_gs_catalog.http_request.assert_not_called()
+        wfs_call, wms_call = mock_safe_request_url.call_args_list
+        self.assertTrue(wfs_call.args[1].startswith("https://advertised.example.com/ows?"))
+        self.assertTrue(wms_call.args[1].startswith("https://advertised.example.com/wms?"))
+        self.assertIsNone(wfs_call.kwargs["auth"])
+        self.assertTrue(dataset.attribute_set.filter(attribute="NAME").exists())
+
+    def test_set_attributes_from_geoserver_keeps_enumerated_attributes(self):
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="enum_attributes",
+            store="datastore",
+            subtype="vector",
+            workspace="geonode",
+            typename="geonode:enum_attributes",
+            alternate="geonode:enum_attributes",
+        )
+        Attribute.objects.create(
+            dataset=dataset,
+            attribute="usv",
+            attribute_label="Custom USV",
+            description="Kept on sync",
+            attribute_type="xsd:int",
+        )
+        xsd_ns = "http://www.w3.org/2001/XMLSchema"
+        xsd = f"{{{xsd_ns}}}"
+        schema = dlxml.Element(f"{xsd}schema", nsmap={"xsd": xsd_ns})
+        sequence = dlxml.SubElement(dlxml.SubElement(schema, f"{xsd}extension"), f"{xsd}sequence")
+        dlxml.SubElement(sequence, f"{xsd}element", name="fid", type="xsd:int")
+        usv = dlxml.SubElement(sequence, f"{xsd}element", name="usv")
+        restriction = dlxml.SubElement(
+            dlxml.SubElement(usv, f"{xsd}simpleType"), f"{xsd}restriction", base="xsd:string"
+        )
+        for value in ("alpha", "beta", "gamma"):
+            dlxml.SubElement(restriction, f"{xsd}enumeration", value=value)
+        dlxml.SubElement(sequence, f"{xsd}element", name="geom", type="gml:PolygonPropertyType")
+        untyped = dlxml.SubElement(sequence, f"{xsd}element", name="untyped_field")
+        dlxml.SubElement(dlxml.SubElement(untyped, f"{xsd}simpleType"), f"{xsd}restriction")
+
+        with (
+            patch("geonode.geoserver.helpers._get_xml", return_value=schema) as mock_get_xml,
+            patch("geonode.geoserver.helpers._get_from_catalog") as mock_get_from_catalog,
+            self.assertLogs("geonode.geoserver.helpers", level="WARNING") as logs,
+        ):
+            set_attributes_from_geoserver(dataset, overwrite=True)
+
+        self.assertEqual(
+            set(dataset.attribute_set.values_list("attribute", "attribute_type")),
+            {("fid", "xsd:int"), ("usv", "xsd:string"), ("geom", "gml:PolygonPropertyType")},
+        )
+        self.assertEqual(dataset.attribute_set.count(), 3)
+        saved_usv = dataset.attribute_set.get(attribute="usv")
+        self.assertEqual(saved_usv.attribute_label, "Custom USV")
+        self.assertEqual(saved_usv.description, "Kept on sync")
+        self.assertEqual(len(logs.records), 1)
+        self.assertIn("untyped_field", logs.output[0])
+        self.assertIn(dataset.alternate, logs.output[0])
+        mock_get_xml.assert_called_once()
+        mock_get_from_catalog.assert_not_called()
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_geoserver_proxy_strip_paths(self):
         response = self.client.get(
@@ -360,3 +553,104 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
 
         result = get_time_info(mock_layer)
         self.assertIsNone(result)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_sync_geoserver_keywords_merges_and_does_not_replace(self):
+        dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="keywords_merge_test",
+            store="httpfooremoteservce",
+            subtype="remote",
+            alternate="geonode:keywords_merge_test",
+        )
+        dataset.keywords.add("keyword_from_geonode", "shared_keyword")
+
+        _sync_geoserver_keywords_to_instance(dataset, ["keyword_from_geoserver", "shared_keyword"])
+
+        self.assertSetEqual(
+            {"keyword_from_geonode", "keyword_from_geoserver", "shared_keyword"},
+            set(dataset.keyword_list()),
+        )
+
+        # an empty keyword list from GeoServer must leave the existing keywords untouched
+        _sync_geoserver_keywords_to_instance(dataset, [])
+        self.assertSetEqual(
+            {"keyword_from_geonode", "keyword_from_geoserver", "shared_keyword"},
+            set(dataset.keyword_list()),
+        )
+
+
+class GeoServerProxyTest(TestCase):
+    """The /gs/ proxy only talks to the internal GeoServer."""
+
+    @staticmethod
+    def _response(request, status, location=None, content=b""):
+        resp = requests.models.Response()
+        resp.status_code = status
+        if location:
+            resp.headers["Location"] = location
+        resp.headers["Content-Type"] = "text/xml"
+        resp.url = request.url
+        resp.request = request
+        resp._content = content
+        resp._content_consumed = True
+        return resp
+
+    def _get(self, path, fake_send):
+        with patch.object(requests.adapters.HTTPAdapter, "send", fake_send):
+            return self.client.get(path)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.utils.socket.getaddrinfo", return_value=[(None, None, None, None, ("172.18.0.5", 0))])
+    def test_proxies_to_internal_geoserver(self, _mock_dns):
+        """/gs/ reaches the internal GeoServer with the safe URL check on, encoded query chars included."""
+        requested = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            requested.append(request.url)
+            return self._response(request, 200, content=b"<ok/>")
+
+        response = self._get(
+            f"{reverse('ows_endpoint')}?service=WFS&version=1.1.0&request=GetFeature&typeName=geonode:x"
+            "&CQL_FILTER=a%20%3D%201",
+            fake_send,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(requested), 1)
+        self.assertTrue(requested[0].startswith(ogc_server_settings.LOCATION))
+        self.assertIn("CQL_FILTER=a%20=%201", requested[0])
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(SAFE_URL_CHECK_ENABLED=True)
+    @patch("geonode.utils.socket.getaddrinfo", return_value=[(None, None, None, None, ("172.18.0.5", 0))])
+    def test_redirects_stay_within_geoserver(self, _mock_dns):
+        location = ogc_server_settings.LOCATION
+        for redirect_to, status in ((f"{location}ows?service=WMS", 200), ("http://spatialreference.org/x", 500)):
+            requested = []
+
+            def fake_send(adapter_self, request, **kwargs):
+                requested.append(request.url)
+                if len(requested) == 1:
+                    return self._response(request, 302, location=redirect_to)
+                return self._response(request, 200, content=b"<ok/>")
+
+            with self.subTest(redirect_to=redirect_to):
+                response = self._get(f"{reverse('ows_endpoint')}?service=WMS&request=GetCapabilities", fake_send)
+                self.assertEqual(response.status_code, status)
+                self.assertTrue(all(u.startswith(location) for u in requested))
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["spatialreference.org"]))
+    def test_rejects_external_target(self):
+        """The workspace/layer route joins the path onto LOCATION: a '//host' path must not switch host."""
+        requested = []
+
+        def fake_send(adapter_self, request, **kwargs):
+            requested.append(request.url)
+            return self._response(request, 200, content=b"<ok/>")
+
+        response = self._get(f"/gs/{settings.DEFAULT_WORKSPACE}/somelayer/ows//spatialreference.org/x", fake_send)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(requested, [])

@@ -23,9 +23,9 @@
   <div class="col-md-8">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
-      <li><a href="#datasets" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Datasets" %}</a></li>
-      <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
-      <li><a href="#documents" data-toggle="tab"><i class="fa fa-file-text-o"></i> {% trans "Documents" %}</a></li>
+      <li><a href="#activity_group_datasets" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Datasets" %}</a></li>
+      <li><a href="#activity_group_maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
+      <li><a href="#activity_group_documents" data-toggle="tab"><i class="fa fa-file-text-o"></i> {% trans "Documents" %}</a></li>
     </ul>
     <div class="tab-content">
       <article id="all" class="tab-pane active">
@@ -37,7 +37,7 @@
         {% endfor %}
         </ul>
       </article>
-      <article id="datasets" class="tab-pane">
+      <article id="activity_group_datasets" class="tab-pane">
         <ul class="no-style-list">
         {% for action in action_list_datasets %}
           {% activity_item action %}
@@ -46,7 +46,7 @@
         {% endfor %}
         </ul>
       </article>
-      <article id="maps" class="tab-pane">
+      <article id="activity_group_maps" class="tab-pane">
         <ul class="no-style-list">
         {% for action in action_list_maps %}
           {% activity_item action %}
@@ -55,7 +55,7 @@
         {% endfor %}
         </ul>
       </article>
-      <article id="documents" class="tab-pane">
+      <article id="activity_group_documents" class="tab-pane">
         <ul class="no-style-list">
         {% for action in action_list_documents %}
           {% activity_item action %}

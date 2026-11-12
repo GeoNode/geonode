@@ -24,7 +24,7 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 class GeoNodeAppsConfig(NotificationsAppConfigBase, AppConfig):
     name = "geonode.geoapps"
     type = "GEONODE_APP"
-
+    default_auto_field = "django.db.models.BigAutoField"
     NOTIFICATIONS = (
         (
             "geoapp_created",

@@ -21,20 +21,21 @@ import os
 import json
 import logging
 
-from modeltranslation.forms import TranslationModelForm
-
 from django import forms
 from django.conf import settings
 from django.forms import HiddenInput
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
-from geonode.base.forms import ResourceBaseForm, get_tree_data
 from geonode.documents.models import Document
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.api.exceptions import FileUploadLimitException
+from geonode.upload.zip_validation import ZipValidationError, is_zip_extension, validate_safe_zip
+from geonode.utils import assert_safe_xml, UnsafeXMLError
 
 logger = logging.getLogger(__name__)
+
+XML_LIKE_DOCUMENT_EXTENSIONS = {"xml", "sld"}
 
 
 class SizeRestrictedFileField(forms.FileField):
@@ -77,40 +78,7 @@ class SizeRestrictedFileField(forms.FileField):
         return max_size_db_obj.max_size
 
 
-class DocumentForm(ResourceBaseForm):
-    title = forms.CharField(required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["regions"].choices = get_tree_data()
-        for field in self.fields:
-            help_text = self.fields[field].help_text
-            self.fields[field].help_text = None
-            if help_text != "":
-                self.fields[field].widget.attrs.update(
-                    {
-                        "class": "has-external-popover",
-                        "data-content": help_text,
-                        "placeholder": help_text,
-                        "data-placement": "right",
-                        "data-container": "body",
-                        "data-html": "true",
-                    }
-                )
-
-    class Meta(ResourceBaseForm.Meta):
-        model = Document
-        exclude = ResourceBaseForm.Meta.exclude + (
-            "content_type",
-            "object_id",
-            "doc_file",
-            "extension",
-            "subtype",
-            "doc_url",
-        )
-
-
-class DocumentCreateForm(TranslationModelForm):
+class DocumentCreateForm(forms.ModelForm):
     """
     The document upload form.
     """
@@ -163,7 +131,7 @@ class DocumentCreateForm(TranslationModelForm):
             raise forms.ValidationError(_("A document cannot have both a file and a url."))
 
         if extension:
-            cleaned_data["extension"] = extension.replace(".", "")
+            cleaned_data["extension"] = extension.replace(".", "").lower()
 
         return cleaned_data
 
@@ -177,39 +145,35 @@ class DocumentCreateForm(TranslationModelForm):
             logger.debug("This file type is not allowed")
             raise forms.ValidationError(_("This file type is not allowed"))
 
-        return doc_file
+        # Mirror the importer's zip-safety gate: inspect the central directory
+        # of any zip-based document upload (.zip plus OOXML / ODF formats) to
+        # reject path-traversal entries, symlinks, oversized archives and zip
+        # bombs before the file is persisted.
+        if doc_file and is_zip_extension(doc_file.name):
+            source = doc_file.temporary_file_path() if hasattr(doc_file, "temporary_file_path") else doc_file
+            try:
+                validate_safe_zip(source)
+            except ZipValidationError:
+                logger.warning("ZIP validation failed for uploaded document.", exc_info=True)
+                raise forms.ValidationError(_("Invalid or unsafe ZIP archive."))
+            finally:
+                if hasattr(doc_file, "seek"):
+                    try:
+                        doc_file.seek(0)
+                    except (OSError, ValueError):
+                        pass
 
-
-class DocumentReplaceForm(forms.ModelForm):
-    """
-    The form used to replace a document.
-    """
-
-    doc_file = SizeRestrictedFileField(label=_("File"), required=True, field_slug="document_upload_size")
-
-    class Meta:
-        model = Document
-        fields = ["doc_file"]
-
-    def clean(self):
-        """
-        Ensures the doc_file field is populated.
-        """
-        cleaned_data = super().clean()
-        doc_file = self.cleaned_data.get("doc_file")
-
-        if not doc_file:
-            raise forms.ValidationError(_("Document must be a file."))
-
-        return cleaned_data
-
-    def clean_doc_file(self):
-        """
-        Ensures the doc_file is valid.
-        """
-        doc_file = self.cleaned_data.get("doc_file")
-
-        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
-            raise forms.ValidationError(_("This file type is not allowed"))
+        if doc_file and os.path.splitext(doc_file.name)[1].lower()[1:] in XML_LIKE_DOCUMENT_EXTENSIONS:
+            try:
+                assert_safe_xml(doc_file.read())
+            except UnsafeXMLError as err:
+                logger.warning("Unsafe XML content rejected on document upload: %s", err)
+                raise forms.ValidationError(_("Uploaded XML contains unsafe content."))
+            finally:
+                if hasattr(doc_file, "seek"):
+                    try:
+                        doc_file.seek(0)
+                    except (OSError, ValueError):
+                        pass
 
         return doc_file

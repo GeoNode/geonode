@@ -99,7 +99,7 @@ class BaseVectorFileHandler(BaseHandler):
         return
 
     @staticmethod
-    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate):
+    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file. For Raster file
@@ -149,7 +149,7 @@ class BaseVectorFileHandler(BaseHandler):
         return
 
     def create_geonode_resource(
-        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, files=None
+        self, layer_name: str, alternate: str, execution_id: str, resource_type: Dataset = Dataset, files=None, **kwargs
     ):
         """
         Base function to create the resource into geonode. Each handler can specify

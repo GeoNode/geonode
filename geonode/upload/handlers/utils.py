@@ -24,15 +24,23 @@ from geonode.resource.models import ExecutionRequest
 import logging
 from dynamic_models.schema import ModelSchemaEditor
 from django.utils.module_loading import import_string
+from django.utils.encoding import force_str
 from uuid import UUID
 
 from geonode.upload.publisher import DataPublisher
 
 logger = logging.getLogger("importer")
 
+EMPTY_DATASET_SUPPORTED_TYPES = {
+    "integer": "django.db.models.IntegerField",
+    "date": "django.db.models.DateField",
+    "float": "django.db.models.FloatField",
+    "string": "django.db.models.CharField",
+}
+
 
 STANDARD_TYPE_MAPPING = {
-    "Integer64": "django.db.models.IntegerField",
+    "Integer64": "django.db.models.FloatField",
     "Integer": "django.db.models.IntegerField",
     "DateTime": "django.db.models.DateTimeField",
     "Date": "django.db.models.DateField",
@@ -44,8 +52,10 @@ STANDARD_TYPE_MAPPING = {
 GEOM_TYPE_MAPPING = {
     "Line String": "django.contrib.gis.db.models.fields.LineStringField",
     "Linestring": "django.contrib.gis.db.models.fields.LineStringField",
+    "LineString": "django.contrib.gis.db.models.fields.LineStringField",
     "3D Line String": "django.contrib.gis.db.models.fields.LineStringField",
     "Multi Line String": "django.contrib.gis.db.models.fields.MultiLineStringField",
+    "Multi Linestring": "django.contrib.gis.db.models.fields.MultiLineStringField",
     "Multilinestring": "django.contrib.gis.db.models.fields.MultiLineStringField",
     "3D Multi Line String": "django.contrib.gis.db.models.fields.MultiLineStringField",
     "Point": "django.contrib.gis.db.models.fields.PointField",
@@ -58,6 +68,8 @@ GEOM_TYPE_MAPPING = {
     "Multi Polygon": "django.contrib.gis.db.models.fields.MultiPolygonField",
     "Multipolygon": "django.contrib.gis.db.models.fields.MultiPolygonField",
     "3D Multi Polygon": "django.contrib.gis.db.models.fields.MultiPolygonField",
+    "Geometry": "django.contrib.gis.db.models.fields.GeometryField",
+    "Unknown (any)": "django.contrib.gis.db.models.fields.GeometryField",
 }
 
 
@@ -93,6 +105,16 @@ def create_alternate(layer_name, execution_id):
     return alternate
 
 
+def create_layer_key(layer_name, execution_id):
+    """
+    Generate a layer key for a specific execution
+    in order to be stored in the 'tasks field of
+    the ExecutionRequest by the importer
+    Format: layername_executionid
+    """
+    return f"{layer_name}_{execution_id}".lower()
+
+
 def drop_dynamic_model_schema(schema_model):
     if schema_model:
         schema = ModelSchemaEditor(initial_model=schema_model.name, db_name="datastore")
@@ -124,6 +146,8 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
     if exec_id.status == ExecutionRequest.STATUS_FAILED:
         logger.info("Execution is already in status FAILED")
         return
+    if exec_id.status == ExecutionRequest.STATUS_FINISHED:
+        logger.info("Execution was 'finished', forcing update to FAILURE")
 
     logger.error(f"Task FAILED with ID: {str(exec_id.exec_id)}, reason: {exc}")
 
@@ -132,19 +156,10 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
     # creting the log message
     _log = handler.create_error_log(exc, celery_task.name, *args)
 
-    if output_params.get("errors"):
-        output_params.get("errors").append(_log)
-        output_params.get("failed_layers", []).append(args[-1] if args else [])
-        failed = list(set(output_params.get("failed_layers", [])))
-        output_params["failed_layers"] = failed
-    else:
-        output_params = {"errors": [_log], "failed_layers": [args[-1]]}
+    output_params.setdefault("errors", []).append(_log)
+    output_params.setdefault("failed_layers", []).append(force_str(args[-1]) if args else "")
+    output_params["failed_layers"] = list(dict.fromkeys(output_params["failed_layers"]))
 
-    celery_task.update_state(
-        task_id=task_id,
-        state="FAILURE",
-        meta={"exec_id": str(exec_id.exec_id), "reason": _log},
-    )
     orchestrator.update_execution_request_status(execution_id=str(exec_id.exec_id), output_params=output_params)
 
     orchestrator.evaluate_execution_progress(

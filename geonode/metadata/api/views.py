@@ -19,8 +19,6 @@
 import logging
 
 from dal import autocomplete
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
@@ -37,15 +35,21 @@ from geonode.base.api.permissions import UserHasPerms
 from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory, License
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
+from geonode.catalogue.models import update_csw_metadata
 from geonode.groups.models import GroupProfile
+from geonode.metadata.handlers.abstract import MetadataHandler
+from geonode.base.i18n import get_localized_label
 from geonode.metadata.manager import metadata_manager
+from geonode.metadata.models import SparseField
+from geonode.metadata.tracking.operation import metadata_tracker
+from geonode.metadata.multilang import utils as multi
 from geonode.people.utils import get_available_users
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
 
 class MetadataViewSet(ViewSet):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
 
     """
@@ -54,19 +58,20 @@ class MetadataViewSet(ViewSet):
 
     queryset = ResourceBase.objects.all()
 
-    def list(self, request):
-        pass
+    def list(self, request, *args, **kwargs):
+        base = request.build_absolute_uri("").rstrip("/")
+        return Response(
+            {
+                "schema": f"{base}/schema/",
+                "instance": f"{base}/instance/<pk>/",
+            }
+        )
 
     # Get the JSON schema
     # A pk argument is set for futured multiple schemas
     @action(detail=False, methods=["get"], url_path=r"schema(?:/(?P<pk>\d+))?", url_name="schema")
     def schema(self, request, pk=None):
-        """
-        The user is able to export her/his keys with
-        resource scope.
-        """
-
-        lang = request.query_params.get("lang", get_language_from_request(request)[:2])
+        lang = multi.get_language(request)
         schema = metadata_manager.get_schema(lang)
 
         if schema:
@@ -79,7 +84,7 @@ class MetadataViewSet(ViewSet):
     # Handle the JSON schema instance
     @action(
         detail=False,
-        methods=["get", "put"],
+        methods=["get", "put", "patch"],
         url_path=r"instance/(?P<pk>\d+)",
         url_name="schema_instance",
         permission_classes=[
@@ -88,6 +93,7 @@ class MetadataViewSet(ViewSet):
                     "default": {
                         "GET": ["base.view_resourcebase"],
                         "PUT": ["change_resourcebase_metadata"],
+                        "PATCH": ["change_resourcebase_metadata"],
                     }
                 }
             )
@@ -96,42 +102,146 @@ class MetadataViewSet(ViewSet):
     def schema_instance(self, request, pk=None):
         try:
             resource = ResourceBase.objects.get(pk=pk)
+            lang = request.query_params.get("lang", get_language_from_request(request)[:2])
 
             if request.method == "GET":
-                lang = request.query_params.get("lang", get_language_from_request(request)[:2])
                 schema_instance = metadata_manager.build_schema_instance(resource, lang)
                 return JsonResponse(
                     schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent": 3}
                 )
 
-            elif request.method in ("PUT"):
+            elif request.method in ("PUT", "PATCH"):
                 logger.debug(f"handling request {request.method}")
                 # try:
                 #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
                 # except Exception as e:
                 #     logger.warning(f"Can't parse JSON {request.data}: {e}")
-                errors = metadata_manager.update_schema_instance(resource, request.data)
+                errors = {}
+                # One request is one change, performed by whoever sent it. The block encloses the
+                # try, so that what did get through is recorded even when some of it did not
+                with metadata_tracker(request.user):
+                    try:
+                        errors = (
+                            metadata_manager.update_schema_instance(resource, request, lang)
+                            if request.method == "PUT"
+                            else metadata_manager.update_schema_instance_partial(
+                                resource, request.data, request.user, lang
+                            )
+                        )
+                        resource.refresh_from_db()
+                        resource.save()  # this is a ResourceBase and won't trigger the catalogue post_save
+                        update_csw_metadata(resource)
+
+                    except Exception as e:
+                        logger.warning(f"Error while updating schema instance: {e}")
+                        MetadataHandler._set_error(
+                            errors, [], MetadataHandler.localize_message({}, "metadata_error_save", {"exc": e})
+                        )
+
+                msg_t = (
+                    ("m_metadata_update_error", "Some errors were found while updating the resource")
+                    if errors
+                    else ("m_metadata_update_ok", "The resource was updated successfully")
+                )
+                msg = get_localized_label(lang, msg_t[0]) or msg_t[1]
 
                 response = {
-                    "message": (
-                        "Some errors were found while updating the resource"
-                        if errors
-                        else "The resource was updated successfully"
-                    ),
+                    "message": msg,
                     "extraErrors": errors,
                 }
 
-                return Response(response, status=400 if errors else 200)
+                return Response(response, status=422 if errors else 200)
 
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
             return Response(result, status=404)
 
+    @action(
+        detail=False,
+        methods=["get", "put", "delete"],
+        url_path=r"sparse/(?P<pk>\d+)/(?P<sparsekey>[A-Za-z0-9_\-]+)",
+        url_name="sparse_field",
+        permission_classes=[],
+    )
+    def sparse_field(self, request, pk=None, sparsekey=None):
+        # Validate sparsekey length against SparseField.name max_length=64
+        if len(sparsekey) > 64:
+            return JsonResponse({"message": "The sparse key must not exceed 64 characters."}, status=400)
+
+        try:
+            resource = ResourceBase.objects.get(pk=pk)
+        except ResourceBase.DoesNotExist:
+            return JsonResponse({"message": "The resource was not found"}, status=404)
+
+        # Check read permission; return 404 to avoid revealing whether the resource exists
+        if not permissions_registry.user_has_perm(request.user, resource, "view_resourcebase"):
+            return JsonResponse({"message": "The resource was not found"}, status=404)
+
+        if request.method == "GET":
+            try:
+                field = SparseField.objects.get(resource=resource, name=sparsekey)
+                return JsonResponse({"value": field.value})
+            except SparseField.DoesNotExist:
+                return JsonResponse({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
+
+        elif request.method == "PUT":
+            # Check write permission
+            if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase_metadata"):
+                return JsonResponse({"message": "You don't have permission to edit this resource"}, status=403)
+
+            # Check if the key conflicts with a declared schema field
+            schema = metadata_manager.get_schema()
+            if sparsekey in schema.get("properties", {}):
+                return JsonResponse(
+                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
+                )
+
+            # Upsert the sparse field
+            value = request.data.get("value", None)
+            # Validate value type and length to match SparseField.value (CharField(max_length=1024))
+            if value is not None and not isinstance(value, str):
+                return JsonResponse(
+                    {"message": "The 'value' field must be a string or null."},
+                    status=400,
+                )
+            if isinstance(value, str) and len(value) > 1024:
+                return JsonResponse(
+                    {"message": "The 'value' field must not exceed 1024 characters."},
+                    status=400,
+                )
+            SparseField.objects.update_or_create(
+                resource=resource,
+                name=sparsekey,
+                defaults={"value": value},
+            )
+            return JsonResponse({"message": f"Sparse field '{sparsekey}' updated successfully"})
+
+        elif request.method == "DELETE":
+            # Check write permission
+            if not permissions_registry.user_has_perm(request.user, resource, "change_resourcebase_metadata"):
+                return JsonResponse({"message": "You don't have permission to edit this resource"}, status=403)
+
+            # Check if the key conflicts with a declared schema field
+            schema = metadata_manager.get_schema()
+            if sparsekey in schema.get("properties", {}):
+                return JsonResponse(
+                    {"message": f"Key '{sparsekey}' conflicts with a declared metadata field"}, status=409
+                )
+
+            deleted, _ = SparseField.objects.filter(resource=resource, name=sparsekey).delete()
+            if not deleted:
+                return JsonResponse({"message": f"Sparse field '{sparsekey}' not found"}, status=404)
+            return JsonResponse({"message": f"Sparse field '{sparsekey}' deleted successfully"})
+
 
 def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
 
     lang = remove_country_from_languagecode(get_language())
-    all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
+
+    try:
+        all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
+    except ValueError:
+        all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus__identifier=thesaurusid)
 
     # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
     localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
@@ -146,7 +256,7 @@ def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
     qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).order_by("label")
     # if q := request.query_params.get("q", None):
     if q := request.GET.get("q", None):
-        qs = qs.filter(label__istartswith=q)
+        qs = qs.filter(label__icontains=q)
 
     ret = []
     for tkl in qs.all():
@@ -171,7 +281,7 @@ def categories_autocomplete(request: WSGIRequest):
     qs = TopicCategory.objects.order_by("gn_description")
 
     if q := request.GET.get("q", None):
-        qs = qs.filter(gn_description__istartswith=q)
+        qs = qs.filter(gn_description__icontains=q)
 
     ret = []
     for record in qs.all():
@@ -189,13 +299,13 @@ def licenses_autocomplete(request: WSGIRequest):
     qs = License.objects.order_by("name")
 
     if q := request.GET.get("q", None):
-        qs = qs.filter(name__istartswith=q)
+        qs = qs.filter(name__icontains=q)
 
     ret = []
     for record in qs.all():
         ret.append(
             {
-                "id": record.identifier,
+                "id": record.id,
                 "label": _(record.name),
             }
         )

@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from unittest.mock import MagicMock
 from django.test import TestCase
 from mock import patch
 from geonode.upload.handlers.common.raster import BaseRasterFileHandler
@@ -93,3 +94,82 @@ class TestBaseRasterFileHandler(TestCase):
         finally:
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()
+
+    def test_overwrite_geoserver_resource_delete_resource_failure_is_non_fatal(self):
+        """
+        If _delete_resource raises during a replace, overwrite_geoserver_resource
+        must log a warning and continue to publish_resources rather than failing.
+        """
+        mock_catalog = MagicMock()
+        mock_store = MagicMock()
+        mock_workspace = MagicMock()
+        resource = {"name": "test_raster"}
+
+        with patch.object(self.handler, "_delete_resource", side_effect=Exception("GeoServer 500")):
+            with patch.object(self.handler, "_delete_store") as mock_delete_store:
+                with patch.object(self.handler, "publish_resources", return_value=True) as mock_publish:
+                    result = self.handler.overwrite_geoserver_resource(
+                        resource, mock_catalog, mock_store, mock_workspace
+                    )
+                    # _delete_store must still be attempted even if _delete_resource failed
+                    mock_delete_store.assert_called_once()
+                    mock_publish.assert_called_once()
+                    self.assertTrue(result)
+
+    def test_overwrite_geoserver_resource_delete_store_failure_is_non_fatal(self):
+        """
+        If _delete_store raises during a replace, overwrite_geoserver_resource
+        must log a warning and continue to publish_resources rather than failing.
+        """
+        mock_catalog = MagicMock()
+        mock_store = MagicMock()
+        mock_workspace = MagicMock()
+        resource = {"name": "test_raster"}
+
+        with patch.object(self.handler, "_delete_resource"):
+            with patch.object(self.handler, "_delete_store", side_effect=Exception("GeoServer 500")):
+                with patch.object(self.handler, "publish_resources", return_value=True) as mock_publish:
+                    result = self.handler.overwrite_geoserver_resource(
+                        resource, mock_catalog, mock_store, mock_workspace
+                    )
+                    mock_publish.assert_called_once()
+                    self.assertTrue(result)
+
+    def test_overwrite_geoserver_resource_both_deletes_fail_still_publishes(self):
+        """
+        If both _delete_resource and _delete_store raise, publish_resources
+        must still be called — the store will be overwritten by publish.
+        """
+        mock_catalog = MagicMock()
+        mock_store = MagicMock()
+        mock_workspace = MagicMock()
+        resource = {"name": "test_raster"}
+
+        with patch.object(self.handler, "_delete_resource", side_effect=Exception("GeoServer 500")):
+            with patch.object(self.handler, "_delete_store", side_effect=Exception("GeoServer 500")):
+                with patch.object(self.handler, "publish_resources", return_value=True) as mock_publish:
+                    result = self.handler.overwrite_geoserver_resource(
+                        resource, mock_catalog, mock_store, mock_workspace
+                    )
+                    mock_publish.assert_called_once()
+                    self.assertTrue(result)
+
+    def test_overwrite_geoserver_resource_success_calls_all_steps(self):
+        """
+        When everything works, all three steps must be called in order.
+        """
+        mock_catalog = MagicMock()
+        mock_store = MagicMock()
+        mock_workspace = MagicMock()
+        resource = {"name": "test_raster"}
+
+        with patch.object(self.handler, "_delete_resource") as mock_delete_resource:
+            with patch.object(self.handler, "_delete_store") as mock_delete_store:
+                with patch.object(self.handler, "publish_resources", return_value=True) as mock_publish:
+                    result = self.handler.overwrite_geoserver_resource(
+                        resource, mock_catalog, mock_store, mock_workspace
+                    )
+                    mock_delete_resource.assert_called_once_with(resource, mock_catalog, mock_workspace)
+                    mock_delete_store.assert_called_once_with(resource, mock_catalog, mock_workspace)
+                    mock_publish.assert_called_once_with([resource], mock_catalog, mock_store, mock_workspace)
+                    self.assertTrue(result)

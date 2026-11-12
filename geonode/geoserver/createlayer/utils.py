@@ -29,9 +29,8 @@ from django.template.defaultfilters import slugify
 from geonode import GeoNodeException
 from geonode.layers.models import Dataset
 from geonode.layers.utils import get_valid_name
-from geonode.resource.manager import resource_manager
+from geonode.resource.registry import resource_manager_registry, dataset_manager
 from geonode.geoserver.helpers import gs_catalog, ogc_server_settings, create_geoserver_db_featurestore
-
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ BBOX = [-180, -90, 180, 90]
 DATA_QUALITY_MESSAGE = "Created with GeoNode"
 
 
-def create_dataset(name, title, owner_name, geometry_type, attributes=None):
+def create_dataset(name, title, owner_name, geometry_type, attributes=None, srs="EPSG:4326"):
     """
     Create an empty layer in GeoServer and register it in GeoNode.
     """
@@ -51,18 +50,18 @@ def create_dataset(name, title, owner_name, geometry_type, attributes=None):
     name = get_valid_name(name)
     # we can proceed
     logger.debug("Creating the layer in GeoServer")
-    workspace, datastore = create_gs_dataset(name, title, geometry_type, attributes)
+    workspace, datastore = create_gs_dataset(name, title, geometry_type, attributes, srs=srs)
     logger.debug("Creating the layer in GeoNode")
-    return create_gn_dataset(workspace, datastore, name, title, owner_name)
+    return create_gn_dataset(workspace, datastore, name, title, owner_name, srs=srs)
 
 
-def create_gn_dataset(workspace, datastore, name, title, owner_name):
+def create_gn_dataset(workspace, datastore, name, title, owner_name, srs="EPSG:4326"):
     """
     Associate a layer in GeoNode for a given layer in GeoServer.
     """
     owner = get_user_model().objects.get(username=owner_name)
 
-    layer = resource_manager.create(
+    layer = dataset_manager.create(
         str(uuid.uuid4()),
         resource_type=Dataset,
         defaults=dict(
@@ -73,7 +72,7 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
             alternate=f"{workspace.name}:{name}",
             title=title,
             owner=owner,
-            srid="EPSG:4326",
+            srid=srs,
             bbox_polygon=Polygon.from_bbox(BBOX),
             ll_bbox_polygon=Polygon.from_bbox(BBOX),
             data_quality_statement=DATA_QUALITY_MESSAGE,
@@ -86,8 +85,9 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
     if settings.RESOURCE_PUBLISHING:
         to_update["is_published"] = to_update["was_published"] = False
 
-    resource_manager.update(layer.uuid, instance=layer, vals=to_update)
-    resource_manager.set_thumbnail(None, instance=layer)
+    resolved_resource_manager = resource_manager_registry.get_for_instance(layer)
+    resolved_resource_manager.update(layer.uuid, instance=layer, vals=to_update)
+    resolved_resource_manager.set_thumbnail(None, instance=layer)
     return layer
 
 
@@ -157,7 +157,7 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
     return ds
 
 
-def create_gs_dataset(name, title, geometry_type, attributes=None):
+def create_gs_dataset(name, title, geometry_type, attributes=None, srs="EPSG:4326"):
     """
     Create an empty PostGIS layer in GeoServer with a given name, title,
     geometry_type and attributes.
@@ -173,10 +173,10 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
     datastore = get_or_create_datastore(cat, workspace)
 
     # check if datastore is of PostGIS type
-    if datastore.type != "PostGIS":
-        msg = "To use the createlayer application you must use PostGIS"
-        logger.error(msg)
-        raise GeoNodeException(msg)
+    # if datastore.type != "PostGIS":
+    #    msg = "To use the createlayer application you must use PostGIS"
+    #    logger.error(msg)
+    #    raise GeoNodeException(msg)
 
     # check if layer is existing
     resources = datastore.get_resources()
@@ -200,13 +200,12 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
         )
     attributes_block += "</attributes>"
 
-    # TODO implement others srs and not only EPSG:4326
     xml = (
         "<featureType>"
         f"<name>{name}</name>"
         f"<nativeName>{native_name}</nativeName>"
         f"<title>{title}</title>"
-        "<srs>EPSG:4326</srs>"
+        f"<srs>{srs}</srs>"
         f"<latLonBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[2]}</maxx><miny>{BBOX[1]}</miny><maxy>{BBOX[3]}</maxy>"
         f"<crs>EPSG:4326</crs></latLonBoundingBox>"
         f"{attributes_block}"
@@ -222,5 +221,4 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
         logger.error(f"Response was: {req.text}")
         raise Exception(f"Dataset could not be created in GeoServer {req.text}")
 
-    cat.reload()
     return workspace, datastore

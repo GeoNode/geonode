@@ -19,6 +19,7 @@
 import json
 import logging
 import os
+import zipfile
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from osgeo import ogr
@@ -54,6 +55,13 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
             "type": "vector",
         }
 
+    @property
+    def upload_validation_config(self):
+        return {
+            "geojson": {"mimes": {"application/json", "text/plain", "text/json"}},
+            "json": {"mimes": {"application/json", "text/plain", "text/json"}},
+        }
+
     @staticmethod
     def can_handle(_data) -> bool:
         """
@@ -72,14 +80,23 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
             try:
                 _file = base
                 if isinstance(base, str):
-                    with open(base, "r") as f:
+                    with open(base, "r", encoding="utf-8") as f:
                         _file = json.loads(f.read())
+                elif "zip_file" in _data:
+                    # if we have a zipfile we need to read the file content before proceed
+                    with zipfile.ZipFile(_data["zip_file"], "r") as z:
+                        with z.open(_file.name) as inner_file:
+                            _file = json.loads(inner_file.read().decode("utf-8"))
                 else:
-                    _file = json.loads(base.read())
+                    content = base.read()
+                    if isinstance(content, bytes):
+                        content = content.decode("utf-8")
+                    _file = json.loads(content)
 
                 return _file.get("type", None) in ["FeatureCollection", "Feature"]
 
-            except Exception:
+            except Exception as e:
+                logger.exception(e)
                 return False
         return False
 
@@ -106,7 +123,7 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
             raise InvalidGeoJsonException("Please remove the additional dots in the filename")
 
         try:
-            with open(_file, "r") as _readed_file:
+            with open(_file, "r", encoding="utf-8") as _readed_file:
                 json.loads(_readed_file.read())
         except Exception:
             raise InvalidGeoJsonException("The provided GeoJson is not valid")
@@ -117,11 +134,11 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
         return ogr.GetDriverByName("GeoJSON")
 
     @staticmethod
-    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate):
+    def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate, **kwargs):
         """
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file
         """
 
         base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
-        return f"{base_command } -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name}"
+        return f"{base_command} -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name}"

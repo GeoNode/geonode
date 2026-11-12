@@ -29,7 +29,6 @@ from geoserver.support import build_url
 from geoserver.catalog import FailedRequestError
 from geonode.upload.api.exceptions import PublishResourceException
 
-
 logger = logging.getLogger("importer")
 
 
@@ -163,20 +162,10 @@ class DataPublisher:
         For each resource. This is a quick test to be sure
         that the resource is correctly set/created
         """
-
         for _resource in resources:
-            possible_layer_name = [
-                _resource.get("name"),
-                _resource.get("name").split(":")[-1],
-                f"{self.workspace.name}:{_resource.get('name')}",
-            ]
-            res = list(
-                filter(
-                    None,
-                    (self.cat.get_resource(x, workspace=self.workspace) for x in possible_layer_name),
-                )
-            )
-            if not res or (res and not res[0].projection):
+            res = self.cat.get_resource(_resource.get("name"), store=self.store, workspace=self.workspace)
+
+            if not res or (res and not res.projection):
                 raise PublishResourceException(
                     f"The SRID for the resource {_resource} is not correctly set, Please check Geoserver logs"
                 )

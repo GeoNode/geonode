@@ -17,11 +17,14 @@
 #
 #########################################################################
 """Utilities for enabling ESRI:ArcGIS:MapServer and ESRI:ArcGIS:ImageServer remote services in geonode."""
+
 import os
 import logging
 import traceback
-
+from collections import namedtuple
 from uuid import uuid4
+
+from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
 from django.conf import settings
 from django.db import transaction
@@ -31,16 +34,8 @@ from django.template.defaultfilters import slugify, safe
 from geonode import GeoNodeException
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
-
-from arcrest import MapService as ArcMapService, ImageService as ArcImageService
-
-from .. import enumerations
-from ..enumerations import INDEXED
-from .. import models
-from .. import utils
-from . import base
-
-from collections import namedtuple
+from geonode.services import enumerations, models, utils
+from geonode.services.serviceprocessors import base
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +60,9 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     service_type = enumerations.REST_MAP
 
-    def __init__(self, url, geonode_service_id=None):
+    def __init__(self, url, geonode_service_id=None, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
         base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
@@ -84,7 +81,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         #     extent['ymax']
         # ])
 
-        self.indexing_method = INDEXED
+        self.indexing_method = enumerations.INDEXED
         self.name = slugify(self.url)[:255]
         self.title = str(_title).encode("utf-8", "ignore").decode("utf-8")
 
@@ -94,7 +91,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def probe(self):
         try:
-            return True if len(self.parsed_service._json_struct) > 0 else False
+            return len(self.parsed_service._json_struct) > 0
         except Exception:
             return False
 
@@ -108,39 +105,45 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         :type owner: geonode.people.models.Profile
 
         """
-        with transaction.atomic():
-            instance = models.Service.objects.create(
-                uuid=str(uuid4()),
-                base_url=self.url,
-                type=self.service_type,
-                method=self.indexing_method,
-                owner=owner,
-                metadata_only=True,
-                version=str(self.parsed_service._json_struct.get("currentVersion", 0.0))
-                .encode("utf-8", "ignore")
-                .decode("utf-8"),
-                name=self.name,
-                title=self.title,
-                abstract=str(self.parsed_service._json_struct.get("serviceDescription"))
-                .encode("utf-8", "ignore")
-                .decode("utf-8")
-                or _("Not provided"),
-            )
-            service_harvester = Harvester.objects.create(
-                name=self.name,
-                default_owner=owner,
-                scheduling_enabled=False,
-                remote_url=instance.service_url,
-                delete_orphan_resources_automatically=True,
-                harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
-                harvester_type_specific_configuration=self.get_harvester_configuration_options(),
-            )
-            if service_harvester.update_availability():
-                service_harvester.initiate_update_harvestable_resources()
-            else:
-                logger.exception(GeoNodeException("Could not reach remote endpoint."))
-            instance.harvester = service_harvester
 
+        def _create(unique_name):
+            with transaction.atomic():
+                new_instance = models.Service.objects.create(
+                    uuid=str(uuid4()),
+                    base_url=self.url,
+                    type=self.service_type,
+                    method=self.indexing_method,
+                    owner=owner,
+                    metadata_only=True,
+                    version=str(self.parsed_service._json_struct.get("currentVersion", 0.0))
+                    .encode("utf-8", "ignore")
+                    .decode("utf-8"),
+                    name=unique_name,
+                    title=self.title,
+                    abstract=str(self.parsed_service._json_struct.get("serviceDescription"))
+                    .encode("utf-8", "ignore")
+                    .decode("utf-8")
+                    or _("Not provided"),
+                )
+                new_harvester = Harvester.objects.create(
+                    name=unique_name,
+                    default_owner=owner,
+                    scheduling_enabled=False,
+                    remote_url=new_instance.service_url,
+                    delete_orphan_resources_automatically=True,
+                    harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
+                    harvester_type_specific_configuration=self.get_harvester_configuration_options(),
+                )
+                if new_harvester.update_availability():
+                    new_harvester.initiate_update_harvestable_resources()
+                else:
+                    logger.exception(GeoNodeException("Could not reach remote endpoint."))
+                new_instance.harvester = new_harvester
+                new_instance.save()
+                return new_instance
+
+        instance = base.create_with_unique_name(self.name, _create)
+        self.name = instance.name
         self.geonode_service_id = instance.id
         return instance
 
@@ -193,7 +196,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         typename = slugify(f"{dataset_meta.id}-{''.join(c for c in dataset_meta.title if ord(c) < 128)}")
         return {
             "name": dataset_meta.title,
-            "store": self.name,
+            # store is a GeoServer grouping: remote datasets have none
+            "store": None,
             "subtype": "remote",
             "workspace": "remoteWorkspace",
             "typename": typename,
@@ -211,9 +215,11 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
 
     service_type = enumerations.REST_IMG
 
-    def __init__(self, url, geonode_service_id=None):
+    def __init__(self, url, geonode_service_id=None, *args, **kwargs):
         ArcMapServiceHandler.__init__(self, url, geonode_service_id)
         self.url = url
+        self.args = args
+        self.kwargs = kwargs
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
@@ -231,7 +237,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         #     extent['ymax']
         # ])
 
-        self.indexing_method = INDEXED
+        self.indexing_method = enumerations.INDEXED
         self.name = slugify(self.url)[:255]
         self.title = _title
 
