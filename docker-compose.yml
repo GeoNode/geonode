@@ -188,6 +188,8 @@ services:
   redis:
     image: redis:8-alpine
     container_name: redis4${COMPOSE_PROJECT_NAME}
+    # redis user of the Alpine image, which also owns /data: the entrypoint skips its root chown
+    user: "999:1000"
     command: redis-server --maxmemory 512mb --maxmemory-policy noeviction --appendonly yes
     volumes:
       - redisdata:/data
