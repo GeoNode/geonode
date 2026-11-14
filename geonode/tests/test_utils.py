@@ -244,6 +244,7 @@ class TestSupportedTypes(TestCase):
     def test_get_allowed_extensions_for_document(self):
         actual = get_allowed_extensions(kind="document")
         self.assertIn("txt", actual)
+        self.assertIn("nc", actual)
         self.assertNotIn("shp", actual)
 
     def test_get_allowed_extensions_for_all_is_the_union(self):
