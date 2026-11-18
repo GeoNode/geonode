@@ -34,6 +34,8 @@ from geonode.resource.models import ExecutionRequest
 
 # Create your tests here.
 
+GPKG_HANDLER = "geonode.upload.handlers.gpkg.handler.GPKGFileHandler"
+
 
 class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
     @classmethod
@@ -385,3 +387,90 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
 
         # Tasks dict should remain SUCCESS
         assert exec_request_obj.tasks["layer_1"]["test"] == "SUCCESS"
+
+    def _create_hooks_execution(self, step="start_import", status=ExecutionRequest.STATUS_READY):
+        _uuid = self.orchestrator.create_execution_request(
+            user=get_user_model().objects.first(),
+            func_name="test",
+            step=step,
+            input_params={"handler_module_path": GPKG_HANDLER, "total_layers": 1},
+            action="upload",
+        )
+        ExecutionRequest.objects.filter(exec_id=_uuid).update(status=status)
+        return _uuid
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    @patch("geonode.upload.orchestrator.importer_app.tasks.get")
+    def test_perform_next_step_should_fire_started_on_the_first_step(self, mock_celery, do_action):
+        """The started event must fire when the execution becomes running"""
+        _uuid = self._create_hooks_execution()
+
+        self.orchestrator.perform_next_step(_uuid, "upload", step="start_import", handler_module_path=GPKG_HANDLER)
+
+        do_action.assert_called_once()
+        phase, execution = do_action.call_args.args
+        self.assertEqual("started", phase)
+        self.assertEqual(ExecutionRequest.STATUS_RUNNING, execution.status)
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    @patch("geonode.upload.orchestrator.importer_app.tasks.get")
+    def test_perform_next_step_should_not_fire_started_after_the_first_step(self, mock_celery, do_action):
+        """Only the first step starts the execution"""
+        _uuid = self._create_hooks_execution(step="geonode.upload.import_resource")
+
+        self.orchestrator.perform_next_step(
+            _uuid, "upload", step="geonode.upload.import_resource", handler_module_path=GPKG_HANDLER
+        )
+
+        do_action.assert_not_called()
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_set_as_completed_should_fire_completed_once(self, do_action):
+        """A second completion of the same execution must not fire the event again"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+
+        self.orchestrator.set_as_completed(_uuid)
+        self.orchestrator.set_as_completed(_uuid)
+
+        do_action.assert_called_once()
+        self.assertEqual("completed", do_action.call_args.args[0])
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_set_as_completed_should_fill_the_resources_before_firing(self, do_action):
+        """Subscribers must receive a finished execution with its resources, without reading it again"""
+        from geonode.base.models import ResourceBase
+        from geonode.upload.models import ResourceHandlerInfo
+
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+        _resource = ResourceBase.objects.create(title="Test resource", owner=get_user_model().objects.first())
+        ResourceHandlerInfo.objects.create(
+            execution_request=ExecutionRequest.objects.get(exec_id=_uuid),
+            handler_module_path=GPKG_HANDLER,
+            resource=_resource,
+        )
+
+        self.orchestrator.set_as_completed(_uuid)
+
+        execution = do_action.call_args.args[1]
+        self.assertEqual(ExecutionRequest.STATUS_FINISHED, execution.status)
+        expected = [{"detail_url": _resource.detail_url, "id": _resource.pk}]
+        self.assertListEqual(expected, execution.output_params["resources"])
+
+    def test_perform_last_step_should_lock_the_execution(self):
+        """Concurrent workers must not overwrite each other: the execution is read under a row lock"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_FINISHED)
+
+        with patch.object(
+            ExecutionRequest.objects, "select_for_update", wraps=ExecutionRequest.objects.select_for_update
+        ) as _select_for_update:
+            BaseHandler.perform_last_step(str(_uuid))
+
+        _select_for_update.assert_called_once()
+        actual = ExecutionRequest.objects.get(exec_id=_uuid)
+        self.assertEqual(ExecutionRequest.STATUS_FINISHED, actual.status)
+        self.assertListEqual([], actual.output_params["resources"])
+
+    def test_perform_last_step_should_raise_if_the_execution_does_not_exist(self):
+        """The lock query must keep the error raised before by get_execution_object"""
+        with self.assertRaises(ImportException):
+            BaseHandler.perform_last_step(str(uuid.uuid4()))

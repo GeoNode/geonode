@@ -35,6 +35,7 @@ from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterS
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import create_layer_key
+from geonode.upload.hooks import importer_hooks
 from geonode.upload.utils import error_handler
 from geonode.upload.utils import ImporterRequestAction as ira
 
@@ -152,6 +153,7 @@ class ImportOrchestrator:
                     execution_id=str(_exec_obj.exec_id),
                     status=ExecutionRequest.STATUS_RUNNING,
                 )
+                importer_hooks.do_action("started", self.get_execution_object(execution_id))
             # finding in the task_list the last step done
             remaining_tasks = tasks[_index:] if not _index >= len(tasks) else []
             if not remaining_tasks:
@@ -235,14 +237,18 @@ class ImportOrchestrator:
 
     def set_as_completed(self, execution_id):
         """
-        Utility method to set the ExecutionRequest object to fail
+        Utility method to set the ExecutionRequest object to completed
         """
-        self.update_execution_request_status(
+        _exec = self.get_execution_object(execution_id)
+        # resources are filled before the status changes: clients polling for "finished" read them
+        self._last_step(execution_id, _exec.input_params.get("handler_module_path"))
+        if self._transition_status(
             execution_id=str(execution_id),
             status=ExecutionRequest.STATUS_FINISHED,
             finished=timezone.now(),
             last_updated=timezone.now(),
-        )
+        ):
+            importer_hooks.do_action("completed", self.get_execution_object(execution_id))
 
     def evaluate_execution_progress(self, execution_id, _log=None, handler_module_path=None):
 
@@ -295,7 +301,6 @@ class ImportOrchestrator:
                 self.set_as_failed(execution_id=execution_id, reason=_log)
             else:
                 logger.info(f"Execution with ID {execution_id} is completed. All tasks are done")
-                self._last_step(execution_id, handler_module_path)
                 self.set_as_completed(execution_id)
         else:
             logger.info(f"Execution progress with id {execution_id} is not finished yet, continuing")
@@ -342,6 +347,15 @@ class ImportOrchestrator:
             kwargs["status"] = status
 
         ExecutionRequest.objects.filter(exec_id=execution_id).update(**kwargs)
+
+    def _transition_status(self, execution_id, status, **kwargs) -> bool:
+        """
+        Update the status only if the execution is not already in it.
+        Return True when the row changed, so concurrent workers fire the event once
+        """
+        return bool(
+            ExecutionRequest.objects.filter(exec_id=execution_id).exclude(status=status).update(status=status, **kwargs)
+        )
 
     def update_execution_request_obj(self, _exec_obj, payload):
         ExecutionRequest.objects.filter(pk=_exec_obj.pk).update(**payload)
