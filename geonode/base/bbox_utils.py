@@ -210,10 +210,8 @@ def split_polygon(
 
     n_splits = len(split_meridians)
     if n_splits > 1:
-        raise NotImplementedError(
-            """Splitting a Polygon by multiple meridians (MultiLineString)
-               not supported by Shapely"""
-        )
+        raise NotImplementedError("""Splitting a Polygon by multiple meridians (MultiLineString)
+               not supported by Shapely""")
     elif n_splits == 1:
         split_lon = next(iter(split_meridians))
         meridian = [[split_lon, -90.0], [split_lon, 90.0]]
