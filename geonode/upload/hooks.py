@@ -96,6 +96,7 @@ class ImporterHooks:
             )
 
     def __callbacks_for(self, action: str, phase: str) -> typing.List[_Action]:
+        # every event the action and phase can match, exact or wildcard: only callbacks subscribed to one of them run
         _events = {f"{action}.{phase}", f"*.{phase}", f"{action}.*", "*.*"}
         return sorted((_a for _a in self._actions if _a.event in _events), key=lambda _a: _a.priority)
 

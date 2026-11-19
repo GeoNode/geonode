@@ -425,6 +425,29 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         do_action.assert_not_called()
 
     @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    @patch("geonode.upload.orchestrator.importer_app.tasks.get")
+    def test_perform_next_step_should_not_fire_started_on_rollback(self, mock_celery, do_action):
+        """The rollback starts on a failed execution: it must not fire started or set it as running"""
+        _uuid = self._create_hooks_execution(step="start_rollback", status=ExecutionRequest.STATUS_FAILED)
+
+        self.orchestrator.perform_next_step(_uuid, "rollback", step="start_rollback", handler_module_path=GPKG_HANDLER)
+
+        do_action.assert_not_called()
+        self.assertEqual(ExecutionRequest.STATUS_FAILED, ExecutionRequest.objects.get(exec_id=_uuid).status)
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_perform_next_step_should_not_complete_an_empty_rollback(self, do_action):
+        """A handler without rollback steps must leave the execution failed, without firing completed"""
+        _uuid = self._create_hooks_execution(step="start_rollback", status=ExecutionRequest.STATUS_FAILED)
+
+        self.orchestrator.perform_next_step(
+            _uuid, "rollback", step="start_rollback", handler_module_path="geonode.upload.handlers.base.BaseHandler"
+        )
+
+        do_action.assert_not_called()
+        self.assertEqual(ExecutionRequest.STATUS_FAILED, ExecutionRequest.objects.get(exec_id=_uuid).status)
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
     def test_set_as_completed_should_fire_completed_once(self, do_action):
         """A second completion of the same execution must not fire the event again"""
         _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
@@ -438,16 +461,8 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
     @patch("geonode.upload.orchestrator.importer_hooks.do_action")
     def test_set_as_completed_should_fill_the_resources_before_firing(self, do_action):
         """Subscribers must receive a finished execution with its resources, without reading it again"""
-        from geonode.base.models import ResourceBase
-        from geonode.upload.models import ResourceHandlerInfo
-
         _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
-        _resource = ResourceBase.objects.create(title="Test resource", owner=get_user_model().objects.first())
-        ResourceHandlerInfo.objects.create(
-            execution_request=ExecutionRequest.objects.get(exec_id=_uuid),
-            handler_module_path=GPKG_HANDLER,
-            resource=_resource,
-        )
+        _resource = self._link_resource(_uuid)
 
         self.orchestrator.set_as_completed(_uuid)
 
@@ -474,3 +489,104 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         """The lock query must keep the error raised before by get_execution_object"""
         with self.assertRaises(ImportException):
             BaseHandler.perform_last_step(str(uuid.uuid4()))
+
+    def _link_resource(self, _uuid):
+        from geonode.base.models import ResourceBase
+        from geonode.upload.models import ResourceHandlerInfo
+
+        _resource = ResourceBase.objects.create(title="Test resource", owner=get_user_model().objects.first())
+        ResourceHandlerInfo.objects.create(
+            execution_request=ExecutionRequest.objects.get(exec_id=_uuid),
+            handler_module_path=GPKG_HANDLER,
+            resource=_resource,
+        )
+        return _resource
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_set_as_partially_failed_should_fire_partially_failed_once(self, do_action):
+        """A second partial failure of the same execution must not fire the event again"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+
+        self.orchestrator.set_as_partially_failed(_uuid, reason=["layer_1"])
+        self.orchestrator.set_as_partially_failed(_uuid, reason=["layer_1"])
+
+        do_action.assert_called_once()
+        self.assertEqual("partially_failed", do_action.call_args.args[0])
+        self.assertDictEqual({"reason": ["layer_1"]}, do_action.call_args.kwargs)
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_set_as_partially_failed_should_fill_the_resources_before_firing(self, do_action):
+        """Subscribers must receive the resources of the imported layers, without reading the execution again"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+        _resource = self._link_resource(_uuid)
+
+        self.orchestrator.set_as_partially_failed(_uuid, reason=["layer_2"])
+
+        execution = do_action.call_args.args[1]
+        self.assertEqual(ExecutionRequest.STATUS_FAILED, execution.status)
+        expected = [{"detail_url": _resource.detail_url, "id": _resource.pk}]
+        self.assertListEqual(expected, execution.output_params["resources"])
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_set_as_failed_should_fire_failed_once(self, do_action):
+        """A second failure of the same execution must not fire the event again"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+
+        self.orchestrator.set_as_failed(_uuid, reason="first error")
+        self.orchestrator.set_as_failed(_uuid, reason="second error")
+
+        do_action.assert_called_once()
+        self.assertEqual("failed", do_action.call_args.args[0])
+        self.assertDictEqual({"reason": "first error"}, do_action.call_args.kwargs)
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_set_as_failed_should_fire_failed_if_already_finished(self, do_action):
+        """evaluate_error can fail a finished execution: failed fires after completed"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_FINISHED)
+
+        self.orchestrator.set_as_failed(_uuid, reason="late error")
+
+        do_action.assert_called_once()
+        self.assertEqual("failed", do_action.call_args.args[0])
+
+    def test_set_as_failed_should_append_the_reason_if_already_failed(self):
+        """The first error must be kept and the following ones appended to the log"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+
+        self.orchestrator.set_as_failed(_uuid, reason="first error")
+        self.orchestrator.set_as_failed(_uuid, reason=Exception("second error"))
+
+        actual = ExecutionRequest.objects.get(exec_id=_uuid)
+        self.assertEqual(ExecutionRequest.STATUS_FAILED, actual.status)
+        self.assertEqual("first error\nsecond error", actual.log)
+
+    def test_set_as_failed_should_append_the_reason_if_the_log_is_empty(self):
+        """A failure without reason leaves the log empty: the following reason must still be appended"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+
+        self.orchestrator.set_as_failed(_uuid)
+        self.orchestrator.set_as_failed(_uuid, reason="second error")
+
+        self.assertEqual("\nsecond error", ExecutionRequest.objects.get(exec_id=_uuid).log)
+
+    def test_set_as_failed_should_not_repeat_the_last_reason(self):
+        """The rollback reports the same error already logged: the log must not contain it twice"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+
+        self.orchestrator.set_as_failed(_uuid, reason="same error")
+        self.orchestrator.set_as_failed(_uuid, reason="same error", delete_file=False)
+
+        self.assertEqual("same error", ExecutionRequest.objects.get(exec_id=_uuid).log)
+
+    def test_evaluate_execution_progress_should_run_the_last_step_once_on_partial_failure(self):
+        """set_as_partially_failed runs the last step: evaluate_execution_progress must not run it again"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+        ExecutionRequest.objects.filter(exec_id=_uuid).update(
+            tasks={"layer_1": {"test": "FAILED"}, "layer_2": {"test": "SUCCESS"}}
+        )
+        self._link_resource(_uuid)
+
+        with patch.object(self.orchestrator, "_last_step") as _last_step:
+            self.orchestrator.evaluate_execution_progress(_uuid)
+
+        _last_step.assert_called_once_with(_uuid, GPKG_HANDLER)
