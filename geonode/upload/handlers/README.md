@@ -375,6 +375,43 @@ class MyAppConfig(AppConfig):
 
 `importer_hooks.remove_action(event, callback)` removes a callback added with the same event.
 
+## Example: email the uploader when an upload completes
+
+The subscriber below listens only to `upload.completed`: replace, upsert, copy and the failures are ignored. It sends the uploader an email with the links of the imported resources.
+
+```python
+# my_app/hooks.py
+from urllib.parse import urljoin
+
+from django.conf import settings
+from django.core.mail import send_mail
+
+from geonode.upload.hooks import BaseImporterSubscriber
+
+
+class UploadCompletedNotifier(BaseImporterSubscriber):
+    def register(self, hooks):
+        hooks.add_action("upload.completed", self.notify_uploader)
+
+    def notify_uploader(self, execution, handler, **kwargs):
+        if not execution.user.email:
+            return
+        # resources is filled before completed fires: no need to read the execution again
+        links = [urljoin(settings.SITEURL, r["detail_url"]) for r in execution.output_params.get("resources", [])]
+        send_mail(
+            subject=f"Upload {execution.name} completed",
+            message="Your upload is completed, the imported resources are:\n" + "\n".join(links),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[execution.user.email],
+        )
+```
+
+```
+IMPORTER_HOOK_SUBSCRIBERS="['my_app.hooks.UploadCompletedNotifier']"
+```
+
+The callback runs in the importer worker: if the mail server is slow, send the email from a Celery task of your own instead.
+
 ## Behaviour to know
 
 - Callbacks run synchronously, in the process that changes the status: usually the Celery worker of the importer, but the web process when the API view fails before dispatching the import. Keep them fast and move slow work to a Celery task of your own.
