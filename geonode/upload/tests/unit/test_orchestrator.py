@@ -515,6 +515,20 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         self.assertDictEqual({"reason": ["layer_1"]}, do_action.call_args.kwargs)
 
     @patch("geonode.upload.orchestrator.importer_hooks.do_action")
+    def test_set_as_partially_failed_should_log_the_layers_if_already_failed(self, do_action):
+        """The rollback of a layer fails the execution first: the layers not imported must still be logged"""
+        _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)
+        self.orchestrator.set_as_failed(_uuid, reason="layer error")
+        do_action.reset_mock()
+
+        self.orchestrator.set_as_partially_failed(_uuid, reason=["layer_1"])
+
+        do_action.assert_not_called()
+        actual = ExecutionRequest.objects.get(exec_id=_uuid).log
+        self.assertTrue(actual.startswith("layer error\n"), actual)
+        self.assertIn("the following layers are not imported: \n layer_1", actual)
+
+    @patch("geonode.upload.orchestrator.importer_hooks.do_action")
     def test_set_as_partially_failed_should_fill_the_resources_before_firing(self, do_action):
         """Subscribers must receive the resources of the imported layers, without reading the execution again"""
         _uuid = self._create_hooks_execution(status=ExecutionRequest.STATUS_RUNNING)

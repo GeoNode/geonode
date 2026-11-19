@@ -382,7 +382,8 @@ class MyAppConfig(AppConfig):
 - Callbacks must not call `orchestrator.set_as_*`.
 - `completed`, `partially_failed` and `failed` fire once per execution, also when several workers end it at the same time (e.g. a multi-layer upload). A second failure appends its reason to `execution.log` without firing `failed` again.
 - `started` does not fire again for the rollback of a failed execution.
-- `failed` can fire after `completed`: an error raised after the execution finished moves it to `failed`.
+- `failed` and `partially_failed` can fire after `completed`: an error raised after the execution finished moves it to `failed`.
+- In a multi-layer upload, the rollback of a failed layer fails the execution while the other layers are still importing: `failed` fires and `partially_failed` does not. The layers not imported are appended to `execution.log`.
 - `failed` can fire without `started`, when the API view fails after creating the execution.
 - `failed` fires after the cleanup of the uploaded asset: the callback may not find the uploaded files.
 - The handler `perform_last_step` runs before `completed` and `partially_failed`, on every path that ends the execution. If it raises, the execution fails: `failed` fires instead.

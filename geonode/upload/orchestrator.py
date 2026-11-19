@@ -239,14 +239,18 @@ class ImportOrchestrator:
         _exec = self.get_execution_object(execution_id)
         # resources of the imported layers are filled before the status changes, as in set_as_completed
         self._last_step(execution_id, _exec.input_params.get("handler_module_path"))
+        _log = f"The execution is completed, but the following layers are not imported: \n {', '.join(reason)}. Check the logs for additional infos"
         if self._transition_status(
             execution_id=str(execution_id),
             status=ExecutionRequest.STATUS_FAILED,
             finished=timezone.now(),
             last_updated=timezone.now(),
-            log=f"The execution is completed, but the following layers are not imported: \n {', '.join(reason)}. Check the logs for additional infos",
+            log=_log,
         ):
             importer_hooks.do_action("partially_failed", self.get_execution_object(execution_id), reason=reason)
+        else:
+            # the rollback of a layer already failed the execution: the layers not imported are still logged
+            self.__append_log(execution_id, _log)
 
     def set_as_completed(self, execution_id):
         """
@@ -264,6 +268,7 @@ class ImportOrchestrator:
             importer_hooks.do_action("completed", self.get_execution_object(execution_id))
 
     def evaluate_execution_progress(self, execution_id, _log=None, handler_module_path=None):
+        # handler_module_path is not used anymore, kept to avoid refactors for external libraries
 
         from geonode.upload.models import ResourceHandlerInfo
 
