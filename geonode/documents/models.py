@@ -27,7 +27,7 @@ from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
 from geonode.assets.models import LocalAsset
-from geonode.client.hooks import hookset
+from geonode.legacy_client.hooks import hookset
 from geonode.base.models import ResourceBase
 from geonode.groups.conf import settings as groups_settings
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP

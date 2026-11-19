@@ -40,7 +40,7 @@ from django.utils.translation import gettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
-from geonode.client.hooks import hookset
+from geonode.legacy_client.hooks import hookset
 from geonode.compat import ensure_string
 from geonode.base.auth import get_auth_user, get_or_create_token
 from geonode.decorators import logged_in_or_basicauth

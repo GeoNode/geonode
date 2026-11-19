@@ -105,7 +105,7 @@ class MapsApiTests(APITestCase):
         layers_data = response.data
         self.assertIsNotNone(layers_data)
 
-        if settings.GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
+        if settings.GEONODE_LEGACY_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
             url = reverse("maps-list")
             self.assertEqual(url, "/api/v2/maps")
 

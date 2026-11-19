@@ -25,7 +25,7 @@ from django.utils.translation import gettext_lazy as _
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.base.models import ResourceBase
-from geonode.client.hooks import hookset
+from geonode.legacy_client.hooks import hookset
 
 logger = logging.getLogger("geonode.geoapps.models")
 

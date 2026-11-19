@@ -21,6 +21,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class AppConfig(BaseAppConfig):
-    name = "geonode.client"
-    label = "geonode_client"
+    name = "geonode.legacy_client"
+    label = "geonode_legacy_client"
     verbose_name = _("GeoNode Client Library")
