@@ -1074,7 +1074,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.linkedresource_handler.update_resource(self.resource, field_name, payload_data, self.context, self.errors)
 
         # Verify the new links
-        linked_resources = LinkedResource.objects.filter(source=self.resource, internal=False)
+        linked_resources = LinkedResource.objects.filter(source=self.resource)
         linked_targets = [link.target for link in linked_resources]
         self.assertIn(self.extra_resource_1, linked_targets)
         self.assertIn(self.extra_resource_2, linked_targets)
@@ -1083,6 +1083,55 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
         # Ensure that there is only one linked resource
         self.assertEqual(len(linked_targets), 2)
+
+    def test_linkedresource_handler_ignores_system_relations(self):
+        """
+        Only generic links are exposed to the editor, the others are left untouched
+        """
+        field_name = "linkedresources"
+        clone_of = LinkedResource.objects.create(
+            source=self.resource, target=self.extra_resource_1, relation_type=LinkedResource.RelationType.CLONE_OF
+        )
+        LinkedResource.objects.create(source=self.resource, target=self.extra_resource_2)
+
+        instance = self.linkedresource_handler.get_jsonschema_instance(
+            self.resource, field_name, self.context, self.errors, self.lang
+        )
+        self.assertEqual(instance, [{"id": str(self.extra_resource_2.id), "label": self.extra_resource_2.title}])
+
+        self.linkedresource_handler.update_resource(
+            self.resource, field_name, {field_name: []}, self.context, self.errors
+        )
+        self.assertEqual([clone_of], list(LinkedResource.objects.filter(source=self.resource)))
+
+    def test_linkedresource_handler_hides_map_viewer(self):
+        """
+        The viewer of a map can not be read nor changed from the editor
+        """
+        field_name = "linkedresources"
+        map = ResourceBase.objects.create(title="A map", uuid=str(uuid4()), owner=self.test_user, resource_type="map")
+        viewer = ResourceBase.objects.create(
+            title="A viewer", uuid=str(uuid4()), owner=self.test_user, resource_type="mapviewer"
+        )
+        other_viewer = ResourceBase.objects.create(
+            title="Another viewer", uuid=str(uuid4()), owner=self.test_user, resource_type="mapviewer"
+        )
+        viewer_link = LinkedResource.objects.create(source=map, target=viewer)
+        LinkedResource.objects.create(source=map, target=self.extra_resource_1)
+
+        instance = self.linkedresource_handler.get_jsonschema_instance(
+            map, field_name, self.context, self.errors, self.lang
+        )
+        self.assertEqual(instance, [{"id": str(self.extra_resource_1.id), "label": self.extra_resource_1.title}])
+
+        payload_data = {field_name: [{"id": other_viewer.id}]}
+        self.linkedresource_handler.update_resource(map, field_name, payload_data, self.context, self.errors)
+        self.assertEqual([viewer_link], list(LinkedResource.objects.filter(source=map)))
+        self.assertIn(field_name, self.errors)
+
+        # a viewer is a regular target for the other resources
+        self.linkedresource_handler.update_resource(self.resource, field_name, payload_data, self.context, {})
+        self.assertTrue(LinkedResource.objects.filter(source=self.resource, target=other_viewer).exists())
 
     # Tests for the DOI handler
     def test_doi_handler_update_schema(self):

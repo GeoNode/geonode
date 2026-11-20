@@ -27,6 +27,8 @@ from geonode.metadata.handlers.abstract import MetadataHandler
 
 logger = logging.getLogger(__name__)
 
+MAP_VIEWER_TYPE = "mapviewer"
+
 
 class LinkedResourceHandler(MetadataHandler):
 
@@ -51,8 +53,16 @@ class LinkedResourceHandler(MetadataHandler):
         jsonschema["properties"]["linkedresources"] = linked
         return jsonschema
 
+    @staticmethod
+    def _editable_links(resource):
+        qs = LinkedResource.get_linked_resources(source=resource, relation_type=LinkedResource.RelationType.RELATED)
+        # the link between a map and its viewer is managed by the client
+        if resource.resource_type == "map":
+            qs = qs.exclude(target__resource_type=MAP_VIEWER_TYPE)
+        return qs
+
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
-        return [{"id": str(lr.target.id), "label": lr.target.title} for lr in resource.get_linked_resources()]
+        return [{"id": str(lr.target.id), "label": lr.target.title} for lr in self._editable_links(resource)]
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         data = json_instance[field_name]
@@ -61,7 +71,12 @@ class LinkedResourceHandler(MetadataHandler):
         # add requested links
         for res_id in new_ids:
             target = ResourceBase.objects.get(pk=res_id)
-            LinkedResource.objects.get_or_create(source=resource, target=target, internal=False)
+            if resource.resource_type == "map" and target.resource_type == MAP_VIEWER_TYPE:
+                self._set_error(errors, [field_name], f"Map viewer '{target.title}' can not be linked to a map.")
+                continue
+            LinkedResource.objects.get_or_create(
+                source=resource, target=target, relation_type=LinkedResource.RelationType.RELATED
+            )
 
         # delete remaining links
-        LinkedResource.objects.filter(source_id=resource.id, internal=False).exclude(target_id__in=new_ids).delete()
+        self._editable_links(resource).exclude(target_id__in=new_ids).delete()

@@ -562,14 +562,21 @@ class BaseResourceManager(ResourceManagerInterface):
                             group=_geolimit.group, resource=_dst, wkt=_geolimit.wkt
                         )
                         _dst.groups_geolimits.add(_new_geolimit)
-                    for lr in LinkedResource.get_linked_resources(source=instance.pk, is_internal=False):
+                    # only generic links are inherited, the clone gets its own lineage
+                    _related = LinkedResource.RelationType.RELATED
+                    for lr in LinkedResource.get_linked_resources(source=instance.pk, relation_type=_related):
                         LinkedResource.objects.get_or_create(
-                            source_id=_resource.pk, target_id=lr.target.pk, internal=False
+                            source_id=_resource.pk, target_id=lr.target.pk, relation_type=_related
                         )
-                    for lr in LinkedResource.get_linked_resources(target=instance.pk, is_internal=False):
+                    for lr in LinkedResource.get_linked_resources(target=instance.pk, relation_type=_related):
                         LinkedResource.objects.get_or_create(
-                            source_id=lr.source.pk, target_id=_resource.pk, internal=False
+                            source_id=lr.source.pk, target_id=_resource.pk, relation_type=_related
                         )
+                    LinkedResource.objects.create(
+                        source_id=_resource.pk,
+                        target_id=instance.pk,
+                        relation_type=LinkedResource.RelationType.CLONE_OF,
+                    )
 
                     if isinstance(instance.get_real_instance(), Dataset):
                         for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):

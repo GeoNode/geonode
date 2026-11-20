@@ -415,7 +415,10 @@ class Dataset(ResourceBase):
 
         if as_target:
             # create LinkedResources on the fly to report MapLayer relationship
-            res = (LinkedResource(source=map, target=self, internal=True) for map in self.maps)
+            res = (
+                LinkedResource(source=map, target=self, relation_type=LinkedResource.RelationType.USES)
+                for map in self.maps
+            )
             ret = itertools.chain(ret, res)
 
         return ret

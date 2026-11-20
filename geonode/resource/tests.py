@@ -371,6 +371,29 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(isinstance(res, Map))
         _copy_assert_resource(res, "A Test Map 2")
 
+    def test_resource_copy_tracks_clone_relation(self):
+        clone_of = LinkedResource.RelationType.CLONE_OF
+        related = LinkedResource.RelationType.RELATED
+        res = create_single_map("A Test Map")
+        target = create_single_doc("A Test Doc")
+        LinkedResource.objects.create(source=res, target=target)
+        clone = clone_2 = None
+        try:
+            clone = self.rm.copy(res, owner=self.user, defaults=dict(title="A Test Map 2"))
+            self.assertIsNotNone(clone)
+            self.assertEqual([res.pk], list(LinkedResource.get_target_ids(clone, clone_of)))
+            self.assertEqual([target.pk], list(LinkedResource.get_target_ids(clone, related)))
+
+            # the lineage is not inherited by a clone of the clone
+            clone_2 = self.rm.copy(clone, owner=self.user, defaults=dict(title="A Test Map 3"))
+            self.assertIsNotNone(clone_2)
+            self.assertEqual([clone.pk], list(LinkedResource.get_target_ids(clone_2, clone_of)))
+            self.assertEqual([target.pk], list(LinkedResource.get_target_ids(clone_2, related)))
+        finally:
+            for r in (clone_2, clone, target, res):
+                if r:
+                    r.delete()
+
     def test_resource_copy_carries_over_metadata_and_permissions(self):
         res = create_single_map("A Test Map With Metadata")
         try:

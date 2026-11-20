@@ -916,7 +916,10 @@ class LinkedResourceSerializer(DynamicModelSerializer):
     class Meta:
         name = "linked_resources"
         model = LinkedResource
-        fields = ("internal",)
+        fields = ("internal", "relation_type")
+
+    # deprecated, superseded by relation_type
+    internal = serializers.BooleanField(read_only=True)
 
     def to_representation(self, instance: LinkedResource):
         data = super().to_representation(instance)
