@@ -976,6 +976,64 @@ url = "https://development.demo.geonode.org/api/v2/resources/{pk}/linked_resourc
 response = requests.request("GET", url)
 ```
 
+The response groups the links by direction: `linked_to` lists the resources this one points to,
+`linked_by` the resources pointing to this one.
+
+```json
+{
+    "linked_to": [
+        {
+            "internal": false,
+            "relation_type": "clone_of",
+            "pk": 4257,
+            "title": "Original map",
+            "resource_type": "map",
+            "detail_url": "/catalogue/#/map/4257",
+            "thumbnail_url": null
+        }
+    ],
+    "linked_by": []
+}
+```
+
+Each link carries a `relation_type`, to be read as `<source> <relation_type> <target>`:
+
+| `relation_type` | Meaning | Managed by |
+|---|---|---|
+| `related` | the source is related to the target | users, from the metadata editor or this API |
+| `uses` | the source uses the target (a `Map` and its `Datasets`) | GeoNode, derived from the map layers |
+| `clone_of` | the source is a clone of the target | GeoNode, set when a resource is cloned |
+
+The `internal` flag is deprecated, it is `true` only for the `uses` relation. Use `relation_type` instead.
+
+The listing can be filtered with the following query parameters:
+
+- `link_type`: `linked_to` or `linked_by`
+- `resource_type`: comma separated list of resource types
+- `relation_type`: comma separated list of relation types
+
+2. List the resources cloned from a resource:
+```python
+import requests
+
+url = "https://development.demo.geonode.org/api/v2/resources/{pk}/linked_resources?link_type=linked_by&relation_type=clone_of"
+response = requests.request("GET", url)
+```
+
+Links can be created with `POST` and removed with `DELETE` on the same endpoint, passing the list of target ids.
+Only `related` links can be created or removed, the other relation types are managed by GeoNode and are rejected
+with status code `400`.
+
+```python
+import requests
+
+url = "https://development.demo.geonode.org/api/v2/resources/{pk}/linked_resources"
+headers = {
+    'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+}
+response = requests.request("POST", url, headers=headers, json={"target": [4257, 4440]})
+```
+
 ## Assets
 
 ### Get Resource Assets
