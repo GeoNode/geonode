@@ -23,6 +23,7 @@ import zipfile
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.utils import override_settings
 from django.urls import reverse
 
@@ -32,6 +33,7 @@ from geonode.assets.utils import get_default_asset
 from geonode.base.enumerations import SOURCE_TYPE_LOCAL, SOURCE_TYPE_REMOTE
 from geonode.base.models import Link, Region, Thesaurus, ThesaurusKeyword
 from geonode.base.populate_test_data import create_single_doc
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 from geonode.resource.models import ExecutionRequest
@@ -50,6 +52,13 @@ from geonode.utils import mkdtemp
 
 DOCUMENT_FIXTURE = os.path.join(os.path.dirname(documents.__file__), "tests", "data", "img.gif")
 PDF_FIXTURE = os.path.join(os.path.dirname(documents.__file__), "tests", "data", "pdf_doc.pdf")
+# libmagic emits application/x-netcdf only when the classic CDF\x01 / CDF\x02
+# signature is followed by at least one content byte. A bare 4-byte buffer is the
+# DROID signature and stays application/octet-stream.
+CLASSIC_NETCDF = b"CDF\x01\x00"
+CLASSIC64_NETCDF = b"CDF\x02\x00"
+HDF5_NETCDF = b"\x89HDF\r\n\x1a\n"
+NETCDF_MIMES = {"application/x-netcdf", "application/netcdf", "application/x-hdf", "application/x-hdf5"}
 
 
 class TestDocumentFileHandler(ImporterBaseTestSupport):
@@ -159,8 +168,10 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
             limit.save()
 
     def test_is_valid_should_raise_exception_if_the_file_is_missing(self):
-        with self.assertRaises(InvalidDocumentException):
+        with self.assertRaises(InvalidDocumentException) as _exc:
             self.handler.is_valid(files={}, user=self.user)
+
+        self.assertIn("A document must have a file or a url", str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_for_an_unsafe_zip(self):
         unsafe_zip = os.path.join(self.tempdir, "unsafe.zip")
@@ -644,3 +655,68 @@ class TestDocumentFileHandler(ImporterBaseTestSupport):
             )
 
         self.assertEqual(400, response.status_code)
+
+    def test_netcdf_is_an_archive_document_with_the_expected_mimes(self):
+        self.assertEqual("archive", DOCUMENT_TYPE_MAP["nc"])
+        self.assertEqual(NETCDF_MIMES, self.handler.upload_validation_config["nc"]["mimes"])
+
+    def test_is_valid_should_pass_for_a_netcdf_document(self):
+        samples = (
+            ("classic.nc", CLASSIC_NETCDF),
+            ("hdf5.nc", HDF5_NETCDF),
+            ("classic64.nc", CLASSIC64_NETCDF),
+            ("upper.NC", CLASSIC_NETCDF),
+        )
+        for filename, content in samples:
+            path = os.path.join(self.tempdir, filename)
+            with open(path, "wb") as _file:
+                _file.write(content)
+
+            self.assertTrue(self.handler.is_valid(files={"base_file": path}, user=self.user))
+
+    @patch("geonode.upload.api.views.import_orchestrator")
+    def test_netcdf_upload_should_create_the_execution_request(self, patch_orchestrator):
+        patch_orchestrator.s.return_value = MagicMock()
+        self.client.force_login(self.user)
+        # a document is not published: the task list stays the import steps only
+        self.assertNotIn("geoserver", " ".join(self.handler.get_task_list(ira.DOCUMENT_UPLOAD.value)))
+        samples = (
+            ("sample.nc", CLASSIC_NETCDF),
+            ("sample.nc", HDF5_NETCDF),
+            ("sample.nc", CLASSIC64_NETCDF),
+            ("sample.NC", CLASSIC_NETCDF),
+        )
+
+        for filename, content in samples:
+            response = self.client.post(
+                self.upload_url,
+                data={
+                    "base_file": SimpleUploadedFile(filename, content),
+                    "action": str(ira.DOCUMENT_UPLOAD.value),
+                },
+            )
+
+            self.assertEqual(201, response.status_code, response.content)
+            _exec = orchestrator.get_execution_object(response.json()["execution_id"])
+            self.assertEqual(ira.DOCUMENT_UPLOAD.value, _exec.action)
+            self.assertEqual(self.handler_module_path, _exec.input_params["handler_module_path"])
+
+    def test_netcdf_upload_should_reject_content_that_does_not_match_the_extension(self):
+        self.client.force_login(self.user)
+        payloads = (
+            b"This is plain text, not a NetCDF file.\n",
+            b"MZ" + b"\x00" * 58 + b"\x80\x00\x00\x00" + b"\x00" * 64 + b"PE\x00\x00" + b"\x4c\x01\x01\x00",
+        )
+
+        for content in payloads:
+            response = self.client.post(
+                self.upload_url,
+                data={
+                    "base_file": SimpleUploadedFile("sample.nc", content),
+                    "action": str(ira.DOCUMENT_UPLOAD.value),
+                },
+            )
+
+            self.assertEqual(400, response.status_code)
+            self.assertIn(b"Detected content type", response.content)
+            self.assertIn(b"does not match extension '.nc'", response.content)
