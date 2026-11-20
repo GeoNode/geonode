@@ -974,7 +974,7 @@ remove the path of the Handler from the list
 :   - Default ``[]``
     - Env: ``IMPORTER_HOOK_SUBSCRIBERS``
 
-List of the dotted paths of the classes subscribing to the importer lifecycle events (`started`, `completed`, `partially_failed`, `failed`). Each class must subclass `geonode.upload.hooks.BaseImporterSubscriber` and is registered at startup. See the Importer hooks section in `geonode/upload/handlers/README.md`.
+List of the dotted paths of the classes subscribing to the importer lifecycle events (`started`, `completed`, `partially_failed`, `failed`). Each class must subclass `geonode.upload.hooks.BaseImporterSubscriber` and is registered at startup. See [Importer hooks](../../development/importer_hooks.md).
 
 ## L
 
