@@ -40,10 +40,10 @@ def load_path_attr(path):
 
 class GeoNodeClientAppConf(AppConf):
     LAYER_PREVIEW_LIBRARY = "geonode"
-    HOOKSET = "geonode.client.hooksets.BaseHookSet"
+    HOOKSET = "geonode.legacy_client.hooksets.BaseHookSet"
 
     def configure_hookset(self, value):
         return load_path_attr(value)()
 
     class Meta:
-        prefix = "geonode_client"
+        prefix = "geonode_legacy_client"

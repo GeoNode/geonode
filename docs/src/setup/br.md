@@ -87,8 +87,8 @@ for the classic and Docker environments accordingly. The content is similar in b
     # data_layername_exclude_filter = {comma separated list of layernames, optionally with glob syntax} e.g.: tuscany_*,italy
 
     [fixtures]
-    apps  = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
-    dumps = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
+    apps  = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite
+    dumps = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite
 
 The ``settings.ini`` file can be created in any directory accessible by GeoNode, and it's path can be passed to the backup / restore
 procedures using `-c` (`--config`) argument.
@@ -152,8 +152,8 @@ This section allows to enable / disable a full data backup / restore of GeoServe
 #### [fixtures] Section
 
     [fixtures]
-    apps  = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
-    dumps = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite,geonode_client
+    apps  = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite
+    dumps = contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,assets,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,metadata,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,geonode_themes,geoapps,favorite
 
 
 This section is the most complex one. Usually you don't need to modify it. Only an expert user who knows Python and GeoNode model structure should modify this section.

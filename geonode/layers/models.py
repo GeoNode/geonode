@@ -28,7 +28,7 @@ from django.utils.timezone import now
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
-from geonode.client.hooks import hookset
+from geonode.legacy_client.hooks import hookset
 from geonode import GeoNodeException
 from geonode.utils import build_absolute_uri, check_shp_columnnames, check_bbox_validity, normalize_bbox_to_float_list
 from geonode.security.models import PermissionLevelMixin

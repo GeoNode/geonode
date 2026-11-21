@@ -33,7 +33,7 @@ from django.views.decorators.http import require_GET
 
 from geonode.security.utils import check_add_remote_resource_perm
 from geonode.base.api.exceptions import geonode_exception_handler
-from geonode.client.hooks import hookset
+from geonode.legacy_client.hooks import hookset
 from geonode.utils import mkdtemp
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper

@@ -392,7 +392,7 @@ def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
         "group": group,
         "perms_list": perms_list,
         "permissions_json": permissions_json,
-        "preview": getattr(settings, "GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),
+        "preview": getattr(settings, "GEONODE_LEGACY_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),
     }
 
     return render(request, template, context=_ctx)
