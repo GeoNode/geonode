@@ -22,6 +22,8 @@ from uuid import UUID
 import zipfile
 
 from django.contrib.auth import get_user_model
+from django.db.models import TextField, Value
+from django.db.models.functions import Concat
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from geonode.base.models import ResourceBase
@@ -35,6 +37,7 @@ from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterS
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import create_layer_key
+from geonode.upload.hooks import importer_hooks
 from geonode.upload.utils import error_handler
 from geonode.upload.utils import ImporterRequestAction as ira
 
@@ -143,7 +146,8 @@ class ImportOrchestrator:
             if not tasks:
                 raise StopIteration("Task lists is completed")
             _index = tasks.index(step) + 1
-            if _index == 1:
+            # a rollback runs on an execution that already failed: it must not set it as running again
+            if _index == 1 and action != ira.ROLLBACK.value:
                 """
                 Means that the first task is available and we set the executions state as running
                 So is updated only at the beginning keeping it in a consistent state
@@ -152,6 +156,7 @@ class ImportOrchestrator:
                     execution_id=str(_exec_obj.exec_id),
                     status=ExecutionRequest.STATUS_RUNNING,
                 )
+                importer_hooks.do_action("started", self.get_execution_object(execution_id))
             # finding in the task_list the last step done
             remaining_tasks = tasks[_index:] if not _index >= len(tasks) else []
             if not remaining_tasks:
@@ -194,7 +199,9 @@ class ImportOrchestrator:
         except StopIteration:
             # means that the expected list of steps is completed
             logger.info("The whole list of tasks has been processed")
-            self.set_as_completed(execution_id)
+            # a rollback ends on a failed execution: it must not complete it
+            if action != ira.ROLLBACK.value:
+                self.set_as_completed(execution_id)
             return
         except Exception as e:
             self.set_as_failed(execution_id, reason=error_handler(e, execution_id))
@@ -204,13 +211,15 @@ class ImportOrchestrator:
         """
         Utility method to set the ExecutionRequest object to fail
         """
-        self.update_execution_request_status(
+        _transitioned = self._transition_status(
             execution_id=str(execution_id),
             status=ExecutionRequest.STATUS_FAILED,
             finished=timezone.now(),
             last_updated=timezone.now(),
             log=reason,
         )
+        if not _transitioned and reason:
+            self.__append_log(execution_id, str(reason))
         # delete
         if delete_file:
             exec_obj = self.get_execution_object(execution_id)
@@ -220,31 +229,46 @@ class ImportOrchestrator:
                 asset = asset_handler.objects.filter(pk=exec_obj.input_params["asset_id"])
                 if asset.exists():
                     asset.first().delete()
+        if _transitioned:
+            importer_hooks.do_action("failed", self.get_execution_object(execution_id), reason=reason)
 
     def set_as_partially_failed(self, execution_id, reason=None):
         """
         Utility method to set the ExecutionRequest object to partially failed
         """
-        self.update_execution_request_status(
+        _exec = self.get_execution_object(execution_id)
+        # resources of the imported layers are filled before the status changes, as in set_as_completed
+        self._last_step(execution_id, _exec.input_params.get("handler_module_path"))
+        _log = f"The execution is completed, but the following layers are not imported: \n {', '.join(reason)}. Check the logs for additional infos"
+        if self._transition_status(
             execution_id=str(execution_id),
             status=ExecutionRequest.STATUS_FAILED,
             finished=timezone.now(),
             last_updated=timezone.now(),
-            log=f"The execution is completed, but the following layers are not imported: \n {', '.join(reason)}. Check the logs for additional infos",
-        )
+            log=_log,
+        ):
+            importer_hooks.do_action("partially_failed", self.get_execution_object(execution_id), reason=reason)
+        else:
+            # the rollback of a layer already failed the execution: the layers not imported are still logged
+            self.__append_log(execution_id, _log)
 
     def set_as_completed(self, execution_id):
         """
-        Utility method to set the ExecutionRequest object to fail
+        Utility method to set the ExecutionRequest object to completed
         """
-        self.update_execution_request_status(
+        _exec = self.get_execution_object(execution_id)
+        # resources are filled before the status changes: clients polling for "finished" read them
+        self._last_step(execution_id, _exec.input_params.get("handler_module_path"))
+        if self._transition_status(
             execution_id=str(execution_id),
             status=ExecutionRequest.STATUS_FINISHED,
             finished=timezone.now(),
             last_updated=timezone.now(),
-        )
+        ):
+            importer_hooks.do_action("completed", self.get_execution_object(execution_id))
 
     def evaluate_execution_progress(self, execution_id, _log=None, handler_module_path=None):
+        # handler_module_path is not used anymore, kept to avoid refactors for external libraries
 
         from geonode.upload.models import ResourceHandlerInfo
 
@@ -269,7 +293,7 @@ class ImportOrchestrator:
 
         if any(status in {"RUNNING", "PENDING"} for status in all_statuses):
             # Some tasks still in progress
-            self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
+            self._evaluate_last_dataset(is_last_dataset, _log, execution_id)
 
         elif "FAILED" in all_statuses:
             # At least one task failed
@@ -279,7 +303,6 @@ class ImportOrchestrator:
                 # Partial import: some layers imported, some failed
                 logger.error(f"Partial failure for execution {execution_id}: {failed_alternates}")
                 self.set_as_partially_failed(execution_id=execution_id, reason=failed_alternates)
-                self._last_step(execution_id, handler_module_path)
             else:
                 # Nothing imported or only a single layer expected
                 logger.error(f"Execution {execution_id} failed completely.")
@@ -287,15 +310,14 @@ class ImportOrchestrator:
 
         else:
             # All tasks succeeded
-            self._evaluate_last_dataset(is_last_dataset, _log, execution_id, handler_module_path)
+            self._evaluate_last_dataset(is_last_dataset, _log, execution_id)
 
-    def _evaluate_last_dataset(self, is_last_dataset, _log, execution_id, handler_module_path):
+    def _evaluate_last_dataset(self, is_last_dataset, _log, execution_id):
         if is_last_dataset:
             if _log and "ErrorDetail" in _log:
                 self.set_as_failed(execution_id=execution_id, reason=_log)
             else:
                 logger.info(f"Execution with ID {execution_id} is completed. All tasks are done")
-                self._last_step(execution_id, handler_module_path)
                 self.set_as_completed(execution_id)
         else:
             logger.info(f"Execution progress with id {execution_id} is not finished yet, continuing")
@@ -342,6 +364,22 @@ class ImportOrchestrator:
             kwargs["status"] = status
 
         ExecutionRequest.objects.filter(exec_id=execution_id).update(**kwargs)
+
+    def _transition_status(self, execution_id, status, **kwargs) -> bool:
+        """
+        Update the status only if the execution is not already in it.
+        Return True when the row changed, so concurrent workers fire the event once
+        """
+        return bool(
+            ExecutionRequest.objects.filter(exec_id=execution_id).exclude(status=status).update(status=status, **kwargs)
+        )
+
+    def __append_log(self, execution_id, message):
+        # the rollback reports the error already logged by evaluate_error: it is not repeated
+        ExecutionRequest.objects.filter(exec_id=execution_id).exclude(log__endswith=message).update(
+            log=Concat("log", Value(f"\n{message}", output_field=TextField())),
+            last_updated=timezone.now(),
+        )
 
     def update_execution_request_obj(self, _exec_obj, payload):
         ExecutionRequest.objects.filter(pk=_exec_obj.pk).update(**payload)
