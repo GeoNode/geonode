@@ -2049,6 +2049,18 @@ class LinkedResource(models.Model):
         return ResourceBase.objects.filter(id__in=cls.get_target_ids(source, relation_type))
 
     @classmethod
+    def copy_links(cls, source: ResourceBase, clone: ResourceBase):
+        """Give a clone the generic links of its source and record which resource it was cloned from."""
+        related = cls.RelationType.RELATED
+        links = cls.objects.filter(relation_type=related)
+        with transaction.atomic():
+            for target_id in links.filter(source=source).values_list("target_id", flat=True):
+                cls.objects.get_or_create(source=clone, target_id=target_id, relation_type=related)
+            for source_id in links.filter(target=source).values_list("source_id", flat=True):
+                cls.objects.get_or_create(source_id=source_id, target=clone, relation_type=related)
+            cls.objects.create(source=clone, target=source, relation_type=cls.RelationType.CLONE_OF)
+
+    @classmethod
     def resolve_targets(cls, linked_resources):
         return (lr.target for lr in linked_resources)
 

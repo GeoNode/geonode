@@ -1551,13 +1551,15 @@ def base_linked_resources_instances(instance, user, params={}):
 
         # resolve the ids of linked resources - using either e QuerySet (preferred) or a list
         if isinstance(linked_to_over, QuerySet):
+            if relation_types:
+                linked_to_over = linked_to_over.filter(relation_type__in=relation_types)
             linked_to_over_loopable = linked_to_over
             linked_to_id_values = linked_to_over.values("target_id")
         else:
-            linked_to_over_loopable = [lr for lr in linked_to_over]
+            linked_to_over_loopable = [
+                lr for lr in linked_to_over if not relation_types or lr.relation_type in relation_types
+            ]
             linked_to_id_values = [lr.target_id for lr in linked_to_over_loopable]
-        if relation_types:
-            linked_to_over_loopable = [lr for lr in linked_to_over_loopable if lr.relation_type in relation_types]
 
         # filter resources by visibility / permissions
         linked_to_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_to_id_values)).order_by(
@@ -1573,13 +1575,15 @@ def base_linked_resources_instances(instance, user, params={}):
     if not link_type or link_type == "linked_by":
         linked_by_over = instance.get_linked_resources(as_target=True)
         if isinstance(linked_by_over, QuerySet):
+            if relation_types:
+                linked_by_over = linked_by_over.filter(relation_type__in=relation_types)
             linked_by_over_loopable = linked_by_over
             linked_by_id_values = linked_by_over.values("source_id")
         else:
-            linked_by_over_loopable = [lr for lr in linked_by_over]
+            linked_by_over_loopable = [
+                lr for lr in linked_by_over if not relation_types or lr.relation_type in relation_types
+            ]
             linked_by_id_values = [lr.source_id for lr in linked_by_over_loopable]
-        if relation_types:
-            linked_by_over_loopable = [lr for lr in linked_by_over_loopable if lr.relation_type in relation_types]
 
         linked_by_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_by_id_values)).order_by(
             "-pk"

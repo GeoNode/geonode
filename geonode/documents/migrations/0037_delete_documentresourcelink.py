@@ -2,6 +2,25 @@
 
 from django.db import migrations
 
+BATCH_SIZE = 1000
+
+
+def move_document_links(apps, schema_editor):
+    # ORM instead of raw SQL: the historical LinkedResource matches the table whether
+    # base.0103 (relation_type replaces internal) has already run or not
+    DocumentResourceLink = apps.get_model("documents", "DocumentResourceLink")
+    LinkedResource = apps.get_model("base", "LinkedResource")
+    ResourceBase = apps.get_model("base", "ResourceBase")
+
+    links = DocumentResourceLink.objects.filter(object_id__in=ResourceBase.objects.values("id")).values_list(
+        "document_id", "object_id"
+    )
+    LinkedResource.objects.bulk_create(
+        (LinkedResource(source_id=s, target_id=t) for s, t in links.iterator()),
+        batch_size=BATCH_SIZE,
+        ignore_conflicts=True,
+    )
+
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -10,12 +29,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            "INSERT INTO base_linkedresource(source_id, target_id, internal) "
-            "SELECT document_id, object_id, false as internal "
-            "FROM documents_documentresourcelink "
-            "WHERE EXISTS (SELECT 1 FROM base_resourcebase base WHERE base.id=object_id);"
-        ),
+        migrations.RunPython(move_document_links, migrations.RunPython.noop),
         migrations.DeleteModel(
             name="DocumentResourceLink",
         ),
