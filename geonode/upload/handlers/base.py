@@ -29,6 +29,7 @@ from datetime import datetime
 import slugify
 
 from django.conf import settings
+from django.db import transaction
 
 from geonode.assets.utils import create_asset_and_link
 from geonode.resource.enumerator import ExecutionRequestAction as exa
@@ -38,7 +39,6 @@ from geonode.upload.api.exceptions import GeneralUploadException, ImportExceptio
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
 from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
-
 
 logger = logging.getLogger("importer")
 
@@ -225,17 +225,20 @@ class BaseHandler(ABC):
         For example can be used to trigger an email-send to notify
         that the execution is completed
         """
-        from geonode.upload.orchestrator import orchestrator
         from geonode.upload.models import ResourceHandlerInfo
 
-        _exec = orchestrator.get_execution_object(execution_id)
+        # the row lock keeps concurrent workers from overwriting each other between the read and the save
+        with transaction.atomic():
+            _exec = ExecutionRequest.objects.select_for_update().filter(exec_id=execution_id).first()
+            if not _exec:
+                raise ImportException("The selected UUID does not exists")
 
-        resource_output_params = [
-            {"detail_url": x.resource.detail_url, "id": x.resource.pk}
-            for x in ResourceHandlerInfo.objects.filter(execution_request=_exec)
-        ]
-        _exec.output_params.update({"resources": resource_output_params})
-        _exec.save()
+            resource_output_params = [
+                {"detail_url": x.resource.detail_url, "id": x.resource.pk}
+                for x in ResourceHandlerInfo.objects.filter(execution_request=_exec).select_related("resource")
+            ]
+            _exec.output_params.update({"resources": resource_output_params})
+            _exec.save(update_fields=["output_params"])
 
         return _exec
 

@@ -20,11 +20,11 @@
 """
 Tools for managing a Catalogue Service for the Web (CSW)
 """
+
 import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from importlib import import_module
-
 
 DEFAULT_CATALOGUE_ALIAS = "default"
 

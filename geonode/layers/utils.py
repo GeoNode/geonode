@@ -17,8 +17,7 @@
 #
 #########################################################################
 
-"""Utilities for managing GeoNode layers
-"""
+"""Utilities for managing GeoNode layers"""
 
 # Standard Modules
 import copy

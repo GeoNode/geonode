@@ -150,6 +150,13 @@ if "django_select2" in settings.INSTALLED_APPS:
         path("select2/", include("django_select2.urls")),
     ]
 
+# Django admin login with reCAPTCHA (same flag as the GeoNode login and signup forms)
+if settings.RECAPTCHA_ENABLED:
+    from geonode.people.forms.recaptcha import AdminReCaptchaAuthenticationForm
+
+    admin.site.login_form = AdminReCaptchaAuthenticationForm
+    admin.site.login_template = "admin/login_recaptcha.html"
+
 urlpatterns += i18n_patterns(
     re_path(r"^admin/", admin.site.urls, name="admin"),
 )

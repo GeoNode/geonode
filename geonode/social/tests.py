@@ -23,6 +23,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+
 import json
 
 from rest_framework import status

@@ -13,7 +13,6 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from .. import models
 from ..api import serializers
 
-
 _REQUEST_FACTORY = APIRequestFactory()
 
 

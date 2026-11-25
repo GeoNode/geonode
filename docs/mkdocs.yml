@@ -109,6 +109,7 @@ nav:
   - Developer Guide: 
     - API Usage: "development/api.md"
     - Source providers and data items: "development/sources.md"
+    - Importer hooks: "development/importer_hooks.md"
     - Metadata:
       - Intro to GeoNode metadata management: "development/metadata/intro.md"
       - Metadata app design and implementation: "development/metadata/design.md"

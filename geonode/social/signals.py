@@ -17,10 +17,11 @@
 #
 #########################################################################
 
-""" Django signals connections and associated receiver functions for geonode's
-    third-party 'social' apps which include announcements, notifications,
-    relationships, actstream user_messages and potentially others
+"""Django signals connections and associated receiver functions for geonode's
+third-party 'social' apps which include announcements, notifications,
+relationships, actstream user_messages and potentially others
 """
+
 import logging
 from collections import defaultdict
 
@@ -32,7 +33,6 @@ from geonode.geoapps.models import GeoApp
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-
 
 logger = logging.getLogger(__name__)
 

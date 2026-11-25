@@ -17,8 +17,7 @@
 #
 #########################################################################
 
-"""Utilities for managing GeoNode base models
-"""
+"""Utilities for managing GeoNode base models"""
 
 # Standard Modules
 import re

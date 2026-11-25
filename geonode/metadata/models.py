@@ -4,7 +4,6 @@ from django.db import models
 
 from geonode.base.models import ResourceBase
 
-
 logger = logging.getLogger(__name__)
 
 # class SparseFieldDecl(models.Model):

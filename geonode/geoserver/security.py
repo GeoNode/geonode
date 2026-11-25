@@ -40,7 +40,6 @@ from geonode.utils import get_dataset_workspace
 from geonode.resource.utils import is_remote_resource
 from geonode.security.registry import permissions_registry
 
-
 logger = logging.getLogger(__name__)
 
 

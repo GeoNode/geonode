@@ -29,7 +29,6 @@ from geonode.documents.models import Document
 from geonode.catalogue import get_catalogue
 from geonode.base.models import Link, ResourceBase
 
-
 LOGGER = logging.getLogger(__name__)
 
 

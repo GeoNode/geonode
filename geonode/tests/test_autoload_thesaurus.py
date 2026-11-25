@@ -27,7 +27,6 @@ from django.test import TestCase
 from geonode.base.management.commands.thesaurus_subcommands.autoload import autoload_thesauri
 from geonode.base.models import Thesaurus
 
-
 RDF_CONTENT = """\
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">

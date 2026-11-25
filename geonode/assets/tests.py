@@ -43,7 +43,6 @@ from geonode.base.models import ResourceBase, Link
 from geonode.security.registry import permissions_registry
 from rest_framework import status
 
-
 logger = logging.getLogger(__name__)
 
 ONE_JSON = os.path.join(os.path.dirname(__file__), "tests/data/one.json")

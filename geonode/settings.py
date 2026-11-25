@@ -2295,6 +2295,9 @@ DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
 
 IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS", "[]"))
 
+# Classes subscribing to the importer lifecycle events, each one a geonode.upload.hooks.BaseImporterSubscriber subclass
+IMPORTER_HOOK_SUBSCRIBERS = ast.literal_eval(os.getenv("IMPORTER_HOOK_SUBSCRIBERS", "[]"))
+
 IMPORTER_ENABLE_DYN_MODELS = True
 
 INSTALLED_APPS += ("geonode.facets",)

@@ -20,5 +20,4 @@ from allauth.socialaccount.providers.oauth2.urls import default_urlpatterns
 
 from geonode.people.socialaccount.providers.geonode_openid_connect.provider import GenericOpenIDConnectProvider
 
-
 urlpatterns = default_urlpatterns(GenericOpenIDConnectProvider)

@@ -20,6 +20,7 @@
 The validate_metadata / download_validation_report admin actions, exercised directly: both only
 need a modeladmin with message_user() and a request/queryset, no admin site or HTTP client involved.
 """
+
 import json
 import sys
 from unittest.mock import MagicMock, patch
