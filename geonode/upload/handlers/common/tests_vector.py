@@ -27,6 +27,7 @@ from django.urls import reverse
 from mock import MagicMock, patch
 from geonode.upload.api.exceptions import ImportException, UpsertException
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_with_ogr2ogr
+from geonode.upload.handlers.utils import create_alternate
 from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
 from geonode.upload.handlers.geojson.handler import GeoJsonFileHandler
@@ -327,6 +328,85 @@ class TestBaseVectorFileHandler(TestCase):
         create_single_dataset(name="stazioni_metropolitana", owner=self.user)
         ModelSchema.objects.create(name="stazioni_metropolitana", db_name="datastore", managed=True)
         self._assert_test_result(overwrite=False)
+
+    def _setup_dynamic_model_for_existing_dataset(self, dataset_table_name, should_be_overwritten, subtype=None):
+        """
+        Create a dataset with the given table name, then call setup_dynamic_model with resource_pk
+        pointing to it and the valid gpkg (layer 'stazioni_metropolitana') as the uploaded file
+        """
+        exec_id = orchestrator.create_execution_request(
+            user=self.user,
+            func_name="funct1",
+            step="step",
+            input_params={"files": self.valid_files, "skip_existing_layer": False},
+        )
+        self.addCleanup(lambda: ExecutionRequest.objects.filter(exec_id=exec_id).delete())
+        resource = self.handler.create_geonode_resource(dataset_table_name, dataset_table_name, str(exec_id))
+        if subtype:
+            ResourceBase.objects.filter(pk=resource.pk).update(subtype=subtype)
+        ExecutionRequest.objects.filter(exec_id=exec_id).update(
+            input_params={"files": self.valid_files, "skip_existing_layer": False, "resource_pk": resource.pk}
+        )
+        layers = ogr.Open(self.valid_gpkg)
+        dynamic_model, layer_name, _ = self.handler.setup_dynamic_model(
+            layer=[x for x in layers][0],
+            execution_id=str(exec_id),
+            should_be_overwritten=should_be_overwritten,
+            username=self.user,
+        )
+        return exec_id, dynamic_model, layer_name
+
+    def test_setup_dynamic_model_replace_dataset_without_modelschema_targets_existing_table(self):
+        """
+        Replacing a dataset that has no ModelSchema (e.g. legacy dataset, restored backup, updatelayers)
+        must target the existing table and create the missing ModelSchema for it,
+        instead of publishing a new layer under a generated alternate
+        """
+        self.assertFalse(ModelSchema.objects.filter(name__iexact="legacy_dataset").exists())
+
+        _, dynamic_model, layer_name = self._setup_dynamic_model_for_existing_dataset(
+            "legacy_dataset", should_be_overwritten=True
+        )
+
+        self.assertEqual("legacy_dataset", layer_name)
+        self.assertEqual("legacy_dataset", dynamic_model.name)
+        self.assertEqual("legacy_dataset", dynamic_model.db_table_name)
+        self.assertEqual("datastore", dynamic_model.db_name)
+        self.assertFalse(ModelSchema.objects.filter(name__startswith="stazioni_metropolitana_").exists())
+
+    def test_setup_dynamic_model_replace_dataset_with_modelschema_reuses_it(self):
+        schema = ModelSchema.objects.create(name="legacy_dataset", db_name="datastore", db_table_name="legacy_dataset")
+
+        _, dynamic_model, layer_name = self._setup_dynamic_model_for_existing_dataset(
+            "legacy_dataset", should_be_overwritten=True
+        )
+
+        self.assertEqual("legacy_dataset", layer_name)
+        self.assertEqual(schema.pk, dynamic_model.pk)
+        self.assertEqual(1, ModelSchema.objects.filter(name__iexact="legacy_dataset").count())
+
+    def test_setup_dynamic_model_replace_raster_dataset_with_vector_is_rejected(self):
+        """
+        A vector file cannot replace a raster dataset: the replace must fail before
+        any ModelSchema is created or the raster layer is touched
+        """
+        with self.assertRaises(ImportException):
+            self._setup_dynamic_model_for_existing_dataset(
+                "raster_dataset", should_be_overwritten=True, subtype="raster"
+            )
+
+        self.assertFalse(ModelSchema.objects.filter(name__iexact="raster_dataset").exists())
+        self.assertFalse(ModelSchema.objects.filter(name__startswith="stazioni_metropolitana_").exists())
+
+    def test_setup_dynamic_model_existing_dataset_without_modelschema_no_replace_uses_new_alternate(self):
+        exec_id, dynamic_model, layer_name = self._setup_dynamic_model_for_existing_dataset(
+            "legacy_dataset", should_be_overwritten=False
+        )
+
+        expected_alternate = create_alternate("stazioni_metropolitana", str(exec_id))
+        self.assertEqual(expected_alternate, layer_name)
+        self.assertEqual(expected_alternate, dynamic_model.name)
+        self.assertFalse(ModelSchema.objects.filter(name__iexact="legacy_dataset").exists())
 
     def _assert_test_result(self, overwrite=False):
         try:

@@ -692,13 +692,31 @@ class BaseVectorFileHandler(BaseHandler):
                     f"'edit' or 'manage' permission is required."
                 )
 
-        if dataset_exists and dynamic_schema_exists and should_be_overwritten:
+        if dataset_exists and should_be_overwritten:
             """
-            If the user has a dataset, the dynamic model has already been created and is in overwrite mode,
-            we just take the dynamic_model to overwrite the existing one
+            If the user has a dataset and is in overwrite mode, we take the dynamic_model
+            to overwrite the existing one. If the dynamic model has not been created before,
+            we create it for the existing dataset table
             """
-            dynamic_schema = dynamic_schema.get()
+            if not self.can_overwrite(_exec_obj, available_dataset.first()):
+                raise ImportException("Cannot override a raster dataset with a vector one")
+
             layer_name = available_dataset.first().alternate.split(":")[-1]
+            if dynamic_schema_exists:
+                dynamic_schema = dynamic_schema.get()
+            else:
+                logger.warning(
+                    f"No ModelSchema found for dataset '{layer_name}'. Creating it so that the replace "
+                    f"targets the existing table for execution {execution_id}."
+                )
+                dynamic_schema, _ = ModelSchema.objects.get_or_create(
+                    name=layer_name,
+                    defaults={
+                        "db_name": "datastore",
+                        "managed": is_dynamic_model_managed,
+                        "db_table_name": layer_name,
+                    },
+                )
 
         elif not dataset_exists and not dynamic_schema_exists:
             """
@@ -720,11 +738,7 @@ class BaseVectorFileHandler(BaseHandler):
                     f"(e.g. .shp vs .zip). Reusing the existing schema for execution {execution_id}."
                 )
 
-        elif (
-            (not dataset_exists and dynamic_schema_exists)
-            or (dataset_exists and dynamic_schema_exists and not should_be_overwritten)
-            or (dataset_exists and not dynamic_schema_exists)
-        ):
+        elif (not dataset_exists and dynamic_schema_exists) or (dataset_exists and not should_be_overwritten):
             """
             The layer should not be overwritten so we append the UUID
             to the layer name to let it proceed to the next steps
