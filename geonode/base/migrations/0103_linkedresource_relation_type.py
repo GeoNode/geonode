@@ -4,20 +4,18 @@ from django.db import migrations, models
 from django.db.models import Count, Min
 
 
-def migrate_links(apps, schema_editor):
+def remove_duplicates(apps, schema_editor):
+    # the unique constraint can't be created otherwise
     LinkedResource = apps.get_model("base", "LinkedResource")
-    LinkedResource.objects.filter(internal=True).update(relation_type="uses")
-
-    # drop duplicates before the unique constraint is created
     duplicates = (
-        LinkedResource.objects.values("source_id", "target_id", "relation_type")
+        LinkedResource.objects.values("source_id", "target_id")
         .annotate(keep=Min("id"), count=Count("id"))
         .filter(count__gt=1)
     )
     for dup in duplicates:
-        LinkedResource.objects.filter(
-            source_id=dup["source_id"], target_id=dup["target_id"], relation_type=dup["relation_type"]
-        ).exclude(id=dup["keep"]).delete()
+        LinkedResource.objects.filter(source_id=dup["source_id"], target_id=dup["target_id"]).exclude(
+            id=dup["keep"]
+        ).delete()
 
 
 class Migration(migrations.Migration):
@@ -32,7 +30,7 @@ class Migration(migrations.Migration):
             name="relation_type",
             field=models.CharField(default="related", max_length=255),
         ),
-        migrations.RunPython(migrate_links, migrations.RunPython.noop),
+        migrations.RunPython(remove_duplicates, migrations.RunPython.noop),
         migrations.RemoveField(
             model_name="linkedresource",
             name="internal",
