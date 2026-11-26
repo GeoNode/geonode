@@ -16,7 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from unittest.mock import MagicMock, patch
+from uuid import uuid4
+
 from django.test import TestCase
+from geonode.base.models import LinkedResource
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from django.contrib.auth import get_user_model
 from geonode.upload import project_dir
@@ -60,6 +64,35 @@ class TestGeoTiffFileHandler(TestCase):
         )
         self.assertEqual(len(self.handler.TASKS["copy"]), 4)
         self.assertTupleEqual(expected, self.handler.TASKS["copy"])
+
+    def test_copy_geonode_resource_tracks_clone_relation(self):
+        source = create_single_dataset(name="raster_clone_source", owner=self.owner)
+        clone = create_single_dataset(name="raster_clone_copy", owner=self.owner)
+        linked = create_single_dataset(name="raster_clone_linked", owner=self.owner)
+        LinkedResource.objects.create(source=source, target=linked)
+
+        with (
+            patch.object(GeoTiffFileHandler, "_prepare_assets_for_copy", return_value=(None, [])),
+            patch.object(GeoTiffFileHandler, "create_geonode_resource", return_value=clone),
+        ):
+            self.handler.copy_geonode_resource(
+                alternate=source.alternate,
+                resource=source,
+                _exec=MagicMock(exec_id=uuid4()),
+                data_to_update={"title": clone.title},
+                new_alternate=clone.alternate,
+            )
+
+        self.assertTrue(
+            LinkedResource.objects.filter(
+                source=clone, target=source, relation_type=LinkedResource.RelationType.CLONE_OF
+            ).exists()
+        )
+        self.assertTrue(
+            LinkedResource.objects.filter(
+                source=clone, target=linked, relation_type=LinkedResource.RelationType.RELATED
+            ).exists()
+        )
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")

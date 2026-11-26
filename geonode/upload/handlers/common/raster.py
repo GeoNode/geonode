@@ -25,7 +25,7 @@ from subprocess import PIPE, Popen
 from typing import List
 
 from django.conf import settings
-from geonode.base.models import ResourceBase
+from geonode.base.models import LinkedResource, ResourceBase
 from geonode.layers.models import Dataset
 from geonode.metadata.tracking.operation import metadata_tracker
 from geonode.resource.enumerator import ExecutionRequestAction as exa
@@ -547,6 +547,8 @@ class BaseRasterFileHandler(BaseHandler):
         )
 
         [create_link(new_resource, asset) for asset in assets_to_link]
+        # the raster clone does not go through the resource manager copy()
+        LinkedResource.copy_links(resource, new_resource)
 
         new_resource.refresh_from_db()
         return new_resource

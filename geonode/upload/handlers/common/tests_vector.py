@@ -22,6 +22,7 @@ import uuid
 from celery.canvas import Signature
 from celery import group
 from django.conf import settings
+from django.db import connections
 from django.test import TestCase
 from django.urls import reverse
 from mock import MagicMock, patch
@@ -143,6 +144,25 @@ class TestBaseVectorFileHandler(TestCase):
         finally:
             new_resource.delete()
             dataset.delete()
+
+    def test_get_table_crs_reads_the_geometry_column(self):
+        with connections["datastore"].cursor() as cursor:
+            cursor.execute("CREATE TABLE table_crs_check (id integer, geom geometry(Point, 4269))")
+        self.assertEqual("EPSG:4269", self.handler.get_table_crs("table_crs_check"))
+        self.assertIsNone(self.handler.get_table_crs("table_crs_missing"))
+
+    def test_extract_resource_to_publish_copy_uses_the_table_crs(self):
+        # a metadata handler can store a srid which does not describe the data
+        ResourceBase.objects.filter(pk=self.layer.pk).update(srid="4326")
+        kwargs = {"original_dataset_alternate": self.layer.alternate}
+
+        with patch.object(BaseVectorFileHandler, "get_table_crs", return_value="EPSG:4269"):
+            resources = self.handler.extract_resource_to_publish({}, exa.COPY.value, None, "layer_copy", **kwargs)
+        self.assertEqual([{"name": "layer_copy", "crs": "EPSG:4269"}], resources)
+
+        with patch.object(BaseVectorFileHandler, "get_table_crs", return_value=None):
+            resources = self.handler.extract_resource_to_publish({}, exa.COPY.value, None, "layer_copy", **kwargs)
+        self.assertEqual([{"name": "layer_copy", "crs": "4326"}], resources)
 
     def test_create_error_log(self):
         """

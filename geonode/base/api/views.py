@@ -1310,6 +1310,10 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             if not isinstance(target_ids, list):
                 raise ValidationError("Payload is not valid")
 
+            relation_type = request.data.get("relation_type", LinkedResource.RelationType.RELATED)
+            if not LinkedResource.is_user_relation_type(relation_type):
+                raise ValidationError(f"Relation type '{relation_type}' can not be set")
+
             # remove duplicates and self ref
             target_ids = set(target_ids)
             if resource.id in target_ids:
@@ -1330,13 +1334,17 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
                         continue
 
                     if request.method == "POST":
-                        _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
+                        _, created = LinkedResource.objects.get_or_create(
+                            source=resource, target=target, relation_type=relation_type
+                        )
                         if created:
                             success_var.append(t_id)
                             continue
                         error_var.append(t_id)
                     if request.method == "DELETE":
-                        link = LinkedResource.objects.filter(source=resource.id, target=t_id).first()
+                        link = LinkedResource.objects.filter(
+                            source=resource.id, target=t_id, relation_type=relation_type
+                        ).first()
                         if not link:
                             logger.error(f"Resource selected with id {t_id} does not exist")
                             error_var.append(t_id)
@@ -1517,7 +1525,9 @@ def base_linked_resources(instance, user, params):
 def base_linked_resources_instances(instance, user, params={}):
     resource_type = params.get("resource_type", None)
     link_type = params.get("link_type", None)
+    relation_type = params.get("relation_type", None)
     type_list = resource_type.split(",") if resource_type else []
+    relation_types = relation_type.split(",") if relation_type else []
 
     warnings = {}
 
@@ -1540,10 +1550,14 @@ def base_linked_resources_instances(instance, user, params={}):
 
         # resolve the ids of linked resources - using either e QuerySet (preferred) or a list
         if isinstance(linked_to_over, QuerySet):
+            if relation_types:
+                linked_to_over = linked_to_over.filter(relation_type__in=relation_types)
             linked_to_over_loopable = linked_to_over
             linked_to_id_values = linked_to_over.values("target_id")
         else:
-            linked_to_over_loopable = [lr for lr in linked_to_over]
+            linked_to_over_loopable = [
+                lr for lr in linked_to_over if not relation_types or lr.relation_type in relation_types
+            ]
             linked_to_id_values = [lr.target_id for lr in linked_to_over_loopable]
 
         # filter resources by visibility / permissions
@@ -1560,10 +1574,14 @@ def base_linked_resources_instances(instance, user, params={}):
     if not link_type or link_type == "linked_by":
         linked_by_over = instance.get_linked_resources(as_target=True)
         if isinstance(linked_by_over, QuerySet):
+            if relation_types:
+                linked_by_over = linked_by_over.filter(relation_type__in=relation_types)
             linked_by_over_loopable = linked_by_over
             linked_by_id_values = linked_by_over.values("source_id")
         else:
-            linked_by_over_loopable = [lr for lr in linked_by_over]
+            linked_by_over_loopable = [
+                lr for lr in linked_by_over if not relation_types or lr.relation_type in relation_types
+            ]
             linked_by_id_values = [lr.source_id for lr in linked_by_over_loopable]
 
         linked_by_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_by_id_values)).order_by(

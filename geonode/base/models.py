@@ -2001,14 +2001,37 @@ class LinkManager(models.Manager):
 
 
 class LinkedResource(models.Model):
+    class RelationType(models.TextChoices):
+        # reads as: <source> <relation_type> <target>
+        RELATED = "related", _("is related to")
+        USES = "uses", _("uses")
+        CLONE_OF = "clone_of", _("is clone of")
+
+    # managed by GeoNode, users can't set or remove them
+    SYSTEM_RELATION_TYPES = frozenset({RelationType.USES, RelationType.CLONE_OF})
+
     source = models.ForeignKey(
         ResourceBase, related_name="linked_to", blank=False, null=False, on_delete=models.CASCADE
     )
     target = models.ForeignKey(ResourceBase, related_name="linked_by", blank=True, null=False, on_delete=models.CASCADE)
-    internal = models.BooleanField(null=False, default=False)
+    relation_type = models.CharField(max_length=255, default=RelationType.RELATED)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["source", "target", "relation_type"], name="unique_linked_resource")
+        ]
+
+    @property
+    def internal(self):
+        # deprecated, superseded by relation_type
+        return self.relation_type == self.RelationType.USES
 
     @classmethod
-    def get_linked_resources(cls, source: ResourceBase = None, target: ResourceBase = None, is_internal: bool = None):
+    def is_user_relation_type(cls, relation_type):
+        return relation_type == cls.RelationType.RELATED
+
+    @classmethod
+    def get_linked_resources(cls, source: ResourceBase = None, target: ResourceBase = None, relation_type: str = None):
         if source is None and target is None:
             raise ValueError("Both source and target filters missing")
 
@@ -2017,20 +2040,31 @@ class LinkedResource(models.Model):
             qs = qs.filter(source=source).select_related("target")
         if target:
             qs = qs.filter(target=target).select_related("source")
-        if is_internal is not None:
-            qs = qs.filter(internal=is_internal)
+        if relation_type is not None:
+            qs = qs.filter(relation_type=relation_type)
         return qs
 
     @classmethod
-    def get_target_ids(cls, source: ResourceBase, is_internal: bool = None):
+    def get_target_ids(cls, source: ResourceBase, relation_type: str = None):
         sub = LinkedResource.objects.filter(source=source).values_list("target_id", flat=True)
-        if is_internal is not None:
-            sub = sub.filter(internal=is_internal)
+        if relation_type is not None:
+            sub = sub.filter(relation_type=relation_type)
         return sub
 
     @classmethod
-    def get_targets(cls, source: ResourceBase, is_internal: bool = None):
-        return ResourceBase.objects.filter(id__in=cls.get_target_ids(source, is_internal))
+    def get_targets(cls, source: ResourceBase, relation_type: str = None):
+        return ResourceBase.objects.filter(id__in=cls.get_target_ids(source, relation_type))
+
+    @classmethod
+    def copy_links(cls, source: ResourceBase, clone: ResourceBase):
+        """Give a clone the user links of its source and record which resource it was cloned from."""
+        links = cls.objects.exclude(relation_type__in=cls.SYSTEM_RELATION_TYPES)
+        with transaction.atomic():
+            for target_id, relation_type in links.filter(source=source).values_list("target_id", "relation_type"):
+                cls.objects.get_or_create(source=clone, target_id=target_id, relation_type=relation_type)
+            for source_id, relation_type in links.filter(target=source).values_list("source_id", "relation_type"):
+                cls.objects.get_or_create(source_id=source_id, target=clone, relation_type=relation_type)
+            cls.objects.create(source=clone, target=source, relation_type=cls.RelationType.CLONE_OF)
 
     @classmethod
     def resolve_targets(cls, linked_resources):

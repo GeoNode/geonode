@@ -38,6 +38,7 @@ from datetime import date, timedelta
 
 from django.urls import reverse
 from django.conf import settings
+from django.db import IntegrityError, transaction
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 
@@ -4166,6 +4167,83 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         finally:
             for d in _d:
                 d.delete()
+
+    def test_linked_resource_relation_type(self):
+        _d = []
+        try:
+            _d.append(LinkedResource.objects.create(source_id=self.map.id, target_id=self.doc.id))
+            _d.append(
+                MapLayer.objects.create(
+                    map=self.map,
+                    dataset=self.dataset,
+                    name=self.dataset.name,
+                    current_style="test_style",
+                    ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+                )
+            )
+
+            url = reverse("base-resources-linked_resources", args=[self.map.id])
+            payload = self.client.get(url).json()
+            self.assert_linkedres_size(payload, "linked_to", 2)
+            self.assert_linkedres_contains(
+                payload,
+                "linked_to",
+                (
+                    {"pk": self.doc.id, "relation_type": "related", "internal": False},
+                    {"pk": self.dataset.id, "relation_type": "uses", "internal": True},
+                ),
+            )
+
+            payload = self.client.get(f"{url}?relation_type=uses").json()
+            self.assert_linkedres_size(payload, "linked_to", 1)
+            self.assert_linkedres_contains(payload, "linked_to", ({"pk": self.dataset.id, "relation_type": "uses"},))
+
+            payload = self.client.get(f"{url}?relation_type=uses,related").json()
+            self.assert_linkedres_size(payload, "linked_to", 2)
+
+            url = reverse("base-resources-linked_resources", args=[self.dataset.id])
+            payload = self.client.get(f"{url}?relation_type=related").json()
+            self.assert_linkedres_size(payload, "linked_by", 0)
+        finally:
+            for d in _d:
+                d.delete()
+
+    def test_insert_linked_resource_system_relation_type(self):
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        for relation_type in ("clone_of", "uses", "invalid"):
+            response = self.client.post(
+                url, data={"target": [self.map.id], "relation_type": relation_type}, content_type="application/json"
+            )
+            self.assertEqual(response.status_code, 400)
+        self.assertFalse(LinkedResource.objects.filter(source_id=self.doc.id).exists())
+
+        response = self.client.post(
+            url, data={"target": [self.map.id], "relation_type": "related"}, content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual("related", LinkedResource.objects.get(source_id=self.doc.id).relation_type)
+
+    def test_delete_linked_resource_keeps_system_relations(self):
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        clone_of = LinkedResource.objects.create(
+            source_id=self.doc.id, target_id=self.map.id, relation_type=LinkedResource.RelationType.CLONE_OF
+        )
+
+        response = self.client.delete(url, data={"target": [self.map.id]}, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(LinkedResource.objects.filter(pk=clone_of.pk).exists())
+
+    def test_linked_resource_is_unique_per_relation_type(self):
+        LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id)
+        LinkedResource.objects.create(
+            source_id=self.doc.id, target_id=self.map.id, relation_type=LinkedResource.RelationType.CLONE_OF
+        )
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id)
 
 
 class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):

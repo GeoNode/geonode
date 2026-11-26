@@ -66,7 +66,9 @@ class Map(ResourceBase):
             dataset_ids = MapLayer.objects.filter(map__id=self.id).values("dataset_id")
             datasets = ResourceBase.objects.filter(id__in=dataset_ids)
             # create LinkedResources on the fly to report MapLayer relationship
-            res = (LinkedResource(source=self, target=d, internal=True) for d in datasets)
+            res = (
+                LinkedResource(source=self, target=d, relation_type=LinkedResource.RelationType.USES) for d in datasets
+            )
             ret = itertools.chain(ret, res)
 
         return ret

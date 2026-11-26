@@ -562,14 +562,7 @@ class BaseResourceManager(ResourceManagerInterface):
                             group=_geolimit.group, resource=_dst, wkt=_geolimit.wkt
                         )
                         _dst.groups_geolimits.add(_new_geolimit)
-                    for lr in LinkedResource.get_linked_resources(source=instance.pk, is_internal=False):
-                        LinkedResource.objects.get_or_create(
-                            source_id=_resource.pk, target_id=lr.target.pk, internal=False
-                        )
-                    for lr in LinkedResource.get_linked_resources(target=instance.pk, is_internal=False):
-                        LinkedResource.objects.get_or_create(
-                            source_id=lr.source.pk, target_id=_resource.pk, internal=False
-                        )
+                    LinkedResource.copy_links(instance, _resource)
 
                     if isinstance(instance.get_real_instance(), Dataset):
                         for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):

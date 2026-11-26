@@ -300,6 +300,21 @@ class BaseVectorFileHandler(BaseHandler):
         return options
 
     @staticmethod
+    def get_table_crs(table_name: str) -> Optional[str]:
+        """Return the CRS of the geometry column of a datastore table (e.g. 'EPSG:4269'), None if not found."""
+        schema = ModelSchema.objects.filter(name=table_name).first()
+        db_name = schema.db_name if schema else os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
+        with connections[db_name].cursor() as cursor:
+            cursor.execute(
+                "SELECT s.auth_name || ':' || s.auth_srid FROM geometry_columns g "
+                "JOIN spatial_ref_sys s ON s.srid = g.srid "
+                "WHERE g.f_table_name = %s AND s.auth_name IS NOT NULL LIMIT 1",
+                [table_name],
+            )
+            row = cursor.fetchone()
+        return row[0] if row else None
+
+    @staticmethod
     def copy_table_with_ogr2ogr(original_table_name: str, new_table_name: str, db_name: Optional[str] = None):
         """
         Copies a old existing table to new table using ogr2ogr.
@@ -422,12 +437,12 @@ class BaseVectorFileHandler(BaseHandler):
 
     def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
-            return [
-                {
-                    "name": alternate,
-                    "crs": ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid,
-                }
-            ]
+            # ResourceBase.srid is metadata and can be changed by the metadata handlers:
+            # the copied table tells the actual CRS of the data
+            crs = self.get_table_crs(alternate)
+            if not crs:
+                crs = ResourceBase.objects.filter(alternate=kwargs.get("original_dataset_alternate")).first().srid
+            return [{"name": alternate, "crs": crs}]
 
         layers = self._select_valid_layers(self.open_source_file(files), filter_layer=layer_name)
         if not layers:
