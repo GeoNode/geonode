@@ -377,12 +377,14 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res = create_single_map("A Test Map")
         target = create_single_doc("A Test Doc")
         LinkedResource.objects.create(source=res, target=target)
+        LinkedResource.objects.create(source=res, target=target, relation_type="crossReference")
         clone = clone_2 = None
         try:
             clone = self.rm.copy(res, owner=self.user, defaults=dict(title="A Test Map 2"))
             self.assertIsNotNone(clone)
             self.assertEqual([res.pk], list(LinkedResource.get_target_ids(clone, clone_of)))
             self.assertEqual([target.pk], list(LinkedResource.get_target_ids(clone, related)))
+            self.assertEqual([target.pk], list(LinkedResource.get_target_ids(clone, "crossReference")))
 
             # the lineage is not inherited by a clone of the clone
             clone_2 = self.rm.copy(clone, owner=self.user, defaults=dict(title="A Test Map 3"))

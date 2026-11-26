@@ -1310,9 +1310,8 @@ class ResourceBaseViewSet(ApiPresetsInitializer, MultiLangViewMixin, DeprecatedE
             if not isinstance(target_ids, list):
                 raise ValidationError("Payload is not valid")
 
-            # the other relation types are managed by the system
             relation_type = request.data.get("relation_type", LinkedResource.RelationType.RELATED)
-            if relation_type != LinkedResource.RelationType.RELATED:
+            if not LinkedResource.is_user_relation_type(relation_type):
                 raise ValidationError(f"Relation type '{relation_type}' can not be set")
 
             # remove duplicates and self ref

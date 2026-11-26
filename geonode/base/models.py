@@ -2007,11 +2007,14 @@ class LinkedResource(models.Model):
         USES = "uses", _("uses")
         CLONE_OF = "clone_of", _("is clone of")
 
+    # managed by GeoNode, users can't set or remove them
+    SYSTEM_RELATION_TYPES = frozenset({RelationType.USES, RelationType.CLONE_OF})
+
     source = models.ForeignKey(
         ResourceBase, related_name="linked_to", blank=False, null=False, on_delete=models.CASCADE
     )
     target = models.ForeignKey(ResourceBase, related_name="linked_by", blank=True, null=False, on_delete=models.CASCADE)
-    relation_type = models.CharField(max_length=32, choices=RelationType.choices, default=RelationType.RELATED)
+    relation_type = models.CharField(max_length=255, default=RelationType.RELATED)
 
     class Meta:
         constraints = [
@@ -2022,6 +2025,10 @@ class LinkedResource(models.Model):
     def internal(self):
         # deprecated, superseded by relation_type
         return self.relation_type == self.RelationType.USES
+
+    @classmethod
+    def is_user_relation_type(cls, relation_type):
+        return relation_type == cls.RelationType.RELATED
 
     @classmethod
     def get_linked_resources(cls, source: ResourceBase = None, target: ResourceBase = None, relation_type: str = None):
@@ -2050,14 +2057,13 @@ class LinkedResource(models.Model):
 
     @classmethod
     def copy_links(cls, source: ResourceBase, clone: ResourceBase):
-        """Give a clone the generic links of its source and record which resource it was cloned from."""
-        related = cls.RelationType.RELATED
-        links = cls.objects.filter(relation_type=related)
+        """Give a clone the user links of its source and record which resource it was cloned from."""
+        links = cls.objects.exclude(relation_type__in=cls.SYSTEM_RELATION_TYPES)
         with transaction.atomic():
-            for target_id in links.filter(source=source).values_list("target_id", flat=True):
-                cls.objects.get_or_create(source=clone, target_id=target_id, relation_type=related)
-            for source_id in links.filter(target=source).values_list("source_id", flat=True):
-                cls.objects.get_or_create(source_id=source_id, target=clone, relation_type=related)
+            for target_id, relation_type in links.filter(source=source).values_list("target_id", "relation_type"):
+                cls.objects.get_or_create(source=clone, target_id=target_id, relation_type=relation_type)
+            for source_id, relation_type in links.filter(target=source).values_list("source_id", "relation_type"):
+                cls.objects.get_or_create(source_id=source_id, target=clone, relation_type=relation_type)
             cls.objects.create(source=clone, target=source, relation_type=cls.RelationType.CLONE_OF)
 
     @classmethod
