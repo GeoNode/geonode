@@ -48,3 +48,11 @@ def run_setup_hooks(*args, **kwargs):
     from geonode.upload.validation import FileValidationConfigRegistry
 
     FileValidationConfigRegistry.rebuild()
+
+    # here to avoid AppRegistryNotReady: hooks imports the resource models
+    from geonode.upload.hooks import importer_hooks
+
+    importer_hooks.register_subscribers()
+    logger.info(
+        f"The following importer hook subscribers have been registered: {', '.join(settings.IMPORTER_HOOK_SUBSCRIBERS)}"
+    )

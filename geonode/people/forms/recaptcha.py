@@ -16,6 +16,7 @@
 #
 #########################################################################
 from django import forms
+from django.contrib.admin.forms import AdminAuthenticationForm
 from allauth.account.forms import LoginForm
 
 try:
@@ -37,3 +38,9 @@ class AllauthRecaptchaLoginForm(LoginForm):
 
     def login(self, *args, **kwargs):
         return super(AllauthRecaptchaLoginForm, self).login(*args, **kwargs)
+
+
+class AdminReCaptchaAuthenticationForm(AdminAuthenticationForm):
+    """Django admin login form with reCAPTCHA (enabled in geonode/urls.py when RECAPTCHA_ENABLED=True)."""
+
+    captcha = ReCaptchaField(label=False)

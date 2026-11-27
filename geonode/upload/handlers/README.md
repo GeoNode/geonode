@@ -119,8 +119,8 @@ class BaseVectorFileHandler(BaseHandler):
         '''
         Override this method if there is some extra step to perform
         before considering the execution as completed.
-        For example can be used to trigger an email-send to notify
-        that the execution is completed
+        To react to the end of an execution from outside the handler
+        (e.g. send an email), use the importer hooks instead
         '''
         return
 
@@ -290,3 +290,8 @@ IMPORTER_HANDLERS = os.getenv('IMPORTER_HANDLERS', [
     'path.to.my.new.Handler.' <----
 ])
 ```
+
+
+# Importer hooks
+
+The importer hooks are documented in `docs/src/development/importer_hooks.md`.

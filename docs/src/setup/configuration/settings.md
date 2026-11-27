@@ -968,6 +968,14 @@ Contains the list of the handlers available to perform an import of a resource.
 In case the user wants to drop the support during the import phase, is enough to
 remove the path of the Handler from the list
 
+**IMPORTER HOOK SUBSCRIBERS**
+
+
+:   - Default ``[]``
+    - Env: ``IMPORTER_HOOK_SUBSCRIBERS``
+
+List of the dotted paths of the classes subscribing to the importer lifecycle events (`started`, `completed`, `partially_failed`, `failed`). Each class must subclass `geonode.upload.hooks.BaseImporterSubscriber` and is registered at startup. See [Importer hooks](../../development/importer_hooks.md).
+
 ## L
 
 **LOCKDOWN_GEONODE**
