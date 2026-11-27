@@ -30,7 +30,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import reverse
 
-from geonode import geoserver
+from geonode import geoserver, GeoNodeException
 from geonode.decorators import on_ogc_backend
 from geonode.base.populate_test_data import all_public, create_models, remove_models
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -51,6 +51,8 @@ from geonode.geoserver.helpers import (
     set_attributes_from_geoserver,
     _sync_geoserver_keywords_to_instance,
     ogc_server_settings,
+    save_style,
+    set_dataset_style,
 )
 from geonode.proxy.utils import ProxyUrlsRegistry
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
@@ -553,6 +555,21 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
 
         result = get_time_info(mock_layer)
         self.assertIsNone(result)
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_save_style_refuses_empty_global_style(self, mock_gs_catalog):
+        gs_style = Mock(workspace=None, sld_body=b"", body_href="http://localhost/styles/default_generic.sld")
+        layer = Mock(workspace="geonode")
+        layer.name = "my_layer"
+        with self.assertRaises(GeoNodeException):
+            save_style(gs_style, layer)
+        mock_gs_catalog.create_style.assert_not_called()
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_set_dataset_style_refuses_empty_body(self, mock_gs_catalog):
+        with self.assertRaises(GeoNodeException):
+            set_dataset_style(Mock(alternate="geonode:my_layer"), "geonode:my_layer", b"")
+        mock_gs_catalog.create_style.assert_not_called()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_sync_geoserver_keywords_merges_and_does_not_replace(self):
