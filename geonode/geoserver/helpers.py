@@ -395,6 +395,9 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
         logger.exception("The uploaded SLD file is not valid XML")
         raise Exception("The uploaded SLD file is not valid XML")
 
+    if not sld or not sld.strip():
+        raise GeoNodeException(f"Refusing to set an empty style on dataset '{saved_dataset.alternate}'")
+
     # Check Dataset's available styles
     match = None
     styles = list(saved_dataset.styles.all()) + [saved_dataset.default_style]
@@ -1311,6 +1314,10 @@ def save_style(gs_style, layer):
     sld_body = copy.copy(gs_style.sld_body)
     _gs_style = None
     if not gs_style.workspace:
+        if not sld_body or not sld_body.strip():
+            raise GeoNodeException(
+                f"Refusing to copy style '{sld_name}' to '{layer.workspace}:{layer.name}': source body is empty"
+            )
         logger.debug(f'save_style: Copying style "{sld_name}" to "{layer.workspace}:{layer.name}')
         _gs_style = gs_catalog.create_style(layer.name, sld_body, raw=True, overwrite=True, workspace=layer.workspace)
     else:
