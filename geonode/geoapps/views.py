@@ -98,7 +98,7 @@ def geoapp_embed(request, geoappid, template="apps/app_embed.html"):
         "group": group,
         "perms_list": perms_list,
         "permissions_json": permissions_json,
-        "preview": getattr(settings, "GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),
+        "preview": getattr(settings, "GEONODE_LEGACY_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),
     }
 
     return render(request, template, context=_ctx)

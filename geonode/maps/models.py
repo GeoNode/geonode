@@ -28,7 +28,7 @@ from django.utils.translation import gettext_lazy as _
 from geonode.base import bbox_utils
 from geonode import geoserver  # noqa
 from geonode.base.models import ResourceBase, LinkedResource
-from geonode.client.hooks import hookset
+from geonode.legacy_client.hooks import hookset
 from geonode.layers.models import Dataset, Style
 from geonode.utils import check_ogc_backend
 

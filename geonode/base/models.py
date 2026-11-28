@@ -1392,7 +1392,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return ""
 
     def get_absolute_url(self):
-        from geonode.client.hooks import hookset
+        from geonode.legacy_client.hooks import hookset
 
         try:
             return (

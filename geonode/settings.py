@@ -373,7 +373,7 @@ GEONODE_APPS_NAV_MENU_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_NAV_MENU
 GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
     "geonode.people",
-    "geonode.client",
+    "geonode.legacy_client",
     "geonode.themes",
     "geonode.proxy",
     "geonode.social",
@@ -1271,13 +1271,15 @@ DEFAULT_MAP_ZOOM = int(os.environ.get("DEFAULT_MAP_ZOOM", 0))
 MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", None)
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
 
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv("GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore")
+GEONODE_LEGACY_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv("GEONODE_LEGACY_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore")
 
 """
 MapStore2 REACT based Client parameters
 """
-if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
-    GEONODE_CLIENT_HOOKSET = os.getenv("GEONODE_CLIENT_HOOKSET", "geonode_mapstore_client.hooksets.MapStoreHookSet")
+if GEONODE_LEGACY_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
+    GEONODE_LEGACY_CLIENT_HOOKSET = os.getenv(
+        "GEONODE_LEGACY_CLIENT_HOOKSET", "geonode_mapstore_client.hooksets.MapStoreHookSet"
+    )
 
     if "geonode_mapstore_client" not in INSTALLED_APPS:
         INSTALLED_APPS += ("geonode_mapstore_client",)

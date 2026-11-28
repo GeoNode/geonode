@@ -17,7 +17,7 @@
 #
 #########################################################################
 from django.contrib.auth.decorators import login_required
-from geonode.client.hooks import hookset
+from geonode.legacy_client.hooks import hookset
 import json
 
 from django.shortcuts import render
